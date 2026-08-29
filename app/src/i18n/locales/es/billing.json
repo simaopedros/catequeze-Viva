@@ -199,7 +199,7 @@
     },
     "class_limit": {
       "title": "Tu próxima turma necesita más espacio",
-      "description": "Ya usas {{currentCount}} de {{maxAllowed}} turma en {{currentPlanName}}. Haz upgrade a {{plan}} y abre la próxima turma sin perder asistencia, encuentros ni historial.",
+      "description": "Usaste {{currentCount}} de {{maxAllowed}} turmas del {{currentPlanName}}. Haz upgrade a {{plan}} y abre la próxima turma sin perder asistencia, encuentros ni historial.",
       "cta": "Liberar próxima turma",
       "checklist": "Liberas la próxima turma sin separar asistencia, planificación ni seguimiento.",
       "toast_description": "Tu turma actual ya está activa. Libera la próxima sin interrumpir el seguimiento."

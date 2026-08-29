@@ -357,8 +357,23 @@ export function MeetingAttendanceSheet({
         (r: any) => r.outcome !== "applied",
       );
       if (failed.length) {
+        const names = failed
+          .map((r: any) => {
+            if (r.name) return r.name;
+            const participant = sheet.participants.find(
+              (p: any) => p.catechumenProfileId === r.catechumenProfileId,
+            );
+            return participant
+              ? `${participant.firstName || ""} ${participant.lastName || ""}`.trim()
+              : r.catechumenProfileId;
+          })
+          .filter(Boolean);
         toast({
           title: t("sheet.bulk_partial", { count: failed.length }),
+          description: t("matrix.bulk_failed_named", {
+            names: names.join(", "),
+            count: failed.length,
+          }),
           variant: "destructive",
         });
         refetch();

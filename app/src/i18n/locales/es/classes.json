@@ -132,6 +132,11 @@
     "no_journey": "Sin jornada",
     "available_to_enroll": "Disponibles para inscribir ({{count}})",
     "enroll_btn": "Inscribir",
+    "import_into_class": "Importar a esta turma",
+    "enroll_all": "Inscribir a todos ({{count}})",
+    "enroll_selected": "Inscribir seleccionados ({{count}})",
+    "enrolled_bulk_success": "{{count}} catecúmenos inscritos.",
+    "enrolled_bulk_partial": "{{enrolled}} inscritos, {{failed}} fallaron.",
     "no_meetings_registered": "Ningún encuentro registrado",
     "schedule_meetings_desc": "Programe encuentros en la página de encuentros del grupo.",
     "no_title": "Sin título",
@@ -172,5 +177,6 @@
   "suggested_structure": "Estructura sugerida",
   "suggested_1": "Defina etapa, horario y catequista principal para cada grupo.",
   "suggested_2": "Registre catecúmenos para seguir asistencia, encuentros y progreso.",
-  "suggested_3": "Use la asistencia editorial para preparar encuentros con más consistencia."
+  "suggested_3": "Use la asistencia editorial para preparar encuentros con más consistencia.",
+  "limit_used_of_plan": "Usaste {{currentCount}} de {{maxAllowed}} turmas del Plan Único"
 }

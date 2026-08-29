@@ -35,6 +35,7 @@ import { PlanLimitBanner } from "../components/PlanLimitBanner";
 import { useClassFilters, useClassStatusMap } from "../../i18n/useLabels";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
+import { formatClassSchedule } from "../../shared/classSchedule";
 import { cn } from "../../client/utils";
 import {
   AppDisplayTitle,
@@ -142,12 +143,6 @@ export default function ClassesPage() {
     [classFilters, classes],
   );
 
-  const formatDay = (dayOfWeek: string | number | null | undefined) => {
-    if (dayOfWeek === null || dayOfWeek === undefined || dayOfWeek === "")
-      return "";
-    return t(`days_long.${dayOfWeek}`);
-  };
-
   const isToday = (dateStr: string) => {
     const d = new Date(dateStr);
     const today = new Date();
@@ -159,14 +154,12 @@ export default function ClassesPage() {
     setFilter("");
   };
 
-  const scheduleLabel = (cls: any) => {
-    if (cls.dayOfWeek != null && cls.dayOfWeek !== "") {
-      return `${formatDay(cls.dayOfWeek)}${
-        cls.startTime ? ` ${cls.startTime}` : ""
-      }`;
-    }
-    return t("no_schedule");
-  };
+  const scheduleLabel = (cls: any) =>
+    formatClassSchedule(
+      cls,
+      (index) => t(`days_long.${index}`),
+      t("no_schedule"),
+    );
 
   const nextActionLabel = (cls: any) => {
     if (cls.meetings?.[0] && isToday(cls.meetings[0].date)) {

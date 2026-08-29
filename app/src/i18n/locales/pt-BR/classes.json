@@ -132,6 +132,11 @@
     "no_journey": "Sem jornada",
     "available_to_enroll": "Disponíveis para matricular ({{count}})",
     "enroll_btn": "Matricular",
+    "import_into_class": "Importar para esta turma",
+    "enroll_all": "Matricular todos ({{count}})",
+    "enroll_selected": "Matricular selecionados ({{count}})",
+    "enrolled_bulk_success": "{{count}} catequizandos matriculados.",
+    "enrolled_bulk_partial": "{{enrolled}} matriculados, {{failed}} falharam.",
     "no_meetings_registered": "Nenhum encontro registrado",
     "schedule_meetings_desc": "Agende encontros na página de encontros da turma.",
     "no_title": "Sem título",
@@ -167,10 +172,11 @@
     "confirm_remove_catechist_desc": "Tem certeza que deseja remover este catequista da turma?",
     "error": "Erro"
   },
-  "no_schedule": "Sin horario",
-  "first_classes": "Primeros grupos",
-  "suggested_structure": "Estructura sugerida",
-  "suggested_1": "Defina etapa, horario y catequista principal para cada grupo.",
-  "suggested_2": "Registre catecúmenos para seguir asistencia, encuentros y progreso.",
-  "suggested_3": "Use la asistencia editorial para preparar encuentros con más consistencia."
+  "no_schedule": "Sem horário",
+  "first_classes": "Primeiras turmas",
+  "suggested_structure": "Estrutura sugerida",
+  "suggested_1": "Defina etapa, horário e catequista responsável para cada turma.",
+  "suggested_2": "Cadastre catequizandos para acompanhar presença, encontros e progresso.",
+  "suggested_3": "Use a presença editorial para preparar encontros com mais consistência.",
+  "limit_used_of_plan": "Você usou {{currentCount}} de {{maxAllowed}} turmas do Plano Único"
 }

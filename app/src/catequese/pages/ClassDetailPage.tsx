@@ -34,6 +34,7 @@ import {
   getClassDetails,
   listCatechumens,
   enrollCatechumen,
+  bulkEnrollCatechumens,
   updateClass,
   getOrCreateClassChat,
   cancelEnrollment,
@@ -71,6 +72,7 @@ import { EmptyState } from "../../client/components/EmptyState";
 import { useClassStatusMap } from "../../i18n/useLabels";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
+import { formatClassSchedule } from "../../shared/classSchedule";
 
 export default function ClassDetailPage() {
   const { t } = useTranslation("classes");
@@ -150,6 +152,10 @@ export default function ClassDetailPage() {
   const [editLocation, setEditLocation] = useState("");
   const [editCapacity, setEditCapacity] = useState(30);
   const [savingEdit, setSavingEdit] = useState(false);
+  const [selectedAvailable, setSelectedAvailable] = useState<Set<string>>(
+    new Set(),
+  );
+  const [bulkEnrolling, setBulkEnrolling] = useState(false);
 
   const statusOpts = useMemo(
     () => [
@@ -248,6 +254,49 @@ export default function ClassDetailPage() {
         description: (e as any).message || tc("try_again"),
         variant: "destructive",
       });
+    }
+  };
+
+  const handleBulkEnroll = async (ids: string[]) => {
+    if (!id || ids.length === 0) return;
+    setBulkEnrolling(true);
+    try {
+      const result = await bulkEnrollCatechumens({
+        classId: id,
+        catechumenProfileIds: ids,
+      });
+      const failed = result.failed || [];
+      if (failed.length > 0) {
+        toast({
+          title: t("detail.enrolled_bulk_partial", {
+            enrolled: result.enrolled,
+            failed: failed.length,
+          }),
+          description: failed.map((f: any) => f.name).join(", "),
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: t("detail.enrolled_bulk_success", { count: result.enrolled }),
+        });
+      }
+      setSelectedAvailable(new Set());
+      refetchClass();
+    } catch (e: any) {
+      if (
+        handlePlanLimitError(e.message || e, {
+          currentPlan: effectivePlan,
+          isPersonalWorkspace: isPersonal,
+        })
+      )
+        return;
+      toast({
+        title: t("detail.enroll_error"),
+        description: (e as any).message || tc("try_again"),
+        variant: "destructive",
+      });
+    } finally {
+      setBulkEnrolling(false);
     }
   };
   const handleUnenroll = (enrollmentId: string) => {
@@ -540,11 +589,11 @@ export default function ClassDetailPage() {
               {t("schedule")}
             </p>
             <p className="mt-1.5 text-sm font-semibold tracking-tight text-brand-ink">
-              {cls.dayOfWeek != null && cls.dayOfWeek !== ""
-                ? t(`days_long.${cls.dayOfWeek}`)
-                : "—"}{" "}
-              {cls.startTime}
-              {cls.endTime && `-${cls.endTime}`}
+              {formatClassSchedule(
+                cls,
+                (index) => t(`days_long.${index}`),
+                t("no_schedule"),
+              )}
             </p>
           </AppPanel>
           <AppMetric
@@ -721,6 +770,11 @@ export default function ClassDetailPage() {
                       </Link>
                     </Button>
                     <Button size="sm" variant="outline" asChild>
+                      <Link to={`/app/catechumens/import?classId=${id}`}>
+                        {t("detail.import_into_class")}
+                      </Link>
+                    </Button>
+                    <Button size="sm" variant="outline" asChild>
                       <Link to={`/app/classes/${id}/attendance`}>
                         <ClipboardList className="mr-1 h-3.5 w-3.5" />
                         {t("detail.empty_cta_attendance")}
@@ -832,6 +886,36 @@ export default function ClassDetailPage() {
                       })}
                     </h3>
                     <div className="h-px w-8 bg-brand-gold" aria-hidden />
+                    <div className="flex flex-wrap gap-2">
+                      <Button size="sm" variant="outline" asChild>
+                        <Link to={`/app/catechumens/import?classId=${id}`}>
+                          {t("detail.import_into_class")}
+                        </Link>
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={bulkEnrolling || available.length === 0}
+                        onClick={() =>
+                          handleBulkEnroll(available.map((c: any) => c.id))
+                        }
+                      >
+                        {t("detail.enroll_all", { count: available.length })}
+                      </Button>
+                      {selectedAvailable.size > 0 && (
+                        <Button
+                          size="sm"
+                          disabled={bulkEnrolling}
+                          onClick={() =>
+                            handleBulkEnroll(Array.from(selectedAvailable))
+                          }
+                        >
+                          {t("detail.enroll_selected", {
+                            count: selectedAvailable.size,
+                          })}
+                        </Button>
+                      )}
+                    </div>
                   </div>
                   <div className="grid gap-2">
                     {available.map((c: any) => (
@@ -840,7 +924,21 @@ export default function ClassDetailPage() {
                         className="flex items-center justify-between p-3"
                         padded={false}
                       >
-                        <div className="flex items-center gap-3">
+                        <label className="flex min-w-0 flex-1 items-center gap-3">
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4"
+                            checked={selectedAvailable.has(c.id)}
+                            onChange={() => {
+                              setSelectedAvailable((prev) => {
+                                const next = new Set(prev);
+                                if (next.has(c.id)) next.delete(c.id);
+                                else next.add(c.id);
+                                return next;
+                              });
+                            }}
+                            aria-label={`${t("detail.enroll_btn")} ${c.firstName} ${c.lastName}`}
+                          />
                           <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-brand-ink">
                             {c.firstName?.[0]}
                             {c.lastName?.[0]}
@@ -848,7 +946,7 @@ export default function ClassDetailPage() {
                           <span className="text-sm font-semibold tracking-tight text-brand-ink">
                             {c.firstName} {c.lastName}
                           </span>
-                        </div>
+                        </label>
                         <Button
                           size="sm"
                           variant="outline"

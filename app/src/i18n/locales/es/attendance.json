@@ -52,7 +52,12 @@
     "mark_all_present_confirm_desc": "¿Realmente desea marcar a todos los {{count}} catecúmenos como PRESENTES en el encuentro \"{{meetingTitle}}\"? Esto sobrescribirá los registros individuales.",
     "mark_all_absent_confirm_desc": "¿Realmente desea marcar a todos los {{count}} catecúmenos como AUSENTES en el encuentro \"{{meetingTitle}}\"? Esto sobrescribirá los registros individuales.",
     "bulk_success": "¡Asistencias registradas con éxito!",
-    "bulk_partial_error": "Error al registrar la asistencia para {{failedCount}} de {{total}} catecúmenos."
+    "bulk_partial_error": "Error al registrar la asistencia para {{failedCount}} de {{total}} catecúmenos.",
+    "bulk_failed_named": "Falló para: {{names}}.",
+    "bulk_retry": "Reintentar los que fallaron",
+    "bulk_retry_hint": "{{count}} catecúmeno(s) sin registro. ¿Reintentar?",
+    "create_meeting_success": "Encuentro creado.",
+    "date_placeholder": "DD/MM/AAAA"
   },
   "sheet": {
     "eyebrow": "Lista",

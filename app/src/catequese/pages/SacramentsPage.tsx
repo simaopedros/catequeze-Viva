@@ -220,7 +220,7 @@ export default function SacramentsPage() {
   };
 
   const loadTemplates = async () => {
-    const data = await listJourneyTemplates();
+    const data = await listJourneyTemplates({ locale: currentLocale } as any);
     setTemplates(data || []);
     if (data?.length && !templateName) setTemplateName(data[0].name);
   };

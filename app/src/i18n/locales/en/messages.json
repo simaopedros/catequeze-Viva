@@ -73,8 +73,19 @@
       "announcement": {
         "label": "Announcement Channel",
         "desc": "Only coordinators can post"
+      },
+      "class_chat": {
+        "label": "Class message",
+        "desc": "Open the class chat with enrolled students and families"
+      },
+      "class_notice": {
+        "label": "Notice for guardians",
+        "desc": "Reach the class and families in the same channel"
       }
     },
+    "pick_class": "Choose a class",
+    "no_classes": "No classes found.",
+    "enrolled_no_account": "No portal account — use the class message",
     "group_name_placeholder": "Group name...",
     "search_contacts": "Search contacts...",
     "loading_contacts": "Loading contacts...",

@@ -18,6 +18,8 @@ import { AppGoldRule } from "../../../client/components/brand/AppChrome";
 import {
   getContactsForConversation,
   createConversation,
+  getOrCreateClassChat,
+  listClasses,
 } from "wasp/client/operations";
 import { useUserContext } from "../../../client/hooks/useUserContext";
 import { useActiveWorkspace } from "../../../client/hooks/useActiveWorkspace";
@@ -32,6 +34,8 @@ interface Contact {
   email?: string | null;
   avatarUrl: string | null;
   role?: string;
+  hasAccount?: boolean;
+  classId?: string;
 }
 
 function contactLabel(c: Contact): string {
@@ -43,14 +47,16 @@ function contactLabel(c: Contact): string {
 
 interface NewConversationDialogProps {
   isOpen: boolean;
+  initialType?: "DIRECT" | "CLASS_CHAT" | "ANNOUNCEMENT" | null;
   onClose: () => void;
   onCreated: (conversationId: string) => void;
 }
 
 const CONVERSATION_TYPE_KEYS = [
   { value: "DIRECT" as const, key: "direct", icon: MessageSquareText },
+  { value: "CLASS_CHAT" as const, key: "class_chat", icon: Users },
+  { value: "ANNOUNCEMENT" as const, key: "class_notice", icon: Megaphone },
   { value: "GROUP" as const, key: "group", icon: Users },
-  { value: "ANNOUNCEMENT" as const, key: "announcement", icon: Megaphone },
 ];
 
 function getInitials(
@@ -65,6 +71,7 @@ function getInitials(
 
 export function NewConversationDialog({
   isOpen,
+  initialType,
   onClose,
   onCreated,
 }: NewConversationDialogProps) {
@@ -73,17 +80,21 @@ export function NewConversationDialog({
   const { t: tc } = useTranslation("common");
   const { userRole } = useUserContext();
   const { workspaceId, isPersonal } = useActiveWorkspace();
-  const isRestricted =
-    ["CATECHUMEN", "GUARDIAN"].includes(userRole) || isPersonal;
+  const isFamilyRole = ["CATECHUMEN", "GUARDIAN"].includes(userRole);
 
-  const availableTypes = isRestricted
-    ? CONVERSATION_TYPE_KEYS.filter((t) => t.value === "DIRECT")
-    : CONVERSATION_TYPE_KEYS;
+  const availableTypes = isFamilyRole
+    ? CONVERSATION_TYPE_KEYS.filter((item) => item.value === "DIRECT")
+    : isPersonal
+      ? CONVERSATION_TYPE_KEYS.filter((item) =>
+          ["DIRECT", "CLASS_CHAT", "ANNOUNCEMENT"].includes(item.value),
+        )
+      : CONVERSATION_TYPE_KEYS;
 
-  const [step, setStep] = useState<"type" | "contacts">("type");
-  const [type, setType] = useState<"DIRECT" | "GROUP" | "ANNOUNCEMENT">(
-    "DIRECT",
-  );
+  const [step, setStep] = useState<"type" | "contacts" | "classes">("type");
+  const [type, setType] = useState<
+    "DIRECT" | "GROUP" | "ANNOUNCEMENT" | "CLASS_CHAT"
+  >("DIRECT");
+  const [classes, setClasses] = useState<any[]>([]);
   const [title, setTitle] = useState("");
   const [search, setSearch] = useState("");
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -108,6 +119,18 @@ export function NewConversationDialog({
   }, [isOpen, step, workspaceId]);
 
   useEffect(() => {
+    if (isOpen && step === "classes" && workspaceId) {
+      setLoading(true);
+      listClasses({ workspaceId, take: 100 } as any)
+        .then((data: any) => {
+          setClasses(Array.isArray(data) ? data : data?.items || []);
+        })
+        .catch(() => setClasses([]))
+        .finally(() => setLoading(false));
+    }
+  }, [isOpen, step, workspaceId]);
+
+  useEffect(() => {
     if (!isOpen) {
       setStep("type");
       setType("DIRECT");
@@ -115,8 +138,18 @@ export function NewConversationDialog({
       setSearch("");
       setSelected(new Set());
       setError("");
+      return;
     }
-  }, [isOpen]);
+    if (initialType === "CLASS_CHAT" || initialType === "ANNOUNCEMENT") {
+      setType(initialType);
+      setStep("classes");
+    } else if (initialType === "DIRECT") {
+      setType("DIRECT");
+      setStep("contacts");
+    } else {
+      setStep("type");
+    }
+  }, [isOpen, initialType]);
 
   const filteredContacts = contacts.filter((c) => {
     if (!search) return true;
@@ -139,6 +172,20 @@ export function NewConversationDialog({
     setSelected(next);
   };
 
+  const openClassChat = async (classId: string) => {
+    setCreating(true);
+    setError("");
+    try {
+      const { conversationId } = await getOrCreateClassChat({ classId });
+      onCreated(conversationId);
+      onClose();
+    } catch (e: any) {
+      setError(e.message || t("new_dialog.create_error"));
+    } finally {
+      setCreating(false);
+    }
+  };
+
   const handleCreate = async () => {
     if (!workspaceId) {
       setError(t("new_dialog.create_error"));
@@ -148,8 +195,20 @@ export function NewConversationDialog({
       setError(t("new_dialog.select_participant"));
       return;
     }
-    if (type !== "DIRECT" && !title.trim()) {
+    if (type !== "DIRECT" && type !== "CLASS_CHAT" && !title.trim()) {
       setError(t("new_dialog.name_group"));
+      return;
+    }
+
+    const selectedContacts = contacts.filter((c) => selected.has(c.id));
+    const withoutAccount = selectedContacts.filter((c) => c.hasAccount === false);
+    if (type === "DIRECT" && withoutAccount.length > 0) {
+      const classId = withoutAccount[0].classId;
+      if (classId) {
+        await openClassChat(classId);
+        return;
+      }
+      setError(t("new_dialog.enrolled_no_account"));
       return;
     }
 
@@ -157,9 +216,11 @@ export function NewConversationDialog({
     setError("");
     try {
       const conversation = await createConversation({
-        type,
+        type: type === "CLASS_CHAT" ? "DIRECT" : type,
         title: type !== "DIRECT" ? title.trim() : undefined,
-        participantUserIds: Array.from(selected),
+        participantUserIds: selectedContacts
+          .filter((c) => c.hasAccount !== false && !String(c.id).startsWith("profile:"))
+          .map((c) => c.id),
         parishId: workspaceId,
       });
       onCreated(conversation.id);
@@ -183,7 +244,9 @@ export function NewConversationDialog({
           <DialogTitle className="text-base">
             {step === "type"
               ? t("new_dialog.title_type")
-              : t("new_dialog.title_contacts")}
+              : step === "classes"
+                ? t("new_dialog.pick_class")
+                : t("new_dialog.title_contacts")}
           </DialogTitle>
           <AppGoldRule className="w-8" />
         </DialogHeader>
@@ -197,7 +260,11 @@ export function NewConversationDialog({
                   key={ct.value}
                   onClick={() => {
                     setType(ct.value);
-                    setStep("contacts");
+                    setStep(
+                      ct.value === "CLASS_CHAT" || ct.value === "ANNOUNCEMENT"
+                        ? "classes"
+                        : "contacts",
+                    );
                   }}
                   className={cn(
                     "w-full flex items-center gap-3 rounded-sm border border-border/70 p-3 text-left transition-colors hover:border-brand-ink/30 hover:bg-muted/20",
@@ -218,6 +285,53 @@ export function NewConversationDialog({
                 </button>
               );
             })}
+          </div>
+        )}
+
+        {step === "classes" && (
+          <div className="p-4 space-y-3">
+            <p className="text-sm text-muted-foreground">
+              {t("new_dialog.pick_class")}
+            </p>
+            {error && <p className="text-xs text-destructive">{error}</p>}
+            <div className="max-h-64 overflow-y-auto border-t scrollbar-thin">
+              {loading ? (
+                <div className="p-6 text-center text-sm text-muted-foreground">
+                  {t("new_dialog.loading_contacts")}
+                </div>
+              ) : classes.length === 0 ? (
+                <div className="p-6 text-center text-sm text-muted-foreground">
+                  {t("new_dialog.no_classes")}
+                </div>
+              ) : (
+                classes.map((cls: any) => (
+                  <button
+                    key={cls.id}
+                    type="button"
+                    disabled={creating}
+                    onClick={() => openClassChat(cls.id)}
+                    className="w-full border-b px-3 py-3 text-left hover:bg-muted/30"
+                  >
+                    <p className="text-sm font-semibold tracking-tight text-brand-ink">
+                      {cls.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {cls._count?.enrollments ?? cls.enrollmentCount ?? 0}{" "}
+                      {tc("enrolled")}
+                    </p>
+                  </button>
+                ))
+              )}
+            </div>
+            <button
+              onClick={() => {
+                setStep("type");
+                setError("");
+              }}
+              className="text-xs text-muted-foreground hover:text-brand-ink"
+            >
+              {t("new_dialog.back")}
+            </button>
           </div>
         )}
 
@@ -307,7 +421,11 @@ export function NewConversationDialog({
                           {name}
                         </p>
                         <p className="text-overline text-muted-foreground truncate">
-                          {c.role ? roleLabel(c.role) : c.maskedEmail || null}
+                          {c.hasAccount === false
+                            ? t("new_dialog.enrolled_no_account")
+                            : c.role
+                              ? roleLabel(c.role)
+                              : c.maskedEmail || null}
                         </p>
                       </div>
                       <div

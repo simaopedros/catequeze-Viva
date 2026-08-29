@@ -54,6 +54,7 @@ function toContactDTO(
     avatarUrl?: string | null;
   },
   role?: string,
+  extra?: Record<string, unknown>,
 ): ConversationContact {
   const name = [user.firstName, user.lastName].filter(Boolean).join(' ').trim();
   return {
@@ -63,7 +64,47 @@ function toContactDTO(
     displayName: buildDisplayName(user),
     maskedEmail: name ? null : maskEmail(user.email),
     avatarUrl: user.avatarUrl ?? null,
+    hasAccount: true,
     ...(role ? { role } : {}),
+    ...extra,
+  };
+}
+
+function toEnrolledProfileContact(profile: {
+  id: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  userId?: string | null;
+  user?: {
+    id: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    email?: string | null;
+    avatarUrl?: string | null;
+  } | null;
+  classId?: string | null;
+}): ConversationContact {
+  if (profile.userId && profile.user) {
+    return toContactDTO(profile.user, 'CATECHUMEN', {
+      catechumenProfileId: profile.id,
+      classId: profile.classId || undefined,
+    });
+  }
+  const displayName = [profile.firstName, profile.lastName]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+  return {
+    id: `profile:${profile.id}`,
+    firstName: profile.firstName ?? null,
+    lastName: profile.lastName ?? null,
+    displayName: displayName || 'Catequizando',
+    maskedEmail: null,
+    avatarUrl: null,
+    role: 'CATECHUMEN',
+    hasAccount: false,
+    catechumenProfileId: profile.id,
+    classId: profile.classId || undefined,
   };
 }
 
@@ -264,8 +305,12 @@ async function listCatechistScopedContacts(
         : { class: { parishId: access.workspaceId } }),
     },
     select: {
+      classId: true,
       catechumenProfile: {
         select: {
+          id: true,
+          firstName: true,
+          lastName: true,
           userId: true,
           user: { select: USER_SELECT },
           household: {
@@ -289,8 +334,10 @@ async function listCatechistScopedContacts(
   }
   for (const e of enrollments) {
     const profile = e.catechumenProfile;
-    if (profile?.userId && profile.user && profile.userId !== context.user.id) {
-      contacts.push(toContactDTO(profile.user, 'CATECHUMEN'));
+    if (profile && profile.userId !== context.user.id) {
+      contacts.push(
+        toEnrolledProfileContact({ ...profile, classId: e.classId }),
+      );
     }
     for (const g of profile?.household?.guardians || []) {
       if (g.userId && g.user && g.userId !== context.user.id) {
@@ -353,16 +400,27 @@ async function listCoordinatorScopedContacts(
 
   const catechumenProfiles = await context.entities.CatechumenProfile.findMany({
     where: {
-      userId: { not: null },
       OR: [
         { parishId: workspaceId },
         { household: { parishId: workspaceId } },
-        { enrollments: { some: { class: { parishId: workspaceId } } } },
+        {
+          enrollments: {
+            some: { status: 'ENROLLED', class: { parishId: workspaceId } },
+          },
+        },
       ],
     },
     select: {
+      id: true,
+      firstName: true,
+      lastName: true,
       userId: true,
       user: { select: USER_SELECT },
+      enrollments: {
+        where: { status: 'ENROLLED', class: { parishId: workspaceId } },
+        select: { classId: true },
+        take: 1,
+      },
     },
   });
 
@@ -376,10 +434,13 @@ async function listCoordinatorScopedContacts(
       )
       .map((g: any) => toContactDTO(g.user, 'GUARDIAN')),
     ...catechumenProfiles
-      .filter(
-        (c: any) => c.userId && c.user && c.userId !== context.user.id,
-      )
-      .map((c: any) => toContactDTO(c.user, 'CATECHUMEN')),
+      .filter((c: any) => c.userId !== context.user.id)
+      .map((c: any) =>
+        toEnrolledProfileContact({
+          ...c,
+          classId: c.enrollments?.[0]?.classId,
+        }),
+      ),
   ]);
 }
 

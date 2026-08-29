@@ -28,6 +28,7 @@ import {
   deleteMilestoneTemplate,
 } from "wasp/client/operations";
 import { useUserContext } from "../../client/hooks/useUserContext";
+import { useLocale } from "../../i18n/useLocale";
 import { toast } from "../../client/hooks/use-toast";
 import { useConfirm } from "../../client/hooks/useConfirm";
 
@@ -36,6 +37,7 @@ export default function JourneyTemplatesPage() {
   const { t: tc } = useTranslation("common");
   const { userRole } = useUserContext();
   const { confirm, confirmDialog } = useConfirm();
+  const { currentLocale } = useLocale();
   const isCoordinator = [
     "SUPER_ADMIN",
     "DIOCESE_ADMIN",
@@ -46,7 +48,9 @@ export default function JourneyTemplatesPage() {
   const isDioceseAdmin = ["SUPER_ADMIN", "DIOCESE_ADMIN"].includes(userRole);
   const canManage = isCoordinator;
 
-  const { data: templates = [], isLoading } = useQuery(listJourneyTemplates);
+  const { data: templates = [], isLoading } = useQuery(listJourneyTemplates, {
+    locale: currentLocale,
+  } as any);
 
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState("");
