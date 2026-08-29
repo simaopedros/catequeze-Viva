@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
-import { generateActivityForMeeting } from "wasp/client/operations";
+import { generateActivityForMeeting } from "../../lib/aiOperations";
 import { AiHubLayout } from "./AiHubLayout";
 import { ContentSourcePicker } from "./ContentSourcePicker";
 import { ActivityResultPanel } from "./ActivityResultPanel";

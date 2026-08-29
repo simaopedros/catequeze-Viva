@@ -9,17 +9,19 @@ import { useNavigate } from "react-router";
 import type { ContentItem } from "wasp/entities";
 import type { AiIntent, SessionContext } from "../../../shared/intent";
 import {
-  startCollaborativeSession,
-  getSessionHistory,
   getContentVersions,
   saveContentVersion,
   restoreContentVersion,
   addContextAttachment,
   removeContextAttachment,
-  getAiSuggestions,
-  getAiCreditsStatus,
   getSessionContentItem,
 } from "wasp/client/operations";
+import {
+  startCollaborativeSession,
+  getSessionHistory,
+  getAiSuggestions,
+  getAiCreditsStatus,
+} from "../../lib/aiOperations";
 import { getSessionId } from "wasp/client/api";
 
 export interface SessionMessage {

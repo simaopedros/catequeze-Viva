@@ -28,7 +28,6 @@ import { getIntendedInterval } from "../lib/intendedPlan";
 import {
   useQuery,
   getDashboardStats,
-  getAiCreditsStatus,
   generateCheckoutSession,
   cancelSubscription,
   changeSubscriptionPlan,
@@ -36,6 +35,7 @@ import {
   getCustomerPortalUrl,
   getSubscriptionDetails,
 } from "wasp/client/operations";
+import { getAiCreditsStatus } from "../lib/aiOperations";
 import { useAuth } from "wasp/client/auth";
 import { PaymentPlanId } from "../../payment/plans";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
