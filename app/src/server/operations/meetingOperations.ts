@@ -1,5 +1,5 @@
 import { HttpError, prisma } from "wasp/server";
-import { MembershipStatus } from "@prisma/client";
+import { AttendanceStatus, MembershipStatus } from "@prisma/client";
 import { logger } from "../logger";
 import {
   isFamilyPortalRole,
@@ -341,7 +341,24 @@ export const getClassAttendanceMatrix = async (
   });
 };
 
-const ATTENDANCE_STATUSES = new Set(["PRESENT", "ABSENT", "LATE", "JUSTIFIED"]);
+const ATTENDANCE_STATUSES = new Set<string>([
+  "PRESENT",
+  "ABSENT",
+  "LATE",
+  "JUSTIFIED",
+]);
+
+function isAttendanceStatus(status: string): status is AttendanceStatus {
+  return ATTENDANCE_STATUSES.has(status);
+}
+
+type AttendanceExisting = {
+  id: string;
+  status: AttendanceStatus;
+  note: string | null;
+  updatedAt: Date;
+  catechumenProfileId: string;
+};
 const MAX_BATCH_CHANGES = 100;
 
 /**
@@ -577,24 +594,27 @@ export const saveAttendanceBatch = async (
       },
     }),
   ]);
-  const nameById = new Map(
+  const nameById = new Map<string, string>(
     profiles.map((p: any) => [
-      p.id,
-      `${p.firstName || ""} ${p.lastName || ""}`.trim() || p.id,
+      String(p.id),
+      `${p.firstName || ""} ${p.lastName || ""}`.trim() || String(p.id),
     ]),
   );
-  const enrolledIds = new Set(
-    enrollments.map((e: any) => e.catechumenProfileId),
+  const enrolledIds = new Set<string>(
+    enrollments.map((e: any) => String(e.catechumenProfileId)),
   );
-  const existingByProfile = new Map(
-    existingRecords.map((r: any) => [r.catechumenProfileId, r]),
+  const existingByProfile = new Map<string, AttendanceExisting>(
+    existingRecords.map((r: any) => [
+      String(r.catechumenProfileId),
+      r as AttendanceExisting,
+    ]),
   );
 
   const results: any[] = [];
   const writes: Array<{
     profileId: string;
     name: string;
-    status: string;
+    status: AttendanceStatus;
     note: string | null;
     existingId?: string;
   }> = [];
@@ -604,7 +624,7 @@ export const saveAttendanceBatch = async (
     const status = change.status;
     const name = nameById.get(profileId) || profileId || "";
 
-    if (!profileId || !ATTENDANCE_STATUSES.has(status)) {
+    if (!profileId || !isAttendanceStatus(status)) {
       results.push({
         catechumenProfileId: profileId || "",
         name,
@@ -672,29 +692,32 @@ export const saveAttendanceBatch = async (
     });
   }
 
-  try {
+    try {
     if (writes.length > 0) {
-      const savedRows = await prisma.$transaction(
-        writes.map((write) => {
+      const savedRows = await prisma.$transaction(async (tx: any) => {
+        const rows: AttendanceExisting[] = [];
+        for (const write of writes) {
           const data = {
             status: write.status,
             note: write.note,
             recordedById: context.user.id,
           };
-          return write.existingId
-            ? prisma.attendanceRecord.update({
+          const saved = write.existingId
+            ? await tx.attendanceRecord.update({
                 where: { id: write.existingId },
                 data,
               })
-            : prisma.attendanceRecord.create({
+            : await tx.attendanceRecord.create({
                 data: {
                   meetingId: args.meetingId,
                   catechumenProfileId: write.profileId,
                   ...data,
                 },
               });
-        }),
-      );
+          rows.push(saved);
+        }
+        return rows;
+      });
       writes.forEach((write, idx) => {
         const saved = savedRows[idx];
         results.push({

@@ -749,7 +749,13 @@ export const bulkEnrollCatechumens = async (
   context: any,
 ) => {
   if (!context.user) throw new HttpError(401);
-  const ids = [...new Set((args.catechumenProfileIds || []).filter(Boolean))];
+  const ids: string[] = [
+    ...new Set(
+      (args.catechumenProfileIds || []).filter(
+        (id): id is string => typeof id === "string" && id.length > 0,
+      ),
+    ),
+  ];
   if (ids.length === 0) {
     return { enrolled: 0, failed: [] as { id: string; name: string; reason: string }[] };
   }
@@ -789,10 +795,10 @@ export const bulkEnrollCatechumens = async (
     where: { id: { in: ids } },
     select: { id: true, firstName: true, lastName: true },
   });
-  const nameById = new Map(
+  const nameById = new Map<string, string>(
     profiles.map((p: any) => [
-      p.id,
-      `${p.firstName || ""} ${p.lastName || ""}`.trim() || p.id,
+      String(p.id),
+      `${p.firstName || ""} ${p.lastName || ""}`.trim() || String(p.id),
     ]),
   );
 
@@ -809,7 +815,7 @@ export const bulkEnrollCatechumens = async (
   const failed: { id: string; name: string; reason: string }[] = [];
   const toEnroll: string[] = [];
   for (const id of ids) {
-    const name = nameById.get(id) || id;
+    const name = nameById.get(id) ?? id;
     if (already.has(id)) {
       failed.push({ id, name, reason: "Já está inscrito." });
       continue;
@@ -823,7 +829,7 @@ export const bulkEnrollCatechumens = async (
 
   let enrolled = 0;
   for (const catechumenProfileId of toEnroll) {
-    const name = nameById.get(catechumenProfileId) || catechumenProfileId;
+    const name = nameById.get(catechumenProfileId) ?? catechumenProfileId;
     try {
       if (!context.user.isAdmin) {
         await assertCanEnrollCatechumen(context, classData.parishId);
