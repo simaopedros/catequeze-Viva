@@ -61,5 +61,7 @@ function generateMockUserData(): MockUserData {
       ? faker.helpers.arrayElement(getSubscriptionPaymentPlanIds())
       : null,
     pricingVersion: 3,
+    socialBannedAt: null,
+    socialBanReason: null,
   };
 }

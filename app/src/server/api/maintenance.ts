@@ -5,6 +5,7 @@ import { logger } from '../logger';
 import { cleanupAiCacheJob } from '../scripts/aiCacheCleanupJob';
 import { resetAiCreditsJob } from '../scripts/aiCreditsResetJob';
 import { sendRemindersJob } from '../scripts/remindersJob';
+import { reconcileSocialMediaJob } from '../scripts/socialMediaReconcileJob';
 import { expireSubscriptionsJob } from '../scripts/subscriptionExpirationJob';
 
 type MaintenanceTask = {
@@ -59,6 +60,7 @@ export async function maintenanceHandler(req: Request, res: Response, context: a
     { name: 'aiCacheCleanup', run: () => cleanupAiCacheJob(undefined, context) },
     { name: 'subscriptionExpiration', run: () => expireSubscriptionsJob(undefined, context) },
     { name: 'meetingReminders', run: () => sendRemindersJob(undefined, context) },
+    { name: 'socialMediaReconcile', run: () => reconcileSocialMediaJob(undefined, context) },
     { name: 'dailyStats', run: () => calculateDailyStats(undefined, context) },
   ];
 

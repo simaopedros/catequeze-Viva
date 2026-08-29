@@ -25,11 +25,39 @@ const FILE_SIGNATURES: Record<string, number[]> = {
   'application/pdf': [0x25, 0x50, 0x44, 0x46],
 };
 
+/**
+ * Container formats whose magic bytes sit at a fixed offset instead of byte 0.
+ * MP4/MOV use an ISO-BMFF box: 4 size bytes, then the `ftyp` marker.
+ */
+const OFFSET_SIGNATURES: Record<string, { offset: number; bytes: number[] }> = {
+  // 'ftyp'
+  'video/mp4': { offset: 4, bytes: [0x66, 0x74, 0x79, 0x70] },
+  'video/quicktime': { offset: 4, bytes: [0x66, 0x74, 0x79, 0x70] },
+  // WebM/Matroska EBML header
+  'video/webm': { offset: 0, bytes: [0x1a, 0x45, 0xdf, 0xa3] },
+};
+
+export const ALLOWED_VIDEO_MIME_TYPES = [
+  'video/mp4',
+  'video/quicktime',
+  'video/webm',
+] as const;
+
 export function validateFileSignature(buffer: Buffer, declaredMimeType: string): boolean {
   const signature = FILE_SIGNATURES[declaredMimeType];
-  if (!signature) return false;
-  if (buffer.length < signature.length) return false;
-  return signature.every((byte, i) => buffer[i] === byte);
+  if (signature) {
+    if (buffer.length < signature.length) return false;
+    return signature.every((byte, i) => buffer[i] === byte);
+  }
+
+  const offsetSignature = OFFSET_SIGNATURES[declaredMimeType];
+  if (offsetSignature) {
+    const { offset, bytes } = offsetSignature;
+    if (buffer.length < offset + bytes.length) return false;
+    return bytes.every((byte, i) => buffer[offset + i] === byte);
+  }
+
+  return false;
 }
 
 export const TYPE_LABELS: Record<string, string> = {

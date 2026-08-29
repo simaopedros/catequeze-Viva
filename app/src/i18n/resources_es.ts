@@ -122,7 +122,8 @@ export const admin_es = {
       "audit": "Auditoría",
       "system": "Sistema",
       "other": "Otros",
-      "back_to_app": "Volver a la App"
+      "back_to_app": "Volver a la App",
+      "socialModeration": "Comunidad"
     },
     "title": "Diócesis",
     "subtitle": "Gestión de diócesis (Super Admin)",
@@ -3548,7 +3549,8 @@ export const navigation_es = {
       "parish": "Parroquias",
       "community": "Comunidades"
     },
-    "sidebarSection": "Navegación lateral"
+    "sidebarSection": "Navegación lateral",
+    "community": "Comunidad"
   } as const;
 
 export const onboarding_es = {
@@ -4571,6 +4573,148 @@ export const settings_es = {
     "privacy_notice": "Sus datos están protegidos conforme a la LGPD. Ningún dato se comparte sin consentimiento."
   } as const;
 
+export const social_es = {
+    "title": "Comunidad",
+    "eyebrow": "Red pastoral",
+    "subtitle": "Comparte la vida de tu catequesis con imágenes y videos.",
+    "publicSubtitle": "Testimonios, catequesis y vida parroquial compartidos por catequistas de todo Brasil.",
+    "feed": {
+      "empty": "Todavía no hay publicaciones",
+      "emptyDescription": "Sé el primero en compartir un momento de tu catequesis.",
+      "emptyTopic": "Aún no hay publicaciones en este tema",
+      "loadMore": "Cargar más",
+      "loading": "Cargando publicaciones...",
+      "allTopics": "Todos los temas",
+      "openPost": "Abrir publicación",
+      "processingVideo": "El video se está procesando. Vuelve en unos instantes.",
+      "videoFailed": "No fue posible procesar este video.",
+      "postedIn": "en {{parish}}",
+      "viewComments": "Ver comentarios"
+    },
+    "composer": {
+      "title": "Nueva publicación",
+      "placeholder": "Comparte un momento, una reflexión o un testimonio...",
+      "addImage": "Imagen",
+      "addVideo": "Video",
+      "topics": "Temas",
+      "topicsHint": "Elige hasta 3 temas",
+      "consent": "Confirmo que tengo autorización de uso de imagen de las personas retratadas, incluidos los responsables de niños y adolescentes.",
+      "consentRequired": "Confirma la autorización de uso de imagen para publicar con contenido multimedia.",
+      "publish": "Publicar",
+      "publishing": "Publicando...",
+      "published": "Publicación creada",
+      "heldForReview": "Tu publicación fue enviada a revisión antes de aparecer en el feed.",
+      "remove": "Quitar",
+      "uploading": "Enviando {{percent}}%",
+      "videoProcessing": "Procesando video...",
+      "quotaLeft": "{{count}} publicación restante hoy",
+      "quotaLeft_plural": "{{count}} publicaciones restantes hoy",
+      "videoTooLong": "Tu plan permite videos de hasta {{minutes}} minutos.",
+      "tooManyMedia": "Tu plan permite {{count}} archivos por publicación.",
+      "uploadFailed": "No se pudo enviar el archivo."
+    },
+    "upsell": {
+      "title": "Suscríbete para publicar",
+      "description": "Leer y compartir la Comunidad es libre. Para publicar imágenes y videos se necesita una suscripción activa.",
+      "cta": "Ver planes",
+      "quotaTitle": "Límite diario alcanzado",
+      "quotaDescription": "Ya publicaste todo lo que tu plan permite hoy. Inténtalo mañana.",
+      "bannedTitle": "Cuenta suspendida en la Comunidad",
+      "bannedDescription": "Habla con soporte para revisar la suspensión.",
+      "anonymousTitle": "Entra para participar",
+      "anonymousDescription": "Crea tu cuenta para reaccionar, comentar y publicar.",
+      "login": "Entrar"
+    },
+    "reactions": {
+      "AMEM": "Amén",
+      "REZO": "Rezo por esto",
+      "ALELUIA": "Aleluya",
+      "react": "Reaccionar",
+      "count": "{{count}} reacción",
+      "count_plural": "{{count}} reacciones"
+    },
+    "comments": {
+      "title": "Comentarios",
+      "placeholder": "Escribe un comentario...",
+      "send": "Comentar",
+      "empty": "Todavía no hay comentarios",
+      "count": "{{count}} comentario",
+      "count_plural": "{{count}} comentarios",
+      "held": "Tu comentario fue enviado a revisión.",
+      "delete": "Borrar comentario",
+      "deleted": "Comentario borrado",
+      "loginToComment": "Entra y suscríbete para comentar"
+    },
+    "share": {
+      "action": "Compartir",
+      "copyLink": "Copiar enlace",
+      "copied": "Enlace copiado",
+      "whatsapp": "WhatsApp",
+      "count": "{{count}} compartición",
+      "count_plural": "{{count}} comparticiones"
+    },
+    "post": {
+      "delete": "Borrar publicación",
+      "deleteConfirm": "¿Borrar esta publicación y sus archivos?",
+      "deleted": "Publicación borrada",
+      "report": "Denunciar",
+      "notFound": "Publicación no encontrada",
+      "notFoundDescription": "Puede haber sido eliminada por el autor o por la moderación.",
+      "backToFeed": "Volver a la Comunidad",
+      "pendingReview": "En revisión por la moderación"
+    },
+    "report": {
+      "title": "Denunciar contenido",
+      "description": "Nuestro equipo analiza cada denuncia. Elige el motivo:",
+      "reason": {
+        "DOCTRINE": "Contrario a la doctrina católica",
+        "HATE": "Discurso de odio o acoso",
+        "SEXUAL": "Contenido sexual",
+        "VIOLENCE": "Violencia",
+        "SPAM": "Spam o estafa",
+        "MINOR_PRIVACY": "Exposición indebida de un menor",
+        "OTHER": "Otro motivo"
+      },
+      "details": "Detalles (opcional)",
+      "submit": "Enviar denuncia",
+      "sent": "Denuncia enviada. Gracias por ayudar a cuidar la Comunidad.",
+      "failed": "No se pudo enviar la denuncia."
+    },
+    "moderation": {
+      "title": "Moderación de la Comunidad",
+      "subtitle": "Denuncias y publicaciones en revisión.",
+      "queue": "Cola de denuncias",
+      "pending": "En revisión",
+      "empty": "Nada por revisar",
+      "emptyDescription": "No hay denuncias abiertas en este momento.",
+      "reportedBy": "Denunciado por",
+      "anonymous": "Anónimo",
+      "approve": "Mantener publicado",
+      "removeContent": "Quitar contenido",
+      "dismiss": "Descartar denuncia",
+      "banAuthor": "Suspender autor",
+      "unbanAuthor": "Reactivar autor",
+      "banReason": "Motivo de la suspensión",
+      "removalReason": "Motivo de la eliminación",
+      "actioned": "Acción registrada",
+      "openTarget": "Ver contenido",
+      "authorSuspended": "Autor suspendido"
+    },
+    "discovery": {
+      "follow": "Seguir",
+      "unfollow": "Dejar de seguir",
+      "following": "Siguiendo",
+      "followers": "Seguidores",
+      "trending": "En tendencia",
+      "recent": "Recientes",
+      "followingFeed": "De quienes sigo",
+      "followSuccess": "Ahora sigues a {{name}}",
+      "unfollowSuccess": "Dejaste de seguir a {{name}}",
+      "emptyFollowing": "Todavía no sigues a nadie",
+      "emptyFollowingDescription": "Sigue catequistas para armar tu feed."
+    }
+  } as const;
+
 export const topbar_es = {
     "openMenu": "Abrir menú",
     "searchPlaceholder": "Buscar catecúmenos, grupos, contenidos, Biblia...",
@@ -4673,6 +4817,7 @@ export const resources_es = {
   reports: reports_es,
   sacraments: sacraments_es,
   settings: settings_es,
+  social: social_es,
   topbar: topbar_es,
   tour: tour_es,
 } as const;

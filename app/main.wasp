@@ -280,6 +280,12 @@ page AdminAuditPage {
   component: import AdminAudit from "@src/admin/lazy/AdminAudit"
 }
 
+route AdminSocialModerationRoute { path: "/admin/comunidade", to: AdminSocialModerationPage }
+page AdminSocialModerationPage {
+  authRequired: true,
+  component: import AdminSocialModeration from "@src/admin/lazy/AdminSocialModeration"
+}
+
 route AdminSystemRoute { path: "/admin/system", to: AdminSystemPage }
 page AdminSystemPage {
   authRequired: true,
@@ -303,6 +309,41 @@ page AppNewClassPage {
   component: import CreateClassPage from "@src/catequese/pages/CreateClassPage"
 }
 
+
+//#region Comunidade (social) - pages
+route AppCommunityRoute { path: "/app/comunidade", to: AppCommunityPage }
+page AppCommunityPage {
+  authRequired: true,
+  component: import CommunityPage from "@src/catequese/pages/CommunityPage"
+}
+
+// Public feed — anyone may read, open and share, signed in or not.
+route PublicCommunityRoute { path: "/comunidade", to: PublicCommunityPage }
+page PublicCommunityPage {
+  authRequired: false,
+  component: import PublicCommunityPage from "@src/catequese/pages/PublicCommunityPage"
+}
+
+route PublicCommunityTopicRoute { path: "/comunidade/t/:topic", to: PublicCommunityTopicPage }
+page PublicCommunityTopicPage {
+  authRequired: false,
+  component: import PublicCommunityTopicPage from "@src/catequese/pages/PublicCommunityPage"
+}
+
+route PublicSocialPostRoute { path: "/comunidade/p/:slug", to: PublicSocialPostPage }
+page PublicSocialPostPage {
+  authRequired: false,
+  component: import PublicSocialPostPage from "@src/catequese/pages/PublicSocialPostPage"
+}
+
+// Client fallback for the /c/:slug share link. In production Caddy proxies
+// /c/* to the server API so crawlers get Open Graph tags instead.
+route SocialShortLinkRoute { path: "/c/:slug", to: SocialShortLinkPage }
+page SocialShortLinkPage {
+  authRequired: false,
+  component: import SocialShortLinkPage from "@src/catequese/pages/SocialShortLinkPage"
+}
+//#endregion
 
 //#region Catequese Viva - Class Detail
 route AppClassDetailRoute { path: "/app/classes/:id", to: AppClassDetailPage }
@@ -1187,6 +1228,157 @@ api serveContentImage {
   entities: [ContentItem, Membership, Parish]
 }
 
+//#region Comunidade (social) - media
+api uploadSocialImage {
+  fn: import { uploadSocialImage } from "@src/server/api/socialMedia",
+  middlewareConfigFn: import { socialImageUploadMiddleware } from "@src/server/api/socialMedia",
+  auth: true,
+  httpRoute: (POST, "/api/social/images"),
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese]
+}
+
+api serveSocialMedia {
+  fn: import { serveSocialMedia } from "@src/server/api/socialMedia",
+  middlewareConfigFn: import { serveSocialMediaMiddleware } from "@src/server/api/socialMedia",
+  httpRoute: (GET, "/api/social/media/:mediaId"),
+  entities: [SocialMedia, SocialPost]
+}
+
+// Canonical share link. Serves Open Graph tags to crawlers, redirects humans
+// to the SPA route.
+api socialShareRedirect {
+  fn: import { socialShareRedirect } from "@src/server/api/socialShare",
+  middlewareConfigFn: import { socialShareMiddleware } from "@src/server/api/socialShare",
+  httpRoute: (GET, "/c/:slug"),
+  entities: [SocialPost, SocialMedia, User]
+}
+
+api socialSitemap {
+  fn: import { socialSitemap } from "@src/server/api/socialShare",
+  middlewareConfigFn: import { socialSitemapMiddleware } from "@src/server/api/socialShare",
+  httpRoute: (GET, "/comunidade/sitemap.xml"),
+  entities: [SocialPost]
+}
+
+api bunnyStreamWebhook {
+  fn: import { bunnyStreamWebhook } from "@src/server/api/socialMedia",
+  middlewareConfigFn: import { bunnyStreamWebhookMiddleware } from "@src/server/api/socialMedia",
+  httpRoute: (POST, "/api/social/bunny-webhook"),
+  entities: [SocialMedia]
+}
+
+action createSocialVideoUpload {
+  fn: import { createSocialVideoUpload } from "@src/server/operations/socialMediaOperations",
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese, SocialPost]
+}
+
+query getSocialMediaStatus {
+  fn: import { getSocialMediaStatus } from "@src/server/operations/socialMediaOperations",
+  entities: [SocialMedia]
+}
+
+action discardSocialMedia {
+  fn: import { discardSocialMedia } from "@src/server/operations/socialMediaOperations",
+  entities: [SocialMedia]
+}
+//#endregion
+
+//#region Comunidade (social) - feed
+// Feed reads are public on purpose: the handlers never require context.user, so
+// anonymous visitors get the same published feed as members.
+query getSocialFeed {
+  fn: import { getSocialFeed } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, SocialFollow, User, Parish]
+}
+
+query getSocialPost {
+  fn: import { getSocialPost } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, User, Parish]
+}
+
+query getSocialTopics {
+  fn: import { getSocialTopics } from "@src/server/operations/socialOperations",
+  entities: [SocialTopic]
+}
+
+query getSocialComments {
+  fn: import { getSocialComments } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialComment, User]
+}
+
+query getSocialPublishAccess {
+  fn: import { getSocialPublishAccess } from "@src/server/operations/socialOperations",
+  entities: [User, Membership, Parish, TenantBilling, Diocese, SocialPost]
+}
+
+action createSocialPost {
+  fn: import { createSocialPost } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, User, Membership, Parish, TenantBilling, Diocese]
+}
+
+action deleteSocialPost {
+  fn: import { deleteSocialPost } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialMedia]
+}
+
+action toggleSocialReaction {
+  fn: import { toggleSocialReaction } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialReaction, Notification, User, Membership, Parish, TenantBilling, Diocese]
+}
+
+action createSocialComment {
+  fn: import { createSocialComment } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialComment, Notification, User, Membership, Parish, TenantBilling, Diocese]
+}
+
+action deleteSocialComment {
+  fn: import { deleteSocialComment } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialComment]
+}
+
+// Public on purpose — sharing never requires an account.
+action registerSocialShare {
+  fn: import { registerSocialShare } from "@src/server/operations/socialOperations",
+  entities: [SocialPost]
+}
+//#endregion
+
+//#region Comunidade (social) - discovery
+// Following is consumption, so any signed-in user may follow an author.
+action toggleSocialFollow {
+  fn: import { toggleSocialFollow } from "@src/server/operations/socialDiscoveryOperations",
+  entities: [SocialFollow, Notification, User]
+}
+
+query getSocialFollowState {
+  fn: import { getSocialFollowState } from "@src/server/operations/socialDiscoveryOperations",
+  entities: [SocialFollow]
+}
+//#endregion
+
+//#region Comunidade (social) - moderation
+// Reporting is public: any visitor may flag content, signed in or not.
+action reportSocialContent {
+  fn: import { reportSocialContent } from "@src/server/operations/socialModerationOperations",
+  entities: [SocialReport, SocialPost, SocialComment]
+}
+
+query getSocialModerationQueue {
+  fn: import { getSocialModerationQueue } from "@src/server/operations/socialModerationOperations",
+  entities: [SocialReport, SocialPost, SocialComment, User]
+}
+
+action moderateSocialContent {
+  fn: import { moderateSocialContent } from "@src/server/operations/socialModerationOperations",
+  entities: [SocialReport, SocialPost, SocialComment, AuditLog, User]
+}
+
+action setSocialAuthorBan {
+  fn: import { setSocialAuthorBan } from "@src/server/operations/socialModerationOperations",
+  entities: [User, AuditLog]
+}
+//#endregion
+
 //#region Catequese Viva - Mobile API
 api mobileAuthLogin {
   fn: import { mobileAuthLogin } from "@src/server/api/mobile",
@@ -1365,7 +1557,7 @@ api readinessCheckApi {
 api maintenanceApi {
   fn: import { maintenanceHandler } from "@src/server/api/maintenance",
   httpRoute: (POST, "/api/internal/maintenance"),
-  entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish]
+  entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish, SocialMedia]
 }
 
 action generateCatechumenUploadToken {
