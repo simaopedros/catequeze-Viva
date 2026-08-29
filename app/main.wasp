@@ -369,33 +369,33 @@ page AppContentLibraryPage {
   component: import ContentLibraryPage from "@src/catequese/pages/ContentLibraryPage"
 }
 
-// ── AI Hub (unified entry point) ──
-// LAUNCH PHASE: AI features disabled. Uncomment when ready to enable.
-// route AppAIHubRoute { path: "/app/ai-hub", to: AppAIHubPage }
-// page AppAIHubPage {
-//   authRequired: true,
-//   component: import AIHubPage from "@src/catequese/lazy/AIHubPage"
-// }
+// ── AI Hub ──
+// Launch phase: routes stay registered so bookmarked URLs redirect to /app
+// instead of rendering the old hub. Point these back to AIHubPage /
+// RedirectToAIHub when AI_FEATURES_ENABLED is turned on.
+route AppAIHubRoute { path: "/app/ai-hub", to: AppAIHubPage }
+page AppAIHubPage {
+  authRequired: true,
+  component: import RedirectDisabledAiToApp from "@src/catequese/pages/RedirectDisabledAiToApp"
+}
 
-// ── Legacy redirects ──
-// LAUNCH PHASE: AI redirects disabled.
-// route AppAIPlannerRedirect { path: "/app/ai-planner", to: AppAIPlannerRedirectPage }
-// page AppAIPlannerRedirectPage {
-//   authRequired: true,
-//   component: import RedirectToAiHub from "@src/catequese/pages/RedirectToAIHub"
-// }
+route AppAIPlannerRedirect { path: "/app/ai-planner", to: AppAIPlannerRedirectPage }
+page AppAIPlannerRedirectPage {
+  authRequired: true,
+  component: import RedirectDisabledAiToApp from "@src/catequese/pages/RedirectDisabledAiToApp"
+}
 
-// route AppCollaborativePlannerRedirect { path: "/app/collaborative-planner", to: AppCollaborativePlannerRedirectPage }
-// page AppCollaborativePlannerRedirectPage {
-//   authRequired: true,
-//   component: import RedirectToAiHub from "@src/catequese/pages/RedirectToAIHub"
-// }
+route AppCollaborativePlannerRedirect { path: "/app/collaborative-planner", to: AppCollaborativePlannerRedirectPage }
+page AppCollaborativePlannerRedirectPage {
+  authRequired: true,
+  component: import RedirectDisabledAiToApp from "@src/catequese/pages/RedirectDisabledAiToApp"
+}
 
-// route AppMyAiGenerationsRedirect { path: "/app/my-ai-generations", to: AppMyAiGenerationsRedirectPage }
-// page AppMyAiGenerationsRedirectPage {
-//   authRequired: true,
-//   component: import RedirectToContentLibraryAI from "@src/catequese/pages/RedirectToContentLibraryAI"
-// }
+route AppMyAiGenerationsRedirect { path: "/app/my-ai-generations", to: AppMyAiGenerationsRedirectPage }
+page AppMyAiGenerationsRedirectPage {
+  authRequired: true,
+  component: import RedirectDisabledAiToApp from "@src/catequese/pages/RedirectDisabledAiToApp"
+}
 
 route WorkspaceSelectorRoute { path: "/app/select-workspace", to: WorkspaceSelectorPage }
 page WorkspaceSelectorPage {

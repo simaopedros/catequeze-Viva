@@ -7,11 +7,13 @@ import { describe, it, expect } from 'vitest';
 import {
   filterByRole,
   filterByWorkspace,
+  filterLaunchHidden,
   getVisibleNavigation,
   ALL_NAV_ITEMS,
   BOTTOM_NAV_KEYS,
   PERSONAL_HIDDEN_ICON_KEYS,
 } from '../shared/navigation';
+import { AI_FEATURES_ENABLED, isAiAppPath } from '../shared/aiFeatures';
 
 describe('Navigation Role Filtering', () => {
   function visiblePaths(userRole: string, isAdmin = false) {
@@ -19,12 +21,15 @@ describe('Navigation Role Filtering', () => {
   }
 
   describe('SUPER_ADMIN (isAdmin=true)', () => {
-    it('sees all items', () => {
+    it('sees all non-launch-hidden items', () => {
       const paths = visiblePaths('', true);
-      expect(paths.length).toBe(ALL_NAV_ITEMS.length);
+      expect(paths.length).toBe(filterLaunchHidden(ALL_NAV_ITEMS).length);
       expect(paths).toContain('/admin');
       expect(paths).toContain('/app/families');
       expect(paths).toContain('/app/bible');
+      if (!AI_FEATURES_ENABLED) {
+        expect(paths).not.toContain('/app/ai-hub');
+      }
     });
   });
 
@@ -328,6 +333,52 @@ describe('getVisibleNavigation SSOT', () => {
       'calendar',
       'messages',
     ]);
+  });
+
+  it('hides AI hub from every nav surface while launch AI is off', () => {
+    const roles = [
+      'LEAD_CATECHIST',
+      'ASSISTANT_CATECHIST',
+      'PARISH_COORDINATOR',
+      'PERSONAL_OWNER',
+      'CONTENT_REVIEWER',
+    ];
+    for (const role of roles) {
+      const nav = getVisibleNavigation({
+        role,
+        isAdmin: role === 'SUPER_ADMIN',
+        workspaceType: 'PARISH',
+      });
+      const paths = nav.all.map((i) => i.to);
+      const keys = nav.all.map((i) => i.iconKey);
+      if (!AI_FEATURES_ENABLED) {
+        expect(paths).not.toContain('/app/ai-hub');
+        expect(keys).not.toContain('ai_hub');
+        expect(nav.sheetItems.map((i) => i.to)).not.toContain('/app/ai-hub');
+        expect(nav.bottomBar.map((i) => i.to)).not.toContain('/app/ai-hub');
+      } else {
+        expect(paths).toContain('/app/ai-hub');
+      }
+    }
+  });
+
+  it('filterLaunchHidden drops AI destinations when the flag is off', () => {
+    const filtered = filterLaunchHidden(ALL_NAV_ITEMS);
+    if (!AI_FEATURES_ENABLED) {
+      expect(filtered.map((i) => i.iconKey)).not.toContain('ai_hub');
+      expect(filtered.some((i) => isAiAppPath(i.to))).toBe(false);
+    }
+  });
+
+  it('admin also loses the AI hub item while launch AI is off', () => {
+    const nav = getVisibleNavigation({
+      role: '',
+      isAdmin: true,
+      workspaceType: 'PARISH',
+    });
+    if (!AI_FEATURES_ENABLED) {
+      expect(nav.all.map((i) => i.to)).not.toContain('/app/ai-hub');
+    }
   });
 
   it('guardian bottomBar includes catechumens for family portal', () => {

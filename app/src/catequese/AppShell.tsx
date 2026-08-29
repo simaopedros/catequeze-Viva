@@ -17,6 +17,7 @@ import { useAction, acceptInvitation } from "wasp/client/operations";
 import { trackMarketingEvent } from "../client/analytics/marketingAnalytics";
 import { toast } from "../client/hooks/use-toast";
 import { Breadcrumbs } from "./components/Breadcrumbs";
+import { AI_FEATURES_ENABLED } from "../shared/aiFeatures";
 
 const AIHelperWidget = lazy(() =>
   import("./components/AIHelperWidget").then((m) => ({
@@ -229,11 +230,13 @@ export function AppShell({ children }: AppShellProps) {
           <div className="no-print">
             <BottomNav />
           </div>
-          <div className="no-print">
-            <Suspense fallback={null}>
-              <AIHelperWidget />
-            </Suspense>
-          </div>
+          {AI_FEATURES_ENABLED && (
+            <div className="no-print">
+              <Suspense fallback={null}>
+                <AIHelperWidget />
+              </Suspense>
+            </div>
+          )}
           {showTour && (
             <Suspense fallback={null}>
               <GuidedTour onComplete={completeTour} />

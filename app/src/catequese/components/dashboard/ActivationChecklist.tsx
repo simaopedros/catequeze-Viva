@@ -19,6 +19,7 @@ import {
 } from "../../../client/analytics/marketingAnalytics";
 import { useActiveWorkspace } from "../../../client/hooks/useActiveWorkspace";
 import { useUserContext } from "../../../client/hooks/useUserContext";
+import { AI_FEATURES_ENABLED } from "../../../shared/aiFeatures";
 
 const DISMISS_KEY = "cv-activation-checklist-dismissed";
 const CELEBRATED_KEY = "cv-first-value-celebrated";
@@ -138,7 +139,9 @@ export function ActivationChecklist({
         description: t("activation.step_meeting_desc"),
         to: firstClassId
           ? `/app/classes/${firstClassId}/meetings`
-          : "/app/ai-hub",
+          : AI_FEATURES_ENABLED
+            ? "/app/ai-hub"
+            : "/app/classes",
       },
     ];
 

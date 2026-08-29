@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { ActivationChecklist } from "./ActivationChecklist";
 import { EncounterFocusCard } from "./EncounterFocusCard";
+import { AI_FEATURES_ENABLED } from "../../../shared/aiFeatures";
 
 interface CoordinatorDashboardProps {
   stats: any;
@@ -317,11 +318,13 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
               title={t("import_catechumens")}
               description={t("quick_new_catechumen")}
             />
-            <ActionCard
-              to="/app/ai-hub"
-              title={t("quick_ai")}
-              description={t("quick_ai_desc")}
-            />
+            {AI_FEATURES_ENABLED && (
+              <ActionCard
+                to="/app/ai-hub"
+                title={t("quick_ai")}
+                description={t("quick_ai_desc")}
+              />
+            )}
           </AppPanel>
           <AppPanel>
             <div className="mb-3 space-y-1.5">

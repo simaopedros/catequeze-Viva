@@ -30,6 +30,7 @@ import {
   listDioceseSharedContent,
 } from "wasp/client/operations";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
+import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 import { cn } from "../../client/utils";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
@@ -282,17 +283,25 @@ export default function ContentLibraryPage() {
                 Criar manualmente
               </Link>
             </Button>
-            <Button variant="outline" className="h-10 rounded-sm" asChild>
-              <Link to="/app/ai-hub?mode=create-meeting">
-                <Feather className="mr-2 h-4 w-4" />
-                {t("library.generate_ai")}
-              </Link>
-            </Button>
+            {AI_FEATURES_ENABLED && (
+              <Button variant="outline" className="h-10 rounded-sm" asChild>
+                <Link to="/app/ai-hub?mode=create-meeting">
+                  <Feather className="mr-2 h-4 w-4" />
+                  {t("library.generate_ai")}
+                </Link>
+              </Button>
+            )}
           </>
         }
       />
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div
+        className={
+          AI_FEATURES_ENABLED
+            ? "grid gap-3 sm:grid-cols-3"
+            : "grid gap-3 sm:grid-cols-2"
+        }
+      >
         <LibraryMetric
           label={t("library.metric_visible", { defaultValue: "Conteúdos" })}
           value={totalScripts}
@@ -301,12 +310,14 @@ export default function ContentLibraryPage() {
           label={t("library.metric_activities", { defaultValue: "Atividades" })}
           value={totalActivities}
         />
-        <LibraryMetric
-          label={t("library.metric_ai", {
-            defaultValue: "Assistência editorial",
-          })}
-          value={aiCount}
-        />
+        {AI_FEATURES_ENABLED && (
+          <LibraryMetric
+            label={t("library.metric_ai", {
+              defaultValue: "Assistência editorial",
+            })}
+            value={aiCount}
+          />
+        )}
       </div>
 
       <AppPanel>
@@ -418,17 +429,19 @@ export default function ContentLibraryPage() {
                   <Button className="h-11 rounded-sm px-5" asChild>
                     <Link to="/app/content-library/new">{t("create")}</Link>
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="h-11 rounded-sm px-5 bg-white"
-                    asChild
-                  >
-                    <Link to="/app/ai-hub?mode=create-meeting">
-                      {t("library.generate_ai", {
-                        defaultValue: "Assistência editorial",
-                      })}
-                    </Link>
-                  </Button>
+                  {AI_FEATURES_ENABLED && (
+                    <Button
+                      variant="outline"
+                      className="h-11 rounded-sm px-5 bg-white"
+                      asChild
+                    >
+                      <Link to="/app/ai-hub?mode=create-meeting">
+                        {t("library.generate_ai", {
+                          defaultValue: "Assistência editorial",
+                        })}
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </div>
             </SurfaceSection>
@@ -443,10 +456,12 @@ export default function ContentLibraryPage() {
                   Adicione atividades para transformar o conteudo em encontro
                   utilizavel.
                 </div>
-                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-                  Combine criação manual com assistência editorial quando
-                  precisar acelerar a preparação.
-                </div>
+                {AI_FEATURES_ENABLED && (
+                  <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
+                    Combine criação manual com assistência editorial quando
+                    precisar acelerar a preparação.
+                  </div>
+                )}
               </div>
             </SurfaceSection>
           </div>

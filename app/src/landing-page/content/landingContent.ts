@@ -198,7 +198,7 @@ export const STEPS: Step[] = [
   {
     number: '2',
     title: 'Acompanhe os encontros',
-    desc: 'Faça a chamada pelo celular, prepare roteiros com a biblioteca pastoral e a assistência editorial. Tudo ao alcance de um toque.',
+    desc: 'Faça a chamada pelo celular e prepare roteiros com a biblioteca pastoral. Tudo ao alcance de um toque.',
   },
   {
     number: '3',

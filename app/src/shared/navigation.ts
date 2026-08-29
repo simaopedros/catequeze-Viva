@@ -1,4 +1,5 @@
 // ---- Navigation Item Config (without icon component — icons mapped per component) ----
+import { shouldShowAiNavItem } from "./aiFeatures";
 import {
   NAV_GROUP_LABEL_KEYS,
   type NavGroupId,
@@ -401,7 +402,7 @@ export function filterByRole(
   userRole: string,
   isAdmin: boolean,
 ): NavItemConfig[] {
-  if (isAdmin) return items;
+  if (isAdmin) return filterLaunchHidden(items);
   if (!userRole) return [];
 
   // PERSONAL_OWNER sees everything a coordinator sees (defensive for items
@@ -409,8 +410,10 @@ export function filterByRole(
   const effectiveRole =
     userRole === "PERSONAL_OWNER" ? "PARISH_COORDINATOR" : userRole;
 
-  return items.filter(
-    (i) => i.roles.includes(effectiveRole) || i.roles.includes(userRole),
+  return filterLaunchHidden(
+    items.filter(
+      (i) => i.roles.includes(effectiveRole) || i.roles.includes(userRole),
+    ),
   );
 }
 
@@ -422,6 +425,11 @@ export function filterByWorkspace(
   return items.filter((i) => !PERSONAL_HIDDEN_ICON_KEYS.has(i.iconKey));
 }
 
+/** Hides AI Hub / editorial surfaces while launch-phase AI is off. */
+export function filterLaunchHidden(items: NavItemConfig[]): NavItemConfig[] {
+  return items.filter(shouldShowAiNavItem);
+}
+
 /**
  * Single source of truth for sidebar, bottom bar, and More sheet visibility.
  */
@@ -429,9 +437,11 @@ export function getVisibleNavigation(
   ctx: WorkspaceNavContext,
 ): VisibleNavigation {
   const apply = (items: NavItemConfig[]) =>
-    filterByWorkspace(
-      filterByRole(items, ctx.role, ctx.isAdmin),
-      ctx.workspaceType,
+    filterLaunchHidden(
+      filterByWorkspace(
+        filterByRole(items, ctx.role, ctx.isAdmin),
+        ctx.workspaceType,
+      ),
     );
 
   const groups: VisibleNavGroup[] = NAV_GROUPS.map((g) => ({

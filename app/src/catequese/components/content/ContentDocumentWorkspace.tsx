@@ -34,6 +34,7 @@ import {
 import { ConfirmDialog } from "../../../client/components/ConfirmDialog";
 import { useUnsavedChangesGuard } from "../../../client/hooks/useUnsavedChangesGuard";
 import { useTranslation } from "react-i18next";
+import { AI_FEATURES_ENABLED } from "../../../shared/aiFeatures";
 import { ReferencePicker } from "../../../client/components/ReferencePicker";
 import { toast } from "../../../client/hooks/use-toast";
 import { cn } from "../../../client/utils";
@@ -836,11 +837,12 @@ export function ContentDocumentWorkspace({
     );
   }
 
-  const aiLink = contentId
-    ? `/app/ai-hub?mode=improve-content&contentId=${contentId}&contentTitle=${encodeURIComponent(
-        title,
-      )}&contentTheme=${encodeURIComponent(theme)}`
-    : null;
+  const aiLink =
+    AI_FEATURES_ENABLED && contentId
+      ? `/app/ai-hub?mode=improve-content&contentId=${contentId}&contentTitle=${encodeURIComponent(
+          title,
+        )}&contentTheme=${encodeURIComponent(theme)}`
+      : null;
 
   return (
     <div className="mx-auto max-w-[1660px] space-y-3 px-3 pb-8 pt-2 sm:px-4">

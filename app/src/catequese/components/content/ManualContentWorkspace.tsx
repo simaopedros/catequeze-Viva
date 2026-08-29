@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
+import { AI_FEATURES_ENABLED } from "../../../shared/aiFeatures";
 import { Button } from "../../../client/components/ui/button";
 import { Card } from "../../../client/components/ui/card";
 import { Badge } from "../../../client/components/ui/badge";
@@ -404,46 +405,48 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
         </Card>
       )}
 
-      <Card className="rounded-sm border-border/70 p-5">
-        <div className="mb-3 flex items-center gap-2">
-          <Badge variant="outline" className="rounded-sm px-2.5 py-0.5 text-xs">
-            Assistência opcional
-          </Badge>
-        </div>
-        <div className="space-y-3">
-          <div>
-            <h3 className="text-sm font-semibold tracking-tight text-brand-ink">
-              Sugestões quando você quiser acelerar
-            </h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              A assistência editorial entra só como apoio, por bloco ou no hub
-              de encontros.
-            </p>
+      {AI_FEATURES_ENABLED && (
+        <Card className="rounded-sm border-border/70 p-5">
+          <div className="mb-3 flex items-center gap-2">
+            <Badge variant="outline" className="rounded-sm px-2.5 py-0.5 text-xs">
+              Assistência opcional
+            </Badge>
           </div>
-          <div className="space-y-2">
-            {[
-              "Sugerir objetivo pastoral",
-              "Sugerir dinâmica para esta faixa etária",
-              "Sugerir oração inicial",
-              "Sugerir compromisso para a família",
-            ].map((label) => (
-              <div
-                key={label}
-                className="flex items-center justify-between rounded-sm border border-border bg-background px-3 py-2 text-sm"
-              >
-                <span className="font-medium text-brand-ink">{label}</span>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </div>
-            ))}
+          <div className="space-y-3">
+            <div>
+              <h3 className="text-sm font-semibold tracking-tight text-brand-ink">
+                Sugestões quando você quiser acelerar
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                A assistência editorial entra só como apoio, por bloco ou no hub
+                de encontros.
+              </p>
+            </div>
+            <div className="space-y-2">
+              {[
+                "Sugerir objetivo pastoral",
+                "Sugerir dinâmica para esta faixa etária",
+                "Sugerir oração inicial",
+                "Sugerir compromisso para a família",
+              ].map((label) => (
+                <div
+                  key={label}
+                  className="flex items-center justify-between rounded-sm border border-border bg-background px-3 py-2 text-sm"
+                >
+                  <span className="font-medium text-brand-ink">{label}</span>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </div>
+              ))}
+            </div>
+            <Button
+              variant="outline"
+              className="w-full justify-start rounded-sm gap-2"
+            >
+              <Feather className="h-4 w-4" /> Abrir assistência editorial
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            className="w-full justify-start rounded-sm gap-2"
-          >
-            <Feather className="h-4 w-4" /> Abrir assistência editorial
-          </Button>
-        </div>
-      </Card>
+        </Card>
+      )}
     </div>
   );
 }

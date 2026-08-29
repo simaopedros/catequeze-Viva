@@ -690,7 +690,7 @@ export const billing_es = {
     "trial_subscribe_plan": "Suscribirse a {{plan}}",
     "trial_banner_title_one": "Queda 1 día de tu periodo de prueba",
     "trial_banner_title_other": "Quedan {{count}} días de tu periodo de prueba",
-    "trial_banner_subtitle": "Suscríbete para mantener grupos, asistencia y asistencia editorial sin interrupción.",
+    "trial_banner_subtitle": "Suscríbete para mantener grupos y asistencia sin interrupción.",
     "trial_banner_ends": "Termina el {{date}}.",
     "trial_banner_cta": "Ver suscripción",
     "trial_soft_title": "Ya usaste lo esencial — sin prisa",
@@ -1112,7 +1112,7 @@ export const classes_es = {
       "empty_cta_create_person": "Añadir catequizando",
       "empty_cta_attendance": "Ir a asistencia",
       "empty_cta_prepare_meeting": "Preparar encuentro",
-      "schedule_meetings_next_desc": "Prepara el próximo encuentro con asistencia editorial o registra la asistencia cuando el grupo se reúna.",
+      "schedule_meetings_next_desc": "Prepara el próximo encuentro o registra la asistencia cuando el grupo se reúna.",
       "no_meetings": "Sin encuentros",
       "no_meetings_desc": "Cree encuentros para este grupo.",
       "no_catechists": "Sin catequistas",
@@ -2178,7 +2178,7 @@ export const dashboard_es = {
     "how_to_start": "Cómo empezar",
     "how_to_start_1": "Cree el grupo con etapa, días de encuentro y responsables.",
     "how_to_start_2": "Registre o importe catecúmenos y asígnelos a los grupos.",
-    "how_to_start_3": "Use la asistencia editorial para preparar los primeros encuentros.",
+    "how_to_start_3": "Registra la asistencia y prepara el próximo encuentro del grupo.",
     "empty_class_card_desc": "Cree su primer grupo para organizar encuentros, asistencia y seguimiento.",
     "empty_catechumen_card_desc": "Después del grupo, registre a los catecúmenos para iniciar el camino pastoral.",
     "registration_section": "Registro",
@@ -2415,7 +2415,7 @@ export const landing_es = {
     "personas": [
       {
         "title": "Catequista",
-        "desc": "Organiza tu grupo, prepara encuentros con asistencia editorial y pasa lista desde el celular."
+        "desc": "Organiza tu grupo, prepara encuentros con la biblioteca pastoral y pasa lista desde el celular."
       },
       {
         "title": "Coordinador Parroquial",
@@ -2672,7 +2672,7 @@ export const landing_es = {
       "launch_text": "Crea la cuenta, arma el grupo y prepara el próximo encuentro. Tienes 7 días para ver si encaja — sin tarjeta de crédito.",
       "promises": [
         "7 días gratis, sin tarjeta de crédito",
-        "Tú revisas todo lo que genere la asistencia editorial",
+        "Biblioteca con Biblia y Catecismo en el mismo lugar",
         "Datos de niños con cuidado y LGPD",
         "Cancela cuando quieras"
       ],
@@ -2720,7 +2720,7 @@ export const landing_es = {
         {
           "criterion": "Preparar el encuentro",
           "old": "Copiar carpetas, búsquedas sueltas e improvisar a última hora",
-          "next": "Borrador con asistencia editorial + Biblia y Catecismo en el mismo lugar, para que lo revises"
+          "next": "Guion con Biblia y Catecismo en el mismo lugar, para que lo revises"
         },
         {
           "criterion": "Asistencia y faltas",
@@ -2827,7 +2827,7 @@ export const landing_es = {
         },
         {
           "title": "Próximo encuentro listo",
-          "desc": "Prepara el guion (con asistencia editorial si quieres) y revísalo antes de usarlo."
+          "desc": "Prepara el guion con la biblioteca pastoral y revísalo antes de usarlo."
         }
       ],
       "eyebrow": "En la práctica"

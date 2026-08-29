@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { SHOWCASES, SECONDARY_FEATURES } from "../content/landingContent";
+import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { FeatureShowcase } from "./FeatureShowcase";
 import { Card } from "../../client/components/ui/card";
@@ -34,18 +35,21 @@ export function FeaturesSection({
       </div>
 
       <div className="divide-y divide-border/50">
-        {order
+        {(order
           ? order
-              .map((id) => {
-                const s = SHOWCASES.find((sc) => sc.id === id);
-                return s ? (
-                  <FeatureShowcase key={s.id} showcase={s} ns={ns} />
-                ) : null;
-              })
+              .map((id) => SHOWCASES.find((sc) => sc.id === id))
               .filter(Boolean)
-          : SHOWCASES.map((showcase) => (
+          : SHOWCASES
+        )
+          .filter(
+            (showcase) =>
+              AI_FEATURES_ENABLED || showcase?.id !== "ai-planner",
+          )
+          .map((showcase) =>
+            showcase ? (
               <FeatureShowcase key={showcase.id} showcase={showcase} ns={ns} />
-            ))}
+            ) : null,
+          )}
       </div>
 
       {showSecondaryGrid && <FeatureGridSection ns={ns} />}

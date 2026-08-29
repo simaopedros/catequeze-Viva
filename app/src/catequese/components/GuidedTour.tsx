@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { X, ChevronRight, ChevronLeft } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
+import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 
 interface TourStep {
   target: string;
@@ -41,7 +42,10 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
 
   const steps = useMemo(
     () =>
-      TOUR_STEP_DEFS.map((def) => ({
+      (AI_FEATURES_ENABLED
+        ? TOUR_STEP_DEFS
+        : TOUR_STEP_DEFS.filter((def) => def.stepKey !== "ai")
+      ).map((def) => ({
         ...def,
         title: t(`steps.${def.stepKey}.title`),
         description: t(`steps.${def.stepKey}.description`),

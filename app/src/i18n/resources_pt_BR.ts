@@ -690,7 +690,7 @@ export const billing_pt_BR = {
     "trial_subscribe_plan": "Assinar {{plan}}",
     "trial_banner_title_one": "Resta 1 dia do seu período de teste",
     "trial_banner_title_other": "Restam {{count}} dias do seu período de teste",
-    "trial_banner_subtitle": "Assine para manter turmas, presença e assistência editorial sem interrupção.",
+    "trial_banner_subtitle": "Assine para manter turmas e presença sem interrupção.",
     "trial_banner_ends": "Termina em {{date}}.",
     "trial_banner_cta": "Ver assinatura",
     "trial_soft_title": "Você já usou o essencial — continue com calma",
@@ -1110,7 +1110,7 @@ export const classes_pt_BR = {
       "empty_cta_create_person": "Adicionar catequizando",
       "empty_cta_attendance": "Ir à presença",
       "empty_cta_prepare_meeting": "Preparar encontro",
-      "schedule_meetings_next_desc": "Prepare o próximo encontro com assistência editorial ou registre a presença quando a turma se reunir.",
+      "schedule_meetings_next_desc": "Prepare o próximo encontro ou registre a presença quando a turma se reunir.",
       "no_meetings": "Nenhum encontro",
       "no_meetings_desc": "Crie encontros para esta turma.",
       "no_catechists": "Nenhum catequista",
@@ -2176,7 +2176,7 @@ export const dashboard_pt_BR = {
     "how_to_start": "Como começar",
     "how_to_start_1": "Crie a turma com etapa, dias de encontro e responsáveis.",
     "how_to_start_2": "Cadastre ou importe catequizandos e distribua nas turmas.",
-    "how_to_start_3": "Use a assistência editorial para montar os primeiros encontros.",
+    "how_to_start_3": "Registre a presença e prepare o próximo encontro na turma.",
     "empty_class_card_desc": "Crie sua primeira turma para organizar encontros, presença e acompanhamento.",
     "empty_catechumen_card_desc": "Depois da turma, cadastre os catequizandos para começar a jornada pastoral.",
     "registration_section": "Cadastro",
@@ -2413,7 +2413,7 @@ export const landing_pt_BR = {
     "personas": [
       {
         "title": "Catequista",
-        "desc": "Organize sua turma, prepare encontros com assistência editorial e registre presença pelo celular."
+        "desc": "Organize sua turma, prepare encontros com a biblioteca pastoral e registre presença pelo celular."
       },
       {
         "title": "Coordenador Paroquial",
@@ -2670,7 +2670,7 @@ export const landing_pt_BR = {
       "launch_text": "Crie a conta, monte a turma e prepare o próximo encontro. Você tem 7 dias para ver se faz sentido — sem cartão de crédito.",
       "promises": [
         "7 dias grátis, sem cartão de crédito",
-        "Você revisa tudo que a assistência editorial gerar",
+        "Biblioteca com Bíblia e Catecismo no mesmo lugar",
         "Dados de crianças com cuidado e LGPD",
         "Cancele quando quiser"
       ],
@@ -2718,7 +2718,7 @@ export const landing_pt_BR = {
         {
           "criterion": "Preparar o encontro",
           "old": "Copiar de pastas, buscas soltas e improviso de última hora",
-          "next": "Roteiro com assistência editorial + Bíblia e Catecismo no mesmo lugar, para você revisar"
+          "next": "Roteiro com Bíblia e Catecismo no mesmo lugar, para você revisar"
         },
         {
           "criterion": "Chamada e faltas",
@@ -2825,7 +2825,7 @@ export const landing_pt_BR = {
         },
         {
           "title": "Próximo encontro pronto",
-          "desc": "Prepare o roteiro (com assistência editorial, se quiser) e revise antes de usar."
+          "desc": "Prepare o roteiro com a biblioteca pastoral e revise antes de usar."
         }
       ],
       "eyebrow": "Na prática"

@@ -36,7 +36,7 @@
   "trial_subscribe_plan": "Subscribe to {{plan}}",
   "trial_banner_title_one": "1 day left on your trial",
   "trial_banner_title_other": "{{count}} days left on your trial",
-  "trial_banner_subtitle": "Subscribe to keep classes, attendance, and editorial assistance without interruption.",
+  "trial_banner_subtitle": "Subscribe to keep classes and attendance without interruption.",
   "trial_banner_ends": "Ends on {{date}}.",
   "trial_banner_cta": "View billing",
   "trial_soft_title": "You've used the essentials — no rush",
