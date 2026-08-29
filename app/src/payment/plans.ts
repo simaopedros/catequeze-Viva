@@ -57,7 +57,7 @@ export const paymentPlans = {
 export function prettyPaymentPlanName(planId: PaymentPlanId): string {
   const planToName: Record<PaymentPlanId, string> = {
     [PaymentPlanId.CatechistFree]: "Sem assinatura",
-    [PaymentPlanId.Single]: "Plano Único",
+    [PaymentPlanId.Single]: "Plano Catequista",
     [PaymentPlanId.Unlimited]: "Plano Ilimitado",
     [PaymentPlanId.AiCredits20]: "+20 Créditos editoriais",
     [PaymentPlanId.AiCredits50]: "+50 Créditos editoriais",

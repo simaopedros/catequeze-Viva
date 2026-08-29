@@ -178,5 +178,5 @@
   "suggested_1": "Defina etapa, horário e catequista responsável para cada turma.",
   "suggested_2": "Cadastre catequizandos para acompanhar presença, encontros e progresso.",
   "suggested_3": "Use a presença editorial para preparar encontros com mais consistência.",
-  "limit_used_of_plan": "Você usou {{currentCount}} de {{maxAllowed}} turmas do Plano Único"
+  "limit_used_of_plan": "Você usou {{currentCount}} de {{maxAllowed}} turmas do Plano Catequista"
 }

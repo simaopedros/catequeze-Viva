@@ -178,5 +178,5 @@
   "suggested_1": "Set stage, schedule, and lead catechist for each class.",
   "suggested_2": "Register catechumens to track attendance, meetings, and progress.",
   "suggested_3": "Use editorial assistance to prepare meetings with more consistency.",
-  "limit_used_of_plan": "You used {{currentCount}} of {{maxAllowed}} classes on the Single Plan"
+  "limit_used_of_plan": "You used {{currentCount}} of {{maxAllowed}} classes on the Catechist Plan"
 }

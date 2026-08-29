@@ -14,7 +14,7 @@ export function getCheckoutPlanRejection(
     return 'O plano "Sem assinatura" não requer pagamento. Escolha um plano pago.';
   }
   if (LAUNCH_CATEQUISTA_ONLY && planId === PaymentPlanId.Unlimited) {
-    return "O Plano Ilimitado não está disponível nesta fase. Assine o Plano Único.";
+    return "O Plano Ilimitado não está disponível nesta fase. Assine o Plano Catequista.";
   }
   if (
     !AI_FEATURES_ENABLED &&

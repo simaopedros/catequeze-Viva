@@ -17,10 +17,6 @@ const loadProof = () =>
   import("./components/ProofSection").then((m) => ({
     default: m.ProofSection,
   }));
-const loadPricing = () =>
-  import("./components/PricingPreviewSection").then((m) => ({
-    default: m.PricingPreviewSection,
-  }));
 const loadCta = () =>
   import("./components/CtaSection").then((m) => ({
     default: function Cta() {
@@ -29,7 +25,9 @@ const loadCta = () =>
   }));
 
 /**
- * Main landing: promise → value → proof → price → CTA.
+ * Main landing: promise → value → proof → CTA.
+ * The price lives only on /pricing (single Plano Catequista card);
+ * the home sells the trial, not the number.
  * Below-fold sections mount near viewport with independent Suspense boundaries.
  */
 export default function LandingPage() {
@@ -39,7 +37,6 @@ export default function LandingPage() {
       <LazySection loader={loadOutcomes} />
       <LazySection loader={loadSteps} />
       <LazySection loader={loadProof} />
-      <LazySection loader={loadPricing} />
       <FaqSection />
       <LazySection loader={loadCta} />
     </LandingShell>

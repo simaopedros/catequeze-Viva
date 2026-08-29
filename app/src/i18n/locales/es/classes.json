@@ -178,5 +178,5 @@
   "suggested_1": "Defina etapa, horario y catequista principal para cada grupo.",
   "suggested_2": "Registre catecúmenos para seguir asistencia, encuentros y progreso.",
   "suggested_3": "Use la asistencia editorial para preparar encuentros con más consistencia.",
-  "limit_used_of_plan": "Usaste {{currentCount}} de {{maxAllowed}} turmas del Plan Único"
+  "limit_used_of_plan": "Usaste {{currentCount}} de {{maxAllowed}} grupos del Plan Catequista"
 }

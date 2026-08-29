@@ -28,8 +28,8 @@
     "error": "Error sending. Please try again."
   },
   "pricing": {
-    "title": "Choose the right plan for your pastoral routine",
-    "subtitle": "Single plan for catechists: up to 3 classes, R$ 9.90/month. Start with a 7-day free trial.",
+    "title": "One simple plan, at the service of your mission",
+    "subtitle": "Catechist Plan: R$ 9.90/month (or R$ 99/year) for up to 3 classes. Start with a 7-day free trial, no card.",
     "payment_card": "Card",
     "annual_savings": "Save 17% on annual",
     "monthly_tab": "Monthly",
@@ -38,31 +38,31 @@
     "faq_title": "Frequently asked questions",
     "per_month": "/month",
     "per_year": "/year",
-    "cta_paid": "Choose this plan",
-    "most_popular": "Most Popular",
+    "cta_paid": "Start the 7 days",
+    "most_popular": "Built for the catechist",
     "plan_desc": {
-      "single": "For one catechist to run a class with clarity, history, and preparation in one flow."
+      "single": "For you to care for your class — attendance, history, and calendar in one place, with more time left for people. Covers up to 3 classes if you walk with more than one."
     },
     "faq": [
       {
         "q": "How can I try the platform before subscribing?",
-        "a": "You can try the platform for 7 days with no credit card, see the full routine, and only choose the plan when it makes sense to continue."
+        "a": "You try it for 7 days with no credit card, use it with your real class, and only decide if it makes sense to continue. When the 7 days end, nothing is charged."
       },
       {
-        "q": "What is the catechist plan price?",
-        "a": "The Single plan costs R$ 9.90/month (or R$ 99/year) and covers 1 parish, up to 3 classes, and up to 150 catechumens in total for one catechist."
+        "q": "What is the price?",
+        "a": "The Catechist Plan costs R$ 9.90/month (or R$ 99/year) and covers up to 3 classes and 150 catechumens in total — more than enough for your reality."
       },
       {
         "q": "How does payment work?",
-        "a": "You start with a 7-day free trial and no credit card. If you continue, you can pay by card monthly or annually. No lock-in — cancel anytime."
+        "a": "You start with a 7-day free trial and no credit card. If you continue, you pay by card, monthly or annually. No lock-in — cancel anytime."
       },
       {
         "q": "What about annual plan refunds?",
         "a": "Annual plans have no automatic refund. Cancellation stops renewal, but access continues until the paid period ends. Proportional refunds are evaluated case by case via contato@catequeseviva.com.br."
       },
       {
-        "q": "Can I switch plans later?",
-        "a": "Yes, anytime. When you change plan, your data is preserved automatically."
+        "q": "What if my catechesis grows?",
+        "a": "The plan covers up to 3 classes and 150 catechumens. If you ever need more, talk to us — your data and class history are preserved in any change."
       },
       {
         "q": "Is my data secure?",

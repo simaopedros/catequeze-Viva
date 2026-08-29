@@ -159,7 +159,7 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
   },
 
   single: {
-    name: 'Plano Único',
+    name: 'Plano Catequista',
     level: 'personal',
     prices: { monthlyCents: 990, annualCents: 9900 },
     limits: {
@@ -174,7 +174,6 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
       scope: 'user',
     },
     features: [
-      '1 paróquia',
       'Até 3 turmas',
       '150 catequizandos no total',
       'Presença e calendário litúrgico',
