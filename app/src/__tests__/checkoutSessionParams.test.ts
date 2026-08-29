@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { getPlanPriceCents } from "../shared/pricing";
 
 const HOMOLOG_TEST_MONTHLY = "price_1U9lJjQ654W7D9A6bWCcgQBP";
 
@@ -19,7 +20,7 @@ vi.mock("../payment/stripe/stripeClient", () => ({
 }));
 
 describe("buildStripeCheckoutSessionCreateParams", () => {
-  it("starts a TEST subscription session for Plano Único with success URL", async () => {
+  it("starts a TEST paid subscription session for Plano Único with no Stripe trial", async () => {
     const { buildStripeCheckoutSessionCreateParams } = await import(
       "../payment/stripe/checkoutUtils"
     );
@@ -29,6 +30,7 @@ describe("buildStripeCheckoutSessionCreateParams", () => {
       customerId: "cus_test",
       userId: "user-1",
       mode: "subscription",
+      // Leftover caller value must not create a second Stripe trial.
       trialPeriodDays: 7,
       frontendUrl: "https://homolog.catechis.app",
       tracking: {
@@ -43,6 +45,7 @@ describe("buildStripeCheckoutSessionCreateParams", () => {
     expect(params.line_items).toEqual([
       { price: HOMOLOG_TEST_MONTHLY, quantity: 1 },
     ]);
+    expect(getPlanPriceCents("single", "monthly")).toBe(990);
     expect(params.success_url).toBe(
       "https://homolog.catechis.app/obrigado?session_id={CHECKOUT_SESSION_ID}",
     );
@@ -50,8 +53,16 @@ describe("buildStripeCheckoutSessionCreateParams", () => {
       "https://homolog.catechis.app/app/billing?status=canceled",
     );
     expect(params.invoice_creation).toBeUndefined();
+    expect(params.locale).toBe("pt-BR");
+    expect(params.adaptive_pricing).toEqual({ enabled: false });
+    expect(params.payment_method_collection).toBe("always");
+    expect(params.subscription_data?.trial_period_days).toBeUndefined();
+    expect(params.subscription_data?.trial_settings).toBeUndefined();
+    expect(params.metadata?.currency).toBe("BRL");
+    expect(params.metadata?.value).toBe("9.9");
+    expect(params.metadata?.trial_days).toBe("0");
+    expect(JSON.stringify(params)).not.toMatch(/trial_period_days/);
     expect(JSON.stringify(params)).not.toMatch(/ai_credits|unlimited/i);
-    expect(params.subscription_data?.trial_period_days).toBe(7);
   });
 
   it("throws when the success URL origin is missing", async () => {

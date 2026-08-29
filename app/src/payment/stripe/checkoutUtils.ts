@@ -30,7 +30,7 @@ interface CreateStripeCheckoutSessionParams {
   userId: string;
   mode: Stripe.Checkout.Session.Mode;
   tracking?: CreateCheckoutSessionTrackingArgs;
-  /** Remaining free trial days for subscription mode (0 = no Stripe trial). */
+  /** Ignored for Stripe trial — Assinar never sets trial_period_days. */
   trialPeriodDays?: number;
 }
 
@@ -124,6 +124,8 @@ export function buildStripeCheckoutSessionCreateParams({
       },
     ],
     mode,
+    locale: "pt-BR",
+    adaptive_pricing: { enabled: false },
     success_url: urls.success_url,
     cancel_url: urls.cancel_url,
     metadata,

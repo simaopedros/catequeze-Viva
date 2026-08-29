@@ -21,8 +21,7 @@ describe('resolveStripeCheckoutTrialDays', () => {
     ).toBe(0);
   });
 
-  it('returns remaining product trial days mid-window (not a full second trial)', () => {
-    // 5 days into a 7-day trial → 2 days left (ceil)
+  it('returns 0 even mid product-trial — Assinar must not start a Stripe trial', () => {
     expect(
       resolveStripeCheckoutTrialDays({
         user: {
@@ -32,10 +31,10 @@ describe('resolveStripeCheckoutTrialDays', () => {
         },
         now,
       }),
-    ).toBe(2);
+    ).toBe(0);
   });
 
-  it('returns full window when checkout is on signup day', () => {
+  it('returns 0 on signup day (in-app trial is enough)', () => {
     expect(
       resolveStripeCheckoutTrialDays({
         user: {
@@ -45,7 +44,8 @@ describe('resolveStripeCheckoutTrialDays', () => {
         },
         now,
       }),
-    ).toBe(SUBSCRIPTION_TRIAL_DAYS);
+    ).toBe(0);
+    expect(SUBSCRIPTION_TRIAL_DAYS).toBe(7);
   });
 
   it('returns 0 when product trial has expired', () => {
@@ -74,7 +74,7 @@ describe('resolveStripeCheckoutTrialDays', () => {
     ).toBe(0);
   });
 
-  it('uses institutional trial remainder when present', () => {
+  it('returns 0 even when an institutional trial remainder exists', () => {
     expect(
       resolveStripeCheckoutTrialDays({
         user: {
@@ -88,43 +88,31 @@ describe('resolveStripeCheckoutTrialDays', () => {
         },
         now,
       }),
-    ).toBe(3);
+    ).toBe(0);
   });
 });
 
 describe('getCheckoutTrialConfig', () => {
-  it('enables a no-card trial only when remaining days > 0', () => {
-    expect(
-      getCheckoutTrialConfig('subscription', { plan_id: 'single' }, 7),
-    ).toEqual({
-      payment_method_collection: 'if_required',
-      subscription_data: {
-        metadata: { plan_id: 'single' },
-        trial_period_days: 7,
-        trial_settings: {
-          end_behavior: {
-            missing_payment_method: 'cancel',
-          },
-        },
-      },
-    });
+  it('never sets trial_period_days even if leftover days are passed', () => {
+    const config = getCheckoutTrialConfig('subscription', { plan_id: 'single' }, 7);
+    expect(config.payment_method_collection).toBe('always');
+    expect(config.subscription_data?.trial_period_days).toBeUndefined();
+    expect(config.subscription_data?.trial_settings).toBeUndefined();
+    expect(config.subscription_data?.metadata).toEqual({ plan_id: 'single' });
+    expect(JSON.stringify(config)).not.toMatch(/trial_period_days/);
   });
 
-  it('passes remaining days (not a fixed full window)', () => {
-    expect(
-      getCheckoutTrialConfig('subscription', { plan_id: 'single' }, 2),
-    ).toMatchObject({
-      payment_method_collection: 'if_required',
-      subscription_data: {
-        trial_period_days: 2,
-      },
-    });
+  it('ignores a remaining-days argument', () => {
+    const config = getCheckoutTrialConfig('subscription', { plan_id: 'single' }, 2);
+    expect(config.payment_method_collection).toBe('always');
+    expect(config.subscription_data?.trial_period_days).toBeUndefined();
   });
 
-  it('omits Stripe trial when remaining days are 0', () => {
+  it('collects a card and omits Stripe trial when days are 0', () => {
     expect(
       getCheckoutTrialConfig('subscription', { plan_id: 'single' }, 0),
     ).toEqual({
+      payment_method_collection: 'always',
       subscription_data: {
         metadata: { plan_id: 'single' },
       },

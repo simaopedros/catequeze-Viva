@@ -11,7 +11,7 @@ export interface CreateCheckoutSessionTrackingArgs {
   planName?: string;
   value?: number;
   currency?: string;
-  /** Remaining product/institutional trial days to pass to Stripe (0 = no trial). */
+  /** Always 0 on Assinar — Checkout never starts a Stripe trial. */
   trialDays?: number;
   initiateCheckoutEventId?: string;
   fbp?: string;
@@ -36,8 +36,8 @@ export interface CreateCheckoutSessionArgs {
   prismaUserDelegate: PrismaClient["user"];
   tracking?: CreateCheckoutSessionTrackingArgs;
   /**
-   * Stripe subscription trial days (remaining free window only).
-   * Defaults to 0 when omitted — never invent a second full trial.
+   * Stripe subscription trial days. Assinar always passes 0 so Checkout
+   * collects a card and starts the paid plan immediately.
    */
   trialPeriodDays?: number;
 }
