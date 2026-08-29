@@ -4,6 +4,8 @@
  */
 export {
   getPlanLimits,
+  getSocialLimits,
+  planCanPublishSocial,
   planName,
   PLAN_NAMES,
   LIMIT_LABELS,
@@ -29,6 +31,7 @@ export {
   PRODUCT_TRIAL_PLAN_ID,
   type PlanId,
   type PlanLimits,
+  type SocialLimits,
   type BillingInfo,
   type WorkspaceEffectivePlan,
   type UserSubscriptionFields,

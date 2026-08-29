@@ -108,6 +108,20 @@ export function resolvePlanIdOrFree(raw: string | null | undefined): PlanId {
 
 export type AiCreditScope = 'user' | 'per_parish' | 'diocese_pool';
 
+/**
+ * Publishing allowances for the Comunidade (social) feed.
+ * Reading and sharing the feed is always open — these limits only gate
+ * authoring. `null` means unlimited.
+ */
+export interface SocialLimits {
+  /** Posts an author may publish per calendar day. 0 blocks publishing. */
+  maxPostsPerDay: number | null;
+  /** Images or videos attached to a single post. */
+  maxMediaPerPost: number;
+  /** Longest video an author may upload, in seconds. */
+  maxVideoSeconds: number;
+}
+
 export interface PlanDefinition {
   name: string;
   level: 'personal' | 'institutional';
@@ -127,6 +141,7 @@ export interface PlanDefinition {
     dailyLimit: number;
     scope: AiCreditScope;
   };
+  social: SocialLimits;
   features: string[];
   highlight: boolean;
 }
@@ -154,6 +169,11 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
       dailyLimit: 0,
       scope: 'user',
     },
+    social: {
+      maxPostsPerDay: 0,
+      maxMediaPerPost: 0,
+      maxVideoSeconds: 0,
+    },
     features: [],
     highlight: false,
   },
@@ -173,10 +193,16 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
       dailyLimit: 0,
       scope: 'user',
     },
+    social: {
+      maxPostsPerDay: 5,
+      maxMediaPerPost: 4,
+      maxVideoSeconds: 180,
+    },
     features: [
       'Até 3 turmas',
       '150 catequizandos no total',
       'Presença e calendário litúrgico',
+      'Publicar na Comunidade',
     ],
     highlight: true,
   },
@@ -196,11 +222,17 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
       dailyLimit: 0,
       scope: 'user',
     },
+    social: {
+      maxPostsPerDay: 30,
+      maxMediaPerPost: 10,
+      maxVideoSeconds: 900,
+    },
     features: [
       'Paróquias e turmas ilimitadas',
       'Catequizandos e catequistas ilimitados',
       'Comunicação integrada (pais/catequizandos)',
       'Documentos e certidões',
+      'Publicar na Comunidade',
     ],
     highlight: false,
   },
@@ -225,6 +257,7 @@ export const LIMIT_LABELS: Record<string, string> = {
   class_limit: 'turma',
   catechumen_limit: 'catequizando',
   catechist_limit: 'catequista',
+  social_post_limit: 'publicação diária',
 };
 
 // ─── Plan limit helpers ───────────────────────────────────────────────────
@@ -243,6 +276,21 @@ export interface PlanLimits {
 export function getPlanLimits(plan: string | null | undefined): PlanLimits {
   const planId = resolvePlanIdOrFree(plan);
   return PLANS[planId].limits;
+}
+
+/**
+ * Comunidade publishing allowances for a plan id (active or legacy).
+ * Falls back to catechist_free (no publishing) when unrecognised.
+ */
+export function getSocialLimits(plan: string | null | undefined): SocialLimits {
+  const planId = resolvePlanIdOrFree(plan);
+  return PLANS[planId].social;
+}
+
+/** Whether a plan may author content in the Comunidade feed. */
+export function planCanPublishSocial(plan: string | null | undefined): boolean {
+  const limits = getSocialLimits(plan);
+  return limits.maxPostsPerDay === null || limits.maxPostsPerDay > 0;
 }
 
 /**

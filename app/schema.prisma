@@ -207,6 +207,64 @@ enum AuditAction {
   PUBLISH
 }
 
+// ─── Comunidade (social) ──────────────────────────────────────────────────────
+
+enum SocialPostKind {
+  TEXT
+  IMAGE
+  VIDEO
+}
+
+enum SocialPostStatus {
+  PUBLISHED
+  PENDING_REVIEW
+  REMOVED
+}
+
+enum SocialMediaKind {
+  IMAGE
+  VIDEO
+}
+
+enum SocialMediaStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+}
+
+enum SocialReactionType {
+  AMEM
+  REZO
+  ALELUIA
+}
+
+enum SocialCommentStatus {
+  PUBLISHED
+  REMOVED
+}
+
+enum SocialReportTargetType {
+  POST
+  COMMENT
+}
+
+enum SocialReportReason {
+  DOCTRINE
+  HATE
+  SEXUAL
+  VIOLENCE
+  SPAM
+  MINOR_PRIVACY
+  OTHER
+}
+
+enum SocialReportStatus {
+  OPEN
+  ACTIONED
+  DISMISSED
+}
+
 // ─── Existing Models (from OpenSaaS) ──────────────────────────────────────────
 
 model GptResponse {
@@ -272,6 +330,10 @@ model User {
   // Pricing version (grandfathering)
   pricingVersion      Int?          @default(2)
 
+  // Comunidade (social) moderation state
+  socialBannedAt   DateTime?
+  socialBanReason  String?
+
   // Catequese Viva relations
   memberships         Membership[]
   ownedParishes       Parish[]           @relation("ParishOwner")
@@ -305,6 +367,17 @@ model User {
   dailyAiUsage        DailyAiUsage[]
   twoFactor           UserTwoFactor?
   aiFeedback          AiFeedback[]
+
+  // Comunidade (social) relations
+  socialPosts            SocialPost[]     @relation("SocialPostAuthor")
+  removedSocialPosts     SocialPost[]     @relation("SocialPostRemovedBy")
+  socialComments         SocialComment[]  @relation("SocialCommentAuthor")
+  removedSocialComments  SocialComment[]  @relation("SocialCommentRemovedBy")
+  socialReactions        SocialReaction[]
+  socialReports          SocialReport[]   @relation("SocialReportReporter")
+  reviewedSocialReports  SocialReport[]   @relation("SocialReportReviewer")
+  socialFollowing        SocialFollow[]   @relation("SocialFollower")
+  socialFollowers        SocialFollow[]   @relation("SocialFollowed")
 }
 
 // ─── Multi-tenant ─────────────────────────────────────────────────────────────
@@ -364,6 +437,7 @@ model Parish {
   messageTemplates     MessageTemplate[]
   catechumens          CatechumenProfile[]
   pendingInvitations   PendingInvitation[]
+  socialPosts          SocialPost[]
 }
 enum CommunityType {
   CHAPEL
@@ -1556,6 +1630,203 @@ model ContactFormMessage {
   content String
   isRead    Boolean   @default(false)
   repliedAt DateTime?
+}
+
+// ─── Comunidade (social feed) ─────────────────────────────────────────────────
+
+/// Public post in the global Catholic community feed.
+/// Publishing requires an active subscription; reading is open to everyone.
+model SocialPost {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// Stable shareable identifier used in /comunidade/p/:slug and /c/:slug
+  slug String @unique
+
+  authorId String
+  author   User   @relation("SocialPostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  /// Optional credit to the workspace the author was acting for
+  parishId String?
+  parish   Parish? @relation(fields: [parishId], references: [id], onDelete: SetNull)
+
+  kind   SocialPostKind   @default(TEXT)
+  status SocialPostStatus @default(PUBLISHED)
+
+  body   String
+  locale String @default("pt-BR")
+
+  publishedAt DateTime?
+
+  /// Author confirmed they hold image-use authorization for people shown in the media
+  mediaConsentAckAt DateTime?
+
+  // Denormalised counters kept in sync by the operations layer
+  reactionCount Int @default(0)
+  commentCount  Int @default(0)
+  shareCount    Int @default(0)
+  viewCount     Int @default(0)
+
+  // Moderation
+  removedAt     DateTime?
+  removedById   String?
+  removedBy     User?     @relation("SocialPostRemovedBy", fields: [removedById], references: [id], onDelete: SetNull)
+  removalReason String?
+
+  media    SocialMedia[]
+  topics   SocialPostTopic[]
+  comments SocialComment[]
+  reactions SocialReaction[]
+
+  @@index([status, publishedAt])
+  @@index([authorId, createdAt])
+  @@index([parishId])
+}
+
+/// Image (Bunny Storage) or video (Bunny Stream) attached to a post.
+model SocialMedia {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  postId String?
+  post   SocialPost? @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  /// Owner of the upload — set before the post exists (direct video upload flow)
+  uploaderId String
+
+  kind     SocialMediaKind
+  position Int             @default(0)
+  status   SocialMediaStatus @default(PENDING)
+
+  /// Bunny Storage object key (images)
+  storageKey String?
+
+  /// Bunny Stream identifiers (videos)
+  bunnyVideoId   String? @unique
+  bunnyLibraryId String?
+
+  mimeType        String?
+  sizeBytes       Int?
+  width           Int?
+  height          Int?
+  durationSeconds Int?
+  thumbnailUrl    String?
+  altText         String?
+
+  failureReason String?
+
+  @@index([postId, position])
+  @@index([status, createdAt])
+  @@index([uploaderId])
+}
+
+/// Curated pastoral topic used to organise and filter the feed.
+model SocialTopic {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  slug     String  @unique
+  name     String
+  nameEn   String?
+  nameEs   String?
+  position Int     @default(0)
+  active   Boolean @default(true)
+
+  posts SocialPostTopic[]
+}
+
+model SocialPostTopic {
+  postId  String
+  post    SocialPost  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  topicId String
+  topic   SocialTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@id([postId, topicId])
+  @@index([topicId])
+}
+
+model SocialReaction {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  postId String
+  post   SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type SocialReactionType @default(AMEM)
+
+  @@unique([postId, userId])
+  @@index([userId])
+}
+
+model SocialComment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  postId String
+  post   SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   User   @relation("SocialCommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  parentId String?
+  parent   SocialComment?  @relation("SocialCommentThread", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  SocialComment[] @relation("SocialCommentThread")
+
+  body   String
+  status SocialCommentStatus @default(PUBLISHED)
+
+  removedAt     DateTime?
+  removedById   String?
+  removedBy     User?     @relation("SocialCommentRemovedBy", fields: [removedById], references: [id], onDelete: SetNull)
+  removalReason String?
+
+  @@index([postId, createdAt])
+  @@index([authorId])
+}
+
+/// Abuse report on a post or comment. Reporter may be anonymous (IP hash only).
+model SocialReport {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  targetType SocialReportTargetType
+  targetId   String
+
+  reporterId    String?
+  reporter      User?   @relation("SocialReportReporter", fields: [reporterId], references: [id], onDelete: SetNull)
+  reporterIpHash String?
+
+  reason  SocialReportReason @default(OTHER)
+  details String?
+
+  status       SocialReportStatus @default(OPEN)
+  reviewedAt   DateTime?
+  reviewedById String?
+  reviewedBy   User?     @relation("SocialReportReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewNote   String?
+
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
+}
+
+model SocialFollow {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  followerId String
+  follower   User   @relation("SocialFollower", fields: [followerId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   User   @relation("SocialFollowed", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, authorId])
+  @@index([authorId])
 }
 
 
