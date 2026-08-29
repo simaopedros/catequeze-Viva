@@ -147,8 +147,6 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     where: { id: userId },
     select: {
       subscriptionStatus: true,
-      subscriptionPlan: true,
-      createdAt: true,
     },
   });
   const hasActiveSub = isSubscriptionActiveLike(freshUser?.subscriptionStatus);
@@ -164,27 +162,9 @@ export const generateCheckoutSession: GenerateCheckoutSession<
   const currency = input.currency ?? detectCurrency();
   const isCreditsPlan = paymentPlan.effect.kind === "credits";
 
-  // Only remaining product/institutional free days — never a second full 7-day Stripe trial.
-  let institutionalBilling: {
-    plan: string;
-    status: string;
-    trialEndsAt?: Date | null;
-  } | null = null;
-  if (!isCreditsPlan && isInstitutionalPlan) {
-    const ownedParish = await context.entities.Parish.findFirst({
-      where: { ownerId: userId, type: { not: "PERSONAL" } },
-      select: {
-        billing: { select: { plan: true, status: true, trialEndsAt: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-    institutionalBilling = ownedParish?.billing ?? null;
-  }
-
+  // Assinar never starts a Stripe trial — the 7-day no-card window is in-app only.
   const trialPeriodDays = resolveStripeCheckoutTrialDays({
     isCredits: isCreditsPlan,
-    user: freshUser,
-    institutionalBilling,
   });
 
   let session;
