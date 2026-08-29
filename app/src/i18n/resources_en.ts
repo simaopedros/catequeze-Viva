@@ -690,7 +690,7 @@ export const billing_en = {
     "trial_subscribe_plan": "Subscribe to {{plan}}",
     "trial_banner_title_one": "1 day left on your trial",
     "trial_banner_title_other": "{{count}} days left on your trial",
-    "trial_banner_subtitle": "Subscribe to keep classes, attendance, and editorial assistance without interruption.",
+    "trial_banner_subtitle": "Subscribe to keep classes and attendance without interruption.",
     "trial_banner_ends": "Ends on {{date}}.",
     "trial_banner_cta": "View billing",
     "trial_soft_title": "You've used the essentials — no rush",
@@ -1112,7 +1112,7 @@ export const classes_en = {
       "empty_cta_create_person": "Add catechumen",
       "empty_cta_attendance": "Go to attendance",
       "empty_cta_prepare_meeting": "Prepare session",
-      "schedule_meetings_next_desc": "Prepare the next session with editorial assistance, or record attendance when the class meets.",
+      "schedule_meetings_next_desc": "Prepare the next session or record attendance when the class meets.",
       "no_meetings": "No meetings",
       "no_meetings_desc": "Create meetings for this class.",
       "no_catechists": "No catechists",
@@ -2178,7 +2178,7 @@ export const dashboard_en = {
     "how_to_start": "How to start",
     "how_to_start_1": "Create a class with stage, meeting days, and leaders.",
     "how_to_start_2": "Register or import catechumens and place them in classes.",
-    "how_to_start_3": "Use editorial assistance to prepare your first meetings.",
+    "how_to_start_3": "Record attendance and prepare the next class meeting.",
     "empty_class_card_desc": "Create your first class to organize meetings, attendance, and follow-up.",
     "empty_catechumen_card_desc": "After the class, register catechumens to begin the pastoral journey.",
     "registration_section": "Registration",
@@ -2415,7 +2415,7 @@ export const landing_en = {
     "personas": [
       {
         "title": "Catechist",
-        "desc": "Organize your class, prepare meetings with editorial assistance, and take attendance on mobile."
+        "desc": "Organize your class, prepare meetings with the pastoral library, and take attendance on mobile."
       },
       {
         "title": "Parish Coordinator",
@@ -2672,7 +2672,7 @@ export const landing_en = {
       "launch_text": "Create an account, set up your class, and prepare the next meeting. You have 7 days to see if it fits — no credit card.",
       "promises": [
         "7 free days, no credit card",
-        "You review everything editorial assistance drafts",
+        "Bible and Catechism library in the same place",
         "Children’s data handled with care and LGPD",
         "Cancel anytime"
       ],
@@ -2720,7 +2720,7 @@ export const landing_en = {
         {
           "criterion": "Prepare the meeting",
           "old": "Copying folders, scattered searches, and last-minute improvisation",
-          "next": "Editorial draft + Bible and Catechism in one place, for you to review"
+          "next": "Outline with Bible and Catechism in one place, for you to review"
         },
         {
           "criterion": "Attendance and absences",
@@ -2827,7 +2827,7 @@ export const landing_en = {
         },
         {
           "title": "Next meeting ready",
-          "desc": "Prep the outline (with editorial assistance if you want) and review before using it."
+          "desc": "Prep the outline with the pastoral library and review before using it."
         }
       ],
       "eyebrow": "In practice"

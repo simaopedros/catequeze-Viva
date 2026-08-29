@@ -1,8 +1,4 @@
-/**
- * Feature flag to control AI-powered features during launch phase.
- * When false, AI operations will be disabled at runtime.
- */
-export const AI_FEATURES_ENABLED = false;
+export { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 
 /**
  * Mock AI credits status for when AI features are disabled

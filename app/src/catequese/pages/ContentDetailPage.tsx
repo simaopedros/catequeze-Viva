@@ -42,6 +42,7 @@ import {
 } from "../../shared/contentDocument";
 import { ContentDocumentRenderer } from "../components/content/ContentDocumentRenderer";
 import { AppPageHeader } from "../../client/components/brand/AppChrome";
+import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 
 function parseData(data: string | null): any {
   if (!data) return {};
@@ -295,21 +296,23 @@ export default function ContentDetailPage() {
             {t("archive")}
           </Button>
         )}
-        <Button
-          size="sm"
-          variant="outline"
-          asChild
-          className="gap-1 border-dashed"
-        >
-          <Link
-            to={`/app/ai-hub?mode=generate-whatsapp&contentId=${id}&contentTitle=${encodeURIComponent(
-              item.title || "",
-            )}&contentTheme=${encodeURIComponent(item.theme || "")}`}
+        {AI_FEATURES_ENABLED && (
+          <Button
+            size="sm"
+            variant="outline"
+            asChild
+            className="gap-1 border-dashed"
           >
-            <MessageCircle className="h-3 w-3" />
-            {tai("hub.existing_whatsapp")}
-          </Link>
-        </Button>
+            <Link
+              to={`/app/ai-hub?mode=generate-whatsapp&contentId=${id}&contentTitle=${encodeURIComponent(
+                item.title || "",
+              )}&contentTheme=${encodeURIComponent(item.theme || "")}`}
+            >
+              <MessageCircle className="h-3 w-3" />
+              {tai("hub.existing_whatsapp")}
+            </Link>
+          </Button>
+        )}
       </div>
 
       <div className="flex border-b">
@@ -421,22 +424,24 @@ export default function ContentDetailPage() {
               <Button onClick={() => setShowForm(true)} className="gap-2">
                 <Plus className="h-4 w-4" /> {t("detail.new_activity")}
               </Button>
-              <Button
-                variant="outline"
-                asChild
-                className="gap-2 rounded-sm border-dashed border-border/70 text-brand-ink hover:bg-muted/20"
-              >
-                <Link
-                  to={`/app/ai-hub?mode=generate-activity&contentId=${id}&contentTitle=${encodeURIComponent(
-                    item.title || "",
-                  )}&contentTheme=${encodeURIComponent(item.theme || "")}`}
+              {AI_FEATURES_ENABLED && (
+                <Button
+                  variant="outline"
+                  asChild
+                  className="gap-2 rounded-sm border-dashed border-border/70 text-brand-ink hover:bg-muted/20"
                 >
-                  <Feather className="h-4 w-4" />
-                  {t("detail.open_copilot")
-                    ? t("detail.open_copilot")
-                    : t("detail.generate_ai")}
-                </Link>
-              </Button>
+                  <Link
+                    to={`/app/ai-hub?mode=generate-activity&contentId=${id}&contentTitle=${encodeURIComponent(
+                      item.title || "",
+                    )}&contentTheme=${encodeURIComponent(item.theme || "")}`}
+                  >
+                    <Feather className="h-4 w-4" />
+                    {t("detail.open_copilot")
+                      ? t("detail.open_copilot")
+                      : t("detail.generate_ai")}
+                  </Link>
+                </Button>
+              )}
             </div>
           )}
 

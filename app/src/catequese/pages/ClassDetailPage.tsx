@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useParams, Link, useNavigate } from "react-router";
+import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
@@ -874,7 +875,13 @@ export default function ClassDetailPage() {
               >
                 <div className="mt-4 flex flex-wrap justify-center gap-2">
                   <Button size="sm" asChild>
-                    <Link to="/app/ai-hub">
+                    <Link
+                      to={
+                        AI_FEATURES_ENABLED
+                          ? "/app/ai-hub"
+                          : `/app/classes/${id}/meetings`
+                      }
+                    >
                       <BookOpen className="mr-1 h-3.5 w-3.5" />
                       {t("detail.empty_cta_prepare_meeting")}
                     </Link>

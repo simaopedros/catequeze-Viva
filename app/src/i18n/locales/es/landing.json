@@ -117,7 +117,7 @@
   "personas": [
     {
       "title": "Catequista",
-      "desc": "Organiza tu grupo, prepara encuentros con asistencia editorial y pasa lista desde el celular."
+      "desc": "Organiza tu grupo, prepara encuentros con la biblioteca pastoral y pasa lista desde el celular."
     },
     {
       "title": "Coordinador Parroquial",
@@ -374,7 +374,7 @@
     "launch_text": "Crea la cuenta, arma el grupo y prepara el próximo encuentro. Tienes 7 días para ver si encaja — sin tarjeta de crédito.",
     "promises": [
       "7 días gratis, sin tarjeta de crédito",
-      "Tú revisas todo lo que genere la asistencia editorial",
+      "Biblioteca con Biblia y Catecismo en el mismo lugar",
       "Datos de niños con cuidado y LGPD",
       "Cancela cuando quieras"
     ],
@@ -422,7 +422,7 @@
       {
         "criterion": "Preparar el encuentro",
         "old": "Copiar carpetas, búsquedas sueltas e improvisar a última hora",
-        "next": "Borrador con asistencia editorial + Biblia y Catecismo en el mismo lugar, para que lo revises"
+        "next": "Guion con Biblia y Catecismo en el mismo lugar, para que lo revises"
       },
       {
         "criterion": "Asistencia y faltas",
@@ -529,7 +529,7 @@
       },
       {
         "title": "Próximo encuentro listo",
-        "desc": "Prepara el guion (con asistencia editorial si quieres) y revísalo antes de usarlo."
+        "desc": "Prepara el guion con la biblioteca pastoral y revísalo antes de usarlo."
       }
     ],
     "eyebrow": "En la práctica"

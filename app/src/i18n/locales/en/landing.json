@@ -117,7 +117,7 @@
   "personas": [
     {
       "title": "Catechist",
-      "desc": "Organize your class, prepare meetings with editorial assistance, and take attendance on mobile."
+      "desc": "Organize your class, prepare meetings with the pastoral library, and take attendance on mobile."
     },
     {
       "title": "Parish Coordinator",
@@ -374,7 +374,7 @@
     "launch_text": "Create an account, set up your class, and prepare the next meeting. You have 7 days to see if it fits — no credit card.",
     "promises": [
       "7 free days, no credit card",
-      "You review everything editorial assistance drafts",
+      "Bible and Catechism library in the same place",
       "Children’s data handled with care and LGPD",
       "Cancel anytime"
     ],
@@ -422,7 +422,7 @@
       {
         "criterion": "Prepare the meeting",
         "old": "Copying folders, scattered searches, and last-minute improvisation",
-        "next": "Editorial draft + Bible and Catechism in one place, for you to review"
+        "next": "Outline with Bible and Catechism in one place, for you to review"
       },
       {
         "criterion": "Attendance and absences",
@@ -529,7 +529,7 @@
       },
       {
         "title": "Next meeting ready",
-        "desc": "Prep the outline (with editorial assistance if you want) and review before using it."
+        "desc": "Prep the outline with the pastoral library and review before using it."
       }
     ],
     "eyebrow": "In practice"

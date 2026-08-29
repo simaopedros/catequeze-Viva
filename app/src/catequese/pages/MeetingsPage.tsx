@@ -38,6 +38,7 @@ import {
   listContentItems,
 } from "wasp/client/operations";
 import { useUserContext } from "../../client/hooks/useUserContext";
+import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 import { toast } from "../../client/hooks/use-toast";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
@@ -378,56 +379,60 @@ export default function MeetingsPage() {
                     {tcl("attendance")}
                   </Link>
                 </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-11 min-h-11 rounded-sm"
-                  onClick={() =>
-                    navigate(
-                      `/app/ai-hub?mode=generate-activity&meetingId=${
-                        m.id
-                      }&meetingTitle=${encodeURIComponent(m.title || "")}${
-                        m.content
-                          ? `&contentId=${
-                              m.content.id
-                            }&contentTitle=${encodeURIComponent(
-                              m.content.title || "",
-                            )}&contentTheme=${encodeURIComponent(
-                              m.content.theme || "",
-                            )}`
-                          : ""
-                      }`,
-                    )
-                  }
-                >
-                  <Feather className="mr-1 h-3 w-3" />
-                  {t("generate_ai_activity")}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-11 min-h-11 text-xs"
-                  onClick={() =>
-                    navigate(
-                      `/app/ai-hub?mode=generate-whatsapp&meetingId=${
-                        m.id
-                      }&meetingTitle=${encodeURIComponent(m.title || "")}${
-                        m.content
-                          ? `&contentId=${
-                              m.content.id
-                            }&contentTitle=${encodeURIComponent(
-                              m.content.title || "",
-                            )}&contentTheme=${encodeURIComponent(
-                              m.content.theme || "",
-                            )}`
-                          : ""
-                      }`,
-                    )
-                  }
-                >
-                  <MessageCircle className="mr-1 h-3 w-3" />
-                  {t("generate_whatsapp")}
-                </Button>
+                {AI_FEATURES_ENABLED && (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-11 min-h-11 rounded-sm"
+                      onClick={() =>
+                        navigate(
+                          `/app/ai-hub?mode=generate-activity&meetingId=${
+                            m.id
+                          }&meetingTitle=${encodeURIComponent(m.title || "")}${
+                            m.content
+                              ? `&contentId=${
+                                  m.content.id
+                                }&contentTitle=${encodeURIComponent(
+                                  m.content.title || "",
+                                )}&contentTheme=${encodeURIComponent(
+                                  m.content.theme || "",
+                                )}`
+                              : ""
+                          }`,
+                        )
+                      }
+                    >
+                      <Feather className="mr-1 h-3 w-3" />
+                      {t("generate_ai_activity")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-11 min-h-11 text-xs"
+                      onClick={() =>
+                        navigate(
+                          `/app/ai-hub?mode=generate-whatsapp&meetingId=${
+                            m.id
+                          }&meetingTitle=${encodeURIComponent(m.title || "")}${
+                            m.content
+                              ? `&contentId=${
+                                  m.content.id
+                                }&contentTitle=${encodeURIComponent(
+                                  m.content.title || "",
+                                )}&contentTheme=${encodeURIComponent(
+                                  m.content.theme || "",
+                                )}`
+                              : ""
+                          }`,
+                        )
+                      }
+                    >
+                      <MessageCircle className="mr-1 h-3 w-3" />
+                      {t("generate_whatsapp")}
+                    </Button>
+                  </>
+                )}
                 {canManageMeetings && (
                   <Button
                     size="sm"

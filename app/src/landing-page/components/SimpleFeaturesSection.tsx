@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { SHOWCASES } from "../content/landingContent";
+import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { FeatureShowcase } from "./FeatureShowcase";
 
@@ -34,7 +35,11 @@ export function SimpleFeaturesSection({ ns = "landing" }: { ns?: string }) {
 
   const showcases = HOME_FEATURE_ORDER.map((id) =>
     SHOWCASES.find((s) => s.id === id),
-  ).filter(Boolean) as typeof SHOWCASES;
+  )
+    .filter(Boolean)
+    .filter(
+      (showcase) => AI_FEATURES_ENABLED || showcase?.id !== "ai-planner",
+    ) as typeof SHOWCASES;
 
   return (
     <section id="recursos" className="scroll-mt-20">

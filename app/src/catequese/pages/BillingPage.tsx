@@ -37,6 +37,7 @@ import {
 } from "wasp/client/operations";
 import { getAiCreditsStatus } from "../lib/aiOperations";
 import { MOCK_AI_STATUS } from "../lib/aiFeatureFlag";
+import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 import { useAuth } from "wasp/client/auth";
 import { PaymentPlanId } from "../../payment/plans";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
@@ -1232,7 +1233,7 @@ export default function BillingPage() {
           </div>
         )}
 
-        {!isConversionMode && (
+        {!isConversionMode && AI_FEATURES_ENABLED && (
           <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
             {aiCredits && aiCredits.monthlyAllowance > 0 ? (
               <SurfaceSection title={t("ai_credits")} icon={Coins}>
