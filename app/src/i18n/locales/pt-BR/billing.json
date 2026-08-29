@@ -96,14 +96,14 @@
     },
     "single": {
       "name": "Plano Único",
-      "price": "R$ 29/mês",
-      "annual_price": "R$ 290/ano (~R$ 24/mês)",
+      "price": "R$ 9,90/mês",
+      "annual_price": "R$ 99/ano (~R$ 8,25/mês)",
       "features": [
         "1 paróquia",
         "Até 3 turmas",
         "150 catequizandos no total",
         "Presença e calendário litúrgico",
-        "15 créditos editoriais/mês"
+        "Portal da família"
       ]
     },
     "unlimited": {
@@ -113,10 +113,8 @@
       "features": [
         "Paróquias e turmas ilimitadas",
         "Catequizandos e catequistas ilimitados",
-        "Gerador de encontros e atividades com assistência editorial",
         "Comunicação integrada",
-        "Documentos e certidões",
-        "50 créditos editoriais/mês"
+        "Documentos e certidões"
       ]
     }
   },
