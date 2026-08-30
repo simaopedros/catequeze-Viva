@@ -9,10 +9,15 @@
 import { logger } from '../logger';
 import { isBunnyStreamConfigured } from '../storage/bunnyStream';
 import { syncSocialVideoFromBunny } from '../api/socialMedia';
+import { isSocialEnabled } from '../social/featureGate';
 
 const PENDING_STATUSES = ['PENDING', 'PROCESSING'] as const;
 
 export async function reconcileSocialMediaJob(_args: any, context: any) {
+  if (!isSocialEnabled()) {
+    return { skipped: true, reconciled: 0 };
+  }
+
   if (!isBunnyStreamConfigured()) {
     logger.info('[socialMediaReconcile] Bunny Stream not configured — skipping.');
     return { skipped: true, reconciled: 0 };
