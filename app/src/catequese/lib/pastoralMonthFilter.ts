@@ -89,19 +89,10 @@ export function resolveDefaultMonth(
 }
 
 export function toLineChartRows(monthlyPresence: MonthlyPresenceRow[]) {
-  return monthlyPresence.map((row) => {
-    const pastoralPresent = row.present + row.late + row.justified;
-    return {
-      month: row.month,
-      present: row.present,
-      late: row.late,
-      absent: row.absent + row.justified,
-      frequency:
-        row.totalMeetings > 0
-          ? Math.round((pastoralPresent / row.totalMeetings) * 100)
-          : 0,
-    };
-  });
+  return monthlyPresence.map((row) => ({
+    month: row.month,
+    present: row.present,
+  }));
 }
 
 function recountTimeline(items: PastoralTimelineItem[]) {

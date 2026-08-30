@@ -152,16 +152,12 @@ describe("filterPastoralByMonth", () => {
 });
 
 describe("toLineChartRows", () => {
-  it("keeps the full history and folds justified into absent counts", () => {
+  it("keeps the full history as a single presence series", () => {
     const rows = toLineChartRows(sampleData().monthlyPresence);
-    expect(rows).toHaveLength(2);
-    expect(rows[1]).toMatchObject({
-      month: "2026-08",
-      present: 2,
-      late: 1,
-      absent: 2,
-      frequency: 80,
-    });
+    expect(rows).toEqual([
+      { month: "2026-07", present: 2 },
+      { month: "2026-08", present: 2 },
+    ]);
   });
 });
 

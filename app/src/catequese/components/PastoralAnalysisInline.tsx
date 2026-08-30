@@ -485,9 +485,6 @@ export function PastoralAnalysisInline({
               <MonthlyPresenceLineChart
                 data={chartRows}
                 presentLabel={t("present")}
-                lateLabel={t("late")}
-                absentLabel={t("absent")}
-                frequencyLabel={t("monthlyFrequency")}
                 variant="print"
               />
             </Suspense>
@@ -944,9 +941,6 @@ export function PastoralAnalysisInline({
               <MonthlyPresenceLineChart
                 data={chartRows}
                 presentLabel={t("present")}
-                lateLabel={t("late")}
-                absentLabel={t("absent")}
-                frequencyLabel={t("monthlyFrequency")}
               />
             </Suspense>
             <div className="mt-3 overflow-x-auto rounded-sm border border-border/70">
