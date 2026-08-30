@@ -25,6 +25,7 @@ import {
   getBunnyVideo,
 } from '../storage/bunnyStream';
 import { assertCanPublishSocial } from '../social/publishGate';
+import { isSocialEnabled } from '../social/featureGate';
 
 function runMulter(req: Request, res: Response): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -39,6 +40,9 @@ function runMulter(req: Request, res: Response): Promise<void> {
 
 export async function uploadSocialImage(req: Request, res: Response, context: any) {
   try {
+    if (!isSocialEnabled()) {
+      return res.status(404).json({ error: 'Recurso indisponível.' });
+    }
     if (!context.user) {
       return res.status(401).json({ error: 'Autenticação necessária.' });
     }
@@ -113,6 +117,10 @@ export const socialImageUploadMiddleware: MiddlewareConfigFn = (middlewareConfig
  */
 export async function serveSocialMedia(req: Request, res: Response, context: any) {
   try {
+    if (!isSocialEnabled()) {
+      return res.status(404).json({ error: 'Mídia não encontrada.' });
+    }
+
     const mediaId = String(req.params.mediaId || '');
     if (!mediaId) {
       return res.status(400).json({ error: 'mediaId é obrigatório.' });

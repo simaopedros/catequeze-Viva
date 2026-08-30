@@ -6,9 +6,12 @@
  */
 import { HttpError } from 'wasp/server';
 import { notifySocialActivity } from '../social/notifications';
+import { assertSocialEnabled, isSocialEnabled } from '../social/featureGate';
 import { buildAuthorDisplayName } from './socialOperations';
 
 export const toggleSocialFollow = async (args: { authorId: string }, context: any) => {
+  assertSocialEnabled();
+
   if (!context.user) {
     throw new HttpError(401, 'Você precisa estar autenticado.');
   }
@@ -59,6 +62,7 @@ export const toggleSocialFollow = async (args: { authorId: string }, context: an
 
 /** Which of the given authors the viewer already follows. */
 export const getSocialFollowState = async (args: { authorIds: string[] }, context: any) => {
+  if (!isSocialEnabled()) return { following: [] as string[] };
   if (!context.user) return { following: [] as string[] };
 
   const authorIds = Array.isArray(args?.authorIds) ? args.authorIds.slice(0, 100) : [];

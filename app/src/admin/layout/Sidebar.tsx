@@ -16,6 +16,7 @@ import { NavLink, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import Logo from "../../client/static/logo.webp";
 import { cn } from "../../client/utils";
+import { SOCIAL_FEATURES_ENABLED } from "../../shared/socialFeatures";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -165,12 +166,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   {t("sidebar.support")}
                 </NavLink>
               </li>
-              <li>
-                <NavLink to="/admin/comunidade" end className={navLinkClass}>
-                  <Flag />
-                  {t("sidebar.socialModeration")}
-                </NavLink>
-              </li>
+              {SOCIAL_FEATURES_ENABLED && (
+                <li>
+                  <NavLink to="/admin/comunidade" end className={navLinkClass}>
+                    <Flag />
+                    {t("sidebar.socialModeration")}
+                  </NavLink>
+                </li>
+              )}
               <li>
                 <NavLink to="/admin/audit" end className={navLinkClass}>
                   <ShieldCheck />

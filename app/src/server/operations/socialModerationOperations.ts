@@ -5,6 +5,7 @@
  */
 import { HttpError } from 'wasp/server';
 import { requirePlatformAdmin, writeAuditLog } from '../auth/helpers';
+import { assertSocialEnabled, isSocialEnabled } from '../social/featureGate';
 
 const REPORT_REASONS = [
   'DOCTRINE',
@@ -51,6 +52,8 @@ export const reportSocialContent = async (
   },
   context: any,
 ) => {
+  assertSocialEnabled();
+
   const targetType = args?.targetType === 'COMMENT' ? 'COMMENT' : 'POST';
   const targetId = String(args?.targetId || '');
   if (!targetId) {
@@ -110,6 +113,8 @@ export const getSocialModerationQueue = async (
   context: any,
 ) => {
   requirePlatformAdmin(context.user);
+
+  if (!isSocialEnabled()) return { reports: [], pendingPosts: [] };
 
   const status = args?.status ?? 'OPEN';
 
@@ -242,6 +247,7 @@ export const moderateSocialContent = async (
   context: any,
 ) => {
   requirePlatformAdmin(context.user);
+  assertSocialEnabled();
 
   const targetType = args?.targetType === 'COMMENT' ? 'COMMENT' : 'POST';
   const targetId = String(args?.targetId || '');
@@ -314,6 +320,7 @@ export const setSocialAuthorBan = async (
   context: any,
 ) => {
   requirePlatformAdmin(context.user);
+  assertSocialEnabled();
 
   const userId = String(args?.userId || '');
   if (!userId) {

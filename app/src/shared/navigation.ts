@@ -1,5 +1,6 @@
 // ---- Navigation Item Config (without icon component — icons mapped per component) ----
 import { AI_FEATURES_ENABLED, shouldShowAiNavItem } from "./aiFeatures";
+import { shouldShowSocialNavItem } from "./socialFeatures";
 import {
   NAV_GROUP_LABEL_KEYS,
   type NavGroupId,
@@ -438,9 +439,11 @@ export function filterByWorkspace(
   return items.filter((i) => !PERSONAL_HIDDEN_ICON_KEYS.has(i.iconKey));
 }
 
-/** Hides AI Hub / editorial surfaces while launch-phase AI is off. */
+/** Hides AI Hub / editorial and Comunidade surfaces while those modules are off. */
 export function filterLaunchHidden(items: NavItemConfig[]): NavItemConfig[] {
-  return items.filter(shouldShowAiNavItem);
+  return items.filter(
+    (item) => shouldShowAiNavItem(item) && shouldShowSocialNavItem(item),
+  );
 }
 
 /**
