@@ -28,6 +28,7 @@ import {
   ensureProductTrial,
   resolveAllEffectiveBilling,
 } from '../operations/billingEnforcement';
+import { assertSocialEnabled } from './featureGate';
 
 export type SocialEntitlementSource = 'personal' | 'trial' | 'institutional' | 'free';
 
@@ -122,6 +123,8 @@ export async function assertCanPublishSocial(
   context: any,
   opts: { skipQuota?: boolean } = {},
 ): Promise<SocialEntitlement> {
+  assertSocialEnabled();
+
   if (!context.user) {
     throw new HttpError(401, 'Você precisa estar autenticado para publicar.');
   }

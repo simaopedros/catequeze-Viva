@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Navigate } from "react-router";
 import { type AuthUser } from "wasp/auth";
 import { useTranslation } from "react-i18next";
 import {
@@ -14,10 +15,20 @@ import { Button } from "../../../client/components/ui/button";
 import { Badge } from "../../../client/components/ui/badge";
 import { EmptyState } from "../../../client/components/EmptyState";
 import { toast } from "../../../client/hooks/use-toast";
+import { SOCIAL_FEATURES_ENABLED } from "../../../shared/socialFeatures";
 
 type ModerationAction = "REMOVE" | "APPROVE" | "DISMISS";
 
+/** Parked with the rest of the Comunidade module — see shared/socialFeatures. */
 const SocialModerationPage = ({ user }: { user: AuthUser }) => {
+  if (!SOCIAL_FEATURES_ENABLED) {
+    return <Navigate to="/admin" replace />;
+  }
+
+  return <SocialModerationQueue user={user} />;
+};
+
+const SocialModerationQueue = ({ user }: { user: AuthUser }) => {
   const { t } = useTranslation("social");
   const [busyId, setBusyId] = useState<string | null>(null);
 

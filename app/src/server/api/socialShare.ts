@@ -17,6 +17,7 @@ import {
   renderOgHtml,
 } from '../operations/socialPolicies';
 import { buildAuthorDisplayName } from '../operations/socialOperations';
+import { isSocialEnabled } from '../social/featureGate';
 
 function absoluteUrl(req: Request, path: string): string {
   if (/^https?:\/\//i.test(path)) return path;
@@ -29,6 +30,12 @@ function absoluteUrl(req: Request, path: string): string {
 export async function socialShareRedirect(req: Request, res: Response, context: any) {
   const slug = String(req.params.slug || '');
   const appUrl = `/comunidade/p/${encodeURIComponent(slug)}`;
+
+  if (!isSocialEnabled()) {
+    res.setHeader('Cache-Control', 'no-store');
+    res.redirect(302, '/');
+    return;
+  }
 
   if (!slug) {
     res.redirect(302, '/comunidade');
@@ -109,6 +116,15 @@ export const socialShareMiddleware: MiddlewareConfigFn = (middlewareConfig) => {
 
 /** GET /comunidade/sitemap.xml — helps search engines find shared posts. */
 export async function socialSitemap(_req: Request, res: Response, context: any) {
+  if (!isSocialEnabled()) {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store');
+    res.send(
+      '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>',
+    );
+    return;
+  }
+
   const posts = await context.entities.SocialPost.findMany({
     where: { status: 'PUBLISHED' },
     orderBy: { publishedAt: 'desc' },

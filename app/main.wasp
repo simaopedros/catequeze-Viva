@@ -311,37 +311,39 @@ page AppNewClassPage {
 
 
 //#region Comunidade (social) - pages
+// PARKED: the module is complete but disabled via SOCIAL_FEATURES_ENABLED in
+// @src/shared/socialFeatures. Every route redirects away until we resume the
+// social work. To re-enable, flip that flag and point these pages back to
+// CommunityPage, PublicCommunityPage, PublicSocialPostPage and
+// SocialShortLinkPage respectively.
 route AppCommunityRoute { path: "/app/comunidade", to: AppCommunityPage }
 page AppCommunityPage {
   authRequired: true,
-  component: import CommunityPage from "@src/catequese/pages/CommunityPage"
+  component: import RedirectDisabledSocial from "@src/catequese/pages/RedirectDisabledSocial"
 }
 
-// Public feed — anyone may read, open and share, signed in or not.
 route PublicCommunityRoute { path: "/comunidade", to: PublicCommunityPage }
 page PublicCommunityPage {
   authRequired: false,
-  component: import PublicCommunityPage from "@src/catequese/pages/PublicCommunityPage"
+  component: import RedirectDisabledSocial from "@src/catequese/pages/RedirectDisabledSocial"
 }
 
 route PublicCommunityTopicRoute { path: "/comunidade/t/:topic", to: PublicCommunityTopicPage }
 page PublicCommunityTopicPage {
   authRequired: false,
-  component: import PublicCommunityTopicPage from "@src/catequese/pages/PublicCommunityPage"
+  component: import RedirectDisabledSocial from "@src/catequese/pages/RedirectDisabledSocial"
 }
 
 route PublicSocialPostRoute { path: "/comunidade/p/:slug", to: PublicSocialPostPage }
 page PublicSocialPostPage {
   authRequired: false,
-  component: import PublicSocialPostPage from "@src/catequese/pages/PublicSocialPostPage"
+  component: import RedirectDisabledSocial from "@src/catequese/pages/RedirectDisabledSocial"
 }
 
-// Client fallback for the /c/:slug share link. In production Caddy proxies
-// /c/* to the server API so crawlers get Open Graph tags instead.
 route SocialShortLinkRoute { path: "/c/:slug", to: SocialShortLinkPage }
 page SocialShortLinkPage {
   authRequired: false,
-  component: import SocialShortLinkPage from "@src/catequese/pages/SocialShortLinkPage"
+  component: import RedirectDisabledSocial from "@src/catequese/pages/RedirectDisabledSocial"
 }
 //#endregion
 
