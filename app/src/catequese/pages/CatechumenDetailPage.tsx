@@ -11,7 +11,6 @@ import {
   CheckCircle,
   XCircle,
   Edit3,
-  Gift,
   MessageCircle,
   FilePlus,
   Upload,
