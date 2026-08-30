@@ -5,7 +5,17 @@
  * it must only ever expose PUBLISHED posts. Requires DATABASE_URL +
  * seed_tests data.
  */
-import { describe, it, expect, afterAll } from 'vitest';
+import { describe, it, expect, afterAll, vi } from 'vitest';
+
+// The Comunidade module ships disabled (shared/socialFeatures). These tests
+// cover the public-visibility rules themselves, so the feature gate is forced
+// on and they keep guarding the feed for when we turn the module back on.
+vi.mock('../server/social/featureGate', () => ({
+  SOCIAL_FEATURES_ENABLED: true,
+  isSocialEnabled: () => true,
+  assertSocialEnabled: () => {},
+}));
+
 import { prisma, USERS } from './setup';
 import {
   getSocialComments,
