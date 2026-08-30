@@ -17,6 +17,7 @@ import {
   startOfDayUtc,
 } from '../social/publishGate';
 import { notifySocialActivity } from '../social/notifications';
+import { assertSocialEnabled, isSocialEnabled } from '../social/featureGate';
 import { detachSocialMediaAsset } from './socialMediaOperations';
 import {
   buildSocialSlug,
@@ -157,6 +158,8 @@ export const getSocialFeed = async (
   },
   context: any,
 ) => {
+  if (!isSocialEnabled()) return { items: [], nextCursor: null };
+
   const limit = Math.min(Math.max(args?.limit ?? DEFAULT_PAGE_SIZE, 1), MAX_PAGE_SIZE);
   const viewerId = context.user?.id ?? null;
   const trending = args?.sort === 'trending';
@@ -210,6 +213,8 @@ export const getSocialFeed = async (
 
 /** Single post by shareable slug. Authors and admins also see hidden posts. */
 export const getSocialPost = async (args: { slug: string }, context: any) => {
+  assertSocialEnabled();
+
   const viewerId = context.user?.id ?? null;
 
   const post = await context.entities.SocialPost.findUnique({
@@ -231,6 +236,8 @@ export const getSocialPost = async (args: { slug: string }, context: any) => {
 };
 
 export const getSocialTopics = async (_args: unknown, context: any) => {
+  if (!isSocialEnabled()) return [];
+
   const topics = await context.entities.SocialTopic.findMany({
     where: { active: true },
     orderBy: [{ position: 'asc' }, { name: 'asc' }],
@@ -244,6 +251,8 @@ export const getSocialComments = async (
   args: { postId: string; cursor?: string | null; limit?: number },
   context: any,
 ) => {
+  assertSocialEnabled();
+
   const limit = Math.min(Math.max(args?.limit ?? DEFAULT_PAGE_SIZE, 1), MAX_PAGE_SIZE);
   const viewerId = context.user?.id ?? null;
 
@@ -291,6 +300,10 @@ export const getSocialComments = async (
  * upsell — never throws, so the page renders for free users too.
  */
 export const getSocialPublishAccess = async (_args: unknown, context: any) => {
+  if (!isSocialEnabled()) {
+    return { authenticated: false, canPublish: false, plan: 'catechist_free', reason: null };
+  }
+
   if (!context.user) {
     return { authenticated: false, canPublish: false, plan: 'catechist_free', reason: 'anonymous' };
   }
@@ -427,6 +440,8 @@ export const createSocialPost = async (
 };
 
 export const deleteSocialPost = async (args: { postId: string }, context: any) => {
+  assertSocialEnabled();
+
   if (!context.user) {
     throw new HttpError(401, 'Você precisa estar autenticado.');
   }
@@ -589,6 +604,8 @@ export const createSocialComment = async (
  * of the things that does not require an account.
  */
 export const registerSocialShare = async (args: { postId: string }, context: any) => {
+  if (!isSocialEnabled()) return { success: true };
+
   const post = await context.entities.SocialPost.findUnique({
     where: { id: String(args?.postId || '') },
     select: { id: true, status: true },
@@ -608,6 +625,8 @@ export const registerSocialShare = async (args: { postId: string }, context: any
 };
 
 export const deleteSocialComment = async (args: { commentId: string }, context: any) => {
+  assertSocialEnabled();
+
   if (!context.user) {
     throw new HttpError(401, 'Você precisa estar autenticado.');
   }

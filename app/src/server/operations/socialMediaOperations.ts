@@ -13,6 +13,7 @@ import {
 import { deleteSocialImage } from '../storage/socialMediaStorage';
 import { syncSocialVideoFromBunny } from '../api/socialMedia';
 import { assertCanPublishSocial, assertMediaWithinPlan } from '../social/publishGate';
+import { assertSocialEnabled, isSocialEnabled } from '../social/featureGate';
 
 /** Bunny keeps upload credentials valid for this long. */
 const UPLOAD_TTL_SECONDS = 60 * 60;
@@ -74,6 +75,8 @@ export const createSocialVideoUpload = async (
  * composer converges even when a webhook is lost.
  */
 export const getSocialMediaStatus = async (args: { mediaIds: string[] }, context: any) => {
+  if (!isSocialEnabled()) return [];
+
   if (!context.user) {
     throw new HttpError(401, 'Você precisa estar autenticado.');
   }
@@ -132,6 +135,8 @@ export const getSocialMediaStatus = async (args: { mediaIds: string[] }, context
 
 /** Discard media the author uploaded but never published. */
 export const discardSocialMedia = async (args: { mediaId: string }, context: any) => {
+  assertSocialEnabled();
+
   if (!context.user) {
     throw new HttpError(401, 'Você precisa estar autenticado.');
   }

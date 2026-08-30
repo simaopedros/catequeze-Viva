@@ -10,6 +10,14 @@ vi.mock('wasp/server', () => ({
   },
 }));
 
+// The Comunidade module ships disabled (shared/socialFeatures). These tests
+// cover the entitlement rules themselves, so the feature gate is forced on.
+vi.mock('../server/social/featureGate', () => ({
+  SOCIAL_FEATURES_ENABLED: true,
+  isSocialEnabled: () => true,
+  assertSocialEnabled: () => {},
+}));
+
 type FakeUser = {
   id?: string;
   subscriptionStatus?: string | null;

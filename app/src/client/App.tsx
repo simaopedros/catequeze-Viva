@@ -41,6 +41,7 @@ import {
   AI_FEATURES_ENABLED,
   isAiAppPath,
 } from "../shared/aiFeatures";
+import { SOCIAL_FEATURES_ENABLED } from "../shared/socialFeatures";
 import i18n, {
   enableDocumentLanguageSync,
   ensureLocaleLoaded,
@@ -165,7 +166,7 @@ export default function App() {
       location.pathname.startsWith("/pricing") ||
       // Public Comunidade feed: visitors arrive from shared links and need the
       // marketing nav (sign in, pricing), not the app nav.
-      location.pathname.startsWith("/comunidade")
+      (SOCIAL_FEATURES_ENABLED && location.pathname.startsWith("/comunidade"))
     );
   }, [location.pathname, isFamilyPortal]);
 
