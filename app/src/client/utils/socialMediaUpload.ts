@@ -1,4 +1,5 @@
 import { Upload } from 'tus-js-client';
+import { getWaspAuthHeaders } from './documentUpload';
 
 export interface UploadedSocialImage {
   mediaId: string;
@@ -13,10 +14,15 @@ export async function uploadSocialImage(
   formData.append('file', file);
   if (altText) formData.append('altText', altText);
 
+  // Wasp authenticates raw API routes via the `Authorization: Bearer <sessionId>`
+  // header (stored in localStorage), not via cookies. Sending only
+  // `credentials: 'include'` leaves `context.user` empty and the endpoint
+  // responds 401 "Autenticação necessária.".
   const response = await fetch('/api/social/images', {
     method: 'POST',
     body: formData,
     credentials: 'include',
+    headers: getWaspAuthHeaders(),
   });
 
   const payload = await response.json().catch(() => ({}));
