@@ -6,7 +6,7 @@ import {
   SubscriptionStatus,
 } from "../../payment/plans";
 
-type MockUserData = Omit<User, "id">;
+type MockUserData = Omit<User, "id" | "lifecycleEmailLogs">;
 
 /**
  * This function, which we've imported in `app.db.seeds` in the `main.wasp` file,
@@ -63,5 +63,6 @@ function generateMockUserData(): MockUserData {
     pricingVersion: 3,
     socialBannedAt: null,
     socialBanReason: null,
+    lifecycleEmailsOptOutAt: null,
   };
 }

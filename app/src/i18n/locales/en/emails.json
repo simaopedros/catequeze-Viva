@@ -1,0 +1,74 @@
+{
+  "fallback_name": "catechist",
+  "fallback_class": "your class",
+  "footer_reason": "You received this email because you created a Catequese Viva account.",
+  "unsubscribe": "I don't want these emails anymore",
+  "unsubscribed_title": "Unsubscribed",
+  "unsubscribed_body": "You will no longer receive account follow-up emails from Catequese Viva.",
+  "unsubscribe_invalid_title": "Invalid link",
+  "unsubscribe_invalid_body": "This unsubscribe link is invalid or has expired.",
+  "campaigns": {
+    "activate_create_class": {
+      "subject": "Create your first class on Catequese Viva",
+      "heading": "Your catechesis is still on paper",
+      "body": "Hi, {{name}}. Create the class in about 2 minutes to start attendance and meetings in one place.",
+      "cta": "Create my class"
+    },
+    "activate_add_people": {
+      "subject": "Add catechumens to {{className}}",
+      "heading": "{{className}} is empty",
+      "body": "Hi, {{name}}. Without names, you can't take attendance or message families.",
+      "cta": "Add catechumens"
+    },
+    "activate_first_action": {
+      "subject": "Sunday comes fast — record attendance",
+      "heading": "The first meeting or roll call is still missing",
+      "body": "Hi, {{name}}. Record attendance or prepare the first meeting for {{className}}.",
+      "cta": "Record attendance"
+    },
+    "convert_after_value": {
+      "subject": "Your class is live — keep access",
+      "heading": "Attendance and meetings are already on Catequese Viva",
+      "body": "Hi, {{name}}. Subscribe to the Catechist Plan ({{price}}/month) so you don't lose access on {{trialEndsAt}}.",
+      "cta": "Subscribe now"
+    },
+    "trial_d3": {
+      "subject": "3 days left on your trial",
+      "heading": "You have 3 days left",
+      "body_no_class": "Hi, {{name}}. There is still time to create the class before the trial ends. It takes about 2 minutes.",
+      "body_no_people": "Hi, {{name}}. {{className}} still has no catechumens. Add the list so you can take attendance.",
+      "body_no_action": "Hi, {{name}}. Record the first attendance or create the first meeting for {{className}}.",
+      "body_value": "Hi, {{name}}. Your class is already live. Subscribe to the Catechist Plan ({{price}}/month) so you don't lose access on {{trialEndsAt}}.",
+      "cta_next_step": "Continue now",
+      "cta_billing": "View subscription"
+    },
+    "trial_d1": {
+      "subject": "Your trial ends tomorrow",
+      "heading": "The trial period ends tomorrow",
+      "body_no_class": "Hi, {{name}}. There is still time to create the class today and see Catequese Viva in action.",
+      "body_no_people": "Hi, {{name}}. Add the catechumens for {{className}} today — the trial ends tomorrow.",
+      "body_no_action": "Hi, {{name}}. Record attendance or prepare the meeting for {{className}} before the trial ends tomorrow.",
+      "body_value": "Hi, {{name}}. The trial ends tomorrow. Subscribe to the Catechist Plan ({{price}}/month) to keep class, attendance, and meetings.",
+      "cta_next_step": "Continue now",
+      "cta_billing": "Subscribe now"
+    },
+    "winback_d1": {
+      "subject": "Your class is still saved",
+      "heading": "The trial ended, but your data did not",
+      "body": "Hi, {{name}}. Reactivate the Catechist Plan ({{price}}/month) to take attendance and prepare meetings again.",
+      "cta": "Reactivate access"
+    },
+    "winback_d3": {
+      "subject": "Your catechesis is still here",
+      "heading": "Three days without access to the class",
+      "body": "Hi, {{name}}. {{className}} is still saved. Reactivate the Catechist Plan ({{price}}/month) whenever you want to resume attendance.",
+      "cta": "Reactivate access"
+    },
+    "winback_d7": {
+      "subject": "An invitation to resume catechesis",
+      "heading": "Your class is waiting",
+      "body": "Hi, {{name}}. It's been a week since the trial ended. The Catechist Plan is {{price}}/month — reactivate to pick up where you left off.",
+      "cta": "Return to Catequese Viva"
+    }
+  }
+}

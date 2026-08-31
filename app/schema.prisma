@@ -334,6 +334,10 @@ model User {
   socialBannedAt   DateTime?
   socialBanReason  String?
 
+  // Lifecycle / conversion emails (activation, trial, win-back)
+  lifecycleEmailsOptOutAt DateTime?
+  lifecycleEmailLogs      LifecycleEmailLog[]
+
   // Catequese Viva relations
   memberships         Membership[]
   ownedParishes       Parish[]           @relation("ParishOwner")
@@ -1237,6 +1241,21 @@ model MessageReadReceipt {
   user   User   @relation(fields: [userId], references: [id])
 
   @@unique([messageId, userId])
+}
+
+// ─── Lifecycle conversion emails ──────────────────────────────────────────────
+
+model LifecycleEmailLog {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  sentAt    DateTime @default(now())
+
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaign String
+
+  @@unique([userId, campaign])
+  @@index([userId, sentAt])
 }
 
 // ─── Notifications ────────────────────────────────────────────────────────────

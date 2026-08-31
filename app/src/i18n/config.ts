@@ -15,6 +15,7 @@ const ALL_NS = [
   "publicNav",
   "public",
   "billing",
+  "emails",
   "landing",
   "landingSistema",
   "landingIa",

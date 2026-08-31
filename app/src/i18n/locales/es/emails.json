@@ -1,0 +1,74 @@
+{
+  "fallback_name": "catequista",
+  "fallback_class": "tu grupo",
+  "footer_reason": "Recibes este correo porque creaste una cuenta en Catequese Viva.",
+  "unsubscribe": "No quiero más estos correos",
+  "unsubscribed_title": "Suscripción cancelada",
+  "unsubscribed_body": "Ya no recibirás correos de seguimiento de tu cuenta en Catequese Viva.",
+  "unsubscribe_invalid_title": "Enlace no válido",
+  "unsubscribe_invalid_body": "Este enlace para cancelar la suscripción no es válido o ha caducado.",
+  "campaigns": {
+    "activate_create_class": {
+      "subject": "Crea tu primer grupo en Catequese Viva",
+      "heading": "Tu catequesis sigue en el papel",
+      "body": "Hola, {{name}}. Crea el grupo en 2 minutos para empezar la asistencia y los encuentros en el mismo lugar.",
+      "cta": "Crear mi grupo"
+    },
+    "activate_add_people": {
+      "subject": "Añade a los catecúmenos de {{className}}",
+      "heading": "El grupo {{className}} está vacío",
+      "body": "Hola, {{name}}. Sin los nombres no puedes pasar lista ni avisar a las familias.",
+      "cta": "Añadir catecúmenos"
+    },
+    "activate_first_action": {
+      "subject": "El domingo llega pronto — registra la asistencia",
+      "heading": "Falta el primer encuentro o la primera lista",
+      "body": "Hola, {{name}}. Pasa lista o prepara el primer encuentro de {{className}}.",
+      "cta": "Registrar asistencia"
+    },
+    "convert_after_value": {
+      "subject": "Tu grupo ya está en marcha — mantén el acceso",
+      "heading": "Asistencia y encuentros ya están en Catequese Viva",
+      "body": "Hola, {{name}}. Suscríbete al Plan Catequista ({{price}}/mes) para no perder el acceso el {{trialEndsAt}}.",
+      "cta": "Suscribirme ahora"
+    },
+    "trial_d3": {
+      "subject": "Quedan 3 días de prueba",
+      "heading": "Te quedan 3 días de prueba",
+      "body_no_class": "Hola, {{name}}. Aún da tiempo de crear el grupo antes de que acabe la prueba. Toma unos 2 minutos.",
+      "body_no_people": "Hola, {{name}}. {{className}} aún no tiene catecúmenos. Añade la lista para pasar lista.",
+      "body_no_action": "Hola, {{name}}. Falta registrar la primera asistencia o crear el primer encuentro de {{className}}.",
+      "body_value": "Hola, {{name}}. Tu grupo ya está en marcha. Suscríbete al Plan Catequista ({{price}}/mes) para no perder el acceso el {{trialEndsAt}}.",
+      "cta_next_step": "Continuar ahora",
+      "cta_billing": "Ver suscripción"
+    },
+    "trial_d1": {
+      "subject": "Tu prueba termina mañana",
+      "heading": "Mañana termina el periodo de prueba",
+      "body_no_class": "Hola, {{name}}. Aún da tiempo de crear el grupo hoy y ver Catequese Viva en acción.",
+      "body_no_people": "Hola, {{name}}. Añade a los catecúmenos de {{className}} hoy: mañana acaba la prueba.",
+      "body_no_action": "Hola, {{name}}. Pasa lista o prepara el encuentro de {{className}} antes de que la prueba acabe mañana.",
+      "body_value": "Hola, {{name}}. Mañana termina la prueba. Suscríbete al Plan Catequista ({{price}}/mes) para mantener grupo, asistencia y encuentros.",
+      "cta_next_step": "Continuar ahora",
+      "cta_billing": "Suscribirme ahora"
+    },
+    "winback_d1": {
+      "subject": "Tu grupo sigue guardado",
+      "heading": "La prueba terminó, pero los datos no",
+      "body": "Hola, {{name}}. Reactiva el Plan Catequista ({{price}}/mes) para volver a pasar lista y preparar encuentros.",
+      "cta": "Reactivar acceso"
+    },
+    "winback_d3": {
+      "subject": "Tu catequesis sigue aquí",
+      "heading": "Tres días sin acceso al grupo",
+      "body": "Hola, {{name}}. {{className}} sigue guardado. Reactiva el Plan Catequista ({{price}}/mes) cuando quieras retomar la lista.",
+      "cta": "Reactivar acceso"
+    },
+    "winback_d7": {
+      "subject": "Una invitación para retomar la catequesis",
+      "heading": "Tu grupo te espera",
+      "body": "Hola, {{name}}. Hace una semana que terminó la prueba. El Plan Catequista cuesta {{price}}/mes: reactívalo para continuar donde lo dejaste.",
+      "cta": "Volver a Catequese Viva"
+    }
+  }
+}
