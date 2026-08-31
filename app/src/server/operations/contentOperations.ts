@@ -8,6 +8,7 @@ import {
   assertCanAccessContent,
   assertCanModifyContent,
 } from "../auth/contentAccess";
+import { requireWorkspaceAccess } from "./sharedScope";
 import {
   CONTENT_DOCUMENT_VERSION,
   buildLegacyContentDocument,
@@ -106,6 +107,7 @@ export const listContentItems = async (
   // Prefer explicit workspace; fall back to all accessible parishes
   let parishFilter: any;
   if (args.workspaceId?.trim()) {
+    await requireWorkspaceAccess(context, args.workspaceId.trim());
     parishFilter = { parishId: args.workspaceId.trim() };
   } else {
     const parishIds = await getParishIds(context);

@@ -1,5 +1,5 @@
 import { type AuthUser } from "wasp/auth";
-import { useQuery, listParishes } from "wasp/client/operations";
+import { useQuery, listParishesAdmin } from "wasp/client/operations";
 import { NavLink } from "react-router";
 import DefaultLayout from "../../layout/DefaultLayout";
 import {
@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 
 const ParishesPage = ({ user }: { user: AuthUser }) => {
-  const { data: parishes = [], isLoading } = useQuery(listParishes);
+  const { data: parishes = [], isLoading } = useQuery(listParishesAdmin);
 
   const statusIcon = (status: string) => {
     switch (status) {

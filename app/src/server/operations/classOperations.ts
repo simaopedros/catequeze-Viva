@@ -954,10 +954,15 @@ export const listParishCatechists = async (
   context: any,
 ) => {
   if (!context.user) throw new HttpError(401);
+  if (!args.parishId?.trim()) {
+    throw new HttpError(400, 'parishId é obrigatório.');
+  }
+
+  await requireWorkspaceAccess(context, args.parishId.trim());
 
   return context.entities.Membership.findMany({
     where: {
-      parishId: args.parishId,
+      parishId: args.parishId.trim(),
       status: MembershipStatus.ACTIVE,
       role: {
         in: [

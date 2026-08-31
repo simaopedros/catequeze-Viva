@@ -24,7 +24,7 @@ export function roleLabel(role: string): string {
   return map[role] || role;
 }
 
-import { sendMessageEmail } from '../operations/sendMessageOperation';
+import { sendRawTransactionalEmail } from '../operations/sendMessageOperation';
 
 export type InviteEmailPayload = {
   to: string;
@@ -35,23 +35,20 @@ export type InviteEmailPayload = {
 
 export async function deliverInviteEmail(
   payload: InviteEmailPayload,
-  context: any,
+  _context: any,
 ): Promise<void> {
   const label = roleLabel(payload.role);
-  await sendMessageEmail(
-    {
-      to: payload.to,
-      subject: `Convite para ${payload.location} — Catequese Viva`,
-      body: [
-        `Você foi convidado(a) para participar de "${payload.location}" como ${label}.`,
-        '',
-        `Para aceitar, acesse: ${inviteLink(payload.token, payload.role)}`,
-        '',
-        'Este convite expira em 30 dias.',
-        '',
-        '— Equipa Catequese Viva',
-      ].join('\n'),
-    },
-    context,
-  );
+  await sendRawTransactionalEmail({
+    to: payload.to,
+    subject: `Convite para ${payload.location} — Catequese Viva`,
+    body: [
+      `Você foi convidado(a) para participar de "${payload.location}" como ${label}.`,
+      '',
+      `Para aceitar, acesse: ${inviteLink(payload.token, payload.role)}`,
+      '',
+      'Este convite expira em 30 dias.',
+      '',
+      '— Equipa Catequese Viva',
+    ].join('\n'),
+  });
 }

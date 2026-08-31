@@ -1,6 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { validateOrThrow, uploadDocumentSchema, verifyDocumentSchema } from '../validation';
-import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
+import { requireAuth, writeAuditLog, getDioceseParishIds, assertCanAccessCatechumenProfile } from '../auth/helpers';
 import { logger } from '../logger';
 import { storeDocumentFile, deleteDocumentFile } from '../storage/documentStorage';
 import {
@@ -133,12 +133,50 @@ export const uploadDocument = async (
   validateOrThrow(uploadDocumentSchema, args);
   requireAuth(context.user);
 
+  // Record-derived authorization: never trust client parishId alone
+  if (args.catechumenProfileId && !context.user.isAdmin) {
+    await assertCanAccessCatechumenProfile(context, args.catechumenProfileId);
+  }
+
   // Only catechists+, PERSONAL_OWNER, or guardians (for their household catechumens) can upload
   if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, status: 'ACTIVE' },
-      select: { role: true, parishId: true },
-    });
+    let membership: { role: string; parishId: string } | null = null;
+
+    if (args.parishId?.trim()) {
+      const access = await requireWorkspaceAccess(context, args.parishId.trim());
+      membership = { role: access.role, parishId: access.workspaceId };
+    } else if (args.catechumenProfileId) {
+      const catechumen = await context.entities.CatechumenProfile.findUnique({
+        where: { id: args.catechumenProfileId },
+        select: {
+          parishId: true,
+          household: { select: { parishId: true } },
+          enrollments: { select: { class: { select: { parishId: true } } } },
+        },
+      });
+      const candidateParishIds = [
+        ...new Set(
+          [
+            catechumen?.parishId,
+            catechumen?.household?.parishId,
+            ...(catechumen?.enrollments || []).map((e: any) => e.class?.parishId),
+          ].filter(Boolean) as string[],
+        ),
+      ];
+      for (const pid of candidateParishIds) {
+        const access = await requireWorkspaceAccess(context, pid).catch(() => null);
+        if (access) {
+          membership = { role: access.role, parishId: access.workspaceId };
+          break;
+        }
+      }
+    } else {
+      const m = await context.entities.Membership.findFirst({
+        where: { userId: context.user.id, status: 'ACTIVE' },
+        select: { role: true, parishId: true },
+      });
+      membership = m;
+    }
 
     // Check personal workspace as fallback
     const personalWorkspace = !membership
@@ -158,36 +196,41 @@ export const uploadDocument = async (
     if (effectiveRole && catechistRoles.includes(effectiveRole)) {
       // Allowed
     } else if (effectiveRole === 'GUARDIAN') {
-      // Guardian: only for catechumens in their household
+      // Guardian: only for catechumens in their household (already gated by assertCanAccessCatechumenProfile)
       if (!args.catechumenProfileId) {
         throw new HttpError(403, 'Responsáveis devem selecionar um catequizando da sua família.');
-      }
-      const guardian = await context.entities.GuardianProfile.findUnique({
-        where: { userId: context.user.id },
-        select: { householdId: true },
-      });
-      if (!guardian?.householdId) {
-        throw new HttpError(403, 'Perfil de responsável não encontrado.');
-      }
-      const catechumen = await context.entities.CatechumenProfile.findUnique({
-        where: { id: args.catechumenProfileId },
-        select: { householdId: true },
-      });
-      if (!catechumen || catechumen.householdId !== guardian.householdId) {
-        throw new HttpError(403, 'Só pode enviar documentos para catequizandos da sua família.');
       }
     } else {
       throw new HttpError(403, 'Sem permissão para enviar documentos.');
     }
   }
 
-  let parishId = args.parishId;
+  let parishId = args.parishId?.trim() || undefined;
+  if (!parishId && args.catechumenProfileId) {
+    const catechumen = await context.entities.CatechumenProfile.findUnique({
+      where: { id: args.catechumenProfileId },
+      select: {
+        parishId: true,
+        household: { select: { parishId: true } },
+        enrollments: { select: { class: { select: { parishId: true } } } },
+      },
+    });
+    parishId =
+      catechumen?.parishId ||
+      catechumen?.household?.parishId ||
+      catechumen?.enrollments?.[0]?.class?.parishId ||
+      undefined;
+  }
   if (!parishId) {
     const membership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, status: 'ACTIVE' },
       select: { parishId: true },
     });
     parishId = membership?.parishId;
+  }
+
+  if (parishId && !context.user.isAdmin) {
+    await requireWorkspaceAccess(context, parishId);
   }
 
   if (!parishId && !context.user.isAdmin) {

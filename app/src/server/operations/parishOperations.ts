@@ -1,5 +1,5 @@
 import { HttpError } from 'wasp/server';
-import { writeAuditLog, getDioceseParishIds, requireDioceseAccess } from '../auth/helpers';
+import { writeAuditLog, getDioceseParishIds, requireDioceseAccess, requirePlatformAdmin } from '../auth/helpers';
 import { assertCanCreateParish, resolveEffectiveBilling, resolveAllEffectiveBilling, resolveNewParishBilling } from './billingEnforcement';
 import { requireWorkspaceAccess } from './sharedScope';
 
@@ -115,6 +115,7 @@ async function ensureOnboardingMembership(context: any, parishId: string): Promi
  * Public search for onboarding — ignores user's Membership.
  * Searches by name, city, and optionally state. Used during
  * onboarding so new users can find existing parishes.
+ * Requires at least one non-empty filter to avoid dumping the directory.
  */
 export const searchParishesForOnboarding = async (
   args: { name?: string; city?: string; state?: string },
@@ -122,18 +123,25 @@ export const searchParishesForOnboarding = async (
 ) => {
   if (!context.user) throw new HttpError(401);
 
+  const name = args.name?.trim() || '';
+  const city = args.city?.trim() || '';
+  const state = args.state?.trim() || '';
+  if (!name && !city && !state) {
+    throw new HttpError(400, 'Informe nome, cidade ou estado para pesquisar paróquias.');
+  }
+
   const where: any = { active: true };
 
-  if (args.name?.trim()) {
-    where.name = { contains: args.name.trim(), mode: 'insensitive' };
+  if (name) {
+    where.name = { contains: name, mode: 'insensitive' };
   }
-  if (args.city?.trim()) {
-    where.city = { contains: args.city.trim(), mode: 'insensitive' };
+  if (city) {
+    where.city = { contains: city, mode: 'insensitive' };
   }
-  if (args.state?.trim()) {
+  if (state) {
     // Include both exact state matches AND parishes without state set (legacy data)
     // Build on existing 'where' by wrapping with AND
-    const stateFilter = args.state.trim().toUpperCase();
+    const stateFilter = state.toUpperCase();
     const existingWhere = { ...where };
     where.AND = [
       existingWhere,
@@ -428,59 +436,52 @@ export const getParishById = async (args: { id: string }, context: any) => {
   return parish;
 };
 
+/**
+ * App-facing parish list — always membership-scoped (including platform admins).
+ * Platform-wide dump lives in listParishesAdmin for /admin only.
+ */
 export const listParishes = async (_args: void, context: any) => {
   if (!context.user) throw new HttpError(401);
 
-  let parishes: any[] = [];
-  if (context.user.isAdmin) {
-    parishes = await context.entities.Parish.findMany({
-      orderBy: { name: 'asc' },
-      include: {
-        diocese: { select: { id: true, name: true } },
-        _count: { select: { communities: true, classes: true, memberships: true } },
-        billing: { select: { plan: true, status: true, trialEndsAt: true } },
-        owner: { select: { id: true, email: true, firstName: true, lastName: true } },
-      },
-    });
-  } else {
-    const memberships = await context.entities.Membership.findMany({
-      where: { userId: context.user.id, status: 'ACTIVE' },
-      select: { parishId: true, role: true },
-    });
+  const memberships = await context.entities.Membership.findMany({
+    where: { userId: context.user.id, status: 'ACTIVE' },
+    select: { parishId: true, role: true },
+  });
 
-    let parishIds = memberships.map((m: any) => m.parishId);
+  let parishIds = memberships.map((m: any) => m.parishId);
 
-    // Include personal workspace
-    const personalWorkspace = await context.entities.Parish.findFirst({
-      where: { ownerId: context.user.id, type: 'PERSONAL' },
-      select: { id: true },
-    });
-    if (personalWorkspace && !parishIds.includes(personalWorkspace.id)) {
-      parishIds.push(personalWorkspace.id);
-    }
-
-    // DIOCESE_ADMIN: incluir todas as paróquias da diocese
-    if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
-      const dioceseParishIds = await getDioceseParishIds(context);
-      parishIds = [...new Set([...parishIds, ...dioceseParishIds])];
-    }
-
-    parishes = await context.entities.Parish.findMany({
-      where: { id: { in: parishIds }, active: true },
-      orderBy: { name: 'asc' },
-      include: {
-        diocese: { select: { id: true, name: true } },
-        _count: { select: { communities: true, classes: true, memberships: true } },
-        billing: { select: { plan: true, status: true } },
-      },
-    });
+  // Include personal workspace
+  const personalWorkspace = await context.entities.Parish.findFirst({
+    where: { ownerId: context.user.id, type: 'PERSONAL' },
+    select: { id: true },
+  });
+  if (personalWorkspace && !parishIds.includes(personalWorkspace.id)) {
+    parishIds.push(personalWorkspace.id);
   }
 
-  // Batch-resolve effective billing for all parishes (1 bulk query instead of N individual)
-  const parishIds = parishes.map((p: any) => p.id);
-  const billingMap = await resolveAllEffectiveBilling(context, parishIds);
+  // DIOCESE_ADMIN: incluir todas as paróquias da diocese
+  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
+    const dioceseParishIds = await getDioceseParishIds(context);
+    parishIds = [...new Set([...parishIds, ...dioceseParishIds])];
+  }
 
-  const parishesWithResolvedBilling = parishes.map((parish: any) => {
+  const parishes = await context.entities.Parish.findMany({
+    where: { id: { in: parishIds }, active: true },
+    orderBy: { name: 'asc' },
+    include: {
+      diocese: { select: { id: true, name: true } },
+      _count: { select: { communities: true, classes: true, memberships: true } },
+      billing: { select: { plan: true, status: true } },
+    },
+  });
+
+  // Batch-resolve effective billing for all parishes (1 bulk query instead of N individual)
+  const billingMap = await resolveAllEffectiveBilling(
+    context,
+    parishes.map((p: any) => p.id),
+  );
+
+  return parishes.map((parish: any) => {
     const resolvedBilling = billingMap.get(parish.id);
     if (resolvedBilling) {
       parish.billing = {
@@ -492,8 +493,39 @@ export const listParishes = async (_args: void, context: any) => {
     }
     return parish;
   });
+};
 
-  return parishesWithResolvedBilling;
+/** Platform-admin-only dump for /admin/parishes and billing dashboards. */
+export const listParishesAdmin = async (_args: void, context: any) => {
+  requirePlatformAdmin(context.user);
+
+  const parishes = await context.entities.Parish.findMany({
+    orderBy: { name: 'asc' },
+    include: {
+      diocese: { select: { id: true, name: true } },
+      _count: { select: { communities: true, classes: true, memberships: true } },
+      billing: { select: { plan: true, status: true, trialEndsAt: true } },
+      owner: { select: { id: true, email: true, firstName: true, lastName: true } },
+    },
+  });
+
+  const billingMap = await resolveAllEffectiveBilling(
+    context,
+    parishes.map((p: any) => p.id),
+  );
+
+  return parishes.map((parish: any) => {
+    const resolvedBilling = billingMap.get(parish.id);
+    if (resolvedBilling) {
+      parish.billing = {
+        ...parish.billing,
+        plan: resolvedBilling.plan,
+        status: resolvedBilling.status,
+        trialEndsAt: resolvedBilling.trialEndsAt,
+      };
+    }
+    return parish;
+  });
 };
 
 /**

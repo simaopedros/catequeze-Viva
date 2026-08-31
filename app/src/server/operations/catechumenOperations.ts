@@ -157,9 +157,6 @@ export const listCatechumens = async (
           { enrollments: { some: { class: { parishId } } } },
           { household: { parishId } },
           { parishId },
-          {
-            AND: [{ parishId: null }, { householdId: null }],
-          },
         ],
       }),
       orderBy,
@@ -305,27 +302,21 @@ export const createCatechumen = async (args: any, context: any) => {
 export const updateCatechumen = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
 
+  if (!args.id) {
+    throw new HttpError(400, 'ID do catequizando é obrigatório.');
+  }
+
   if (!context.user.isAdmin) {
     const catechumen = await context.entities.CatechumenProfile.findUnique({
       where: { id: args.id },
       select: { userId: true },
     });
-    // Allow self-update or coordinator/catechist update
-    if (catechumen?.userId !== context.user.id) {
-      const membership = await context.entities.Membership.findFirst({
-        where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
-        select: { role: true },
-      });
-      if (!membership || (!isCoordinatorOrAbove(membership.role) && !isCatechist(membership.role))) {
-        // Check personal workspace ownership
-        const personal = await context.entities.Parish.findFirst({
-          where: { ownerId: context.user.id, type: 'PERSONAL' },
-          select: { id: true },
-        });
-        if (!personal) {
-          throw new HttpError(403, 'Apenas coordenadores e catequistas podem editar catequizandos.');
-        }
-      }
+    if (!catechumen) {
+      throw new HttpError(404, 'Catequizando não encontrado.');
+    }
+    // Self-update allowed; otherwise require access to THIS catechumen's workspace
+    if (catechumen.userId !== context.user.id) {
+      await assertCanAccessCatechumenProfile(context, args.id);
     }
   }
 
