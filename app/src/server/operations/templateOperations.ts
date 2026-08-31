@@ -1,5 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { requireAuth, getDioceseParishIds } from '../auth/helpers';
+import { requireWorkspaceAccess } from './sharedScope';
 
 const STAFF_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
 
@@ -64,13 +65,24 @@ export const createMessageTemplate = async (
     throw new HttpError(403, 'Apenas administradores podem criar templates globais.');
   }
 
-  let parishId = args.parishId;
+  let parishId = args.parishId?.trim() || undefined;
   if (!parishId && !args.isGlobal) {
     const membership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, status: 'ACTIVE' },
       select: { parishId: true },
     });
     parishId = membership?.parishId;
+  }
+
+  if (parishId && !context.user.isAdmin) {
+    const access = await requireWorkspaceAccess(context, parishId);
+    if (!STAFF_ROLES.includes(access.role) && !access.isCoordinatorOrAbove) {
+      throw new HttpError(403, 'Sem permissão para criar templates neste workspace.');
+    }
+  }
+
+  if (!parishId && !args.isGlobal && !context.user.isAdmin) {
+    throw new HttpError(400, 'É necessário indicar um workspace para o template.');
   }
 
   return context.entities.MessageTemplate.create({

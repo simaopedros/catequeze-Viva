@@ -536,6 +536,11 @@ query listParishes {
   entities: [Parish, Membership, TenantBilling, Diocese, User]
 }
 
+query listParishesAdmin {
+  fn: import { listParishesAdmin } from "@src/server/operations/parishOperations",
+  entities: [Parish, Membership, TenantBilling, Diocese, User]
+}
+
 query searchParishesForOnboarding {
   fn: import { searchParishesForOnboarding } from "@src/server/operations/parishOperations",
   entities: [Parish, Diocese]
@@ -690,7 +695,7 @@ query getClassDetails {
 
 query listParishCatechists {
   fn: import { listParishCatechists } from "@src/server/operations/classOperations",
-  entities: [Membership, User]
+  entities: [Membership, User, Parish]
 }
 
 action createClass {
@@ -774,7 +779,7 @@ query listHouseholds {
 
 action createHousehold {
   fn: import { createHousehold } from "@src/server/operations/familyOperations",
-  entities: [Household, Membership, Parish]
+  entities: [Household, Membership, Parish, Community]
 }
 
 action addGuardianToHousehold {
@@ -979,7 +984,7 @@ query getInstitutionalDashboardInsights {
 //#region Catequese Viva - Content Library
 query listContentItems {
   fn: import { listContentItems } from "@src/server/operations/contentOperations",
-  entities: [ContentItem, Membership]
+  entities: [ContentItem, Membership, Parish]
 }
 
 query getContentItem {
@@ -1174,7 +1179,7 @@ query listDocuments {
 
 action uploadDocument {
   fn: import { uploadDocument } from "@src/server/operations/documentOperations",
-  entities: [Document, Membership, CatechesisClass, ClassEnrollment]
+  entities: [Document, Membership, CatechesisClass, ClassEnrollment, CatechumenProfile, Parish, GuardianProfile, Household]
 }
 
 action verifyDocument {
@@ -1731,7 +1736,7 @@ page PricingPage {
 //#region Resend Email Sender
 action sendMessageEmail {
   fn: import { sendMessageEmail } from "@src/server/operations/sendMessageOperation",
-  entities: [User]
+  entities: [User, Membership, Parish, CatechumenProfile, GuardianProfile, Household, PendingInvitation]
 }
 //#endregion
 
@@ -1825,7 +1830,7 @@ query listMessageTemplates {
 
 action createMessageTemplate {
   fn: import { createMessageTemplate } from "@src/server/operations/templateOperations",
-  entities: [MessageTemplate, Membership]
+  entities: [MessageTemplate, Membership, Parish]
 }
 
 action updateMessageTemplate {

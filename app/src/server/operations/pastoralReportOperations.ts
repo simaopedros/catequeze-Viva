@@ -32,13 +32,26 @@ async function getBirthdayScope(context: any): Promise<{ parishIds: string[]; cl
 
 export const getClassPastoralReport = async (args: { classId: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
+  if (!args.classId?.trim()) {
+    throw new HttpError(400, 'classId é obrigatório.');
+  }
 
-  const parishRoles = await getUserParishRoles(context);
-  const roles = parishRoles.map((r: any) => r.role);
-  const isAdmin = context.user.isAdmin;
+  const { parishId } = await assertCanAccessClass(context, args.classId.trim());
+  void (context.entities.Membership as unknown); // Required by assertCanAccessClass
 
-  if (!isAdmin && !roles.some((r: string) => isCoordinatorOrAboveRole(r))) {
-    throw new HttpError(403, 'Apenas coordenadores e catequistas podem aceder ao relatório pastoral.');
+  if (!context.user.isAdmin) {
+    const membership = await context.entities.Membership.findFirst({
+      where: {
+        userId: context.user.id,
+        parishId,
+        status: 'ACTIVE',
+      },
+      select: { role: true },
+    });
+    const role = membership?.role || '';
+    if (!isCoordinatorOrAboveRole(role) && !isCatechistOrAboveRole(role)) {
+      throw new HttpError(403, 'Apenas coordenadores e catequistas podem aceder ao relatório pastoral.');
+    }
   }
 
   const cls = await context.entities.CatechesisClass.findUnique({

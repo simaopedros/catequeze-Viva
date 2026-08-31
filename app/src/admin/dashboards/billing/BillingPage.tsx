@@ -1,6 +1,6 @@
 import { type AuthUser } from "wasp/auth";
 import { useTranslation } from "react-i18next";
-import { useQuery, listParishes } from "wasp/client/operations";
+import { useQuery, listParishesAdmin } from "wasp/client/operations";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { AppPageHeader } from "../../../client/components/brand/AppChrome";
 import {
@@ -14,7 +14,7 @@ import {
 
 const BillingPage = ({ user }: { user: AuthUser }) => {
   const { t, i18n } = useTranslation("billing");
-  const { data: parishes = [], isLoading } = useQuery(listParishes);
+  const { data: parishes = [], isLoading } = useQuery(listParishesAdmin);
 
   const locale = i18n.language.startsWith("en")
     ? "en-US"

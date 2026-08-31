@@ -60,7 +60,11 @@ export async function assertCanAccessContent(
     if (!parishIds.includes(item.parishId)) {
       throw new HttpError(403, 'Você não tem acesso a este conteúdo.');
     }
+    return;
   }
+
+  // Global/unscoped content is only visible to creator or platform admin
+  throw new HttpError(403, 'Você não tem acesso a este conteúdo.');
 }
 
 export async function assertCanModifyContent(
@@ -78,7 +82,10 @@ export async function assertCanModifyContent(
     if (!parishIds.includes(item.parishId)) {
       throw new HttpError(403, 'Você não tem acesso a este conteúdo.');
     }
+    return;
   }
+
+  throw new HttpError(403, 'Sem permissão para alterar este conteúdo.');
 }
 
 // ── Collaborative Session access wrappers ──────────────────────────────────

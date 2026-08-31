@@ -154,6 +154,7 @@ export const sendMessageSchema = z.object({
   to: emailSchema,
   subject: z.string().min(1).max(200),
   body: z.string().min(1).max(50000),
+  workspaceId: z.string().uuid().optional(),
 });
 
 export const createMessageCampaignSchema = z.object({

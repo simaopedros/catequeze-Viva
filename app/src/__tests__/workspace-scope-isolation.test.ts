@@ -155,7 +155,7 @@ describe('Workspace scope isolation', () => {
           c.parishId,
           ...(c.enrollments || []).map((e: any) => e.class?.parishId),
         ].filter(Boolean);
-        // May include null parish unassigned profiles for coordinators — OK
+        // Should not include SM-only catechumens
         if (parishIds.length && parishIds.every((p: string) => p === PARISH_SANTA_MARIA)) {
           // Should not happen for SJ workspace query of coordinator...
           // unless unassigned; if parishId is SM, fail

@@ -135,6 +135,13 @@ describe('Collaborative Session Access Control', () => {
         assertCanAccessContent(ctx, { parishId: null, createdById: USERS.coordSaoJose.id }),
       ).resolves.toBeUndefined();
     });
+
+    skipIfNoDB('denies non-creator access to content without parish', async () => {
+      const ctx = makeContext('coordSantaMaria');
+      await expect(
+        assertCanAccessContent(ctx, { parishId: null, createdById: USERS.coordSaoJose.id }),
+      ).rejects.toThrow('Você não tem acesso a este conteúdo.');
+    });
   });
 
   // ── assertCanModifyContent ────────────────────────────────────────────

@@ -207,7 +207,7 @@ export const createHousehold = async (
 ) => {
   if (!context.user) throw new HttpError(401);
 
-  let parishId = args.parishId;
+  let parishId = args.parishId?.trim() || undefined;
   if (!parishId && !context.user.isAdmin) {
     const membership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, status: 'ACTIVE' },
@@ -227,6 +227,13 @@ export const createHousehold = async (
 
   if (!parishId && !context.user.isAdmin) {
     throw new HttpError(400, 'É necessário especificar uma paróquia para criar a família.');
+  }
+
+  if (parishId && !context.user.isAdmin) {
+    const access = await requireWorkspaceAccess(context, parishId);
+    if (!access.isCoordinatorOrAbove && !access.isCatechist && access.role !== 'PERSONAL_OWNER') {
+      throw new HttpError(403, 'Apenas coordenadores e catequistas podem criar famílias neste workspace.');
+    }
   }
 
   // Validate communityId belongs to the same parish if provided
