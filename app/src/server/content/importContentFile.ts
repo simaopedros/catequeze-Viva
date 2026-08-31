@@ -72,7 +72,7 @@ function bufferToUtf8(buffer: Buffer): string {
 async function extractPdfText(buffer: Buffer): Promise<string> {
   const pdf = await getDocumentProxy(new Uint8Array(buffer));
   const { text } = await extractText(pdf, { mergePages: true });
-  return typeof text === "string" ? text : text.join("\n\n");
+  return text;
 }
 
 async function extractDocxHtml(buffer: Buffer): Promise<string> {
