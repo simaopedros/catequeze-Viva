@@ -1579,7 +1579,13 @@ api readinessCheckApi {
 api maintenanceApi {
   fn: import { maintenanceHandler } from "@src/server/api/maintenance",
   httpRoute: (POST, "/api/internal/maintenance"),
-  entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish, SocialMedia]
+  entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish, SocialMedia, LifecycleEmailLog, Membership, ClassEnrollment, AttendanceRecord]
+}
+
+api lifecycleUnsubscribeApi {
+  fn: import { lifecycleUnsubscribeHandler } from "@src/server/api/lifecycleUnsubscribe",
+  httpRoute: (GET, "/api/lifecycle/unsubscribe"),
+  entities: [User]
 }
 
 action generateCatechumenUploadToken {

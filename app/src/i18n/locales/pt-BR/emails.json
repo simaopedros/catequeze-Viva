@@ -1,0 +1,74 @@
+{
+  "fallback_name": "catequista",
+  "fallback_class": "sua turma",
+  "footer_reason": "Você recebe este e-mail porque criou uma conta no Catequese Viva.",
+  "unsubscribe": "Não quero mais estes e-mails",
+  "unsubscribed_title": "Inscrição cancelada",
+  "unsubscribed_body": "Você não receberá mais e-mails de acompanhamento da sua conta no Catequese Viva.",
+  "unsubscribe_invalid_title": "Link inválido",
+  "unsubscribe_invalid_body": "Este link de descadastro é inválido ou já expirou.",
+  "campaigns": {
+    "activate_create_class": {
+      "subject": "Crie sua primeira turma no Catequese Viva",
+      "heading": "Sua catequese ainda está no papel",
+      "body": "Olá, {{name}}. Crie a turma em 2 minutos para começar a chamada e os encontros no mesmo lugar.",
+      "cta": "Criar minha turma"
+    },
+    "activate_add_people": {
+      "subject": "Adicione os catequizandos da turma {{className}}",
+      "heading": "A turma {{className}} está vazia",
+      "body": "Olá, {{name}}. Sem os nomes, você não consegue marcar presença nem avisar as famílias.",
+      "cta": "Adicionar catequizandos"
+    },
+    "activate_first_action": {
+      "subject": "Domingo chega rápido — registre a presença",
+      "heading": "Falta o primeiro encontro ou a primeira chamada",
+      "body": "Olá, {{name}}. Lance a presença ou prepare o primeiro encontro da {{className}}.",
+      "cta": "Registrar presença"
+    },
+    "convert_after_value": {
+      "subject": "Sua turma já está no ar — mantenha o acesso",
+      "heading": "Presença e encontros já estão no Catequese Viva",
+      "body": "Olá, {{name}}. Assine o Plano Catequista ({{price}}/mês) para não perder o acesso no dia {{trialEndsAt}}.",
+      "cta": "Assinar agora"
+    },
+    "trial_d3": {
+      "subject": "Restam 3 dias de teste",
+      "heading": "Restam 3 dias do seu teste",
+      "body_no_class": "Olá, {{name}}. Ainda dá tempo de criar a turma antes do teste acabar. Leva cerca de 2 minutos.",
+      "body_no_people": "Olá, {{name}}. A turma {{className}} ainda não tem catequizandos. Adicione a lista para marcar presença.",
+      "body_no_action": "Olá, {{name}}. Falta registrar a primeira presença ou criar o primeiro encontro da {{className}}.",
+      "body_value": "Olá, {{name}}. Sua turma já está no ar. Assine o Plano Catequista ({{price}}/mês) para não perder o acesso no dia {{trialEndsAt}}.",
+      "cta_next_step": "Continuar agora",
+      "cta_billing": "Ver assinatura"
+    },
+    "trial_d1": {
+      "subject": "Seu teste termina amanhã",
+      "heading": "Amanhã o período de teste acaba",
+      "body_no_class": "Olá, {{name}}. Ainda dá tempo de criar a turma hoje e ver o Catequese Viva em ação.",
+      "body_no_people": "Olá, {{name}}. Adicione os catequizandos da {{className}} hoje — amanhã o teste acaba.",
+      "body_no_action": "Olá, {{name}}. Lance a presença ou prepare o encontro da {{className}} antes de o teste acabar amanhã.",
+      "body_value": "Olá, {{name}}. Amanhã termina o teste. Assine o Plano Catequista ({{price}}/mês) para manter turma, presença e encontros.",
+      "cta_next_step": "Continuar agora",
+      "cta_billing": "Assinar agora"
+    },
+    "winback_d1": {
+      "subject": "Sua turma continua salva",
+      "heading": "O teste acabou, mas os dados não",
+      "body": "Olá, {{name}}. Reative o Plano Catequista ({{price}}/mês) para voltar a marcar presença e preparar encontros.",
+      "cta": "Reativar acesso"
+    },
+    "winback_d3": {
+      "subject": "Sua catequese ainda está aqui",
+      "heading": "Três dias sem acesso à turma",
+      "body": "Olá, {{name}}. A {{className}} continua salva. Reative o Plano Catequista ({{price}}/mês) quando quiser retomar a chamada.",
+      "cta": "Reativar acesso"
+    },
+    "winback_d7": {
+      "subject": "Um convite para retomar a catequese",
+      "heading": "Sua turma espera você",
+      "body": "Olá, {{name}}. Faz uma semana que o teste acabou. O Plano Catequista custa {{price}}/mês — reative para continuar de onde parou.",
+      "cta": "Voltar ao Catequese Viva"
+    }
+  }
+}
