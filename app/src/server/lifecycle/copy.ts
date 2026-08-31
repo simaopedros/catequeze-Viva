@@ -1,8 +1,8 @@
+import { emails_en } from "../../i18n/resources_en";
+import { emails_es } from "../../i18n/resources_es";
+import { emails_pt_BR } from "../../i18n/resources_pt_BR";
 import type { ServerLocale } from "../i18n/serverLocale";
 import type { LifecycleCampaign } from "./selectCampaign";
-import emails_en from "../../i18n/locales/en/emails.json";
-import emails_es from "../../i18n/locales/es/emails.json";
-import emails_pt_BR from "../../i18n/locales/pt-BR/emails.json";
 
 type SimpleCampaignCopy = {
   subject: string;
@@ -45,9 +45,9 @@ type EmailsNs = {
 };
 
 const BUNDLES: Record<ServerLocale, EmailsNs> = {
-  "pt-BR": emails_pt_BR as EmailsNs,
-  en: emails_en as EmailsNs,
-  es: emails_es as EmailsNs,
+  "pt-BR": emails_pt_BR as unknown as EmailsNs,
+  en: emails_en as unknown as EmailsNs,
+  es: emails_es as unknown as EmailsNs,
 };
 
 export type CampaignCopyVars = {
