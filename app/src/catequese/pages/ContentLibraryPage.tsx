@@ -23,6 +23,7 @@ import {
   ArrowRight,
   CheckCircle2,
   FileText,
+  FileUp,
 } from "lucide-react";
 import {
   useQuery,
@@ -40,6 +41,7 @@ import {
   AppPanel,
   AppMetric,
 } from "../../client/components/brand/AppChrome";
+import { ImportContentModal } from "../components/content/ImportContentModal";
 
 const STATUS_KEYS = [
   "all",
@@ -105,6 +107,7 @@ export default function ContentLibraryPage() {
   const [items, setItems] = useState<any[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [cursor, setCursor] = useState<string | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
 
   const serverSearch =
     debouncedSearch.trim().length >= 2 ? debouncedSearch.trim() : undefined;
@@ -280,8 +283,18 @@ export default function ContentLibraryPage() {
             <Button asChild className="h-10 rounded-md">
               <Link to="/app/content-library/new">
                 <Plus className="mr-2 h-4 w-4" />
-                Criar manualmente
+                {t("library.create_manual", {
+                  defaultValue: "Criar manualmente",
+                })}
               </Link>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-10 rounded-sm"
+              onClick={() => setImportOpen(true)}
+            >
+              <FileUp className="mr-2 h-4 w-4" />
+              {t("library.import")}
             </Button>
             {AI_FEATURES_ENABLED && (
               <Button variant="outline" className="h-10 rounded-sm" asChild>
@@ -420,7 +433,10 @@ export default function ContentLibraryPage() {
                   <AppDisplayTitle as="h2">
                     {t("library.empty_no_content")}
                   </AppDisplayTitle>
-                  <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
+                  <div
+                    className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent"
+                    aria-hidden
+                  />
                   <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
                     {t("library.empty_create_desc")}
                   </p>
@@ -428,6 +444,14 @@ export default function ContentLibraryPage() {
                 <div className="flex flex-wrap gap-3">
                   <Button className="h-11 rounded-sm px-5" asChild>
                     <Link to="/app/content-library/new">{t("create")}</Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-11 rounded-sm px-5 bg-white"
+                    onClick={() => setImportOpen(true)}
+                  >
+                    <FileUp className="mr-2 h-4 w-4" />
+                    {t("library.import")}
                   </Button>
                   {AI_FEATURES_ENABLED && (
                     <Button
@@ -642,6 +666,8 @@ export default function ContentLibraryPage() {
           </Button>
         </div>
       )}
+
+      <ImportContentModal open={importOpen} onOpenChange={setImportOpen} />
     </div>
   );
 }
