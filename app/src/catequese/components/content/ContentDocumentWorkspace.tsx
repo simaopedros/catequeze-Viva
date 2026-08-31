@@ -47,6 +47,10 @@ import {
   parseContentDocument,
 } from "../../../shared/contentDocument";
 import { uploadContentImage } from "../../../client/utils/contentImageUpload";
+import {
+  downloadContentSourceFile,
+  triggerBrowserDownload,
+} from "../../../client/utils/contentImport";
 import { ContentDocumentRenderer } from "./ContentDocumentRenderer";
 
 /** TipTap editor is heavy — load only when the content workspace mounts. */
@@ -57,6 +61,7 @@ const RichContentEditor = lazy(() =>
 import {
   BookMarked,
   Clock3,
+  Download,
   Eye,
   ExternalLink,
   FileText,
@@ -409,6 +414,9 @@ export function ContentDocumentWorkspace({
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [sourceFileKey, setSourceFileKey] = useState<string | null>(null);
+  const [sourceFileName, setSourceFileName] = useState<string | null>(null);
+  const [downloadingSource, setDownloadingSource] = useState(false);
   const baselineRef = useRef("");
   const readyRef = useRef(!existingContentId);
   const creatingRef = useRef(false);
@@ -448,6 +456,8 @@ export function ContentDocumentWorkspace({
     setTheme(item.theme || "");
     setEstimatedTime(String(item.estimatedTime || 60));
     setTags(item.tags || "");
+    setSourceFileKey(item.sourceFileKey || null);
+    setSourceFileName(item.sourceFileName || null);
     setDocumentJson(
       item.documentJson || JSON.stringify(buildLegacyContentDocument(item)),
     );
@@ -657,6 +667,24 @@ export function ContentDocumentWorkspace({
   const leaveGuard = useUnsavedChangesGuard(
     saveState === "dirty" || saveState === "error" || saveState === "saving",
   );
+
+  const handleDownloadOriginal = async () => {
+    if (!contentId || !sourceFileKey) return;
+    setDownloadingSource(true);
+    try {
+      const { blob, fileName } = await downloadContentSourceFile(contentId);
+      triggerBrowserDownload(blob, fileName || sourceFileName || "documento");
+    } catch (error: any) {
+      toast({
+        title: "Erro ao descarregar",
+        description:
+          error?.message || "Não foi possível descarregar o original.",
+        variant: "destructive",
+      });
+    } finally {
+      setDownloadingSource(false);
+    }
+  };
 
   const handleDeleteContent = async () => {
     if (!contentId) return;
@@ -919,6 +947,15 @@ export function ContentDocumentWorkspace({
                 <DropdownMenuItem onClick={useBlankDocument}>
                   Documento em branco
                 </DropdownMenuItem>
+                {contentId && sourceFileKey && (
+                  <DropdownMenuItem
+                    disabled={downloadingSource}
+                    onClick={() => void handleDownloadOriginal()}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    Descarregar original
+                  </DropdownMenuItem>
+                )}
                 {contentId && (
                   <DropdownMenuItem
                     className="text-destructive focus:text-destructive"
@@ -1059,7 +1096,10 @@ export function ContentDocumentWorkspace({
                     .join(" · ")}
                 </p>
               )}
-              <div className="mt-3 h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
+              <div
+                className="mt-3 h-px w-16 bg-gradient-to-r from-brand-gold to-transparent"
+                aria-hidden
+              />
               <div className="mt-6">
                 <ContentDocumentRenderer
                   document={
@@ -1113,11 +1153,7 @@ export function ContentDocumentWorkspace({
                       Pré-impressão
                     </Link>
                   </Button>
-                  <Button
-                    size="sm"
-                    className="h-9 gap-1.5 rounded-md"
-                    asChild
-                  >
+                  <Button size="sm" className="h-9 gap-1.5 rounded-md" asChild>
                     <Link to={`/app/content-library/${contentId}`}>
                       Página completa
                     </Link>

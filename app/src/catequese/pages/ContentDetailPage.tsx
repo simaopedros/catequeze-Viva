@@ -21,6 +21,7 @@ import {
   Feather,
   Printer,
   MessageCircle,
+  Download,
 } from "lucide-react";
 import {
   useQuery,
@@ -43,6 +44,11 @@ import {
 import { ContentDocumentRenderer } from "../components/content/ContentDocumentRenderer";
 import { AppPageHeader } from "../../client/components/brand/AppChrome";
 import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
+import { toast } from "../../client/hooks/use-toast";
+import {
+  downloadContentSourceFile,
+  triggerBrowserDownload,
+} from "../../client/utils/contentImport";
 
 function parseData(data: string | null): any {
   if (!data) return {};
@@ -114,6 +120,7 @@ export default function ContentDetailPage() {
   const [tab, setTab] = useState<"meeting" | "activities">(initialTab);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [downloadingSource, setDownloadingSource] = useState(false);
 
   const changeStatus = async (status: string) => {
     await updateContentStatus({ id: id!, status });
@@ -165,6 +172,25 @@ export default function ContentDetailPage() {
     });
     if (!ok) return;
     await deleteActivity({ id: activityId });
+  };
+
+  const handleDownloadOriginal = async () => {
+    if (!id) return;
+    setDownloadingSource(true);
+    try {
+      const { blob, fileName } = await downloadContentSourceFile(id);
+      triggerBrowserDownload(blob, fileName);
+    } catch (error: any) {
+      toast({
+        title: t("library.error_download_original", {
+          defaultValue:
+            error?.message || "Não foi possível descarregar o original.",
+        }),
+        variant: "destructive",
+      });
+    } finally {
+      setDownloadingSource(false);
+    }
   };
 
   if (loading) {
@@ -249,6 +275,18 @@ export default function ContentDetailPage() {
                   {t("print")}
                 </Link>
               </Button>
+              {item.sourceFileKey && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-10 rounded-sm"
+                  onClick={() => void handleDownloadOriginal()}
+                  disabled={downloadingSource}
+                >
+                  <Download className="mr-1 h-3 w-3" />
+                  {t("library.download_original")}
+                </Button>
+              )}
             </>
           }
         />

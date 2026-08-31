@@ -15,6 +15,8 @@ import {
   createEmptyContentDocument,
   parseContentDocument,
 } from "../../shared/contentDocument";
+import { logger } from "../logger";
+import { deleteContentSourceFile } from "../storage/contentSourceStorage";
 import {
   dateIdCursorWhere,
   emptyPage,
@@ -49,17 +51,15 @@ function normalizeDocumentJson(
 
 /** Returns array (legacy) or { items, nextCursor } when paginated/cursor. */
 export const listContentItems = async (
-  _args:
-    | {
-        take?: number;
-        skip?: number;
-        search?: string;
-        status?: string;
-        workspaceId?: string;
-        cursor?: string | null;
-        paginated?: boolean;
-      }
-    | void,
+  _args: {
+    take?: number;
+    skip?: number;
+    search?: string;
+    status?: string;
+    workspaceId?: string;
+    cursor?: string | null;
+    paginated?: boolean;
+  } | void,
   context: any,
 ): Promise<any> => {
   const args = _args || {};
@@ -341,11 +341,27 @@ export const deleteContentItem = async (args: { id: string }, context: any) => {
 
   const item = await context.entities.ContentItem.findUnique({
     where: { id: args.id },
-    select: { id: true, parishId: true, createdById: true },
+    select: {
+      id: true,
+      parishId: true,
+      createdById: true,
+      sourceFileKey: true,
+    },
   });
   if (!item) throw new HttpError(404, "Conteúdo não encontrado.");
 
   await assertCanModifyContent(context, item);
+
+  if (item.sourceFileKey) {
+    try {
+      await deleteContentSourceFile(item.sourceFileKey);
+    } catch (error) {
+      logger.warn("failed to delete content source file", {
+        contentId: args.id,
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
 
   await context.entities.Meeting.updateMany({
     where: { contentId: args.id },

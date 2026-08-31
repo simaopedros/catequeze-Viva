@@ -1235,6 +1235,21 @@ api serveContentImage {
   entities: [ContentItem, Membership, Parish]
 }
 
+api importContentDocument {
+  fn: import { importContentDocument } from "@src/server/api/contentImportUpload",
+  middlewareConfigFn: import { importContentMiddleware } from "@src/server/api/contentImportUpload",
+  auth: true,
+  httpRoute: (POST, "/api/content-library/import"),
+  entities: [ContentItem, Membership, Parish]
+}
+
+api serveContentSource {
+  fn: import { serveContentSource } from "@src/server/api/contentSourceServe",
+  auth: true,
+  httpRoute: (GET, "/api/content-library/:contentId/source"),
+  entities: [ContentItem, Membership, Parish]
+}
+
 //#region Comunidade (social) - media
 api uploadSocialImage {
   fn: import { uploadSocialImage } from "@src/server/api/socialMedia",

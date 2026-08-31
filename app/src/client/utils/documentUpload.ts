@@ -15,36 +15,36 @@ export type PublicDocumentUploadParams = {
   type: string;
 };
 
-function getServerUrl(): string {
+export function getServerUrl(): string {
   const envUrl =
     (import.meta as any).env?.REACT_APP_WASP_SERVER_URL ||
     (import.meta as any).env?.REACT_APP_API_URL;
-  if (envUrl) return envUrl.replace(/\/$/, '');
-  if (typeof window !== 'undefined') {
+  if (envUrl) return envUrl.replace(/\/$/, "");
+  if (typeof window !== "undefined") {
     const { protocol, hostname } = window.location;
-    if (hostname.startsWith('familia.')) {
-      return `${protocol}//api.${hostname.replace(/^familia\./, '')}`;
+    if (hostname.startsWith("familia.")) {
+      return `${protocol}//api.${hostname.replace(/^familia\./, "")}`;
     }
-    if (hostname.startsWith('familia-')) {
+    if (hostname.startsWith("familia-")) {
       return `${protocol}//${window.location.host}`;
     }
     if (
-      hostname === 'homolog.catechis.app' ||
-      hostname.endsWith('-homolog.catechis.app') ||
-      hostname.includes('.homolog.')
+      hostname === "homolog.catechis.app" ||
+      hostname.endsWith("-homolog.catechis.app") ||
+      hostname.includes(".homolog.")
     ) {
       return `${protocol}//${window.location.host}`;
     }
-    return `${protocol}//api.${hostname.replace(/^www\./, '')}`;
+    return `${protocol}//api.${hostname.replace(/^www\./, "")}`;
   }
-  return 'http://localhost:3001';
+  return "http://localhost:3001";
 }
 
 /** Wasp stores the session in localStorage; custom fetch must send it explicitly. */
 export function getWaspAuthHeaders(): Record<string, string> {
-  if (typeof window === 'undefined') return {};
+  if (typeof window === "undefined") return {};
   try {
-    const raw = localStorage.getItem('wasp:sessionId');
+    const raw = localStorage.getItem("wasp:sessionId");
     const sessionId = raw ? JSON.parse(raw) : null;
     return sessionId ? { Authorization: `Bearer ${sessionId}` } : {};
   } catch {
@@ -56,22 +56,23 @@ export async function uploadDocumentMultipart(
   params: DocumentUploadParams,
 ): Promise<{ success: boolean; document: { id: string; name: string } }> {
   const form = new FormData();
-  form.append('file', params.file);
-  form.append('name', params.name);
-  form.append('type', params.type);
-  if (params.catechumenProfileId) form.append('catechumenProfileId', params.catechumenProfileId);
-  if (params.parishId) form.append('parishId', params.parishId);
+  form.append("file", params.file);
+  form.append("name", params.name);
+  form.append("type", params.type);
+  if (params.catechumenProfileId)
+    form.append("catechumenProfileId", params.catechumenProfileId);
+  if (params.parishId) form.append("parishId", params.parishId);
 
   const res = await fetch(`${getServerUrl()}/api/documents/upload`, {
-    method: 'POST',
+    method: "POST",
     body: form,
-    credentials: 'include',
+    credentials: "include",
     headers: getWaspAuthHeaders(),
   });
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(data.error || 'Erro ao enviar documento.');
+    throw new Error(data.error || "Erro ao enviar documento.");
   }
   return data;
 }
@@ -80,30 +81,30 @@ export async function uploadPublicDocumentMultipart(
   params: PublicDocumentUploadParams,
 ): Promise<{ success: boolean; document: { id: string; name: string } }> {
   const form = new FormData();
-  form.append('file', params.file);
-  form.append('token', params.token);
-  form.append('type', params.type);
+  form.append("file", params.file);
+  form.append("token", params.token);
+  form.append("type", params.type);
 
   const res = await fetch(`${getServerUrl()}/api/upload-document`, {
-    method: 'POST',
+    method: "POST",
     body: form,
   });
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(data.error || 'Erro ao enviar documento.');
+    throw new Error(data.error || "Erro ao enviar documento.");
   }
   return data;
 }
 
 export async function fetchAuthenticatedDocument(docId: string): Promise<Blob> {
   const res = await fetch(`${getServerUrl()}/api/documents/${docId}`, {
-    credentials: 'include',
+    credentials: "include",
     headers: getWaspAuthHeaders(),
   });
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
-    throw new Error(data.error || 'Erro ao aceder ao documento.');
+    throw new Error(data.error || "Erro ao aceder ao documento.");
   }
   return res.blob();
 }

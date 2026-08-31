@@ -848,6 +848,9 @@ model ContentItem {
   tags              String?
   documentJson      String?
   documentVersion   Int             @default(1)
+  sourceFileKey      String?
+  sourceFileName     String?
+  sourceFileMimeType String?
   status            ContentStatus   @default(DRAFT)
   visibilityScope   VisibilityScope @default(PARISH)
 
