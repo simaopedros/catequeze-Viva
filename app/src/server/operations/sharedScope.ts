@@ -268,6 +268,59 @@ export function classWhereForAccess(access: WorkspaceAccess, extra?: Record<stri
   };
 }
 
+/**
+ * Prisma where fragment for classes visible to the actor across several
+ * workspaces (search, exports). Resolves the role per workspace — a coordinator
+ * role in one parish never widens visibility in another. Family roles only see
+ * classes where they (or a household member) are enrolled; workspaces without
+ * access are dropped. Returns `{ id: { in: [] } }` when nothing is visible.
+ */
+export async function classWhereAcrossWorkspaces(
+  context: any,
+  workspaceIds: string[],
+): Promise<Record<string, unknown>> {
+  if (!context.user) throw new HttpError(401);
+  const userId = context.user.id;
+  const or: Record<string, unknown>[] = [];
+
+  for (const workspaceId of [...new Set(workspaceIds)]) {
+    const access = await resolveWorkspaceAccess(context, workspaceId, {
+      required: false,
+    });
+    if (!access) continue;
+
+    if (access.allowedClassIds === 'ALL') {
+      or.push({ parishId: workspaceId });
+      continue;
+    }
+    if (access.isCatechist) {
+      if (access.allowedClassIds.length > 0) {
+        or.push({ parishId: workspaceId, id: { in: access.allowedClassIds } });
+      }
+      continue;
+    }
+    if (access.role === 'GUARDIAN' || access.role === 'CATECHUMEN') {
+      or.push({
+        parishId: workspaceId,
+        enrollments: {
+          some: {
+            catechumenProfile: {
+              OR: [
+                { userId },
+                { household: { guardians: { some: { userId } } } },
+              ],
+            },
+          },
+        },
+      });
+    }
+  }
+
+  if (or.length === 0) return { id: { in: [] as string[] } };
+  if (or.length === 1) return or[0];
+  return { OR: or };
+}
+
 export function isStaffRole(role: string): boolean {
   return (
     isCoordinatorOrAboveRole(role) ||

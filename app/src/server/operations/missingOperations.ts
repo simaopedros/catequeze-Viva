@@ -169,13 +169,29 @@ export const exportReport = async (
     throw new HttpError(400, 'workspaceId é obrigatório.');
   }
 
+  // Membership grants entry; the class list itself follows the workspace-local
+  // role (coordinator = whole parish, catechist = assigned classes only).
+  let classScope: Record<string, unknown> = workspaceId
+    ? { parishId: workspaceId }
+    : {};
   if (workspaceId && !context.user.isAdmin) {
-    await requireWorkspaceAccess(context, workspaceId);
+    const access = await requireWorkspaceAccess(context, workspaceId);
+    if (!access.isCoordinatorOrAbove && access.role !== 'PASTORAL_VIEWER') {
+      if (!access.isCatechist) {
+        throw new HttpError(403, 'Apenas a equipe pastoral pode exportar relatórios.');
+      }
+      classScope = {
+        parishId: workspaceId,
+        id: {
+          in: Array.isArray(access.allowedClassIds) ? access.allowedClassIds : [],
+        },
+      };
+    }
   }
 
   const whereClause: any = {
     status: 'ACTIVE',
-    ...(workspaceId ? { parishId: workspaceId } : {}),
+    ...classScope,
   };
 
   const rows = await context.entities.CatechesisClass.findMany({

@@ -43,6 +43,8 @@ function meetingWhere(
  */
 async function resolveMeetingClassScope(params: {
   isAdmin: boolean;
+  /** Platform admin viewing one workspace: parish scope, never platform-wide. */
+  workspaceScoped?: boolean;
   roles: string[];
   myClassIds: string[];
   guardianHouseholdId: string | null;
@@ -52,7 +54,9 @@ async function resolveMeetingClassScope(params: {
   const { isAdmin, roles, myClassIds, guardianHouseholdId, userId, context } =
     params;
 
-  if (isAdmin) return { kind: "all" };
+  if (isAdmin) {
+    return params.workspaceScoped ? { kind: "parish" } : { kind: "all" };
+  }
 
   const hasCoordinator = roles.some((r) =>
     (COORDINATOR_OR_ABOVE as readonly string[]).includes(r),
@@ -103,6 +107,97 @@ async function resolveMeetingClassScope(params: {
   return { kind: "classIds", classIds: [] };
 }
 
+/**
+ * Prisma `where` for the CatechesisClass rows the actor may see on the dashboard.
+ *
+ * - Platform admin without a workspace: everything (platform view).
+ * - Workspace requested: only that workspace. Whole parish for coordinator-level
+ *   access; otherwise only assigned classes — an empty assignment list must
+ *   never fall back to the whole parish.
+ * - No workspace: parishes where the actor is coordinator-or-above plus classes
+ *   assigned as catechist elsewhere. A coordinator role in one workspace never
+ *   grants parish-wide visibility in another.
+ * - Pure guardian: only classes where a household member is enrolled.
+ */
+function buildClassScopeWhere(params: {
+  isAdmin: boolean;
+  requestedWorkspace?: string;
+  wholeWorkspace: boolean;
+  coordinatorParishIds: string[];
+  myClassIds: string[];
+  guardianHouseholdId: string | null;
+}): Record<string, unknown> {
+  const {
+    isAdmin,
+    requestedWorkspace,
+    wholeWorkspace,
+    coordinatorParishIds,
+    myClassIds,
+    guardianHouseholdId,
+  } = params;
+
+  if (isAdmin && !requestedWorkspace) return {};
+
+  if (guardianHouseholdId) {
+    return {
+      ...(requestedWorkspace ? { parishId: requestedWorkspace } : {}),
+      enrollments: {
+        some: { catechumenProfile: { householdId: guardianHouseholdId } },
+      },
+    };
+  }
+
+  if (requestedWorkspace) {
+    if (wholeWorkspace) return { parishId: requestedWorkspace };
+    return { parishId: requestedWorkspace, id: { in: myClassIds } };
+  }
+
+  const or: Record<string, unknown>[] = [];
+  if (coordinatorParishIds.length > 0) {
+    or.push({ parishId: { in: coordinatorParishIds } });
+  }
+  if (myClassIds.length > 0) {
+    or.push({ id: { in: myClassIds } });
+  }
+  if (or.length === 0) return { id: { in: [] as string[] } };
+  if (or.length === 1) return or[0];
+  return { OR: or };
+}
+
+/**
+ * Parishes where the actor holds a coordinator-level role (per membership),
+ * including the personal workspace and DIOCESE_ADMIN expansion. Roles are
+ * evaluated per parish — never merged across workspaces.
+ */
+function coordinatorParishIdsFromScope(scope: {
+  memberships: { parishId: string; role: string }[];
+  parishIds: string[];
+  personalWorkspaceId: string | null;
+}): string[] {
+  const ids = new Set<string>();
+  const membershipParishIds = new Set(scope.memberships.map((m) => m.parishId));
+  for (const m of scope.memberships) {
+    if ((COORDINATOR_OR_ABOVE as readonly string[]).includes(m.role)) {
+      ids.add(m.parishId);
+    }
+  }
+  if (scope.personalWorkspaceId) ids.add(scope.personalWorkspaceId);
+  // Parishes present in scope without a direct membership come from the
+  // DIOCESE_ADMIN expansion (resolveUserScope) — coordinator-level by definition.
+  for (const id of scope.parishIds) {
+    if (!membershipParishIds.has(id) && id !== scope.personalWorkspaceId) {
+      ids.add(id);
+    }
+  }
+  return [...ids];
+}
+
+const REVIEWER_ROLES = [
+  "CONTENT_REVIEWER",
+  "PARISH_COORDINATOR",
+  "DIOCESE_ADMIN",
+] as const;
+
 export const getDashboardStats = async (
   args: { parishId?: string; workspaceId?: string; surface?: string },
   context: any,
@@ -132,7 +227,8 @@ export const getDashboardStats = async (
     };
   }
 
-  const { parishIds, roles: globalRoles } = await resolveUserScope(context);
+  const userScope = await resolveUserScope(context);
+  const { parishIds, roles: globalRoles } = userScope;
   // Local roles for this workspace only (never elevate via other memberships)
   const roles = workspaceAccess ? [workspaceAccess.role] : globalRoles;
 
@@ -157,19 +253,15 @@ export const getDashboardStats = async (
     };
   }
 
-  const whereClause = requestedWorkspace
-    ? { parishId: requestedWorkspace }
-    : isAdmin
-      ? {}
-      : { parishId: { in: parishIds } };
+  // Platform admin without a workspace: platform-wide view. With a workspace,
+  // even admins are scoped to it (no cross-tenant rows on a workspace dashboard).
+  const platformWide = isAdmin && !requestedWorkspace;
 
-  // Catechists: scope attendance stats to their own classes, not whole parish
-  // Use workspace-local role only (PARISH_COORDINATOR in another parish must not elevate)
-  const isCatechistOnly =
-    !isAdmin &&
-    !roles.some((r: string) =>
-      (COORDINATOR_OR_ABOVE as readonly string[]).includes(r),
-    );
+  // Coordinator-level access to the whole requested workspace (workspace-local
+  // role only — PARISH_COORDINATOR in another parish must not elevate).
+  const wholeWorkspace =
+    !!requestedWorkspace &&
+    (isAdmin || workspaceAccess?.allowedClassIds === "ALL");
 
   // Family surface OR pure GUARDIAN: scope to household only (never parish-wide KPIs)
   let guardianHouseholdId: string | null = null;
@@ -327,9 +419,9 @@ export const getDashboardStats = async (
     return emptyFamily;
   }
 
-  // ─── Phase 2: Independent queries (meetings deferred until class scope known) ─
+  // ─── Phase 2: class scope first (everything else is filtered by it) ──────────
 
-  const myClassLinksPromise = context.entities.ClassCatechist.findMany({
+  const myClassLinks = await context.entities.ClassCatechist.findMany({
     where: {
       userId: context.user.id,
       ...(requestedWorkspace
@@ -356,6 +448,21 @@ export const getDashboardStats = async (
       },
     },
   });
+  const myClassIds: string[] = myClassLinks.map((c: any) => c.classId);
+
+  const coordinatorParishIds = requestedWorkspace
+    ? []
+    : coordinatorParishIdsFromScope(userScope);
+
+  // Single source of truth for every class-derived KPI below.
+  const classScopeWhere = buildClassScopeWhere({
+    isAdmin,
+    requestedWorkspace,
+    wholeWorkspace,
+    coordinatorParishIds,
+    myClassIds,
+    guardianHouseholdId,
+  });
 
   const pendingSacramentsPromise = context.entities.SacramentalMilestone.count({
     where: {
@@ -363,7 +470,7 @@ export const getDashboardStats = async (
       journey: {
         catechumenProfile: guardianHouseholdId
           ? { householdId: guardianHouseholdId }
-          : { enrollments: { some: { class: whereClause } } },
+          : { enrollments: { some: { class: classScopeWhere } } },
       },
     },
   });
@@ -377,24 +484,41 @@ export const getDashboardStats = async (
   const allCatechumensPromise = context.entities.CatechumenProfile.findMany({
     where: guardianHouseholdId
       ? { householdId: guardianHouseholdId }
-      : isAdmin
+      : platformWide
         ? {}
-        : { enrollments: { some: { class: whereClause } } },
+        : { enrollments: { some: { class: classScopeWhere } } },
     select: { id: true, firstName: true, lastName: true, birthDate: true },
   });
 
-  // Review queue
+  // Review queue — scoped to the requested workspace, or to the parishes where
+  // the actor actually holds a reviewer-level role (never every membership).
   const isReviewer =
-    roles.includes("CONTENT_REVIEWER") ||
     isAdmin ||
     roles.some((r: string) =>
-      ["PARISH_COORDINATOR", "DIOCESE_ADMIN"].includes(r),
+      (REVIEWER_ROLES as readonly string[]).includes(r),
     );
+  const reviewerParishIds = requestedWorkspace
+    ? [requestedWorkspace]
+    : [
+        ...new Set([
+          ...userScope.memberships
+            .filter((m) =>
+              (REVIEWER_ROLES as readonly string[]).includes(m.role),
+            )
+            .map((m) => m.parishId),
+          // DIOCESE_ADMIN expansion (parishes without direct membership)
+          ...parishIds.filter(
+            (id) =>
+              !userScope.memberships.some((m) => m.parishId === id) &&
+              id !== userScope.personalWorkspaceId,
+          ),
+        ]),
+      ];
   const reviewQueuePromise = isReviewer
     ? context.entities.ContentItem.findMany({
         where: {
           status: "IN_REVIEW",
-          ...(isAdmin ? {} : { parishId: { in: parishIds } }),
+          ...(platformWide ? {} : { parishId: { in: reviewerParishIds } }),
         },
         orderBy: { updatedAt: "asc" },
         take: 5,
@@ -431,7 +555,6 @@ export const getDashboardStats = async (
 
   // ─── Resolve Phase 2 ────────────────────────────────────────────────────────
   const [
-    myClassLinks,
     pendingSacraments,
     allCatechumens,
     reviewQueue,
@@ -439,7 +562,6 @@ export const getDashboardStats = async (
     totalUsers,
     totalParishes,
   ] = await Promise.all([
-    myClassLinksPromise,
     pendingSacramentsPromise,
     allCatechumensPromise,
     reviewQueuePromise,
@@ -448,8 +570,6 @@ export const getDashboardStats = async (
     totalParishesPromise,
   ]);
 
-  // ─── Compute myClassIds from merged query ───────────────────────────────────
-  const myClassIds = myClassLinks.map((c: any) => c.classId);
   const enrollmentCountByClass = new Map<string, number>();
   if (myClassIds.length > 0) {
     const enrollmentGroups = await context.entities.ClassEnrollment.groupBy({
@@ -462,8 +582,10 @@ export const getDashboardStats = async (
     }
   }
 
+  // Whole-workspace class list only for coordinator-level access in the
+  // requested workspace; catechists/guardians/viewers keep their own links.
   let parishClasses: { id: string; name: string; meetings: any[] }[] = [];
-  if (!isCatechistOnly && requestedWorkspace) {
+  if (wholeWorkspace && requestedWorkspace) {
     parishClasses = await context.entities.CatechesisClass.findMany({
       where: { parishId: requestedWorkspace, status: "ACTIVE" },
       select: {
@@ -518,6 +640,7 @@ export const getDashboardStats = async (
   // Meeting lists (upcoming + today): resolve class scope AFTER myClassIds are known
   const meetingScope = await resolveMeetingClassScope({
     isAdmin,
+    workspaceScoped: !!requestedWorkspace,
     roles,
     myClassIds,
     guardianHouseholdId,
@@ -535,7 +658,7 @@ export const getDashboardStats = async (
     where: meetingWhere(
       { date: { gte: today, lte: nextWeek } },
       meetingScope,
-      whereClause,
+      classScopeWhere,
     ),
     orderBy: { date: "asc" },
     take: 5,
@@ -546,45 +669,28 @@ export const getDashboardStats = async (
     where: meetingWhere(
       { date: { gte: today, lt: tomorrow } },
       meetingScope,
-      whereClause,
+      classScopeWhere,
     ),
     orderBy: { date: "asc" },
     include: meetingInclude,
   });
 
-  const classWhereClause =
-    isCatechistOnly && myClassIds.length > 0
-      ? { id: { in: myClassIds } }
-      : whereClause;
-
-  // ─── Phase 3: Queries depending on classWhereClause (run in parallel) ──────
+  // ─── Phase 3: Queries depending on classScopeWhere (run in parallel) ───────
 
   const activeClassesPromise = context.entities.CatechesisClass.count({
-    where: { ...classWhereClause, status: "ACTIVE" },
+    where: { ...classScopeWhere, status: "ACTIVE" },
   });
   const enrolledCatechumensPromise = context.entities.ClassEnrollment.findMany({
     where: {
       status: "ENROLLED",
-      class: classWhereClause,
+      class: classScopeWhere,
       catechumenProfileId: { not: null },
     },
     select: { catechumenProfileId: true },
     distinct: ["catechumenProfileId"],
   });
 
-  const attendanceWhere = guardianHouseholdId
-    ? {
-        meeting: {
-          class: {
-            enrollments: {
-              some: { catechumenProfile: { householdId: guardianHouseholdId } },
-            },
-          },
-        },
-      }
-    : isCatechistOnly && myClassIds.length > 0
-      ? { meeting: { classId: { in: myClassIds } } }
-      : { meeting: { class: whereClause } };
+  const attendanceWhere = { meeting: { class: classScopeWhere } };
   const attendanceTotalPromise = context.entities.AttendanceRecord.count({
     where: { status: "PRESENT", ...attendanceWhere },
   });
@@ -599,7 +705,7 @@ export const getDashboardStats = async (
     meetingScope.kind === "all"
       ? {}
       : meetingScope.kind === "parish"
-        ? { class: whereClause }
+        ? { class: classScopeWhere }
         : meetingScope.classIds.length > 0
           ? { classId: { in: meetingScope.classIds } }
           : { classId: { in: [] as string[] } };
@@ -650,7 +756,7 @@ export const getDashboardStats = async (
   const recentAlerts: { type: string; message: string }[] = [];
   if (activeClasses === 0) {
     const draftCount = await context.entities.CatechesisClass.count({
-      where: { ...whereClause, status: "DRAFT" },
+      where: { ...classScopeWhere, status: "DRAFT" },
     });
     if (draftCount > 0) {
       recentAlerts.push({
@@ -697,6 +803,8 @@ export const getDashboardStats = async (
 export const __test__ = {
   meetingWhere,
   resolveMeetingClassScope,
+  buildClassScopeWhere,
+  coordinatorParishIdsFromScope,
   COORDINATOR_OR_ABOVE,
   CATECHIST_ROLES,
 };

@@ -1,6 +1,7 @@
 import { HttpError } from 'wasp/server';
 import { MembershipStatus } from '@prisma/client';
 import { getDioceseParishIds } from '../auth/helpers';
+import { classWhereAcrossWorkspaces } from './sharedScope';
 import {
   isCacheReady,
   triggerBackgroundLoad,
@@ -74,6 +75,11 @@ export const globalSearch = async (args: { query: string; locale?: string | null
   if (!isAdmin && parishIds.length === 0) return [];
 
   const parishFilter = isAdmin ? {} : { parishId: { in: parishIds } };
+  // Classes: per-workspace role (coordinator = whole parish, catechist = assigned
+  // classes, family = own enrollments). Parish membership alone is not enough.
+  const classFilter = isAdmin
+    ? {}
+    : await classWhereAcrossWorkspaces(context, parishIds);
 
   // Reference data: serve from cache if ready, otherwise trigger background load
   const cacheReady = isCacheReady();
@@ -136,7 +142,7 @@ export const globalSearch = async (args: { query: string; locale?: string | null
 
     safeQuery(() =>
       context.entities.CatechesisClass.findMany({
-        where: { name: { contains: q, mode: 'insensitive' }, ...parishFilter },
+        where: { AND: [{ name: { contains: q, mode: 'insensitive' } }, classFilter] },
         select: { id: true, name: true, parish: { select: { name: true } } },
         take: limit,
       })
