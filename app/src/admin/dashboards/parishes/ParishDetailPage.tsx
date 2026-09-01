@@ -1,6 +1,9 @@
 import { type AuthUser } from "wasp/auth";
 import { useQuery, getParishAdminDetail } from "wasp/client/operations";
 import { useParams } from "react-router";
+import { useTranslation } from "react-i18next";
+import { formatDate } from "../../../i18n/format";
+import { useLocale } from "../../../i18n/useLocale";
 import DefaultLayout from "../../layout/DefaultLayout";
 import {
   AppMetric,
@@ -23,6 +26,8 @@ import { NavLink } from "react-router";
 
 const ParishDetailPage = ({ user }: { user: AuthUser }) => {
   const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation("admin");
+  const { currentLocale } = useLocale();
   const { data: parish, isLoading } = useQuery(getParishAdminDetail, {
     id: id!,
   });
@@ -56,7 +61,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
     return (
       <DefaultLayout user={user}>
         <div className="text-center py-12 text-muted-foreground">
-          Paróquia não encontrada.
+          {t("pages.parish.not_found")}
         </div>
       </DefaultLayout>
     );
@@ -68,7 +73,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <NavLink to="/admin/parishes" className="hover:text-[#071A2D]">
-            Paróquias
+            {t("pages.parishes.title")}
           </NavLink>
           <span>/</span>
           <span className="font-semibold tracking-tight text-[#071A2D]">
@@ -77,10 +82,10 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
         </div>
 
         <AppPageHeader
-          eyebrow="Admin · Paróquias"
+          eyebrow={t("pages.parish.eyebrow")}
           title={parish.name}
           subtitle={[
-            !parish.active ? "Arquivada" : null,
+            !parish.active ? t("pages.parishes.archived") : null,
             parish.city,
             parish.diocese?.name,
             parish.owner?.email,
@@ -92,7 +97,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
               to={`/app`}
               className="inline-flex h-10 items-center gap-1 rounded-sm bg-[#071A2D] px-3 text-xs text-white hover:bg-[#0a2540]"
             >
-              Abrir no App →
+              {t("pages.parish.open_in_app")}
             </NavLink>
           }
         />
@@ -100,27 +105,27 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
         {/* KPI Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
           <AppMetric
-            label="Turmas"
+            label={t("pages.parish.kpi_classes")}
             value={parish._count?.classes || 0}
             className="bg-white"
           />
           <AppMetric
-            label="Catequizandos"
+            label={t("pages.parish.kpi_catechumens")}
             value={parish._count?.catechumens || 0}
             className="bg-white"
           />
           <AppMetric
-            label="Membros"
+            label={t("pages.parish.kpi_members")}
             value={parish._count?.memberships || 0}
             className="bg-white"
           />
           <AppMetric
-            label="Comunidades"
+            label={t("pages.parish.kpi_communities")}
             value={parish._count?.communities || 0}
             className="bg-white"
           />
           <AppMetric
-            label="Campanhas"
+            label={t("pages.parish.kpi_campaigns")}
             value={parish._count?.messageCampaigns || 0}
             className="bg-white"
           />
@@ -131,46 +136,46 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
           <div className="mb-4 space-y-1.5">
             <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               <CircleDot className="h-3.5 w-3.5 text-[#071A2D]" />
-              Licença
+              {t("pages.parish.license")}
             </h2>
             <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
           </div>
           {parish.billing ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
               <div>
-                <p className="text-xs text-muted-foreground">Plano</p>
+                <p className="text-xs text-muted-foreground">{t("pages.parish.plan")}</p>
                 <p className="font-semibold tracking-tight text-[#071A2D]">
                   {parish.billing.plan}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Status</p>
+                <p className="text-xs text-muted-foreground">{t("pages.parish.status")}</p>
                 <p className="flex items-center gap-1 font-semibold tracking-tight text-[#071A2D]">
                   {statusIcon(parish.billing.status)}
                   {parish.billing.status}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Trial até</p>
+                <p className="text-xs text-muted-foreground">{t("pages.parish.trial_until")}</p>
                 <p className="font-semibold tracking-tight text-[#071A2D]">
                   {parish.billing.trialEndsAt
-                    ? new Date(parish.billing.trialEndsAt).toLocaleDateString(
-                        "pt-BR",
-                      )
+                    ? formatDate(parish.billing.trialEndsAt, currentLocale)
                     : "—"}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Limites</p>
+                <p className="text-xs text-muted-foreground">{t("pages.parish.limits")}</p>
                 <p className="font-semibold tracking-tight text-[#071A2D]">
-                  {parish.billing.maxClasses || "default"} turmas /{" "}
-                  {parish.billing.maxCatechumens || "default"} catequizandos
+                  {t("pages.parish.limits_value", {
+                    classes: parish.billing.maxClasses || t("pages.parish.default_limit"),
+                    catechumens: parish.billing.maxCatechumens || t("pages.parish.default_limit"),
+                  })}
                 </p>
               </div>
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">
-              Sem licença registada.
+              {t("pages.parish.no_license")}
             </p>
           )}
         </div>
@@ -180,14 +185,14 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
           <div className="mb-4 space-y-1.5">
             <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               <Users className="h-3.5 w-3.5 text-[#071A2D]" />
-              Membros ({parish.members?.length || 0})
+              {t("pages.parish.members", { count: parish.members?.length || 0 })}
             </h2>
             <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
           </div>
           <div className="divide-y -mx-5">
             {!parish.members || parish.members.length === 0 ? (
               <div className="px-5 py-6 text-center text-sm text-muted-foreground">
-                Nenhum membro ativo.
+                {t("pages.parish.no_members")}
               </div>
             ) : (
               parish.members.map((m: any) => (
@@ -219,14 +224,14 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
           <div className="mb-4 space-y-1.5">
             <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               <History className="h-3.5 w-3.5 text-[#071A2D]" />
-              Actividade Recente
+              {t("pages.parish.recent_activity")}
             </h2>
             <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
           </div>
           <div className="divide-y -mx-5">
             {!parish.recentAudit || parish.recentAudit.length === 0 ? (
               <div className="px-5 py-6 text-center text-sm text-muted-foreground">
-                Nenhuma actividade registada.
+                {t("pages.parish.no_activity")}
               </div>
             ) : (
               parish.recentAudit.map((log: any) => (
@@ -256,7 +261,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                   <div className="flex items-center gap-3 text-muted-foreground">
                     <span>{log.user?.email || "—"}</span>
                     <span>
-                      {new Date(log.createdAt).toLocaleDateString("pt-BR")}
+                      {formatDate(log.createdAt, currentLocale)}
                     </span>
                   </div>
                 </div>

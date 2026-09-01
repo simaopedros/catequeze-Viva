@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
+import { QueryErrorState } from "../../client/components/QueryErrorState";
 import { Textarea } from "../../client/components/ui/textarea";
 import {
   ArrowLeft,
@@ -39,7 +40,11 @@ export default function ImportCatechumensPage() {
   const [searchParams] = useSearchParams();
   const scopedClassId = searchParams.get("classId") || "";
   const { data: parishes = [] } = useQuery(listParishes);
-  const { data: classPage } = useQuery(
+  const {
+    data: classPage,
+    error: classesError,
+    refetch: refetchClasses,
+  } = useQuery(
     listClasses,
     { workspaceId: activeParishId || undefined, take: 100 } as any,
     { enabled: Boolean(activeParishId) },
@@ -189,6 +194,14 @@ Maria,Santos,2014-07-22,Silva Santos,Eucaristia 2026`}
               ))}
             </select>
           </div>
+        )}
+
+        {!scopedClassId && classesError && classes.length === 0 && (
+          <QueryErrorState
+            compact
+            error={classesError}
+            onRetry={refetchClasses}
+          />
         )}
 
         {!scopedClassId && classes.length > 0 && (

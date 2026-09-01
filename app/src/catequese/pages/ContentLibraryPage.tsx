@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import useDebounce from "../../client/hooks/useDebounce";
 import { Button } from "../../client/components/ui/button";
+import { QueryErrorState } from "../../client/components/QueryErrorState";
 import { Badge } from "../../client/components/ui/badge";
 import { FilterPills } from "../../client/components/FilterPills";
 import { SearchInput } from "../../client/components/SearchInput";
@@ -122,6 +123,8 @@ export default function ContentLibraryPage() {
     data: pageData,
     isLoading: loading,
     isFetching,
+    error: listError,
+    refetch: refetchList,
   } = useQuery(
     listContentItems,
     {
@@ -267,6 +270,10 @@ export default function ContentLibraryPage() {
         </div>
       </div>
     );
+  }
+
+  if (listError && !pageData) {
+    return <QueryErrorState error={listError} onRetry={refetchList} />;
   }
 
   return (

@@ -1,6 +1,8 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
+import { QueryErrorState } from "../../client/components/QueryErrorState";
+import { toast } from "../../client/hooks/use-toast";
 import { Badge } from "../../client/components/ui/badge";
 import {
   AppPageHeader,
@@ -31,7 +33,12 @@ export default function BirthdaysPage() {
     { workspaceId: activeParishId || undefined } as any,
     { enabled: Boolean(activeParishId) },
   );
-  const { data: birthdays, isLoading } = useQuery(listUpcomingBirthdays, {
+  const {
+    data: birthdays,
+    isLoading,
+    error: birthdaysError,
+    refetch: refetchBirthdays,
+  } = useQuery(listUpcomingBirthdays, {
     classId: classFilter || undefined,
     days: parseInt(days),
   });
@@ -47,8 +54,12 @@ export default function BirthdaysPage() {
         catechumenId,
         year: new Date().getFullYear(),
       });
-    } catch {
-      /* silently fail */
+    } catch (err: any) {
+      toast({
+        title: tc("error"),
+        description: err?.message || tc("load_error"),
+        variant: "destructive",
+      });
     }
   };
 
@@ -121,6 +132,12 @@ export default function BirthdaysPage() {
             <div key={i} className="h-14 rounded-sm bg-muted" />
           ))}
         </div>
+      ) : birthdaysError && !birthdays ? (
+        <QueryErrorState
+          compact
+          error={birthdaysError}
+          onRetry={refetchBirthdays}
+        />
       ) : !birthdays?.length ? (
         <EmptyState icon={Cake} title={t("noBirthdays")} compact />
       ) : (

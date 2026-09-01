@@ -80,7 +80,7 @@ import {
   DropdownMenuTrigger,
 } from "../../../client/components/ui/dropdown-menu";
 
-const DEFAULT_TITLE = "Novo encontro";
+const DEFAULT_TITLE_KEY = "workspace.default_title";
 const DEFAULT_TIME = "60";
 
 function SelectedChip({
@@ -131,11 +131,12 @@ function ReferencesSidebar({
   setCatechismRefs: React.Dispatch<React.SetStateAction<any[]>>;
   setDirectoryRefs: React.Dispatch<React.SetStateAction<any[]>>;
 }) {
+  const { t } = useTranslation("content");
   const [pickerOpen, setPickerOpen] = useState(false);
   const total = bibleRefs.length + catechismRefs.length + directoryRefs.length;
 
   const onError = (message: string) =>
-    toast({ title: "Erro", description: message, variant: "destructive" });
+    toast({ title: t("workspace.error"), description: message, variant: "destructive" });
 
   const handleRemoveBible = async (id?: string, verseId?: string) => {
     try {
@@ -174,8 +175,8 @@ function ReferencesSidebar({
     const id = await ensurePersisted();
     if (!id) {
       toast({
-        title: "Salve o rascunho",
-        description: "Edite o título ou o roteiro antes de anexar referências.",
+        title: t("workspace.save_draft_first"),
+        description: t("workspace.save_draft_before_refs"),
       });
       return;
     }
@@ -393,6 +394,8 @@ export function ContentDocumentWorkspace({
 }) {
   const navigate = useNavigate();
   const { t: tc } = useTranslation("common");
+  const { t } = useTranslation("content");
+  const DEFAULT_TITLE = t(DEFAULT_TITLE_KEY);
   const [loading, setLoading] = useState(!!existingContentId);
   const [contentId, setContentId] = useState<string | null>(
     existingContentId || null,
@@ -517,8 +520,8 @@ export function ContentDocumentWorkspace({
         readyRef.current = true;
       } catch (error: any) {
         toast({
-          title: "Erro",
-          description: error?.message || "Não foi possível abrir o editor.",
+          title: t("workspace.error"),
+          description: error?.message || t("workspace.editor_open_error"),
           variant: "destructive",
         });
       } finally {
@@ -581,8 +584,8 @@ export function ContentDocumentWorkspace({
     } catch (error: any) {
       setSaveState("error");
       toast({
-        title: "Erro ao salvar",
-        description: error?.message || "Tente novamente.",
+        title: t("workspace.save_error"),
+        description: error?.message || t("workspace.try_again"),
         variant: "destructive",
       });
       return null;
@@ -603,8 +606,8 @@ export function ContentDocumentWorkspace({
   const saveNow = useCallback(async () => {
     if (!isMeaningfullyEdited() && !contentIdRef.current) {
       toast({
-        title: "Nada para salvar",
-        description: "Edite o título ou o roteiro do encontro.",
+        title: t("workspace.nothing_to_save"),
+        description: t("workspace.nothing_to_save_desc"),
       });
       return;
     }
@@ -633,8 +636,8 @@ export function ContentDocumentWorkspace({
     } catch (error: any) {
       setSaveState("error");
       toast({
-        title: "Erro ao salvar",
-        description: error?.message || "Tente novamente.",
+        title: t("workspace.save_error"),
+        description: error?.message || t("workspace.try_again"),
         variant: "destructive",
       });
     }
@@ -676,9 +679,9 @@ export function ContentDocumentWorkspace({
       triggerBrowserDownload(blob, fileName || sourceFileName || "documento");
     } catch (error: any) {
       toast({
-        title: "Erro ao descarregar",
+        title: t("workspace.download_error"),
         description:
-          error?.message || "Não foi possível descarregar o original.",
+          error?.message || t("workspace.download_error_desc"),
         variant: "destructive",
       });
     } finally {
@@ -692,14 +695,14 @@ export function ContentDocumentWorkspace({
     try {
       await deleteContentItem({ id: contentId });
       toast({
-        title: "Encontro excluído",
-        description: "O rascunho foi removido.",
+        title: t("workspace.deleted_title"),
+        description: t("workspace.deleted_desc"),
       });
       navigate("/app/content-library");
     } catch (error: any) {
       toast({
-        title: "Erro ao excluir",
-        description: error?.message || "Não foi possível excluir.",
+        title: t("workspace.delete_error"),
+        description: error?.message || t("workspace.delete_error_desc"),
         variant: "destructive",
       });
     } finally {
@@ -716,8 +719,8 @@ export function ContentDocumentWorkspace({
     const id = await ensurePersisted();
     if (!id) {
       toast({
-        title: "Salve o rascunho",
-        description: "Edite o encontro antes de vincular referências.",
+        title: t("workspace.save_draft_first"),
+        description: t("workspace.save_draft_before_links"),
       });
       throw new Error("Draft not persisted");
     }
@@ -733,9 +736,9 @@ export function ContentDocumentWorkspace({
       });
     } catch (error: any) {
       toast({
-        title: "Erro",
+        title: t("workspace.error"),
         description:
-          error?.message || "Não foi possível vincular a referência bíblica.",
+          error?.message || t("workspace.link_bible_error"),
         variant: "destructive",
       });
       throw error;
@@ -750,8 +753,8 @@ export function ContentDocumentWorkspace({
     const id = await ensurePersisted();
     if (!id) {
       toast({
-        title: "Salve o rascunho",
-        description: "Edite o encontro antes de vincular referências.",
+        title: t("workspace.save_draft_first"),
+        description: t("workspace.save_draft_before_links"),
       });
       throw new Error("Draft not persisted");
     }
@@ -767,10 +770,9 @@ export function ContentDocumentWorkspace({
       });
     } catch (error: any) {
       toast({
-        title: "Erro",
+        title: t("workspace.error"),
         description:
-          error?.message ||
-          "Não foi possível vincular a referência do Catecismo.",
+          error?.message || t("workspace.link_catechism_error"),
         variant: "destructive",
       });
       throw error;
@@ -785,8 +787,8 @@ export function ContentDocumentWorkspace({
     const id = await ensurePersisted();
     if (!id) {
       toast({
-        title: "Salve o rascunho",
-        description: "Edite o encontro antes de vincular referências.",
+        title: t("workspace.save_draft_first"),
+        description: t("workspace.save_draft_before_links"),
       });
       throw new Error("Draft not persisted");
     }
@@ -802,10 +804,9 @@ export function ContentDocumentWorkspace({
       });
     } catch (error: any) {
       toast({
-        title: "Erro",
+        title: t("workspace.error"),
         description:
-          error?.message ||
-          "Não foi possível vincular a referência do Diretório.",
+          error?.message || t("workspace.link_directory_error"),
         variant: "destructive",
       });
       throw error;
@@ -823,31 +824,31 @@ export function ContentDocumentWorkspace({
   const saveBadge = (() => {
     if (saveState === "saving") {
       return {
-        label: "Salvando…",
+        label: t("workspace.status_saving"),
         className: "border-border/70 bg-muted/30 text-brand-ink",
       };
     }
     if (saveState === "error") {
       return {
-        label: "Falha ao salvar",
+        label: t("workspace.status_save_failed"),
         className: "border-destructive/20 bg-destructive/10 text-destructive",
       };
     }
     if (saveState === "saved" || (contentId && saveState === "clean")) {
       const time = formatSavedAt(lastSavedAt);
       return {
-        label: time ? `Salvo às ${time}` : "Salvo",
+        label: time ? t("workspace.status_saved_at", { time }) : t("workspace.status_saved"),
         className: "border-brand-ink/20 bg-brand-ink/5 text-brand-ink",
       };
     }
     if (saveState === "dirty") {
       return {
-        label: "Não salvo",
+        label: t("workspace.status_unsaved"),
         className: "border-border/70 bg-muted/30 text-muted-foreground",
       };
     }
     return {
-      label: "Rascunho local",
+      label: t("workspace.status_local_draft"),
       className: "border-border/70 bg-muted/20 text-muted-foreground",
     };
   })();
@@ -880,7 +881,8 @@ export function ContentDocumentWorkspace({
           <Link
             to="/app/content-library"
             className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-sm px-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-brand-ink"
-            title="Voltar para a biblioteca"
+            title={t("workspace.back_to_library")}
+            aria-label={t("workspace.back_to_library")}
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Biblioteca</span>
@@ -975,15 +977,15 @@ export function ContentDocumentWorkspace({
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             className="h-8 rounded-sm border-border/60 bg-muted/20 px-2.5 text-sm font-semibold tracking-tight text-brand-ink shadow-none focus-visible:ring-1"
-            placeholder="Título do encontro"
+            placeholder={t("workspace.title_placeholder")}
             aria-label="Título"
           />
           <Input
             value={theme}
             onChange={(event) => setTheme(event.target.value)}
             className="h-8 rounded-sm border-border/60 bg-muted/20 px-2.5 text-sm shadow-none focus-visible:ring-1"
-            placeholder="Tema"
-            aria-label="Tema"
+            placeholder={t("workspace.theme_placeholder")}
+            aria-label={t("workspace.theme_placeholder")}
           />
           <div className="relative">
             <Clock3 className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -994,7 +996,7 @@ export function ContentDocumentWorkspace({
               }
               className="h-8 rounded-sm border-border/60 bg-muted/20 pl-7 pr-2 text-sm shadow-none focus-visible:ring-1"
               placeholder="min"
-              aria-label="Duração em minutos"
+              aria-label={t("workspace.duration_minutes")}
             />
           </div>
           <div className="relative">
@@ -1003,8 +1005,8 @@ export function ContentDocumentWorkspace({
               value={tags}
               onChange={(event) => setTags(event.target.value)}
               className="h-8 rounded-sm border-border/60 bg-muted/20 pl-7 pr-2 text-sm shadow-none focus-visible:ring-1"
-              placeholder="Tags"
-              aria-label="Tags"
+              placeholder={t("workspace.tags_placeholder")}
+              aria-label={t("workspace.tags_placeholder")}
             />
           </div>
         </div>
@@ -1027,8 +1029,8 @@ export function ContentDocumentWorkspace({
                 const id = await ensurePersisted();
                 if (!id) {
                   toast({
-                    title: "Salve o rascunho",
-                    description: "Edite o encontro antes de enviar imagens.",
+                    title: t("workspace.save_draft_first"),
+                    description: t("workspace.save_draft_before_images"),
                   });
                   throw new Error("Draft not persisted");
                 }
@@ -1037,14 +1039,14 @@ export function ContentDocumentWorkspace({
               onAddBibleReference={attachBibleReference}
               onAddCatechismReference={attachCatechismReference}
               onAddDirectoryReference={attachDirectoryReference}
-              placeholder="Escreva o roteiro do encontro nesta seção…"
+              placeholder={t("workspace.script_placeholder")}
               onSave={() => void saveNow()}
               saveLabel={
                 saveState === "saving"
-                  ? "Salvando…"
+                  ? t("workspace.status_saving")
                   : saveState === "error"
-                    ? "Tentar de novo"
-                    : "Salvar"
+                    ? t("workspace.retry")
+                    : t("workspace.save")
               }
               saveDisabled={saveState === "saving"}
               onPreview={() => setPreviewOpen(true)}
@@ -1180,9 +1182,9 @@ export function ContentDocumentWorkspace({
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title="Excluir este rascunho?"
-        description="Esta ação não pode ser desfeita. O encontro será removido da biblioteca."
-        confirmLabel="Excluir"
+        title={t("workspace.delete_confirm_title")}
+        description={t("workspace.delete_confirm_desc")}
+        confirmLabel={t("workspace.delete_confirm_label")}
         variant="destructive"
         loading={deleting}
         onConfirm={() => void handleDeleteContent()}

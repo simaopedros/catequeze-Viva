@@ -1,6 +1,7 @@
 import { lazy, Suspense, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
+import { QueryErrorState } from "../../client/components/QueryErrorState";
 import { Badge } from "../../client/components/ui/badge";
 import {
   BarChart3,
@@ -32,7 +33,12 @@ export default function ReportsPage() {
   const { t } = useTranslation("reports");
   const { t: tc } = useTranslation("common");
   const { activeParishId } = useActiveParish();
-  const { data, isLoading: loading } = useQuery(
+  const {
+    data,
+    isLoading: loading,
+    error,
+    refetch,
+  } = useQuery(
     getReportsOverview,
     { workspaceId: activeParishId || undefined } as any,
     { enabled: Boolean(activeParishId) },
@@ -176,6 +182,10 @@ export default function ReportsPage() {
     if (!classReports.length) return 100;
     return Math.max(...classReports.map((r: any) => r.attendanceRate), 100);
   }, [classReports]);
+
+  if (error && !data) {
+    return <QueryErrorState error={error} onRetry={refetch} />;
+  }
 
   if (loading)
     return (

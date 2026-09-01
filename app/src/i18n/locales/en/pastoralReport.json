@@ -35,5 +35,12 @@
   "avgAttendanceLine": "Avg attendance (%)",
   "meetingsCount": "No. of meetings",
   "attendanceRate": "Attendance rate",
-  "monthlyMeetings": "Meetings in month"
+  "monthlyMeetings": "Meetings in month",
+  "enrollment_status": {
+    "ENROLLED": "Active",
+    "DROPPED": "Dropped",
+    "TRANSFERRED": "Transferred",
+    "COMPLETED": "Completed",
+    "MOVED_TO_OTHER_CLASS": "Moved to another class"
+  }
 }

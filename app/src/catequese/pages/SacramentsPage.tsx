@@ -30,6 +30,7 @@ import {
   AppMetric,
 } from "../../client/components/brand/AppChrome";
 import { EmptyState } from "../../client/components/EmptyState";
+import { QueryErrorState } from "../../client/components/QueryErrorState";
 import {
   useQuery,
   listCatechumens,
@@ -322,6 +323,10 @@ export default function SacramentsPage() {
       ).length,
     };
   }, [journeys, activeParishId]);
+
+  if (journeysError && journeys.length === 0 && !loading) {
+    return <QueryErrorState error={journeysError} onRetry={refetchJourneys} />;
+  }
 
   if (loading)
     return (

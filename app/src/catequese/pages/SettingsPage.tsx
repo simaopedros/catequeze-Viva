@@ -20,7 +20,6 @@ import {
   GitMerge,
   RefreshCw,
 } from "lucide-react";
-import { ROLE_LABELS } from "../../shared/constants";
 import {
   AppEyebrow,
   AppPageHeader,
