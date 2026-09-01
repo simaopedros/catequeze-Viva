@@ -7,6 +7,43 @@ import { probeAiHealth } from './api/healthCheck';
 import { preloadReferenceCache } from './cache/referenceCache';
 import { registerLandingHtmlMeta } from './middleware/landingHtmlMeta';
 
+const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
+const TOKEN_QUERY_RE = /([?&](token|key|code|session|access_token)=)[^&#\s]+/gi;
+const SENSITIVE_HEADERS = ['authorization', 'cookie', 'set-cookie', 'x-api-key', 'x-maintenance-secret'];
+
+function scrubString(value: string): string {
+  return value.replace(EMAIL_RE, '[email]').replace(TOKEN_QUERY_RE, '$1[redacted]');
+}
+
+/** Remove PII and credentials from Sentry events before they leave the server. */
+export function scrubSentryEvent<T extends Record<string, any>>(input: T): T {
+  const event = input as Record<string, any>;
+  if (event.user) {
+    event.user = { id: event.user.id };
+  }
+  if (event.request) {
+    if (event.request.url) event.request.url = scrubString(event.request.url);
+    if (event.request.query_string) event.request.query_string = scrubString(String(event.request.query_string));
+    delete event.request.data;
+    delete event.request.cookies;
+    if (event.request.headers) {
+      for (const header of Object.keys(event.request.headers)) {
+        if (SENSITIVE_HEADERS.includes(header.toLowerCase())) {
+          event.request.headers[header] = '[redacted]';
+        }
+      }
+    }
+  }
+  if (event.message) event.message = scrubString(event.message);
+  for (const exception of event.exception?.values ?? []) {
+    if (exception.value) exception.value = scrubString(exception.value);
+  }
+  for (const crumb of event.breadcrumbs ?? []) {
+    if (crumb.message) crumb.message = scrubString(crumb.message);
+  }
+  return event as T;
+}
+
 export const serverSetup: ServerSetupFn = async ({ app, server }) => {
   const MAX_BODY = '2mb';
 
@@ -55,6 +92,8 @@ export const serverSetup: ServerSetupFn = async ({ app, server }) => {
         dsn: sentryDsn,
         environment: process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'production',
         tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE || '0.1'),
+        sendDefaultPii: false,
+        beforeSend: (event) => scrubSentryEvent(event),
       });
       logger.info('[setup] Sentry initialized');
     } catch (e) {

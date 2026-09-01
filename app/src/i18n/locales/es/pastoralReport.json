@@ -35,5 +35,12 @@
   "avgAttendanceLine": "Media de asistencia (%)",
   "meetingsCount": "Nº de encuentros",
   "attendanceRate": "Tasa de asistencia",
-  "monthlyMeetings": "Encuentros en el mes"
+  "monthlyMeetings": "Encuentros en el mes",
+  "enrollment_status": {
+    "ENROLLED": "Activo",
+    "DROPPED": "Desistente",
+    "TRANSFERRED": "Transferido",
+    "COMPLETED": "Concluido",
+    "MOVED_TO_OTHER_CLASS": "Cambió de grupo"
+  }
 }

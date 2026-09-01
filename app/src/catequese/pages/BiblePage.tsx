@@ -16,6 +16,7 @@ import {
   Clock,
 } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
+import { QueryErrorState } from "../../client/components/QueryErrorState";
 import { FilterPills } from "../../client/components/FilterPills";
 import { AppPageHeader } from "../../client/components/brand/AppChrome";
 import { SearchInput } from "../../client/components/SearchInput";
@@ -124,7 +125,11 @@ export default function BiblePage() {
   const { t } = useTranslation("bible");
   const { t: tc } = useTranslation("common");
   const { currentLocale } = useLocale();
-  const { data: books = [] } = useQuery(listBibleBooks, {
+  const {
+    data: books = [],
+    error: booksError,
+    refetch: refetchBooks,
+  } = useQuery(listBibleBooks, {
     locale: currentLocale,
   });
 
@@ -565,6 +570,10 @@ export default function BiblePage() {
   // ── Shared sidebar content ──
   const sidebarContent = (
     <>
+      {!selectedBook && booksError && books.length === 0 && (
+        <QueryErrorState compact error={booksError} onRetry={refetchBooks} />
+      )}
+
       {/* No book selected: recents + favorites + testament grids */}
       {!selectedBook && (
         <div className="space-y-5">

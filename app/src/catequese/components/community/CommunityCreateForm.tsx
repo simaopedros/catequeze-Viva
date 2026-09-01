@@ -7,7 +7,7 @@ import {
   AppGoldRule,
 } from "../../../client/components/brand/AppChrome";
 import { Loader2 } from "lucide-react";
-import { COMMUNITY_TYPE_OPTIONS } from "../../../shared/constants";
+import { useCommunityTypeOptions } from "../../../i18n/useLabels";
 import PhoneMaskInput from "../../../client/components/PhoneMaskInput";
 import AddressAutocomplete, {
   type AddressData,
@@ -25,6 +25,7 @@ export function CommunityCreateForm({
   onCancel,
 }: CommunityCreateFormProps) {
   const { t } = useTranslation("parishes");
+  const communityTypeOptions = useCommunityTypeOptions();
   const [name, setName] = useState("");
   const [type, setType] = useState("");
   const [description, setDescription] = useState("");
@@ -112,7 +113,7 @@ export function CommunityCreateForm({
             onChange={(e) => setType(e.target.value)}
             className={inputClass}
           >
-            {COMMUNITY_TYPE_OPTIONS.map((o) => (
+            {communityTypeOptions.map((o) => (
               <option key={o.value} value={o.value}>
                 {o.label}
               </option>

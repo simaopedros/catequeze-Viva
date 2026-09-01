@@ -10,14 +10,21 @@ import { logger } from '../logger';
 import type { Request, Response } from 'express';
 import { HttpError } from 'wasp/server';
 import { detectProvider, createAiClient, aiCompletionStream } from '../ai/providers';
-import { getCreditsStatus, resolveUserEffectivePlanAndStatus } from '../ai/credits';
+import {
+  assertAndDeductCredits,
+  getCreditsStatus,
+  resolveUserEffectivePlanAndStatus,
+} from '../ai/credits';
 import { getDailyUsage, incrementDailyUsage } from '../ai/dailyUsage';
 import { getCachedResponse, setCachedResponse } from '../ai/cache';
 import { CHAT_SYSTEM_PROMPT } from '../ai/prompts';
-import { getDailyLimit } from '../../shared/aiCredits';
+import { AI_CREDITS, getDailyLimit } from '../../shared/aiCredits';
 import { assertTwoFactorSessionVerified } from './twoFactorOperations';
 
+/** Daily-limit weight of one chat turn (independent of the monthly credit cost). */
 const CHAT_DAILY_COST = 1;
+/** Monthly credit cost of one chat turn — governed by pricing (`AI_CREDIT_COST.chatMessage`). */
+const CHAT_CREDIT_COST = AI_CREDITS.COST.chatMessage;
 
 function getAiClientOrThrow() {
   const config = detectProvider({
@@ -82,24 +89,6 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
     return;
   }
 
-  const user = await context.entities.User.findUnique({
-    where: { id: context.user.id },
-    select: { subscriptionPlan: true },
-  });
-  const { effectivePlan } = await resolveUserEffectivePlanAndStatus(
-    context,
-    context.user.id,
-    user?.subscriptionPlan ?? null,
-  );
-  const dailyLimit = getDailyLimit(effectivePlan ?? user?.subscriptionPlan);
-  if (dailyLimit > 0) {
-    const todayUsage = await getDailyUsage(context.entities, context.user.id);
-    if (todayUsage + CHAT_DAILY_COST > dailyLimit) {
-      res.status(429).json({ error: `Limite diário de assistência editorial atingido (${dailyLimit} créditos/dia).` });
-      return;
-    }
-  }
-
   const cacheScope = {
     userId: context.user.id,
     workspaceId: null as string | null,
@@ -128,6 +117,35 @@ export async function chatStreamHandler(req: Request, res: Response, context: an
       res.status(status).json({
         error: err?.message || 'Serviço de assistência editorial não configurado.',
       });
+      return;
+    }
+
+    // Same credit policy as every other AI action: plan access, monthly pool,
+    // daily limit. Charged before the stream opens so a 402/429 is a JSON reply.
+    try {
+      await assertAndDeductCredits(context, CHAT_CREDIT_COST);
+      const user = await context.entities.User.findUnique({
+        where: { id: context.user.id },
+        select: { subscriptionPlan: true },
+      });
+      const { effectivePlan } = await resolveUserEffectivePlanAndStatus(
+        context,
+        context.user.id,
+        user?.subscriptionPlan ?? null,
+      );
+      const dailyLimit = getDailyLimit(effectivePlan ?? user?.subscriptionPlan);
+      if (dailyLimit > 0) {
+        const todayUsage = await getDailyUsage(context.entities, context.user.id);
+        if (todayUsage + CHAT_DAILY_COST > dailyLimit) {
+          throw new HttpError(
+            429,
+            `Limite diário de assistência editorial atingido (${dailyLimit} créditos/dia).`,
+          );
+        }
+      }
+    } catch (err: any) {
+      const status = typeof err?.statusCode === 'number' ? err.statusCode : 402;
+      res.status(status).json({ error: err?.message || 'Sem créditos de assistência editorial.' });
       return;
     }
   }

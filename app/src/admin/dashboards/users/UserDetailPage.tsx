@@ -12,9 +12,14 @@ import {
   Building2,
 } from "lucide-react";
 import { NavLink } from "react-router";
+import { useTranslation } from "react-i18next";
+import { formatDate } from "../../../i18n/format";
+import { useLocale } from "../../../i18n/useLocale";
 
 const UserDetailPage = ({ user }: { user: AuthUser }) => {
   const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation("admin");
+  const { currentLocale } = useLocale();
   const { data: u, isLoading } = useQuery(getUserAdminDetail, { id: id! });
 
   if (isLoading) {
@@ -31,7 +36,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
     return (
       <DefaultLayout user={user}>
         <div className="text-center py-12 text-muted-foreground">
-          Utilizador não encontrado.
+          {t("pages.user.not_found")}
         </div>
       </DefaultLayout>
     );
@@ -43,7 +48,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <NavLink to="/admin/users" className="hover:text-[#071A2D]">
-            Utilizadores
+            {t("pages.user.breadcrumb")}
           </NavLink>
           <span>/</span>
           <span className="font-semibold tracking-tight text-[#071A2D]">
@@ -52,9 +57,9 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
         </div>
 
         <AppPageHeader
-          eyebrow="Admin · Utilizadores"
+          eyebrow={t("pages.user.eyebrow")}
           title={u.firstName ? `${u.firstName} ${u.lastName || ""}` : u.email}
-          subtitle={u.isAdmin ? `${u.email} · Admin` : u.email}
+          subtitle={u.isAdmin ? `${u.email} · ${t("pages.admin")}` : u.email}
         />
 
         {/* Profile + Billing */}
@@ -63,33 +68,33 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
             <div className="mb-4 space-y-1.5">
               <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 <Users className="h-3.5 w-3.5 text-[#071A2D]" />
-                Perfil
+                {t("pages.user.profile")}
               </h2>
               <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <p className="text-xs text-muted-foreground">Username</p>
+                <p className="text-xs text-muted-foreground">{t("pages.user.username")}</p>
                 <p className="font-semibold tracking-tight text-[#071A2D]">
                   {u.username || "—"}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Telefone</p>
+                <p className="text-xs text-muted-foreground">{t("pages.user.phone")}</p>
                 <p className="font-semibold tracking-tight text-[#071A2D]">
                   {u.phone || "—"}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Locale</p>
+                <p className="text-xs text-muted-foreground">{t("pages.user.locale")}</p>
                 <p className="font-semibold tracking-tight text-[#071A2D]">
                   {u.locale}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Criado em</p>
+                <p className="text-xs text-muted-foreground">{t("pages.user.created_at")}</p>
                 <p className="font-semibold tracking-tight text-[#071A2D]">
-                  {new Date(u.createdAt).toLocaleDateString("pt-BR")}
+                  {formatDate(u.createdAt, currentLocale)}
                 </p>
               </div>
             </div>
@@ -99,33 +104,33 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
             <div className="mb-4 space-y-1.5">
               <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 <CreditCard className="h-3.5 w-3.5 text-[#071A2D]" />
-                Billing
+                {t("pages.user.billing")}
               </h2>
               <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <p className="text-xs text-muted-foreground">Plano</p>
+                <p className="text-xs text-muted-foreground">{t("pages.user.plan")}</p>
                 <p className="font-semibold tracking-tight text-[#071A2D]">
                   {u.subscriptionPlan || "—"}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Status</p>
+                <p className="text-xs text-muted-foreground">{t("pages.user.status")}</p>
                 <p className="font-semibold tracking-tight text-[#071A2D]">
                   {u.subscriptionStatus || "—"}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">
-                  Créditos editoriais
+                  {t("pages.user.ai_credits")}
                 </p>
                 <p className="font-semibold tabular-nums tracking-tight text-[#071A2D]">
                   {u.credits}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Stripe ID</p>
+                <p className="text-xs text-muted-foreground">{t("pages.user.stripe_id")}</p>
                 <p className="text-xs">{u.paymentProcessorUserId || "—"}</p>
               </div>
             </div>
@@ -137,14 +142,14 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
           <div className="mb-4 space-y-1.5">
             <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               <Building2 className="h-3.5 w-3.5 text-[#071A2D]" />
-              Paróquias ({u.memberships?.length || 0})
+              {t("pages.user.parishes", { count: u.memberships?.length || 0 })}
             </h2>
             <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
           </div>
           <div className="divide-y -mx-5">
             {!u.memberships || u.memberships.length === 0 ? (
               <div className="px-5 py-6 text-center text-sm text-muted-foreground">
-                Nenhuma paróquia.
+                {t("pages.user.no_parishes")}
               </div>
             ) : (
               u.memberships.map((m: any) => (
@@ -158,13 +163,13 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {m.community?.name
-                        ? `Comunidade: ${m.community.name} · `
+                        ? t("pages.user.community_prefix", { name: m.community.name })
                         : ""}
                       {m.role} · {m.status}
                     </p>
                   </div>
                   <span className="text-xs text-muted-foreground">
-                    desde {new Date(m.createdAt).toLocaleDateString("pt-BR")}
+                    {t("pages.user.since", { date: formatDate(m.createdAt, currentLocale) })}
                   </span>
                 </div>
               ))
@@ -177,14 +182,14 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
           <div className="mb-4 space-y-1.5">
             <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               <History className="h-3.5 w-3.5 text-[#071A2D]" />
-              Histórico de Acções
+              {t("pages.user.audit")}
             </h2>
             <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
           </div>
           <div className="divide-y -mx-5">
             {!u.auditLog || u.auditLog.length === 0 ? (
               <div className="px-5 py-6 text-center text-sm text-muted-foreground">
-                Nenhuma acção registada.
+                {t("pages.user.no_audit")}
               </div>
             ) : (
               u.auditLog.map((log: any) => (
@@ -212,7 +217,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                     )}
                   </div>
                   <span className="text-muted-foreground">
-                    {new Date(log.createdAt).toLocaleDateString("pt-BR")}
+                    {formatDate(log.createdAt, currentLocale)}
                   </span>
                 </div>
               ))
@@ -226,7 +231,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
             <div className="mb-4 space-y-1.5">
               <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 <BarChart3 className="h-3.5 w-3.5 text-[#071A2D]" />
-                Uso editorial (30d)
+                {t("pages.user.ai_usage")}
               </h2>
               <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
             </div>
@@ -236,9 +241,9 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                   key={d.id}
                   className="px-5 py-2 flex items-center justify-between text-xs"
                 >
-                  <span>{new Date(d.date).toLocaleDateString("pt-BR")}</span>
+                  <span>{formatDate(d.date, currentLocale)}</span>
                   <span className="font-semibold tabular-nums tracking-tight text-[#071A2D]">
-                    {d.creditsUsed} créditos
+                    {t("pages.user.credits_value", { count: d.creditsUsed })}
                   </span>
                 </div>
               ))}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AiProgressIndicator } from "./AiProgressIndicator";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 import { generateWhatsAppMessage } from "../../lib/aiOperations";
@@ -188,6 +189,8 @@ export function GenerateWhatsappFlow() {
               ))}
             </div>
           </div>
+
+          <AiProgressIndicator active={generating} label={t("whatsapp.generating")} />
 
           <Button
             onClick={handleGenerate}

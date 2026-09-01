@@ -94,7 +94,34 @@ async function resolveOwnerUmbrella(
   return null;
 }
 
+// Per-request memo (keyed by the operation context) — several enforcement
+// checks in one request resolve the same parish billing repeatedly.
+const billingRequestCache = new WeakMap<object, Map<string, Promise<TenantBillingStub | null>>>();
+
 export async function resolveEffectiveBilling(
+  context: any,
+  parishId: string,
+): Promise<TenantBillingStub | null> {
+  const cacheKey = context?.entities;
+  if (!cacheKey || typeof cacheKey !== 'object') {
+    return resolveEffectiveBillingUncached(context, parishId);
+  }
+  let perRequest = billingRequestCache.get(cacheKey);
+  if (!perRequest) {
+    perRequest = new Map();
+    billingRequestCache.set(cacheKey, perRequest);
+  }
+  const hit = perRequest.get(parishId);
+  if (hit) return hit;
+  const pending = resolveEffectiveBillingUncached(context, parishId).catch((err) => {
+    perRequest!.delete(parishId);
+    throw err;
+  });
+  perRequest.set(parishId, pending);
+  return pending;
+}
+
+async function resolveEffectiveBillingUncached(
   context: any,
   parishId: string,
 ): Promise<TenantBillingStub | null> {
@@ -542,10 +569,23 @@ export async function assertCanCreateClass(
 
 // ─── Catechumen enrollment ──────────────────────────────────────────────────
 
-export async function assertCanEnrollCatechumen(
+export type EnrollmentCapacity = {
+  /** null = unlimited */
+  maxCatechumens: number | null;
+  enrolledCount: number;
+  /** Error to raise when the limit is reached (message depends on plan). */
+  limitError: () => HttpError;
+};
+
+/**
+ * Resolves the workspace's catechumen limit and current usage once. Bulk
+ * callers (CSV import) use this to enforce the limit locally instead of
+ * re-querying billing for every row.
+ */
+export async function resolveEnrollmentCapacity(
   context: any,
   parishId: string,
-): Promise<void> {
+): Promise<EnrollmentCapacity> {
   const parish = await context.entities.Parish.findUnique({
     where: { id: parishId },
     select: { type: true },
@@ -556,19 +596,23 @@ export async function assertCanEnrollCatechumen(
     const freshUser = await ensureProductTrial(context, context.user.id);
     const plan = getPersonalPlanId(freshUser);
     const limits = getPlanLimits(plan);
-    if (limits.maxCatechumens === null) return;
+    if (limits.maxCatechumens === null) {
+      return { maxCatechumens: null, enrolledCount: 0, limitError: () => new HttpError(403) };
+    }
 
     const enrolledCount = await context.entities.ClassEnrollment.count({
       where: { status: 'ENROLLED', class: { parishId } },
     });
-
-    if (enrolledCount >= limits.maxCatechumens!) {
-      throw new HttpError(
-        403,
-        `LIMIT: Limite de catequizandos do plano ${planName(plan)} atingido (${enrolledCount}/${limits.maxCatechumens}).`,
-      );
-    }
-    return;
+    const max = limits.maxCatechumens;
+    return {
+      maxCatechumens: max,
+      enrolledCount,
+      limitError: () =>
+        new HttpError(
+          403,
+          `LIMIT: Limite de catequizandos do plano ${planName(plan)} atingido (${enrolledCount}/${max}).`,
+        ),
+    };
   }
 
   const billing = await resolveEffectiveBilling(context, parishId);
@@ -576,7 +620,9 @@ export async function assertCanEnrollCatechumen(
   const planLimits = getPlanLimits(effectivePlan);
 
   const maxCatechumens = billing?.maxCatechumens != null ? billing.maxCatechumens : planLimits.maxCatechumens;
-  if (maxCatechumens === null) return;
+  if (maxCatechumens === null) {
+    return { maxCatechumens: null, enrolledCount: 0, limitError: () => new HttpError(403) };
+  }
 
   let enrolledCount: number;
   if (!billing && (effectivePlan === 'CATECHIST_FREE' || effectivePlan === 'SINGLE')) {
@@ -594,10 +640,24 @@ export async function assertCanEnrollCatechumen(
     });
   }
 
-  if (enrolledCount >= maxCatechumens) {
-    throw new HttpError(
-      403,
-      buildLimitMessage('catechumen_limit', effectivePlan, enrolledCount, maxCatechumens),
-    );
+  return {
+    maxCatechumens,
+    enrolledCount,
+    limitError: () =>
+      new HttpError(
+        403,
+        buildLimitMessage('catechumen_limit', effectivePlan, enrolledCount, maxCatechumens),
+      ),
+  };
+}
+
+export async function assertCanEnrollCatechumen(
+  context: any,
+  parishId: string,
+): Promise<void> {
+  const capacity = await resolveEnrollmentCapacity(context, parishId);
+  if (capacity.maxCatechumens === null) return;
+  if (capacity.enrolledCount >= capacity.maxCatechumens) {
+    throw capacity.limitError();
   }
 }

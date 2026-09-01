@@ -68,9 +68,9 @@ export function AttendanceMock({ ns = "landing" }: { ns?: string }) {
             <span className="font-semibold tracking-tight text-brand-ink">
               {s.name}
             </span>
-            <div className="flex gap-1">
-              <button
-                type="button"
+            <div className="flex gap-1" role="img" aria-label={`${s.name}: ${s.status}`}>
+              <span
+                aria-hidden="true"
                 className={`rounded-sm p-1 ${
                   s.status === "present"
                     ? "bg-success/20 text-success"
@@ -78,9 +78,9 @@ export function AttendanceMock({ ns = "landing" }: { ns?: string }) {
                 }`}
               >
                 <CheckCircle2 className="h-3.5 w-3.5" />
-              </button>
-              <button
-                type="button"
+              </span>
+              <span
+                aria-hidden="true"
                 className={`rounded-sm p-1 ${
                   s.status === "absent"
                     ? "bg-destructive/20 text-destructive"
@@ -88,9 +88,9 @@ export function AttendanceMock({ ns = "landing" }: { ns?: string }) {
                 }`}
               >
                 <XCircle className="h-3.5 w-3.5" />
-              </button>
-              <button
-                type="button"
+              </span>
+              <span
+                aria-hidden="true"
                 className={`rounded-sm p-1 ${
                   s.status === "late"
                     ? "bg-warning/20 text-warning"
@@ -98,7 +98,7 @@ export function AttendanceMock({ ns = "landing" }: { ns?: string }) {
                 }`}
               >
                 <Clock className="h-3.5 w-3.5" />
-              </button>
+              </span>
             </div>
           </div>
         ))}

@@ -609,6 +609,7 @@ export const getSaintStory = async (
   const ageGroup = sanitizePrompt(args.ageGroup);
 
   const { client, model } = getAiClientOrThrow();
+  await assertAndDeductCredits(context, AI_CREDIT_COST.generateActivity);
   const locale = resolveUserLocale(context);
 
   const systemPrompt = `Você é um assistente pastoral católico especializado em catequese.
@@ -663,6 +664,7 @@ export const getPedagogicalHooks = async (
   const ageGroup = sanitizePrompt(args.ageGroup);
 
   const { client, model } = getAiClientOrThrow();
+  await assertAndDeductCredits(context, AI_CREDIT_COST.generateActivity);
 
   const systemPrompt = `Você é um catequista católico experiente especializado em pedagogia catequética.
 Sugira 3 "ganchos pedagógicos" (introduções impactantes) para começar um encontro de catequese.

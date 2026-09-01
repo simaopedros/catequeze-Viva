@@ -37,6 +37,7 @@ import {
   DropdownMenuTrigger,
 } from "../../../client/components/ui/dropdown-menu";
 import { cn } from "../../../client/utils";
+import { useTranslation } from "react-i18next";
 import { useLocale } from "../../../i18n/useLocale";
 import {
   parseContentDocument,
@@ -200,7 +201,14 @@ function SelectionActionBubble({
   onClose: () => void;
 }) {
   const { currentLocale } = useLocale();
+  const { t } = useTranslation("content");
   const [mode, setMode] = useState<ReferenceKind | null>(null);
+  const searchPlaceholder =
+    mode === "bible"
+      ? t("editor.search_passage")
+      : mode === "catechism"
+        ? t("editor.search_catechism")
+        : t("editor.search_directory");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<
     Array<BibleSearchResult | CatechismSearchResult | DirectorySearchResult>
@@ -350,7 +358,7 @@ function SelectionActionBubble({
       const bookLabel =
         verse.chapter?.book?.abbreviation ||
         verse.chapter?.book?.name ||
-        "Bíblia";
+        t("editor.bible");
       return {
         title: `${bookLabel} ${verse.chapter?.number}:${verse.number}`,
         description: verse.text,
@@ -434,8 +442,8 @@ function SelectionActionBubble({
             type="button"
             onClick={onClose}
             className="inline-flex h-7 w-7 items-center justify-center rounded-sm border border-border/60 bg-background/90 text-muted-foreground transition-colors hover:text-brand-ink"
-            aria-label="Fechar balão"
-            title="Fechar"
+            aria-label={t("editor.close_bubble")}
+            title={t("editor.close")}
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -495,20 +503,8 @@ function SelectionActionBubble({
             onChange={(event) => setQuery(event.target.value)}
             autoFocus
             className="h-9 w-full rounded-sm border border-input bg-background px-3 text-sm outline-none"
-            placeholder={
-              mode === "bible"
-                ? "Buscar passagem"
-                : mode === "catechism"
-                  ? "Buscar no Catecismo"
-                  : "Buscar no Diretório"
-            }
-            aria-label={
-              mode === "bible"
-                ? "Buscar passagem"
-                : mode === "catechism"
-                  ? "Buscar no Catecismo"
-                  : "Buscar no Diretório"
-            }
+            placeholder={searchPlaceholder}
+            aria-label={searchPlaceholder}
           />
 
           {query.trim().length < 2 ? (
@@ -566,9 +562,9 @@ export function RichContentEditor({
   onAddBibleReference,
   onAddCatechismReference,
   onAddDirectoryReference,
-  placeholder = "Escreva o encontro aqui...",
+  placeholder,
   onSave,
-  saveLabel = "Salvar",
+  saveLabel,
   saveDisabled = false,
   onPreview,
 }: {
@@ -598,6 +594,9 @@ export function RichContentEditor({
   /** Live preview of the current document without leaving the editor */
   onPreview?: () => void;
 }) {
+  const { t } = useTranslation("content");
+  const resolvedPlaceholder = placeholder ?? t("editor.placeholder");
+  const resolvedSaveLabel = saveLabel ?? t("editor.save");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const syncRef = useRef(false);
   const dismissedSelectionRef = useRef<string | null>(null);
@@ -614,7 +613,7 @@ export function RichContentEditor({
       Underline,
       Image,
       ReferenceAnchor,
-      Placeholder.configure({ placeholder }),
+      Placeholder.configure({ placeholder: resolvedPlaceholder }),
       Table.configure({ resizable: true }),
       TableRow,
       TableHeader,
@@ -790,14 +789,14 @@ export function RichContentEditor({
           </DropdownMenu>
           <span className="hidden h-5 w-px shrink-0 bg-border/70 sm:inline-block" />
           <ToolbarButton
-            title="Parágrafo"
+            title={t("editor.paragraph")}
             onClick={() => editor?.chain().focus().setParagraph().run()}
             active={editor?.isActive("paragraph")}
           >
             <Pilcrow className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
-            title="Título 1"
+            title={t("editor.heading1")}
             onClick={() =>
               editor?.chain().focus().toggleHeading({ level: 1 }).run()
             }
@@ -806,7 +805,7 @@ export function RichContentEditor({
             <Heading1 className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
-            title="Título 2"
+            title={t("editor.heading2")}
             onClick={() =>
               editor?.chain().focus().toggleHeading({ level: 2 }).run()
             }
@@ -815,7 +814,7 @@ export function RichContentEditor({
             <Heading2 className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
-            title="Título 3"
+            title={t("editor.heading3")}
             onClick={() =>
               editor?.chain().focus().toggleHeading({ level: 3 }).run()
             }
@@ -825,21 +824,21 @@ export function RichContentEditor({
           </ToolbarButton>
           <ToolbarDivider />
           <ToolbarButton
-            title="Negrito (Ctrl/Cmd+B)"
+            title={t("editor.bold")}
             onClick={() => editor?.chain().focus().toggleBold().run()}
             active={editor?.isActive("bold")}
           >
             <Bold className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
-            title="Itálico (Ctrl/Cmd+I)"
+            title={t("editor.italic")}
             onClick={() => editor?.chain().focus().toggleItalic().run()}
             active={editor?.isActive("italic")}
           >
             <Italic className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
-            title="Sublinhado"
+            title={t("editor.underline")}
             onClick={() => editor?.chain().focus().toggleUnderline().run()}
             active={editor?.isActive("underline")}
           >
@@ -847,42 +846,42 @@ export function RichContentEditor({
           </ToolbarButton>
           <ToolbarDivider />
           <ToolbarButton
-            title="Lista"
+            title={t("editor.bullet_list")}
             onClick={() => editor?.chain().focus().toggleBulletList().run()}
             active={editor?.isActive("bulletList")}
           >
             <List className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
-            title="Lista numerada"
+            title={t("editor.ordered_list")}
             onClick={() => editor?.chain().focus().toggleOrderedList().run()}
             active={editor?.isActive("orderedList")}
           >
             <ListOrdered className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
-            title="Citação"
+            title={t("editor.blockquote")}
             onClick={() => editor?.chain().focus().toggleBlockquote().run()}
             active={editor?.isActive("blockquote")}
           >
             <Quote className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
-            title="Separador"
+            title={t("editor.divider")}
             onClick={() => editor?.chain().focus().setHorizontalRule().run()}
           >
             <Minus className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarDivider />
           <ToolbarButton
-            title="Link"
+            title={t("editor.link")}
             onClick={openLinkDialog}
             active={editor?.isActive("link")}
           >
             <LinkIcon className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
-            title="Tabela"
+            title={t("editor.table")}
             onClick={() =>
               editor
                 ?.chain()
@@ -895,20 +894,20 @@ export function RichContentEditor({
             <Table2 className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
-            title="Imagem"
+            title={t("editor.image")}
             onClick={() => fileInputRef.current?.click()}
           >
             <ImageIcon className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarDivider />
           <ToolbarButton
-            title="Desfazer"
+            title={t("editor.undo")}
             onClick={() => editor?.chain().focus().undo().run()}
           >
             <Undo2 className="h-3.5 w-3.5" />
           </ToolbarButton>
           <ToolbarButton
-            title="Refazer"
+            title={t("editor.redo")}
             onClick={() => editor?.chain().focus().redo().run()}
           >
             <Redo2 className="h-3.5 w-3.5" />
@@ -937,7 +936,7 @@ export function RichContentEditor({
                 disabled={saveDisabled}
               >
                 <Save className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">{saveLabel}</span>
+                <span className="hidden sm:inline">{resolvedSaveLabel}</span>
               </Button>
             ) : null}
           </div>

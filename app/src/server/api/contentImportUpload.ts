@@ -3,6 +3,10 @@ import type { MiddlewareConfigFn } from "wasp/server";
 import multer from "multer";
 import { canCreateContent, getUserRoleAndParish } from "../auth/contentAccess";
 import { extractImportedDocument } from "../content/importContentFile";
+import {
+  HeavyWorkRejectedError,
+  documentExtractionLimiter,
+} from "../content/heavyWorkLimiter";
 import { resolveUserLocale } from "../i18n/serverLocale";
 import { logger } from "../logger";
 import { CONTENT_DOCUMENT_VERSION } from "../../shared/contentDocument";
@@ -31,6 +35,11 @@ function runMulter(req: Request, res: Response): Promise<void> {
 }
 
 function sendImportError(res: Response, error: unknown) {
+  if (error instanceof HeavyWorkRejectedError) {
+    const status = error.reason === "busy" ? 429 : 504;
+    if (status === 429) res.setHeader("Retry-After", "10");
+    return res.status(status).json({ error: error.message, code: "BUSY" });
+  }
   if (error instanceof ContentImportError) {
     return res.status(error.status).json({
       error: error.message,
@@ -76,11 +85,15 @@ export async function importContentDocument(
       });
     }
 
-    const imported = await extractImportedDocument({
-      buffer: file.buffer,
-      fileName: file.originalname || "documento",
-      mimeType: file.mimetype,
-    });
+    // Heavy extraction is bounded (concurrency + timeout) so bursts of uploads
+    // degrade gracefully with a retryable error instead of blocking the server.
+    const imported = await documentExtractionLimiter.run(() =>
+      extractImportedDocument({
+        buffer: file.buffer,
+        fileName: file.originalname || "documento",
+        mimeType: file.mimetype,
+      }),
+    );
 
     const sourceFileKey = await storeContentSourceFile({
       buffer: file.buffer,

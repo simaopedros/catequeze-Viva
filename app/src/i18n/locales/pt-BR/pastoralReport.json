@@ -35,5 +35,12 @@
   "avgAttendanceLine": "Média de presença (%)",
   "meetingsCount": "Nº de encontros",
   "attendanceRate": "Taxa de presença",
-  "monthlyMeetings": "Encontros no mês"
+  "monthlyMeetings": "Encontros no mês",
+  "enrollment_status": {
+    "ENROLLED": "Ativo",
+    "DROPPED": "Desistente",
+    "TRANSFERRED": "Transferido",
+    "COMPLETED": "Concluído",
+    "MOVED_TO_OTHER_CLASS": "Mudou de turma"
+  }
 }

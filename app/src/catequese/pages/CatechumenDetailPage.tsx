@@ -57,7 +57,8 @@ import { useUserContext } from "../../client/hooks/useUserContext";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { toast } from "../../client/hooks/use-toast";
 import { calculatePoints } from "../../shared/gamification";
-import { formatDateOnly, getAgeFromDate } from "../../i18n/format";
+import { formatDate, formatDateOnly, getAgeFromDate } from "../../i18n/format";
+import { useLocale } from "../../i18n/useLocale";
 
 const AVATAR_COLORS = ["border border-border/70 bg-muted/30 text-brand-ink"];
 
@@ -81,6 +82,7 @@ const DOC_TYPE_SHORT_KEYS: Record<string, string> = {
 
 export default function CatechumenDetailPage() {
   const { t } = useTranslation("common");
+  const { currentLocale } = useLocale();
   const { t: tp } = useTranslation("parishes");
   const { t: tpa } = useTranslation("pastoralAnalysis");
   const { t: tf } = useTranslation("family");
@@ -208,7 +210,7 @@ export default function CatechumenDetailPage() {
       });
       setTokenData({
         token: result.token,
-        expires: new Date(result.expires).toLocaleDateString(),
+        expires: formatDate(result.expires, currentLocale),
       });
       toast({ title: t("catechumens.detail_upload_link_success") });
     } catch (e: any) {
@@ -370,7 +372,7 @@ export default function CatechumenDetailPage() {
 
   const detailSubtitle = [
     age ? t("catechumens.years_old", { age }) : null,
-    profile.birthDate ? formatDateOnly(profile.birthDate, "pt-BR") : null,
+    profile.birthDate ? formatDateOnly(profile.birthDate, currentLocale) : null,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -385,7 +387,7 @@ export default function CatechumenDetailPage() {
             className="mt-1 shrink-0 rounded-sm"
             asChild
           >
-            <Link to="/app/catechumens">
+            <Link to="/app/catechumens" aria-label={t("back")}>
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
@@ -608,7 +610,7 @@ export default function CatechumenDetailPage() {
                 >
                   <div>
                     <span className="text-xs text-muted-foreground">
-                      {new Date(a.meetingDate).toLocaleDateString()}
+                      {formatDate(a.meetingDate, currentLocale)}
                     </span>{" "}
                     <span className="font-semibold tracking-tight text-brand-ink">
                       {a.meetingTitle || t("catechumens.detail_meeting")}

@@ -1,203 +1,46 @@
-import { ApexOptions } from "apexcharts";
-import { useEffect, useMemo, useState } from "react";
-import ReactApexChart from "react-apexcharts";
+import { useMemo } from "react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { type DailyStatsProps } from "../../../analytics/stats";
 
-const options: ApexOptions = {
-  legend: {
-    show: false,
-    position: "top",
-    horizontalAlign: "left",
-  },
-  colors: ["#3C50E0", "#80CAEE"],
-  chart: {
-    fontFamily: "system-ui, sans-serif",
-    height: 335,
-    type: "area",
-    dropShadow: {
-      enabled: true,
-      color: "#623CEA14",
-      top: 10,
-      blur: 4,
-      left: 0,
-      opacity: 0.1,
-    },
+const REVENUE_COLOR = "#D39A2B";
+const PROFIT_COLOR = "#071A2D";
 
-    toolbar: {
-      show: false,
-    },
-  },
-  responsive: [
-    {
-      breakpoint: 1024,
-      options: {
-        chart: {
-          height: 300,
-        },
-      },
-    },
-    {
-      breakpoint: 1366,
-      options: {
-        chart: {
-          height: 350,
-        },
-      },
-    },
-  ],
-  stroke: {
-    width: [2, 2],
-    curve: "straight",
-  },
-  // labels: {
-  //   show: false,
-  //   position: "top",
-  // },
-  grid: {
-    xaxis: {
-      lines: {
-        show: true,
-      },
-    },
-    yaxis: {
-      lines: {
-        show: true,
-      },
-    },
-  },
-  dataLabels: {
-    enabled: false,
-  },
-  markers: {
-    size: 4,
-    colors: "#fff",
-    strokeColors: ["#3056D3", "#80CAEE"],
-    strokeWidth: 3,
-    strokeOpacity: 0.9,
-    strokeDashArray: 0,
-    fillOpacity: 1,
-    discrete: [],
-    hover: {
-      size: undefined,
-      sizeOffset: 5,
-    },
-  },
-  xaxis: {
-    type: "category",
-    axisBorder: {
-      show: false,
-    },
-    axisTicks: {
-      show: false,
-    },
-  },
-  yaxis: {
-    title: {
-      style: {
-        fontSize: "0px",
-      },
-    },
-    min: 0,
-    max: 100,
-  },
-};
+type Point = { label: string; revenue: number };
 
-interface ChartOneState {
-  series: {
-    name: string;
-    data: number[];
-  }[];
+function roundToHundred(value: number, direction: "up" | "down"): number {
+  return direction === "up"
+    ? Math.ceil(value / 100) * 100
+    : Math.floor(value / 100) * 100;
 }
 
 const RevenueAndProfitChart = ({ weeklyStats, isLoading }: DailyStatsProps) => {
-  const dailyRevenueArray = useMemo(() => {
-    if (!!weeklyStats && weeklyStats?.length > 0) {
-      const sortedWeeks = weeklyStats?.sort((a, b) => {
-        return new Date(a.date).getTime() - new Date(b.date).getTime();
-      });
-      return sortedWeeks.map((stat) => stat.totalRevenue);
-    }
+  const data = useMemo<Point[]>(() => {
+    if (!weeklyStats || weeklyStats.length === 0) return [];
+    return [...weeklyStats]
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .map((stat) => ({
+        // day of week, month and day of month ("Mon Jan 01")
+        label: stat.date.toString().split(" ").slice(0, 3).join(" "),
+        revenue: stat.totalRevenue,
+      }));
   }, [weeklyStats]);
 
-  const daysOfWeekArr = useMemo(() => {
-    if (!!weeklyStats && weeklyStats?.length > 0) {
-      const datesArr = weeklyStats?.map((stat) => {
-        // get day of week, month, and day of month
-        const dateArr = stat.date.toString().split(" ");
-        return dateArr.slice(0, 3).join(" ");
-      });
-      return datesArr;
-    }
-  }, [weeklyStats]);
-
-  const [state, setState] = useState<ChartOneState>({
-    series: [
-      {
-        name: "Profit",
-        data: [4, 7, 10, 11, 13, 14, 17],
-      },
-    ],
-  });
-  const [chartOptions, setChartOptions] = useState<ApexOptions>(options);
-
-  useEffect(() => {
-    if (dailyRevenueArray && dailyRevenueArray.length > 0) {
-      setState((prevState) => {
-        // Check if a "Revenue" series already exists
-        const existingSeriesIndex = prevState.series.findIndex(
-          (series) => series.name === "Revenue",
-        );
-
-        if (existingSeriesIndex >= 0) {
-          // Update existing "Revenue" series data
-          return {
-            ...prevState,
-            series: prevState.series.map((serie, index) => {
-              if (index === existingSeriesIndex) {
-                return { ...serie, data: dailyRevenueArray };
-              }
-              return serie;
-            }),
-          };
-        } else {
-          // Add "Revenue" series as it does not exist yet
-          return {
-            ...prevState,
-            series: [
-              ...prevState.series,
-              {
-                name: "Revenue",
-                data: dailyRevenueArray,
-              },
-            ],
-          };
-        }
-      });
-    }
-  }, [dailyRevenueArray]);
-
-  useEffect(() => {
-    if (
-      !!daysOfWeekArr &&
-      daysOfWeekArr?.length > 0 &&
-      !!dailyRevenueArray &&
-      dailyRevenueArray?.length > 0
-    ) {
-      setChartOptions({
-        ...options,
-        xaxis: {
-          ...options.xaxis,
-          categories: daysOfWeekArr,
-        },
-        yaxis: {
-          ...options.yaxis,
-          // get the min & max values to the neareast hundred
-          max: Math.ceil(Math.max(...dailyRevenueArray) / 100) * 100,
-          min: Math.floor(Math.min(...dailyRevenueArray) / 100) * 100,
-        },
-      });
-    }
-  }, [daysOfWeekArr, dailyRevenueArray]);
+  const domain = useMemo<[number, number]>(() => {
+    if (data.length === 0) return [0, 100];
+    const values = data.map((d) => d.revenue);
+    return [
+      roundToHundred(Math.min(...values), "down"),
+      Math.max(roundToHundred(Math.max(...values), "up"), 100),
+    ];
+  }, [data]);
 
   return (
     <div className="border-border/70 bg-white pt-7.5 sm:px-7.5 col-span-12 rounded-sm border px-5 pb-5 xl:col-span-8">
@@ -226,30 +69,55 @@ const RevenueAndProfitChart = ({ weeklyStats, isLoading }: DailyStatsProps) => {
             </div>
           </div>
         </div>
-        <div className="max-w-45 flex w-full justify-end">
-          <div className="inline-flex items-center rounded-sm bg-muted p-1.5">
-            <button className="rounded-sm bg-background px-3 py-1 text-xs font-semibold tracking-tight text-[#071A2D] hover:bg-background">
-              Day
-            </button>
-            <button className="rounded-sm px-3 py-1 text-xs font-medium text-muted-foreground hover:bg-background hover:text-[#071A2D]">
-              Week
-            </button>
-            <button className="rounded-sm px-3 py-1 text-xs font-medium text-muted-foreground hover:bg-background hover:text-[#071A2D]">
-              Month
-            </button>
-          </div>
-        </div>
       </div>
 
-      <div>
-        <div id="chartOne" className="-ml-5">
-          <ReactApexChart
-            options={chartOptions}
-            series={state.series}
-            type="area"
-            height={350}
-          />
-        </div>
+      <div
+        id="chartOne"
+        className="-ml-5 mt-4 h-[350px]"
+        aria-busy={isLoading || undefined}
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart
+            data={data}
+            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={REVENUE_COLOR} stopOpacity={0.25} />
+                <stop offset="95%" stopColor={REVENUE_COLOR} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis
+              dataKey="label"
+              tickLine={false}
+              axisLine={false}
+              tick={{ fontSize: 12, fill: "#6b7280" }}
+            />
+            <YAxis
+              domain={domain}
+              tickLine={false}
+              axisLine={false}
+              tick={{ fontSize: 12, fill: "#6b7280" }}
+              width={48}
+            />
+            <Tooltip
+              formatter={(value) => [`${value}`, "Revenue"]}
+              contentStyle={{ borderRadius: 4, fontSize: 12 }}
+            />
+            <Area
+              type="monotone"
+              dataKey="revenue"
+              name="Revenue"
+              stroke={REVENUE_COLOR}
+              strokeWidth={2}
+              fill="url(#revenueFill)"
+              dot={{ r: 3, stroke: PROFIT_COLOR, strokeWidth: 1, fill: "#fff" }}
+              activeDot={{ r: 5 }}
+              isAnimationActive={false}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

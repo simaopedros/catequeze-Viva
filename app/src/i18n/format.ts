@@ -43,6 +43,21 @@ export function formatDateOnly(
   }).format(d);
 }
 
+/** Date + time of a timestamp in the app timezone (e.g. audit rows, error logs). */
+export function formatDateTime(
+  date: Date | string | number,
+  locale: SupportedLocale | string,
+  options?: Intl.DateTimeFormatOptions,
+): string {
+  const d = date instanceof Date ? date : new Date(date);
+  return new Intl.DateTimeFormat(resolveIntlLocale(locale as SupportedLocale), {
+    timeZone: APP_TIMEZONE,
+    dateStyle: "short",
+    timeStyle: "short",
+    ...options,
+  }).format(d);
+}
+
 export function getAgeFromDate(birthDate: string): number | null {
   if (!birthDate) return null;
   const b = new Date(birthDate);

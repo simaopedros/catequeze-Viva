@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useParams, Link, useSearchParams } from "react-router";
 import { useState, useEffect, useMemo, useRef, type ReactNode } from "react";
 import { Button } from "../../client/components/ui/button";
+import { QueryErrorState } from "../../client/components/QueryErrorState";
 import { cn } from "../../client/utils";
 import {
   ArrowLeft,
@@ -175,12 +176,20 @@ export default function AttendancePage() {
     };
   }, [classId, rangeDays]);
 
-  const { data: meetings = [], refetch: refetchMeetings } = useQuery(
+  const {
+    data: meetings = [],
+    refetch: refetchMeetings,
+    error: matrixError,
+  } = useQuery(
     getClassAttendanceMatrix,
     matrixArgs as any,
     { enabled: Boolean(classId) && loadMatrix },
   );
-  const { data: cls } = useQuery(getClassDetails, { id: classId! });
+  const {
+    data: cls,
+    error: classError,
+    refetch: refetchClass,
+  } = useQuery(getClassDetails, { id: classId! });
   const catechumens =
     cls?.enrollments
       ?.map((e: any) => ({
@@ -652,7 +661,16 @@ export default function AttendancePage() {
           </select>
         </div>
 
-        {meetings.length === 0 ? (
+        {(classError && !cls) || (matrixError && meetings.length === 0) ? (
+          <QueryErrorState
+            compact
+            error={classError ?? matrixError}
+            onRetry={() => {
+              void refetchClass();
+              void refetchMeetings();
+            }}
+          />
+        ) : meetings.length === 0 ? (
           <EmptyState
             icon={ClipboardList}
             title={t("matrix.empty")}

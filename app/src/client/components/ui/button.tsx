@@ -60,11 +60,19 @@ function Button({
 }: ButtonProps) {
   const Comp = asChild ? Slot : "button";
 
+  // Icon-only buttons often carry only a `title` (tooltip); expose the same
+  // text to assistive tech so they never render as an unnamed button.
+  const accessibleName =
+    size === "icon" && !props["aria-label"] && !props["aria-labelledby"]
+      ? props.title
+      : undefined;
+
   return (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       disabled={disabled || loading}
+      aria-label={accessibleName}
       {...props}
     >
       {asChild ? (

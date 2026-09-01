@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AiProgressIndicator } from "./AiProgressIndicator";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 import { generateActivityForMeeting } from "../../lib/aiOperations";
@@ -154,6 +155,8 @@ export function GenerateActivityFlow() {
               ))}
             </div>
           </div>
+
+          <AiProgressIndicator active={generating} label={t("activity.generating")} />
 
           <Button
             onClick={handleGenerate}

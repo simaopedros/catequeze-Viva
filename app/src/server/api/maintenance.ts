@@ -63,32 +63,39 @@ export async function maintenanceHandler(
 
   maintenanceRunning = true;
   const startedAt = Date.now();
-  const tasks: MaintenanceTask[] = [
-    {
-      name: "aiCreditsReset",
-      run: () => resetAiCreditsJob(undefined, context),
-    },
-    {
-      name: "aiCacheCleanup",
-      run: () => cleanupAiCacheJob(undefined, context),
-    },
-    {
-      name: "subscriptionExpiration",
-      run: () => expireSubscriptionsJob(undefined, context),
-    },
-    {
-      name: "lifecycleNudge",
-      run: () => lifecycleNudgeJob(undefined, context),
-    },
-    {
-      name: "meetingReminders",
-      run: () => sendRemindersJob(undefined, context),
-    },
-    {
-      name: "socialMediaReconcile",
-      run: () => reconcileSocialMediaJob(undefined, context),
-    },
-    { name: "dailyStats", run: () => calculateDailyStats(undefined, context) },
+
+  // Independent tasks run concurrently; the second stage depends on the first
+  // (lifecycle emails read the refreshed subscription state, daily stats count it).
+  const stages: MaintenanceTask[][] = [
+    [
+      {
+        name: "aiCreditsReset",
+        run: () => resetAiCreditsJob(undefined, context),
+      },
+      {
+        name: "aiCacheCleanup",
+        run: () => cleanupAiCacheJob(undefined, context),
+      },
+      {
+        name: "subscriptionExpiration",
+        run: () => expireSubscriptionsJob(undefined, context),
+      },
+      {
+        name: "meetingReminders",
+        run: () => sendRemindersJob(undefined, context),
+      },
+      {
+        name: "socialMediaReconcile",
+        run: () => reconcileSocialMediaJob(undefined, context),
+      },
+    ],
+    [
+      {
+        name: "lifecycleNudge",
+        run: () => lifecycleNudgeJob(undefined, context),
+      },
+      { name: "dailyStats", run: () => calculateDailyStats(undefined, context) },
+    ],
   ];
 
   const results: Array<{
@@ -99,30 +106,34 @@ export async function maintenanceHandler(
     error?: string;
   }> = [];
 
+  const runTask = async (task: MaintenanceTask) => {
+    const taskStartedAt = Date.now();
+    try {
+      const result = await task.run();
+      results.push({
+        name: task.name,
+        status: "ok",
+        durationMs: Date.now() - taskStartedAt,
+        result,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error("[maintenance] Task failed", {
+        task: task.name,
+        error: message,
+      });
+      results.push({
+        name: task.name,
+        status: "error",
+        durationMs: Date.now() - taskStartedAt,
+        error: message,
+      });
+    }
+  };
+
   try {
-    for (const task of tasks) {
-      const taskStartedAt = Date.now();
-      try {
-        const result = await task.run();
-        results.push({
-          name: task.name,
-          status: "ok",
-          durationMs: Date.now() - taskStartedAt,
-          result,
-        });
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        logger.error("[maintenance] Task failed", {
-          task: task.name,
-          error: message,
-        });
-        results.push({
-          name: task.name,
-          status: "error",
-          durationMs: Date.now() - taskStartedAt,
-          error: message,
-        });
-      }
+    for (const stage of stages) {
+      await Promise.all(stage.map(runTask));
     }
 
     const failed = results.some((result) => result.status === "error");

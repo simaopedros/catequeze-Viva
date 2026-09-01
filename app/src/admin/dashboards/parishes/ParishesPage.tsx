@@ -1,6 +1,7 @@
 import { type AuthUser } from "wasp/auth";
 import { useQuery, listParishesAdmin } from "wasp/client/operations";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import DefaultLayout from "../../layout/DefaultLayout";
 import {
   AppDisplayTitle,
@@ -8,6 +9,7 @@ import {
   AppMetric,
   AppPageHeader,
 } from "../../../client/components/brand/AppChrome";
+import { QueryErrorState } from "../../../client/components/QueryErrorState";
 import {
   Church,
   MapPin,
@@ -21,7 +23,14 @@ import {
 } from "lucide-react";
 
 const ParishesPage = ({ user }: { user: AuthUser }) => {
-  const { data: parishes = [], isLoading } = useQuery(listParishesAdmin);
+  const { t } = useTranslation("admin");
+  const navigate = useNavigate();
+  const {
+    data: parishes = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuery(listParishesAdmin);
 
   const statusIcon = (status: string) => {
     switch (status) {
@@ -42,24 +51,26 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
     <DefaultLayout user={user}>
       <div className="space-y-6">
         <AppPageHeader
-          eyebrow="Admin"
-          title="Paróquias"
-          subtitle="Gerir todas as paróquias da plataforma."
+          eyebrow={t("pages.admin")}
+          title={t("pages.parishes.title")}
+          subtitle={t("pages.parishes.subtitle")}
         />
 
         {isLoading ? (
           <div className="flex justify-center py-12">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
           </div>
+        ) : error && parishes.length === 0 ? (
+          <QueryErrorState error={error} onRetry={refetch} />
         ) : parishes.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
             <Church className="h-10 w-10 text-muted-foreground/40 mb-3" />
             <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
-              Nenhuma paróquia
+              {t("pages.parishes.empty_title")}
             </AppDisplayTitle>
             <AppGoldRule className="mx-auto" />
             <p className="text-sm text-muted-foreground">
-              As paróquias aparecerão aqui quando forem criadas.
+              {t("pages.parishes.empty_desc")}
             </p>
           </div>
         ) : (
@@ -68,22 +79,22 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
               <thead className="bg-muted/50 border-b">
                 <tr>
                   <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    Nome
+                    {t("pages.parishes.col_name")}
                   </th>
                   <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:table-cell">
-                    Diocese
+                    {t("pages.parishes.col_diocese")}
                   </th>
                   <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground md:table-cell">
-                    Cidade
+                    {t("pages.parishes.col_city")}
                   </th>
                   <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:table-cell">
-                    Plano
+                    {t("pages.parishes.col_plan")}
                   </th>
                   <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:table-cell">
-                    Owner
+                    {t("pages.parishes.col_owner")}
                   </th>
                   <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:table-cell">
-                    Membros
+                    {t("pages.parishes.col_members")}
                   </th>
                 </tr>
               </thead>
@@ -91,21 +102,24 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                 {parishes.map((p: any) => (
                   <tr
                     key={p.id}
-                    className="border-b last:border-0 hover:bg-muted/30 cursor-pointer"
-                    onClick={() =>
-                      (window.location.href = `/admin/parishes/${p.id}`)
-                    }
+                    className="border-b last:border-0 hover:bg-muted/30 cursor-pointer focus-within:bg-muted/30"
+                    onClick={() => navigate(`/admin/parishes/${p.id}`)}
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <Church className="h-4 w-4 text-[#071A2D] shrink-0" />
                         <div>
-                          <span className="font-semibold tracking-tight text-[#071A2D] hover:underline">
+                          <NavLink
+                            to={`/admin/parishes/${p.id}`}
+                            className="font-semibold tracking-tight text-[#071A2D] hover:underline"
+                            aria-label={t("pages.parishes.open_row", { name: p.name })}
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             {p.name}
-                          </span>
+                          </NavLink>
                           {!p.active && (
                             <span className="ml-2 rounded-sm bg-[#D39A2B]/15 px-1.5 py-0.5 text-xs text-[#8A6418]">
-                              Arquivada
+                              {t("pages.parishes.archived")}
                             </span>
                           )}
                         </div>
@@ -155,17 +169,17 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
         {parishes.length > 0 && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <AppMetric
-              label="Total de paróquias"
+              label={t("pages.parishes.total")}
               value={parishes.length}
               className="bg-white"
             />
             <AppMetric
-              label="Paróquias ativas"
+              label={t("pages.parishes.active")}
               value={parishes.filter((p: any) => p.active).length}
               className="bg-white"
             />
             <AppMetric
-              label="Total de membros"
+              label={t("pages.parishes.total_members")}
               value={parishes.reduce(
                 (sum: number, p: any) => sum + (p._count?.memberships || 0),
                 0,

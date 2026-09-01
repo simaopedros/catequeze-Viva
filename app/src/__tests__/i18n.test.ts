@@ -141,6 +141,32 @@ describe("i18n config dual-safe bootstrap", () => {
     expect(mod.isLocaleBundleLoaded("pt-BR")).toBe(true);
   });
 
+  it("splits pt-BR into core (sync) and app (lazy) bundles that together cover every namespace", async () => {
+    const core = await import("../i18n/resources_pt_BR_core");
+    const app = await import("../i18n/resources_pt_BR_app");
+    const coreNs = Object.keys(core.resources_pt_BR_core);
+    const appNs = Object.keys(app.resources_pt_BR_app);
+    const all = new Set([...coreNs, ...appNs]);
+    const namespaces = fs
+      .readdirSync(path.join(LOCALES_DIR, "pt-BR"))
+      .filter((f) => f.endsWith(".json"))
+      .map((f) => f.replace(".json", ""));
+    expect(coreNs.filter((ns) => appNs.includes(ns))).toEqual([]);
+    for (const ns of namespaces) expect(all.has(ns), ns).toBe(true);
+    // Public surfaces must not depend on the lazy bundle.
+    for (const ns of ["common", "auth", "landing", "public", "billing", "legal", "cookie"]) {
+      expect(coreNs, ns).toContain(ns);
+    }
+  });
+
+  it("server bootstrap registers the app namespaces synchronously", async () => {
+    const serverI18n = (await import("../server/i18n/serverI18n")).default;
+    const { areAppNamespacesLoaded } = await import("../i18n/config");
+    expect(areAppNamespacesLoaded()).toBe(true);
+    const label = serverI18n.t("error_parish_exists", { ns: "onboarding", lng: "pt-BR" });
+    expect(label).not.toBe("error_parish_exists");
+  });
+
   it("ensureLocaleLoaded is a no-op for en on server/Node path", async () => {
     const { ensureLocaleLoaded, isLocaleBundleLoaded } = await import(
       "../i18n/config"

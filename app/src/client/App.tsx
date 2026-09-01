@@ -7,7 +7,6 @@ import { routes } from "wasp/client/router";
 import { configureQueryClient } from "wasp/client/operations";
 import { Toaster } from "../client/components/ui/toaster";
 import "./Main.css";
-import NavBar from "./components/NavBar/NavBar";
 import {
   getDemoNavigationItems,
   getMarketingNavigationItems,
@@ -15,6 +14,8 @@ import {
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import GoogleTagScripts from "./analytics/GoogleTagScripts";
+import { activatePreloadedFonts } from "./fonts";
+import { rememberIntendedPath } from "../auth/intendedPath";
 import { isFamilyPortalHost } from "../shared/portal";
 // Family landing is public-host only — code-split so staff landing does not pay for it
 const FamilyLandingPage = lazy(
@@ -43,15 +44,70 @@ import {
 } from "../shared/aiFeatures";
 import { SOCIAL_FEATURES_ENABLED } from "../shared/socialFeatures";
 import i18n, {
+  areAppNamespacesLoaded,
   enableDocumentLanguageSync,
+  ensureAppNamespacesLoaded,
   ensureLocaleLoaded,
   isLocaleBundleLoaded,
   normalizeLocale,
 } from "../i18n/config";
 
+const PUBLIC_PATH_PREFIXES = [
+  "/ia",
+  "/presenca",
+  "/sistema",
+  "/pricing",
+  "/obrigado",
+  "/about",
+  "/privacy",
+  "/terms",
+  "/contact",
+  "/login",
+  "/signup",
+  "/request-password-reset",
+  "/password-reset",
+  "/email-verification",
+  "/oauth",
+];
+
+/** Landing/auth/legal routes only need the core i18n namespaces. */
+function isPublicOnlyPath(pathname: string): boolean {
+  if (pathname === "/") return true;
+  return PUBLIC_PATH_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
+/**
+ * Runs `cb` once on the first user interaction (or after a long idle) so
+ * prefetching never competes with the landing page's critical path.
+ */
+function scheduleAfterInteraction(cb: () => void): () => void {
+  let done = false;
+  const events = ["pointerdown", "keydown", "touchstart"] as const;
+  const run = () => {
+    if (done) return;
+    done = true;
+    cleanup();
+    cb();
+  };
+  const cleanup = () => {
+    for (const evt of events) window.removeEventListener(evt, run);
+    window.clearTimeout(timer);
+  };
+  for (const evt of events) {
+    window.addEventListener(evt, run, { passive: true, once: true });
+  }
+  const timer = window.setTimeout(run, 15_000);
+  return cleanup;
+}
+
 const CookieConsentBanner = lazy(
   () => import("./components/cookie-consent/Banner"),
 );
+// Only non-landing public/legacy routes render this bar; keep its Radix
+// Sheet/Dropdown dependencies out of the landing bundle.
+const NavBar = lazy(() => import("./components/NavBar/NavBar"));
 
 function isLocalDevHost() {
   if (typeof window === "undefined") return false;
@@ -138,17 +194,21 @@ export default function App() {
   const { t: tNavigation } = useTranslation("navigation");
   const { t: tPublicNav } = useTranslation("publicNav");
   const [offlineDismissed, setOfflineDismissed] = useState(false);
-  // Gate: wait for en/es pack when preferred locale is not pt-BR (pt-BR is eager).
-  const [i18nReady, setI18nReady] = useState(() => {
+  // Gate: wait for en/es pack when preferred locale is not pt-BR (pt-BR core is
+  // eager) and for the pt-BR `app` namespaces when entering an authenticated route.
+  const needsAppNamespaces = !isPublicOnlyPath(location.pathname);
+  const [localeReady, setLocaleReady] = useState(() => {
     const lng = normalizeLocale(i18n.language) ?? "pt-BR";
     return isLocaleBundleLoaded(lng);
   });
+  const [appNsReady, setAppNsReady] = useState(() => areAppNamespacesLoaded());
+  const i18nReady = localeReady && (!needsAppNamespaces || appNsReady);
 
   useEffect(() => {
     let cancelled = false;
     const lng = normalizeLocale(i18n.language) ?? "pt-BR";
     void ensureLocaleLoaded(lng).then(() => {
-      if (!cancelled) setI18nReady(true);
+      if (!cancelled) setLocaleReady(true);
     });
     // After hydrate only — Wasp Layout hardcodes <html lang="en">
     enableDocumentLanguageSync(lng);
@@ -156,6 +216,28 @@ export default function App() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (appNsReady) return;
+    let cancelled = false;
+    const markReady = () => {
+      if (!cancelled) setAppNsReady(true);
+    };
+    let cancelPrefetch: (() => void) | undefined;
+    if (needsAppNamespaces) {
+      void ensureAppNamespacesLoaded().then(markReady);
+    } else {
+      // Public page: prefetch the app namespaces after the visitor interacts so
+      // the transition into /app does not wait on the network.
+      cancelPrefetch = scheduleAfterInteraction(
+        () => void ensureAppNamespacesLoaded().then(markReady),
+      );
+    }
+    return () => {
+      cancelled = true;
+      cancelPrefetch?.();
+    };
+  }, [needsAppNamespaces, appNsReady]);
 
   const isFamilyPortal = useMemo(() => isFamilyPortalHost(), []);
 
@@ -232,6 +314,14 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  // Deep links: if this visit gets bounced to /login, the post-login redirect
+  // brings the user back here instead of the generic /app.
+  useEffect(() => {
+    if (isAppRoute || isAdminDashboard) {
+      rememberIntendedPath(`${location.pathname}${location.search}`);
+    }
+  }, [isAppRoute, isAdminDashboard, location.pathname, location.search]);
+
   useEffect(() => {
     ensureFbcFromFbclid();
     persistAttributionParams();
@@ -256,6 +346,7 @@ export default function App() {
   }, [location.pathname]);
 
   useEffect(() => {
+    activatePreloadedFonts();
     registerServiceWorker();
   }, []);
 
@@ -336,7 +427,9 @@ export default function App() {
             ) : (
               <>
                 {shouldDisplayAppNavBar && (
-                  <NavBar navigationItems={navigationItems} />
+                  <Suspense fallback={<div className="h-16" aria-hidden />}>
+                    <NavBar navigationItems={navigationItems} />
+                  </Suspense>
                 )}
                 <div className="mx-auto max-w-(--breakpoint-2xl)">
                   <Outlet />

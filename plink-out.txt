@@ -1,8 +1,0 @@
-The host key is not cached for this server:
-  5.189.189.50 (port 22)
-You have no guarantee that the server is the computer you
-think it is.
-The server's ssh-ed25519 key fingerprint is:
-  ssh-ed25519 255 SHA256:0IeYq/sVTns8WiQZRIrzOiy6C8qN24RsakIY15DGtXs
-Connection abandoned.
-FATAL ERROR: Cannot confirm a host key in batch mode

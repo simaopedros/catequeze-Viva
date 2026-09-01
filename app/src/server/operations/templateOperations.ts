@@ -1,6 +1,7 @@
 import { HttpError } from 'wasp/server';
 import { requireAuth, getDioceseParishIds } from '../auth/helpers';
 import { requireWorkspaceAccess } from './sharedScope';
+import { LEGACY_MAX_TAKE } from './listCursor';
 
 const STAFF_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
 
@@ -12,6 +13,7 @@ export const listMessageTemplates = async (_args: void, context: any) => {
   if (context.user.isAdmin) {
     return context.entities.MessageTemplate.findMany({
       orderBy: { name: 'asc' },
+      take: LEGACY_MAX_TAKE,
       include: { createdBy: { select: { id: true, firstName: true, lastName: true } } },
     });
   }
@@ -40,6 +42,7 @@ export const listMessageTemplates = async (_args: void, context: any) => {
       ],
     },
     orderBy: { name: 'asc' },
+    take: LEGACY_MAX_TAKE,
     include: { createdBy: { select: { id: true, firstName: true, lastName: true } } },
   });
 };

@@ -2,7 +2,7 @@ import {
   type GetPasswordResetEmailContentFn,
   type GetVerificationEmailContentFn,
 } from "wasp/server/auth";
-import i18n from "../../i18n/config";
+import i18n from "../../server/i18n/serverI18n";
 import { rewriteClientLinkForFamilyPortal } from "../emailLinkUtils";
 
 const t = (key: string) => i18n.t(key, { ns: "auth", lng: "pt-BR" });

@@ -9,7 +9,7 @@ import {
   parseBirthDateUtc,
   parseCatechumenCsv,
 } from '../../shared/csvCatechumenImport';
-import { assertCanEnrollCatechumen } from './billingEnforcement';
+import { resolveEnrollmentCapacity } from './billingEnforcement';
 import { ensureSacramentalJourneyForCatechumen } from '../sacramentHelpers';
 import { logger } from '../logger';
 
@@ -196,23 +196,22 @@ export const importCatechumensCSV = async (
   const classCache = new Map<string, Awaited<ReturnType<typeof resolveClassForImport>>>();
   if (scopedClass) classCache.set('__scoped__', scopedClass);
 
+  // Resolve the target class of every profile first (cached per class name).
+  const targets: Array<{
+    profile: (typeof createdProfiles)[number];
+    target: NonNullable<Awaited<ReturnType<typeof resolveClassForImport>>>;
+  }> = [];
   for (const profile of createdProfiles) {
-    const target =
-      scopedClass ||
-      (profile.className
-        ? classCache.get(profile.className) ??
-          (await (async () => {
-            const resolved = await resolveClassForImport(
-              context,
-              parishId,
-              undefined,
-              profile.className,
-            );
-            classCache.set(profile.className, resolved);
-            return resolved;
-          })())
-        : null);
-
+    let target = scopedClass;
+    if (!target && profile.className) {
+      if (!classCache.has(profile.className)) {
+        classCache.set(
+          profile.className,
+          await resolveClassForImport(context, parishId, undefined, profile.className),
+        );
+      }
+      target = classCache.get(profile.className) ?? null;
+    }
     if (!target) {
       if (profile.className) {
         results.details.push(
@@ -221,47 +220,78 @@ export const importCatechumensCSV = async (
       }
       continue;
     }
+    targets.push({ profile, target });
+  }
 
+  if (targets.length === 0) return results;
+
+  // Plan limit and class capacities are loaded once and tracked locally while
+  // we decide which rows can be enrolled (instead of 2-3 queries per row).
+  const capacity = context.user.isAdmin ? null : await resolveEnrollmentCapacity(context, parishId);
+  let remainingPlanSlots =
+    capacity && capacity.maxCatechumens !== null
+      ? Math.max(capacity.maxCatechumens - capacity.enrolledCount, 0)
+      : Number.POSITIVE_INFINITY;
+
+  const targetClassIds = [...new Set(targets.map((t) => t.target.id))];
+  const enrolledByClass = new Map<string, number>();
+  const enrolledGroups = await context.entities.ClassEnrollment.groupBy({
+    by: ['classId'],
+    where: { classId: { in: targetClassIds }, status: EnrollmentStatus.ENROLLED },
+    _count: { id: true },
+  });
+  for (const g of enrolledGroups as any[]) enrolledByClass.set(g.classId, g._count.id);
+
+  const enrollmentsToCreate: { classId: string; catechumenProfileId: string; status: EnrollmentStatus }[] = [];
+  const journeysToEnsure: { profileId: string; sacramentId: string }[] = [];
+
+  for (const { profile, target } of targets) {
+    if (remainingPlanSlots <= 0) {
+      results.details.push(
+        `Linha ${profile.lineNumber}: não foi possível matricular — ${capacity?.limitError().message ?? 'limite do plano atingido'}`,
+      );
+      continue;
+    }
+    const enrolledCount = enrolledByClass.get(target.id) ?? 0;
+    if (target.maxCapacity && enrolledCount >= target.maxCapacity) {
+      results.details.push(
+        `Linha ${profile.lineNumber}: turma lotada — catequizando criado sem matrícula.`,
+      );
+      continue;
+    }
+    enrolledByClass.set(target.id, enrolledCount + 1);
+    remainingPlanSlots -= 1;
+    enrollmentsToCreate.push({
+      classId: target.id,
+      catechumenProfileId: profile.id,
+      status: EnrollmentStatus.ENROLLED,
+    });
+    if (target.sacramentId) journeysToEnsure.push({ profileId: profile.id, sacramentId: target.sacramentId });
+  }
+
+  if (enrollmentsToCreate.length > 0) {
     try {
-      if (!context.user.isAdmin) {
-        await assertCanEnrollCatechumen(context, parishId);
-      }
-      const enrolledCount = await context.entities.ClassEnrollment.count({
-        where: { classId: target.id, status: EnrollmentStatus.ENROLLED },
+      const created = await context.entities.ClassEnrollment.createMany({
+        data: enrollmentsToCreate,
+        skipDuplicates: true,
       });
-      if (target.maxCapacity && enrolledCount >= target.maxCapacity) {
-        results.details.push(
-          `Linha ${profile.lineNumber}: turma lotada — catequizando criado sem matrícula.`,
-        );
-        continue;
-      }
-      await context.entities.ClassEnrollment.create({
-        data: {
-          classId: target.id,
-          catechumenProfileId: profile.id,
-          status: EnrollmentStatus.ENROLLED,
-        },
-      });
-      results.enrolled++;
-      if (target.sacramentId) {
-        try {
-          await ensureSacramentalJourneyForCatechumen(
-            profile.id,
-            target.sacramentId,
-            parishId,
-            context,
-          );
-        } catch (e: any) {
-          logger.warn('Failed to auto-create sacramental journey on CSV import', {
-            catechumenProfileId: profile.id,
-            error: e instanceof Error ? e.message : String(e),
-          });
-        }
-      }
+      results.enrolled += created?.count ?? enrollmentsToCreate.length;
     } catch (e: any) {
       results.details.push(
-        `Linha ${profile.lineNumber}: não foi possível matricular — ${e.message || e}`,
+        `Não foi possível matricular ${enrollmentsToCreate.length} catequizando(s) — ${e.message || e}`,
       );
+      return results;
+    }
+  }
+
+  for (const { profileId, sacramentId } of journeysToEnsure) {
+    try {
+      await ensureSacramentalJourneyForCatechumen(profileId, sacramentId, parishId, context);
+    } catch (e: any) {
+      logger.warn('Failed to auto-create sacramental journey on CSV import', {
+        catechumenProfileId: profileId,
+        error: e instanceof Error ? e.message : String(e),
+      });
     }
   }
 

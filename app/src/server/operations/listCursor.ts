@@ -65,6 +65,20 @@ export function emptyPage(useCursorPage: boolean) {
   return useCursorPage ? { items: [], nextCursor: null } : [];
 }
 
+/**
+ * Legacy (non-cursor) callers used to receive the whole table when `take` was
+ * omitted. Every list now has a default and a hard ceiling; UIs that need more
+ * must page with `paginated: true` + `cursor`.
+ */
+export const LEGACY_DEFAULT_TAKE = 200;
+export const LEGACY_MAX_TAKE = 500;
+
+export function legacyTake(take: number | undefined | null): number {
+  const n = Number(take);
+  if (!Number.isFinite(n) || n <= 0) return LEGACY_DEFAULT_TAKE;
+  return Math.min(Math.floor(n), LEGACY_MAX_TAKE);
+}
+
 export function pageParams(args: {
   take?: number;
   skip?: number;
@@ -76,7 +90,7 @@ export function pageParams(args: {
   return {
     useCursorPage,
     pageSize,
-    take: useCursorPage ? pageSize + 1 : args.take,
+    take: useCursorPage ? pageSize + 1 : legacyTake(args.take),
     skip: useCursorPage ? 0 : args.skip || 0,
   };
 }

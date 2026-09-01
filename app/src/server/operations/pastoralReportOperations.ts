@@ -1,5 +1,10 @@
 import { HttpError } from 'wasp/server';
 import { assertCanAccessClass, getUserParishRoles, isCatechistOrAboveRole, isCoordinatorOrAboveRole } from '../auth/helpers';
+import { requireWorkspaceAccess } from './sharedScope';
+
+/** Pastoral report window: meetings older than this are not loaded. */
+const PASTORAL_REPORT_WINDOW_MONTHS = 24;
+const PASTORAL_REPORT_MAX_MEETINGS = 300;
 
 async function canViewSensitiveCatechumenSignals(context: any): Promise<boolean> {
   if (context.user?.isAdmin) return true;
@@ -37,19 +42,10 @@ export const getClassPastoralReport = async (args: { classId: string }, context:
   }
 
   const { parishId } = await assertCanAccessClass(context, args.classId.trim());
-  void (context.entities.Membership as unknown); // Required by assertCanAccessClass
 
   if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: {
-        userId: context.user.id,
-        parishId,
-        status: 'ACTIVE',
-      },
-      select: { role: true },
-    });
-    const role = membership?.role || '';
-    if (!isCoordinatorOrAboveRole(role) && !isCatechistOrAboveRole(role)) {
+    const access = await requireWorkspaceAccess(context, parishId);
+    if (!access.isCoordinatorOrAbove && !access.isCatechist) {
       throw new HttpError(403, 'Apenas coordenadores e catequistas podem aceder ao relatório pastoral.');
     }
   }
@@ -67,19 +63,48 @@ export const getClassPastoralReport = async (args: { classId: string }, context:
           },
         },
       },
-      meetings: {
-        orderBy: { date: 'asc' },
-        select: {
-          id: true, date: true, title: true, theme: true, kind: true, sequenceNumber: true,
-          attendance: {
-            select: { catechumenProfileId: true, status: true },
-          },
-        },
-      },
     },
   });
 
   if (!cls) throw new HttpError(404, 'Turma não encontrada.');
+
+  // Meetings: bounded window, flat rows (no nested attendance trees).
+  const windowStart = new Date();
+  windowStart.setMonth(windowStart.getMonth() - PASTORAL_REPORT_WINDOW_MONTHS);
+  const meetingRows = await context.entities.Meeting.findMany({
+    where: { classId: cls.id, date: { gte: windowStart } },
+    orderBy: { date: 'desc' },
+    take: PASTORAL_REPORT_MAX_MEETINGS,
+    select: { id: true, date: true, title: true, theme: true, kind: true, sequenceNumber: true },
+  });
+  meetingRows.reverse();
+
+  const attendanceRows: { meetingId: string; catechumenProfileId: string; status: string }[] =
+    meetingRows.length > 0
+      ? await context.entities.AttendanceRecord.findMany({
+          where: { meetingId: { in: meetingRows.map((m: any) => m.id) } },
+          select: { meetingId: true, catechumenProfileId: true, status: true },
+        })
+      : [];
+
+  // meetingId -> (catechumenProfileId -> status), O(1) lookups in the loops below.
+  const attendanceByMeeting = new Map<string, Map<string, string>>();
+  for (const row of attendanceRows) {
+    let perMeeting = attendanceByMeeting.get(row.meetingId);
+    if (!perMeeting) {
+      perMeeting = new Map();
+      attendanceByMeeting.set(row.meetingId, perMeeting);
+    }
+    perMeeting.set(row.catechumenProfileId, row.status);
+  }
+  const statusCountsFor = (meetingId: string) => {
+    const counts = { PRESENT: 0, ABSENT: 0, LATE: 0, JUSTIFIED: 0 } as Record<string, number>;
+    for (const status of attendanceByMeeting.get(meetingId)?.values() ?? []) {
+      counts[status] = (counts[status] ?? 0) + 1;
+    }
+    return counts;
+  };
+  cls.meetings = meetingRows;
 
   const activeEnrollments = cls.enrollments.filter((e: any) => e.status === 'ENROLLED');
   const allEnrollmentsWithProfile = cls.enrollments.filter((e: any) => e.catechumenProfile);
@@ -113,10 +138,11 @@ export const getClassPastoralReport = async (args: { classId: string }, context:
 
   // MEETINGS WITH ATTENDANCE for charts
   const meetingsWithAttendance = cls.meetings.map((m: any) => {
-    const present = m.attendance.filter((a: any) => a.status === 'PRESENT').length;
-    const absent = m.attendance.filter((a: any) => a.status === 'ABSENT').length;
-    const late = m.attendance.filter((a: any) => a.status === 'LATE').length;
-    const justified = m.attendance.filter((a: any) => a.status === 'JUSTIFIED').length;
+    const counts = statusCountsFor(m.id);
+    const present = counts.PRESENT;
+    const absent = counts.ABSENT;
+    const late = counts.LATE;
+    const justified = counts.JUSTIFIED;
     return {
       id: m.id,
       sequenceNumber: m.sequenceNumber,
@@ -176,12 +202,12 @@ export const getClassPastoralReport = async (args: { classId: string }, context:
     let maxConsecutive = 0;
 
     for (const m of validMeetings) {
-      const record = m.attendance.find((a: any) => a.catechumenProfileId === profile.id);
-      if (!record) {
+      const recordStatus = attendanceByMeeting.get(m.id)?.get(profile.id);
+      if (!recordStatus) {
         absent++;
         consecutiveAbsences++;
       } else {
-        switch (record.status) {
+        switch (recordStatus) {
           case 'PRESENT': present++; consecutiveAbsences = 0; break;
           case 'LATE': late++; consecutiveAbsences = 0; break;
           case 'JUSTIFIED': justified++; consecutiveAbsences = 0; break;

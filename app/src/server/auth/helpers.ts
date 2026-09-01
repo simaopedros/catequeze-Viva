@@ -389,21 +389,16 @@ export async function assertCanAccessClass(
 
   if (context.user.isAdmin) return { parishId: classData.parishId };
 
-  const membership = await context.entities.Membership.findFirst({
-    where: {
-      userId: context.user.id,
-      parishId: classData.parishId,
-      status: MembershipStatus.ACTIVE,
-    },
-    select: { role: true },
-  });
+  // Workspace-local role (covers PERSONAL owners and diocese admins without a direct Membership).
+  const { resolveWorkspaceAccess } = await import('../operations/sharedScope');
+  const access = await resolveWorkspaceAccess(context, classData.parishId, { required: false });
 
-  if (membership && COORDINATOR_ROLES.includes(membership.role)) {
+  if (access?.isCoordinatorOrAbove || access?.role === 'PASTORAL_VIEWER') {
     return { parishId: classData.parishId };
   }
 
   const isClassCatechist = classData.catechists.some((cc: { userId: string }) => cc.userId === context.user.id);
-  if (isClassCatechist && membership && ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(membership.role)) {
+  if (isClassCatechist && access?.isCatechist) {
     return { parishId: classData.parishId };
   }
 

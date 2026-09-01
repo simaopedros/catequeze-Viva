@@ -1,4 +1,5 @@
 import { logout } from 'wasp/client/auth';
+import { clearIntendedPath } from '../../auth/intendedPath';
 
 const LOGOUT_REDIRECT_GUARD_KEY = 'catequese-viva-just-logged-out';
 const CLIENT_SESSION_STORAGE_KEYS = [
@@ -14,6 +15,7 @@ function clearClientSessionState(): void {
       window.localStorage.removeItem(key);
     }
     window.sessionStorage.setItem(LOGOUT_REDIRECT_GUARD_KEY, '1');
+    clearIntendedPath();
   } catch {
     // Ignore storage errors — non-critical during logout
   }

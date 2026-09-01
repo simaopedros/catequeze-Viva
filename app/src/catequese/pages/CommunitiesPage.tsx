@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
+import { QueryErrorState } from "../../client/components/QueryErrorState";
 import { Textarea } from "../../client/components/ui/textarea";
 import { Building2, Plus, Loader2, Check, X, Search } from "lucide-react";
 import { useCommunityTypeOptions } from "../../i18n/useLabels";
@@ -28,10 +29,12 @@ export default function CommunitiesPage() {
   const communityTypeOptions = useCommunityTypeOptions();
   const navigate = useNavigate();
   const { activeParishId } = useActiveParish();
-  const { data: communities = [], isLoading: loading } = useQuery(
-    listCommunities,
-    { parishId: activeParishId },
-  );
+  const {
+    data: communities = [],
+    isLoading: loading,
+    error: communitiesError,
+    refetch: refetchCommunities,
+  } = useQuery(listCommunities, { parishId: activeParishId });
 
   const [showCreate, setShowCreate] = useState(false);
   const [search, setSearch] = useState("");
@@ -179,6 +182,12 @@ export default function CommunitiesPage() {
             <SkeletonCard key={i} />
           ))}
         </div>
+      ) : communitiesError && communities.length === 0 ? (
+        <QueryErrorState
+          compact
+          error={communitiesError}
+          onRetry={refetchCommunities}
+        />
       ) : filterCommunities.length === 0 ? (
         hasFilters ? (
           <EmptyState

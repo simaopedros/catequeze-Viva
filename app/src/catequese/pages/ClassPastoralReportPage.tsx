@@ -37,17 +37,12 @@ const STATUS_COLORS: Record<string, string> = {
   COMPLETED: "#071A2D",
   MOVED_TO_OTHER_CLASS: "#071A2D",
 };
-const STATUS_LABELS: Record<string, string> = {
-  ENROLLED: "Ativo",
-  DROPPED: "Desistente",
-  TRANSFERRED: "Transferido",
-  COMPLETED: "Concluído",
-  MOVED_TO_OTHER_CLASS: "Mudou de turma",
-};
 
 export default function ClassPastoralReportPage() {
   const { t } = useTranslation("pastoralReport");
   const { t: tc } = useTranslation("common");
+  const statusLabel = (status: string) =>
+    t(`enrollment_status.${status}`, { defaultValue: status });
   const { currentLocale } = useLocale();
   const { id } = useParams<{ id: string }>();
   const { data, isLoading: loading } = useQuery(getClassPastoralReport, {
@@ -117,7 +112,7 @@ export default function ClassPastoralReportPage() {
   const statusPieData = useMemo(
     () =>
       data?.statusDistribution?.map((s: any) => ({
-        name: STATUS_LABELS[s.status] || s.status,
+        name: statusLabel(s.status),
         value: s.count,
         color: STATUS_COLORS[s.status] || "#94a3b8",
       })) || [],
@@ -266,8 +261,7 @@ export default function ClassPastoralReportPage() {
                             {r.name}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {STATUS_LABELS[r.enrollmentStatus] ||
-                              r.enrollmentStatus}
+                            {statusLabel(r.enrollmentStatus)}
                           </p>
                         </div>
                       </div>

@@ -9,16 +9,58 @@ import { HttpError } from 'wasp/server';
 import { detectProvider, createAiClient, aiCompletion } from '../ai/providers';
 import { resolveUserLocale } from '../i18n/serverLocale';
 
-/** Sanitize user input for AI prompts — prevents injection of system instructions */
-function sanitizePrompt(input: string): string {
-  return input
+const MAX_PROMPT_INPUT_CHARS = 2000;
+
+/**
+ * Sanitize free-text user input before interpolating it into a prompt.
+ * Filtering alone cannot stop prompt injection, so callers must also keep user
+ * text in the `user` role (never in `system`) and prefer allowlisted options
+ * (see `pickAllowedOption`) whenever the input is a choice rather than prose.
+ */
+function sanitizePrompt(input: string, maxChars = MAX_PROMPT_INPUT_CHARS): string {
+  return String(input ?? '')
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
     .replace(/<\/?(system|assistant|user|instruction|prompt)[^>]*>/gi, '')
     .replace(/^[#*>\-\s]*(system|assistant|user):?\s*/gim, '')
     .replace(/ignore (all |previous |the above )?(instructions|prompts|rules)/gi, '')
     .replace(/forget (all |previous )?(instructions|prompts|rules)/gi, '')
     .replace(/you are now/gi, '')
     .replace(/\[system\]|\[assistant\]|\[user\]|system:|assistant:|user:/gi, '')
-    .slice(0, 2000); // Limit length
+    .slice(0, maxChars);
+}
+
+/** Returns `value` only when it is one of the allowed options; otherwise the fallback. */
+function pickAllowedOption<T extends string>(
+  value: string | undefined,
+  allowed: readonly T[],
+  fallback: T,
+): T {
+  const normalized = String(value || '').trim().toLowerCase();
+  return (allowed as readonly string[]).includes(normalized) ? (normalized as T) : fallback;
+}
+
+// Keep in sync with GenerateWhatsappFlow.tsx option values.
+const WHATSAPP_TONES = ['acolhedor', 'direto', 'pastoral', 'breve'] as const;
+const WHATSAPP_LENGTHS = ['curto', 'medio', 'detalhado'] as const;
+
+/**
+ * Loads the meeting/class context used to personalise AI output, enforcing
+ * that the caller can access the meeting's class. Returns null when no meeting
+ * was requested.
+ */
+async function loadMeetingContextForAi(context: any, meetingId?: string) {
+  if (!meetingId) return null;
+  const meeting = await context.entities.Meeting.findUnique({
+    where: { id: meetingId },
+    select: {
+      id: true,
+      classId: true,
+      class: { select: { id: true, name: true, ageGroup: true } },
+    },
+  });
+  if (!meeting) throw new HttpError(404, 'Encontro não encontrado.');
+  await assertCanAccessClass(context, meeting.classId);
+  return meeting;
 }
 import { assertAndDeductCredits, getCreditsStatus } from '../ai/credits';
 import { assertCanAccessClass, assertCanAccessParish } from '../auth/helpers';
@@ -407,14 +449,7 @@ export const generateActivityForMeeting = async (
 
   await assertCanAccessContent(context, content);
 
-  const meeting = args.meetingId
-    ? await context.entities.Meeting.findUnique({
-        where: { id: args.meetingId },
-        include: {
-          class: { select: { id: true, name: true, ageGroup: true } },
-        },
-      })
-    : null;
+  const meeting = await loadMeetingContextForAi(context, args.meetingId);
 
   const { client, model } = await getAiClient();
   const requestedType = args.activityType || 'QUIZ';
@@ -590,22 +625,20 @@ export const generateWhatsAppMessage = async (
 
   const content = await context.entities.ContentItem.findUnique({
     where: { id: args.contentId },
-    select: { id: true, title: true, theme: true, familyTask: true, mainContent: true },
+    select: {
+      id: true, parishId: true, createdById: true,
+      title: true, theme: true, familyTask: true, mainContent: true,
+    },
   });
   if (!content) throw new HttpError(404, 'Conteúdo não encontrado.');
 
-  const meeting = args.meetingId
-    ? await context.entities.Meeting.findUnique({
-        where: { id: args.meetingId },
-        include: {
-          class: { select: { id: true, name: true, ageGroup: true } },
-        },
-      })
-    : null;
+  await assertCanAccessContent(context, content);
+
+  const meeting = await loadMeetingContextForAi(context, args.meetingId);
 
   const { client, model } = await getAiClient();
-  const tone = sanitizePrompt(args.tone || 'acolhedor');
-  const length = sanitizePrompt(args.length || 'medio');
+  const tone = pickAllowedOption(args.tone, WHATSAPP_TONES, 'acolhedor');
+  const length = pickAllowedOption(args.length, WHATSAPP_LENGTHS, 'medio');
 
   const userMessage = `Encontro de catequese:
 Título: ${content.title}

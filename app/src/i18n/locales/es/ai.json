@@ -213,5 +213,10 @@
     "infra_error": "Error de infraestructura: el chat no recibió un stream SSE. Es posible que la ruta /api/* no se esté reenviando al servidor. Contacte con soporte si continúa.",
     "view_history": "Ver historial de conversas",
     "open_copilot": "Abrir asistencia editorial"
+  },
+  "progress": {
+    "elapsed": "{{seconds}}s",
+    "keep_page_open": "Suele tardar entre 10 y 40 segundos. Mantén esta página abierta.",
+    "slow_hint": "Está tardando más de lo habitual. Seguimos intentando hasta 2 minutos; si falla podrás reintentar."
   }
 }

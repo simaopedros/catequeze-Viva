@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 
 /**
- * Light theme is the only officially supported color scheme for this stage.
- * Always force light; ignore any stored dark preference.
+ * Light theme is the only supported color scheme for this product stage
+ * (decision recorded in the correction plan). Main.css ships no `.dark`
+ * tokens and the `dark` variant is class-based, so `dark:` utilities are
+ * inert. This hook only clears any stale `.dark` class / stored preference.
  */
 export default function useColorMode(): ["light", (mode: string) => void] {
   useEffect(() => {

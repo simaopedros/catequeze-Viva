@@ -55,3 +55,15 @@ export const changePasswordSchema = z.object({
 });
 
 export type ChangePasswordValues = z.infer<typeof changePasswordSchema>;
+
+export const updateProfileSchema = z.object({
+  firstName: z.string().trim().min(1, 'first_name_required').max(100, 'too_long'),
+  lastName: z.string().trim().max(100, 'too_long'),
+  phone: z
+    .string()
+    .trim()
+    .max(20, 'too_long')
+    .refine((v) => v === '' || v.replace(/\D/g, '').length >= 10, 'phone_invalid'),
+});
+
+export type UpdateProfileValues = z.infer<typeof updateProfileSchema>;

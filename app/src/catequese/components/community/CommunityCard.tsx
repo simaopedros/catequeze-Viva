@@ -11,7 +11,7 @@ import {
   ChevronUp,
   Pencil,
 } from "lucide-react";
-import { COMMUNITY_TYPE_LABELS } from "../../../shared/constants";
+import { useCommunityTypeLabels } from "../../../i18n/useLabels";
 
 interface CommunityCardProps {
   community: any;
@@ -27,6 +27,7 @@ export function CommunityCard({
   editForm,
 }: CommunityCardProps) {
   const { t } = useTranslation("common");
+  const communityTypeLabels = useCommunityTypeLabels();
   const [expanded, setExpanded] = useState(false);
   const c = community;
 
@@ -52,7 +53,7 @@ export function CommunityCard({
             </p>
             {c.type && (
               <Badge variant="outline" className="text-overline">
-                {COMMUNITY_TYPE_LABELS[c.type] || c.type}
+                {communityTypeLabels[c.type as keyof typeof communityTypeLabels] || c.type}
               </Badge>
             )}
           </div>

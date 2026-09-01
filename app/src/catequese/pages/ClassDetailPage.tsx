@@ -495,20 +495,7 @@ export default function ClassDetailPage() {
   const isCatechumenLimitReached =
     limits.maxCatechumens !== null && enrolled.length >= limits.maxCatechumens;
 
-  let attendanceRate = 0;
-  if (cls.meetings?.length) {
-    const total = cls.meetings.reduce(
-      (s: number, m: any) => s + (m.attendance?.length || 0),
-      0,
-    );
-    const present = cls.meetings.reduce(
-      (s: number, m: any) =>
-        s +
-        (m.attendance?.filter((a: any) => a.status === "PRESENT")?.length || 0),
-      0,
-    );
-    if (total > 0) attendanceRate = Math.round((present / total) * 100);
-  }
+  const attendanceRate: number = cls.attendanceSummary?.attendanceRate ?? 0;
 
   const statusBadge = classStatusMap[cls.status as keyof typeof classStatusMap];
 
@@ -733,7 +720,7 @@ export default function ClassDetailPage() {
             {
               id: "encontros",
               label: t("detail.tab_meetings", {
-                count: cls.meetings?.length || 0,
+                count: cls._count?.meetings ?? cls.meetings?.length ?? 0,
               }),
             },
             {

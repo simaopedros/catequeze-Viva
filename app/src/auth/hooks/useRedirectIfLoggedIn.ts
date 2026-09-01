@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useAuth } from "wasp/client/auth";
 import { isFamilyPortalHost } from "../../shared/portal";
+import { consumeIntendedPath, isSafeInternalPath } from "../intendedPath";
 
 type Options = {
   redirectTo?: string;
@@ -14,6 +15,8 @@ export function useRedirectIfLoggedIn(options: Options = {}) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
+  // `?next=/app/...` (explicit deep link) wins over the stored intended path.
+  const nextParam = searchParams.get("next");
   const defaultRedirect = isFamilyPortalHost() ? "/app" : "/app";
   const redirectTo = options.redirectTo ?? defaultRedirect;
 
@@ -37,6 +40,11 @@ export function useRedirectIfLoggedIn(options: Options = {}) {
       return;
     }
 
-    navigate(redirectTo, { replace: true });
-  }, [user, isLoading, navigate, redirectTo, token]);
+    const target = isSafeInternalPath(nextParam)
+      ? nextParam
+      : options.redirectTo
+        ? redirectTo
+        : consumeIntendedPath() ?? redirectTo;
+    navigate(target, { replace: true });
+  }, [user, isLoading, navigate, redirectTo, token, nextParam, options.redirectTo]);
 }

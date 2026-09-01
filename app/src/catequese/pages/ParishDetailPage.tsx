@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
+import { QueryErrorState } from "../../client/components/QueryErrorState";
 import {
   Church,
   Users,
@@ -40,7 +41,12 @@ export default function ParishDetailPage() {
   const pid = parishId ?? "";
   const navigate = useNavigate();
 
-  const { data: parish, isLoading: loading } = useQuery(getParishById, {
+  const {
+    data: parish,
+    isLoading: loading,
+    error: parishError,
+    refetch: refetchParish,
+  } = useQuery(getParishById, {
     id: parishId!,
   });
   const { data: communities = [] } = useQuery(listCommunities, {
@@ -160,6 +166,20 @@ export default function ParishDetailPage() {
     return (
       <div className="flex justify-center py-20">
         <Loader2 className="h-8 w-8 animate-spin text-brand-ink" />
+      </div>
+    );
+  }
+
+  if (!parish && !loading && parishError) {
+    return (
+      <div className="space-y-4">
+        <QueryErrorState error={parishError} onRetry={refetchParish} />
+        <div className="flex justify-center">
+          <Button variant="ghost" onClick={() => navigate("/app/parishes")}>
+            <ArrowLeft className="mr-1 h-4 w-4" />
+            {tp("back")}
+          </Button>
+        </div>
       </div>
     );
   }
