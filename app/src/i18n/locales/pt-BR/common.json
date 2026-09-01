@@ -114,9 +114,9 @@
     "DIOCESE_ADMIN": "Diocese",
     "PARISH_COORDINATOR": "Coordenador",
     "COMMUNITY_COORDINATOR": "Comunidade",
-    "LEAD_CATECHIST": "Catequista Resp.",
-    "ASSISTANT_CATECHIST": "Auxiliar",
-    "GUARDIAN": "Responsável",
+    "LEAD_CATECHIST": "Catequista responsável",
+    "ASSISTANT_CATECHIST": "Catequista auxiliar",
+    "GUARDIAN": "Responsável familiar",
     "CATECHUMEN": "Catequizando",
     "CONTENT_REVIEWER": "Revisor",
     "PASTORAL_VIEWER": "Pastoral",
@@ -544,12 +544,14 @@
     "select_class": "Selecione a turma",
     "select_class_optional": "Turma (opcional)",
     "class_required": "Informe a turma ao convidar catequistas ou auxiliares.",
-    "select_workspace": "Selecione um espaço"
+    "select_workspace": "Selecione um espaço",
+    "family_invites_hint": "Para convidar responsáveis ou catequizandos, use os Convites da Família — esta página é só para a equipe pastoral.",
+    "open_family_invites": "Abrir convites da família"
   },
   "pending_invite": {
     "banner_one": "Tem um convite pendente para {{name}}",
     "banner_many": "Tem {{count}} convites pendentes",
-    "banner_hint": "Aceite para entrar no espaço e começar a colaborar.",
+    "banner_hint": "Aceite para entrar no espaço.",
     "view_cta": "Ver e aceitar",
     "a_workspace": "um espaço"
   },

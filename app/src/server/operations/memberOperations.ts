@@ -21,7 +21,7 @@ import {
   TEAM_ROLES_NEEDING_CLASS_FOR_LEAD,
   type InviteEmailDelivery,
 } from '../../shared/teamInvitePolicy';
-import { deliverInviteEmail } from '../jobs/inviteEmailUtils';
+import { deliverInviteEmail, roleLabel } from '../jobs/inviteEmailUtils';
 
 // ── Simple rate limiter for public invite token endpoint ───────────────────
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -84,20 +84,6 @@ async function sendInviteEmail(
     });
     return 'failed';
   }
-}
-
-function roleLabel(role: string): string {
-  const map: Record<string, string> = {
-    PARISH_COORDINATOR: 'Coordenador(a) Paroquial',
-    COMMUNITY_COORDINATOR: 'Coordenador(a) de Comunidade',
-    LEAD_CATECHIST: 'Catequista',
-    ASSISTANT_CATECHIST: 'Catequista Auxiliar',
-    GUARDIAN: 'Responsável',
-    CATECHUMEN: 'Catequizando',
-    CONTENT_REVIEWER: 'Revisor(a) de Conteúdo',
-    PASTORAL_VIEWER: 'Liderança Pastoral',
-  };
-  return map[role] || role;
 }
 
 // ── Resolve inviter role ───────────────────────────────────────────────────

@@ -19,7 +19,6 @@ import {
   Plus,
   Pencil,
   Trash2,
-  Copy,
   Mail,
 } from "lucide-react";
 import {
@@ -37,7 +36,6 @@ import { toast } from "../../client/hooks/use-toast";
 import PhoneMaskInput from "../../client/components/PhoneMaskInput";
 import { useViaCep } from "../../client/hooks/useViaCep";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
-import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import {
   Dialog,
   DialogContent,
@@ -387,17 +385,6 @@ export default function FamilyDetailPage() {
     } finally {
       setRemovingGuardianLoading(false);
     }
-  };
-
-  const handleCopyInviteLink = () => {
-    // Point staff to the family-portal invites hub (not the admin family URL).
-    const link = `${window.location.origin}/app/family-invites`;
-    navigator.clipboard.writeText(link);
-    trackMarketingEvent("share_clicked", {
-      placement: "family_detail_page",
-      method: "copy_link",
-    });
-    toast({ title: t("detail_link_copied") || "Link copiado!" });
   };
 
   const openAddCatechumenDialog = () => {
@@ -759,18 +746,6 @@ export default function FamilyDetailPage() {
                           >
                             <Mail className="h-3.5 w-3.5" />
                           </Link>
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-7 w-7"
-                          onClick={handleCopyInviteLink}
-                          title={
-                            t("families.copy_invite_link") ||
-                            "Copiar link de convite"
-                          }
-                        >
-                          <Copy className="h-3.5 w-3.5" />
                         </Button>
                         <Button
                           size="icon"

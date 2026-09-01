@@ -1435,9 +1435,9 @@ export const common_pt_BR = {
       "DIOCESE_ADMIN": "Diocese",
       "PARISH_COORDINATOR": "Coordenador",
       "COMMUNITY_COORDINATOR": "Comunidade",
-      "LEAD_CATECHIST": "Catequista Resp.",
-      "ASSISTANT_CATECHIST": "Auxiliar",
-      "GUARDIAN": "Responsável",
+      "LEAD_CATECHIST": "Catequista responsável",
+      "ASSISTANT_CATECHIST": "Catequista auxiliar",
+      "GUARDIAN": "Responsável familiar",
       "CATECHUMEN": "Catequizando",
       "CONTENT_REVIEWER": "Revisor",
       "PASTORAL_VIEWER": "Pastoral",
@@ -1865,12 +1865,14 @@ export const common_pt_BR = {
       "select_class": "Selecione a turma",
       "select_class_optional": "Turma (opcional)",
       "class_required": "Informe a turma ao convidar catequistas ou auxiliares.",
-      "select_workspace": "Selecione um espaço"
+      "select_workspace": "Selecione um espaço",
+      "family_invites_hint": "Para convidar responsáveis ou catequizandos, use os Convites da Família — esta página é só para a equipe pastoral.",
+      "open_family_invites": "Abrir convites da família"
     },
     "pending_invite": {
       "banner_one": "Tem um convite pendente para {{name}}",
       "banner_many": "Tem {{count}} convites pendentes",
-      "banner_hint": "Aceite para entrar no espaço e começar a colaborar.",
+      "banner_hint": "Aceite para entrar no espaço.",
       "view_cta": "Ver e aceitar",
       "a_workspace": "um espaço"
     },
@@ -2315,6 +2317,7 @@ export const emails_pt_BR = {
 
 export const family_pt_BR = {
     "portal_badge": "Portal da Família",
+    "staff_portal_badge": "Equipe Pastoral",
     "app_name": "Catequese Viva",
     "landing": {
       "tagline": "Acompanha a jornada de fé dos teus filhos.",
@@ -2348,6 +2351,7 @@ export const family_pt_BR = {
     "invite": {
       "badge": "Convite",
       "title": "Foste Convidado(a)!",
+      "title_staff": "Convite para a equipe de catequese",
       "as_role": "como {{role}}",
       "sent_to": "Convite enviado para {{email}}",
       "expires": " · Expira em {{date}}",
@@ -2356,15 +2360,18 @@ export const family_pt_BR = {
       "accepting": "Aceitando...",
       "accept": "Aceitar Convite",
       "login_to_accept": "Para aceitar o convite, entra ou cria uma conta.",
+      "login_to_accept_staff": "Para aceitar o convite da equipe pastoral, entra ou cria uma conta.",
       "accepted_title": "Convite Aceite!",
       "accepted_desc": "Agora você faz parte de {{parish}} como {{role}}.",
       "redirecting": "A redirecionar para o teu painel...",
+      "redirecting_staff": "A redirecionar para o painel pastoral...",
       "not_found_title": "Convite Não Encontrado",
       "not_found_desc": "Não foi possível encontrar este convite. Verifica se o link está correto.",
       "expired_desc_accept": "Este convite já expirou. Pede um novo convite ao teu coordenador ou catequista.",
       "login": "Entrar",
       "signup": "Criar Conta",
-      "back_portal": "Voltar ao portal da família"
+      "back_portal": "Voltar ao portal da família",
+      "back_home": "Voltar ao início"
     },
     "portal_invites": {
       "title": "Convites do Portal da Família",
@@ -4328,7 +4335,7 @@ export const public_pt_BR = {
       "personal_plan_hint": "· Plano pessoal",
       "personal_pending": "Espaço pessoal será criado ao completar o onboarding.",
       "pending_invites": "Convites Pendentes",
-      "pending_invites_subtitle": "Aceite um convite para entrar no espaço e colaborar com a equipe.",
+      "pending_invites_subtitle": "Aceite um convite para entrar no espaço.",
       "invited_as": "Você foi convidado(a) como {{role}}",
       "accepting": "Aceitando...",
       "accept": "Aceitar",

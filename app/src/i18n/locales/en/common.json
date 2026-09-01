@@ -194,8 +194,8 @@
     "PARISH_COORDINATOR": "Coordinator",
     "COMMUNITY_COORDINATOR": "Community",
     "LEAD_CATECHIST": "Lead Catechist",
-    "ASSISTANT_CATECHIST": "Assistant",
-    "GUARDIAN": "Guardian",
+    "ASSISTANT_CATECHIST": "Assistant Catechist",
+    "GUARDIAN": "Family Guardian",
     "CATECHUMEN": "Catechumen",
     "CONTENT_REVIEWER": "Reviewer",
     "PASTORAL_VIEWER": "Pastoral",
@@ -544,12 +544,14 @@
     "select_class": "Select class",
     "select_class_optional": "Class (optional)",
     "class_required": "Select a class when inviting catechists or assistants.",
-    "select_workspace": "Select a workspace"
+    "select_workspace": "Select a workspace",
+    "family_invites_hint": "To invite guardians or catechumens, use Family Invites — this page is only for the pastoral team.",
+    "open_family_invites": "Open family invites"
   },
   "pending_invite": {
     "banner_one": "You have a pending invite to {{name}}",
     "banner_many": "You have {{count}} pending invites",
-    "banner_hint": "Accept to join the workspace and start collaborating.",
+    "banner_hint": "Accept to join the workspace.",
     "view_cta": "View and accept",
     "a_workspace": "a workspace"
   },
