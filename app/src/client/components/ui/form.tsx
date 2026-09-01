@@ -10,6 +10,7 @@ import {
   type FieldValues,
 } from "react-hook-form";
 
+import { useTranslation } from "react-i18next";
 import { cn } from "../../utils";
 import { Label } from "./label";
 
@@ -132,13 +133,32 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
   );
 }
 
+/**
+ * Zod schemas in src/client/validation/schemas.ts use short keys as messages
+ * (e.g. `first_name_required`); they are resolved from `common:validation.*`
+ * here so users never see the raw key.
+ */
+function translateValidationMessage(
+  t: (key: string, opts?: Record<string, unknown>) => string,
+  message: string,
+): string {
+  if (/^[a-z][a-z0-9_]*$/.test(message)) {
+    const translated = t(`validation.${message}`, { defaultValue: "" });
+    if (translated) return translated;
+  }
+  return message;
+}
+
 function FormMessage({
   className,
   children,
   ...props
 }: React.ComponentProps<"p">) {
   const { error, formMessageId } = useFormField();
-  const body = error ? String(error?.message ?? "") : children;
+  const { t } = useTranslation("common");
+  const body = error
+    ? translateValidationMessage(t, String(error?.message ?? ""))
+    : children;
 
   if (!body) {
     return null;

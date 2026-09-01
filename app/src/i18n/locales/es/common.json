@@ -561,5 +561,18 @@
   "leave_form_desc": "Tiene cambios que aún no se han guardado. ¿Salir de todos modos?",
   "leave_anyway": "Salir sin guardar",
   "more_actions": "Más acciones",
-  "clear": "Limpiar"
+  "clear": "Limpiar",
+  "validation": {
+    "first_name_required": "Indica el nombre.",
+    "last_name_required": "Indica el apellido.",
+    "email_invalid": "Correo electrónico no válido.",
+    "name_required": "Indica el nombre.",
+    "name_min": "El nombre debe tener al menos 3 caracteres.",
+    "title_min": "El título debe tener al menos 3 caracteres.",
+    "content_required": "Escribe el contenido principal.",
+    "current_password_required": "Indica la contraseña actual.",
+    "password_min_length": "La nueva contraseña debe tener al menos 8 caracteres.",
+    "phone_invalid": "Teléfono no válido.",
+    "too_long": "Texto demasiado largo."
+  }
 }

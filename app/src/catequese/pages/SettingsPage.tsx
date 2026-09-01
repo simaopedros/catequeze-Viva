@@ -38,8 +38,12 @@ import PhoneMaskInput from "../../client/components/PhoneMaskInput";
 import TwoFactorSetup from "../components/TwoFactorSetup";
 import {
   changePasswordSchema,
+  updateProfileSchema,
   type ChangePasswordValues,
+  type UpdateProfileValues,
 } from "../../client/validation/schemas";
+import { ConfirmDialog } from "../../client/components/ConfirmDialog";
+import { useUnsavedChangesGuard } from "../../client/hooks/useUnsavedChangesGuard";
 import {
   Form,
   FormControl,
@@ -69,16 +73,21 @@ export default function SettingsPage() {
   const [migrationConfirm, setMigrationConfirm] = useState("");
   const { data: userParishes = [] } = useQuery(listParishes);
 
-  // Profile form (manual since it uses PhoneMaskInput which doesn't support ref)
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phone, setPhone] = useState("");
+  // Profile form: RHF + zod (PhoneMaskInput is wired through Controller).
+  const profileForm = useForm<UpdateProfileValues>({
+    resolver: zodResolver(updateProfileSchema),
+    defaultValues: { firstName: "", lastName: "", phone: "" },
+  });
+  const profileDirty = profileForm.formState.isDirty;
+  const leaveGuard = useUnsavedChangesGuard(profileDirty && !saving);
 
   useEffect(() => {
-    setFirstName(user?.firstName || "");
-    setLastName(user?.lastName || "");
-    setPhone(user?.phone || "");
-  }, [user]);
+    profileForm.reset({
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      phone: user?.phone || "",
+    });
+  }, [user, profileForm]);
 
   // Password form with Zod
   const passwordForm = useForm<ChangePasswordValues>({
@@ -86,19 +95,20 @@ export default function SettingsPage() {
     defaultValues: { currentPassword: "", newPassword: "" },
   });
 
-  const handleSaveProfile = async () => {
+  const handleSaveProfile = profileForm.handleSubmit(async (values) => {
     setSaving(true);
     setSaved(false);
     setSaveError("");
     try {
-      await updateUserProfile({ firstName, lastName, phone });
+      await updateUserProfile(values);
+      profileForm.reset(values);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (e: any) {
       setSaveError(e.message || t("save_profile_error"));
     }
     setSaving(false);
-  };
+  });
 
   const handleChangePassword = async (values: ChangePasswordValues) => {
     try {
@@ -200,55 +210,81 @@ export default function SettingsPage() {
 
       <AppPanel className="space-y-4">
         <AppEyebrow>{t("profile")}</AppEyebrow>
+        <Form {...profileForm}>
+        <form
+          className="space-y-4"
+          onSubmit={handleSaveProfile}
+          noValidate
+        >
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <label htmlFor="firstName" className="text-xs font-medium">
-              {t("first_name")}
-            </label>
-            <Input
-              id="firstName"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              placeholder={t("first_name_placeholder")}
-              className="h-10 rounded-sm"
-            />
-          </div>
-          <div className="space-y-1.5">
-            <label htmlFor="lastName" className="text-xs font-medium">
-              {t("last_name")}
-            </label>
-            <Input
-              id="lastName"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder={t("last_name_placeholder")}
-              className="h-10 rounded-sm"
-            />
-          </div>
-        </div>
-        <div className="space-y-1.5">
-          <label htmlFor="phone" className="text-xs font-medium">
-            {t("phone")}
-          </label>
-          <PhoneMaskInput
-            value={phone}
-            onChange={setPhone}
-            className="flex h-10 w-full rounded-sm"
-            placeholder={t("phone_placeholder")}
+          <FormField
+            control={profileForm.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem className="space-y-1.5">
+                <FormLabel className="text-xs font-medium">{t("first_name")}</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder={t("first_name_placeholder")}
+                    className="h-10 rounded-sm"
+                    autoComplete="given-name"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={profileForm.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem className="space-y-1.5">
+                <FormLabel className="text-xs font-medium">{t("last_name")}</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder={t("last_name_placeholder")}
+                    className="h-10 rounded-sm"
+                    autoComplete="family-name"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
         </div>
+        <FormField
+          control={profileForm.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem className="space-y-1.5">
+              <FormLabel className="text-xs font-medium">{t("phone")}</FormLabel>
+              <FormControl>
+                <PhoneMaskInput
+                  value={field.value}
+                  onChange={field.onChange}
+                  className="flex h-10 w-full rounded-sm"
+                  placeholder={t("phone_placeholder")}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         {saveError && (
-          <p className="text-xs text-destructive flex items-center gap-1">
+          <p className="text-xs text-destructive flex items-center gap-1" role="alert">
             <AlertCircle className="h-3 w-3" />
             {saveError}
           </p>
         )}
         <div className="flex gap-2">
           <Button
+            type="submit"
             size="sm"
             className="rounded-md"
-            onClick={handleSaveProfile}
-            disabled={saving}
+            disabled={saving || !profileDirty}
+            loading={saving}
           >
             <Save className="mr-1 h-3 w-3" />
             {saving ? t("saving") : tc("save")}
@@ -260,7 +296,19 @@ export default function SettingsPage() {
             </span>
           )}
         </div>
+        </form>
+        </Form>
       </AppPanel>
+
+      <ConfirmDialog
+        open={leaveGuard.dialogOpen}
+        onOpenChange={leaveGuard.setDialogOpen}
+        title={tc("leave_form_title")}
+        description={tc("leave_form_desc")}
+        confirmLabel={tc("leave_anyway")}
+        variant="destructive"
+        onConfirm={leaveGuard.onConfirmLeave}
+      />
 
       {/* Password */}
       <AppPanel className="space-y-4">

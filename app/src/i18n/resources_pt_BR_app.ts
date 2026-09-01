@@ -463,6 +463,11 @@ export const ai_pt_BR_app = {
       "infra_error": "Erro de infraestrutura: o chat não recebeu um stream SSE. A rota /api/* pode não estar a ser encaminhada para o servidor. Contacte o suporte se o problema continuar.",
       "view_history": "Ver histórico de conversas",
       "open_copilot": "Abrir assistência editorial"
+    },
+    "progress": {
+      "elapsed": "{{seconds}}s",
+      "keep_page_open": "Isso costuma levar entre 10 e 40 segundos. Mantenha esta página aberta.",
+      "slow_hint": "Está demorando mais que o habitual. Continuamos tentando por até 2 minutos; se falhar, você poderá tentar novamente."
     }
   } as const;
 

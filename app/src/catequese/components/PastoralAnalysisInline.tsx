@@ -13,6 +13,8 @@ import {
   XCircle,
 } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
+import { formatDate as formatAppDate } from "../../i18n/format";
+import { useLocale } from "../../i18n/useLocale";
 import { ChartSuspenseFallback } from "../../client/components/ChartSuspenseFallback";
 import {
   PASTORAL_PERIOD_ALL,
@@ -114,6 +116,7 @@ export function PastoralAnalysisInline({
   }, [data]);
 
   const locale = i18n.resolvedLanguage || "pt-BR";
+  const { currentLocale } = useLocale();
   const currentMonth = useMemo(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
@@ -167,9 +170,9 @@ export function PastoralAnalysisInline({
     return <p className="text-sm text-muted-foreground">{t("noMeetings")}</p>;
 
   const { catechumen, class: cls, enrollment } = data;
-  const reportDate = new Date().toLocaleDateString();
+  const reportDate = formatAppDate(new Date(), currentLocale);
   const formatDate = (value: string | null | undefined) =>
-    value ? new Date(value).toLocaleDateString() : "-";
+    value ? formatAppDate(value, currentLocale) : "-";
   const displayTheme = (item: any) => item.theme || item.title || t("meeting");
   const statusLabels: Record<string, string> = {
     PRESENT: t("present"),

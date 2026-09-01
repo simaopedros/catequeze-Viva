@@ -213,5 +213,10 @@
     "infra_error": "Infrastructure error: the chat did not receive an SSE stream. The /api/* route may not be proxied to the server. Contact support if this persists.",
     "view_history": "View chat history",
     "open_copilot": "Open editorial assistance"
+  },
+  "progress": {
+    "elapsed": "{{seconds}}s",
+    "keep_page_open": "This usually takes 10–40 seconds. Keep this page open.",
+    "slow_hint": "Taking longer than usual. We keep trying for up to 2 minutes; if it fails you can retry."
   }
 }

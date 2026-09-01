@@ -945,7 +945,20 @@ export const common_pt_BR_core = {
     "leave_form_desc": "Você tem alterações que ainda não foram salvas. Sair mesmo assim?",
     "leave_anyway": "Sair sem salvar",
     "more_actions": "Mais ações",
-    "clear": "Limpar"
+    "clear": "Limpar",
+    "validation": {
+      "first_name_required": "Informe o nome.",
+      "last_name_required": "Informe o sobrenome.",
+      "email_invalid": "E-mail inválido.",
+      "name_required": "Informe o nome.",
+      "name_min": "O nome precisa ter pelo menos 3 caracteres.",
+      "title_min": "O título precisa ter pelo menos 3 caracteres.",
+      "content_required": "Escreva o conteúdo principal.",
+      "current_password_required": "Informe a senha atual.",
+      "password_min_length": "A nova senha precisa ter pelo menos 8 caracteres.",
+      "phone_invalid": "Telefone inválido.",
+      "too_long": "Texto muito longo."
+    }
   } as const;
 
 export const components_pt_BR_core = {

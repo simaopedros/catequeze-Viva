@@ -463,6 +463,11 @@ export const ai_en = {
       "infra_error": "Infrastructure error: the chat did not receive an SSE stream. The /api/* route may not be proxied to the server. Contact support if this persists.",
       "view_history": "View chat history",
       "open_copilot": "Open editorial assistance"
+    },
+    "progress": {
+      "elapsed": "{{seconds}}s",
+      "keep_page_open": "This usually takes 10–40 seconds. Keep this page open.",
+      "slow_hint": "Taking longer than usual. We keep trying for up to 2 minutes; if it fails you can retry."
     }
   } as const;
 
@@ -1972,7 +1977,20 @@ export const common_en = {
     "leave_form_desc": "You have changes that have not been saved yet. Leave anyway?",
     "leave_anyway": "Leave without saving",
     "more_actions": "More actions",
-    "clear": "Clear"
+    "clear": "Clear",
+    "validation": {
+      "first_name_required": "Enter the first name.",
+      "last_name_required": "Enter the last name.",
+      "email_invalid": "Invalid e-mail.",
+      "name_required": "Enter a name.",
+      "name_min": "Name must have at least 3 characters.",
+      "title_min": "Title must have at least 3 characters.",
+      "content_required": "Write the main content.",
+      "current_password_required": "Enter your current password.",
+      "password_min_length": "The new password must have at least 8 characters.",
+      "phone_invalid": "Invalid phone number.",
+      "too_long": "Text is too long."
+    }
   } as const;
 
 export const components_en = {

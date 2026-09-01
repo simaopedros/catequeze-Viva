@@ -15,6 +15,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import GoogleTagScripts from "./analytics/GoogleTagScripts";
 import { activatePreloadedFonts } from "./fonts";
+import { rememberIntendedPath } from "../auth/intendedPath";
 import { isFamilyPortalHost } from "../shared/portal";
 // Family landing is public-host only — code-split so staff landing does not pay for it
 const FamilyLandingPage = lazy(
@@ -312,6 +313,14 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
+
+  // Deep links: if this visit gets bounced to /login, the post-login redirect
+  // brings the user back here instead of the generic /app.
+  useEffect(() => {
+    if (isAppRoute || isAdminDashboard) {
+      rememberIntendedPath(`${location.pathname}${location.search}`);
+    }
+  }, [isAppRoute, isAdminDashboard, location.pathname, location.search]);
 
   useEffect(() => {
     ensureFbcFromFbclid();

@@ -5,6 +5,7 @@
 @plugin "@tailwindcss/typography";
 @plugin "tailwindcss-animate";
 
+/* Class-based (not media-query) so `dark:` utilities never activate on their own. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ── Metric-compatible fallbacks ─────────────────────────────────────
@@ -451,52 +452,9 @@
     --info-foreground: 0 0% 98%;
   }
 
-  .dark {
-    /* Surface */
-    --background: 210 50% 5%;
-    --foreground: 0 0% 98%;
-    --card: 210 50% 5%;
-    --card-foreground: 0 0% 98%;
-    --card-accent: 31 57% 93%;
-    --card-accent-foreground: 0 0% 3.9%;
-    --card-subtle: 233 24% 15%;
-    --card-subtle-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --muted: 210 100% 13%;
-    --muted-foreground: 0 0% 63.9%;
-
-    /* Brand */
-    --primary: 31 57% 93%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 32 100% 60%;
-    --secondary-foreground: 0 0% 9%;
-    --secondary-muted: 32 90% 70%;
-    --secondary-muted-foreground: 0 0% 9%;
-    --accent: 31 57% 93%;
-    --accent-foreground: 210 100% 13%;
-
-    /* Feedback */
-    --destructive: 0 62.8% 63%;
-    --destructive-foreground: 0 0% 98%;
-    --success: 141 71% 48%;
-    --success-foreground: 0 0% 98%;
-    --warning: 36 100% 50%;
-    --warning-foreground: 0 0% 98%;
-
-    /* Borders & inputs */
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-
-    /* Mesmo raio do tema claro — divergir aqui só produz surpresa se o dark
-       algum dia for ligado. */
-    --radius: 0.75rem;
-
-    /* Info */
-    --info: 200 80% 55%;
-    --info-foreground: 0 0% 98%;
-  }
+  /* Light-only product stage: no `.dark` token set is shipped. `dark:` utilities
+     stay inert because the variant above is class-based (never toggled) —
+     see src/client/hooks/useColorMode.ts. */
 }
 
 /* ── Base styles ───────────────────────────────────────────────────── */

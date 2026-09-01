@@ -463,6 +463,11 @@ export const ai_es = {
       "infra_error": "Error de infraestructura: el chat no recibió un stream SSE. Es posible que la ruta /api/* no se esté reenviando al servidor. Contacte con soporte si continúa.",
       "view_history": "Ver historial de conversas",
       "open_copilot": "Abrir asistencia editorial"
+    },
+    "progress": {
+      "elapsed": "{{seconds}}s",
+      "keep_page_open": "Suele tardar entre 10 y 40 segundos. Mantén esta página abierta.",
+      "slow_hint": "Está tardando más de lo habitual. Seguimos intentando hasta 2 minutos; si falla podrás reintentar."
     }
   } as const;
 
@@ -1972,7 +1977,20 @@ export const common_es = {
     "leave_form_desc": "Tiene cambios que aún no se han guardado. ¿Salir de todos modos?",
     "leave_anyway": "Salir sin guardar",
     "more_actions": "Más acciones",
-    "clear": "Limpiar"
+    "clear": "Limpiar",
+    "validation": {
+      "first_name_required": "Indica el nombre.",
+      "last_name_required": "Indica el apellido.",
+      "email_invalid": "Correo electrónico no válido.",
+      "name_required": "Indica el nombre.",
+      "name_min": "El nombre debe tener al menos 3 caracteres.",
+      "title_min": "El título debe tener al menos 3 caracteres.",
+      "content_required": "Escribe el contenido principal.",
+      "current_password_required": "Indica la contraseña actual.",
+      "password_min_length": "La nueva contraseña debe tener al menos 8 caracteres.",
+      "phone_invalid": "Teléfono no válido.",
+      "too_long": "Texto demasiado largo."
+    }
   } as const;
 
 export const components_es = {
