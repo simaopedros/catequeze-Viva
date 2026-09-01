@@ -2,6 +2,9 @@ import { HttpError } from 'wasp/server';
 import { Resend } from 'resend';
 import { MembershipStatus } from '@prisma/client';
 
+/** Resend accepts up to 100 emails per batch request. */
+const RESEND_BATCH_SIZE = 100;
+
 function escapeHtml(unsafe: string): string {
   return unsafe.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
@@ -79,25 +82,40 @@ export const sendClassAnnouncementByEmail = async (
 
   const resend = new Resend(apiKey);
   const safeBody = escapeHtml(args.body).replace(/\n/g, '<br>');
-
-  const results = await Promise.allSettled(
-    [...guardianEmails].map((to) =>
-      resend.emails.send({
-        from: 'Catequese Viva <comunicados@catequeseviva.com.br>',
-        to,
-        subject: args.subject,
-        html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px">
+  const html = `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px">
 <h2 style="color:#4f46e5">${escapeHtml(args.subject)}</h2>
 <div style="line-height:1.6;color:#333;margin:16px 0">${safeBody}</div>
 <hr style="border:none;border-top:1px solid #e5e7eb"/>
 <p style="color:#6b7280;font-size:12px">Enviado pela Catequese Viva • Gerencie suas notificações em Configurações</p>
-</div>`,
-      }),
-    ),
-  );
+</div>`;
 
-  const sent = results.filter((r) => r.status === 'fulfilled').length;
-  const failed = results.filter((r) => r.status === 'rejected').length;
+  // One batch API call per RESEND_BATCH_SIZE recipients instead of one HTTP
+  // request per guardian; batches run sequentially to respect provider limits.
+  const recipients = [...guardianEmails];
+  let sent = 0;
+  let failed = 0;
+  for (let i = 0; i < recipients.length; i += RESEND_BATCH_SIZE) {
+    const chunk = recipients.slice(i, i + RESEND_BATCH_SIZE);
+    try {
+      const { data, error } = await resend.batch.send(
+        chunk.map((to) => ({
+          from: 'Catequese Viva <comunicados@catequeseviva.com.br>',
+          to,
+          subject: args.subject,
+          html,
+        })),
+      );
+      if (error) {
+        failed += chunk.length;
+      } else {
+        const accepted = data?.data?.length ?? chunk.length;
+        sent += accepted;
+        failed += chunk.length - accepted;
+      }
+    } catch {
+      failed += chunk.length;
+    }
+  }
 
-  return { sent, failed, total: guardianEmails.size };
+  return { sent, failed, total: recipients.length };
 };
