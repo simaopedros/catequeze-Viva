@@ -417,7 +417,7 @@ export const getClassDetails = async (args: { id: string }, context: any) => {
                 sacramentalJourneys: {
                   select: {
                     id: true,
-                    status: true,
+                    targetDate: true,
                     templateId: true,
                     template: {
                       select: { id: true, name: true, sacramentId: true },
