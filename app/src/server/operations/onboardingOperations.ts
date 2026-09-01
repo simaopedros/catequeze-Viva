@@ -1,5 +1,5 @@
 import { HttpError } from 'wasp/server';
-import i18n from '../../i18n/config';
+import i18n from '../i18n/serverI18n';
 import { isParishClaimedByOthers } from './parishOperations';
 import { resolveNewParishBilling } from './billingEnforcement';
 

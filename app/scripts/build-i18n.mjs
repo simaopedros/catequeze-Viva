@@ -16,6 +16,35 @@ const OUT_DIR = path.join(ROOT, 'src/i18n');
 const LANGS = ['pt-BR', 'en', 'es'];
 const LANG_SUFFIX = { 'pt-BR': 'pt_BR', en: 'en', es: 'es' };
 
+/**
+ * Namespaces needed before login (landings, auth, pricing, legal, chrome).
+ * They ship synchronously with the client; every other namespace goes to the
+ * `app` split bundle that is loaded when an authenticated route is entered.
+ */
+const CORE_NS = new Set([
+  'common',
+  'navigation',
+  'publicNav',
+  'public',
+  'auth',
+  'billing',
+  'landing',
+  'landingSistema',
+  'landingIa',
+  'landingPresenca',
+  'legal',
+  'cookie',
+  'components',
+  'topbar',
+]);
+
+function splitBundleTargets(namespaces) {
+  return [
+    { fileSuffix: 'pt_BR_core', exportSuffix: 'pt_BR_core', namespaces: namespaces.filter((ns) => CORE_NS.has(ns)) },
+    { fileSuffix: 'pt_BR_app', exportSuffix: 'pt_BR_app', namespaces: namespaces.filter((ns) => !CORE_NS.has(ns)) },
+  ];
+}
+
 const checkOnly = process.argv.includes('--check');
 
 function flattenKeys(obj, prefix = '') {
@@ -77,8 +106,8 @@ function serializeValue(value, indent = 2) {
   return json.split('\n').map((line, i) => (i === 0 ? line : ' '.repeat(indent) + line)).join('\n');
 }
 
-function generateBundle(lang, namespaces) {
-  const suffix = LANG_SUFFIX[lang];
+function generateBundle(lang, namespaces, suffixOverride) {
+  const suffix = suffixOverride || LANG_SUFFIX[lang];
   const lines = [
     '// Auto-generated i18n resources — do not edit directly',
     `// Language: ${lang}`,
@@ -126,6 +155,13 @@ if (checkOnly) {
     }
   }
 
+  for (const target of splitBundleTargets(namespaces)) {
+    const filePath = path.join(OUT_DIR, `resources_${target.fileSuffix}.ts`);
+    const expected = generateBundle('pt-BR', target.namespaces, target.exportSuffix);
+    const current = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : null;
+    if (current !== expected) staleBundles.push(path.relative(ROOT, filePath));
+  }
+
   if (staleBundles.length > 0) {
     console.error('Generated i18n bundles are missing or stale:');
     staleBundles.forEach((file) => console.error('  -', file));
@@ -145,4 +181,11 @@ for (const lang of LANGS) {
   const filePath = path.join(OUT_DIR, `resources_${suffix}.ts`);
   fs.writeFileSync(filePath, generateBundle(lang, namespaces), 'utf8');
   console.log(`Generated ${filePath} (${namespaces.length} namespaces)`);
+}
+
+// pt-BR split bundles for the client (core = sync, app = lazy)
+for (const target of splitBundleTargets(namespaces)) {
+  const filePath = path.join(OUT_DIR, `resources_${target.fileSuffix}.ts`);
+  fs.writeFileSync(filePath, generateBundle('pt-BR', target.namespaces, target.exportSuffix), 'utf8');
+  console.log(`Generated ${filePath} (${target.namespaces.length} namespaces)`);
 }

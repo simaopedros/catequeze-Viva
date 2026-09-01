@@ -6,7 +6,10 @@ declare global {
   }
 }
 
-const GTM_ID = (import.meta.env.REACT_APP_GTM_ID as string | undefined)?.trim();
+// Production container id; REACT_APP_GTM_ID overrides it (empty string disables GTM).
+const DEFAULT_GTM_ID = "GTM-MTGNTJG6";
+const envGtmId = import.meta.env.REACT_APP_GTM_ID as string | undefined;
+const GTM_ID = envGtmId === undefined ? DEFAULT_GTM_ID : envGtmId.trim();
 
 function hasAnalyticsConsent(): boolean {
   try {

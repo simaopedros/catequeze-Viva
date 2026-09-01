@@ -1,9 +1,11 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
-// Eager only pt-BR — server-safe sync import and product default / fallback.
-// en/es load on demand via ensureLocaleLoaded (client-only dynamic import).
-import { resources_pt_BR } from "./resources_pt_BR";
+// Eager only the pt-BR "core" namespaces (landings, auth, pricing, chrome) —
+// server-safe sync import and product default / fallback. The remaining pt-BR
+// namespaces (`app` bundle) and en/es load on demand on the client; the server
+// registers the full pt-BR bundle through `src/server/i18n/serverI18n.ts`.
+import { resources_pt_BR_core } from "./resources_pt_BR_core";
 
 const SUPPORTED_LOCALES = ["pt-BR", "en", "es"] as const;
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
@@ -54,6 +56,48 @@ const ALL_NS = [
 
 const loadedLocales = new Set<string>(["pt-BR"]);
 const loadingPromises = new Map<string, Promise<void>>();
+
+/** Namespaces shipped synchronously (see CORE_NS in scripts/build-i18n.mjs). */
+const CORE_NS = new Set<string>(Object.keys(resources_pt_BR_core));
+
+let appNamespacesLoaded = false;
+let appNamespacesPromise: Promise<void> | null = null;
+
+/** Register every pt-BR namespace at once (server bootstrap / tests). */
+export function registerFullPtBrResources(
+  resources: Record<string, Record<string, unknown>>,
+) {
+  for (const [ns, data] of Object.entries(resources)) {
+    if (!CORE_NS.has(ns)) i18n.addResourceBundle("pt-BR", ns, data, true, true);
+  }
+  appNamespacesLoaded = true;
+}
+
+export function areAppNamespacesLoaded(): boolean {
+  return appNamespacesLoaded;
+}
+
+/**
+ * Load the pt-BR `app` namespaces (dashboard, classes, content, ...) on the
+ * client. Public/landing routes never need them, so they stay out of the
+ * initial bundle. Deduped; no-op on the server.
+ */
+export async function ensureAppNamespacesLoaded(): Promise<void> {
+  if (appNamespacesLoaded) return;
+  if (typeof window === "undefined") return;
+  if (!appNamespacesPromise) {
+    appNamespacesPromise = import("./resources_pt_BR_app")
+      .then((mod) => {
+        registerFullPtBrResources(
+          mod.resources_pt_BR_app as Record<string, Record<string, unknown>>,
+        );
+      })
+      .finally(() => {
+        appNamespacesPromise = null;
+      });
+  }
+  await appNamespacesPromise;
+}
 
 export function normalizeLocale(
   value: string | null | undefined,
@@ -195,7 +239,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
-      "pt-BR": resources_pt_BR,
+      "pt-BR": resources_pt_BR_core,
     },
     lng: initialLocale,
     fallbackLng: "pt-BR",
@@ -214,6 +258,8 @@ i18n
     },
     react: {
       useSuspense: false,
+      // Re-render bound components when a lazily loaded bundle is registered.
+      bindI18nStore: "added",
     },
     // Missing keys fall back to pt-BR until the locale pack finishes loading
     partialBundledLanguages: true,

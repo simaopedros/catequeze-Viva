@@ -1,17 +1,15 @@
 import type * as React from "react";
-import type { ReactNode } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { MoreHorizontal } from "lucide-react";
 import { cn } from "../../utils";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { Button } from "../ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+
+// Radix dropdown stack only when a page actually has mobile overflow actions.
+const AppPageHeaderOverflowMenu = lazy(
+  () => import("./AppPageHeaderOverflowMenu"),
+);
 import type {
   PagePrimaryAction,
   PageSecondaryAction,
@@ -243,45 +241,19 @@ export function AppPageHeader({
           {/* Secondary: mobile overflow */}
           {mobileSecondaries.length > 0 && (
             <div className="sm:hidden">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    className="h-11 w-11 min-h-11 min-w-11 rounded-md"
-                    aria-label={t("more_actions")}
-                  >
-                    <MoreHorizontal className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="min-w-[12rem]">
-                  {mobileSecondaries.map((action) =>
-                    action.href ? (
-                      <DropdownMenuItem key={action.label} asChild>
-                        <Link
-                          to={action.href}
-                          onClick={action.onClick}
-                          className={cn(
-                            action.destructive && "text-destructive",
-                          )}
-                        >
-                          {action.label}
-                        </Link>
-                      </DropdownMenuItem>
-                    ) : (
-                      <DropdownMenuItem
-                        key={action.label}
-                        disabled={action.disabled}
-                        className={cn(action.destructive && "text-destructive")}
-                        onClick={action.onClick}
-                      >
-                        {action.label}
-                      </DropdownMenuItem>
-                    ),
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Suspense
+                fallback={
+                  <span
+                    className="inline-block h-11 w-11 rounded-md border border-border/70"
+                    aria-hidden
+                  />
+                }
+              >
+                <AppPageHeaderOverflowMenu
+                  actions={mobileSecondaries}
+                  label={t("more_actions")}
+                />
+              </Suspense>
             </div>
           )}
           {primaryAction && (

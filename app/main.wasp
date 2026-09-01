@@ -18,14 +18,16 @@ app OpenSaaS {
     "<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />",
     "<meta name='apple-mobile-web-app-title' content='Catequese Viva' />",
 
-    // Fonts: preconnect + non-blocking stylesheet (no CSS @import)
+    // Fonts: preconnect + preloaded stylesheet. The <link> is `as='style'` so it
+    // does not block first paint; src/client/fonts.ts promotes it to a
+    // stylesheet right after hydration (display=swap keeps text visible).
     // Note: head tags are converted to React; use camelCase attrs Wasp/React accept.
     "<link rel='preconnect' href='https://fonts.googleapis.com' />",
     "<link rel='preconnect' href='https://fonts.gstatic.com' crossOrigin='anonymous' />",
-    "<link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap' />",
+    "<link rel='preload' as='style' data-font-stylesheet='true' href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap' />",
 
     // LCP hero (mobile-first): discover image before JS hydrates
-    "<link rel='preload' as='image' type='image/avif' href='/landing/hero-mobile-light-640.avif' fetchPriority='high' />",
+    "<link rel='preload' as='image' type='image/avif' imageSrcSet='/landing/hero-mobile-light-640.avif 640w, /landing/hero-mobile-light-960.avif 960w, /landing/hero-mobile-light-1280.avif 1280w, /landing/hero-mobile-light-1896.avif 1896w' imageSizes='(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 560px' fetchPriority='high' />",
 
     "<meta name='description' content='Organize sua turma, prepare encontros e acompanhe famílias no mesmo fluxo pastoral — sem depender de papel, planilha e improviso.' />",
     "<meta name='author' content='Catequese Viva' />",
@@ -229,74 +231,74 @@ query getDailyStats {
 route AdminRoute { path: "/admin", to: AnalyticsDashboardPage }
 page AnalyticsDashboardPage {
   authRequired: true,
-  component: import AnalyticsDashboardPage from "@src/admin/lazy/AnalyticsDashboardPage"
+  component: import AnalyticsDashboardPage from "@src/admin/dashboards/analytics/AnalyticsDashboardPage"
 }
 
 route AdminUsersRoute { path: "/admin/users", to: AdminUsersPage }
 page AdminUsersPage {
   authRequired: true,
-  component: import AdminUsers from "@src/admin/lazy/AdminUsers"
+  component: import AdminUsers from "@src/admin/dashboards/users/UsersDashboardPage"
 }
 
 route AdminUserDetailRoute { path: "/admin/users/:id", to: AdminUserDetailPage }
 page AdminUserDetailPage {
   authRequired: true,
-  component: import AdminUserDetail from "@src/admin/lazy/AdminUserDetail"
+  component: import AdminUserDetail from "@src/admin/dashboards/users/UserDetailPage"
 }
 
 route AdminParishesRoute { path: "/admin/parishes", to: AdminParishesPage }
 page AdminParishesPage {
   authRequired: true,
-  component: import AdminParishes from "@src/admin/lazy/AdminParishes"
+  component: import AdminParishes from "@src/admin/dashboards/parishes/ParishesPage"
 }
 
 route AdminParishDetailRoute { path: "/admin/parishes/:id", to: AdminParishDetailPage }
 page AdminParishDetailPage {
   authRequired: true,
-  component: import AdminParishDetail from "@src/admin/lazy/AdminParishDetail"
+  component: import AdminParishDetail from "@src/admin/dashboards/parishes/ParishDetailPage"
 }
 
 route AdminAnalyticsRoute { path: "/admin/analytics", to: AdminAnalyticsPage }
 page AdminAnalyticsPage {
   authRequired: true,
-  component: import AdminAnalytics from "@src/admin/lazy/AdminAnalytics"
+  component: import AdminAnalytics from "@src/admin/dashboards/analytics/AnalyticsPage"
 }
 
 route AdminBillingRoute { path: "/admin/billing", to: AdminBillingPage }
 page AdminBillingPage {
   authRequired: true,
-  component: import AdminBilling from "@src/admin/lazy/AdminBilling"
+  component: import AdminBilling from "@src/admin/dashboards/billing/BillingPage"
 }
 
 route AdminSupportRoute { path: "/admin/support", to: AdminSupportPage }
 page AdminSupportPage {
   authRequired: true,
-  component: import AdminSupport from "@src/admin/lazy/AdminSupport"
+  component: import AdminSupport from "@src/admin/dashboards/support/SupportInboxPage"
 }
 
 route AdminAuditRoute { path: "/admin/audit", to: AdminAuditPage }
 page AdminAuditPage {
   authRequired: true,
-  component: import AdminAudit from "@src/admin/lazy/AdminAudit"
+  component: import AdminAudit from "@src/admin/dashboards/audit/AuditLogPage"
 }
 
 route AdminSocialModerationRoute { path: "/admin/comunidade", to: AdminSocialModerationPage }
 page AdminSocialModerationPage {
   authRequired: true,
-  component: import AdminSocialModeration from "@src/admin/lazy/AdminSocialModeration"
+  component: import AdminSocialModeration from "@src/admin/dashboards/social/SocialModerationPage"
 }
 
 route AdminSystemRoute { path: "/admin/system", to: AdminSystemPage }
 page AdminSystemPage {
   authRequired: true,
-  component: import AdminSystem from "@src/admin/lazy/AdminSystem"
+  component: import AdminSystem from "@src/admin/dashboards/system/SystemHealthPage"
 }
 
 //#region Catequese Viva App Routes
 route AppDashboardRoute { path: "/app", to: AppDashboardPage }
 page AppDashboardPage {
   authRequired: true,
-  component: import DashboardPage from "@src/catequese/lazy/DashboardPage"
+  component: import DashboardPage from "@src/catequese/pages/DashboardPage"
 }
 route AppDashboardAliasRoute { path: "/app/dashboard", to: AppDashboardAliasPage }
 page AppDashboardAliasPage {
@@ -357,7 +359,7 @@ page AppClassDetailPage {
 route AppClassPastoralReportRoute { path: "/app/classes/:id/reports", to: AppClassPastoralReportPage }
 page AppClassPastoralReportPage {
   authRequired: true,
-  component: import ClassPastoralReportPage from "@src/catequese/lazy/ClassPastoralReportPage"
+  component: import ClassPastoralReportPage from "@src/catequese/pages/ClassPastoralReportPage"
 }
 //#endregion
 
@@ -401,7 +403,7 @@ page AppFamiliesPage {
 route AppNewContentRoute { path: "/app/content-library/new", to: AppNewContentPage }
 page AppNewContentPage {
   authRequired: true,
-  component: import CreateContentPage from "@src/catequese/lazy/CreateContentPage"
+  component: import CreateContentPage from "@src/catequese/pages/CreateContentPage"
 }
 
 route AppContentDetailRoute { path: "/app/content-library/:id", to: AppContentDetailPage }
@@ -454,7 +456,7 @@ page WorkspaceSelectorPage {
 route AppActivitiesRoute { path: "/app/activities", to: AppActivitiesPage }
 page AppActivitiesPage {
   authRequired: true,
-  component: import ActivitiesPage from "@src/catequese/lazy/ActivitiesPage"
+  component: import ActivitiesPage from "@src/catequese/pages/ActivitiesPage"
 }
 
 route AppCalendarRoute { path: "/app/calendar", to: AppCalendarPage }
@@ -478,19 +480,19 @@ page AppSacramentalJourneyDetailPage {
 route AppJourneyTemplatesRoute { path: "/app/journey-templates", to: AppJourneyTemplatesPage }
 page AppJourneyTemplatesPage {
   authRequired: true,
-  component: import JourneyTemplatesPage from "@src/catequese/lazy/JourneyTemplatesPage"
+  component: import JourneyTemplatesPage from "@src/catequese/pages/JourneyTemplatesPage"
 }
 
 route AppMessagesRoute { path: "/app/messages", to: AppMessagesPage }
 page AppMessagesPage {
   authRequired: true,
-  component: import MessagesPage from "@src/catequese/lazy/MessagesPage"
+  component: import MessagesPage from "@src/catequese/pages/MessagesPage"
 }
 
 route AppReportsRoute { path: "/app/reports", to: AppReportsPage }
 page AppReportsPage {
   authRequired: true,
-  component: import ReportsPage from "@src/catequese/lazy/ReportsPage"
+  component: import ReportsPage from "@src/catequese/pages/ReportsPage"
 }
 
 route AppBirthdaysRoute { path: "/app/birthdays", to: AppBirthdaysPage }
@@ -508,7 +510,7 @@ page AppSettingsPage {
 route AppBillingRoute { path: "/app/billing", to: AppBillingPage }
 page AppBillingPage {
   authRequired: true,
-  component: import BillingPage from "@src/catequese/lazy/BillingPage"
+  component: import BillingPage from "@src/catequese/pages/BillingPage"
 }
 
 route AppOnboardingRoute { path: "/app/onboarding", to: AppOnboardingPage }
@@ -1609,7 +1611,7 @@ action uploadDocumentWithToken {
 route AppImportCatechumensRoute { path: "/app/catechumens/import", to: AppImportCatechumensPage }
 page AppImportCatechumensPage {
   authRequired: true,
-  component: import ImportCatechumensPage from "@src/catequese/lazy/ImportCatechumensPage"
+  component: import ImportCatechumensPage from "@src/catequese/pages/ImportCatechumensPage"
 }
 
 action importCatechumensCSV {
@@ -1637,13 +1639,13 @@ page AppCommunitiesPage { authRequired: true, component: import CommunitiesPage 
 route AppCommunityDetailRoute { path: "/app/communities/:id", to: AppCommunityDetailPage }
 page AppCommunityDetailPage { authRequired: true, component: import CommunityDetailPage from "@src/catequese/pages/CommunityDetailPage" }
 route AppBibleRoute { path: "/app/bible", to: AppBiblePage }
-page AppBiblePage { authRequired: true, component: import BiblePage from "@src/catequese/lazy/BiblePage" }
+page AppBiblePage { authRequired: true, component: import BiblePage from "@src/catequese/pages/BiblePage" }
 
 route AppDirectoryRoute { path: "/app/directory", to: AppDirectoryPage }
-page AppDirectoryPage { authRequired: true, component: import DirectoryPage from "@src/catequese/lazy/DirectoryPage" }
+page AppDirectoryPage { authRequired: true, component: import DirectoryPage from "@src/catequese/pages/DirectoryPage" }
 
 route AppCatechismRoute { path: "/app/catechism", to: AppCatechismPage }
-page AppCatechismPage { authRequired: true, component: import CatechismPage from "@src/catequese/lazy/CatechismPage" }
+page AppCatechismPage { authRequired: true, component: import CatechismPage from "@src/catequese/pages/CatechismPage" }
 
 
 route AppCatecheticalYearsRoute { path: "/app/catechetical-years", to: AppCatecheticalYearsPage }
@@ -2249,10 +2251,10 @@ page AppEditCatechumenPage { authRequired: true, component: import EditCatechume
 
 
 route AppEditContentRoute { path: "/app/content-library/:id/edit", to: AppEditContentPage }
-page AppEditContentPage { authRequired: true, component: import EditContentPage from "@src/catequese/lazy/EditContentPage" }
+page AppEditContentPage { authRequired: true, component: import EditContentPage from "@src/catequese/pages/EditContentPage" }
 
 route AppPrintContentRoute { path: "/app/content-library/:id/print", to: AppPrintContentPage }
-page AppPrintContentPage { authRequired: true, component: import ContentPrintPage from "@src/catequese/lazy/ContentPrintPage" }
+page AppPrintContentPage { authRequired: true, component: import ContentPrintPage from "@src/catequese/pages/ContentPrintPage" }
 
 route NotFoundRoute { path: "*", to: NotFoundPage }
 page NotFoundPage {

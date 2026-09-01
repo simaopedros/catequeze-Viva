@@ -190,7 +190,8 @@ export function HeroSection({
       >
         {/*
           Hero LCP image: modern formats + srcset. Intrinsic size 1896×867.
-          PNG kept only as last-resort fallback (~425KB); AVIF/WebP are ~10–64KB.
+          The <img> fallback is the smallest WebP (every supported browser decodes
+          WebP); the 425KB PNG is no longer shipped.
         */}
         {visual === "product" ? (
           <picture>
@@ -205,7 +206,7 @@ export function HeroSection({
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 560px"
             />
             <img
-              src="/landing/hero-mobile-light.png"
+              src="/landing/hero-mobile-light-960.webp"
               alt={tr("hero.image_alt")}
               width={1896}
               height={867}

@@ -56,8 +56,10 @@ const getConfig = () => {
 
     guiOptions: {
       consentModal: {
-        layout: "box",
-        position: "bottom right",
+        // Compact bar: does not cover the hero on mobile (and is no longer the
+        // largest painted element, which used to distort LCP on landings).
+        layout: "bar inline",
+        position: "bottom",
         equalWeightButtons: true,
         flipButtons: false,
       },
