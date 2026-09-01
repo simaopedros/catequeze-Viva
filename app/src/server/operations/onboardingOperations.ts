@@ -1,6 +1,9 @@
 import { HttpError } from 'wasp/server';
 import i18n from '../i18n/serverI18n';
-import { isParishClaimedByOthers } from './parishOperations';
+import {
+  isParishClaimedByOthers,
+  canOnboardingReactivateMembership,
+} from './parishOperations';
 import { resolveNewParishBilling } from './billingEnforcement';
 
 export const completeCoordinatorOnboarding = async (
@@ -65,6 +68,16 @@ export const completeCoordinatorOnboarding = async (
         data: { owner: { connect: { id: context.user.id } } },
       });
     } else if (existingMembership.status !== 'ACTIVE') {
+      // Accept a pending invite; a removed/suspended member must be re-invited.
+      if (
+        !context.user.isAdmin &&
+        !canOnboardingReactivateMembership(existingMembership.status)
+      ) {
+        throw new HttpError(
+          403,
+          i18n.t('onboarding:error_parish_exists', { lng: 'pt-BR' }),
+        );
+      }
       await context.entities.Membership.update({
         where: { id: existingMembership.id },
         data: { status: 'ACTIVE' },

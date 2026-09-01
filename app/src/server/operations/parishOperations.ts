@@ -5,10 +5,13 @@ import { requireWorkspaceAccess } from './sharedScope';
 
 /**
  * Determines whether a parish is already "claimed" by someone other than the
- * given user — i.e. it has a different owner, or an active admin/coordinator
- * membership belonging to another user. Claimed parishes can only be joined
- * through an explicit invitation (see joinParish/inviteUserToParish), never by
- * matching name/city/state or OSM id during onboarding.
+ * given user — i.e. it has a different owner, any other person attached to it
+ * (active or invited membership, whatever the role), or it already holds
+ * pastoral data (classes / catechumens / households). Claimed parishes can only
+ * be joined through an explicit invitation (see joinParish/inviteUserToParish),
+ * never by matching name/city/state or OSM id during onboarding — otherwise a
+ * stranger would become PARISH_COORDINATOR of a parish with someone else's
+ * classes and see all of them.
  */
 export async function isParishClaimedByOthers(
   context: any,
@@ -17,20 +20,41 @@ export async function isParishClaimedByOthers(
 ): Promise<boolean> {
   const parish = await context.entities.Parish.findUnique({
     where: { id: parishId },
-    select: { ownerId: true },
+    select: {
+      ownerId: true,
+      _count: { select: { classes: true, catechumens: true, Household: true } },
+    },
   });
-  if (parish?.ownerId && parish.ownerId !== userId) return true;
+  if (!parish) return true;
+  if (parish.ownerId && parish.ownerId !== userId) return true;
 
-  const adminMembership = await context.entities.Membership.findFirst({
+  const counts = parish._count ?? {};
+  if (
+    (counts.classes ?? 0) > 0 ||
+    (counts.catechumens ?? 0) > 0 ||
+    (counts.Household ?? 0) > 0
+  ) {
+    return true;
+  }
+
+  const otherMember = await context.entities.Membership.findFirst({
     where: {
       parishId,
-      status: 'ACTIVE',
-      role: { in: ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR'] },
+      status: { in: ['ACTIVE', 'INVITED'] },
       userId: { not: userId },
     },
     select: { id: true },
   });
-  return !!adminMembership;
+  return !!otherMember;
+}
+
+/**
+ * Membership statuses that onboarding may promote to ACTIVE. INACTIVE and
+ * SUSPENDED were set by a coordinator (removal / suspension) and must not be
+ * silently reverted by re-running onboarding with the parish name.
+ */
+export function canOnboardingReactivateMembership(status: string): boolean {
+  return status === 'INVITED';
 }
 
 const PARISH_INVITE_REQUIRED_MESSAGE =
@@ -84,12 +108,22 @@ async function ensureOnboardingMembership(context: any, parishId: string): Promi
   });
 
   if (existingMembership) {
-    if (existingMembership.status !== 'ACTIVE') {
+    if (existingMembership.status === 'ACTIVE') return;
+    if (canOnboardingReactivateMembership(existingMembership.status)) {
       await context.entities.Membership.update({
         where: { id: existingMembership.id },
         data: { status: 'ACTIVE' },
       });
+      return;
     }
+    // Removed / suspended: only an invitation can restore access.
+    if (!context.user.isAdmin) {
+      throw new HttpError(403, PARISH_INVITE_REQUIRED_MESSAGE);
+    }
+    await context.entities.Membership.update({
+      where: { id: existingMembership.id },
+      data: { status: 'ACTIVE' },
+    });
     return;
   }
 
@@ -214,9 +248,15 @@ export const createParish = async (
       where: { userId: context.user.id, parishId: existing.id },
     });
 
-    // Already linked — just reactivate the membership if needed.
+    // Already linked — accept a pending invite; never revert a removal.
     if (existingMembership) {
       if (existingMembership.status !== 'ACTIVE') {
+        if (
+          !context.user.isAdmin &&
+          !canOnboardingReactivateMembership(existingMembership.status)
+        ) {
+          throw new HttpError(403, PARISH_INVITE_REQUIRED_MESSAGE);
+        }
         await context.entities.Membership.update({
           where: { id: existingMembership.id },
           data: { status: 'ACTIVE' },
