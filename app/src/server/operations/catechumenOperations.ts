@@ -7,6 +7,7 @@ import {
   isCatechist,
 } from './sharedScope';
 import { deleteDocumentFile } from '../storage/documentStorage';
+import { legacyTake } from './listCursor';
 
 type ListCatechumensArgs = {
   take?: number;
@@ -78,7 +79,7 @@ export const listCatechumens = async (
   const args = _args || {};
   const useCursorPage = Boolean(args.paginated || args.cursor);
   const pageSize = Math.min(Math.max(args.take || 50, 1), 100);
-  const take = useCursorPage ? pageSize + 1 : args.take;
+  const take = useCursorPage ? pageSize + 1 : legacyTake(args.take);
   const skip = useCursorPage ? 0 : args.skip || 0;
   const search = args.search?.trim();
   if (!context.user) throw new HttpError(401);

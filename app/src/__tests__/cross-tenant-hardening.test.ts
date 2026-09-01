@@ -31,20 +31,20 @@ vi.mock('../server/middleware/rateLimiter', () => ({
 const readDocumentFile = vi.fn();
 vi.mock('../server/storage/documentStorage', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../server/storage/documentStorage')>();
-  return { ...actual, readDocumentFile: (...args: any[]) => readDocumentFile(...args) };
+  return { ...actual, readDocumentFile: (...args: any[]) => (readDocumentFile as any)(...args) };
 });
 
 const aiCompletion = vi.fn(async () => ({ content: '{"message":"ok"}' }));
 vi.mock('../server/ai/providers', () => ({
   detectProvider: () => ({ model: 'test-model' }),
   createAiClient: () => ({}),
-  aiCompletion: (...args: any[]) => aiCompletion(...args),
+  aiCompletion: (...args: any[]) => (aiCompletion as any)(...args),
   aiCompletionStream: vi.fn(),
 }));
 
 const assertAndDeductCredits = vi.fn(async () => ({ creditsLeft: 1 }));
 vi.mock('../server/ai/credits', () => ({
-  assertAndDeductCredits: (...args: any[]) => assertAndDeductCredits(...args),
+  assertAndDeductCredits: (...args: any[]) => (assertAndDeductCredits as any)(...args),
   getCreditsStatus: async () => ({ creditsLeft: 1, plan: 'PARISH', hasAiAccess: true, monthlyAllowance: 10 }),
   resolveUserEffectivePlanAndStatus: async () => ({ effectivePlan: 'PARISH', isFreePlan: false }),
 }));

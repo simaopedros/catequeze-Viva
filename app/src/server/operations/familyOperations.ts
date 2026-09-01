@@ -92,7 +92,7 @@ export const listHouseholds = async (
         _count: { select: { catechumens: true } },
       },
       orderBy: [{ name: 'asc' }, { id: 'asc' }],
-      take: useCursorPage ? pageSize + 1 : undefined,
+      take,
     });
     return wrapNameIdPage(rows, pageSize, useCursorPage);
   }

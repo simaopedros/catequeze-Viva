@@ -1,5 +1,13 @@
 import { HttpError } from 'wasp/server';
 import { requireWorkspaceAccess } from './sharedScope';
+import {
+  attendanceRate,
+  emptyAggregate,
+  getClassAttendanceAggregates,
+} from '../reports/attendanceAggregates';
+
+/** Safety cap: a parish overview never needs more than this many classes at once. */
+const MAX_CLASSES_IN_OVERVIEW = 500;
 
 export const getReportsOverview = async (
   _args: { workspaceId?: string; parishId?: string } | void,
@@ -28,50 +36,32 @@ export const getReportsOverview = async (
     throw new HttpError(403, 'Apenas coordenadores podem aceder a relatorios.');
   }
 
-  // Classes with attendance stats
+  // Classes + enrollment counts; attendance is aggregated in SQL (no row trees).
   const classes = await context.entities.CatechesisClass.findMany({
     where: { ...whereClause, status: 'ACTIVE' },
     select: {
       id: true, name: true, parishId: true,
-      meetings: {
-        select: {
-          id: true, date: true,
-          attendance: { select: { status: true } },
-        },
-      },
-      enrollments: { select: { id: true } },
+      _count: { select: { enrollments: true } },
     },
+    orderBy: { name: 'asc' },
+    take: MAX_CLASSES_IN_OVERVIEW,
   });
 
-  // Build report data
-  const classReports = classes.map((cls: any) => {
-    const totalMeetings = cls.meetings.length;
-    const totalAttendanceRecords = cls.meetings.reduce((sum: number, m: any) => sum + m.attendance.length, 0);
-    const presentCount = cls.meetings.reduce((sum: number, m: any) =>
-      sum + m.attendance.filter((a: any) => a.status === 'PRESENT').length, 0
-    );
-    const absentCount = cls.meetings.reduce((sum: number, m: any) =>
-      sum + m.attendance.filter((a: any) => a.status === 'ABSENT').length, 0
-    );
-    const lastMeetingDate = cls.meetings.reduce((latest: Date | null, meeting: any) => {
-      if (!meeting?.date) return latest;
-      if (!latest || meeting.date > latest) return meeting.date;
-      return latest;
-    }, null as Date | null);
+  const aggregates = await getClassAttendanceAggregates(classes.map((c: any) => c.id));
 
+  const classReports = classes.map((cls: any) => {
+    const agg = aggregates.get(cls.id) ?? emptyAggregate(cls.id);
     return {
       id: cls.id,
       name: cls.name,
       parishId: cls.parishId,
-      lastMeetingDate: lastMeetingDate?.toISOString?.() || null,
-      totalEnrolled: cls.enrollments.length,
-      totalMeetings,
-      totalAttendanceRecords,
-      presentCount,
-      absentCount,
-      attendanceRate: totalAttendanceRecords > 0
-        ? Math.round((presentCount / totalAttendanceRecords) * 100)
-        : 0,
+      lastMeetingDate: agg.lastMeetingDate?.toISOString() || null,
+      totalEnrolled: cls._count.enrollments,
+      totalMeetings: agg.totalMeetings,
+      totalAttendanceRecords: agg.totalAttendanceRecords,
+      presentCount: agg.presentCount,
+      absentCount: agg.absentCount,
+      attendanceRate: attendanceRate(agg),
     };
   });
 

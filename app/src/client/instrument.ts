@@ -43,7 +43,8 @@ function scrubString(value: string): string {
 }
 
 /** Strip PII (emails, tokens in URLs, request bodies) before events leave the browser. */
-function scrubEvent<T extends Record<string, any>>(event: T): T {
+function scrubEvent<T extends Record<string, any>>(input: T): T {
+  const event = input as Record<string, any>;
   if (event.user) {
     event.user = { id: event.user.id };
   }
@@ -57,7 +58,7 @@ function scrubEvent<T extends Record<string, any>>(event: T): T {
     if (crumb.message) crumb.message = scrubString(crumb.message);
     if (crumb.data?.url) crumb.data.url = scrubString(String(crumb.data.url));
   }
-  return event;
+  return event as T;
 }
 
 async function initSentryDeferred() {

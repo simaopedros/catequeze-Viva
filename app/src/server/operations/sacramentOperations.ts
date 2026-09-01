@@ -3,6 +3,7 @@ import { validateOrThrow, createSacramentalJourneySchema, updateMilestoneStatusS
 import { requireAuth, getEffectiveParishRole, isCoordinatorOrAboveRole, getDioceseParishIds } from '../auth/helpers';
 import { ensureSacramentalJourneyForCatechumen } from '../sacramentHelpers';
 import { requireWorkspaceAccess } from './sharedScope';
+import { legacyTake } from './listCursor';
 
 /**
  * @deprecated Prefer resolveWorkspaceAccess for authorization.
@@ -39,13 +40,12 @@ async function getEffectiveParishScope(context: any): Promise<{ parishIds: strin
 // ─── List Sacramental Journeys ────────────────────────────────────────────────
 
 export const listSacramentalJourneys = async (
-  _args: { workspaceId?: string } | void,
+  _args: { workspaceId?: string; take?: number; search?: string } | void,
   context: any,
 ) => {
   requireAuth(context.user);
   const args = _args || {};
   const workspaceId = args.workspaceId?.trim() || undefined;
-
   const baseInclude = {
     catechumenProfile: {
       select: {
@@ -62,9 +62,29 @@ export const listSacramentalJourneys = async (
       orderBy: { templateMilestone: { order: 'asc' } },
     },
   };
+  const take = legacyTake(args.take);
+  const search = args.search?.trim();
+  // Server-side name filter so the UI does not have to load every journey to search.
+  const searchWhere = search
+    ? {
+        catechumenProfile: {
+          OR: [
+            { firstName: { contains: search, mode: 'insensitive' as const } },
+            { lastName: { contains: search, mode: 'insensitive' as const } },
+          ],
+        },
+      }
+    : null;
+  const listOpts = {
+    include: baseInclude,
+    orderBy: [{ targetDate: 'asc' as const }, { id: 'asc' as const }],
+    take,
+  };
+  const withSearch = (where: any) => (searchWhere ? { AND: [where, searchWhere] } : where);
+
 
   if (context.user.isAdmin && !workspaceId) {
-    return context.entities.SacramentalJourney.findMany({ include: baseInclude });
+    return context.entities.SacramentalJourney.findMany({ where: withSearch({}), ...listOpts });
   }
 
   if (!workspaceId) return [];
@@ -75,13 +95,13 @@ export const listSacramentalJourneys = async (
   // Coordinator+PersonalOwner: journeys in this parish only
   if (access.isCoordinatorOrAbove) {
     return context.entities.SacramentalJourney.findMany({
-      where: {
+      where: withSearch({
         OR: [
           { catechumenProfile: { enrollments: { some: { class: { parishId } } } } },
           { catechumenProfile: { parishId } },
         ],
-      },
-      include: baseInclude,
+      }),
+      ...listOpts,
     });
   }
 
@@ -96,8 +116,8 @@ export const listSacramentalJourneys = async (
     });
     const catechumenIds = enrollments.map((e: any) => e.catechumenProfileId);
     return context.entities.SacramentalJourney.findMany({
-      where: { catechumenProfileId: { in: catechumenIds } },
-      include: baseInclude,
+      where: withSearch({ catechumenProfileId: { in: catechumenIds } }),
+      ...listOpts,
     });
   }
 
@@ -111,8 +131,8 @@ export const listSacramentalJourneys = async (
     });
     const dependentIds = dependents.map((d: any) => d.id);
     return context.entities.SacramentalJourney.findMany({
-      where: { catechumenProfileId: { in: dependentIds } },
-      include: baseInclude,
+      where: withSearch({ catechumenProfileId: { in: dependentIds } }),
+      ...listOpts,
     });
   }
 
@@ -124,8 +144,8 @@ export const listSacramentalJourneys = async (
     });
     if (!catechumen) return [];
     return context.entities.SacramentalJourney.findMany({
-      where: { catechumenProfileId: catechumen.id },
-      include: baseInclude,
+      where: withSearch({ catechumenProfileId: catechumen.id }),
+      ...listOpts,
     });
   }
 

@@ -34,6 +34,15 @@ import {
   pageParams,
   wrapNameIdPage,
 } from "./listCursor";
+import {
+  attendanceRate,
+  emptyAggregate,
+  getClassAttendanceAggregates,
+} from "../reports/attendanceAggregates";
+
+/** Detail page shows the latest meetings; older ones are paginated elsewhere. */
+const MAX_MEETINGS_IN_DETAILS = 60;
+const MAX_ENROLLMENTS_IN_DETAILS = 300;
 
 // isCoordinatorOrAbove now delegates to the auth helper which includes PERSONAL_OWNER
 function isCoordinatorOrAbove(role: string | null): boolean {
@@ -375,56 +384,93 @@ export const getClassDetails = async (args: { id: string }, context: any) => {
     }
   }
 
-  return context.entities.CatechesisClass.findUnique({
-    where: { id: args.id },
-    include: {
-      parish: { select: { id: true, name: true } },
-      community: { select: { id: true, name: true } },
-      stage: { select: { id: true, name: true } },
-      sacrament: { select: { id: true, name: true } },
-      year: { select: { id: true, name: true } },
-      catechists: {
-        include: {
-          user: {
-            select: { id: true, firstName: true, lastName: true, email: true },
+  const [details, aggregates] = await Promise.all([
+    context.entities.CatechesisClass.findUnique({
+      where: { id: args.id },
+      include: {
+        parish: { select: { id: true, name: true } },
+        community: { select: { id: true, name: true } },
+        stage: { select: { id: true, name: true } },
+        sacrament: { select: { id: true, name: true } },
+        year: { select: { id: true, name: true } },
+        catechists: {
+          include: {
+            user: {
+              select: { id: true, firstName: true, lastName: true, email: true },
+            },
           },
         },
-      },
-      enrollments: {
-        where: { status: EnrollmentStatus.ENROLLED },
-        include: {
-          catechumenProfile: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              sacramentalJourneys: {
-                include: {
-                  template: {
-                    select: { id: true, name: true, sacramentId: true },
+        enrollments: {
+          where: { status: EnrollmentStatus.ENROLLED },
+          orderBy: { catechumenProfile: { firstName: "asc" } },
+          take: MAX_ENROLLMENTS_IN_DETAILS,
+          select: {
+            id: true,
+            status: true,
+            startedAt: true,
+            catechumenProfileId: true,
+            catechumenProfile: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                sacramentalJourneys: {
+                  select: {
+                    id: true,
+                    status: true,
+                    templateId: true,
+                    template: {
+                      select: { id: true, name: true, sacramentId: true },
+                    },
+                    milestones: { select: { id: true, status: true } },
                   },
-                  milestones: { select: { id: true, status: true } },
                 },
               },
             },
           },
         },
-      },
-      meetings: {
-        orderBy: { date: "desc" },
-        include: {
-          content: { select: { id: true, title: true } },
-          _count: { select: { attendance: true } },
+        // Most recent meetings only; the full list lives in the meetings page (cursor-paginated).
+        meetings: {
+          orderBy: { date: "desc" },
+          take: MAX_MEETINGS_IN_DETAILS,
+          select: {
+            id: true,
+            title: true,
+            theme: true,
+            date: true,
+            status: true,
+            kind: true,
+            sequenceNumber: true,
+            contentId: true,
+            content: { select: { id: true, title: true } },
+            _count: { select: { attendance: true } },
+          },
+        },
+        _count: {
+          select: {
+            enrollments: { where: { status: "ENROLLED" } },
+            meetings: true,
+          },
         },
       },
-      _count: {
-        select: {
-          enrollments: { where: { status: "ENROLLED" } },
-          meetings: true,
-        },
-      },
+    }),
+    getClassAttendanceAggregates([args.id]),
+  ]);
+
+  if (!details) throw new HttpError(404, "Turma não encontrada.");
+
+  const agg = aggregates.get(args.id) ?? emptyAggregate(args.id);
+  return {
+    ...details,
+    attendanceSummary: {
+      totalMeetings: agg.totalMeetings,
+      totalAttendanceRecords: agg.totalAttendanceRecords,
+      presentCount: agg.presentCount,
+      absentCount: agg.absentCount,
+      attendanceRate: attendanceRate(agg),
+      lastMeetingDate: agg.lastMeetingDate?.toISOString() ?? null,
     },
-  });
+  };
 };
 
 export const updateClass = async (args: any, context: any) => {

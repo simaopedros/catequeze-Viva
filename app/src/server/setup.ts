@@ -16,7 +16,8 @@ function scrubString(value: string): string {
 }
 
 /** Remove PII and credentials from Sentry events before they leave the server. */
-export function scrubSentryEvent<T extends Record<string, any>>(event: T): T {
+export function scrubSentryEvent<T extends Record<string, any>>(input: T): T {
+  const event = input as Record<string, any>;
   if (event.user) {
     event.user = { id: event.user.id };
   }
@@ -40,7 +41,7 @@ export function scrubSentryEvent<T extends Record<string, any>>(event: T): T {
   for (const crumb of event.breadcrumbs ?? []) {
     if (crumb.message) crumb.message = scrubString(crumb.message);
   }
-  return event;
+  return event as T;
 }
 
 export const serverSetup: ServerSetupFn = async ({ app, server }) => {

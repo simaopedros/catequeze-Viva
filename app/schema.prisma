@@ -563,6 +563,8 @@ model CatecheticalYear {
 
   classes CatechesisClass[]
   stages  Stage[]
+
+  @@index([parishId])
 }
 
 model Stage {
@@ -636,6 +638,7 @@ model CatechesisClass {
   @@index([parishId])
   @@index([communityId])
   @@index([stageId])
+  @@index([parishId, status])
 }
 
 model ClassCatechist {
@@ -804,6 +807,8 @@ model Meeting {
 
   @@index([classId])
   @@index([date])
+  @@index([classId, date])
+  @@index([status])
 }
 
 model AttendanceRecord {
@@ -1150,6 +1155,8 @@ model Conversation {
   messages     Message[]
 
   @@unique([classId, type])
+  @@index([parishId])
+  @@index([classId])
 }
 
 model ConversationParticipant {
@@ -1298,6 +1305,9 @@ model MessageTemplate {
   createdBy   User?   @relation("TemplateCreator", fields: [createdById], references: [id])
 
   isGlobal Boolean @default(false)
+
+  @@index([parishId])
+  @@index([createdById])
 }
 
 // ─── Documents & Consents ─────────────────────────────────────────────────────
@@ -1326,6 +1336,7 @@ model Document {
 
   @@index([catechumenProfileId])
   @@index([uploadedById])
+  @@index([status])
 }
 
 model ConsentRecord {
@@ -1368,6 +1379,9 @@ model LiturgicalEvent {
 
   classId String?
   class   CatechesisClass? @relation(fields: [classId], references: [id])
+
+  @@index([parishId, date])
+  @@index([classId])
 }
 
 // ─── Billing ──────────────────────────────────────────────────────────────────

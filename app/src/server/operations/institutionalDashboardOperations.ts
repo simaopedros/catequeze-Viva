@@ -14,6 +14,9 @@ import {
 import { assertTwoFactorSessionVerified } from './twoFactorOperations';
 import { formatServerDate, getPeriodLabel, resolveUserLocale } from '../i18n/serverLocale';
 
+/** Upper bound of classes scanned per alert query (alerts are counts, not lists). */
+const MAX_ALERT_CLASSES = 500;
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface ScopeArgs {
@@ -598,6 +601,7 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
         id: true, name: true,
         meetings: { orderBy: { date: 'desc' }, take: 1, select: { date: true } },
       },
+      take: MAX_ALERT_CLASSES,
     }),
     // 4. Capacidade excedida
     context.entities.CatechesisClass.findMany({
@@ -606,6 +610,7 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
         id: true, name: true, maxCapacity: true,
         _count: { select: { enrollments: { where: { status: 'ENROLLED' } } } },
       },
+      take: MAX_ALERT_CLASSES,
     }),
     // 5. Documentos obrigatórios pendentes próximos do sacramento
     context.entities.SacramentalMilestone.count({
@@ -647,16 +652,17 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
       select: { catechumenProfileId: true },
       distinct: ['catechumenProfileId'],
     }),
-    // 9. Active classes with meetings (low attendance risk)
+    // 9. Active classes with their last 3 meeting ids (attendance aggregated below, not loaded as rows)
     context.entities.CatechesisClass.findMany({
       where: { ...classWhere, status: 'ACTIVE' },
       select: {
         id: true, name: true,
         meetings: {
           orderBy: { date: 'desc' }, take: 3,
-          select: { id: true, attendance: { select: { status: true } } },
+          select: { id: true },
         },
       },
+      take: MAX_ALERT_CLASSES,
     }),
     // 10. Prontidão sacramental
     context.entities.SacramentalMilestone.count({
@@ -802,18 +808,35 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
     }
   }
 
-  // 9. Turmas com presença < 50% nos últimos 3 encontros
+  // 9. Turmas com presença < 50% nos últimos 3 encontros (agregado em SQL por encontro)
   let lowAttendanceClassCount = 0;
-  for (const cls of activeClassesWithMeetings) {
-    if (cls.meetings.length < 3) continue;
-    const totalRecords = cls.meetings.reduce(
-      (sum: number, m: any) => sum + m.attendance.length, 0,
-    );
-    const presentRecords = cls.meetings.reduce(
-      (sum: number, m: any) => sum + m.attendance.filter((r: any) => r.status === 'PRESENT').length, 0,
-    );
-    if (totalRecords > 0 && (presentRecords / totalRecords) < 0.5) {
-      lowAttendanceClassCount++;
+  const eligibleClasses = activeClassesWithMeetings.filter((cls: any) => cls.meetings.length >= 3);
+  const recentMeetingIds = eligibleClasses.flatMap((cls: any) => cls.meetings.map((m: any) => m.id));
+  if (recentMeetingIds.length > 0) {
+    const perMeetingStatus = await context.entities.AttendanceRecord.groupBy({
+      by: ['meetingId', 'status'],
+      where: { meetingId: { in: recentMeetingIds } },
+      _count: { id: true },
+    });
+    const totals = new Map<string, { total: number; present: number }>();
+    for (const row of perMeetingStatus as any[]) {
+      const entry = totals.get(row.meetingId) ?? { total: 0, present: 0 };
+      entry.total += row._count.id;
+      if (row.status === 'PRESENT') entry.present += row._count.id;
+      totals.set(row.meetingId, entry);
+    }
+    for (const cls of eligibleClasses) {
+      let totalRecords = 0;
+      let presentRecords = 0;
+      for (const m of cls.meetings) {
+        const entry = totals.get(m.id);
+        if (!entry) continue;
+        totalRecords += entry.total;
+        presentRecords += entry.present;
+      }
+      if (totalRecords > 0 && presentRecords / totalRecords < 0.5) {
+        lowAttendanceClassCount++;
+      }
     }
   }
   if (lowAttendanceClassCount > 0) {

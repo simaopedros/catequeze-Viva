@@ -44,6 +44,7 @@ import { useUserContext } from "../../client/hooks/useUserContext";
 import { toast } from "../../client/hooks/use-toast";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
+import { useDebouncedValue } from "../../client/hooks/useDebouncedValue";
 
 type FilterKey =
   | "all"
@@ -96,9 +97,19 @@ export default function SacramentsPage() {
     { take: 200, workspaceId: activeParishId || undefined } as any,
     { enabled: Boolean(activeParishId) },
   );
-  const { data: journeys = [], isLoading: loading } = useQuery(
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search.trim(), 300);
+  const {
+    data: journeys = [],
+    isLoading: loading,
+    error: journeysError,
+    refetch: refetchJourneys,
+  } = useQuery(
     listSacramentalJourneys,
-    { workspaceId: activeParishId || undefined } as any,
+    {
+      workspaceId: activeParishId || undefined,
+      search: debouncedSearch || undefined,
+    } as any,
     { enabled: Boolean(activeParishId) },
   );
   const [showForm, setShowForm] = useState(false);
@@ -106,7 +117,6 @@ export default function SacramentsPage() {
   const [templateName, setTemplateName] = useState("");
   const [templates, setTemplates] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
-  const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
   const [editingTargetDate, setEditingTargetDate] = useState<
     Record<string, string>

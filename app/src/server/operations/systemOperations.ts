@@ -18,11 +18,11 @@ export const getSystemHealth = async (_args: void, context: any) => {
 
   // AI usage summary (current month)
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const aiUsageThisMonth = await context.entities.DailyAiUsage.findMany({
+  const aiUsageThisMonth = await context.entities.DailyAiUsage.aggregate({
     where: { date: { gte: monthStart } },
-    select: { creditsUsed: true },
+    _sum: { creditsUsed: true },
   });
-  const totalAiCredits = aiUsageThisMonth.reduce((sum: number, d: { creditsUsed: number }) => sum + d.creditsUsed, 0);
+  const totalAiCredits = aiUsageThisMonth._sum?.creditsUsed ?? 0;
 
   // Total users with AI credits
   const usersWithCredits = await context.entities.User.count({
