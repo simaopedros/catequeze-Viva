@@ -29,6 +29,14 @@ vi.mock('../server/i18n/serverI18n', () => ({
   default: { t: (key: string) => key },
 }));
 
+vi.mock('../server/cache/referenceCache', () => ({
+  isCacheReady: () => true,
+  triggerBackgroundLoad: vi.fn(),
+  searchBibleInCache: () => [],
+  searchCatechismInCache: () => [],
+  searchDirectoryInCache: () => [],
+}));
+
 import {
   __test__,
   getDashboardStats,
@@ -38,6 +46,9 @@ import {
   canOnboardingReactivateMembership,
 } from '../server/operations/parishOperations';
 import { completeCoordinatorOnboarding } from '../server/operations/onboardingOperations';
+import { classWhereAcrossWorkspaces } from '../server/operations/sharedScope';
+import { globalSearch } from '../server/operations/searchOperations';
+import { exportReport } from '../server/operations/missingOperations';
 
 const { buildClassScopeWhere, coordinatorParishIdsFromScope, resolveMeetingClassScope } =
   __test__;
@@ -400,6 +411,177 @@ describe('getDashboardStats scoping', () => {
     expect(whereOf(calls, 'CatechesisClass', 'findMany')).toEqual([
       { parishId: PARISH_A, status: 'ACTIVE' },
     ]);
+  });
+});
+
+// ─── Cross-workspace class scope (search / export) ──────────────────────────
+
+function makeScopeEntities(opts: {
+  memberships: { parishId: string; role: string }[];
+  personalWorkspaceId: string | null;
+  classLinks: { classId: string; parishId: string }[];
+  classes?: { id: string; name: string; parishId: string }[];
+}) {
+  const classQueries: any[] = [];
+  return {
+    classQueries,
+    entities: {
+      Membership: {
+        findMany: async () => opts.memberships,
+        findFirst: async (args: any) => {
+          const wantRole = args?.where?.role;
+          const wantParish = args?.where?.parishId;
+          const m = opts.memberships.find(
+            (x) =>
+              (!wantRole || x.role === wantRole) &&
+              (!wantParish || x.parishId === wantParish),
+          );
+          return m ? { id: `m-${m.parishId}`, role: m.role } : null;
+        },
+      },
+      Parish: {
+        findFirst: async (args: any) => {
+          if (!opts.personalWorkspaceId) return null;
+          const wantId = args?.where?.id;
+          if (wantId && wantId !== opts.personalWorkspaceId) return null;
+          return { id: opts.personalWorkspaceId };
+        },
+      },
+      ClassCatechist: {
+        findMany: async (args: any) => {
+          const wantParish = args?.where?.class?.parishId;
+          return opts.classLinks
+            .filter((l) => !wantParish || l.parishId === wantParish)
+            .map((l) => ({ classId: l.classId }));
+        },
+      },
+      CatechesisClass: {
+        findMany: async (args: any) => {
+          classQueries.push(args?.where);
+          return (opts.classes ?? []).map((c) => ({
+            ...c,
+            parish: { name: c.parishId },
+            _count: { enrollments: 0 },
+          }));
+        },
+      },
+      CatechumenProfile: { findMany: async () => [] },
+      ContentItem: { findMany: async () => [] },
+      Household: { findMany: async () => [] },
+      SacramentalJourney: { findMany: async () => [] },
+      Document: { findMany: async () => [] },
+      Community: { findMany: async () => [] },
+    },
+  };
+}
+
+describe('classWhereAcrossWorkspaces', () => {
+  it('coordinator role in A does not widen a catechist role in B', async () => {
+    const { entities } = makeScopeEntities({
+      memberships: [
+        { parishId: PERSONAL, role: 'PERSONAL_OWNER' },
+        { parishId: PARISH_B, role: 'LEAD_CATECHIST' },
+      ],
+      personalWorkspaceId: PERSONAL,
+      classLinks: [{ classId: 'mine-b', parishId: PARISH_B }],
+    });
+    const context = { user: { id: 'u1', isAdmin: false }, entities };
+
+    const where = await classWhereAcrossWorkspaces(context, [PERSONAL, PARISH_B]);
+    expect(where).toEqual({
+      OR: [{ parishId: PERSONAL }, { parishId: PARISH_B, id: { in: ['mine-b'] } }],
+    });
+  });
+
+  it('catechist without links contributes nothing (never whole parish)', async () => {
+    const { entities } = makeScopeEntities({
+      memberships: [{ parishId: PARISH_B, role: 'ASSISTANT_CATECHIST' }],
+      personalWorkspaceId: null,
+      classLinks: [],
+    });
+    const context = { user: { id: 'u1', isAdmin: false }, entities };
+
+    expect(await classWhereAcrossWorkspaces(context, [PARISH_B])).toEqual({ id: { in: [] } });
+  });
+
+  it('guardian is limited to classes with own/household enrollments', async () => {
+    const { entities } = makeScopeEntities({
+      memberships: [{ parishId: PARISH_A, role: 'GUARDIAN' }],
+      personalWorkspaceId: null,
+      classLinks: [],
+    });
+    const context = { user: { id: 'g1', isAdmin: false }, entities };
+
+    const where: any = await classWhereAcrossWorkspaces(context, [PARISH_A]);
+    expect(where.parishId).toBe(PARISH_A);
+    expect(where.enrollments.some.catechumenProfile.OR).toEqual([
+      { userId: 'g1' },
+      { household: { guardians: { some: { userId: 'g1' } } } },
+    ]);
+  });
+});
+
+describe('globalSearch classes', () => {
+  it('catechist only matches assigned classes, not every class in the parish', async () => {
+    const { entities, classQueries } = makeScopeEntities({
+      memberships: [{ parishId: PARISH_B, role: 'LEAD_CATECHIST' }],
+      personalWorkspaceId: null,
+      classLinks: [{ classId: 'mine-b', parishId: PARISH_B }],
+    });
+    const context = { user: { id: 'u1', isAdmin: false }, entities };
+
+    await globalSearch({ query: 'crisma' }, context);
+
+    expect(classQueries).toHaveLength(1);
+    expect(classQueries[0]).toEqual({
+      AND: [
+        { name: { contains: 'crisma', mode: 'insensitive' } },
+        { parishId: PARISH_B, id: { in: ['mine-b'] } },
+      ],
+    });
+  });
+});
+
+describe('exportReport', () => {
+  it('catechist export is limited to assigned classes', async () => {
+    const { entities, classQueries } = makeScopeEntities({
+      memberships: [{ parishId: PARISH_B, role: 'LEAD_CATECHIST' }],
+      personalWorkspaceId: null,
+      classLinks: [{ classId: 'mine-b', parishId: PARISH_B }],
+    });
+    const context = { user: { id: 'u1', isAdmin: false }, entities };
+
+    await exportReport({ workspaceId: PARISH_B }, context);
+
+    expect(classQueries).toEqual([
+      { status: 'ACTIVE', parishId: PARISH_B, id: { in: ['mine-b'] } },
+    ]);
+  });
+
+  it('coordinator export covers the whole workspace', async () => {
+    const { entities, classQueries } = makeScopeEntities({
+      memberships: [{ parishId: PARISH_A, role: 'PARISH_COORDINATOR' }],
+      personalWorkspaceId: null,
+      classLinks: [],
+    });
+    const context = { user: { id: 'coord', isAdmin: false }, entities };
+
+    await exportReport({ workspaceId: PARISH_A }, context);
+
+    expect(classQueries).toEqual([{ status: 'ACTIVE', parishId: PARISH_A }]);
+  });
+
+  it('guardian cannot export', async () => {
+    const { entities } = makeScopeEntities({
+      memberships: [{ parishId: PARISH_A, role: 'GUARDIAN' }],
+      personalWorkspaceId: null,
+      classLinks: [],
+    });
+    const context = { user: { id: 'g1', isAdmin: false }, entities };
+
+    await expect(exportReport({ workspaceId: PARISH_A }, context)).rejects.toMatchObject({
+      statusCode: 403,
+    });
   });
 });
 
