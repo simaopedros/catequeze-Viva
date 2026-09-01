@@ -1,5 +1,6 @@
 {
   "portal_badge": "Portal da Família",
+  "staff_portal_badge": "Equipe Pastoral",
   "app_name": "Catequese Viva",
   "landing": {
     "tagline": "Acompanha a jornada de fé dos teus filhos.",
@@ -33,6 +34,7 @@
   "invite": {
     "badge": "Convite",
     "title": "Foste Convidado(a)!",
+    "title_staff": "Convite para a equipe de catequese",
     "as_role": "como {{role}}",
     "sent_to": "Convite enviado para {{email}}",
     "expires": " · Expira em {{date}}",
@@ -41,15 +43,18 @@
     "accepting": "Aceitando...",
     "accept": "Aceitar Convite",
     "login_to_accept": "Para aceitar o convite, entra ou cria uma conta.",
+    "login_to_accept_staff": "Para aceitar o convite da equipe pastoral, entra ou cria uma conta.",
     "accepted_title": "Convite Aceite!",
     "accepted_desc": "Agora você faz parte de {{parish}} como {{role}}.",
     "redirecting": "A redirecionar para o teu painel...",
+    "redirecting_staff": "A redirecionar para o painel pastoral...",
     "not_found_title": "Convite Não Encontrado",
     "not_found_desc": "Não foi possível encontrar este convite. Verifica se o link está correto.",
     "expired_desc_accept": "Este convite já expirou. Pede um novo convite ao teu coordenador ou catequista.",
     "login": "Entrar",
     "signup": "Criar Conta",
-    "back_portal": "Voltar ao portal da família"
+    "back_portal": "Voltar ao portal da família",
+    "back_home": "Voltar ao início"
   },
   "portal_invites": {
     "title": "Convites do Portal da Família",

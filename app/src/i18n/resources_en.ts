@@ -1517,8 +1517,8 @@ export const common_en = {
       "PARISH_COORDINATOR": "Coordinator",
       "COMMUNITY_COORDINATOR": "Community",
       "LEAD_CATECHIST": "Lead Catechist",
-      "ASSISTANT_CATECHIST": "Assistant",
-      "GUARDIAN": "Guardian",
+      "ASSISTANT_CATECHIST": "Assistant Catechist",
+      "GUARDIAN": "Family Guardian",
       "CATECHUMEN": "Catechumen",
       "CONTENT_REVIEWER": "Reviewer",
       "PASTORAL_VIEWER": "Pastoral",
@@ -1867,12 +1867,14 @@ export const common_en = {
       "select_class": "Select class",
       "select_class_optional": "Class (optional)",
       "class_required": "Select a class when inviting catechists or assistants.",
-      "select_workspace": "Select a workspace"
+      "select_workspace": "Select a workspace",
+      "family_invites_hint": "To invite guardians or catechumens, use Family Invites — this page is only for the pastoral team.",
+      "open_family_invites": "Open family invites"
     },
     "pending_invite": {
       "banner_one": "You have a pending invite to {{name}}",
       "banner_many": "You have {{count}} pending invites",
-      "banner_hint": "Accept to join the workspace and start collaborating.",
+      "banner_hint": "Accept to join the workspace.",
       "view_cta": "View and accept",
       "a_workspace": "a workspace"
     },
@@ -2317,6 +2319,7 @@ export const emails_en = {
 
 export const family_en = {
     "portal_badge": "Family Portal",
+    "staff_portal_badge": "Pastoral Team",
     "app_name": "Catequese Viva",
     "landing": {
       "tagline": "Follow your children's faith journey.",
@@ -2350,6 +2353,7 @@ export const family_en = {
     "invite": {
       "badge": "Invitation",
       "title": "You've Been Invited!",
+      "title_staff": "Invitation to the catechesis team",
       "as_role": "as {{role}}",
       "sent_to": "Invitation sent to {{email}}",
       "expires": " · Expires on {{date}}",
@@ -2358,15 +2362,18 @@ export const family_en = {
       "accepting": "Accepting...",
       "accept": "Accept Invitation",
       "login_to_accept": "To accept the invitation, sign in or create an account.",
+      "login_to_accept_staff": "To accept the pastoral team invitation, sign in or create an account.",
       "accepted_title": "Invitation Accepted!",
       "accepted_desc": "You are now part of {{parish}} as {{role}}.",
       "redirecting": "Redirecting to your dashboard...",
+      "redirecting_staff": "Redirecting to the pastoral dashboard...",
       "not_found_title": "Invitation Not Found",
       "not_found_desc": "Could not find this invitation. Check if the link is correct.",
       "expired_desc_accept": "This invitation has expired. Ask your coordinator or catechist for a new one.",
       "login": "Sign in",
       "signup": "Create Account",
-      "back_portal": "Back to family portal"
+      "back_portal": "Back to family portal",
+      "back_home": "Back to home"
     },
     "portal_invites": {
       "title": "Family Portal Invites",
@@ -4330,7 +4337,7 @@ export const public_en = {
       "personal_plan_hint": "· Personal plan",
       "personal_pending": "Personal space will be created when you complete onboarding.",
       "pending_invites": "Pending Invitations",
-      "pending_invites_subtitle": "Accept an invite to join the workspace and collaborate with the team.",
+      "pending_invites_subtitle": "Accept an invite to join the workspace.",
       "invited_as": "You were invited as {{role}}",
       "accepting": "Accepting...",
       "accept": "Accept",

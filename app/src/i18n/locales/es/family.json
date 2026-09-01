@@ -1,5 +1,6 @@
 {
   "portal_badge": "Portal Familiar",
+  "staff_portal_badge": "Equipo Pastoral",
   "app_name": "Catequesis Viva",
   "landing": {
     "tagline": "Acompañe la jornada de fe de sus hijos.",
@@ -33,6 +34,7 @@
   "invite": {
     "badge": "Invitación",
     "title": "¡Fuiste Invitado(a)!",
+    "title_staff": "Invitación al equipo de catequesis",
     "as_role": "como {{role}}",
     "sent_to": "Invitación enviada a {{email}}",
     "expires": " · Expira el {{date}}",
@@ -41,15 +43,18 @@
     "accepting": "Aceptando...",
     "accept": "Aceptar Invitación",
     "login_to_accept": "Para aceptar la invitación, entre o cree una cuenta.",
+    "login_to_accept_staff": "Para aceptar la invitación del equipo pastoral, entre o cree una cuenta.",
     "accepted_title": "¡Invitación Aceptada!",
     "accepted_desc": "Ahora formas parte de {{parish}} como {{role}}.",
     "redirecting": "Redirigiendo a su panel...",
+    "redirecting_staff": "Redirigiendo al panel pastoral...",
     "not_found_title": "Invitación No Encontrada",
     "not_found_desc": "No se pudo encontrar esta invitación. Verifique si el enlace es correcto.",
     "expired_desc_accept": "Esta invitación ya expiró. Pida una nueva a su coordinador o catequista.",
     "login": "Entrar",
     "signup": "Crear Cuenta",
-    "back_portal": "Volver al portal familiar"
+    "back_portal": "Volver al portal familiar",
+    "back_home": "Volver al inicio"
   },
   "portal_invites": {
     "title": "Invitaciones del Portal Familiar",

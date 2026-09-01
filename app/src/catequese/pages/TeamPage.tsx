@@ -25,6 +25,7 @@ import {
   AlertTriangle,
   Ban,
 } from "lucide-react";
+import { Link } from "react-router";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
 import {
@@ -40,6 +41,7 @@ import { toast } from "../../client/hooks/use-toast";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import { formatDate } from "../../i18n/format";
 import { useLocale } from "../../i18n/useLocale";
+import { isTeamInviteRole } from "../../shared/teamInvitePolicy";
 function deliveryMessage(
   delivery: string | undefined,
   t: (k: string) => string,
@@ -90,14 +92,23 @@ export default function TeamPage() {
   const canInvite = Boolean(permissions?.canInvite);
   const canManageRoles = Boolean(permissions?.canManageRoles);
 
+  const teamAssignableRoles = useMemo(
+    () => assignableRoles.filter((role) => isTeamInviteRole(role)),
+    [assignableRoles],
+  );
+
   const inviteRoleOptions = useMemo(
     () =>
-      assignableRoles.map((value) => ({
+      teamAssignableRoles.map((value) => ({
         value,
         label: roleLabels[value as keyof typeof roleLabels] || value,
       })),
-    [assignableRoles, roleLabels],
+    [teamAssignableRoles, roleLabels],
   );
+
+  const canInviteTeam = canInvite && teamAssignableRoles.length > 0;
+  const canInviteFamilyOnly =
+    canInvite && teamAssignableRoles.length === 0 && assignableRoles.length > 0;
 
   const [showInvite, setShowInvite] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -117,7 +128,7 @@ export default function TeamPage() {
 
   // Sync default invite role when permissions load
   const effectiveInviteRole =
-    inviteRole && assignableRoles.includes(inviteRole)
+    inviteRole && teamAssignableRoles.includes(inviteRole)
       ? inviteRole
       : inviteRoleOptions[0]?.value || "";
 
@@ -279,7 +290,7 @@ export default function TeamPage() {
             pending: invitations.length,
           })}
           primaryAction={
-            canInvite
+            canInviteTeam
               ? {
                   label: tp("invite"),
                   onClick: () => setShowInvite(!showInvite),
@@ -288,7 +299,18 @@ export default function TeamPage() {
           }
         />
 
-        {showInvite && canInvite && (
+        {canInviteFamilyOnly && (
+          <AppPanel className="space-y-2 p-4">
+            <p className="text-sm text-muted-foreground">
+              {t("team.family_invites_hint")}
+            </p>
+            <Button asChild variant="outline" className="h-11 min-h-11">
+              <Link to="/app/family-invites">{t("team.open_family_invites")}</Link>
+            </Button>
+          </AppPanel>
+        )}
+
+        {showInvite && canInviteTeam && (
           <AppPanel className="space-y-3 p-4">
             <div className="space-y-1.5">
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">

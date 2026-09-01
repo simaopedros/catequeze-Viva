@@ -36,6 +36,7 @@ interface InvitationData {
   emailMasked: string;
   expiresAt: string | null;
   hasAccount: boolean;
+  portal?: "family" | "staff";
 }
 
 export default function InviteAcceptPage() {
@@ -57,6 +58,7 @@ export default function InviteAcceptPage() {
     { enabled: !!token },
   );
   const invitation = rawInvitation as InvitationData | null | undefined;
+  const isStaffPortal = invitation?.portal === "staff";
 
   const acceptAction = useAction(acceptInvitationByTokenAction);
 
@@ -71,6 +73,7 @@ export default function InviteAcceptPage() {
         role: invitation?.role,
         parish_type: invitation?.parishType,
         has_account: Boolean(authUser),
+        portal: invitation?.portal,
       });
       setAccepted(true);
       setTimeout(() => navigate("/app"), 1500);
@@ -121,7 +124,7 @@ export default function InviteAcceptPage() {
             to="/"
             className="text-brand-ink underline underline-offset-2 text-sm"
           >
-            {t("invite.back_portal")}
+            {t("invite.back_home")}
           </Link>
         </div>
       </div>
@@ -148,7 +151,9 @@ export default function InviteAcceptPage() {
             </p>
           </div>
           <p className="text-sm text-muted-foreground">
-            {t("invite.redirecting")}
+            {isStaffPortal
+              ? t("invite.redirecting_staff")
+              : t("invite.redirecting")}
           </p>
         </div>
       </div>
@@ -161,17 +166,26 @@ export default function InviteAcceptPage() {
       ? "es-ES"
       : "pt-BR";
 
+  const loginPath = isStaffPortal
+    ? `/login?token=${token}`
+    : `/entrar?token=${token}`;
+  const signupPath = isStaffPortal
+    ? `/signup?token=${token}`
+    : `/criar-conta?token=${token}`;
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground inline-flex items-center justify-center gap-1.5">
             <Mail className="h-4 w-4" />
             {t("invite.badge")}
           </div>
-          <AppEyebrow className="text-center">{t("portal_badge")}</AppEyebrow>
+          <AppEyebrow className="text-center">
+            {isStaffPortal ? t("staff_portal_badge") : t("portal_badge")}
+          </AppEyebrow>
           <AppDisplayTitle className="text-center">
-            {t("invite.title")}
+            {isStaffPortal ? t("invite.title_staff") : t("invite.title")}
           </AppDisplayTitle>
           <AppGoldRule className="mx-auto" />
         </div>
@@ -233,16 +247,18 @@ export default function InviteAcceptPage() {
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-center text-muted-foreground">
-              {t("invite.login_to_accept")}
+              {isStaffPortal
+                ? t("invite.login_to_accept_staff")
+                : t("invite.login_to_accept")}
             </p>
             <Link
-              to={`/entrar?token=${token}`}
+              to={loginPath}
               className="block h-10 w-full rounded-sm bg-brand-ink px-4 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-brand-ink-soft"
             >
               {t("invite.login")}
             </Link>
             <Link
-              to={`/criar-conta?token=${token}`}
+              to={signupPath}
               className="block h-10 w-full rounded-sm border border-input bg-background px-4 py-2 text-center text-sm font-medium text-brand-ink transition-colors hover:bg-muted/30"
             >
               {t("invite.signup")}
