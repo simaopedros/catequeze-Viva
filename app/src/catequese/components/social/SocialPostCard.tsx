@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "../../../client/components/ui/dropdown-menu";
 import { toast } from "../../../client/hooks/use-toast";
+import { useConfirm } from "../../../client/hooks/useConfirm";
 import { cn } from "../../../client/utils";
 import { formatRelativeTime } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
@@ -89,6 +90,7 @@ export function SocialPostCard({
   const [commentCount, setCommentCount] = useState(post.commentCount);
   const [showComments, setShowComments] = useState(expandComments);
   const [reporting, setReporting] = useState(false);
+  const { confirm, confirmDialog } = useConfirm();
   const [busy, setBusy] = useState(false);
 
   const react = async () => {
@@ -109,7 +111,13 @@ export function SocialPostCard({
   };
 
   const remove = async () => {
-    if (!window.confirm(t("post.deleteConfirm"))) return;
+    const ok = await confirm({
+      title: t("post.delete"),
+      description: t("post.deleteConfirm"),
+      confirmLabel: t("post.delete"),
+      variant: "destructive",
+    });
+    if (!ok) return;
     setBusy(true);
     try {
       await deleteSocialPost({ postId: post.id });
@@ -249,6 +257,7 @@ export function SocialPostCard({
         targetType="POST"
         targetId={post.id}
       />
+      {confirmDialog}
     </article>
   );
 }

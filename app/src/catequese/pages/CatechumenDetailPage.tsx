@@ -385,7 +385,7 @@ export default function CatechumenDetailPage() {
             className="mt-1 shrink-0 rounded-sm"
             asChild
           >
-            <Link to="/app/catechumens">
+            <Link to="/app/catechumens" aria-label={t("back")}>
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>

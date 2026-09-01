@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from "react";
+import { SkipToContent } from "../../client/components/SkipToContent";
 import { useLocation } from "react-router";
 import { PublicFooter } from "../../catequese/PublicFooter";
 import { PublicNavbar } from "../../catequese/PublicNavbar";
@@ -37,8 +38,11 @@ export function LandingShell({
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-brand-ink">
+      <SkipToContent />
       <PublicNavbar />
       <main
+        id="main-content"
+        tabIndex={-1}
         className={
           contentClassName ??
           "flex-1 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:pb-0"

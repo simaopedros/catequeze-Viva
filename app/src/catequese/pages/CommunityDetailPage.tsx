@@ -130,7 +130,7 @@ export default function CommunityDetailPage() {
     <div className="mx-auto max-w-4xl space-y-6 py-6">
       <div className="flex items-start gap-3">
         <Button variant="ghost" size="icon" className="mt-1 shrink-0" asChild>
-          <Link to="/app/communities">
+          <Link to="/app/communities" aria-label={t("back")}>
             <ArrowLeft className="h-5 w-5" />
           </Link>
         </Button>

@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, useMemo, useRef, lazy, Suspense } from "react";
+import { SkipToContent } from "../client/components/SkipToContent";
 import { useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Sidebar } from "./Sidebar";
@@ -183,12 +184,7 @@ export function AppShell({ children }: AppShellProps) {
         <div className="mobile-screen-height bg-background">{children}</div>
       ) : (
         <ShellBase variant="app">
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-overlay focus:rounded-sm focus:bg-brand-ink focus:px-4 focus:py-2 focus:text-white"
-          >
-            {t("skip_to_content")}
-          </a>
+          <SkipToContent />
           <div className="no-print hidden flex-shrink-0 lg:block">
             <Sidebar />
           </div>

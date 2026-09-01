@@ -484,7 +484,7 @@ export default function TeamPage() {
                 ))}
               </div>
               <AppPanel
-                className="hidden overflow-hidden md:block"
+                className="hidden overflow-x-auto md:block"
                 padded={false}
               >
                 <table className="w-full text-sm">
@@ -718,7 +718,7 @@ export default function TeamPage() {
 
               {/* Desktop table */}
               <AppPanel
-                className="hidden overflow-hidden md:block"
+                className="hidden overflow-x-auto md:block"
                 padded={false}
               >
                 <table className="w-full text-sm">
@@ -827,6 +827,8 @@ export default function TeamPage() {
                                 size="icon"
                                 variant="ghost"
                                 className="h-11 w-11 text-destructive"
+                                aria-label={t("remove_member")}
+                                title={t("remove_member")}
                                 onClick={() => setRemoveTarget(m.id)}
                               >
                                 <Trash2 className="h-3.5 w-3.5" />

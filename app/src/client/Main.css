@@ -99,7 +99,8 @@
 
   --color-text-primary: hsl(var(--foreground));
   --color-text-secondary: hsl(var(--muted-foreground));
-  --color-text-tertiary: hsl(var(--muted-foreground) / 0.7);
+  /* 0.9 keeps small tertiary text above the 4.5:1 WCAG AA contrast on white */
+  --color-text-tertiary: hsl(var(--muted-foreground) / 0.9);
 
   --color-stroke-default: hsl(var(--border));
   --color-stroke-strong: hsl(var(--input));

@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import { SkipToContent } from "../client/components/SkipToContent";
 import { BrandLockup } from "../client/components/brand/Brand";
 import { useLocale, SupportedLocale } from "../i18n/useLocale";
 import { cn } from "../client/utils";
@@ -29,6 +30,7 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
+      <SkipToContent />
       {/* With panel: brand is on the left (desktop); header only on mobile. Without panel: always show header. */}
       <AuthHeader mobileOnly={Boolean(panel)} />
 
@@ -91,7 +93,11 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
 
         {/* Form column */}
         <div className="flex flex-1 flex-col">
-          <main className="flex flex-1 flex-col justify-center px-4 py-10 sm:px-8 lg:px-12 xl:px-16">
+          <main
+            id="main-content"
+            tabIndex={-1}
+            className="flex flex-1 flex-col justify-center px-4 py-10 sm:px-8 lg:px-12 xl:px-16"
+          >
             <div
               className={cn(
                 "mx-auto w-full",
