@@ -33,13 +33,26 @@ export function generateUploadFileName(
   return `${Date.now()}_${crypto.randomUUID().slice(0, 8)}.${ext}`;
 }
 
-/** Resolves a stored s3Key to an absolute path, rejecting path traversal. */
+const SAFE_KEY_SEGMENT = /^[A-Za-z0-9_.-]+$/;
+
+/**
+ * Resolves a stored s3Key to an absolute path, rejecting path traversal.
+ * Accepts flat keys (`file.png`) and namespaced keys (`content/<parish>/<id>/file.png`).
+ */
 export function resolveUploadFilePath(s3Key: string): string | null {
-  const safeName = path.basename(s3Key);
-  if (!safeName || safeName !== s3Key || safeName.includes("..")) return null;
+  if (!s3Key || path.isAbsolute(s3Key) || s3Key.includes("\\")) return null;
+  const segments = s3Key.split("/");
+  if (
+    segments.some(
+      (segment) =>
+        !segment || segment === "." || segment === ".." || !SAFE_KEY_SEGMENT.test(segment),
+    )
+  ) {
+    return null;
+  }
 
   const uploadsRoot = path.resolve(UPLOADS_DIR);
-  const resolved = path.resolve(uploadsRoot, safeName);
+  const resolved = path.resolve(uploadsRoot, ...segments);
   if (
     resolved !== uploadsRoot &&
     !resolved.startsWith(`${uploadsRoot}${path.sep}`)

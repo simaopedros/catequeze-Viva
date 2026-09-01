@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import type { MiddlewareConfigFn } from 'wasp/server';
 import { singleDocumentUpload } from './multipart';
-import { storeDocumentFile } from '../storage/documentStorage';
+import { contentImageKeyPrefix, storeDocumentFile } from '../storage/documentStorage';
 import { validateFileSignature } from '../storage/uploadValidation';
 import { assertCanModifyContent } from '../auth/contentAccess';
 
@@ -59,6 +59,7 @@ export async function uploadContentImage(req: Request, res: Response, context: a
       buffer: file.buffer,
       mimeType: file.mimetype,
       parishId: item.parishId || undefined,
+      keyPrefix: contentImageKeyPrefix(item),
     });
 
     return res.json({

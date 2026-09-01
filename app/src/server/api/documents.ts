@@ -4,6 +4,44 @@ import { documentAccessRateLimiter } from '../middleware/rateLimiter';
 import { logger } from '../logger';
 import { readDocumentFile } from '../storage/documentStorage';
 import { makeAuthUserIfPossible } from 'wasp/auth/user';
+import { HttpError } from 'wasp/server';
+import { assertCanAccessCatechumenProfile } from '../auth/helpers';
+import { resolveWorkspaceAccess } from '../operations/sharedScope';
+
+/**
+ * Documents without a catechumen (e.g. uploaded by a staff member) are visible
+ * to coordinators of a workspace the uploader belongs to. The caller's role is
+ * evaluated inside each candidate workspace only — never merged across them.
+ */
+async function canCoordinatorAccessUploaderDocument(
+  context: any,
+  uploadedById: string,
+): Promise<boolean> {
+  const entities = context.entities;
+  if (uploadedById === context.user.id) return true;
+
+  const [uploaderMemberships, uploaderPersonal] = await Promise.all([
+    entities.Membership.findMany({
+      where: { userId: uploadedById, status: 'ACTIVE' },
+      select: { parishId: true },
+    }),
+    entities.Parish.findFirst({
+      where: { ownerId: uploadedById, type: 'PERSONAL' },
+      select: { id: true },
+    }),
+  ]);
+
+  const candidateParishIds = new Set<string>(
+    uploaderMemberships.map((m: { parishId: string }) => m.parishId),
+  );
+  if (uploaderPersonal) candidateParishIds.add(uploaderPersonal.id);
+
+  for (const parishId of candidateParishIds) {
+    const access = await resolveWorkspaceAccess(context, parishId, { required: false });
+    if (access?.isCoordinatorOrAbove) return true;
+  }
+  return false;
+}
 
 /**
  * Populates req.user from the session WITHOUT rejecting unauthenticated requests.
@@ -65,115 +103,17 @@ export async function serveDocument(req: Request, res: Response, context: any) {
       if (user.isAdmin) {
         authorized = true;
         logger.info(`[doc-access] admin user=${user.id} docId=${docId}`);
-      } else {
-        const memberships = await entities.Membership.findMany({
-          where: { userId: user.id, status: 'ACTIVE' },
-          select: { parishId: true, role: true },
-        });
-        const roles = memberships.map((m: any) => m.role);
-        const parishIds = memberships.map((m: any) => m.parishId);
-
-        // Include personal workspace
-        const personalWorkspace = await entities.Parish.findFirst({
-          where: { ownerId: user.id, type: 'PERSONAL' },
-          select: { id: true },
-        });
-        if (personalWorkspace) {
-          if (!parishIds.includes(personalWorkspace.id)) parishIds.push(personalWorkspace.id);
-          if (!roles.includes('PERSONAL_OWNER')) roles.push('PERSONAL_OWNER');
+      } else if (doc.catechumenProfileId) {
+        // Record-derived workspace: coordinator in the catechumen's parish, catechist of an
+        // enrolled class, guardian of the household or the catechumen themself.
+        try {
+          await assertCanAccessCatechumenProfile(context, doc.catechumenProfileId);
+          authorized = true;
+        } catch (err) {
+          if (!(err instanceof HttpError)) throw err;
         }
-
-        logger.info(`[doc-access] user=${user.id} docId=${docId} roles=${JSON.stringify(roles)} parishIds=${JSON.stringify(parishIds)} personalWs=${personalWorkspace?.id || 'none'} docCatechumenId=${doc.catechumenProfileId} docUploadedById=${doc.uploadedById}`);
-
-        // Coordinator and above: same parish
-        if (roles.some((r: string) => ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(r))) {
-          if (doc.catechumenProfileId) {
-            const catechumen = await entities.CatechumenProfile.findUnique({
-              where: { id: doc.catechumenProfileId },
-              select: {
-                parishId: true,
-                household: { select: { parishId: true } },
-                enrollments: { select: { class: { select: { parishId: true } } } },
-              },
-            });
-            if (catechumen) {
-              const catechumenParishIds = [
-                catechumen.parishId,
-                catechumen.household?.parishId,
-                ...(catechumen.enrollments || []).map((e: any) => e.class?.parishId),
-              ].filter(Boolean);
-              if (catechumenParishIds.some((id: string) => parishIds.includes(id))) {
-                authorized = true;
-              }
-            }
-          }
-          if (!authorized && doc.uploadedById) {
-            const uploaderMembership = await entities.Membership.findFirst({
-              where: { userId: doc.uploadedById },
-              select: { parishId: true },
-            });
-            if (uploaderMembership && parishIds.includes(uploaderMembership.parishId)) {
-              authorized = true;
-            }
-            // Also check if uploader owns a personal workspace in the user's parish scope
-            if (!authorized) {
-              const uploaderPersonal = await entities.Parish.findFirst({
-                where: { ownerId: doc.uploadedById, type: 'PERSONAL' },
-                select: { id: true },
-              });
-              if (uploaderPersonal && parishIds.includes(uploaderPersonal.id)) {
-                authorized = true;
-              }
-            }
-          }
-        }
-
-        // Catechist: only documents of their students
-        if (!authorized && (roles.includes('LEAD_CATECHIST') || roles.includes('ASSISTANT_CATECHIST'))) {
-          if (doc.catechumenProfileId) {
-            const myClasses = await entities.ClassCatechist.findMany({
-              where: { userId: user.id },
-              select: { classId: true },
-            });
-            const classIds = myClasses.map((cc: any) => cc.classId);
-            const enrollment = await entities.ClassEnrollment.findFirst({
-              where: { catechumenProfileId: doc.catechumenProfileId, classId: { in: classIds } },
-            });
-            if (enrollment) authorized = true;
-          }
-        }
-
-        // Guardian: only documents of their household dependents
-        if (!authorized && roles.includes('GUARDIAN')) {
-          if (doc.catechumenProfileId) {
-            const guardian = await entities.GuardianProfile.findUnique({
-              where: { userId: user.id },
-              select: { householdId: true },
-            });
-            if (guardian?.householdId) {
-              const catechumen = await entities.CatechumenProfile.findUnique({
-                where: { id: doc.catechumenProfileId },
-                select: { householdId: true },
-              });
-              if (catechumen?.householdId === guardian.householdId) {
-                authorized = true;
-              }
-            }
-          }
-        }
-
-        // CATECHUMEN: only own documents
-        if (!authorized && roles.includes('CATECHUMEN')) {
-          if (doc.catechumenProfileId) {
-            const catechumen = await entities.CatechumenProfile.findFirst({
-              where: { userId: user.id },
-              select: { id: true },
-            });
-            if (catechumen?.id === doc.catechumenProfileId) {
-              authorized = true;
-            }
-          }
-        }
+      } else if (doc.uploadedById) {
+        authorized = await canCoordinatorAccessUploaderDocument(context, doc.uploadedById);
       }
     }
 

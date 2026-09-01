@@ -784,22 +784,22 @@ action createHousehold {
 
 action addGuardianToHousehold {
   fn: import { addGuardianToHousehold } from "@src/server/operations/familyOperations",
-  entities: [GuardianProfile, Household, Membership, Parish]
+  entities: [GuardianProfile, Household, Membership, Parish, ClassCatechist]
 }
 
 action removeGuardianFromHousehold {
   fn: import { removeGuardianFromHousehold } from "@src/server/operations/familyOperations",
-  entities: [GuardianProfile, Household, Membership, Parish]
+  entities: [GuardianProfile, Household, Membership, Parish, ClassCatechist]
 }
 
 action updateGuardianProfile {
   fn: import { updateGuardianProfile } from "@src/server/operations/familyOperations",
-  entities: [GuardianProfile, Household, Membership, Parish]
+  entities: [GuardianProfile, Household, Membership, Parish, ClassCatechist]
 }
 
 action updateHousehold {
   fn: import { updateHousehold } from "@src/server/operations/familyOperations",
-  entities: [Household, Membership, Parish]
+  entities: [Household, Membership, Parish, ClassCatechist]
 }
 //#endregion
 
@@ -1184,12 +1184,12 @@ action uploadDocument {
 
 action verifyDocument {
   fn: import { verifyDocument } from "@src/server/operations/documentOperations",
-  entities: [Document, Membership]
+  entities: [Document, Membership, Parish, ClassCatechist, SacramentalJourney, SacramentalMilestone]
 }
 
 action rejectDocument {
   fn: import { rejectDocument } from "@src/server/operations/documentOperations",
-  entities: [Document, Membership]
+  entities: [Document, Membership, Parish, ClassCatechist, SacramentalJourney, SacramentalMilestone]
 }
 
 action deleteDocument {
@@ -2016,12 +2016,12 @@ query getClassComparison {
 // LAUNCH PHASE: AI actions disabled.
 // action generateActivityForMeeting {
 //   fn: import { generateActivityForMeeting } from "@src/server/operations/aiOperations",
-//   entities: [Activity, ContentItem, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+//   entities: [Activity, ContentItem, Meeting, CatechesisClass, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
 // }
 
 // action generateWhatsAppMessage {
 //   fn: import { generateWhatsAppMessage } from "@src/server/operations/aiOperations",
-//   entities: [ContentItem, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
+//   entities: [ContentItem, Meeting, CatechesisClass, UserAiCredits, User, Membership, Parish, TenantBilling, DailyAiUsage]
 // }
 
 // action enhanceContentWithAi {
@@ -2108,14 +2108,15 @@ action restoreContentVersion {
 //   entities: [CollaborativeSession, ContentItem, Membership, Parish]
 // }
 
-// query getSaintStory {
+// action getSaintStory {
 //   fn: import { getSaintStory } from "@src/server/operations/collaborativeOperations",
-//   entities: []
+//   entities: [User, UserAiCredits, Membership, Parish, TenantBilling, DailyAiUsage]
 // }
 
-query getPedagogicalHooks {
+// Declared as an action: it calls the AI provider and deducts credits.
+action getPedagogicalHooks {
   fn: import { getPedagogicalHooks } from "@src/server/operations/collaborativeOperations",
-  entities: []
+  entities: [User, UserAiCredits, Membership, Parish, TenantBilling, DailyAiUsage]
 }
 
 // ───────────────────────────────────────────────────────────────────────────

@@ -8,7 +8,7 @@ import {
   validateFileSignature,
 } from '../storage/uploadValidation';
 
-import { requireWorkspaceAccess } from './sharedScope';
+import { requireWorkspaceAccess, resolveWorkspaceAccess } from './sharedScope';
 
 export const listDocuments = async (
   _args: { workspaceId?: string } | void,
@@ -300,50 +300,7 @@ export const verifyDocument = async (args: { id: string }, context: any) => {
   });
   if (!document) throw new HttpError(404, 'Documento não encontrado.');
 
-  if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, status: 'ACTIVE' },
-      select: { role: true, parishId: true },
-    });
-
-    const allowedRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
-    if (!membership || !allowedRoles.includes(membership.role)) {
-      throw new HttpError(403, 'Apenas coordenadores podem verificar documentos.');
-    }
-
-    // Verify the document belongs to the coordinator's parish
-    if (membership.parishId) {
-      let isSameParish = false;
-
-      // Check via uploader (if exists)
-      if (document.uploadedById) {
-        const uploaderMembership = await context.entities.Membership.findFirst({
-          where: { userId: document.uploadedById, parishId: membership.parishId },
-        });
-        if (uploaderMembership) isSameParish = true;
-      }
-
-      // Check via associated catechumen's parish (covers public-token uploads where uploadedById is null)
-      if (!isSameParish) {
-        const cat = document.catechumenProfile;
-        if (cat) {
-          const catParishIds = [
-            cat.parishId,
-            cat.household?.parishId,
-            ...cat.enrollments.map((e: any) => e.class?.parishId),
-          ].filter(Boolean);
-
-          if (catParishIds.includes(membership.parishId)) {
-            isSameParish = true;
-          }
-        }
-      }
-
-      if (!isSameParish) {
-        throw new HttpError(403, 'Este documento não pertence à sua paróquia.');
-      }
-    }
-  }
+  await assertCanReviewDocument(context, document, 'Apenas coordenadores podem verificar documentos.');
 
   const updated = await context.entities.Document.update({
     where: { id: args.id },
@@ -366,51 +323,19 @@ export const rejectDocument = async (args: { id: string; reason?: string }, cont
     select: {
       id: true,
       uploadedById: true,
-      catechumenProfileId: true,
-      catechumenProfile: { select: { id: true } },
+      catechumenProfile: {
+        select: {
+          id: true,
+          parishId: true,
+          household: { select: { parishId: true } },
+          enrollments: { select: { class: { select: { parishId: true } } } },
+        },
+      },
     },
   });
   if (!document) throw new HttpError(404, 'Documento não encontrado.');
 
-  if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, status: 'ACTIVE' },
-      select: { role: true, parishId: true },
-    });
-
-    const allowedRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
-    if (!membership || !allowedRoles.includes(membership.role)) {
-      throw new HttpError(403, 'Apenas coordenadores podem rejeitar documentos.');
-    }
-
-    if (membership.parishId) {
-      let sameParish = false;
-
-      if (document.uploadedById) {
-        const uploaderMembership = await context.entities.Membership.findFirst({
-          where: { userId: document.uploadedById, parishId: membership.parishId },
-        });
-        if (uploaderMembership) sameParish = true;
-      }
-
-      if (!sameParish && document.catechumenProfileId) {
-        const cat = await context.entities.CatechumenProfile.findUnique({
-          where: { id: document.catechumenProfileId },
-          select: { parishId: true, household: { select: { parishId: true } }, enrollments: { select: { class: { select: { parishId: true } } } } },
-        });
-        const catParishIds = [
-          cat?.parishId,
-          cat?.household?.parishId,
-          ...(cat?.enrollments || []).map((e: any) => e.class?.parishId),
-        ].filter(Boolean);
-        if (catParishIds.includes(membership.parishId)) sameParish = true;
-      }
-
-      if (!sameParish) {
-        throw new HttpError(403, 'Este documento não pertence à sua paróquia.');
-      }
-    }
-  }
+  await assertCanReviewDocument(context, document, 'Apenas coordenadores podem rejeitar documentos.');
 
   const updated = await context.entities.Document.update({
     where: { id: args.id },
@@ -455,6 +380,66 @@ export const deleteDocument = async (args: { id: string }, context: any) => {
   await writeAuditLog(context, 'DELETE', 'Document', args.id, { operation: 'DOCUMENT_DELETE' });
   return { success: true };
 };
+
+// ─── Review authorization ────────────────────────────────────────────────────
+
+type ReviewableDocument = {
+  uploadedById: string | null;
+  catechumenProfile: {
+    parishId: string | null;
+    household: { parishId: string | null } | null;
+    enrollments: { class: { parishId: string } | null }[];
+  } | null;
+};
+
+/**
+ * Only a coordinator of the workspace the document belongs to may verify or
+ * reject it. The workspace is derived from the record (catechumen's parish,
+ * household or enrolled classes; otherwise the uploader's workspaces) and the
+ * caller's role is checked inside each candidate workspace only.
+ */
+async function assertCanReviewDocument(
+  context: any,
+  document: ReviewableDocument,
+  deniedMessage: string,
+): Promise<void> {
+  if (context.user.isAdmin) return;
+
+  const candidateParishIds = new Set<string>();
+  const cat = document.catechumenProfile;
+  if (cat) {
+    if (cat.parishId) candidateParishIds.add(cat.parishId);
+    if (cat.household?.parishId) candidateParishIds.add(cat.household.parishId);
+    for (const e of cat.enrollments || []) {
+      if (e.class?.parishId) candidateParishIds.add(e.class.parishId);
+    }
+  }
+
+  if (candidateParishIds.size === 0 && document.uploadedById) {
+    const [uploaderMemberships, uploaderPersonal] = await Promise.all([
+      context.entities.Membership.findMany({
+        where: { userId: document.uploadedById, status: 'ACTIVE' },
+        select: { parishId: true },
+      }),
+      context.entities.Parish.findFirst({
+        where: { ownerId: document.uploadedById, type: 'PERSONAL' },
+        select: { id: true },
+      }),
+    ]);
+    for (const m of uploaderMemberships) candidateParishIds.add(m.parishId);
+    if (uploaderPersonal) candidateParishIds.add(uploaderPersonal.id);
+  }
+
+  let hasAnyAccess = false;
+  for (const parishId of candidateParishIds) {
+    const access = await resolveWorkspaceAccess(context, parishId, { required: false });
+    if (!access) continue;
+    hasAnyAccess = true;
+    if (access.isCoordinatorOrAbove) return;
+  }
+
+  throw new HttpError(403, hasAnyAccess ? deniedMessage : 'Este documento não pertence à sua paróquia.');
+}
 
 // ─── Document ↔ Sacramental Milestone Sync ────────────────────────────────────
 

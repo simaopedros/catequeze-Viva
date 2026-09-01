@@ -7,6 +7,36 @@ import type {
   ContentDocument,
 } from "../../../shared/contentDocument";
 
+const SAFE_LINK_PROTOCOLS = ["http:", "https:", "mailto:", "tel:"];
+const CONTENT_IMAGE_PATH = "/api/content-images/";
+
+/** Allow only http(s)/mailto/tel links and same-origin relative paths; block javascript:/data:. */
+export function sanitizeLinkHref(raw: unknown): string {
+  const value = String(raw || "").trim();
+  if (!value) return "#";
+  if (value.startsWith("/") && !value.startsWith("//")) return value;
+  if (value.startsWith("#")) return value;
+  try {
+    const url = new URL(value);
+    return SAFE_LINK_PROTOCOLS.includes(url.protocol) ? url.href : "#";
+  } catch {
+    return "#";
+  }
+}
+
+/** Allow only https images or the authenticated content-image endpoint. */
+export function sanitizeImageSrc(raw: unknown): string {
+  const value = String(raw || "").trim();
+  if (!value) return "";
+  if (value.startsWith(CONTENT_IMAGE_PATH)) return value;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
 function getReferenceMarkClass(refType?: string) {
   switch (refType) {
     case "bible":
@@ -40,9 +70,9 @@ function renderMarkedText(text: string, marks?: ContentDocMark[]) {
       case "link":
         output = (
           <a
-            href={String(mark.attrs?.href || "#")}
+            href={sanitizeLinkHref(mark.attrs?.href)}
             target="_blank"
-            rel="noreferrer"
+            rel="noreferrer noopener"
             className="text-brand-ink underline underline-offset-2"
           >
             {output}
@@ -119,16 +149,20 @@ function renderNode(node: ContentDocNode, index: number): ReactNode {
       );
     case "horizontalRule":
       return <hr key={index} />;
-    case "image":
+    case "image": {
+      const src = sanitizeImageSrc(node.attrs?.src);
+      if (!src) return null;
       return (
         <figure key={index} className="my-6">
           <img
-            src={String(node.attrs?.src || "")}
+            src={src}
             alt={String(node.attrs?.alt || "")}
+            loading="lazy"
             className="max-h-[420px] w-auto max-w-full rounded-sm border bg-muted/20 object-contain"
           />
         </figure>
       );
+    }
     case "table":
       return (
         <div key={index} className="my-6 overflow-x-auto rounded-sm border">

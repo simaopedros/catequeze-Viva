@@ -18,32 +18,43 @@ export type StoredFile = {
   contentType: string;
 };
 
-function buildObjectKey(parishId: string | undefined, mimeType: string): string {
-  const prefix = parishId || 'general';
+function buildObjectKey(
+  parishId: string | undefined,
+  mimeType: string,
+  keyPrefix?: string,
+): string {
+  const prefix = keyPrefix || parishId || 'general';
   const fileName = generateUploadFileName(mimeType);
   return `${prefix}/${fileName}`;
+}
+
+/** Namespaced prefix that binds a stored object to one content item. */
+export function contentImageKeyPrefix(item: { id: string; parishId?: string | null }): string {
+  return `content/${item.parishId || 'general'}/${item.id}`;
 }
 
 export async function storeDocumentFile(params: {
   buffer: Buffer;
   mimeType: string;
   parishId?: string;
+  /** When set, the object is stored under this prefix instead of `<parishId>/` (Bunny and local). */
+  keyPrefix?: string;
 }): Promise<string> {
-  const key = buildObjectKey(params.parishId, params.mimeType);
+  const key = buildObjectKey(params.parishId, params.mimeType, params.keyPrefix);
 
   if (isBunnyStorageConfigured()) {
     await bunnyPutObject(key, params.buffer, params.mimeType);
     return key;
   }
 
-  if (!fs.existsSync(UPLOADS_DIR)) {
-    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-  }
+  // Local storage: legacy callers keep flat file names; namespaced prefixes keep their folders.
+  const localKey = params.keyPrefix ? key : path.basename(key);
+  const filePath = resolveUploadFilePath(localKey);
+  if (!filePath) throw new Error('Chave de armazenamento inválida.');
 
-  const fileName = path.basename(key);
-  const filePath = path.join(UPLOADS_DIR, fileName);
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, params.buffer);
-  return fileName;
+  return localKey;
 }
 
 export async function readDocumentFile(key: string): Promise<StoredFile | null> {
