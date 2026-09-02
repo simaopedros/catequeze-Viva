@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 declare global {
   interface Window {
     dataLayer: unknown[];
-    fbq?: (...args: unknown[]) => void;
-    _fbq?: (...args: unknown[]) => void;
   }
 }
 
