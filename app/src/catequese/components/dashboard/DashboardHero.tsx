@@ -53,12 +53,16 @@ export function DashboardHero({
   return (
     <header
       className={cn(
-        "flex flex-col gap-4 border-b border-border pb-5 sm:pb-6 lg:flex-row lg:items-start lg:justify-between",
+        "flex flex-col gap-3 border-b border-border pb-4 sm:gap-4 sm:pb-6 lg:flex-row lg:items-start lg:justify-between",
         className,
       )}
     >
-      <div className="min-w-0 space-y-2">
-        <AppDisplayTitle className="text-title-md sm:text-title-lg">
+      <div className="min-w-0 space-y-1.5 sm:space-y-2">
+        {/* Mobile: date as eyebrow saves a line below the title */}
+        <p className="text-overline font-semibold uppercase text-muted-foreground first-letter:uppercase sm:hidden">
+          {fullDate}
+        </p>
+        <AppDisplayTitle className="text-title-sm sm:text-title-lg">
           {greeting}
           <span aria-hidden className="ml-2">
             👋
@@ -67,17 +71,18 @@ export function DashboardHero({
         <p className="text-sm leading-relaxed text-muted-foreground sm:text-body">
           {t("hero_subtitle")}
         </p>
-        <p className="flex items-center gap-1.5 pt-1 text-xs font-medium text-muted-foreground">
+        <p className="hidden items-center gap-1.5 pt-1 text-xs font-medium text-muted-foreground sm:flex">
           <Calendar className="h-3.5 w-3.5" aria-hidden />
           <span className="first-letter:uppercase">{fullDate}</span>
         </p>
       </div>
 
       <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center lg:w-auto lg:shrink-0">
+        {/* Mobile already has the TopBar search icon; the field only helps on wider screens. */}
         <button
           type="button"
           onClick={openGlobalSearch}
-          className="group flex h-11 min-h-11 w-full items-center gap-2 rounded-md border border-border bg-card px-3 text-left text-sm text-muted-foreground shadow-elevation-xs transition-colors hover:border-input hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 sm:w-56"
+          className="group hidden h-11 min-h-11 w-full items-center gap-2 rounded-md border border-border bg-card px-3 text-left text-sm text-muted-foreground shadow-elevation-xs transition-colors hover:border-input hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 sm:flex sm:w-56"
           aria-label={tTop("searchPlaceholder")}
         >
           <Search className="h-4 w-4 shrink-0" aria-hidden />
@@ -92,7 +97,7 @@ export function DashboardHero({
             <Button
               asChild
               variant="outline"
-              className="h-11 min-h-11 flex-1 rounded-md sm:flex-none"
+              className="h-10 min-h-10 flex-1 rounded-md px-3 text-xs sm:h-11 sm:min-h-11 sm:flex-none sm:px-4 sm:text-sm"
             >
               <Link to="/app/catechumens/new">
                 <UserPlus aria-hidden />
@@ -101,7 +106,7 @@ export function DashboardHero({
             </Button>
             <Button
               asChild
-              className="h-11 min-h-11 flex-1 rounded-md sm:flex-none"
+              className="h-10 min-h-10 flex-1 rounded-md px-3 text-xs sm:h-11 sm:min-h-11 sm:flex-none sm:px-4 sm:text-sm"
             >
               <Link to="/app/classes/new">
                 <Plus aria-hidden />

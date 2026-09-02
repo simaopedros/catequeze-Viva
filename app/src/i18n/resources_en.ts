@@ -2289,6 +2289,9 @@ export const dashboard_en = {
     "search_placeholder": "Search...",
     "next_actions": "Next actions",
     "see_all": "See all",
+    "fact_catechumens": "Catechumens",
+    "fact_upcoming_meetings": "Upcoming encounters",
+    "fact_attendance": "Attendance",
     "priority": {
       "high": "High priority",
       "important": "Important",
