@@ -17,6 +17,7 @@ import {
 } from "../../client/components/brand/AppChrome";
 import { Loader2, ShieldCheck } from "lucide-react";
 import { Alert } from "../../client/components/ui/alert";
+import { isImpersonating } from "../../admin/impersonation";
 
 /**
  * Blocks app access until 2FA is verified for the current login session.
@@ -31,6 +32,11 @@ export function TwoFactorGate({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation("auth");
 
   useEffect(() => {
+    if (isImpersonating()) {
+      setNeedsVerification(false);
+      setChecking(false);
+      return;
+    }
     getTwoFactorStatus()
       .then((status) => {
         setNeedsVerification(status.enabled && !status.sessionVerified);

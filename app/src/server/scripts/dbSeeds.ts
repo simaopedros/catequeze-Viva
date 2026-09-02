@@ -63,6 +63,8 @@ function generateMockUserData(): MockUserData {
     pricingVersion: 3,
     socialBannedAt: null,
     socialBanReason: null,
+    suspendedAt: null,
+    suspendedReason: null,
     lifecycleEmailsOptOutAt: null,
   };
 }

@@ -1,10 +1,14 @@
 /**
- * User detail operation — full profile view for the admin governance panel.
+ * User detail and governance actions for the platform admin panel.
  */
-import { HttpError } from 'wasp/server';
-import { requirePlatformAdmin } from '../auth/helpers';
+import { HttpError, prisma } from "wasp/server";
+import { createSession } from "wasp/auth/session";
+import { requirePlatformAdmin, writeAuditLog } from "../auth/helpers";
 
-export const getUserAdminDetail = async (args: { id: string }, context: any) => {
+export const getUserAdminDetail = async (
+  args: { id: string },
+  context: any,
+) => {
   requirePlatformAdmin(context.user);
 
   const user = await context.entities.User.findUnique({
@@ -21,49 +25,203 @@ export const getUserAdminDetail = async (args: { id: string }, context: any) => 
       createdAt: true,
       subscriptionStatus: true,
       subscriptionPlan: true,
-      credits: true,
       paymentProcessorUserId: true,
+      socialBannedAt: true,
+      socialBanReason: true,
+      suspendedAt: true,
+      suspendedReason: true,
     },
   });
 
-  if (!user) throw new HttpError(404, 'Utilizador não encontrado.');
+  if (!user) throw new HttpError(404, "Utilizador não encontrado.");
 
-  // Memberships
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: args.id },
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      role: true,
-      status: true,
-      createdAt: true,
-      parish: { select: { id: true, name: true, active: true } },
-      community: { select: { id: true, name: true } },
+  const [memberships, auditLog, aiUsage, aiCredits, twoFactor, ownedParishes] =
+    await Promise.all([
+      context.entities.Membership.findMany({
+        where: { userId: args.id },
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          role: true,
+          status: true,
+          createdAt: true,
+          parish: { select: { id: true, name: true, active: true } },
+          community: { select: { id: true, name: true } },
+        },
+      }),
+      context.entities.AuditLog.findMany({
+        where: { userId: args.id },
+        orderBy: { createdAt: "desc" },
+        take: 30,
+        select: {
+          id: true,
+          action: true,
+          entityType: true,
+          entityId: true,
+          metadata: true,
+          createdAt: true,
+        },
+      }),
+      context.entities.DailyAiUsage.findMany({
+        where: { userId: args.id },
+        orderBy: { date: "desc" },
+        take: 30,
+        select: { id: true, date: true, count: true },
+      }),
+      context.entities.UserAiCredits.findUnique({
+        where: { userId: args.id },
+        select: { creditsLeft: true, lastReset: true },
+      }),
+      context.entities.UserTwoFactor.findUnique({
+        where: { userId: args.id },
+        select: { enabled: true, verified: true },
+      }),
+      context.entities.Parish.findMany({
+        where: { ownerId: args.id },
+        orderBy: { name: "asc" },
+        select: { id: true, name: true, type: true, active: true },
+      }),
+    ]);
+
+  return {
+    ...user,
+    creditsLeft: aiCredits?.creditsLeft ?? 0,
+    twoFactorEnabled: Boolean(twoFactor?.enabled && twoFactor?.verified),
+    memberships,
+    auditLog,
+    aiUsage,
+    ownedParishes,
+  };
+};
+
+export const adjustUserAiCredits = async (
+  args: { userId: string; creditsLeft: number },
+  context: any,
+) => {
+  requirePlatformAdmin(context.user);
+
+  const creditsLeft = Math.max(0, Math.floor(Number(args.creditsLeft)));
+  if (!Number.isFinite(creditsLeft)) {
+    throw new HttpError(400, "Quantidade de créditos inválida.");
+  }
+
+  const target = await context.entities.User.findUnique({
+    where: { id: args.userId },
+    select: { id: true },
+  });
+  if (!target) throw new HttpError(404, "Utilizador não encontrado.");
+
+  const existing = await context.entities.UserAiCredits.findUnique({
+    where: { userId: args.userId },
+    select: { id: true, creditsLeft: true },
+  });
+
+  const row = existing
+    ? await context.entities.UserAiCredits.update({
+        where: { userId: args.userId },
+        data: { creditsLeft },
+      })
+    : await context.entities.UserAiCredits.create({
+        data: { userId: args.userId, creditsLeft },
+      });
+
+  await writeAuditLog(context, "UPDATE", "User", args.userId, {
+    operation: "ADMIN_ADJUST_AI_CREDITS",
+    from: existing?.creditsLeft ?? null,
+    to: creditsLeft,
+  });
+
+  return { creditsLeft: row.creditsLeft };
+};
+
+export const setUserSuspended = async (
+  args: { userId: string; suspended: boolean; reason?: string },
+  context: any,
+) => {
+  requirePlatformAdmin(context.user);
+
+  if (args.userId === context.user.id) {
+    throw new HttpError(403, "Não pode suspender a sua própria conta.");
+  }
+
+  const target = await context.entities.User.findUnique({
+    where: { id: args.userId },
+    select: { id: true, isAdmin: true, email: true },
+  });
+  if (!target) throw new HttpError(404, "Utilizador não encontrado.");
+  if (target.isAdmin) {
+    throw new HttpError(
+      403,
+      "Não pode suspender outro administrador da plataforma.",
+    );
+  }
+
+  const reason = args.reason?.trim() || null;
+  const updated = await context.entities.User.update({
+    where: { id: args.userId },
+    data: args.suspended
+      ? { suspendedAt: new Date(), suspendedReason: reason }
+      : { suspendedAt: null, suspendedReason: null },
+  });
+
+  await writeAuditLog(
+    context,
+    args.suspended ? "REJECT" : "APPROVE",
+    "User",
+    args.userId,
+    {
+      operation: args.suspended ? "ADMIN_SUSPEND_USER" : "ADMIN_UNSUSPEND_USER",
+      reason,
     },
+  );
+
+  return {
+    id: updated.id,
+    suspendedAt: updated.suspendedAt,
+    suspendedReason: updated.suspendedReason,
+  };
+};
+
+export const impersonateUser = async (
+  args: { userId: string },
+  context: any,
+) => {
+  requirePlatformAdmin(context.user);
+
+  if (args.userId === context.user.id) {
+    throw new HttpError(400, "Não pode impersonar a si próprio.");
+  }
+
+  const target = await context.entities.User.findUnique({
+    where: { id: args.userId },
+    select: { id: true, email: true, isAdmin: true },
+  });
+  if (!target) throw new HttpError(404, "Utilizador não encontrado.");
+  if (target.isAdmin) {
+    throw new HttpError(
+      403,
+      "Não pode impersonar outro administrador da plataforma.",
+    );
+  }
+
+  const auth = await (prisma as any).auth.findUnique({
+    where: { userId: target.id },
+    select: { id: true },
+  });
+  if (!auth?.id) {
+    throw new HttpError(400, "Utilizador sem identidade de autenticação.");
+  }
+
+  const session = await createSession(auth.id);
+
+  await writeAuditLog(context, "LOGIN", "User", args.userId, {
+    operation: "ADMIN_IMPERSONATE",
+    targetEmail: target.email,
   });
 
-  // Audit log
-  const auditLog = await context.entities.AuditLog.findMany({
-    where: { userId: args.id },
-    orderBy: { createdAt: 'desc' },
-    take: 30,
-    select: {
-      id: true,
-      action: true,
-      entityType: true,
-      entityId: true,
-      metadata: true,
-      createdAt: true,
-    },
-  });
-
-  // AI usage
-  const aiUsage = await context.entities.DailyAiUsage.findMany({
-    where: { userId: args.id },
-    orderBy: { date: 'desc' },
-    take: 30,
-    select: { id: true, date: true, creditsUsed: true },
-  });
-
-  return { ...user, memberships, auditLog, aiUsage };
+  return {
+    sessionId: session.id,
+    email: target.email,
+    userId: target.id,
+  };
 };

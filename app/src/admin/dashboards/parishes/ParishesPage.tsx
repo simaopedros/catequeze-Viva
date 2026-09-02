@@ -1,6 +1,6 @@
 import { type AuthUser } from "wasp/auth";
 import { useQuery, listParishesAdmin } from "wasp/client/operations";
-import { NavLink, useNavigate } from "react-router";
+import { NavLink, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import DefaultLayout from "../../layout/DefaultLayout";
 import {
@@ -14,23 +14,33 @@ import {
   Church,
   MapPin,
   Users,
-  Crown,
   Building2,
   BadgeCheck,
   AlertTriangle,
   CircleDot,
-  ChevronRight,
 } from "lucide-react";
 
 const ParishesPage = ({ user }: { user: AuthUser }) => {
   const { t } = useTranslation("admin");
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const dioceseFilter = searchParams.get("dioceseId") || "";
   const {
-    data: parishes = [],
+    data: allParishes = [],
     isLoading,
     error,
     refetch,
   } = useQuery(listParishesAdmin);
+  const parishes = dioceseFilter
+    ? allParishes.filter(
+        (p: any) =>
+          p.dioceseId === dioceseFilter || p.diocese?.id === dioceseFilter,
+      )
+    : allParishes;
+  const filterName =
+    parishes.find((p: any) => p.diocese?.id === dioceseFilter)?.diocese?.name ||
+    allParishes.find((p: any) => p.diocese?.id === dioceseFilter)?.diocese
+      ?.name;
 
   const statusIcon = (status: string) => {
     switch (status) {
@@ -53,7 +63,22 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
         <AppPageHeader
           eyebrow={t("pages.admin")}
           title={t("pages.parishes.title")}
-          subtitle={t("pages.parishes.subtitle")}
+          subtitle={
+            dioceseFilter && filterName
+              ? t("pages.parishes.filtered_by", { name: filterName })
+              : t("pages.parishes.subtitle")
+          }
+          actions={
+            dioceseFilter ? (
+              <button
+                type="button"
+                className="text-xs text-muted-foreground hover:text-[#071A2D]"
+                onClick={() => setSearchParams({})}
+              >
+                {t("pages.parishes.clear_filter")}
+              </button>
+            ) : null
+          }
         />
 
         {isLoading ? (
@@ -112,7 +137,9 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                           <NavLink
                             to={`/admin/parishes/${p.id}`}
                             className="font-semibold tracking-tight text-[#071A2D] hover:underline"
-                            aria-label={t("pages.parishes.open_row", { name: p.name })}
+                            aria-label={t("pages.parishes.open_row", {
+                              name: p.name,
+                            })}
                             onClick={(e) => e.stopPropagation()}
                           >
                             {p.name}

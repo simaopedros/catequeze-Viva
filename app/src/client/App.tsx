@@ -37,6 +37,7 @@ import {
   trackPageView,
 } from "./analytics/metaTracking";
 import { applyLandingRouteMeta } from "../landing-page/routeMeta";
+import { PlatformSessionGuards } from "../admin/PlatformSessionGuards";
 import {
   AI_APP_HOME,
   AI_FEATURES_ENABLED,
@@ -439,6 +440,7 @@ export default function App() {
           </ErrorBoundary>
         </div>
       )}
+      <PlatformSessionGuards />
       <Toaster position="top-right" />
       <Suspense fallback={null}>
         <CookieConsentBanner />

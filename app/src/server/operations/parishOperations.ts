@@ -331,7 +331,16 @@ export const createParish = async (
 };
 
 export const updateParish = async (
-  args: { id: string; name?: string; city?: string; state?: string; locale?: string; timezone?: string; active?: boolean },
+  args: {
+    id: string;
+    name?: string;
+    city?: string;
+    state?: string;
+    locale?: string;
+    timezone?: string;
+    active?: boolean;
+    dioceseId?: string | null;
+  },
   context: any
 ): Promise<{ success: boolean }> => {
   if (!context.user) throw new HttpError(401);
@@ -350,9 +359,26 @@ export const updateParish = async (
     if (args.active === false && !access.canManageParish) {
       throw new HttpError(403, 'Sem permissão para desativar esta paróquia.');
     }
+    if (args.dioceseId !== undefined) {
+      throw new HttpError(403, 'Apenas administradores da plataforma podem vincular a diocese.');
+    }
   }
 
-  const { id, ...data } = args;
+  if (args.active === false) {
+    const existing = await context.entities.Parish.findUnique({
+      where: { id: args.id },
+      select: { type: true },
+    });
+    if (existing?.type === 'PERSONAL') {
+      throw new HttpError(400, 'O espaço pessoal não pode ser arquivado.');
+    }
+  }
+
+  const { id, dioceseId, ...rest } = args;
+  const data: Record<string, unknown> = { ...rest };
+  if (dioceseId !== undefined) {
+    data.dioceseId = dioceseId;
+  }
   await context.entities.Parish.update({ where: { id }, data });
   await writeAuditLog(context, 'UPDATE', 'Parish', args.id, {
     parishId: args.id,

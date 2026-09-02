@@ -14,6 +14,8 @@ import { Switch } from "../../../client/components/ui/switch";
 import useDebounce from "../../../client/hooks/useDebounce";
 import LoadingSpinner from "../../layout/LoadingSpinner";
 import { useNavigate } from "react-router";
+import { formatDate } from "../../../i18n/format";
+import { useLocale } from "../../../i18n/useLocale";
 
 function AdminSwitch({ id, isAdmin }: Pick<User, "id" | "isAdmin">) {
   const { data: currentUser } = useAuth();
@@ -29,6 +31,7 @@ function AdminSwitch({ id, isAdmin }: Pick<User, "id" | "isAdmin">) {
 
 const UsersTable = () => {
   const { t } = useTranslation("admin");
+  const { currentLocale } = useLocale();
   const [currentPage, setCurrentPage] = useState(1);
   const [emailFilter, setEmailFilter] = useState<string | undefined>(undefined);
   const [isAdminFilter, setIsAdminFilter] = useState<boolean | undefined>(
@@ -131,8 +134,13 @@ const UsersTable = () => {
             key={user.id}
             className="py-3 grid grid-cols-7 gap-4 px-4 md:px-6 border-t"
           >
-            <div className="col-span-2 flex items-center truncate text-sm font-semibold tracking-tight text-[#071A2D]">
-              {user.email || "—"}
+            <div className="col-span-2 flex items-center gap-2 truncate text-sm font-semibold tracking-tight text-[#071A2D]">
+              <span className="truncate">{user.email || "—"}</span>
+              {user.suspendedAt && (
+                <span className="shrink-0 rounded-sm bg-destructive/10 px-1.5 py-0.5 text-[10px] font-medium text-destructive">
+                  {t("pages.user.suspended")}
+                </span>
+              )}
             </div>
             <div className="col-span-2 flex items-center text-sm text-muted-foreground truncate">
               {user.firstName
@@ -143,9 +151,7 @@ const UsersTable = () => {
               <AdminSwitch {...user} />
             </div>
             <div className="col-span-1 flex items-center text-xs text-muted-foreground">
-              {user.createdAt
-                ? new Date(user.createdAt).toLocaleDateString("pt-BR")
-                : "—"}
+              {user.createdAt ? formatDate(user.createdAt, currentLocale) : "—"}
             </div>
             <div className="col-span-1 flex items-center justify-end">
               <Button
