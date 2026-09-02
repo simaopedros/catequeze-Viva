@@ -88,9 +88,22 @@ export const onAfterSignup = async ({
   // Never fire commercial Meta conversion for family portal signups.
   if (!isFamilyPortalSignup) {
     try {
+      // Fetch user phone for Event Match Quality (EMQ).
+      let userPhone: string | null | undefined = undefined;
+      try {
+        const fullUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { phone: true },
+        });
+        userPhone = fullUser?.phone;
+      } catch {
+        /* non-fatal */
+      }
+      
       await sendCompleteRegistrationToMeta({
         userId: user.id,
         email: user.email,
+        phone: userPhone,
         prisma,
         req,
       });
@@ -218,6 +231,8 @@ function isPublicIp(ip?: string): boolean {
 export async function sendCompleteRegistrationToMeta(args: {
   userId: string;
   email: string | null;
+  /** Optional phone for Event Match Quality (sent hashed). E.164 format recommended. */
+  phone?: string | null;
   prisma: any;
   req?: unknown;
 }): Promise<void> {
@@ -256,6 +271,7 @@ export async function sendCompleteRegistrationToMeta(args: {
       event_source_url: `${config.frontendUrl}/signup`,
       user_data: {
         email: args.email ?? undefined,
+        phone: args.phone ?? undefined,
         external_id: args.userId,
         client_ip_address: clientMeta.client_ip_address,
         client_user_agent: clientMeta.client_user_agent,

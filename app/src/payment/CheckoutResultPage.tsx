@@ -7,7 +7,7 @@ import {
   AppGoldRule,
 } from "../client/components/brand/AppChrome";
 import { trackStartTrialBrowser } from "../client/analytics/metaTracking";
-import { SUBSCRIPTION_TRIAL_DAYS } from "../shared/pricing";
+import { SUBSCRIPTION_TRIAL_DAYS, PLANS } from "../shared/pricing";
 
 const BILLING_PAGE_REDIRECT_DELAY_MS = 4000;
 
@@ -28,11 +28,13 @@ export default function CheckoutResultPage() {
   useEffect(() => {
     if (sessionId) {
       // Same event_id as server CAPI StartTrial for Meta deduplication.
+      // Meta requires value > 0 for StartTrial (use plan monthly price).
+      const planMonthlyValue = PLANS.single.prices.monthlyCents / 100;
       trackStartTrialBrowser({
         event_id: `starttrial_${sessionId}`,
         content_name: "Trial Catechis",
         trial_days: SUBSCRIPTION_TRIAL_DAYS,
-        value: 0,
+        value: planMonthlyValue,
         currency: "BRL",
       });
     }

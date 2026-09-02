@@ -23,6 +23,7 @@ import { stripeClient } from "./stripeClient";
 import { trackPricingEvent } from "../pricingEvents";
 import { sendMetaEvent } from "../meta/metaCapi";
 import { SUBSCRIPTION_TRIAL_DAYS } from "../../shared/pricing";
+import { sendPurchaseToMeta } from "../meta/sendPurchaseToMeta";
 
 const STRIPE_PROVIDER = "stripe";
 const META_PROVIDER = "meta";
@@ -83,7 +84,7 @@ export const stripeWebhook: PaymentsWebhook = async (
 
     switch (event.type) {
       case "checkout.session.completed":
-        await handleCheckoutSessionCompleted(event, trackedEventDelegate);
+        await handleCheckoutSessionCompleted(event, prismaUserDelegate, trackedEventDelegate);
         break;
       case "invoice.paid":
       case "invoice.payment_succeeded":
@@ -142,6 +143,7 @@ function constructStripeEvent(request: express.Request): Stripe.Event {
 
 async function handleCheckoutSessionCompleted(
   event: Stripe.CheckoutSessionCompletedEvent,
+  prismaUserDelegate: PrismaClient["user"],
   trackedEventDelegate: TrackedEventDelegate,
 ): Promise<void> {
   const session = event.data.object;
@@ -162,6 +164,23 @@ async function handleCheckoutSessionCompleted(
   const customerEmail = session.customer_details?.email ?? customer?.email ?? undefined;
   const stripeCustomerId = getCustomerId(session.customer);
   const startTrialEventId = `starttrial_${session.id}`;
+  
+  // Fetch user phone for Event Match Quality (EMQ) if client_reference_id exists.
+  let userPhone: string | null | undefined = undefined;
+  if (session.client_reference_id) {
+    try {
+      const user = await prismaUserDelegate.findUnique({
+        where: { id: session.client_reference_id },
+        select: { phone: true },
+      });
+      userPhone = user?.phone;
+    } catch (error) {
+      console.warn("[webhook] Failed to fetch user phone for StartTrial", {
+        userId: session.client_reference_id,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
 
   if (!isTrialingSubscription(subscription)) {
     await markTrackedEventSkipped(trackedEventDelegate, {
@@ -177,6 +196,12 @@ async function handleCheckoutSessionCompleted(
     });
     return;
   }
+
+  // Meta requires StartTrial value > 0 (use plan monthly price from metadata or subscription).
+  const paymentPlanId = getPaymentPlanIdFromSubscription(subscription);
+  const planValue = metadata.value 
+    ? Number(metadata.value) 
+    : Number((getSubscriptionPriceMonthlyEquivalent(subscription) / 100).toFixed(2));
 
   await deliverMetaTrackedEvent(trackedEventDelegate, {
     provider: META_PROVIDER,
@@ -194,6 +219,7 @@ async function handleCheckoutSessionCompleted(
     event_source_url: metadata.event_source_url || config.frontendUrl,
     user_data: {
       email: customerEmail,
+      phone: userPhone ?? undefined,
       external_id: session.client_reference_id || undefined,
       fbp: metadata.fbp,
       fbc: metadata.fbc,
@@ -201,8 +227,8 @@ async function handleCheckoutSessionCompleted(
     },
     custom_data: {
       currency: metadata.currency || "BRL",
-      value: 0,
-      content_name: metadata.plan_name || prettyPaymentPlanName(getPaymentPlanIdFromSubscription(subscription)),
+      value: planValue,
+      content_name: metadata.plan_name || prettyPaymentPlanName(paymentPlanId),
       content_category: "subscription",
       content_type: "product",
       content_ids: metadata.plan_id ? [metadata.plan_id] : undefined,
@@ -295,6 +321,7 @@ async function processPaidInvoice(
         await finishTrackedEvent(trackedEventDelegate, invoiceProcessing.id, {
           responseJson: { invoiceId: invoice.id, paymentPlanId },
         });
+        // AI credits are one-time purchases — deliver as Purchase (not Subscribe).
         await deliverAiCreditsPurchaseMetaEvent({
           invoice,
           paymentPlanId,
@@ -333,6 +360,7 @@ async function processPaidInvoice(
           ? await findTrackedEventBySubscription(trackedEventDelegate, META_PROVIDER, "Subscribe", subscriptionId)
           : null;
 
+        // First paid invoice for a subscription → deliver both Subscribe (legacy) and Purchase (optimization).
         if (subscriptionId && existingSubscribe?.status !== "sent") {
           await trackPricingEvent(context, {
             userId: user.id,
@@ -348,7 +376,9 @@ async function processPaidInvoice(
             ...normalizeMetadata(invoice.parent?.subscription_details?.metadata as Record<string, string> | undefined),
           };
           const subscribeEventId = `subscribe_${subscriptionId}_first_paid`;
+          const purchaseEventId = `purchase_${subscriptionId}_first_paid`;
 
+          // Subscribe: legacy conversion event (kept for historical reporting).
           await deliverMetaTrackedEvent(trackedEventDelegate, {
             provider: META_PROVIDER,
             eventName: "Subscribe",
@@ -385,6 +415,35 @@ async function processPaidInvoice(
               trial_days: parseTrialDays(metadata.trial_days),
             },
           });
+
+          // Purchase: ads optimization event (standard for Meta campaigns).
+          // Never let Meta delivery fail invoice processing — Stripe would retry
+          // and the already-sent Subscribe would be treated as a renewal.
+          try {
+            await sendPurchaseToMeta({
+              userId: user.id,
+              email: customer?.email ?? undefined,
+              phone: user.phone ?? undefined,
+              eventId: purchaseEventId,
+              planId: metadata.plan_id || paymentPlanId,
+              planName: metadata.plan_name || prettyPaymentPlanName(paymentPlanId),
+              value: Number((invoice.amount_paid / 100).toFixed(2)),
+              currency: (invoice.currency || metadata.currency || "brl").toUpperCase(),
+              contentCategory: "subscription",
+              fbp: metadata.fbp,
+              fbc: metadata.fbc,
+              fbclid: metadata.fbclid,
+              clientUserAgent: metadata.client_user_agent,
+              eventSourceUrl: metadata.event_source_url,
+              stripeCustomerId: customerId,
+              stripeSessionId: metadata.stripe_session_id,
+              invoiceId: invoice.id,
+              subscriptionId,
+              prisma: { trackedEvent: trackedEventDelegate },
+            });
+          } catch (error) {
+            console.error("[meta-capi] Purchase delivery failed without blocking invoice processing", error);
+          }
         } else {
           await trackPricingEvent(context, {
             userId: user.id,
@@ -846,6 +905,25 @@ function getSubscriptionPriceId(
   }
 
   return priceId;
+}
+
+function getSubscriptionPriceMonthlyEquivalent(
+  subscription: Stripe.Subscription,
+): number {
+  const item = subscription.items.data[0];
+  if (!item) {
+    return 990; // fallback: Plano Catequista monthly (R$ 9.90)
+  }
+
+  const price = item.price;
+  const unitAmount = price.unit_amount ?? 0;
+  
+  // If annual, divide by 12 for monthly equivalent
+  if (price.recurring?.interval === "year") {
+    return Math.round(unitAmount / 12);
+  }
+
+  return unitAmount;
 }
 
 function getLegacyInvoiceLinePriceId(

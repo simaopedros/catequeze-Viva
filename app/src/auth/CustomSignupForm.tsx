@@ -143,6 +143,7 @@ export default function CustomSignupForm({
           content_name: intendedPlanId
             ? `Signup Catechis ${intendedPlanId}`
             : "Signup Catechis",
+          email, // Advanced Matching — hashed by fbq, improves Event Match Quality
         });
       } catch {
         // Analytics must never block the success UI
@@ -160,6 +161,7 @@ export default function CustomSignupForm({
           trackCompleteRegistration({
             method: inviteToken ? "email_invite" : "email",
             content_name: "Signup Catechis (client fallback)",
+            email, // Advanced Matching — hashed by fbq, improves Event Match Quality
           });
         } catch {}
       }

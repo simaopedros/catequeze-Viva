@@ -1,11 +1,12 @@
 /**
- * Server-side Meta CAPI InitiateCheckout.
+ * Server-side Meta CAPI Purchase.
  *
- * Mirrors the browser Pixel event using the same `event_id` so Meta can
- * deduplicate and improve Event Match Quality / coverage diagnostics.
+ * Fires when a Stripe invoice is paid (subscription creation or one-time credit pack).
+ * Uses the same `event_id` as the browser Pixel Purchase so Meta can deduplicate
+ * and improve Event Match Quality / coverage diagnostics.
  *
  * Delivery is independent of TrackedEvent: Meta is called first so a missing
- * audit table never swallows the conversion. Failures never block checkout.
+ * audit table never swallows the conversion. Failures never block payment processing.
  */
 
 import { config } from "wasp/server";
@@ -14,7 +15,7 @@ import { logger } from "../../server/logger";
 
 import { isMetaCapiConfigured, sendMetaEvent } from "./metaCapi";
 
-export interface SendInitiateCheckoutToMetaArgs {
+export interface SendPurchaseToMetaArgs {
   userId: string;
   email: string | null | undefined;
   /** Optional phone number for Event Match Quality (sent hashed). E.164 format recommended. */
@@ -26,34 +27,38 @@ export interface SendInitiateCheckoutToMetaArgs {
   currency: string;
   priceId?: string;
   contentCategory?: "subscription" | "ai_credits";
-  trialDays?: number;
   fbp?: string;
   fbc?: string;
   fbclid?: string;
   clientUserAgent?: string;
   eventSourceUrl?: string;
   stripeSessionId?: string;
+  stripeCustomerId?: string;
+  invoiceId?: string;
+  subscriptionId?: string;
   prisma?: { trackedEvent?: any };
   req?: unknown;
 }
 
-/**
- * Build `_fbc` from `fbclid` when the cookie was not forwarded.
- * Format: fb.1.{creation_time_ms}.{fbclid}
- */
-export function fbcFromFbclid(
-  fbclid?: string | null,
-  nowMs = Date.now(),
-): string | undefined {
-  if (!fbclid?.trim()) return undefined;
-  return `fb.1.${nowMs}.${fbclid.trim()}`;
+export async function sendPurchaseToMeta(
+  args: SendPurchaseToMetaArgs,
+): Promise<void> {
+  try {
+    await deliverPurchaseToMeta(args);
+  } catch (error) {
+    logger.error("[meta-capi] Purchase delivery failed", {
+      userId: args.userId,
+      eventId: args.eventId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
 }
 
-export async function sendInitiateCheckoutToMeta(
-  args: SendInitiateCheckoutToMetaArgs,
+async function deliverPurchaseToMeta(
+  args: SendPurchaseToMetaArgs,
 ): Promise<void> {
   if (!isMetaCapiConfigured()) {
-    logger.info("[meta-capi] InitiateCheckout skipped — Meta CAPI not configured", {
+    logger.info("[meta-capi] Purchase skipped — Meta CAPI not configured", {
       eventId: args.eventId,
       userId: args.userId,
     });
@@ -62,7 +67,7 @@ export async function sendInitiateCheckoutToMeta(
 
   const eventId = args.eventId?.trim();
   if (!eventId) {
-    logger.warn("[meta-capi] InitiateCheckout skipped — missing event_id", {
+    logger.warn("[meta-capi] Purchase skipped — missing event_id", {
       userId: args.userId,
     });
     return;
@@ -74,7 +79,7 @@ export async function sendInitiateCheckoutToMeta(
     try {
       const existing = await tracked.findUnique({ where: { eventId } });
       if (existing?.status === "sent") {
-        logger.info("[meta-capi] InitiateCheckout already sent", { eventId });
+        logger.info("[meta-capi] Purchase already sent", { eventId });
         return;
       }
     } catch (error) {
@@ -86,24 +91,21 @@ export async function sendInitiateCheckoutToMeta(
   }
 
   const clientMeta = extractClientMetaFromReq(args.req);
-  const fbc = args.fbc?.trim() || fbcFromFbclid(args.fbclid);
   const contentCategory = args.contentCategory ?? "subscription";
-  // Prefer explicit remaining days from checkout; never invent a full second trial.
-  const trialDays = args.trialDays ?? 0;
 
   try {
     const responseJson = await sendMetaEvent({
-      event_name: "InitiateCheckout",
+      event_name: "Purchase",
       event_time: Math.floor(Date.now() / 1000),
       event_id: eventId,
       event_source_url:
-        args.eventSourceUrl || `${config.frontendUrl}/app/billing`,
+        args.eventSourceUrl || `${config.frontendUrl}/obrigado`,
       user_data: {
         email: args.email ?? undefined,
         phone: args.phone ?? undefined,
         external_id: args.userId,
         fbp: args.fbp,
-        fbc,
+        fbc: args.fbc,
         client_ip_address: clientMeta.client_ip_address,
         client_user_agent:
           args.clientUserAgent || clientMeta.client_user_agent,
@@ -117,15 +119,19 @@ export async function sendInitiateCheckoutToMeta(
         content_ids: [args.planId],
         num_items: 1,
         plan_id: args.planId,
-        trial_days: trialDays,
+        stripe_customer_id: args.stripeCustomerId,
         stripe_session_id: args.stripeSessionId,
+        invoice_id: args.invoiceId,
+        subscription_id: args.subscriptionId,
       },
     });
 
-    logger.info("[meta-capi] InitiateCheckout sent", {
+    logger.info("[meta-capi] Purchase sent", {
       userId: args.userId,
       eventId,
       planId: args.planId,
+      value: args.value,
+      currency: args.currency,
     });
 
     if (tracked) {
@@ -134,9 +140,12 @@ export async function sendInitiateCheckoutToMeta(
           where: { eventId },
           create: {
             provider: "meta",
-            eventName: "InitiateCheckout",
+            eventName: "Purchase",
             eventId,
             stripeSessionId: args.stripeSessionId ?? null,
+            stripeCustomerId: args.stripeCustomerId ?? null,
+            stripeSubscriptionId: args.subscriptionId ?? null,
+            invoiceId: args.invoiceId ?? null,
             status: "sent",
             responseJson,
             errorMessage: null,
@@ -144,13 +153,16 @@ export async function sendInitiateCheckoutToMeta(
           update: {
             status: "sent",
             stripeSessionId: args.stripeSessionId ?? undefined,
+            stripeCustomerId: args.stripeCustomerId ?? undefined,
+            stripeSubscriptionId: args.subscriptionId ?? undefined,
+            invoiceId: args.invoiceId ?? undefined,
             responseJson,
             errorMessage: null,
           },
         });
       } catch (error) {
         logger.warn(
-          "[meta-capi] TrackedEvent audit write failed after successful InitiateCheckout",
+          "[meta-capi] TrackedEvent audit write failed after successful Purchase",
           {
             eventId,
             error: error instanceof Error ? error.message : String(error),
@@ -159,7 +171,7 @@ export async function sendInitiateCheckoutToMeta(
       }
     }
   } catch (error) {
-    logger.error("[meta-capi] InitiateCheckout delivery failed", {
+    logger.error("[meta-capi] Purchase delivery failed", {
       userId: args.userId,
       eventId,
       error: error instanceof Error ? error.message : String(error),
@@ -171,9 +183,12 @@ export async function sendInitiateCheckoutToMeta(
           where: { eventId },
           create: {
             provider: "meta",
-            eventName: "InitiateCheckout",
+            eventName: "Purchase",
             eventId,
             stripeSessionId: args.stripeSessionId ?? null,
+            stripeCustomerId: args.stripeCustomerId ?? null,
+            stripeSubscriptionId: args.subscriptionId ?? null,
+            invoiceId: args.invoiceId ?? null,
             status: "failed",
             errorMessage:
               error instanceof Error
