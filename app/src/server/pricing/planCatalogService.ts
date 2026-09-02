@@ -91,7 +91,7 @@ function attachEnvPriceIds(snapshot: PlanCatalogSnapshot): PlanCatalogSnapshot {
       const envIntervalName = mapping[price.interval];
       if (!envIntervalName) continue;
       const fromEnv = readEnvStripePriceId(plan.slug, envIntervalName);
-      if (fromEnv) {
+      if (isUsableStripePriceId(fromEnv)) {
         price.stripePriceId = fromEnv;
       }
     }

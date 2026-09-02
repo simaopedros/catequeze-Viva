@@ -1,20 +1,38 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+const ENV_SINGLE_MONTHLY = 'price_1EnvSingleMonthlyX';
+const ENV_SINGLE_ANNUAL = 'price_1EnvSingleAnnualXX';
+const ENV_UNLIMITED_MONTHLY = 'price_1EnvUnlimitedMonth';
+const ENV_UNLIMITED_ANNUAL = 'price_1EnvUnlimitedAnnual';
+const ENV_AI20 = 'price_1EnvAiCredits20XXX';
+const ENV_AI50 = 'price_1EnvAiCredits50XXX';
+
+const waspEnv = {
+  STRIPE_SINGLE_PLAN_ID: ENV_SINGLE_MONTHLY,
+  STRIPE_SINGLE_ANNUAL_PLAN_ID: ENV_SINGLE_ANNUAL,
+  STRIPE_UNLIMITED_PLAN_ID: ENV_UNLIMITED_MONTHLY,
+  STRIPE_UNLIMITED_ANNUAL_PLAN_ID: ENV_UNLIMITED_ANNUAL,
+  STRIPE_AI_CREDITS_20_PLAN_ID: ENV_AI20,
+  STRIPE_AI_CREDITS_50_PLAN_ID: ENV_AI50,
+};
+
 vi.mock('wasp/server', () => ({
-  env: {
-    STRIPE_SINGLE_PLAN_ID: 'price_env_single',
-    STRIPE_SINGLE_ANNUAL_PLAN_ID: 'price_env_single_annual',
-    STRIPE_UNLIMITED_PLAN_ID: 'price_env_unlimited',
-    STRIPE_UNLIMITED_ANNUAL_PLAN_ID: 'price_env_unlimited_annual',
-    STRIPE_AI_CREDITS_20_PLAN_ID: 'price_env_ai20',
-    STRIPE_AI_CREDITS_50_PLAN_ID: 'price_env_ai50',
-  },
+  env: waspEnv,
 }));
 
 describe('planCatalogService', () => {
   beforeEach(() => {
     process.env.PRICING_CATALOG_SOURCE = 'static';
+    process.env.STRIPE_SINGLE_PLAN_ID = ENV_SINGLE_MONTHLY;
+    process.env.STRIPE_SINGLE_ANNUAL_PLAN_ID = ENV_SINGLE_ANNUAL;
+    process.env.STRIPE_UNLIMITED_PLAN_ID = ENV_UNLIMITED_MONTHLY;
+    process.env.STRIPE_UNLIMITED_ANNUAL_PLAN_ID = ENV_UNLIMITED_ANNUAL;
+    process.env.STRIPE_AI_CREDITS_20_PLAN_ID = ENV_AI20;
+    process.env.STRIPE_AI_CREDITS_50_PLAN_ID = ENV_AI50;
     vi.resetModules();
+    vi.doMock('wasp/server', () => ({
+      env: waspEnv,
+    }));
   });
 
   it('static mode matches DEFAULT_PLANS and attaches env price ids', async () => {
@@ -24,7 +42,7 @@ describe('planCatalogService', () => {
     const snapshot = await loadPlanCatalog();
     expect(snapshot.source).toBe('static');
     expect(snapshot.bySlug.single.limits.maxClasses).toBe(DEFAULT_PLANS_BY_SLUG.single.limits.maxClasses);
-    expect(snapshot.bySlug.single.prices.find((p) => p.interval === 'monthly')?.stripePriceId).toBe('price_env_single');
+    expect(snapshot.bySlug.single.prices.find((p) => p.interval === 'monthly')?.stripePriceId).toBe(ENV_SINGLE_MONTHLY);
     expect(snapshot.bySlug.unlimited.isPublic).toBe(false);
   });
 
