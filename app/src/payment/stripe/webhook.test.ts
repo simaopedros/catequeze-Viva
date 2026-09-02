@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   retrieveSubscriptionMock: vi.fn(),
   retrieveCustomerMock: vi.fn(),
   sendMetaEventMock: vi.fn(),
+  isMetaCapiConfiguredMock: vi.fn(),
   updateUserSubscriptionMock: vi.fn(),
   updateUserCreditsMock: vi.fn(),
   grantSubscriptionAiCreditsMock: vi.fn(),
@@ -60,6 +61,7 @@ vi.mock('./stripeClient', () => ({
 
 vi.mock('../meta/metaCapi', () => ({
   sendMetaEvent: mocks.sendMetaEventMock,
+  isMetaCapiConfigured: (...args: unknown[]) => mocks.isMetaCapiConfiguredMock(...args),
 }));
 
 vi.mock('../user', () => ({
@@ -89,6 +91,15 @@ function createTrackedEventDelegate() {
     async findFirst({ where }: { where: Record<string, unknown> }) {
       return rows.find((row) => Object.entries(where).every(([key, value]) => row[key] === value)) ?? null;
     },
+    async findUnique({ where }: { where: { eventId?: string; id?: string } }) {
+      if (where.id) {
+        return rows.find((row) => row.id === where.id) ?? null;
+      }
+      if (where.eventId) {
+        return rows.find((row) => row.eventId === where.eventId) ?? null;
+      }
+      return null;
+    },
     async create({ data }: { data: any }) {
       const uniqueKeys = [
         ['eventId'],
@@ -114,6 +125,16 @@ function createTrackedEventDelegate() {
       const row = rows.find((item) => item.id === where.id);
       Object.assign(row, data);
       return row;
+    },
+    async upsert({ where, create, update }: { where: { eventId: string }; create: any; update: any }) {
+      const existing = rows.find((row) => row.eventId === where.eventId);
+      if (existing) {
+        Object.assign(existing, update);
+        return existing;
+      }
+      const record = { id: create.id ?? `tracked_${rows.length + 1}`, ...create };
+      rows.push(record);
+      return record;
     },
   };
 }
@@ -184,6 +205,7 @@ describe('stripeWebhook', () => {
     mocks.trackPricingEventMock.mockResolvedValue(undefined);
     mocks.updateUserCreditsMock.mockResolvedValue(undefined);
     mocks.sendMetaEventMock.mockResolvedValue({ events_received: 1 });
+    mocks.isMetaCapiConfiguredMock.mockReturnValue(true);
     mocks.retrieveSubscriptionMock.mockResolvedValue({
       id: 'sub_1',
       status: 'active',
@@ -285,6 +307,10 @@ describe('stripeWebhook', () => {
       event_name: 'Subscribe',
       event_id: 'subscribe_sub_1_first_paid',
     }));
+    expect(mocks.sendMetaEventMock).toHaveBeenCalledWith(expect.objectContaining({
+      event_name: 'Purchase',
+      event_id: 'purchase_sub_1_first_paid',
+    }));
     expect(mocks.trackPricingEventMock).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ event: 'purchase_completed' }));
 
     mocks.sendMetaEventMock.mockClear();
@@ -314,8 +340,39 @@ describe('stripeWebhook', () => {
     await stripeWebhook({ headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any, response, context);
     await stripeWebhook({ headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any, response, context);
 
-    expect(mocks.sendMetaEventMock).toHaveBeenCalledTimes(1);
+    expect(mocks.sendMetaEventMock).toHaveBeenCalledTimes(2);
+    expect(mocks.sendMetaEventMock).toHaveBeenCalledWith(expect.objectContaining({
+      event_name: 'Subscribe',
+      event_id: 'subscribe_sub_1_first_paid',
+    }));
+    expect(mocks.sendMetaEventMock).toHaveBeenCalledWith(expect.objectContaining({
+      event_name: 'Purchase',
+      event_id: 'purchase_sub_1_first_paid',
+    }));
     expect(mocks.trackPricingEventMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not fail invoice processing when Meta Purchase helper throws', async () => {
+    mocks.isMetaCapiConfiguredMock.mockImplementation(() => {
+      throw new Error('No isMetaCapiConfigured export');
+    });
+    const event = {
+      id: 'evt_invoice_meta_throw',
+      type: 'invoice.paid',
+      data: { object: paidInvoice({ id: 'in_meta_throw' }) },
+    };
+    mocks.constructEventMock.mockReturnValue(event);
+
+    const response = createResponse();
+    const context = createContext();
+    await stripeWebhook({ headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any, response, context);
+    await stripeWebhook({ headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any, response, context);
+
+    expect(response.status).toHaveBeenCalledWith(204);
+    expect(mocks.trackPricingEventMock).toHaveBeenCalledTimes(1);
+    expect(mocks.sendMetaEventMock).toHaveBeenCalledWith(expect.objectContaining({
+      event_name: 'Subscribe',
+    }));
   });
 
   it('tracks payment failures and cancellations internally only', async () => {

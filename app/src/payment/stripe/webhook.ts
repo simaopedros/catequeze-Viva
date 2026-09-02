@@ -417,27 +417,33 @@ async function processPaidInvoice(
           });
 
           // Purchase: ads optimization event (standard for Meta campaigns).
-          await sendPurchaseToMeta({
-            userId: user.id,
-            email: customer?.email ?? undefined,
-            phone: user.phone ?? undefined,
-            eventId: purchaseEventId,
-            planId: metadata.plan_id || paymentPlanId,
-            planName: metadata.plan_name || prettyPaymentPlanName(paymentPlanId),
-            value: Number((invoice.amount_paid / 100).toFixed(2)),
-            currency: (invoice.currency || metadata.currency || "brl").toUpperCase(),
-            contentCategory: "subscription",
-            fbp: metadata.fbp,
-            fbc: metadata.fbc,
-            fbclid: metadata.fbclid,
-            clientUserAgent: metadata.client_user_agent,
-            eventSourceUrl: metadata.event_source_url,
-            stripeCustomerId: customerId,
-            stripeSessionId: metadata.stripe_session_id,
-            invoiceId: invoice.id,
-            subscriptionId,
-            prisma: { trackedEvent: trackedEventDelegate },
-          });
+          // Never let Meta delivery fail invoice processing — Stripe would retry
+          // and the already-sent Subscribe would be treated as a renewal.
+          try {
+            await sendPurchaseToMeta({
+              userId: user.id,
+              email: customer?.email ?? undefined,
+              phone: user.phone ?? undefined,
+              eventId: purchaseEventId,
+              planId: metadata.plan_id || paymentPlanId,
+              planName: metadata.plan_name || prettyPaymentPlanName(paymentPlanId),
+              value: Number((invoice.amount_paid / 100).toFixed(2)),
+              currency: (invoice.currency || metadata.currency || "brl").toUpperCase(),
+              contentCategory: "subscription",
+              fbp: metadata.fbp,
+              fbc: metadata.fbc,
+              fbclid: metadata.fbclid,
+              clientUserAgent: metadata.client_user_agent,
+              eventSourceUrl: metadata.event_source_url,
+              stripeCustomerId: customerId,
+              stripeSessionId: metadata.stripe_session_id,
+              invoiceId: invoice.id,
+              subscriptionId,
+              prisma: { trackedEvent: trackedEventDelegate },
+            });
+          } catch (error) {
+            console.error("[meta-capi] Purchase delivery failed without blocking invoice processing", error);
+          }
         } else {
           await trackPricingEvent(context, {
             userId: user.id,

@@ -43,6 +43,20 @@ export interface SendPurchaseToMetaArgs {
 export async function sendPurchaseToMeta(
   args: SendPurchaseToMetaArgs,
 ): Promise<void> {
+  try {
+    await deliverPurchaseToMeta(args);
+  } catch (error) {
+    logger.error("[meta-capi] Purchase delivery failed", {
+      userId: args.userId,
+      eventId: args.eventId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
+
+async function deliverPurchaseToMeta(
+  args: SendPurchaseToMetaArgs,
+): Promise<void> {
   if (!isMetaCapiConfigured()) {
     logger.info("[meta-capi] Purchase skipped — Meta CAPI not configured", {
       eventId: args.eventId,
