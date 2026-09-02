@@ -242,10 +242,10 @@ export const admin_en = {
         "col_date": "Date",
         "col_users": "Users",
         "col_paid": "Paid",
-        "col_views": "Views",
+        "col_views": "Activity",
         "scheduled_jobs": "Maintenance tasks (daily run)",
         "jobs": {
-          "dailyStats": "Daily traffic and revenue metrics",
+          "dailyStats": "Daily user, activity and revenue metrics",
           "aiCreditsReset": "Monthly reset of editorial assistance credits",
           "aiCacheCleanup": "Editorial cache cleanup",
           "subscriptionExpiration": "Trial and subscription expiration",
