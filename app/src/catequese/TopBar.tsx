@@ -49,6 +49,7 @@ import {
 } from "../shared/pricing";
 import { useActiveWorkspace } from "../client/hooks/useActiveWorkspace";
 import { Link } from "react-router";
+import { OPEN_SEARCH_EVENT } from "../client/utils/globalSearchEvent";
 
 const MODULE_ICONS: Record<string, React.ComponentType<any>> = {
   catechumen: Users,
@@ -194,17 +195,29 @@ export const TopBar = memo(function TopBar() {
     return () => document.removeEventListener("mousedown", handler);
   }, [searchExpanded]);
 
-  // Ctrl+K keyboard shortcut
+  // Ctrl+K keyboard shortcut + programmatic open (e.g. dashboard search field)
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
+    const openSearch = () => {
+      const isMobile = window.matchMedia("(max-width: 639px)").matches;
+      if (isMobile) {
+        setSearchSheetOpen(true);
+        return;
+      }
+      setSearchExpanded(true);
+      setTimeout(() => inputRef.current?.focus(), 50);
+    };
+    const keyHandler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        setSearchExpanded(true);
-        setTimeout(() => inputRef.current?.focus(), 50);
+        openSearch();
       }
     };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    window.addEventListener("keydown", keyHandler);
+    window.addEventListener(OPEN_SEARCH_EVENT, openSearch);
+    return () => {
+      window.removeEventListener("keydown", keyHandler);
+      window.removeEventListener(OPEN_SEARCH_EVENT, openSearch);
+    };
   }, []);
 
   const handleSelect = useCallback(

@@ -301,3 +301,55 @@ describe('getDashboardStats meeting scope (integration)', () => {
     }
   });
 });
+
+// ── Integration: action-center insights stay inside class scope ─────────────
+
+describe('getDashboardStats action-center insights (integration)', () => {
+  itIntegration('LEAD_CATECHIST insights only reference linked classes', async () => {
+    const ctx = makeContext('leadCatechist');
+    const allowed = await allowedClassIdsForCatechist(USERS.leadCatechist.id);
+    const stats: any = await getDashboardStats({}, ctx);
+
+    expect(stats.lowFrequency).toMatchObject({
+      count: expect.any(Number),
+      threshold: expect.any(Number),
+      sample: expect.any(Array),
+    });
+    expect(Array.isArray(stats.recentMeetings)).toBe(true);
+    expect(Array.isArray(stats.classInsights)).toBe(true);
+    expect(Array.isArray(stats.upcomingBirthdays)).toBe(true);
+
+    assertMeetingsInAllowedClasses(stats.recentMeetings, allowed, 'catechist recent');
+    if (stats.pendingAttendanceMeeting) {
+      assertMeetingsInAllowedClasses(
+        [stats.pendingAttendanceMeeting],
+        allowed,
+        'catechist pending attendance',
+      );
+      expect(stats.pendingAttendanceMeeting.id).toBe(stats.recentMeetings[0]?.id);
+    }
+    for (const cls of stats.classInsights) {
+      expect(allowed.has(cls.id), `classInsights leaked ${cls.id}`).toBe(true);
+      if (cls.lastMeeting) {
+        expect(cls.lastMeeting.presentCount).toBeLessThanOrEqual(
+          Math.max(cls.lastMeeting.registeredCount, cls.lastMeeting.enrollmentCount),
+        );
+      }
+    }
+    for (const b of stats.upcomingBirthdays) {
+      expect(b.daysUntil).toBeGreaterThanOrEqual(0);
+      expect(b.daysUntil).toBeLessThanOrEqual(30);
+    }
+  });
+
+  itIntegration('GUARDIAN (family surface) never receives staff insights', async () => {
+    const ctx = makeContext('guardian');
+    const stats: any = await getDashboardStats({ surface: 'PORTAL' }, ctx);
+    expect(stats.familySurface).toBe(true);
+    expect(stats.lowFrequency).toBeUndefined();
+    expect(stats.pendingAttendanceMeeting).toBeUndefined();
+    expect(stats.recentMeetings).toBeUndefined();
+    expect(stats.classInsights).toBeUndefined();
+    expect(stats.attendanceTrend).toBeUndefined();
+  });
+});

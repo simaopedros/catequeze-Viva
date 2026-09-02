@@ -1,6 +1,15 @@
 import { HttpError } from "wasp/server";
 import { resolveUserScope, requireWorkspaceAccess } from "./sharedScope";
 import { isFamilySurface, rolesAreFamilyOnly } from "../auth/familySurface";
+import {
+  BIRTHDAY_LIST_WINDOW_DAYS,
+  INSIGHT_WINDOW_DAYS,
+  LOW_FREQUENCY_THRESHOLD,
+  computeAttendanceTrend,
+  computeFrequencyStats,
+  daysUntilBirthday,
+  isLowFrequency,
+} from "../../shared/dashboardActions";
 
 const COORDINATOR_OR_ABOVE = [
   "PARISH_COORDINATOR",
@@ -487,7 +496,17 @@ export const getDashboardStats = async (
       : platformWide
         ? {}
         : { enrollments: { some: { class: classScopeWhere } } },
-    select: { id: true, firstName: true, lastName: true, birthDate: true },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      birthDate: true,
+      enrollments: {
+        where: { status: "ENROLLED" },
+        select: { classId: true, class: { select: { name: true } } },
+        take: 1,
+      },
+    },
   });
 
   // Review queue — scoped to the requested workspace, or to the parishes where
@@ -731,6 +750,212 @@ export const getDashboardStats = async (
     todayMeetingsPromise,
   ]);
 
+  // ─── Phase 4: action-center insights (staff only, bounded window) ───────────
+
+  const now = new Date();
+  const insightStart = new Date(
+    now.getTime() - INSIGHT_WINDOW_DAYS * 24 * 60 * 60 * 1000,
+  );
+
+  const [windowAttendance, pastMeetings] = await Promise.all([
+    context.entities.AttendanceRecord.findMany({
+      where: {
+        ...attendanceWhere,
+        meeting: { ...attendanceWhere.meeting, date: { gte: insightStart } },
+      },
+      select: {
+        catechumenProfileId: true,
+        status: true,
+        meeting: { select: { date: true, classId: true } },
+      },
+    }) as Promise<
+      {
+        catechumenProfileId: string;
+        status: string;
+        meeting: { date: Date; classId: string };
+      }[]
+    >,
+    context.entities.Meeting.findMany({
+      where: {
+        ...meetingScopeWhere,
+        date: { lt: now },
+        status: { not: "CANCELLED" },
+      },
+      orderBy: { date: "desc" },
+      take: 20,
+      select: {
+        id: true,
+        title: true,
+        theme: true,
+        date: true,
+        status: true,
+        classId: true,
+        class: { select: { id: true, name: true } },
+        _count: { select: { attendance: true } },
+      },
+    }) as Promise<
+      {
+        id: string;
+        title: string | null;
+        theme: string | null;
+        date: Date;
+        status: string;
+        classId: string;
+        class: { id: string; name: string };
+        _count: { attendance: number };
+      }[]
+    >,
+  ]);
+
+  const pastMeetingIds = pastMeetings.map((m) => m.id);
+  const presentByMeeting = new Map<string, number>();
+  if (pastMeetingIds.length > 0) {
+    const presentGroups = await context.entities.AttendanceRecord.groupBy({
+      by: ["meetingId"],
+      where: {
+        meetingId: { in: pastMeetingIds },
+        status: { in: ["PRESENT", "LATE"] },
+      },
+      _count: { _all: true },
+    });
+    for (const row of presentGroups) {
+      presentByMeeting.set(row.meetingId, row._count._all);
+    }
+  }
+
+  const pastEnrollmentByClass = new Map<string, number>(enrollmentCountByClass);
+  const missingClassIds = [
+    ...new Set(
+      pastMeetings
+        .map((m) => m.classId)
+        .filter((id) => !pastEnrollmentByClass.has(id)),
+    ),
+  ];
+  if (missingClassIds.length > 0) {
+    const groups = await context.entities.ClassEnrollment.groupBy({
+      by: ["classId"],
+      where: { classId: { in: missingClassIds }, status: "ENROLLED" },
+      _count: { _all: true },
+    });
+    for (const row of groups) {
+      pastEnrollmentByClass.set(row.classId, row._count._all);
+    }
+  }
+
+  const mapPastMeeting = (m: (typeof pastMeetings)[number]) => ({
+    id: m.id,
+    title: m.title,
+    theme: m.theme,
+    date: m.date,
+    status: m.status,
+    class: m.class,
+    registeredCount: m._count.attendance,
+    presentCount: presentByMeeting.get(m.id) ?? 0,
+    enrollmentCount: pastEnrollmentByClass.get(m.classId) ?? 0,
+  });
+
+  const recentMeetings = pastMeetings.slice(0, 5).map(mapPastMeeting);
+
+  // Only the most recent past encounter counts as "presença pendente" — older
+  // gaps would flood the action list.
+  const lastPast = pastMeetings[0];
+  const pendingAttendanceMeeting =
+    lastPast && lastPast._count.attendance === 0
+      ? {
+          id: lastPast.id,
+          title: lastPast.title,
+          theme: lastPast.theme,
+          date: lastPast.date,
+          class: lastPast.class,
+          enrollmentCount: pastEnrollmentByClass.get(lastPast.classId) ?? 0,
+        }
+      : null;
+
+  const attendanceTrend = computeAttendanceTrend(
+    windowAttendance.map((r) => ({ status: r.status, date: r.meeting.date })),
+    now,
+  );
+
+  const frequencyStats = computeFrequencyStats(
+    windowAttendance.map((r) => ({
+      catechumenProfileId: r.catechumenProfileId,
+      status: r.status,
+      classId: r.meeting.classId,
+    })),
+  );
+  const catechumenById = new Map<string, any>(
+    allCatechumens.map((c: any) => [c.id, c]),
+  );
+  const lowFrequencyStats = [...frequencyStats.values()]
+    .filter(isLowFrequency)
+    .sort((a, b) => a.rate - b.rate);
+  const lowFrequency = {
+    count: lowFrequencyStats.length,
+    threshold: LOW_FREQUENCY_THRESHOLD,
+    sample: lowFrequencyStats.slice(0, 3).map((s) => {
+      const c = catechumenById.get(s.catechumenProfileId);
+      return {
+        id: s.catechumenProfileId,
+        firstName: c?.firstName ?? "",
+        lastName: c?.lastName ?? "",
+        rate: s.rate,
+        classId: s.classIds[0] ?? null,
+      };
+    }),
+  };
+
+  const lowFrequencyByClass = new Map<string, number>();
+  for (const s of lowFrequencyStats) {
+    for (const classId of s.classIds) {
+      lowFrequencyByClass.set(
+        classId,
+        (lowFrequencyByClass.get(classId) ?? 0) + 1,
+      );
+    }
+  }
+  const attendanceByClass = new Map<
+    string,
+    { total: number; attended: number }
+  >();
+  for (const r of windowAttendance) {
+    const agg = attendanceByClass.get(r.meeting.classId) ?? {
+      total: 0,
+      attended: 0,
+    };
+    agg.total += 1;
+    if (r.status === "PRESENT" || r.status === "LATE") agg.attended += 1;
+    attendanceByClass.set(r.meeting.classId, agg);
+  }
+  const classInsights = myClasses.map((cls) => {
+    const agg = attendanceByClass.get(cls.id);
+    const last = pastMeetings.find((m) => m.classId === cls.id);
+    return {
+      id: cls.id,
+      name: cls.name,
+      enrollmentCount: cls.enrollmentCount,
+      attendanceRate:
+        agg && agg.total > 0
+          ? Math.round((agg.attended / agg.total) * 100)
+          : null,
+      lowFrequencyCount: lowFrequencyByClass.get(cls.id) ?? 0,
+      lastMeeting: last ? mapPastMeeting(last) : null,
+    };
+  });
+
+  const upcomingBirthdays = allCatechumens
+    .filter((c: any) => c.birthDate)
+    .map((c: any) => ({
+      id: c.id,
+      firstName: c.firstName,
+      lastName: c.lastName,
+      birthDate: c.birthDate,
+      daysUntil: daysUntilBirthday(c.birthDate, now),
+      className: c.enrollments?.[0]?.class?.name ?? null,
+    }))
+    .filter((c: any) => c.daysUntil <= BIRTHDAY_LIST_WINDOW_DAYS)
+    .sort((a: any, b: any) => a.daysUntil - b.daysUntil)
+    .slice(0, 10);
+
   // ─── Post-processing (pure JS, no DB) ───────────────────────────────────────
 
   let avgAttendance = 0;
@@ -750,7 +975,13 @@ export const getDashboardStats = async (
       (a: any, b: any) =>
         new Date(a.birthDate).getUTCDate() - new Date(b.birthDate).getUTCDate(),
     )
-    .slice(0, 10);
+    .slice(0, 10)
+    .map((c: any) => ({
+      id: c.id,
+      firstName: c.firstName,
+      lastName: c.lastName,
+      birthDate: c.birthDate,
+    }));
 
   // Alerts
   const recentAlerts: { type: string; message: string }[] = [];
@@ -796,6 +1027,13 @@ export const getDashboardStats = async (
     hasAnyAttendance: attendanceRecordsTotal > 0,
     /** Any meeting created/saved in scope (past or future) */
     hasAnyMeeting: anyMeetingCount > 0,
+    // Action-center insights (staff only; family surface returned earlier)
+    pendingAttendanceMeeting,
+    attendanceTrend,
+    lowFrequency,
+    recentMeetings,
+    classInsights,
+    upcomingBirthdays,
   };
 };
 
