@@ -56,11 +56,12 @@ export function getCachedPlanCatalogForTests(): PlanCatalogSnapshot | null {
 type CatalogContext = {
   entities?: {
     PricingPlan?: {
-      findMany: (args: unknown) => Promise<any[]>;
-      findFirst?: (args: unknown) => Promise<any | null>;
+      // `any` keeps Prisma generated args assignable (unknown is invariant).
+      findMany: (args?: any) => Promise<any[]>;
+      findFirst?: (args?: any) => Promise<any | null>;
     };
     PricingPlanPrice?: {
-      findFirst: (args: unknown) => Promise<any | null>;
+      findFirst: (args?: any) => Promise<any | null>;
     };
   };
 };

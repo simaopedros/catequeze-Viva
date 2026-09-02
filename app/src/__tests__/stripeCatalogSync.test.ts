@@ -47,11 +47,11 @@ describe('stripeCatalogSync', () => {
       plan: { slug: 'single', name: 'Plano Catequista', kind: 'subscription', stripeProductId: 'prod_1' },
       interval: 'monthly',
       unitAmountCents: 1290,
-      previousStripePriceId: 'price_old',
+      previousStripePriceId: 'price_1OldPriceIdXXXX',
     });
 
     expect(result.priceId).toBe('price_new');
-    expect(result.archivedPriceId).toBe('price_old');
+    expect(result.archivedPriceId).toBe('price_1OldPriceIdXXXX');
     expect(stripeMocks.pricesCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         lookup_key: 'single_monthly',
@@ -61,12 +61,12 @@ describe('stripeCatalogSync', () => {
         metadata: { planSlug: 'single', interval: 'monthly' },
       }),
     );
-    expect(stripeMocks.pricesUpdate).toHaveBeenCalledWith('price_old', { active: false });
+    expect(stripeMocks.pricesUpdate).toHaveBeenCalledWith('price_1OldPriceIdXXXX', { active: false });
   });
 
   it('importStripePrice only retrieves and never creates', async () => {
     stripeMocks.pricesRetrieve.mockResolvedValue({
-      id: 'price_env',
+      id: 'price_1U9lJjQ654W7D9A6bWCcgQBP',
       unit_amount: 990,
       currency: 'brl',
       recurring: { interval: 'month' },
@@ -74,7 +74,7 @@ describe('stripeCatalogSync', () => {
       product: 'prod_1',
       active: true,
     });
-    const imported = await importStripePrice('price_env');
+    const imported = await importStripePrice('price_1U9lJjQ654W7D9A6bWCcgQBP');
     expect(imported?.unitAmountCents).toBe(990);
     expect(imported?.interval).toBe('monthly');
     expect(stripeMocks.pricesCreate).not.toHaveBeenCalled();

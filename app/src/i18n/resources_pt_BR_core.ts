@@ -249,35 +249,6 @@ export const billing_pt_BR_core = {
     "monthly": "Mensal",
     "annual": "Anual",
     "annual_savings": "17% de desconto",
-    "plans": {
-      "catechist_free": {
-        "name": "Sem assinatura",
-        "price": "—",
-        "features": []
-      },
-      "single": {
-        "name": "Plano Catequista",
-        "price": "R$ 9,90/mês",
-        "annual_price": "R$ 99/ano (~R$ 8,25/mês)",
-        "features": [
-          "Até 3 turmas",
-          "150 catequizandos no total",
-          "Presença e calendário litúrgico",
-          "Portal para as famílias da sua turma"
-        ]
-      },
-      "unlimited": {
-        "name": "Plano Ilimitado",
-        "price": "R$ 99/mês",
-        "annual_price": "R$ 990/ano (~R$ 82/mês)",
-        "features": [
-          "Paróquias e turmas ilimitadas",
-          "Catequizandos e catequistas ilimitados",
-          "Comunicação integrada",
-          "Documentos e certidões"
-        ]
-      }
-    },
     "checkout_success": "🥳 Pagamento confirmado!",
     "checkout_canceled": "😢 Pagamento cancelado.",
     "checkout_redirect": "Será redirecionado para a sua conta em {{seconds}} segundos...",

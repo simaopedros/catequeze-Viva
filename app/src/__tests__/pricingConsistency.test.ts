@@ -8,7 +8,18 @@
  *
  * Run in CI to prevent drift.
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+vi.mock('wasp/server', () => ({
+  env: {
+    STRIPE_SINGLE_PLAN_ID: '',
+    STRIPE_SINGLE_ANNUAL_PLAN_ID: '',
+    STRIPE_UNLIMITED_PLAN_ID: '',
+    STRIPE_UNLIMITED_ANNUAL_PLAN_ID: '',
+    STRIPE_AI_CREDITS_20_PLAN_ID: '',
+    STRIPE_AI_CREDITS_50_PLAN_ID: '',
+  },
+}));
 import {
   PLANS,
   PLAN_IDS,
@@ -18,7 +29,6 @@ import {
   resolvePlanId,
   INSTITUTIONAL_PLANS as PRICING_INSTITUTIONAL_PLANS,
   getPlanPriceCents,
-  type PlanId,
 } from '../shared/pricing';
 import { PaymentPlanId } from '../payment/plans';
 import { paymentProcessorPlanIds } from '../payment/paymentProcessorPlans';
@@ -100,7 +110,7 @@ describe('Plan IDs ↔ PaymentPlanId consistency', () => {
 describe('PLAN_ALIASES integrity', () => {
   it('aliases resolve to valid PlanIds', () => {
     for (const [alias, target] of Object.entries(PLAN_ALIASES)) {
-      expect(PLAN_IDS.includes(target as PlanId), `Alias "${alias}" targets invalid PlanId "${target}"`).toBe(true);
+      expect((PLAN_IDS as readonly string[]).includes(target), `Alias "${alias}" targets invalid PlanId "${target}"`).toBe(true);
     }
   });
 

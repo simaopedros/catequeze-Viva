@@ -302,7 +302,7 @@ export default function BillingPage() {
       ? (user.subscriptionPlan as PaymentPlanId)
       : null;
 
-  let effectivePlanId = PaymentPlanId.CatechistFree;
+  let effectivePlanId: PaymentPlanId = PaymentPlanId.CatechistFree;
   let isActive = false;
   let isParishManaged = false;
   let isTrialAccess = false;

@@ -47,7 +47,9 @@ describe('Plan Limits Configuration (simplified plans)', () => {
   });
 });
 
-describe('Parish Billing Records', () => {
+const hasDb = Boolean(process.env.DATABASE_URL);
+
+describe.skipIf(!hasDb)('Parish Billing Records', () => {
 
   it('São José has an active institutional billing record', async () => {
     const billing = await prisma.tenantBilling.findUnique({
@@ -67,7 +69,7 @@ describe('Parish Billing Records', () => {
 
 });
 
-describe('Class Limits — São José (paid plan)', () => {
+describe.skipIf(!hasDb)('Class Limits — São José (paid plan)', () => {
 
   it('has multiple classes (no limit)', async () => {
     const classes = await prisma.catechesisClass.count({

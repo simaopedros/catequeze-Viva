@@ -15,7 +15,6 @@ import { Card, CardContent, CardHeader } from "../client/components/ui/card";
 import { Separator } from "../client/components/ui/separator";
 import { Church, User as UserIcon, CreditCard, Coins } from "lucide-react";
 import {
-  PaymentPlanId,
   SubscriptionStatus,
   parsePaymentPlanId,
   prettyPaymentPlanName,
@@ -204,7 +203,7 @@ function UserCurrentSubscriptionPlan({
 
 function formatSubscriptionStatusMessage(
   t: ReturnType<typeof useTranslation>["t"],
-  subscriptionPlan: PaymentPlanId,
+  subscriptionPlan: string,
   datePaid: Date,
   subscriptionStatus: SubscriptionStatus,
 ): string {

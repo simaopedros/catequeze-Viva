@@ -203,7 +203,8 @@ query getSubscriptionDetails {
 
 query getPlanCatalog {
   fn: import { getPlanCatalog } from "@src/server/operations/planCatalogOperations",
-  entities: [PricingPlan, PricingPlanPrice]
+  entities: [PricingPlan, PricingPlanPrice],
+  auth: false
 }
 
 action generateCheckoutSession {
