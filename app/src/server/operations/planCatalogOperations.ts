@@ -15,6 +15,9 @@ export type PublicPlanDto = {
   creditsAmount: number | null;
   highlight: boolean;
   sortOrder: number;
+  isActive: boolean;
+  isPublic: boolean;
+  isSystem: boolean;
   limits: {
     [key: string]: number | null;
     maxClasses: number | null;
@@ -56,6 +59,9 @@ export const getPlanCatalog = async (_args: void, context: any): Promise<PublicP
     creditsAmount: plan.creditsAmount,
     highlight: plan.highlight,
     sortOrder: plan.sortOrder,
+    isActive: plan.isActive,
+    isPublic: plan.isPublic,
+    isSystem: plan.isSystem,
     limits: {
       maxClasses: plan.limits.maxClasses,
       maxCatechumens: plan.limits.maxCatechumens,

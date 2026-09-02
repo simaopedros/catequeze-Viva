@@ -410,16 +410,12 @@ export default function BillingPage() {
       ? effectivePlan.priceCents * 12 - effectivePlan.priceCentsAnnual
       : null;
 
-  const unlimitedPublic =
-    getBySlug("unlimited").isPublic && getBySlug("unlimited").isActive;
   const visiblePlans = allPlans.filter((plan) => {
-    if (!unlimitedPublic) {
-      return plan.planId === PaymentPlanId.Single;
-    }
+    const catalogPlan = getBySlug(plan.planId);
     if (isPersonal || (!parishId && !parish)) {
-      return getBySlug(plan.planId).level === "personal";
+      return catalogPlan.level === "personal";
     }
-    return getBySlug(plan.planId).level === "institutional";
+    return catalogPlan.level === "institutional";
   });
 
   const classesUsed = stats?.activeClasses ?? 0;

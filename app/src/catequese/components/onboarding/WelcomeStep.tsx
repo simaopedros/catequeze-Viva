@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "wasp/client/auth";
 import { ArrowRight } from "lucide-react";
 import { cn } from "../../../client/utils";
-import { LAUNCH_CATEQUISTA_ONLY } from "../../../shared/pricing";
 import {
   AppEyebrow,
   AppDisplayTitle,
@@ -12,9 +11,14 @@ import {
 interface WelcomeStepProps {
   onPersonal: () => void;
   onManager: () => void;
+  launchCatequistaOnly?: boolean;
 }
 
-export function WelcomeStep({ onPersonal, onManager }: WelcomeStepProps) {
+export function WelcomeStep({
+  onPersonal,
+  onManager,
+  launchCatequistaOnly = true,
+}: WelcomeStepProps) {
   const { t } = useTranslation("onboarding");
   const { data: user } = useAuth();
   const firstName = user?.firstName || "";
@@ -30,7 +34,7 @@ export function WelcomeStep({ onPersonal, onManager }: WelcomeStepProps) {
         </AppDisplayTitle>
         <AppGoldRule />
         <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-          {LAUNCH_CATEQUISTA_ONLY
+          {launchCatequistaOnly
             ? t("welcome.launch_question")
             : t("welcome.question")}
         </p>
@@ -42,7 +46,7 @@ export function WelcomeStep({ onPersonal, onManager }: WelcomeStepProps) {
           description={t("welcome.personal_desc")}
           onClick={onPersonal}
         />
-        {!LAUNCH_CATEQUISTA_ONLY && (
+        {!launchCatequistaOnly && (
           <PathOption
             label={t("welcome.manager_title")}
             description={t("welcome.manager_desc")}
@@ -52,7 +56,7 @@ export function WelcomeStep({ onPersonal, onManager }: WelcomeStepProps) {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        {LAUNCH_CATEQUISTA_ONLY
+        {launchCatequistaOnly
           ? t("welcome.launch_helper")
           : t("welcome.helper")}
       </p>

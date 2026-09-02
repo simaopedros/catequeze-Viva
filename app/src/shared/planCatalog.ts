@@ -404,9 +404,16 @@ export const DEFAULT_CATALOG_SNAPSHOT = snapshotFromPlans(DEFAULT_PLAN_LIST, 'st
 /**
  * Launch-phase hide Unlimited. Derived from DEFAULT_PLANS so the static catalog
  * stays the single source of truth. Public UI should prefer plan.isPublic from
- * the live catalog when PRICING_CATALOG_SOURCE=db.
+ * the live catalog (PRICING_CATALOG_SOURCE=db, the default).
  */
 export const LAUNCH_CATEQUISTA_ONLY = !DEFAULT_PLANS.unlimited.isPublic;
+
+/** True when the live public catalog has no institutional plan on sale. */
+export function catalogIsCatequistaOnly(
+  plans: Array<{ slug?: string; level: string }>,
+): boolean {
+  return !plans.some((plan) => plan.level === 'institutional');
+}
 
 export function getAllPlanIds(catalog: CatalogBySlug = DEFAULT_PLANS_BY_SLUG): string[] {
   return Object.values(catalog)
