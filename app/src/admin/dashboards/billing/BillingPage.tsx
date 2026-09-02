@@ -1,7 +1,7 @@
 import { type AuthUser } from "wasp/auth";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   useQuery,
   listAdminLicenses,
@@ -13,6 +13,7 @@ import {
 } from "wasp/client/operations";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { AppPageHeader } from "../../../client/components/brand/AppChrome";
+import { QueryErrorState } from "../../../client/components/QueryErrorState";
 import {
   Activity,
   Church,
@@ -23,6 +24,7 @@ import {
 } from "lucide-react";
 import { Button } from "../../../client/components/ui/button";
 import { Input } from "../../../client/components/ui/input";
+import { Label } from "../../../client/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -46,17 +48,14 @@ type LicenseRow = {
   status: string | null;
   trialEndsAt: string | Date | null;
   ownerEmail: string | null;
+  ownerName: string | null;
   ownerId: string | null;
   hasStripe: boolean;
   active: boolean;
 };
 
 type DialogKind =
-  | "extend"
-  | "complimentary"
-  | "cancelLicense"
-  | "cancelStripe"
-  | null;
+  "extend" | "complimentary" | "cancelLicense" | "cancelStripe" | null;
 
 const BillingPage = ({ user }: { user: AuthUser }) => {
   const { t } = useTranslation("admin");
@@ -64,6 +63,7 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
   const {
     data: licenses = [],
     isLoading,
+    error: loadError,
     refetch,
   } = useQuery(listAdminLicenses);
   const { data: plans = [] } = useQuery(listPricingPlansAdmin);
@@ -73,10 +73,29 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
   const [planSlug, setPlanSlug] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
 
   const sellablePlans = (plans as any[]).filter(
     (plan) => plan.isActive && plan.kind !== "CREDITS",
   );
+
+  const filteredLicenses = useMemo(() => {
+    const needle = search.trim().toLowerCase();
+    if (!needle) return licenses as LicenseRow[];
+    return (licenses as LicenseRow[]).filter((row) =>
+      [row.name, row.ownerEmail, row.ownerName, row.plan, row.type]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(needle)),
+    );
+  }, [licenses, search]);
+
+  const ownerLabel = (row: LicenseRow | null) => {
+    if (!row) return "";
+    if (row.ownerName && row.ownerEmail) {
+      return `${row.ownerName} (${row.ownerEmail})`;
+    }
+    return row.ownerEmail || row.ownerName || t("pages.licenses.no_owner");
+  };
 
   const statusIcon = (status: string | null) => {
     switch (status) {
@@ -144,131 +163,177 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
           <div className="flex justify-center py-12">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
           </div>
+        ) : loadError && licenses.length === 0 ? (
+          <QueryErrorState error={loadError} onRetry={refetch} />
         ) : (
-          <div className="rounded-sm border border-border/70 bg-white overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/50 border-b">
-                <tr>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    {t("pages.licenses.col_entity")}
-                  </th>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    {t("pages.licenses.col_type")}
-                  </th>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    {t("pages.licenses.col_plan")}
-                  </th>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    {t("pages.licenses.col_status")}
-                  </th>
-                  <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    {t("pages.licenses.col_actions")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {licenses.map((row: LicenseRow) => (
-                  <tr
-                    key={row.id}
-                    className="border-b last:border-0 hover:bg-muted/30"
-                  >
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        {row.type === "PERSONAL" ? (
-                          <Activity className="h-4 w-4" />
-                        ) : row.kind === "diocese" ? (
-                          <Building2 className="h-4 w-4" />
-                        ) : (
-                          <Church className="h-4 w-4" />
-                        )}
-                        {row.kind === "parish" ? (
+          <>
+            <div className="flex items-center gap-3">
+              <Label htmlFor="license-search" className="sr-only">
+                {t("pages.licenses.search_placeholder")}
+              </Label>
+              <Input
+                id="license-search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={t("pages.licenses.search_placeholder")}
+                className="max-w-md"
+              />
+            </div>
+            <div className="rounded-sm border border-border/70 bg-white overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-muted/50 border-b">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("pages.licenses.col_entity")}
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("pages.licenses.col_owner")}
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("pages.licenses.col_type")}
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("pages.licenses.col_plan")}
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("pages.licenses.col_status")}
+                    </th>
+                    <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("pages.licenses.col_actions")}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredLicenses.map((row: LicenseRow) => (
+                    <tr
+                      key={row.id}
+                      className="border-b last:border-0 hover:bg-muted/30"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          {row.type === "PERSONAL" ? (
+                            <Activity className="h-4 w-4" />
+                          ) : row.kind === "diocese" ? (
+                            <Building2 className="h-4 w-4" />
+                          ) : (
+                            <Church className="h-4 w-4" />
+                          )}
+                          {row.kind === "parish" ? (
+                            <NavLink
+                              to={`/admin/parishes/${row.entityId}`}
+                              className="font-semibold tracking-tight text-[#071A2D] hover:underline"
+                            >
+                              {row.name}
+                            </NavLink>
+                          ) : (
+                            <NavLink
+                              to={`/admin/parishes?dioceseId=${row.entityId}`}
+                              className="font-semibold tracking-tight text-[#071A2D] hover:underline"
+                            >
+                              {row.name}
+                            </NavLink>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        {row.ownerId ? (
                           <NavLink
-                            to={`/admin/parishes/${row.entityId}`}
-                            className="font-semibold tracking-tight text-[#071A2D] hover:underline"
+                            to={`/admin/users/${row.ownerId}`}
+                            className="block min-w-0 hover:underline"
+                            aria-label={t("pages.licenses.open_owner", {
+                              email:
+                                row.ownerEmail || row.ownerName || row.ownerId,
+                            })}
                           >
-                            {row.name}
+                            <span className="block truncate text-xs font-semibold tracking-tight text-[#071A2D]">
+                              {row.ownerEmail ||
+                                row.ownerName ||
+                                t("pages.licenses.no_owner")}
+                            </span>
+                            {row.ownerEmail && row.ownerName && (
+                              <span className="block truncate text-xs text-muted-foreground">
+                                {row.ownerName}
+                              </span>
+                            )}
                           </NavLink>
                         ) : (
-                          <NavLink
-                            to={`/admin/parishes?dioceseId=${row.entityId}`}
-                            className="font-semibold tracking-tight text-[#071A2D] hover:underline"
-                          >
-                            {row.name}
-                          </NavLink>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground text-xs">
-                      {row.kind === "diocese"
-                        ? t("pages.licenses.diocese")
-                        : row.type || t("pages.licenses.parish")}
-                    </td>
-                    <td className="px-4 py-3 text-xs font-semibold tracking-tight text-[#071A2D]">
-                      {row.plan || t("pages.licenses.no_plan")}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="flex items-center gap-1">
-                        {statusIcon(row.status)}
-                        <span className="text-xs">{row.status || "—"}</span>
-                        {row.trialEndsAt && (
-                          <span className="text-xs text-muted-foreground ml-2">
-                            {t("pages.licenses.until")}{" "}
-                            {formatDate(row.trialEndsAt, currentLocale)}
+                          <span className="text-xs text-muted-foreground">
+                            {t("pages.licenses.no_owner")}
                           </span>
                         )}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap justify-end gap-1">
-                        <Button
-                          size="xs"
-                          variant="outline"
-                          onClick={() => open(row, "extend")}
-                        >
-                          {t("pages.licenses.extend_trial")}
-                        </Button>
-                        <Button
-                          size="xs"
-                          variant="outline"
-                          onClick={() => open(row, "complimentary")}
-                        >
-                          {t("pages.licenses.complimentary")}
-                        </Button>
-                        {row.billingId && (
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs">
+                        {row.kind === "diocese"
+                          ? t("pages.licenses.diocese")
+                          : row.type || t("pages.licenses.parish")}
+                      </td>
+                      <td className="px-4 py-3 text-xs font-semibold tracking-tight text-[#071A2D]">
+                        {row.plan || t("pages.licenses.no_plan")}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="flex items-center gap-1">
+                          {statusIcon(row.status)}
+                          <span className="text-xs">{row.status || "—"}</span>
+                          {row.trialEndsAt && (
+                            <span className="text-xs text-muted-foreground ml-2">
+                              {t("pages.licenses.until")}{" "}
+                              {formatDate(row.trialEndsAt, currentLocale)}
+                            </span>
+                          )}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap justify-end gap-1">
                           <Button
                             size="xs"
                             variant="outline"
-                            onClick={() => open(row, "cancelLicense")}
+                            onClick={() => open(row, "extend")}
                           >
-                            {t("pages.licenses.cancel_license")}
+                            {t("pages.licenses.extend_trial")}
                           </Button>
-                        )}
-                        {row.hasStripe && row.ownerId && (
                           <Button
                             size="xs"
-                            variant="destructive"
-                            onClick={() => open(row, "cancelStripe")}
+                            variant="outline"
+                            onClick={() => open(row, "complimentary")}
                           >
-                            {t("pages.licenses.cancel_stripe")}
+                            {t("pages.licenses.complimentary")}
                           </Button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {licenses.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      className="px-4 py-8 text-center text-sm text-muted-foreground"
-                    >
-                      {t("pages.licenses.empty")}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                          {row.billingId && (
+                            <Button
+                              size="xs"
+                              variant="outline"
+                              onClick={() => open(row, "cancelLicense")}
+                            >
+                              {t("pages.licenses.cancel_license")}
+                            </Button>
+                          )}
+                          {row.hasStripe && row.ownerId && (
+                            <Button
+                              size="xs"
+                              variant="destructive"
+                              onClick={() => open(row, "cancelStripe")}
+                            >
+                              {t("pages.licenses.cancel_stripe")}
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredLicenses.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        className="px-4 py-8 text-center text-sm text-muted-foreground"
+                      >
+                        {t("pages.licenses.empty")}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
@@ -281,6 +346,11 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
             <DialogTitle>{t("pages.licenses.extend_title")}</DialogTitle>
             <DialogDescription>
               {t("pages.licenses.extend_desc")}
+              {target && (
+                <span className="mt-2 block text-[#071A2D]">
+                  {target.name} · {ownerLabel(target)}
+                </span>
+              )}
             </DialogDescription>
           </DialogHeader>
           <Input
@@ -322,6 +392,11 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
             <DialogTitle>{t("pages.licenses.complimentary_title")}</DialogTitle>
             <DialogDescription>
               {t("pages.licenses.complimentary_desc")}
+              {target && (
+                <span className="mt-2 block text-[#071A2D]">
+                  {target.name} · {ownerLabel(target)}
+                </span>
+              )}
             </DialogDescription>
           </DialogHeader>
           <select
@@ -362,7 +437,11 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
         open={dialog === "cancelLicense"}
         onOpenChange={(openState) => !openState && close()}
         title={t("pages.licenses.cancel_license_title")}
-        description={t("pages.licenses.cancel_license_desc")}
+        description={
+          target
+            ? `${t("pages.licenses.cancel_license_desc")} ${target.name} · ${ownerLabel(target)}.`
+            : t("pages.licenses.cancel_license_desc")
+        }
         confirmLabel={t("pages.licenses.cancel_license")}
         variant="destructive"
         loading={busy}
@@ -378,7 +457,11 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
         open={dialog === "cancelStripe"}
         onOpenChange={(openState) => !openState && close()}
         title={t("pages.licenses.cancel_stripe_title")}
-        description={t("pages.licenses.cancel_stripe_desc")}
+        description={
+          target
+            ? `${t("pages.licenses.cancel_stripe_desc")} ${target.name} · ${ownerLabel(target)}.`
+            : t("pages.licenses.cancel_stripe_desc")
+        }
         confirmLabel={t("pages.licenses.cancel_stripe")}
         variant="destructive"
         loading={busy}

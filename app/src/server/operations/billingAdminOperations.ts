@@ -8,6 +8,7 @@ import { requirePlatformAdmin, writeAuditLog } from "../auth/helpers";
 import { validateOrThrow } from "../validation";
 import { loadPlanCatalog } from "../pricing/planCatalogService";
 import { getPlanLimits } from "../../shared/planCatalog";
+import { BILLING_MANAGER_ROLES } from "../../shared/billingAccess";
 import { stripeClient } from "../../payment/stripe/stripeClient";
 import { SubscriptionStatus } from "../../payment/plans";
 
@@ -34,6 +35,66 @@ function billingWhere(scope: { parishId?: string; dioceseId?: string }) {
   return scope.parishId
     ? { parishId: scope.parishId }
     : { dioceseId: scope.dioceseId };
+}
+
+const OWNER_USER_SELECT = {
+  id: true,
+  email: true,
+  username: true,
+  firstName: true,
+  lastName: true,
+  paymentProcessorUserId: true,
+} as const;
+
+const BILLING_MANAGER_ROLE_PRIORITY: Record<string, number> = {
+  PERSONAL_OWNER: 0,
+  PARISH_COORDINATOR: 1,
+  DIOCESE_ADMIN: 2,
+  SUPER_ADMIN: 3,
+  COMMUNITY_COORDINATOR: 4,
+};
+
+export type LicenseOwnerUser = {
+  id: string;
+  email?: string | null;
+  username?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  paymentProcessorUserId?: string | null;
+};
+
+export function toLicenseOwnerFields(
+  user: LicenseOwnerUser | null | undefined,
+) {
+  if (!user) {
+    return {
+      ownerId: null as string | null,
+      ownerEmail: null as string | null,
+      ownerName: null as string | null,
+      hasStripe: false,
+    };
+  }
+  const name = [user.firstName, user.lastName].filter(Boolean).join(" ").trim();
+  return {
+    ownerId: user.id,
+    ownerEmail: user.email || user.username || null,
+    ownerName: name || null,
+    hasStripe: Boolean(user.paymentProcessorUserId),
+  };
+}
+
+export function pickBestBillingManager(
+  memberships: Array<{ role?: string | null; user?: LicenseOwnerUser | null }>,
+): LicenseOwnerUser | null {
+  let best: { score: number; user: LicenseOwnerUser } | null = null;
+  for (const membership of memberships) {
+    if (!membership.user) continue;
+    const score = BILLING_MANAGER_ROLE_PRIORITY[membership.role ?? ""] ?? 99;
+    if (!best || score < best.score) {
+      best = { score, user: membership.user };
+    }
+  }
+  return best?.user ?? null;
 }
 
 async function requireScopeEntity(
@@ -77,11 +138,15 @@ export const listAdminLicenses = async (_args: void, context: any) => {
             trialEndsAt: true,
           },
         },
-        owner: {
+        owner: { select: OWNER_USER_SELECT },
+        memberships: {
+          where: {
+            status: "ACTIVE",
+            role: { in: [...BILLING_MANAGER_ROLES] },
+          },
           select: {
-            id: true,
-            email: true,
-            paymentProcessorUserId: true,
+            role: true,
+            user: { select: OWNER_USER_SELECT },
           },
         },
       },
@@ -99,23 +164,60 @@ export const listAdminLicenses = async (_args: void, context: any) => {
     }),
   ]);
 
-  const parishRows = parishes.map((parish: any) => ({
-    id: parish.billing?.id ?? `parish:${parish.id}`,
-    billingId: parish.billing?.id ?? null,
-    kind: "parish" as const,
-    entityId: parish.id,
-    name: parish.name,
-    type: parish.type,
-    plan: parish.billing?.plan ?? null,
-    status: parish.billing?.status ?? null,
-    trialEndsAt: parish.billing?.trialEndsAt ?? null,
-    ownerEmail: parish.owner?.email ?? null,
-    ownerId: parish.owner?.id ?? null,
-    hasStripe: Boolean(parish.owner?.paymentProcessorUserId),
-    active: parish.active,
-  }));
+  const dioceseOwnerById = new Map<string, LicenseOwnerUser>();
+  for (const parish of parishes as any[]) {
+    if (!parish.dioceseId || parish.type !== "DIOCESE") continue;
+    const candidate =
+      parish.owner ?? pickBestBillingManager(parish.memberships);
+    if (!candidate) continue;
+    dioceseOwnerById.set(parish.dioceseId, candidate);
+  }
 
-  const dioceseRows = dioceseBillings.map((row: any) => ({
+  const missingDioceseIds = (dioceseBillings as any[])
+    .map((row) => row.dioceseId)
+    .filter((id: string | null) => id && !dioceseOwnerById.has(id));
+
+  if (missingDioceseIds.length > 0) {
+    const dioceseAdmins = await context.entities.Membership.findMany({
+      where: {
+        status: "ACTIVE",
+        role: "DIOCESE_ADMIN",
+        parish: { dioceseId: { in: missingDioceseIds } },
+      },
+      select: {
+        parish: { select: { dioceseId: true, type: true } },
+        user: { select: OWNER_USER_SELECT },
+      },
+    });
+    for (const membership of dioceseAdmins as any[]) {
+      const dioceseId = membership.parish?.dioceseId;
+      if (!dioceseId || !membership.user) continue;
+      const existing = dioceseOwnerById.get(dioceseId);
+      if (!existing || membership.parish?.type === "DIOCESE") {
+        dioceseOwnerById.set(dioceseId, membership.user);
+      }
+    }
+  }
+
+  const parishRows = (parishes as any[]).map((parish) => {
+    const owner =
+      parish.owner ?? pickBestBillingManager(parish.memberships ?? []);
+    return {
+      id: parish.billing?.id ?? `parish:${parish.id}`,
+      billingId: parish.billing?.id ?? null,
+      kind: "parish" as const,
+      entityId: parish.id,
+      name: parish.name,
+      type: parish.type,
+      plan: parish.billing?.plan ?? null,
+      status: parish.billing?.status ?? null,
+      trialEndsAt: parish.billing?.trialEndsAt ?? null,
+      ...toLicenseOwnerFields(owner),
+      active: parish.active,
+    };
+  });
+
+  const dioceseRows = (dioceseBillings as any[]).map((row) => ({
     id: row.id,
     billingId: row.id,
     kind: "diocese" as const,
@@ -125,9 +227,7 @@ export const listAdminLicenses = async (_args: void, context: any) => {
     plan: row.plan,
     status: row.status,
     trialEndsAt: row.trialEndsAt,
-    ownerEmail: null,
-    ownerId: null,
-    hasStripe: false,
+    ...toLicenseOwnerFields(dioceseOwnerById.get(row.dioceseId)),
     active: true,
   }));
 

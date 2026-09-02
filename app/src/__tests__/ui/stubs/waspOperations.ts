@@ -15,5 +15,17 @@ export const createHousehold = vi.fn(async (args: Record<string, unknown>) => ({
 export const getContactsForConversation = vi.fn(async () => []);
 export const createConversation = vi.fn(async () => ({ id: "conversa-teste" }));
 
-export const useQuery = () => ({ data: undefined, isLoading: false });
+export const listAdminLicenses = vi.fn();
+export const listPricingPlansAdmin = vi.fn();
+export const extendTenantTrial = vi.fn();
+export const setComplimentaryPlan = vi.fn();
+export const cancelTenantLicense = vi.fn();
+export const cancelUserSubscriptionImmediate = vi.fn();
+
+export const useQuery = vi.fn((_query?: unknown) => ({
+  data: undefined,
+  isLoading: false,
+  error: null,
+  refetch: vi.fn(),
+}));
 export const useAction = (fn: unknown) => fn;

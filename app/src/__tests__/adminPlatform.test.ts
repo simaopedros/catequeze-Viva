@@ -102,8 +102,13 @@ import {
 import {
   extendTenantTrial,
   setComplimentaryPlan,
+  listAdminLicenses,
+  toLicenseOwnerFields,
 } from "../server/operations/billingAdminOperations";
-import { replyToContactMessage, getMySupportMessages } from "../server/operations/supportOperations";
+import {
+  replyToContactMessage,
+  getMySupportMessages,
+} from "../server/operations/supportOperations";
 import { listWorkspaces } from "../server/operations/workspaceOperations";
 import { updateIsUserAdminById } from "../user/operations";
 import { getSystemHealth } from "../server/operations/systemOperations";
@@ -249,13 +254,11 @@ describe("setUserSuspended / impersonateUser guards", () => {
 
   it("refuses to suspend another platform admin", async () => {
     const User = {
-      findUnique: vi
-        .fn()
-        .mockResolvedValue({
-          id: "other-admin",
-          isAdmin: true,
-          email: "a@x.com",
-        }),
+      findUnique: vi.fn().mockResolvedValue({
+        id: "other-admin",
+        isAdmin: true,
+        email: "a@x.com",
+      }),
       update: vi.fn(),
     };
     await expect(
@@ -389,6 +392,168 @@ describe("billing admin trial / complimentary", () => {
   });
 });
 
+describe("listAdminLicenses owner contact", () => {
+  it("exposes parish owner email, name and stripe flag", async () => {
+    const entities = {
+      Parish: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: PARISH_ID,
+            name: "São José",
+            type: "PARISH",
+            active: true,
+            dioceseId: null,
+            diocese: null,
+            billing: {
+              id: "bill-1",
+              plan: "single",
+              status: "ACTIVE",
+              trialEndsAt: null,
+            },
+            owner: {
+              id: "user-1",
+              email: "coord@paroquia.com",
+              username: "coord@paroquia.com",
+              firstName: "Ana",
+              lastName: "Silva",
+              paymentProcessorUserId: "cus_123",
+            },
+            memberships: [],
+          },
+        ]),
+      },
+      TenantBilling: { findMany: vi.fn().mockResolvedValue([]) },
+      Membership: { findMany: vi.fn() },
+    };
+    const rows = await listAdminLicenses(undefined, context(ADMIN, entities));
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      ownerEmail: "coord@paroquia.com",
+      ownerName: "Ana Silva",
+      ownerId: "user-1",
+      hasStripe: true,
+    });
+  });
+
+  it("falls back to a billing-manager membership when the parish has no owner", async () => {
+    const entities = {
+      Parish: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: PARISH_ID,
+            name: "Santa Maria",
+            type: "PARISH",
+            active: true,
+            dioceseId: null,
+            diocese: null,
+            billing: null,
+            owner: null,
+            memberships: [
+              {
+                role: "COMMUNITY_COORDINATOR",
+                user: {
+                  id: "user-comm",
+                  email: "comunidade@paroquia.com",
+                  username: null,
+                  firstName: "João",
+                  lastName: null,
+                  paymentProcessorUserId: null,
+                },
+              },
+              {
+                role: "PARISH_COORDINATOR",
+                user: {
+                  id: "user-coord",
+                  email: "coordenador@paroquia.com",
+                  username: null,
+                  firstName: "Maria",
+                  lastName: "Costa",
+                  paymentProcessorUserId: null,
+                },
+              },
+            ],
+          },
+        ]),
+      },
+      TenantBilling: { findMany: vi.fn().mockResolvedValue([]) },
+      Membership: { findMany: vi.fn() },
+    };
+    const rows = await listAdminLicenses(undefined, context(ADMIN, entities));
+    expect(rows[0]).toMatchObject({
+      ownerEmail: "coordenador@paroquia.com",
+      ownerName: "Maria Costa",
+      ownerId: "user-coord",
+    });
+    expect(entities.Membership.findMany).not.toHaveBeenCalled();
+  });
+
+  it("resolves diocese license owner from a DIOCESE_ADMIN membership", async () => {
+    const dioceseId = "diocese-1";
+    const entities = {
+      Parish: { findMany: vi.fn().mockResolvedValue([]) },
+      TenantBilling: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: "bill-d1",
+            dioceseId,
+            plan: "diocese",
+            status: "ACTIVE",
+            trialEndsAt: null,
+            diocese: { id: dioceseId, name: "Arquidiocese de BH" },
+          },
+        ]),
+      },
+      Membership: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            parish: { dioceseId, type: "DIOCESE" },
+            user: {
+              id: "user-diocese",
+              email: "admin@diocese.com",
+              username: null,
+              firstName: "Pedro",
+              lastName: "Santos",
+              paymentProcessorUserId: "cus_diocese",
+            },
+          },
+        ]),
+      },
+    };
+    const rows = await listAdminLicenses(undefined, context(ADMIN, entities));
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      kind: "diocese",
+      name: "Arquidiocese de BH",
+      ownerEmail: "admin@diocese.com",
+      ownerName: "Pedro Santos",
+      ownerId: "user-diocese",
+      hasStripe: true,
+    });
+  });
+
+  it("uses username when the owner email field is empty", async () => {
+    expect(
+      toLicenseOwnerFields({
+        id: "user-1",
+        email: null,
+        username: "fallback@paroquia.com",
+        firstName: "Ana",
+        lastName: null,
+        paymentProcessorUserId: null,
+      }),
+    ).toMatchObject({
+      ownerEmail: "fallback@paroquia.com",
+      ownerName: "Ana",
+    });
+  });
+
+  it("rejects non-admin callers", async () => {
+    await expect(
+      listAdminLicenses(undefined, context({ id: "u1", isAdmin: false }, {})),
+    ).rejects.toMatchObject({ statusCode: 403 });
+  });
+});
+
 describe("replyToContactMessage", () => {
   it("sends email, stores replyBody and notifies the matching user", async () => {
     const now = new Date();
@@ -460,9 +625,7 @@ describe("replyToContactMessage", () => {
       }),
     };
     const User = {
-      findUnique: vi
-        .fn()
-        .mockResolvedValue({ id: "user-1", email: "a@b.com" }),
+      findUnique: vi.fn().mockResolvedValue({ id: "user-1", email: "a@b.com" }),
     };
     const Notification = { create: vi.fn().mockResolvedValue({ id: "n1" }) };
     const result = await replyToContactMessage(
@@ -478,15 +641,25 @@ describe("replyToContactMessage", () => {
 describe("getMySupportMessages", () => {
   it("returns messages for the signed-in user", async () => {
     const ContactFormMessage = {
-      findMany: vi.fn().mockResolvedValue([
-        { id: "msg-1", content: "Olá", replyBody: "Ok", repliedAt: new Date() },
-      ]),
+      findMany: vi
+        .fn()
+        .mockResolvedValue([
+          {
+            id: "msg-1",
+            content: "Olá",
+            replyBody: "Ok",
+            repliedAt: new Date(),
+          },
+        ]),
     };
     const result = await getMySupportMessages(
       undefined,
-      context({ id: "user-1", email: "a@b.com", isAdmin: false }, {
-        ContactFormMessage,
-      }),
+      context(
+        { id: "user-1", email: "a@b.com", isAdmin: false },
+        {
+          ContactFormMessage,
+        },
+      ),
     );
     expect(ContactFormMessage.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -545,18 +718,16 @@ describe("listWorkspaces admin extras", () => {
       },
       Parish: {
         findFirst: vi.fn().mockResolvedValue(null),
-        findMany: vi
-          .fn()
-          .mockResolvedValue([
-            {
-              id: "should-not-appear",
-              name: "X",
-              type: "PARISH",
-              ownerId: "z",
-              dioceseId: null,
-              diocese: null,
-            },
-          ]),
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: "should-not-appear",
+            name: "X",
+            type: "PARISH",
+            ownerId: "z",
+            dioceseId: null,
+            diocese: null,
+          },
+        ]),
       },
       Membership: { findMany: vi.fn().mockResolvedValue([]) },
       TenantBilling: { findMany: vi.fn().mockResolvedValue([]) },
@@ -572,9 +743,8 @@ describe("listWorkspaces admin extras", () => {
 
 describe("stripe cancel confirmation", () => {
   it("requires confirm=true", async () => {
-    const { cancelUserSubscriptionImmediate } = await import(
-      "../server/operations/billingAdminOperations"
-    );
+    const { cancelUserSubscriptionImmediate } =
+      await import("../server/operations/billingAdminOperations");
     await expect(
       cancelUserSubscriptionImmediate(
         { userId: "user-1", confirm: false },
@@ -584,9 +754,8 @@ describe("stripe cancel confirmation", () => {
   });
 
   it("cancels manageable Stripe subscriptions", async () => {
-    const { cancelUserSubscriptionImmediate } = await import(
-      "../server/operations/billingAdminOperations"
-    );
+    const { cancelUserSubscriptionImmediate } =
+      await import("../server/operations/billingAdminOperations");
     const User = {
       findUnique: vi.fn().mockResolvedValue({
         id: "user-1",
