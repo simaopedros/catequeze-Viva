@@ -56,7 +56,12 @@ export function makeContext(userKey: keyof typeof USERS) {
   const u = USERS[userKey];
   return {
     user: { id: u.id, isAdmin: u.isAdmin, email: u.email },
-    entities: prisma,
+    // Fresh object per context: Wasp hands every request its own `entities`,
+    // and scope helpers (resolveUserScope) cache by that identity. Sharing the
+    // bare prisma instance would leak one user's scope into the next test.
+    entities: new Proxy({} as typeof prisma, {
+      get: (_target, prop) => (prisma as any)[prop],
+    }),
   };
 }
 
