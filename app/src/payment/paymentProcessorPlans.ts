@@ -5,44 +5,46 @@ import { isUsableStripePriceId, readStripePriceEnv } from "./stripePriceId";
 /**
  * Stripe Price IDs — Brazil-only (BRL).
  *
- * Each vendable plan has a monthly AND an annual Price ID (BRL). AI credit
- * packs are one-time payments (monthly map reused; no annual variant).
- * Create the corresponding Prices in the Stripe Dashboard (currency BRL)
- * and set the env vars in .env.server.
- *
- * Values are read at call time (process.env first, then Wasp `env`) so a
- * leftover placeholder baked at import / `price_...` example never wins
- * over the TEST IDs already on the homolog VPS.
+ * Legacy env vars remain the last-resort fallback (and the source used when
+ * PRICING_CATALOG_SOURCE=static). Admin-managed prices live in PricingPlanPrice.
  */
 
-const MONTHLY_ENV_BY_PLAN: Partial<Record<PaymentPlanId, string>> = {
+const MONTHLY_ENV_BY_PLAN: Record<string, string> = {
   [PaymentPlanId.Single]: "STRIPE_SINGLE_PLAN_ID",
   [PaymentPlanId.Unlimited]: "STRIPE_UNLIMITED_PLAN_ID",
   [PaymentPlanId.AiCredits20]: "STRIPE_AI_CREDITS_20_PLAN_ID",
   [PaymentPlanId.AiCredits50]: "STRIPE_AI_CREDITS_50_PLAN_ID",
 };
 
-const ANNUAL_ENV_BY_PLAN: Partial<Record<PaymentPlanId, string>> = {
+const ANNUAL_ENV_BY_PLAN: Record<string, string> = {
   [PaymentPlanId.Single]: "STRIPE_SINGLE_ANNUAL_PLAN_ID",
   [PaymentPlanId.Unlimited]: "STRIPE_UNLIMITED_ANNUAL_PLAN_ID",
 };
 
-function readPlanPriceId(
-  planId: PaymentPlanId,
-  interval: "monthly" | "annual",
+function envNameFor(planId: string, interval: "monthly" | "annual"): string | undefined {
+  return interval === "annual" ? ANNUAL_ENV_BY_PLAN[planId] : MONTHLY_ENV_BY_PLAN[planId];
+}
+
+export function readEnvStripePriceId(
+  planId: string,
+  interval: "monthly" | "annual" = "monthly",
 ): string {
-  const envName =
-    interval === "annual"
-      ? ANNUAL_ENV_BY_PLAN[planId]
-      : MONTHLY_ENV_BY_PLAN[planId];
+  const envName = envNameFor(planId, interval);
   if (!envName) {
     return planId === PaymentPlanId.CatechistFree ? "catechist_free" : "";
   }
   return readStripePriceEnv(env as unknown as Record<string, unknown>, process.env, envName);
 }
 
+function readPlanPriceId(
+  planId: string,
+  interval: "monthly" | "annual",
+): string {
+  return readEnvStripePriceId(planId, interval);
+}
+
 /** Monthly (default) Stripe Price IDs — getters so VPS env wins at call time. */
-export const paymentProcessorPlanIds: Record<PaymentPlanId, string> = {
+export const paymentProcessorPlanIds: Record<string, string> = {
   get [PaymentPlanId.Single]() {
     return readPlanPriceId(PaymentPlanId.Single, "monthly");
   },
@@ -59,7 +61,7 @@ export const paymentProcessorPlanIds: Record<PaymentPlanId, string> = {
 };
 
 /** Annual Stripe Price IDs (subscriptions only). */
-export const annualPaymentProcessorPlanIds: Partial<Record<PaymentPlanId, string>> = {
+export const annualPaymentProcessorPlanIds: Partial<Record<string, string>> = {
   get [PaymentPlanId.Single]() {
     return readPlanPriceId(PaymentPlanId.Single, "annual");
   },
@@ -68,32 +70,16 @@ export const annualPaymentProcessorPlanIds: Partial<Record<PaymentPlanId, string
   },
 };
 
-/** Env var name for each vendable Stripe plan (for error messages). */
-const stripePlanEnvVarByPlanId: Partial<Record<PaymentPlanId, string>> = {
-  [PaymentPlanId.Single]: "STRIPE_SINGLE_PLAN_ID",
-  [PaymentPlanId.Unlimited]: "STRIPE_UNLIMITED_PLAN_ID",
-  [PaymentPlanId.AiCredits20]: "STRIPE_AI_CREDITS_20_PLAN_ID",
-  [PaymentPlanId.AiCredits50]: "STRIPE_AI_CREDITS_50_PLAN_ID",
-};
+const stripePlanEnvVarByPlanId: Record<string, string> = { ...MONTHLY_ENV_BY_PLAN };
+const annualStripePlanEnvVarByPlanId: Record<string, string> = { ...ANNUAL_ENV_BY_PLAN };
 
-/** Env var names for annual plan IDs (for error messages). */
-const annualStripePlanEnvVarByPlanId: Partial<Record<PaymentPlanId, string>> = {
-  [PaymentPlanId.Single]: "STRIPE_SINGLE_ANNUAL_PLAN_ID",
-  [PaymentPlanId.Unlimited]: "STRIPE_UNLIMITED_ANNUAL_PLAN_ID",
-};
-
-/**
- * Returns your payment processor plan ID for a given Open SaaS `PaymentPlan`.
- */
 export function getPaymentProcessorPlanId(paymentPlan: PaymentPlan): string {
   return readPlanPriceId(paymentPlan.id, "monthly");
 }
 
 /**
  * Stripe Checkout requires a real Price ID (`price_...` + alphanumeric).
- * When `interval='annual'`, uses the annual Price ID env var.
- * All prices are BRL (Brazil-only).
- * Throws a clear error when .env.server is missing a plan mapping.
+ * Env-var fallback used when the catalog has no usable Price ID.
  */
 export function requireStripePriceId(
   paymentPlan: PaymentPlan,
@@ -128,15 +114,14 @@ export function requireStripePriceId(
 }
 
 /**
- * Returns Open SaaS `PaymentPlanId` for a Stripe Price ID.
- * Searches both the monthly and annual maps.
+ * Returns the catalog slug for a Stripe Price ID using env-var maps.
+ * Last-resort fallback for webhooks; prefer resolvePlanByStripePriceId.
  */
 export function getPaymentPlanIdByPaymentProcessorPlanId(
   paymentProcessorPlanId: string,
-): PaymentPlanId {
+): string {
   const target = paymentProcessorPlanId.trim();
-  for (const planId of Object.values(PaymentPlanId)) {
-    if (planId === PaymentPlanId.CatechistFree) continue;
+  for (const planId of Object.keys(MONTHLY_ENV_BY_PLAN)) {
     if (readPlanPriceId(planId, "monthly") === target) {
       return planId;
     }

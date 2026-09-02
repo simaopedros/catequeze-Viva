@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getCheckoutPlanRejection } from "../payment/checkoutPlanPolicy";
 import { PaymentPlanId } from "../payment/plans";
 import { AI_FEATURES_ENABLED } from "../shared/aiFeatures";
-import { LAUNCH_CATEQUISTA_ONLY } from "../shared/pricing";
+import { LAUNCH_CATEQUISTA_ONLY, DEFAULT_PLANS_BY_SLUG } from "../shared/pricing";
 
 describe("getCheckoutPlanRejection", () => {
   it("allows Plano Único during launch", () => {
@@ -30,5 +30,12 @@ describe("getCheckoutPlanRejection", () => {
     expect(getCheckoutPlanRejection(PaymentPlanId.AiCredits50)).toMatch(
       /créditos/i,
     );
+  });
+
+  it("uses catalog isActive when a plan object is provided", () => {
+    expect(
+      getCheckoutPlanRejection("unlimited", DEFAULT_PLANS_BY_SLUG.unlimited),
+    ).toMatch(/Ilimitado/i);
+    expect(getCheckoutPlanRejection("single", DEFAULT_PLANS_BY_SLUG.single)).toBeNull();
   });
 });

@@ -10,6 +10,7 @@ import {
   Settings,
   Activity,
   Flag,
+  Tags,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router";
@@ -149,6 +150,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 <NavLink to="/admin/billing" end className={navLinkClass}>
                   <Activity />
                   {t("sidebar.licenses")}
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/planos" end className={navLinkClass}>
+                  <Tags />
+                  {t("sidebar.plans")}
                 </NavLink>
               </li>
             </ul>

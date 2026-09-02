@@ -48,11 +48,11 @@ import { useAuth } from "wasp/client/auth";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import {
-  getPlanLimits,
   getEffectiveBillingPlan,
   getPersonalPlanId,
   isBillingActive,
 } from "../../shared/planLimits";
+import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import { PlanLimitBanner } from "../components/PlanLimitBanner";
 import { handlePlanLimitError } from "../lib/planLimitToast";
 import { canManageWorkspaceBilling } from "../../shared/billingAccess";
@@ -89,6 +89,7 @@ export default function ClassDetailPage() {
   } = useQuery(getClassDetails, { id: id! });
   const { data: user } = useAuth();
   const { userRole, parishId, isAdmin } = useUserContext();
+  const { getBySlug } = usePlanCatalog();
   const [tab, setTab] = useDetailTab(CLASS_DETAIL_TABS, "inscritos");
 
   const isCoordinator = [
@@ -195,7 +196,7 @@ export default function ClassDetailPage() {
   const effectivePlan = isPersonal
     ? getPersonalPlanId(user)
     : getEffectiveBillingPlan(parishBilling);
-  const limits = getPlanLimits(effectivePlan);
+  const limits = getBySlug(effectivePlan).limits;
   const isParishManaged =
     !isPersonal && !user?.subscriptionPlan && isBillingActive(parishBilling);
 

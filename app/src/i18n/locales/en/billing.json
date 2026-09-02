@@ -88,37 +88,6 @@
   "monthly": "Monthly",
   "annual": "Annual",
   "annual_savings": "17% off",
-  "plans": {
-    "catechist_free": {
-      "name": "No subscription",
-      "price": "—",
-      "features": []
-    },
-    "single": {
-      "name": "Catechist Plan",
-      "price": "R$ 9.90/month",
-      "annual_price": "R$ 99/year (~R$ 8.25/month)",
-      "features": [
-        "Up to 3 classes",
-        "150 catechumens in total",
-        "Attendance and liturgical calendar",
-        "Portal for the families in your class"
-      ]
-    },
-    "unlimited": {
-      "name": "Unlimited Plan",
-      "price": "R$ 99/month",
-      "annual_price": "R$ 990/year (~R$ 82/month)",
-      "features": [
-        "Unlimited parishes and classes",
-        "Unlimited catechumens and catechists",
-        "Meeting and activity generator with editorial assistance",
-        "Integrated communication",
-        "Documents and certificates",
-        "50 Editorial credits/month"
-      ]
-    }
-  },
   "checkout_success": "🥳 Payment Successful!",
   "checkout_canceled": "😢 Payment Canceled.",
   "checkout_redirect": "You will be redirected to your account page in {{seconds}} seconds...",

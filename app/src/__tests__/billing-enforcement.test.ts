@@ -57,12 +57,12 @@ describe('Parish Billing Records', () => {
     expect(billing!.status).toBe('ACTIVE');
   });
 
-  it('Santa Maria has CATECHIST_FREE plan', async () => {
+  it('Santa Maria has catechist_free plan', async () => {
     const billing = await prisma.tenantBilling.findUnique({
       where: { parishId: PARISH_SANTA_MARIA },
     });
     expect(billing).toBeTruthy();
-    expect(billing!.plan).toBe('CATECHIST_FREE');
+    expect(billing!.plan).toBe('catechist_free');
   });
 
 });

@@ -16,6 +16,8 @@ export {
   PLANS,
   PLAN_IDS,
   PRICING_VERSION,
+  PRISMA_INSTITUTIONAL_PLANS,
+  PRISMA_PAID_PARISH_PLANS,
   type PlanId,
   type AiCreditScope,
 } from './pricing';

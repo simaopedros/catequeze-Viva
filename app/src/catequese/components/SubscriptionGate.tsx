@@ -61,7 +61,7 @@ function workspaceHasAccess(
       status: billing.status,
       trialEndsAt: billing.trialEndsAt,
     });
-    if (planId === "single" || planId === "unlimited") return true;
+    if (planId) return true;
   }
   const effective = getWorkspaceEffectivePlan({
     user,
@@ -75,7 +75,7 @@ function workspaceHasAccess(
           }
         : null,
   });
-  return effective.plan === "single" || effective.plan === "unlimited";
+  return effective.plan !== "catechist_free";
 }
 
 export function SubscriptionGate({ children }: { children: ReactNode }) {

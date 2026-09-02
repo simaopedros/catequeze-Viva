@@ -4,15 +4,14 @@ import type { Stripe } from "stripe";
 import { config, env, type MiddlewareConfigFn } from "wasp/server";
 import { type PaymentsWebhook } from "wasp/server/api";
 import { emailSender } from "wasp/server/email";
-import { assertUnreachable } from "../../shared/utils";
 import { UnhandledWebhookEventError } from "../errors";
 import {
-  PaymentPlanId,
   paymentPlans,
   SubscriptionStatus,
   prettyPaymentPlanName,
 } from "../plans";
-import { getPaymentPlanIdByPaymentProcessorPlanId } from "../paymentProcessorPlans";
+import { resolvePlanByStripePriceId } from "../../server/pricing/planCatalogService";
+import type { CatalogPlan } from "../../shared/planCatalog";
 import { updateUserCredits, updateUserSubscription } from "../user";
 import {
   cascadeActivatePlanToTenantBilling,
@@ -198,7 +197,8 @@ async function handleCheckoutSessionCompleted(
   }
 
   // Meta requires StartTrial value > 0 (use plan monthly price from metadata or subscription).
-  const paymentPlanId = getPaymentPlanIdFromSubscription(subscription);
+  const catalogPlan = await getPaymentPlanFromSubscription(subscription);
+  const paymentPlanId = catalogPlan.slug;
   const planValue = metadata.value 
     ? Number(metadata.value) 
     : Number((getSubscriptionPriceMonthlyEquivalent(subscription) / 100).toFixed(2));
@@ -300,28 +300,30 @@ async function processPaidInvoice(
   try {
     const customerId = getCustomerId(invoice.customer);
     const invoicePaidAtDate = getInvoicePaidAtDate(invoice);
-    const paymentPlanId = getPaymentPlanIdByPaymentProcessorPlanId(
+    const catalogPlan = await resolvePlanByStripePriceId(
+      context,
       getInvoicePriceId(invoice),
     );
+    const paymentPlanId = catalogPlan.slug;
     const subscriptionId = getInvoiceSubscriptionId(invoice);
 
     console.info(`[Stripe] processPaidInvoice customer=${customerId} subscription=${subscriptionId} plan=${paymentPlanId}`);
 
-    switch (paymentPlanId) {
-      case PaymentPlanId.AiCredits20:
-      case PaymentPlanId.AiCredits50:
+    if (catalogPlan.kind === "credits") {
         await updateUserCredits(
           {
             paymentProcessorUserId: customerId,
             datePaid: invoicePaidAtDate,
-            numOfCreditsPurchased: paymentPlans[paymentPlanId].effect.amount,
+            numOfCreditsPurchased: catalogPlan.creditsAmount
+              ?? (paymentPlans[paymentPlanId]?.effect.kind === "credits"
+                ? paymentPlans[paymentPlanId].effect.amount
+                : 0),
           },
           prismaUserDelegate,
         );
         await finishTrackedEvent(trackedEventDelegate, invoiceProcessing.id, {
           responseJson: { invoiceId: invoice.id, paymentPlanId },
         });
-        // AI credits are one-time purchases — deliver as Purchase (not Subscribe).
         await deliverAiCreditsPurchaseMetaEvent({
           invoice,
           paymentPlanId,
@@ -329,9 +331,10 @@ async function processPaidInvoice(
           customerId,
           trackedEventDelegate,
         });
-        break;
-      case PaymentPlanId.Single:
-      case PaymentPlanId.Unlimited: {
+    } else if (catalogPlan.kind === "subscription") {
+        if (catalogPlan.slug === "catechist_free") {
+          throw new Error(`Unexpected invoice for non-purchasable plan "${paymentPlanId}"`);
+        }
         const user = await updateUserSubscription(
           {
             paymentProcessorUserId: customerId,
@@ -348,8 +351,8 @@ async function processPaidInvoice(
           paymentPlanId,
         );
 
-        if (paymentPlanId === PaymentPlanId.Unlimited) {
-          await cascadeActivatePlanToTenantBilling(context, user.id, "UNLIMITED");
+        if (catalogPlan.level === "institutional") {
+          await cascadeActivatePlanToTenantBilling(context, user.id, catalogPlan);
         }
 
         await finishTrackedEvent(trackedEventDelegate, invoiceProcessing.id, {
@@ -452,12 +455,8 @@ async function processPaidInvoice(
             processor: "stripe",
           });
         }
-        break;
-      }
-      case PaymentPlanId.CatechistFree:
-        throw new Error(`Unexpected invoice for non-purchasable plan "${paymentPlanId}"`);
-      default:
-        assertUnreachable(paymentPlanId);
+    } else {
+      throw new Error(`Unexpected invoice for plan "${paymentPlanId}"`);
     }
   } catch (error) {
     await failTrackedEvent(trackedEventDelegate, invoiceProcessing.id, error);
@@ -496,9 +495,11 @@ async function handleCustomerSubscriptionUpdated(
   }
 
   const customerId = getCustomerId(subscription.customer);
-  const paymentPlanId = getPaymentPlanIdByPaymentProcessorPlanId(
+  const catalogPlan = await resolvePlanByStripePriceId(
+    context,
     getSubscriptionPriceId(subscription),
   );
+  const paymentPlanId = catalogPlan.slug;
 
   console.info(`[Stripe] subscription.updated customer=${customerId} subscription=${subscription.id} status=${subscriptionStatus} plan=${paymentPlanId}`);
 
@@ -517,6 +518,10 @@ async function handleCustomerSubscriptionUpdated(
       user.id,
       paymentPlanId,
     );
+  }
+
+  if (catalogPlan.level === "institutional" && subscriptionStatus === SubscriptionStatus.Active) {
+    await cascadeActivatePlanToTenantBilling(context, user.id, catalogPlan);
   }
 
   if (subscription.cancel_at_period_end && user.email) {
@@ -558,7 +563,7 @@ async function handleCustomerSubscriptionDeleted(
 /** One-time AI credit pack → Meta Purchase (not Subscribe). */
 async function deliverAiCreditsPurchaseMetaEvent(args: {
   invoice: Stripe.Invoice;
-  paymentPlanId: PaymentPlanId;
+  paymentPlanId: string;
   stripeEventId: string;
   customerId: string | undefined;
   trackedEventDelegate: TrackedEventDelegate;
@@ -968,10 +973,12 @@ function getInvoicePaidAtDate(invoice: Stripe.Invoice): Date {
   return new Date(invoice.status_transitions.paid_at * 1000);
 }
 
-function getPaymentPlanIdFromSubscription(
+async function getPaymentPlanFromSubscription(
   subscription: Stripe.Subscription,
-): PaymentPlanId {
-  return getPaymentPlanIdByPaymentProcessorPlanId(
+  context?: WebhookContext,
+): Promise<CatalogPlan> {
+  return resolvePlanByStripePriceId(
+    context,
     getSubscriptionPriceId(subscription),
   );
 }

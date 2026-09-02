@@ -105,6 +105,12 @@ app OpenSaaS {
       email: "noreply@catechis.app"
     },
   },
+
+  db: {
+    seeds: [
+      import { seedPricingCatalog } from "@src/server/scripts/seedPricingCatalog"
+    ]
+  },
 }
 
 route LandingPageRoute { path: "/", to: LandingPage }
@@ -195,9 +201,14 @@ query getSubscriptionDetails {
   entities: [User]
 }
 
+query getPlanCatalog {
+  fn: import { getPlanCatalog } from "@src/server/operations/planCatalogOperations",
+  entities: [PricingPlan, PricingPlanPrice]
+}
+
 action generateCheckoutSession {
   fn: import { generateCheckoutSession } from "@src/payment/operations",
-  entities: [User, Parish, Membership, PricingEvent, TrackedEvent]
+  entities: [User, Parish, Membership, PricingEvent, TrackedEvent, PricingPlan, PricingPlanPrice]
 }
 
 action cancelSubscription {
@@ -207,12 +218,12 @@ action cancelSubscription {
 
 action changeSubscriptionPlan {
   fn: import { changeSubscriptionPlan } from "@src/payment/operations",
-  entities: [User]
+  entities: [User, PricingPlan, PricingPlanPrice]
 }
 
 api paymentsWebhook {
   fn: import { paymentsWebhook } from "@src/payment/webhook",
-  entities: [User, UserAiCredits, TenantBilling, Diocese, Parish, Membership, PricingEvent, TrackedEvent],
+  entities: [User, UserAiCredits, TenantBilling, Diocese, Parish, Membership, PricingEvent, TrackedEvent, PricingPlan, PricingPlanPrice],
   middlewareConfigFn: import { paymentsMiddlewareConfigFn } from "@src/payment/webhook",
   httpRoute: (POST, "/payments-webhook")
 }
@@ -292,6 +303,12 @@ route AdminSystemRoute { path: "/admin/system", to: AdminSystemPage }
 page AdminSystemPage {
   authRequired: true,
   component: import AdminSystem from "@src/admin/dashboards/system/SystemHealthPage"
+}
+
+route AdminPlansRoute { path: "/admin/planos", to: AdminPlansPage }
+page AdminPlansPage {
+  authRequired: true,
+  component: import AdminPlans from "@src/admin/dashboards/plans/PlansPage"
 }
 
 //#region Catequese Viva App Routes
@@ -550,12 +567,12 @@ query searchParishesForOnboarding {
 
 action createParish {
   fn: import { createParish } from "@src/server/operations/parishOperations",
-  entities: [Parish, Membership, TenantBilling]
+  entities: [Parish, Membership, TenantBilling, PricingPlan, PricingPlanPrice]
 }
 
 action completeCoordinatorOnboarding {
   fn: import { completeCoordinatorOnboarding } from "@src/server/operations/onboardingOperations",
-  entities: [Parish, Membership, TenantBilling, CatecheticalYear, CatechesisClass]
+  entities: [Parish, Membership, TenantBilling, CatecheticalYear, CatechesisClass, PricingPlan, PricingPlanPrice]
 }
 
 action updateParish {
@@ -581,7 +598,7 @@ query getParishById {
 
 action getOrCreateParishByOsmId {
   fn: import { getOrCreateParishByOsmId } from "@src/server/operations/parishOperations",
-  entities: [Parish, Membership, TenantBilling]
+  entities: [Parish, Membership, TenantBilling, PricingPlan, PricingPlanPrice]
 }
 // ── Diocese Management ───────────────────────────────────────────────────
 
@@ -669,12 +686,12 @@ action joinParish {
 
 action ensurePersonalWorkspace {
   fn: import { ensurePersonalWorkspace } from "@src/server/operations/workspaceOperations",
-  entities: [Parish, User, Membership]
+  entities: [Parish, User, Membership, TenantBilling, PricingPlan, PricingPlanPrice]
 }
 
 query listWorkspaces {
   fn: import { listWorkspaces } from "@src/server/operations/workspaceOperations",
-  entities: [Parish, Membership, TenantBilling, User, Diocese]
+  entities: [Parish, Membership, TenantBilling, User, Diocese, PricingPlan, PricingPlanPrice]
 }
 
 query getInstitutionalManageContext {
@@ -702,7 +719,7 @@ query listParishCatechists {
 
 action createClass {
   fn: import { createClass } from "@src/server/operations/classOperations",
-  entities: [CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User]
+  entities: [CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, PricingPlan, PricingPlanPrice]
 }
 
 action updateClass {
@@ -727,12 +744,12 @@ action removeCatechistFromClass {
 
 action enrollCatechumen {
   fn: import { enrollCatechumen } from "@src/server/operations/classOperations",
-  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User]
+  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, PricingPlan, PricingPlanPrice]
 }
 
 action bulkEnrollCatechumens {
   fn: import { bulkEnrollCatechumens } from "@src/server/operations/classOperations",
-  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, CatechumenProfile]
+  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, CatechumenProfile, PricingPlan, PricingPlanPrice]
 }
 
 action archiveClass {
@@ -1293,7 +1310,7 @@ api bunnyStreamWebhook {
 
 action createSocialVideoUpload {
   fn: import { createSocialVideoUpload } from "@src/server/operations/socialMediaOperations",
-  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese, SocialPost]
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese, SocialPost, PricingPlan, PricingPlanPrice]
 }
 
 query getSocialMediaStatus {
@@ -1332,12 +1349,12 @@ query getSocialComments {
 
 query getSocialPublishAccess {
   fn: import { getSocialPublishAccess } from "@src/server/operations/socialOperations",
-  entities: [User, Membership, Parish, TenantBilling, Diocese, SocialPost]
+  entities: [User, Membership, Parish, TenantBilling, Diocese, SocialPost, PricingPlan, PricingPlanPrice]
 }
 
 action createSocialPost {
   fn: import { createSocialPost } from "@src/server/operations/socialOperations",
-  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, User, Membership, Parish, TenantBilling, Diocese]
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, User, Membership, Parish, TenantBilling, Diocese, PricingPlan, PricingPlanPrice]
 }
 
 action deleteSocialPost {
@@ -1347,12 +1364,12 @@ action deleteSocialPost {
 
 action toggleSocialReaction {
   fn: import { toggleSocialReaction } from "@src/server/operations/socialOperations",
-  entities: [SocialPost, SocialReaction, Notification, User, Membership, Parish, TenantBilling, Diocese]
+  entities: [SocialPost, SocialReaction, Notification, User, Membership, Parish, TenantBilling, Diocese, PricingPlan, PricingPlanPrice]
 }
 
 action createSocialComment {
   fn: import { createSocialComment } from "@src/server/operations/socialOperations",
-  entities: [SocialPost, SocialComment, Notification, User, Membership, Parish, TenantBilling, Diocese]
+  entities: [SocialPost, SocialComment, Notification, User, Membership, Parish, TenantBilling, Diocese, PricingPlan, PricingPlanPrice]
 }
 
 action deleteSocialComment {
@@ -1564,7 +1581,7 @@ api chatStreamApi {
   fn: import { chatStreamHandler } from "@src/server/operations/chatStream",
   auth: true,
   httpRoute: (POST, "/api/chat-stream"),
-  entities: [User, UserAiCredits, AiResponseCache, Membership, Parish, TenantBilling, UserTwoFactor, DailyAiUsage, Conversation, ConversationParticipant, Message]
+  entities: [User, UserAiCredits, AiResponseCache, Membership, Parish, TenantBilling, UserTwoFactor, DailyAiUsage, Conversation, ConversationParticipant, Message, PricingPlan, PricingPlanPrice]
 }
 
 api healthCheckApi {
@@ -1581,7 +1598,7 @@ api readinessCheckApi {
 api maintenanceApi {
   fn: import { maintenanceHandler } from "@src/server/api/maintenance",
   httpRoute: (POST, "/api/internal/maintenance"),
-  entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish, SocialMedia, LifecycleEmailLog, Membership, ClassEnrollment, AttendanceRecord]
+  entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish, SocialMedia, LifecycleEmailLog, Membership, ClassEnrollment, AttendanceRecord, PricingPlan, PricingPlanPrice]
 }
 
 api lifecycleUnsubscribeApi {
@@ -1616,7 +1633,7 @@ page AppImportCatechumensPage {
 
 action importCatechumensCSV {
   fn: import { importCatechumensCSV } from "@src/server/operations/importOperations",
-  entities: [CatechumenProfile, Membership, Parish, CatechesisClass, ClassEnrollment, TenantBilling, Diocese, User]
+  entities: [CatechumenProfile, Membership, Parish, CatechesisClass, ClassEnrollment, TenantBilling, Diocese, User, PricingPlan, PricingPlanPrice]
 }
 //#endregion
 
@@ -2118,7 +2135,7 @@ action restoreContentVersion {
 // Declared as an action: it calls the AI provider and deducts credits.
 action getPedagogicalHooks {
   fn: import { getPedagogicalHooks } from "@src/server/operations/collaborativeOperations",
-  entities: [User, UserAiCredits, Membership, Parish, TenantBilling, DailyAiUsage]
+  entities: [User, UserAiCredits, Membership, Parish, TenantBilling, DailyAiUsage, PricingPlan, PricingPlanPrice]
 }
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -2174,7 +2191,7 @@ action createCatecheticalYear {
 //#region Platform Admin Operations (Centro de Comando)
 query getPlatformOverview {
   fn: import { getPlatformOverview } from "@src/server/operations/platformOperations",
-  entities: [User, Parish, TenantBilling, CatechesisClass, ClassEnrollment]
+  entities: [User, Parish, TenantBilling, CatechesisClass, ClassEnrollment, PricingPlan, PricingPlanPrice]
 }
 
 query getPlatformGrowth {
@@ -2225,6 +2242,31 @@ query getAuditLogs {
 query getSystemHealth {
   fn: import { getSystemHealth } from "@src/server/operations/systemOperations",
   entities: [Logs, DailyAiUsage, User, DailyStats]
+}
+
+query listPricingPlansAdmin {
+  fn: import { listPricingPlansAdmin } from "@src/server/operations/pricingAdminOperations",
+  entities: [PricingPlan, PricingPlanPrice, User, TenantBilling]
+}
+
+action upsertPricingPlan {
+  fn: import { upsertPricingPlan } from "@src/server/operations/pricingAdminOperations",
+  entities: [PricingPlan, PricingPlanPrice, AuditLog, User, TenantBilling]
+}
+
+action setPricingPlanPrice {
+  fn: import { setPricingPlanPrice } from "@src/server/operations/pricingAdminOperations",
+  entities: [PricingPlan, PricingPlanPrice, AuditLog, User]
+}
+
+action archivePricingPlan {
+  fn: import { archivePricingPlan } from "@src/server/operations/pricingAdminOperations",
+  entities: [PricingPlan, PricingPlanPrice, AuditLog, User, TenantBilling]
+}
+
+action reorderPricingPlans {
+  fn: import { reorderPricingPlans } from "@src/server/operations/pricingAdminOperations",
+  entities: [PricingPlan, PricingPlanPrice, AuditLog, User]
 }
 //#endregion
 

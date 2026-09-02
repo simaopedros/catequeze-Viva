@@ -11,7 +11,7 @@ import {
   getIntendedInterval,
   type BillingInterval,
 } from "../lib/intendedPlan";
-import { PLANS, PLAN_IDS, type PlanId } from "../../shared/pricing";
+import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import {
   formatEquivalentMonthlyPrice,
   formatPrice,
@@ -29,7 +29,7 @@ import {
 type PlanLevel = "personal" | "institutional";
 
 interface PricingPlan {
-  planId: PlanId;
+  planId: string;
   level: PlanLevel;
   name: string;
   desc: string;
@@ -49,10 +49,6 @@ function translatedString(
   return typeof value === "string" && value !== key ? value : fallback;
 }
 
-function translatedArray<T>(value: unknown, fallback: T[]): T[] {
-  return Array.isArray(value) ? (value as T[]) : fallback;
-}
-
 function equivalentMonthlyPrice(annualCents: number): string {
   return formatEquivalentMonthlyPrice(annualCents);
 }
@@ -63,12 +59,12 @@ function annualSavings(monthlyCents: number, annualCents: number): string {
 
 export default function PricingPage() {
   const { t: tp } = useTranslation("public");
-  const { t: tb } = useTranslation("billing");
   const { data: user } = useAuth();
   const navigate = useNavigate();
   const isLoggedIn = !!user;
   const [billingInterval, setBillingInterval] =
     useState<BillingInterval>(getIntendedInterval);
+  const { publicPlans, localize } = usePlanCatalog();
 
   useEffect(() => {
     trackMarketingEvent("pricing_viewed", { placement: "pricing_page" });
@@ -79,26 +75,25 @@ export default function PricingPage() {
   }, []);
 
   const pricingPlans = useMemo((): PricingPlan[] => {
-    return (PLAN_IDS as readonly PlanId[])
-      .filter((id) => id !== "catechist_free" && id !== "unlimited")
-      .map((id) => {
-        const def = PLANS[id];
+    return publicPlans
+      .filter((plan) => plan.kind === "subscription" && plan.slug !== "catechist_free")
+      .map((plan) => {
+        const loc = localize(plan);
+        const monthly = plan.prices.find((price) => price.interval === "monthly" && price.isActive);
+        const annual = plan.prices.find((price) => price.interval === "annual" && price.isActive);
         return {
-          planId: id,
-          level: def.level,
-          name: translatedString(tb, `plans.${id}.name`, def.name),
-          desc: translatedString(tp, `pricing.plan_desc.${id}`, def.name),
-          features: translatedArray(
-            tb(`plans.${id}.features`, { returnObjects: true }),
-            def.features,
-          ),
-          highlight: def.highlight,
+          planId: plan.slug,
+          level: plan.level,
+          name: loc.name,
+          desc: translatedString(tp, `pricing.plan_desc.${plan.slug}`, plan.description || loc.name),
+          features: loc.features,
+          highlight: plan.highlight,
           cta: translatedString(tp, "pricing.cta_paid", "Comecar agora"),
-          priceCents: def.prices.monthlyCents,
-          priceCentsAnnual: def.prices.annualCents,
+          priceCents: monthly?.unitAmountCents ?? 0,
+          priceCentsAnnual: annual?.unitAmountCents,
         };
       });
-  }, [tp, tb]);
+  }, [publicPlans, tp, localize]);
 
   const faqResult = tp("pricing.faq", { returnObjects: true });
   const faq = Array.isArray(faqResult)

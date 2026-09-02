@@ -534,8 +534,8 @@ describe('getWorkspaceEffectivePlan', () => {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────
 
-function mapPlanIdToPaymentPlanId(planId: PlanId): PaymentPlanId {
-  const mapping: Record<PlanId, PaymentPlanId> = {
+function mapPlanIdToPaymentPlanId(planId: string): PaymentPlanId {
+  const mapping: Record<string, PaymentPlanId> = {
     catechist_free: PaymentPlanId.CatechistFree,
     single: PaymentPlanId.Single,
     unlimited: PaymentPlanId.Unlimited,

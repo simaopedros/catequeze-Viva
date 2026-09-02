@@ -26,6 +26,7 @@ export const stripePaymentProcessor: PaymentProcessor = {
     userEmail,
     paymentPlan,
     interval,
+    priceId: priceIdOverride,
     prismaUserDelegate,
     tracking,
     trialPeriodDays: _ignoredTrialPeriodDays = 0,
@@ -37,7 +38,7 @@ export const stripePaymentProcessor: PaymentProcessor = {
       prismaUserDelegate,
     );
 
-    const priceId = requireStripePriceId(paymentPlan, interval);
+    const priceId = priceIdOverride ?? requireStripePriceId(paymentPlan, interval);
     const mode = paymentPlanEffectToStripeCheckoutSessionMode(paymentPlan.effect);
     // Assinar never starts a Stripe trial — ignore leftover caller days.
     const resolvedTrialDays = 0;

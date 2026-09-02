@@ -29,6 +29,8 @@ export {
   PLANS,
   SUBSCRIPTION_TRIAL_DAYS,
   PRODUCT_TRIAL_PLAN_ID,
+  PRISMA_INSTITUTIONAL_PLANS,
+  PRISMA_FREE_PLANS,
   type PlanId,
   type PlanLimits,
   type SocialLimits,

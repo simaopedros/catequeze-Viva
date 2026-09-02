@@ -16,18 +16,21 @@ import {
 import { validateOrThrow } from "../server/validation";
 import { paymentProcessor } from "./paymentProcessor";
 import { stripeClient } from "./stripe/stripeClient";
-import { requireStripePriceId } from "./paymentProcessorPlans";
 import {
   isSubscriptionActiveLike,
   resolvePlanIdOrFree,
   type PlanId,
-  PLANS,
+  type CatalogPlan,
 } from "../shared/pricing";
 import { resolveStripeCheckoutTrialDays } from "./stripe/trialConfig";
 import { trackPricingEvent } from "./pricingEvents";
 import { detectCurrency } from "../shared/currency";
 import { sendInitiateCheckoutToMeta } from "./meta/sendInitiateCheckout";
 import { getCheckoutPlanRejection } from "./checkoutPlanPolicy";
+import {
+  loadPlanCatalog,
+  requireActiveStripePriceId,
+} from "../server/pricing/planCatalogService";
 
 export type CheckoutSession = {
   sessionUrl: string | null;
@@ -35,7 +38,7 @@ export type CheckoutSession = {
 };
 
 const generateCheckoutSessionSchema = z.object({
-  planId: z.nativeEnum(PaymentPlanId),
+  planId: z.string().min(1),
   interval: z.enum(["monthly", "annual"]).optional().default("monthly"),
   priceId: z.string().optional(),
   planName: z.string().optional(),
@@ -58,8 +61,19 @@ const generateCheckoutSessionSchema = z.object({
 
 type GenerateCheckoutSessionInput = z.infer<typeof generateCheckoutSessionSchema>;
 
-const INSTITUTIONAL_PLAN_IDS: PaymentPlanId[] = [PaymentPlanId.Unlimited];
 const MANAGEABLE_SUBSCRIPTION_STATUSES = new Set(["trialing", "active", "past_due"]);
+
+function getCheckoutValue(
+  plan: CatalogPlan,
+  interval: "monthly" | "annual",
+): number | undefined {
+  const wanted = interval === "annual" ? "annual" : plan.kind === "credits" ? "one_time" : "monthly";
+  const price = plan.prices.find((item) => item.interval === wanted && item.isActive)
+    ?? plan.prices.find((item) => item.interval === "monthly" && item.isActive)
+    ?? plan.prices.find((item) => item.isActive);
+  if (!price) return undefined;
+  return Number((price.unitAmountCents / 100).toFixed(2));
+}
 
 async function listManageableSubscriptions(customerId: string) {
   const subscriptions = await stripeClient.subscriptions.list({
@@ -71,23 +85,6 @@ async function listManageableSubscriptions(customerId: string) {
   return subscriptions.data.filter((subscription) =>
     MANAGEABLE_SUBSCRIPTION_STATUSES.has(subscription.status),
   );
-}
-
-function getCheckoutValue(
-  paymentPlanId: PaymentPlanId,
-  interval: "monthly" | "annual",
-): number | undefined {
-  if (paymentPlanId === PaymentPlanId.Single) {
-    const cents = interval === "annual" ? PLANS.single.prices.annualCents ?? PLANS.single.prices.monthlyCents : PLANS.single.prices.monthlyCents;
-    return Number((cents / 100).toFixed(2));
-  }
-
-  if (paymentPlanId === PaymentPlanId.Unlimited) {
-    const cents = interval === "annual" ? PLANS.unlimited.prices.annualCents ?? PLANS.unlimited.prices.monthlyCents : PLANS.unlimited.prices.monthlyCents;
-    return Number((cents / 100).toFixed(2));
-  }
-
-  return undefined;
 }
 
 export const generateCheckoutSession: GenerateCheckoutSession<
@@ -112,14 +109,25 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     throw new HttpError(403, "User needs an email to make a payment.");
   }
 
-  const paymentPlan = paymentPlans[paymentPlanId];
+  const catalog = await loadPlanCatalog(context);
+  const catalogPlan = catalog.bySlug[paymentPlanId] ?? catalog.bySlug[paymentPlanId.toLowerCase()];
+  if (!catalogPlan) {
+    throw new HttpError(400, "Plano inválido.");
+  }
 
-  const planRejection = getCheckoutPlanRejection(paymentPlanId);
+  const paymentPlan = paymentPlans[catalogPlan.slug] ?? {
+    id: catalogPlan.slug,
+    effect: catalogPlan.kind === "credits"
+      ? { kind: "credits" as const, amount: catalogPlan.creditsAmount ?? 0 }
+      : { kind: "subscription" as const },
+  };
+
+  const planRejection = getCheckoutPlanRejection(catalogPlan.slug, catalogPlan);
   if (planRejection) {
     throw new HttpError(400, planRejection);
   }
 
-  if (INSTITUTIONAL_PLAN_IDS.includes(paymentPlanId) && !context.user.isAdmin) {
+  if (catalogPlan.level === "institutional" && !context.user.isAdmin) {
     const ownedParish = await context.entities.Parish.findFirst({
       where: { ownerId: context.user.id, type: { not: "PERSONAL" } },
     });
@@ -142,7 +150,7 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     }
   }
 
-  const isInstitutionalPlan = INSTITUTIONAL_PLAN_IDS.includes(paymentPlanId);
+  const isInstitutionalPlan = catalogPlan.level === "institutional";
   const freshUser = await context.entities.User.findUnique({
     where: { id: userId },
     select: {
@@ -158,8 +166,8 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     );
   }
 
-  const planName = input.planName ?? prettyPaymentPlanName(paymentPlanId);
-  const checkoutValue = input.value ?? getCheckoutValue(paymentPlanId, interval) ?? 0;
+  const planName = input.planName ?? prettyPaymentPlanName(catalogPlan.slug);
+  const checkoutValue = input.value ?? getCheckoutValue(catalogPlan, interval) ?? 0;
   const currency = input.currency ?? detectCurrency();
   const isCreditsPlan = paymentPlan.effect.kind === "credits";
 
@@ -168,6 +176,12 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     isCredits: isCreditsPlan,
   });
 
+  const resolvedPriceId = await requireActiveStripePriceId(
+    context,
+    catalogPlan.slug,
+    isCreditsPlan ? "one_time" : interval,
+  );
+
   let session;
   try {
     const result = await paymentProcessor.createCheckoutSession({
@@ -175,6 +189,7 @@ export const generateCheckoutSession: GenerateCheckoutSession<
       userEmail,
       paymentPlan,
       interval,
+      priceId: resolvedPriceId,
       prismaUserDelegate: context.entities.User,
       trialPeriodDays,
       tracking: {
@@ -392,13 +407,19 @@ export const changeSubscriptionPlan: ChangeSubscriptionPlan<
     throw new HttpError(400, "Nenhuma assinatura ativa encontrada para alterar.");
   }
 
-  const paymentPlan = paymentPlans[paymentPlanId as PaymentPlanId];
-  if (!paymentPlan || paymentPlanId === PaymentPlanId.CatechistFree) {
+  const catalog = await loadPlanCatalog(context);
+  const catalogPlan = catalog.bySlug[paymentPlanId] ?? catalog.bySlug[String(paymentPlanId).toLowerCase()];
+  if (!catalogPlan || catalogPlan.slug === PaymentPlanId.CatechistFree || catalogPlan.kind !== "subscription") {
     throw new HttpError(400, "Plano inválido para alteração.");
   }
 
+  const paymentPlan = paymentPlans[catalogPlan.slug] ?? {
+    id: catalogPlan.slug,
+    effect: { kind: "subscription" as const },
+  };
+
   try {
-    const priceId = requireStripePriceId(paymentPlan, interval || 'monthly');
+    const priceId = await requireActiveStripePriceId(context, catalogPlan.slug, interval || "monthly");
     const stripeSubscriptionId = (await listManageableSubscriptions(user.paymentProcessorUserId))[0]?.id;
     if (!stripeSubscriptionId) {
       throw new HttpError(400, "Nenhuma assinatura ativa encontrada para alterar.");

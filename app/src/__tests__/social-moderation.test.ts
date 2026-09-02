@@ -8,6 +8,7 @@ vi.mock('wasp/server', () => ({
       this.statusCode = statusCode;
     }
   },
+  env: {},
 }));
 
 // The Comunidade module ships disabled (shared/socialFeatures). These tests

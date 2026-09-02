@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router";
-import { useTranslation } from "react-i18next";
 import { ArrowRight, Check } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { useLandingText } from "../hooks/useLandingText";
@@ -10,8 +9,9 @@ import {
   trackViewPricing,
 } from "../../client/analytics/metaTracking";
 import { Button } from "../../client/components/ui/button";
+import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import { formatPrice } from "../../shared/currency";
-import { LAUNCH_CATEQUISTA_ONLY, PLANS } from "../../shared/pricing";
+import { LAUNCH_CATEQUISTA_ONLY } from "../../shared/pricing";
 
 /**
  * Minimal pricing for the main landing: trial-first, no annual toggle noise.
@@ -19,7 +19,7 @@ import { LAUNCH_CATEQUISTA_ONLY, PLANS } from "../../shared/pricing";
  */
 export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
   const tr = useLandingText(ns);
-  const { t: tb } = useTranslation("billing");
+  const { localize, publicPlans, getBySlug } = usePlanCatalog();
   const {
     ref: headerRef,
     className: headerClass,
@@ -41,22 +41,15 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
     });
   }, [isVisible, ns]);
 
-  const plans = [
-    {
-      id: "single" as const,
-      price: formatPrice(PLANS.single.prices.monthlyCents),
-      highlight: true,
-    },
-    ...(!LAUNCH_CATEQUISTA_ONLY
-      ? [
-          {
-            id: "unlimited" as const,
-            price: formatPrice(PLANS.unlimited.prices.monthlyCents),
-            highlight: false,
-          },
-        ]
-      : []),
-  ];
+  const plans = publicPlans
+    .filter((plan) => plan.kind === "subscription" && plan.slug !== "catechist_free")
+    .map((plan) => ({
+      id: plan.slug,
+      price: formatPrice(
+        plan.prices.find((item) => item.interval === "monthly" && item.isActive)?.unitAmountCents ?? 0,
+      ),
+      highlight: plan.highlight,
+    }));
 
   return (
     <section
@@ -80,26 +73,26 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
 
       <div
         className={
-          LAUNCH_CATEQUISTA_ONLY
+          plans.length < 2
             ? "max-w-lg mx-auto"
             : "grid gap-4 sm:grid-cols-2"
         }
       >
         {plans.map((plan, index) => {
-          const name = (() => {
-            const v = tb(`plans.${plan.id}.name`);
-            return typeof v === "string" && !v.startsWith("plans.")
-              ? v
-              : tr(`plans.${plan.id}.name`);
-          })();
+          const name = localize(plan.id).name;
+          const catalogPlan = getBySlug(plan.id);
           const audience = tr(`plans.${plan.id}.audience`);
           const features = tr(`plans.${plan.id}.features`, {
             returnObjects: true,
           });
           const featureList = Array.isArray(features)
             ? (features as string[])
-            : [];
+            : localize(catalogPlan).features;
           const href = `/signup?plan=${plan.id}`;
+          const monthlyCents =
+            catalogPlan.prices.find(
+              (item) => item.interval === "monthly" && item.isActive,
+            )?.unitAmountCents ?? 0;
 
           return (
             <PlanCard
@@ -122,6 +115,7 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
               href={href}
               ns={ns}
               planId={plan.id}
+              monthlyCents={monthlyCents}
             />
           );
         })}
@@ -159,6 +153,7 @@ function PlanCard({
   href,
   ns,
   planId,
+  monthlyCents,
 }: {
   delay: number;
   name: string;
@@ -172,6 +167,7 @@ function PlanCard({
   href: string;
   ns: string;
   planId: string;
+  monthlyCents: number;
 }) {
   const { ref, className } = useScrollReveal({ delay });
 
@@ -222,10 +218,7 @@ function PlanCard({
               destination: href,
               plan: planId,
             });
-            const planDef = PLANS[planId as keyof typeof PLANS];
-            const value = planDef
-              ? Number((planDef.prices.monthlyCents / 100).toFixed(2))
-              : undefined;
+            const value = Number((monthlyCents / 100).toFixed(2));
             trackLead({
               content_name: name,
               plan_id: planId,

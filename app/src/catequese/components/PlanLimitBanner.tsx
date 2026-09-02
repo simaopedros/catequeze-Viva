@@ -4,10 +4,10 @@ import { useTranslation, Trans } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";
 import {
-  getPlanLimits,
   resolvePlanIdOrFree,
   type PlanLimits,
 } from "../../shared/planLimits";
+import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import {
   buildBillingJourneyHrefFromContext,
   type UpgradeJourneyReason,
@@ -57,8 +57,9 @@ export function PlanLimitBanner({
   canManageBilling = true,
 }: PlanLimitBannerProps) {
   const { t } = useTranslation("billing");
+  const { localize, priceLabel, getBySlug } = usePlanCatalog();
   const plan = userPlan || "catechist_free";
-  const limits: PlanLimits = getPlanLimits(plan);
+  const limits: PlanLimits = getBySlug(plan).limits;
   const maxAllowed =
     maxAllowedOverride ??
     (type === "class_limit"
@@ -70,11 +71,11 @@ export function PlanLimitBanner({
           : null);
 
   const normalizedPlan = resolvePlanIdOrFree(plan);
-  const currentPlanName = t(`plans.${normalizedPlan}.name`);
+  const currentPlanName = localize(normalizedPlan).name;
   const defaultUpgradePlanKey =
     normalizedPlan === "single" ? "unlimited" : "single";
-  const defaultUpgradePlan = t(`plans.${defaultUpgradePlanKey}.name`);
-  const defaultUpgradePrice = t(`plans.${defaultUpgradePlanKey}.price`);
+  const defaultUpgradePlan = localize(defaultUpgradePlanKey).name;
+  const defaultUpgradePrice = priceLabel(getBySlug(defaultUpgradePlanKey), "monthly");
   const journeyReason: UpgradeJourneyReason =
     type === "ai_credits" ? "generic" : type;
   const upgradeHref = buildBillingJourneyHrefFromContext({

@@ -10,15 +10,9 @@ import { PastoralDashboard } from "../components/dashboard/PastoralDashboard";
 import { CoordinatorDashboard } from "../components/dashboard/CoordinatorDashboard";
 import { InstitutionalDashboard } from "../components/dashboard/InstitutionalDashboard";
 import { SkeletonPage } from "../../client/components/Skeletons";
+import { isInstitutionalPlan } from "../../shared/pricing";
 import { FAMILY_PORTAL_ROLES, isFamilyPortalHost } from "../../shared/portal";
 
-const INSTITUTIONAL_PLANS = [
-  "unlimited",
-  "parish",
-  "parish_essential",
-  "parish_complete",
-  "diocese",
-];
 const INSTITUTIONAL_TYPES = ["PARISH", "DIOCESE"];
 const STAFF_ROLES = [
   "SUPER_ADMIN",
@@ -40,7 +34,7 @@ export function shouldUseInstitutionalDashboard(args: {
   const { workspaceType, workspacePlan, userRole } = args;
   return (
     Boolean(workspaceType && INSTITUTIONAL_TYPES.includes(workspaceType)) &&
-    Boolean(workspacePlan && INSTITUTIONAL_PLANS.includes(workspacePlan)) &&
+    Boolean(workspacePlan && isInstitutionalPlan(workspacePlan)) &&
     Boolean(userRole && STAFF_ROLES.includes(userRole))
   );
 }
