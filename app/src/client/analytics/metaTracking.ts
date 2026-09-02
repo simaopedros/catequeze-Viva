@@ -630,6 +630,8 @@ export function initMetaPixel(): boolean {
       // Enable Advanced Matching (autoConfig) for higher Event Match Quality (EMQ).
       // Meta automatically extracts & hashes email, phone, name from form inputs.
       window.fbq!("init", pixelId, {}, { autoConfig: true, debug: false });
+      // Fire initial PageView after init (Meta Pixel requirement).
+      window.fbq!("track", "PageView");
     }
 
     w.__catequeseMetaPixelInited[pixelId] = true;

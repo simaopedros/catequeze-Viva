@@ -14,6 +14,7 @@ import {
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import GoogleTagScripts from "./analytics/GoogleTagScripts";
+import MetaPixelScripts from "./analytics/MetaPixelScripts";
 import { activatePreloadedFonts } from "./fonts";
 import { rememberIntendedPath } from "../auth/intendedPath";
 import { isFamilyPortalHost } from "../shared/portal";
@@ -444,8 +445,8 @@ export default function App() {
         <CookieConsentBanner />
       </Suspense>
       <InstallPrompt />
-      {/* GTM only — Meta Pixel must live inside GTM to avoid double-loading */}
       <GoogleTagScripts />
+      <MetaPixelScripts />
     </>
   );
 }
