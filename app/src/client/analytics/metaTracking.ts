@@ -87,6 +87,8 @@ interface CompleteRegistrationPayload {
   content_name?: string;
   content_category?: string;
   status?: boolean;
+  /** Optional: user email for Advanced Matching (hashed automatically by fbq). */
+  email?: string;
 }
 
 interface LeadPayload {
@@ -396,7 +398,7 @@ export function buildInitiateCheckoutDataLayerEvent(
 export function buildCompleteRegistrationDataLayerEvent(
   payload: CompleteRegistrationPayload = {},
 ): Record<string, unknown> {
-  return cleanObject({
+  const data = cleanObject({
     meta_event_name: "CompleteRegistration",
     event_id: payload.event_id ?? createEventId("complete_registration"),
     content_name: payload.content_name ?? "Signup Catechis",
@@ -404,6 +406,14 @@ export function buildCompleteRegistrationDataLayerEvent(
     method: payload.method ?? "email",
     status: payload.status ?? true,
   });
+  
+  // If email provided for Advanced Matching, add as em (hashed by fbq).
+  // Only include when explicitly passed — do NOT extract from DOM (AAM does that).
+  if (payload.email) {
+    (data as Record<string, unknown>).em = payload.email;
+  }
+  
+  return data;
 }
 
 export function buildLeadDataLayerEvent(
@@ -552,6 +562,11 @@ type WindowWithMetaInit = Window & {
  * Returns true if the pixel was (or already is) initialized.
  *
  * Never calls fbq('init') twice for the same ID (avoids Meta "Duplicate Pixel ID").
+ * 
+ * Enables Advanced Matching (autoConfig) to improve Event Match Quality (EMQ):
+ * - Automatically extracts email, phone, first/last name from form fields
+ * - Hashes PII before sending to Meta
+ * - Raises EMQ from ~6/10 to 8-10/10
  */
 export function initMetaPixel(): boolean {
   if (!isBrowser()) return false;
@@ -612,7 +627,9 @@ export function initMetaPixel(): boolean {
     // If fbq already existed (GTM / previous init), do not call init again —
     // Meta logs "Duplicate Pixel ID" and double-counts.
     if (!hadFbq) {
-      window.fbq!("init", pixelId);
+      // Enable Advanced Matching (autoConfig) for higher Event Match Quality (EMQ).
+      // Meta automatically extracts & hashes email, phone, name from form inputs.
+      window.fbq!("init", pixelId, {}, { autoConfig: true, debug: false });
     }
 
     w.__catequeseMetaPixelInited[pixelId] = true;

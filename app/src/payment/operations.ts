@@ -147,6 +147,7 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     where: { id: userId },
     select: {
       subscriptionStatus: true,
+      phone: true,
     },
   });
   const hasActiveSub = isSubscriptionActiveLike(freshUser?.subscriptionStatus);
@@ -229,6 +230,7 @@ export const generateCheckoutSession: GenerateCheckoutSession<
   await sendInitiateCheckoutToMeta({
     userId,
     email: userEmail,
+    phone: freshUser?.phone,
     eventId: initiateCheckoutEventId,
     planId: paymentPlanId,
     planName,

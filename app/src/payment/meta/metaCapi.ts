@@ -4,6 +4,8 @@ import { logger } from "../../server/logger";
 
 export interface MetaEventUserData {
   email?: string;
+  /** Unhashed phone number — hashed before send. E.164 format recommended (e.g. +5531999999999). */
+  phone?: string;
   /** Unhashed external user id — hashed before send. */
   external_id?: string;
   fbp?: string;
@@ -94,9 +96,15 @@ export function buildMetaEventRequestBody(
       ? params.user_data.external_id.trim()
       : undefined,
   );
+  
+  // Hash phone if provided — Meta requires digits only (no spaces/dashes) for best match.
+  // E.164 format recommended: +5531999999999
+  const normalizedPhone = params.user_data?.phone?.replace(/\D/g, "");
+  const phoneHash = sha256(normalizedPhone);
 
   const userData = cleanObject({
     em: emailHash ? [emailHash] : undefined,
+    ph: phoneHash ? [phoneHash] : undefined,
     external_id: externalIdHash ? [externalIdHash] : undefined,
     fbp: params.user_data?.fbp,
     fbc: params.user_data?.fbc,

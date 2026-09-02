@@ -18,6 +18,8 @@ import { isMetaCapiConfigured, sendMetaEvent } from "./metaCapi";
 export interface SendPurchaseToMetaArgs {
   userId: string;
   email: string | null | undefined;
+  /** Optional phone number for Event Match Quality (sent hashed). E.164 format recommended. */
+  phone?: string | null;
   eventId: string;
   planId: string;
   planName: string;
@@ -86,6 +88,7 @@ export async function sendPurchaseToMeta(
         args.eventSourceUrl || `${config.frontendUrl}/obrigado`,
       user_data: {
         email: args.email ?? undefined,
+        phone: args.phone ?? undefined,
         external_id: args.userId,
         fbp: args.fbp,
         fbc: args.fbc,

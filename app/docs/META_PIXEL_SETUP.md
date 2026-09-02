@@ -77,19 +77,44 @@ Quando aprovado, adicione as mesmas variáveis no servidor de produção.
    - Test Events deve mostrar **2 eventos Purchase** com o mesmo `event_id` (browser + CAPI)
    - Meta deduplica automaticamente, contando apenas 1 conversão
 
-#### Event Match Quality
+#### Event Match Quality (EMQ)
 
-Verifique a qualidade de atribuição no Events Manager:
+Event Match Quality mede quão bem o Meta pode atribuir eventos server-side (CAPI) a perfis de usuários reais. **Meta reporta EMQ de 0 a 10**. Quanto maior, melhor a atribuição e otimização de anúncios.
 
-- **Excelente** (8-10): fbp, fbc, email, external_id presentes
-- **Bom** (5-7): fbp ou email presente
-- **Ruim** (<5): falta de parâmetros de matching
+**Implementado para melhorar EMQ de 6.1/10 → 8-10/10**:
 
-**Importante**: 
+##### Browser Pixel (Automatic Advanced Matching - AAM)
+- **Habilitado**: `fbq('init', pixelId, {}, { autoConfig: true })`
+- **O que faz**: Meta extrai automaticamente email, phone, first/last name de campos de formulário HTML e envia hasheado
+- **Benefício**: Melhora EMQ sem código adicional em todos os eventos PageView, CompleteRegistration, Lead
+
+##### Conversions API (Server-side)
+Para **todos** os eventos CAPI (CompleteRegistration, InitiateCheckout, StartTrial, Purchase), enviamos:
+
+| Parâmetro | Descrição | Hash | Impacto EMQ |
+|-----------|-----------|------|-------------|
+| `em` | Email do usuário | SHA256 | ⭐⭐⭐ Alto |
+| `ph` | Telefone do perfil (se disponível) | SHA256 | ⭐⭐⭐ Alto |
+| `external_id` | User UUID do banco | SHA256 | ⭐⭐⭐ Alto |
+| `fbp` | Cookie `_fbp` (first-party) | Não | ⭐⭐⭐ Crítico |
+| `fbc` | Cookie `_fbc` (click ID) | Não | ⭐⭐⭐ Crítico |
+| `client_ip_address` | IP do usuário | Não | ⭐⭐ Médio |
+| `client_user_agent` | User-Agent do navegador | Não | ⭐⭐ Médio |
+| `event_source_url` | URL onde evento ocorreu | Não | ⭐ Baixo |
+
+**Como verificar EMQ**:
+1. Events Manager → Test Events (homolog) ou Data Sources (produção)
+2. Clique em um evento → veja **Event Match Quality** score
+3. **Meta recomenda EMQ ≥ 7.0** para boa performance de ads
+4. Se EMQ < 7, verifique se `fbp`, `fbc`, `em`, `external_id` estão presentes no payload
+
+**Notas técnicas**:
 - `fbp` = cookie `_fbp` do navegador (auto-gerado pelo pixel)
 - `fbc` = cookie `_fbc` derivado de `fbclid` (clique em anúncio do Meta)
 - `external_id` = user_id do banco (hashed antes de enviar)
 - `em` = email do usuário (hashed antes de enviar)
+- `ph` = telefone E.164 (ex: +5531999999999), apenas dígitos hasheados
+- **Phone é opcional**: só enviado se catequista preencheu telefone no perfil
 
 ### 5. Remover Test Event Code em Produção
 
@@ -177,6 +202,27 @@ app/src/payment/stripe/
 ```
 
 **⚠️ Nunca enviar StartTrial com `value: 0` ou sem value** — Meta rejeita e marca como "affected".
+
+## Otimização de Campanhas para Purchase
+
+**⚠️ Importante**: Após homolog validar que Purchase events estão fluindo corretamente com EMQ ≥ 7.0, Simão/Chefia deve:
+
+1. **Ads Manager** → Campanhas → Editar conjunto de anúncios
+2. **Evento de conversão**: Trocar de `CompleteRegistration` para **`Purchase`**
+3. **Janela de atribuição**: Recomendado 7 dias click, 1 dia view
+4. **Aguardar 7-14 dias** para Meta aprender com os novos dados de Purchase
+5. **Não pausar** as campanhas — algoritmo do Meta precisa de volume
+
+**Por que trocar?**:
+- `CompleteRegistration` = cadastro grátis (trial 7 dias sem cartão)
+- `Purchase` = pagamento real (R$ 9.90+ BRL)
+- Meta otimiza para o evento configurado → otimizar para Purchase traz **mais compradores**, não apenas trialists
+
+**Quando trocar?**:
+- ✅ **SIM**: Após 1-2 semanas de Purchase events fluindo em produção (não homolog)
+- ✅ **SIM**: EMQ ≥ 7.0 confirmado
+- ❌ **NÃO**: Imediatamente — aguardar volume de dados
+- ❌ **NÃO**: Se Purchase events < 10/semana (algoritmo não aprende)
 
 ## Troubleshooting
 

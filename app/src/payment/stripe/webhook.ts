@@ -84,7 +84,7 @@ export const stripeWebhook: PaymentsWebhook = async (
 
     switch (event.type) {
       case "checkout.session.completed":
-        await handleCheckoutSessionCompleted(event, trackedEventDelegate);
+        await handleCheckoutSessionCompleted(event, prismaUserDelegate, trackedEventDelegate);
         break;
       case "invoice.paid":
       case "invoice.payment_succeeded":
@@ -143,6 +143,7 @@ function constructStripeEvent(request: express.Request): Stripe.Event {
 
 async function handleCheckoutSessionCompleted(
   event: Stripe.CheckoutSessionCompletedEvent,
+  prismaUserDelegate: PrismaClient["user"],
   trackedEventDelegate: TrackedEventDelegate,
 ): Promise<void> {
   const session = event.data.object;
@@ -163,6 +164,23 @@ async function handleCheckoutSessionCompleted(
   const customerEmail = session.customer_details?.email ?? customer?.email ?? undefined;
   const stripeCustomerId = getCustomerId(session.customer);
   const startTrialEventId = `starttrial_${session.id}`;
+  
+  // Fetch user phone for Event Match Quality (EMQ) if client_reference_id exists.
+  let userPhone: string | null | undefined = undefined;
+  if (session.client_reference_id) {
+    try {
+      const user = await prismaUserDelegate.findUnique({
+        where: { id: session.client_reference_id },
+        select: { phone: true },
+      });
+      userPhone = user?.phone;
+    } catch (error) {
+      logger.warn("[webhook] Failed to fetch user phone for StartTrial", {
+        userId: session.client_reference_id,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
 
   if (!isTrialingSubscription(subscription)) {
     await markTrackedEventSkipped(trackedEventDelegate, {
@@ -201,6 +219,7 @@ async function handleCheckoutSessionCompleted(
     event_source_url: metadata.event_source_url || config.frontendUrl,
     user_data: {
       email: customerEmail,
+      phone: userPhone,
       external_id: session.client_reference_id || undefined,
       fbp: metadata.fbp,
       fbc: metadata.fbc,
@@ -401,6 +420,7 @@ async function processPaidInvoice(
           await sendPurchaseToMeta({
             userId: user.id,
             email: customer?.email ?? undefined,
+            phone: user.phone,
             eventId: purchaseEventId,
             planId: metadata.plan_id || paymentPlanId,
             planName: metadata.plan_name || prettyPaymentPlanName(paymentPlanId),
