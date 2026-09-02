@@ -12,6 +12,7 @@ import {
   invalidatePlanCatalogCache,
 } from '../pricing/planCatalogService';
 import { rotateStripePrice } from '../pricing/stripeCatalogSync';
+import { ensurePricingCatalogSeeded } from '../scripts/seedPricingCatalog';
 
 const slugSchema = z
   .string()
@@ -110,6 +111,14 @@ async function countActiveSubscribers(context: any, slug: string) {
 
 export const listPricingPlansAdmin = async (_args: void, context: any) => {
   requirePlatformAdmin(context.user);
+
+  const seeded = await ensurePricingCatalogSeeded({
+    pricingPlan: context.entities.PricingPlan,
+    pricingPlanPrice: context.entities.PricingPlanPrice,
+  });
+  if (seeded.createdPlans > 0 || seeded.createdPrices > 0) {
+    invalidatePlanCatalogCache();
+  }
 
   const rows = await context.entities.PricingPlan.findMany({
     include: { prices: { orderBy: { createdAt: 'desc' } } },
