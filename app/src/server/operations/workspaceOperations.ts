@@ -185,10 +185,34 @@ export const listWorkspaces = async (_args: void, context: any) => {
     }
   }
 
+  let adminExtraParishes: any[] = [];
+  if (context.user.isAdmin) {
+    const exclude = [
+      personalWorkspace?.id,
+      ...membershipParishIds,
+      ...dioceseExtraParishes.map((p: any) => p.id),
+    ].filter((id): id is string => Boolean(id));
+    adminExtraParishes = await context.entities.Parish.findMany({
+      where: {
+        active: true,
+        ...(exclude.length > 0 ? { id: { notIn: exclude } } : {}),
+      },
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        ownerId: true,
+        dioceseId: true,
+        diocese: { select: { id: true, name: true } },
+      },
+    });
+  }
+
   const allBillingIds = [
     ...new Set([
       ...membershipParishIds,
       ...dioceseExtraParishes.map((p: any) => p.id),
+      ...adminExtraParishes.map((p: any) => p.id),
     ]),
   ];
   const billingByParish = await resolveAllEffectiveBilling(context, allBillingIds);
@@ -255,6 +279,35 @@ export const listWorkspaces = async (_args: void, context: any) => {
       plan,
       billingStatus,
       isPersonal: false,
+      membershipStatus: 'ACTIVE',
+      membershipId: null,
+      dioceseId: parish.dioceseId ?? null,
+      dioceseName: parish.diocese?.name ?? null,
+      planInherited,
+      isManager: true,
+    });
+  }
+
+  for (const parish of adminExtraParishes) {
+    if (seenIds.has(parish.id)) continue;
+    seenIds.add(parish.id);
+
+    const billing = (billingByParish.get(parish.id) as any) ?? null;
+    const billingStatus: string | null = billing?.status ?? null;
+    const plan = getEffectiveBillingPlan(billing).toLowerCase();
+    const ownBilling = (ownByParish.get(parish.id) as any) ?? null;
+    const ownActive = isBillingActive(ownBilling);
+    const planInherited = plan !== 'catechist_free' && !ownActive;
+
+    workspaces.push({
+      id: parish.id,
+      name: parish.name,
+      type: parish.type,
+      role: 'SUPER_ADMIN',
+      plan,
+      billingStatus,
+      trialEndsAt: ownBilling?.trialEndsAt ?? billing?.trialEndsAt ?? null,
+      isPersonal: parish.type === 'PERSONAL',
       membershipStatus: 'ACTIVE',
       membershipId: null,
       dioceseId: parish.dioceseId ?? null,

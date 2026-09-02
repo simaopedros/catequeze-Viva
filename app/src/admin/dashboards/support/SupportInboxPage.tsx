@@ -1,19 +1,55 @@
 import { type AuthUser } from "wasp/auth";
-import { useQuery, getContactMessages, markContactMessageRead } from "wasp/client/operations";
+import {
+  useQuery,
+  getContactMessages,
+  markContactMessageRead,
+  replyToContactMessage,
+} from "wasp/client/operations";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import DefaultLayout from "../../layout/DefaultLayout";
 import {
   AppDisplayTitle,
   AppGoldRule,
   AppPageHeader,
 } from "../../../client/components/brand/AppChrome";
-import { Bell, Mail, CheckCircle } from 'lucide-react';
+import { Bell, Mail, CheckCircle, Send } from "lucide-react";
+import { Button } from "../../../client/components/ui/button";
+import { Textarea } from "../../../client/components/ui/textarea";
+import { formatDateTime } from "../../../i18n/format";
+import { useLocale } from "../../../i18n/useLocale";
 
 const SupportInboxPage = ({ user }: { user: AuthUser }) => {
+  const { t } = useTranslation("admin");
+  const { currentLocale } = useLocale();
   const { data: messages = [], isLoading, refetch } = useQuery(getContactMessages);
+  const [replyFor, setReplyFor] = useState<string | null>(null);
+  const [replyBody, setReplyBody] = useState("");
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
 
   const handleMarkRead = async (id: string) => {
     await markContactMessageRead({ id });
     refetch();
+  };
+
+  const handleReply = async (id: string) => {
+    if (!replyBody.trim()) return;
+    setSending(true);
+    setError("");
+    try {
+      const result = await replyToContactMessage({ id, body: replyBody });
+      setReplyFor(null);
+      setReplyBody("");
+      await refetch();
+      if (result && (result as any).emailSent === false) {
+        setError(t("pages.support.email_failed"));
+      }
+    } catch (err: any) {
+      setError(err?.message || t("pages.support.reply_error"));
+    } finally {
+      setSending(false);
+    }
   };
 
   const unreadCount = messages.filter((m: any) => !m.isRead).length;
@@ -22,14 +58,18 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
     <DefaultLayout user={user}>
       <div className="space-y-6">
         <AppPageHeader
-          eyebrow="Admin"
-          title="Suporte"
+          eyebrow={t("pages.admin")}
+          title={t("pages.support.title")}
           subtitle={
             unreadCount > 0
-              ? `Mensagens do formulário de contacto · ${unreadCount} não lida${unreadCount > 1 ? "s" : ""}`
-              : "Mensagens recebidas do formulário de contacto."
+              ? t("pages.support.subtitle_unread", { count: unreadCount })
+              : t("pages.support.subtitle")
           }
         />
+
+        {error && (
+          <p className="text-sm text-destructive">{error}</p>
+        )}
 
         {isLoading ? (
           <div className="flex justify-center py-12">
@@ -39,11 +79,11 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
           <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
             <Bell className="h-10 w-10 text-muted-foreground/40 mb-3" />
             <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
-              Nenhuma mensagem
+              {t("pages.support.empty_title")}
             </AppDisplayTitle>
             <AppGoldRule className="mx-auto" />
             <p className="text-sm text-muted-foreground max-w-md mt-1">
-              As mensagens enviadas pelo formulário de contacto público aparecerão aqui.
+              {t("pages.support.empty_desc")}
             </p>
           </div>
         ) : (
@@ -52,39 +92,101 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
               <div
                 key={msg.id}
                 className={`rounded-sm border border-border/70 p-5 ${
- !msg.isRead ? 'border-[#071A2D]/20 bg-muted/30' : 'bg-white'
- }`}
+                  !msg.isRead ? "border-[#071A2D]/20 bg-muted/30" : "bg-white"
+                }`}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
-                      <span
-                        className="text-sm font-semibold tracking-tight text-[#071A2D]"
-                      >
+                      <span className="text-sm font-semibold tracking-tight text-[#071A2D]">
                         {msg.name}
                       </span>
-                      <span className="text-xs text-muted-foreground">{msg.email}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {msg.email}
+                      </span>
                       {!msg.isRead && (
                         <span className="rounded-sm bg-[#071A2D] px-1.5 py-0.5 text-overline text-white">
-                          Nova
+                          {t("pages.support.new")}
+                        </span>
+                      )}
+                      {msg.repliedAt && (
+                        <span className="rounded-sm bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+                          {t("pages.support.replied")}
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{msg.content}</p>
-                    <p className="text-xs text-muted-foreground/60 mt-2">
-                      {new Date(msg.createdAt).toLocaleString('pt-BR')}
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                      {msg.content}
                     </p>
+                    {msg.replyBody && (
+                      <div className="mt-3 rounded-sm border-l-[3px] border-[#D39A2B] bg-muted/40 px-3 py-2">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                          {t("pages.support.sent_reply")}
+                        </p>
+                        <p className="mt-1 whitespace-pre-wrap text-sm text-[#071A2D]">
+                          {msg.replyBody}
+                        </p>
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground/60 mt-2">
+                      {formatDateTime(msg.createdAt, currentLocale)}
+                    </p>
+                    {replyFor === msg.id ? (
+                      <div className="mt-3 space-y-2">
+                        <Textarea
+                          value={replyBody}
+                          onChange={(e) => setReplyBody(e.target.value)}
+                          rows={4}
+                          placeholder={t("pages.support.reply_placeholder")}
+                        />
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            disabled={sending || !replyBody.trim()}
+                            onClick={() => handleReply(msg.id)}
+                          >
+                            <Send className="mr-1 h-3.5 w-3.5" />
+                            {sending
+                              ? t("pages.support.sending")
+                              : t("pages.support.send")}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setReplyFor(null);
+                              setReplyBody("");
+                            }}
+                          >
+                            {t("pages.plans.cancel")}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
-                  {!msg.isRead && (
-                    <button
-                      onClick={() => handleMarkRead(msg.id)}
-                      className="flex shrink-0 items-center gap-1 rounded-sm bg-muted px-2 py-1 text-xs text-muted-foreground hover:bg-muted/80"
-                    >
-                      <CheckCircle className="h-3 w-3" />
-                      Marcar lida
-                    </button>
-                  )}
+                  <div className="flex shrink-0 flex-col gap-1">
+                    {!msg.isRead && (
+                      <button
+                        onClick={() => handleMarkRead(msg.id)}
+                        className="flex items-center gap-1 rounded-sm bg-muted px-2 py-1 text-xs text-muted-foreground hover:bg-muted/80"
+                      >
+                        <CheckCircle className="h-3 w-3" />
+                        {t("pages.support.mark_read")}
+                      </button>
+                    )}
+                    {msg.email && (
+                      <button
+                        onClick={() => {
+                          setReplyFor(msg.id);
+                          setReplyBody("");
+                        }}
+                        className="flex items-center gap-1 rounded-sm bg-[#071A2D] px-2 py-1 text-xs text-white hover:bg-[#0a2540]"
+                      >
+                        {t("pages.support.reply")}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

@@ -339,6 +339,10 @@ model User {
   socialBannedAt   DateTime?
   socialBanReason  String?
 
+  // Platform admin lifecycle (login blocked; impersonation still allowed)
+  suspendedAt     DateTime?
+  suspendedReason String?
+
   // Lifecycle / conversion emails (activation, trial, win-back)
   lifecycleEmailsOptOutAt DateTime?
   lifecycleEmailLogs      LifecycleEmailLog[]
@@ -1735,6 +1739,7 @@ model ContactFormMessage {
   content String
   isRead    Boolean   @default(false)
   repliedAt DateTime?
+  replyBody String?
 }
 
 // ─── Comunidade (social feed) ─────────────────────────────────────────────────

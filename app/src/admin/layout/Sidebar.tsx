@@ -50,7 +50,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     };
     document.addEventListener("click", clickHandler);
     return () => document.removeEventListener("click", clickHandler);
-  });
+  }, [sidebarOpen]);
 
   useEffect(() => {
     const keyHandler = ({ keyCode }: KeyboardEvent) => {
@@ -59,7 +59,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     };
     document.addEventListener("keydown", keyHandler);
     return () => document.removeEventListener("keydown", keyHandler);
-  });
+  }, [sidebarOpen]);
 
   useEffect(() => {
     localStorage.setItem("sidebar-expanded", sidebarExpanded.toString());
@@ -129,13 +129,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             </h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
-                <NavLink to="/admin/parishes" end className={navLinkClass}>
+                <NavLink to="/admin/parishes" className={navLinkClass}>
                   <Church />
                   {t("sidebar.parishes")}
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/admin/users" end className={navLinkClass}>
+                <NavLink to="/admin/users" className={navLinkClass}>
                   <Sheet />
                   {t("sidebar.users")}
                 </NavLink>

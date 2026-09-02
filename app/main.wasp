@@ -525,6 +525,12 @@ page AppSettingsPage {
   component: import SettingsPage from "@src/catequese/pages/SettingsPage"
 }
 
+route AppSupportRoute { path: "/app/suporte", to: AppSupportPage }
+page AppSupportPage {
+  authRequired: true,
+  component: import MySupportPage from "@src/catequese/pages/MySupportPage"
+}
+
 route AppBillingRoute { path: "/app/billing", to: AppBillingPage }
 page AppBillingPage {
   authRequired: true,
@@ -578,7 +584,7 @@ action completeCoordinatorOnboarding {
 
 action updateParish {
   fn: import { updateParish } from "@src/server/operations/parishOperations",
-  entities: [Parish, Membership]
+  entities: [Parish, Membership, Diocese, AuditLog]
 }
 
 action deleteParish {
@@ -2207,7 +2213,7 @@ query getPlatformGrowth {
 
 query getPlatformAlerts {
   fn: import { getPlatformAlerts } from "@src/server/operations/platformOperations",
-  entities: [User, Parish, TenantBilling]
+  entities: [User, Parish, TenantBilling, Membership]
 }
 
 query getPricingFunnel {
@@ -2222,7 +2228,22 @@ query getParishAdminDetail {
 
 query getUserAdminDetail {
   fn: import { getUserAdminDetail } from "@src/server/operations/userAdminOperations",
-  entities: [User, Membership, AuditLog, DailyAiUsage]
+  entities: [User, Membership, AuditLog, DailyAiUsage, Parish, Community, UserAiCredits, UserTwoFactor]
+}
+
+action adjustUserAiCredits {
+  fn: import { adjustUserAiCredits } from "@src/server/operations/userAdminOperations",
+  entities: [User, UserAiCredits, AuditLog]
+}
+
+action setUserSuspended {
+  fn: import { setUserSuspended } from "@src/server/operations/userAdminOperations",
+  entities: [User, AuditLog]
+}
+
+action impersonateUser {
+  fn: import { impersonateUser } from "@src/server/operations/userAdminOperations",
+  entities: [User, AuditLog]
 }
 
 query getContactMessages {
@@ -2230,9 +2251,14 @@ query getContactMessages {
   entities: [ContactFormMessage]
 }
 
+query getContactUnreadCount {
+  fn: import { getContactUnreadCount } from "@src/server/operations/supportOperations",
+  entities: [ContactFormMessage]
+}
+
 action submitContactMessage {
   fn: import { submitContactMessage } from "@src/server/operations/supportOperations",
-  entities: [ContactFormMessage]
+  entities: [ContactFormMessage, User]
 }
 
 action markContactMessageRead {
@@ -2240,14 +2266,25 @@ action markContactMessageRead {
   entities: [ContactFormMessage]
 }
 
+query getMySupportMessages {
+  fn: import { getMySupportMessages } from "@src/server/operations/supportOperations",
+  entities: [ContactFormMessage],
+  auth: true
+}
+
+action replyToContactMessage {
+  fn: import { replyToContactMessage } from "@src/server/operations/supportOperations",
+  entities: [ContactFormMessage, AuditLog, User, Notification]
+}
+
 query getAuditLogs {
   fn: import { getAuditLogs } from "@src/server/operations/auditOperations",
-  entities: [AuditLog]
+  entities: [AuditLog, User]
 }
 
 query getSystemHealth {
   fn: import { getSystemHealth } from "@src/server/operations/systemOperations",
-  entities: [Logs, DailyAiUsage, User, DailyStats]
+  entities: [Logs, DailyAiUsage, User, DailyStats, UserAiCredits]
 }
 
 query listPricingPlansAdmin {
@@ -2274,6 +2311,31 @@ action reorderPricingPlans {
   fn: import { reorderPricingPlans } from "@src/server/operations/pricingAdminOperations",
   entities: [PricingPlan, PricingPlanPrice, AuditLog, User]
 }
+
+query listAdminLicenses {
+  fn: import { listAdminLicenses } from "@src/server/operations/billingAdminOperations",
+  entities: [Parish, TenantBilling, Diocese, User]
+}
+
+action extendTenantTrial {
+  fn: import { extendTenantTrial } from "@src/server/operations/billingAdminOperations",
+  entities: [TenantBilling, Parish, Diocese, AuditLog, PricingPlan, PricingPlanPrice]
+}
+
+action setComplimentaryPlan {
+  fn: import { setComplimentaryPlan } from "@src/server/operations/billingAdminOperations",
+  entities: [TenantBilling, Parish, Diocese, AuditLog, PricingPlan, PricingPlanPrice]
+}
+
+action cancelTenantLicense {
+  fn: import { cancelTenantLicense } from "@src/server/operations/billingAdminOperations",
+  entities: [TenantBilling, Parish, Diocese, AuditLog]
+}
+
+action cancelUserSubscriptionImmediate {
+  fn: import { cancelUserSubscriptionImmediate } from "@src/server/operations/billingAdminOperations",
+  entities: [User, AuditLog]
+}
 //#endregion
 
 
@@ -2284,7 +2346,7 @@ query getPaginatedUsers {
 
 action updateIsUserAdminById {
   fn: import { updateIsUserAdminById } from "@src/user/operations",
-  entities: [User]
+  entities: [User, AuditLog]
 }
 
 route AccountRoute { path: "/account", to: AccountPage }
@@ -2311,9 +2373,6 @@ page NotFoundPage {
 //#endregion
 
 //#region Contact Form Messages
-// TODO:
-// add functionality to allow users to send messages to admin
-// and make them accessible via the admin dashboard
 route AdminDiocesesRoute { path: "/admin/dioceses", to: AdminDiocesesPage }
 page AdminDiocesesPage { authRequired: true, component: import AdminDiocesesPage from "@src/catequese/pages/AdminDiocesesPage" }
 //#endregion

@@ -579,6 +579,15 @@
   "leave_anyway": "Leave without saving",
   "more_actions": "More actions",
   "clear": "Clear",
+  "support_inbox": {
+    "title": "Support inbox",
+    "subtitle": "Team replies appear here and are also sent by email.",
+    "your_message": "Your message",
+    "our_reply": "Reply from Catequese Viva",
+    "waiting": "Waiting for a reply.",
+    "empty_title": "No support messages",
+    "empty_desc": "When the team replies to a contact from you, the conversation appears here."
+  },
   "validation": {
     "first_name_required": "Enter the first name.",
     "last_name_required": "Enter the last name.",

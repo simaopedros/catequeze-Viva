@@ -118,6 +118,39 @@ export const getPlatformOverview = async (_args: void, context: any) => {
   };
 };
 
+function startOfLocalDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function dayIndex(createdAt: Date, origin: Date, days: number): number {
+  const start = startOfLocalDay(createdAt);
+  const idx = Math.round((start.getTime() - origin.getTime()) / 86_400_000);
+  if (idx < 0 || idx >= days) return -1;
+  return idx;
+}
+
+/** Cumulative totals per day from raw createdAt timestamps (no interpolation). */
+export function buildCumulativeGrowthSeries(args: {
+  days: number;
+  origin: Date;
+  createdAtList: Array<Date | string>;
+  totalNow: number;
+}): number[] {
+  const { days, origin, createdAtList, totalNow } = args;
+  const perDay = new Array(days).fill(0);
+  for (const raw of createdAtList) {
+    const createdAt = raw instanceof Date ? raw : new Date(raw);
+    const idx = dayIndex(createdAt, origin, days);
+    if (idx >= 0) perDay[idx] += 1;
+  }
+  const inWindow = perDay.reduce((sum: number, n: number) => sum + n, 0);
+  let running = Math.max(0, totalNow - inWindow);
+  return perDay.map((count) => {
+    running += count;
+    return running;
+  });
+}
+
 export const getPlatformGrowth = async (_args: void, context: any) => {
   requirePlatformAdmin(context.user);
 
@@ -129,35 +162,43 @@ export const getPlatformGrowth = async (_args: void, context: any) => {
     dayStarts.push(new Date(now.getFullYear(), now.getMonth(), now.getDate() - i));
   }
 
-  const thirtyDaysAgo = dayStarts[0];
+  const origin = dayStarts[0];
   const dayEnd = new Date(dayStarts[dayStarts.length - 1]);
   dayEnd.setDate(dayEnd.getDate() + 1);
 
-  const [usersInWindow, parishesInWindow, totalUsersNow, totalParishesNow] = await Promise.all([
-    context.entities.User.count({ where: { createdAt: { gt: thirtyDaysAgo, lt: dayEnd } } }),
-    context.entities.Parish.count({ where: { createdAt: { gt: thirtyDaysAgo, lt: dayEnd } } }),
+  const [usersCreated, parishesCreated, totalUsersNow, totalParishesNow] = await Promise.all([
+    context.entities.User.findMany({
+      where: { createdAt: { gte: origin, lt: dayEnd } },
+      select: { createdAt: true },
+    }),
+    context.entities.Parish.findMany({
+      where: { createdAt: { gte: origin, lt: dayEnd } },
+      select: { createdAt: true },
+    }),
     context.entities.User.count(),
     context.entities.Parish.count(),
   ]);
 
-  const baseUsers = totalUsersNow - usersInWindow;
-  const baseParishes = totalParishesNow - parishesInWindow;
-
   const userLocale = resolveUserLocale(context.user);
-  const labels: string[] = [];
-  const users: number[] = [];
-  const parishes: number[] = [];
+  const labels = dayStarts.map((day) =>
+    formatServerDate(day, userLocale, { day: '2-digit', month: '2-digit' }),
+  );
 
-  const userStep = days > 1 ? usersInWindow / (days - 1) : 0;
-  const parishStep = days > 1 ? parishesInWindow / (days - 1) : 0;
-
-  for (let i = 0; i < days; i++) {
-    labels.push(formatServerDate(dayStarts[i], userLocale, { day: '2-digit', month: '2-digit' }));
-    users.push(Math.round(baseUsers + userStep * i));
-    parishes.push(Math.round(baseParishes + parishStep * i));
-  }
-
-  return { labels, users, parishes };
+  return {
+    labels,
+    users: buildCumulativeGrowthSeries({
+      days,
+      origin,
+      createdAtList: usersCreated.map((row: { createdAt: Date }) => row.createdAt),
+      totalNow: totalUsersNow,
+    }),
+    parishes: buildCumulativeGrowthSeries({
+      days,
+      origin,
+      createdAtList: parishesCreated.map((row: { createdAt: Date }) => row.createdAt),
+      totalNow: totalParishesNow,
+    }),
+  };
 };
 
 export const getPlatformAlerts = async (_args: void, context: any) => {
@@ -167,32 +208,32 @@ export const getPlatformAlerts = async (_args: void, context: any) => {
   const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-  const alerts: { type: 'warning' | 'info' | 'error'; message: string }[] = [];
+  const alerts: { type: 'warning' | 'info' | 'error'; code: string; count?: number }[] = [];
 
   const trialsExpiring = await context.entities.TenantBilling.count({
     where: { status: 'TRIAL', trialEndsAt: { gte: now, lte: sevenDaysFromNow } },
   });
   if (trialsExpiring > 0) {
-    alerts.push({ type: 'warning', message: `${trialsExpiring} trial(s) expiram nos próximos 7 dias.` });
+    alerts.push({ type: 'warning', code: 'trials_expiring', count: trialsExpiring });
   }
 
   const archivedParishes = await context.entities.Parish.count({ where: { active: false } });
   if (archivedParishes > 0) {
-    alerts.push({ type: 'info', message: `${archivedParishes} paróquia(s) arquivada(s).` });
+    alerts.push({ type: 'info', code: 'archived_parishes', count: archivedParishes });
   }
 
   const emptyParishes = await context.entities.Parish.count({
     where: { active: false, memberships: { some: { status: 'ACTIVE' } } },
   });
   if (emptyParishes > 0) {
-    alerts.push({ type: 'warning', message: `${emptyParishes} paróquia(s) arquivada(s) com membros ativos.` });
+    alerts.push({ type: 'warning', code: 'archived_with_members', count: emptyParishes });
   }
 
   const newUsers = await context.entities.User.count({
     where: { createdAt: { gte: thirtyDaysAgo } },
   });
   if (newUsers === 0) {
-    alerts.push({ type: 'warning', message: 'Nenhum novo utilizador nos últimos 30 dias.' });
+    alerts.push({ type: 'warning', code: 'no_new_users' });
   }
 
   return alerts;

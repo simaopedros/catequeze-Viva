@@ -26,6 +26,7 @@ import {
   Building2,
   Shield,
   Clock,
+  Mail,
 } from "lucide-react";
 import { useAuth } from "wasp/client/auth";
 import { UserDropdown } from "../user/UserDropdown";
@@ -71,7 +72,7 @@ const NOTIF_ICONS: Record<string, React.ComponentType<any>> = {
   ATTENDANCE: CalendarDays,
   DOCUMENT: FileText,
   SACRAMENT: Shield,
-  SYSTEM: Bell,
+  SYSTEM: Mail,
 };
 
 export const TopBar = memo(function TopBar() {

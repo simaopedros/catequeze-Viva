@@ -40,6 +40,13 @@ export const updateIsUserAdminById: UpdateIsUserAdminById<
     );
   }
 
+  if (id === context.user.id && isAdmin === false) {
+    throw new HttpError(
+      403,
+      "Não pode remover o seu próprio acesso de administrador.",
+    );
+  }
+
   return context.entities.User.update({
     where: { id },
     data: { isAdmin },
@@ -65,6 +72,7 @@ type GetPaginatedUsersOutput = {
     | "subscriptionStatus"
     | "paymentProcessorUserId"
     | "isAdmin"
+    | "suspendedAt"
   >[];
   totalPages: number;
 };
@@ -154,6 +162,7 @@ export const getPaginatedUsers: GetPaginatedUsers<
       isAdmin: true,
       subscriptionStatus: true,
       paymentProcessorUserId: true,
+      suspendedAt: true,
     },
     orderBy: {
       username: "asc",

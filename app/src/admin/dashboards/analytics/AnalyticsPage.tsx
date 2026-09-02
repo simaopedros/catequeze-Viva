@@ -1,5 +1,6 @@
 import { type AuthUser } from "wasp/auth";
 import { useQuery, getPricingFunnel } from "wasp/client/operations";
+import { useTranslation } from "react-i18next";
 import DefaultLayout from "../../layout/DefaultLayout";
 import {
   AppMetric,
@@ -14,6 +15,8 @@ import {
   Share2,
   Users,
 } from "lucide-react";
+import { formatDateTime } from "../../../i18n/format";
+import { useLocale } from "../../../i18n/useLocale";
 
 type Counts = {
   landing_viewed: number;
@@ -62,6 +65,8 @@ function pretty(value: string | null | undefined): string {
 }
 
 const AnalyticsPage = ({ user }: { user: AuthUser }) => {
+  const { t } = useTranslation("admin");
+  const { currentLocale } = useLocale();
   const { data, isLoading } = useQuery(getPricingFunnel) as {
     data: FunnelData | undefined;
     isLoading: boolean;
@@ -70,31 +75,33 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
   const counts = data?.counts30d;
   const topCards = [
     {
-      label: "Landing views (30d)",
+      label: t("pages.analytics.landing_views"),
       value: counts?.landing_viewed ?? 0,
-      subtitle: `${data?.counts7d.landing_viewed ?? 0} nos últimos 7 dias`,
+      subtitle: t("pages.analytics.last_7d", {
+        count: data?.counts7d.landing_viewed ?? 0,
+      }),
       icon: BarChart3,
     },
     {
-      label: "Pricing views (30d)",
+      label: t("pages.analytics.pricing_views"),
       value: counts?.pricing_viewed ?? 0,
       subtitle: percent(data?.conversion30d.landingToPricing ?? null),
       icon: MousePointerClick,
     },
     {
-      label: "Checkout started (30d)",
+      label: t("pages.analytics.checkout_started"),
       value: counts?.checkout_started ?? 0,
       subtitle: percent(data?.conversion30d.signupToCheckout ?? null),
       icon: CreditCard,
     },
     {
-      label: "Purchases (30d)",
+      label: t("pages.analytics.purchases"),
       value: counts?.purchase_completed ?? 0,
       subtitle: percent(data?.conversion30d.checkoutToPurchase ?? null),
       icon: ShoppingCart,
     },
     {
-      label: "Activations (30d)",
+      label: t("pages.analytics.activations"),
       value: counts?.activation_completed ?? 0,
       subtitle: percent(data?.conversion30d.purchaseToActivation ?? null),
       icon: Rocket,
@@ -102,39 +109,39 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
   ];
 
   const funnelSteps = [
-    { label: "Landing viewed", count: counts?.landing_viewed ?? 0, rate: null },
+    { key: "landing_viewed", count: counts?.landing_viewed ?? 0, rate: null },
     {
-      label: "Pricing viewed",
+      key: "pricing_viewed",
       count: counts?.pricing_viewed ?? 0,
       rate: data?.conversion30d.landingToPricing ?? null,
     },
     {
-      label: "Plan selected",
+      key: "plan_selected",
       count: counts?.plan_selected ?? 0,
       rate: data?.conversion30d.pricingToPlan ?? null,
     },
     {
-      label: "Signup started",
+      key: "signup_started",
       count: counts?.signup_started ?? 0,
       rate: data?.conversion30d.planToSignup ?? null,
     },
     {
-      label: "Signup completed",
+      key: "signup_completed",
       count: counts?.signup_completed ?? 0,
       rate: null,
     },
     {
-      label: "Checkout started",
+      key: "checkout_started",
       count: counts?.checkout_started ?? 0,
       rate: data?.conversion30d.signupToCheckout ?? null,
     },
     {
-      label: "Purchase completed",
+      key: "purchase_completed",
       count: counts?.purchase_completed ?? 0,
       rate: data?.conversion30d.checkoutToPurchase ?? null,
     },
     {
-      label: "Activation completed",
+      key: "activation_completed",
       count: counts?.activation_completed ?? 0,
       rate: data?.conversion30d.purchaseToActivation ?? null,
     },
@@ -144,11 +151,11 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
     <DefaultLayout user={user}>
       <div className="space-y-6">
         <AppPageHeader
-          eyebrow="Admin"
-          title="Pricing Funnel"
-          subtitle={`Conversão comercial baseada em PricingEvent dos últimos ${
-            data?.windowDays ?? 30
-          } dias.`}
+          eyebrow={t("pages.admin")}
+          title={t("pages.analytics.title")}
+          subtitle={t("pages.analytics.subtitle", {
+            days: data?.windowDays ?? 30,
+          })}
         />
 
         {isLoading ? (
@@ -176,23 +183,23 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
               <div className="rounded-sm border border-border/70 bg-white p-5">
                 <div className="space-y-1.5">
                   <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    Etapas do funil
+                    {t("pages.analytics.funnel_title")}
                   </h2>
                   <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Contagens em 30 dias com conversão entre etapas principais.
+                  {t("pages.analytics.funnel_hint")}
                 </p>
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
                   {funnelSteps.map((step) => (
                     <div
-                      key={step.label}
+                      key={step.key}
                       className="rounded-sm border border-border/70 bg-white p-4"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p className="text-sm font-semibold tracking-tight text-[#071A2D]">
-                            {step.label}
+                            {t(`pages.analytics.step_${step.key}`)}
                           </p>
                           <p className="mt-1 text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]">
                             {step.count}
@@ -212,27 +219,27 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                   <div className="space-y-1.5">
                     <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       <Users className="h-3.5 w-3.5 text-[#071A2D]" />
-                      Convites e share
+                      {t("pages.analytics.invites_title")}
                     </h2>
                     <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
                   </div>
                   <div className="mt-4 space-y-3 text-sm">
                     <div className="flex items-center justify-between">
-                      <span>Invites sent</span>
+                      <span>{t("pages.analytics.invites_sent")}</span>
                       <strong>{counts?.invite_sent ?? 0}</strong>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span>Invites accepted</span>
+                      <span>{t("pages.analytics.invites_accepted")}</span>
                       <strong>{counts?.invite_accepted ?? 0}</strong>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span>Invite acceptance</span>
+                      <span>{t("pages.analytics.invite_acceptance")}</span>
                       <strong>
                         {percent(data?.conversion30d.inviteAcceptance ?? null)}
                       </strong>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span>Share clicked</span>
+                      <span>{t("pages.analytics.share_clicked")}</span>
                       <strong>{counts?.share_clicked ?? 0}</strong>
                     </div>
                   </div>
@@ -242,7 +249,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                   <div className="space-y-1.5">
                     <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       <Share2 className="h-3.5 w-3.5 text-[#071A2D]" />
-                      Top plans (30d)
+                      {t("pages.analytics.top_plans")}
                     </h2>
                     <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
                   </div>
@@ -261,7 +268,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                       ))
                     ) : (
                       <p className="text-muted-foreground">
-                        Sem compras no período.
+                        {t("pages.analytics.no_purchases")}
                       </p>
                     )}
                   </div>
@@ -270,7 +277,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                 <div className="rounded-sm border border-border/70 bg-white p-5">
                   <div className="space-y-1.5">
                     <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      Processors (30d)
+                      {t("pages.analytics.processors")}
                     </h2>
                     <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
                   </div>
@@ -289,7 +296,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                       ))
                     ) : (
                       <p className="text-muted-foreground">
-                        Sem processadores registados.
+                        {t("pages.analytics.no_processors")}
                       </p>
                     )}
                   </div>
@@ -300,28 +307,28 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
             <div className="rounded-sm border border-border/70 bg-white p-5">
               <div className="space-y-1.5">
                 <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  Recent purchases
+                  {t("pages.analytics.recent_purchases")}
                 </h2>
                 <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
               </div>
               <p className="mt-2 text-sm text-muted-foreground">
-                Últimos eventos autoritativos de pagamento confirmado.
+                {t("pages.analytics.recent_hint")}
               </p>
               <div className="mt-4 overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="border-b text-left text-muted-foreground">
                     <tr>
                       <th className="pb-3 pr-4 text-[11px] font-semibold uppercase tracking-[0.14em]">
-                        Data
+                        {t("pages.analytics.col_date")}
                       </th>
                       <th className="pb-3 pr-4 text-[11px] font-semibold uppercase tracking-[0.14em]">
-                        Plano
+                        {t("pages.analytics.col_plan")}
                       </th>
                       <th className="pb-3 pr-4 text-[11px] font-semibold uppercase tracking-[0.14em]">
-                        Processor
+                        {t("pages.analytics.col_processor")}
                       </th>
                       <th className="pb-3 pr-4 text-[11px] font-semibold uppercase tracking-[0.14em]">
-                        User
+                        {t("pages.analytics.col_user")}
                       </th>
                     </tr>
                   </thead>
@@ -333,7 +340,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                           className="border-b last:border-0"
                         >
                           <td className="py-3 pr-4">
-                            {new Date(item.createdAt).toLocaleString("pt-BR")}
+                            {formatDateTime(item.createdAt, currentLocale)}
                           </td>
                           <td className="py-3 pr-4 uppercase">
                             {pretty(item.toPlan)}
@@ -352,7 +359,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                           colSpan={4}
                           className="py-6 text-center text-muted-foreground"
                         >
-                          Nenhuma compra confirmada ainda.
+                          {t("pages.analytics.no_confirmed")}
                         </td>
                       </tr>
                     )}
