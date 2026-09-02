@@ -63,25 +63,39 @@ Quando aprovado, adicione as mesmas variáveis no servidor de produção.
 
 ### 4. Verificar Instalação do Pixel
 
-**Antes de testar conversões**, confirme que o pixel está carregando corretamente:
+**Antes de testar conversões**, confirme que o pixel está carregando corretamente.
+
+#### LGPD: Pixel só carrega APÓS aceitar cookies
+
+⚠️ **Importante**: O Meta Pixel (e GTM) **SÓ CARREGAM** após o usuário aceitar cookies analytics OU marketing no banner LGPD. Isso é intencional e obrigatório.
+
+**Comportamento esperado**:
+- ✅ **Aceitar todos / Aceitar marketing / Aceitar analytics**: Pixel carrega imediatamente
+- ❌ **Rejeitar todos**: Pixel NÃO carrega (Pixel Helper vazio) — **isso é correto**
+- ⏳ **Banner não interagido**: Pixel não carrega até aceitar
+
+#### Verificação passo a passo
 
 1. **Abra** `https://homolog.catechis.app/` (landing page)
-2. **Abra Console do Navegador** (F12 → Console)
-3. **Verifique**:
+2. **Banner LGPD aparece**: Clique em **"Aceitar todos"** (ou "Personalizar" → marque Analytics/Marketing)
+3. **Aguarde 1-2 segundos** (carregamento do pixel)
+4. **Abra Console do Navegador** (F12 → Console)
+5. **Verifique**:
    - Nenhum erro `[meta-pixel]`
    - Na aba Network: requisição para `fbevents.js` (status 200)
    - No Console, digite: `window.fbq` → deve retornar `function`
    - No Console, digite: `window._fbq` → deve retornar `function`
-4. **Meta Pixel Helper** (extensão Chrome/Firefox):
+6. **Meta Pixel Helper** (extensão Chrome/Firefox):
    - Instale: [Meta Pixel Helper](https://chrome.google.com/webstore/detail/meta-pixel-helper)
    - Ícone deve mostrar **"1 Pixel Found"** com ID `2069332313989772`
    - PageView aparece na lista de eventos
 
-**Se pixel NÃO carregar**:
+**Se pixel NÃO carregar (APÓS aceitar cookies)**:
 - ✅ Confirme `REACT_APP_META_PIXEL_ID=2069332313989772` no `.env.client` do servidor
 - ✅ Reinicie o servidor Wasp após alterar `.env.client`
-- ✅ Limpe cache do navegador (Ctrl+Shift+Delete)
+- ✅ Limpe cache do navegador (Ctrl+Shift+Delete) e **cookies** (especialmente `cc_cookie`)
 - ✅ Verifique Console por erros CSP (Content Security Policy) bloqueando `connect.facebook.net`
+- ✅ Confirme que clicou em "Aceitar todos" (não "Rejeitar todos")
 
 ### 5. Testar Conversões
 
@@ -151,27 +165,30 @@ Quando deploy em produção, **remova** ou comente `META_TEST_EVENT_CODE` para q
 
 ## Eventos Rastreados
 
+**⚠️ LGPD**: Todos os eventos browser-side (Pixel) **só disparam** se o usuário aceitou cookies analytics/marketing. Se "Rejeitar todos", nenhum evento Pixel é enviado (apenas CAPI server-side continua funcionando).
+
 ### CompleteRegistration
 - **Quando**: Usuário cria conta no signup
-- **Browser**: `/signup` → `CompleteRegistration`
-- **CAPI**: Não enviado (signup é só browser)
+- **Browser**: `/signup` → `CompleteRegistration` (se consentiu cookies)
+- **CAPI**: Enviado server-side no hook de signup (independente de cookies)
 
 ### InitiateCheckout
 - **Quando**: Usuário clica em "Assinar" na página de billing
-- **Browser**: `/app/billing` → `InitiateCheckout`
-- **CAPI**: Enviado via `sendInitiateCheckoutToMeta` ao criar checkout session
+- **Browser**: `/app/billing` → `InitiateCheckout` (se consentiu cookies)
+- **CAPI**: Enviado server-side via `sendInitiateCheckoutToMeta` ao criar checkout session
 
 ### StartTrial
 - **Quando**: Trial de 7 dias começa (primeira criação de assinatura no Stripe com trial)
-- **Browser**: `/obrigado?session_id=...` → `StartTrial` com `value: 9.90` (Plano Catequista monthly)
-- **CAPI**: Enviado no webhook `checkout.session.completed` quando `subscription.status === 'trialing'`
+- **Browser**: `/obrigado?session_id=...` → `StartTrial` com `value: 9.90` (se consentiu cookies)
+- **CAPI**: Enviado server-side no webhook `checkout.session.completed` quando `subscription.status === 'trialing'`
 - **⚠️ Importante**: Meta **requer** `value > 0` no StartTrial (valor mensal do plano, ex: 9.90 BRL). Nunca enviar `value: 0` ou omitir.
 
 ### Purchase ⭐ (NOVO)
 - **Quando**: Invoice paga (primeiro pagamento de assinatura ou renovação)
-- **Browser**: `/app/billing?status=success&session_id=...` → `Purchase`
-- **CAPI**: Enviado no webhook `invoice.paid` ou `checkout.session.completed` quando `amount_paid > 0`
+- **Browser**: `/app/billing?status=success&session_id=...` → `Purchase` (se consentiu cookies)
+- **CAPI**: Enviado server-side no webhook `invoice.paid` ou `checkout.session.completed` quando `amount_paid > 0`
 - **Deduplicação**: Mesmo `event_id` = `purchase_${session_id}` ou `purchase_${subscription_id}_first_paid`
+- **⚠️ LGPD**: Se usuário rejeitou cookies, apenas CAPI server-side é enviado (browser pixel não dispara)
 
 ### Subscribe (legado)
 - **Quando**: Primeiro pagamento de assinatura (mantido para histórico)
