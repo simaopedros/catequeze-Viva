@@ -67,6 +67,7 @@ jobs:
             --build-arg REACT_APP_API_URL=https://api.catechis.app \
             --build-arg REACT_APP_FAMILY_PORTAL_HOST=familia.catechis.app \
             --build-arg REACT_APP_STAFF_PORTAL_HOST=catechis.app \
+            --build-arg REACT_APP_META_PIXEL_ID=2069332313989772 \
             -t "${IMAGE}:prod-${{ github.sha }}" -t "${IMAGE}:prod-latest" .
           docker push "${IMAGE}:prod-${{ github.sha }}"
           docker push "${IMAGE}:prod-latest"
