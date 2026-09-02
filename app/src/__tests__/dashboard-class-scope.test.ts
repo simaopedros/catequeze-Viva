@@ -279,7 +279,11 @@ function makeFakeEntities(opts: {
       findMany: record('Meeting', 'findMany'),
       count: record('Meeting', 'count'),
     },
-    AttendanceRecord: { count: record('AttendanceRecord', 'count') },
+    AttendanceRecord: {
+      count: record('AttendanceRecord', 'count'),
+      findMany: record('AttendanceRecord', 'findMany'),
+      groupBy: record('AttendanceRecord', 'groupBy'),
+    },
   };
 
   return { entities, calls };
@@ -314,6 +318,11 @@ describe('getDashboardStats scoping', () => {
     }
     for (const where of whereOf(calls, 'AttendanceRecord', 'count')) {
       expect(where.meeting).toEqual({ class: { parishId: PARISH_A } });
+    }
+    // Action-center insight window keeps the same class scope
+    for (const where of whereOf(calls, 'AttendanceRecord', 'findMany')) {
+      expect(where.meeting).toMatchObject({ class: { parishId: PARISH_A } });
+      expect(where.meeting.date).toBeDefined();
     }
   });
 
@@ -360,6 +369,9 @@ describe('getDashboardStats scoping', () => {
     }
     for (const where of whereOf(calls, 'AttendanceRecord', 'count')) {
       expect(where.meeting).toEqual({ class: expectedScope });
+    }
+    for (const where of whereOf(calls, 'AttendanceRecord', 'findMany')) {
+      expect(where.meeting).toMatchObject({ class: expectedScope });
     }
     // Never a bare "parishId in [..., PARISH_B]" filter
     const serialized = JSON.stringify(calls.map((c) => c.args?.where ?? {}));
