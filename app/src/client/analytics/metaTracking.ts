@@ -500,6 +500,41 @@ export function trackStartTrialBrowser(payload: StartTrialPayload): void {
   );
 }
 
+interface PurchasePayload {
+  event_id?: string;
+  content_name?: string;
+  content_category?: string;
+  content_ids?: string[];
+  plan_id?: string;
+  value: number;
+  currency?: string;
+}
+
+export function buildPurchaseDataLayerEvent(
+  payload: PurchasePayload,
+): Record<string, unknown> {
+  return cleanObject({
+    meta_event_name: "Purchase",
+    event_id: payload.event_id,
+    content_name: payload.content_name ?? "Subscription Catechis",
+    content_category: payload.content_category ?? META_CONTENT_CATEGORY,
+    content_type: META_CONTENT_TYPE,
+    content_ids: payload.content_ids ?? (payload.plan_id ? [payload.plan_id] : undefined),
+    plan_id: payload.plan_id,
+    value: payload.value,
+    currency: payload.currency ?? detectCurrency(),
+    num_items: 1,
+  });
+}
+
+export function trackPurchaseBrowser(payload: PurchasePayload): void {
+  trackMetaStandardEvent(
+    "purchase_success",
+    "Purchase",
+    buildPurchaseDataLayerEvent(payload),
+  );
+}
+
 type WindowWithMetaInit = Window & {
   /** Survives StrictMode remounts and module HMR better than a module Set. */
   __catequeseMetaPixelInited?: Record<string, true>;

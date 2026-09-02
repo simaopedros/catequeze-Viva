@@ -67,6 +67,7 @@ import {
   buildCheckoutTrackingFields,
   trackInitiateCheckout,
   trackViewPricing,
+  trackPurchaseBrowser,
 } from "../../client/analytics/metaTracking";
 import { cn } from "../../client/utils";
 import type { ReactNode } from "react";
@@ -682,6 +683,7 @@ export default function BillingPage() {
   // subscription may not yet be reflected (webhook can lag). Refetch everything
   // and surface a confirmation so the user does not stare at a blank screen.
   const checkoutStatus = searchParams.get("status");
+  const returnedSessionId = searchParams.get("session_id");
   const successToastShownRef = useRef(false);
   useEffect(() => {
     if (checkoutStatus !== "success" && checkoutStatus !== "canceled") return;
@@ -692,24 +694,45 @@ export default function BillingPage() {
       refetchCredits();
       refetchSubscription();
       toast({ title: t("checkout_success") });
+
+      // Fire Meta Purchase event after successful checkout (first paid invoice).
+      // Same event_id as server CAPI Purchase for deduplication.
+      // Only fire when returning from a checkout session (not on manual subscription status success).
+      if (returnedSessionId && effectivePlanId !== PaymentPlanId.CatechistFree) {
+        const plan = getPlanDef(effectivePlanId);
+        const purchaseValue = getPlanCheckoutValue(plan, billingInterval);
+        trackPurchaseBrowser({
+          event_id: `purchase_${returnedSessionId}`,
+          content_name: plan.name,
+          content_ids: [effectivePlanId],
+          plan_id: effectivePlanId,
+          value: purchaseValue,
+          currency: "BRL",
+        });
+      }
     } else if (checkoutStatus === "canceled") {
       toast({ title: t("checkout_canceled"), variant: "destructive" });
     }
     // Clean the query param so it does not retrigger on refresh/navigation.
     const next = new URLSearchParams(searchParams);
     next.delete("status");
+    next.delete("session_id");
     navigate(
       { search: next.toString().length ? `?${next.toString()}` : "" },
       { replace: true },
     );
   }, [
     checkoutStatus,
+    returnedSessionId,
+    effectivePlanId,
+    billingInterval,
     navigate,
     refetchCredits,
     refetchStats,
     refetchSubscription,
     searchParams,
     t,
+    getPlanDef,
   ]);
 
   const creditLabel =

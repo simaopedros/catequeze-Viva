@@ -23,6 +23,7 @@ import { stripeClient } from "./stripeClient";
 import { trackPricingEvent } from "../pricingEvents";
 import { sendMetaEvent } from "../meta/metaCapi";
 import { SUBSCRIPTION_TRIAL_DAYS } from "../../shared/pricing";
+import { sendPurchaseToMeta } from "../meta/sendPurchaseToMeta";
 
 const STRIPE_PROVIDER = "stripe";
 const META_PROVIDER = "meta";
@@ -295,6 +296,7 @@ async function processPaidInvoice(
         await finishTrackedEvent(trackedEventDelegate, invoiceProcessing.id, {
           responseJson: { invoiceId: invoice.id, paymentPlanId },
         });
+        // AI credits are one-time purchases — deliver as Purchase (not Subscribe).
         await deliverAiCreditsPurchaseMetaEvent({
           invoice,
           paymentPlanId,
@@ -333,6 +335,7 @@ async function processPaidInvoice(
           ? await findTrackedEventBySubscription(trackedEventDelegate, META_PROVIDER, "Subscribe", subscriptionId)
           : null;
 
+        // First paid invoice for a subscription → deliver both Subscribe (legacy) and Purchase (optimization).
         if (subscriptionId && existingSubscribe?.status !== "sent") {
           await trackPricingEvent(context, {
             userId: user.id,
@@ -348,7 +351,9 @@ async function processPaidInvoice(
             ...normalizeMetadata(invoice.parent?.subscription_details?.metadata as Record<string, string> | undefined),
           };
           const subscribeEventId = `subscribe_${subscriptionId}_first_paid`;
+          const purchaseEventId = `purchase_${subscriptionId}_first_paid`;
 
+          // Subscribe: legacy conversion event (kept for historical reporting).
           await deliverMetaTrackedEvent(trackedEventDelegate, {
             provider: META_PROVIDER,
             eventName: "Subscribe",
@@ -384,6 +389,28 @@ async function processPaidInvoice(
               plan_id: metadata.plan_id || paymentPlanId,
               trial_days: parseTrialDays(metadata.trial_days),
             },
+          });
+
+          // Purchase: ads optimization event (standard for Meta campaigns).
+          await sendPurchaseToMeta({
+            userId: user.id,
+            email: customer?.email ?? undefined,
+            eventId: purchaseEventId,
+            planId: metadata.plan_id || paymentPlanId,
+            planName: metadata.plan_name || prettyPaymentPlanName(paymentPlanId),
+            value: Number((invoice.amount_paid / 100).toFixed(2)),
+            currency: (invoice.currency || metadata.currency || "brl").toUpperCase(),
+            contentCategory: "subscription",
+            fbp: metadata.fbp,
+            fbc: metadata.fbc,
+            fbclid: metadata.fbclid,
+            clientUserAgent: metadata.client_user_agent,
+            eventSourceUrl: metadata.event_source_url,
+            stripeCustomerId: customerId,
+            stripeSessionId: metadata.stripe_session_id,
+            invoiceId: invoice.id,
+            subscriptionId,
+            prisma: { trackedEvent: trackedEventDelegate },
           });
         } else {
           await trackPricingEvent(context, {
