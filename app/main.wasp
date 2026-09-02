@@ -2314,7 +2314,7 @@ action reorderPricingPlans {
 
 query listAdminLicenses {
   fn: import { listAdminLicenses } from "@src/server/operations/billingAdminOperations",
-  entities: [Parish, TenantBilling, Diocese, User]
+  entities: [Parish, TenantBilling, Diocese, User, PricingPlan, PricingPlanPrice]
 }
 
 action extendTenantTrial {

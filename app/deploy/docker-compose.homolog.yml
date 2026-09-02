@@ -19,6 +19,7 @@ services:
     env_file: .env.server
     environment:
       BUNNY_STORAGE_HOSTNAME: "storage.bunnycdn.com"
+      PRICING_CATALOG_SOURCE: db
     expose:
       - "3001"
 

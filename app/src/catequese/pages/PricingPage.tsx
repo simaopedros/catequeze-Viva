@@ -69,10 +69,12 @@ export default function PricingPage() {
   useEffect(() => {
     trackMarketingEvent("pricing_viewed", { placement: "pricing_page" });
     trackViewPricing({
-      plan_ids: ["single"],
+      plan_ids: publicPlans
+        .filter((plan) => plan.kind === "subscription" && plan.slug !== "catechist_free")
+        .map((plan) => plan.slug),
       content_name: "Planos Catechis",
     });
-  }, []);
+  }, [publicPlans]);
 
   const pricingPlans = useMemo((): PricingPlan[] => {
     return publicPlans

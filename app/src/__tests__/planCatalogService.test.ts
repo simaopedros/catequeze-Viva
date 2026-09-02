@@ -46,6 +46,12 @@ describe('planCatalogService', () => {
     expect(snapshot.bySlug.unlimited.isPublic).toBe(false);
   });
 
+  it('defaults to db when PRICING_CATALOG_SOURCE is unset', async () => {
+    delete process.env.PRICING_CATALOG_SOURCE;
+    const { getPricingCatalogSource } = await import('../server/pricing/planCatalogService');
+    expect(getPricingCatalogSource()).toBe('db');
+  });
+
   it('db mode uses cache and falls back to DEFAULT when table is empty', async () => {
     process.env.PRICING_CATALOG_SOURCE = 'db';
     const { loadPlanCatalog, invalidatePlanCatalogCache } = await import('../server/pricing/planCatalogService');
@@ -149,5 +155,82 @@ describe('planCatalogService', () => {
     expect(slugFromLookupKey('ai_credits_20_one_time')).toBe('ai_credits_20');
     expect(slugFromLookupKey('single_monthly')).toBe('single');
     expect(slugFromLookupKey('unlimited_annual')).toBe('unlimited');
+  });
+
+  it('db mode includes a newly published custom plan', async () => {
+    process.env.PRICING_CATALOG_SOURCE = 'db';
+    const { loadPlanCatalog, invalidatePlanCatalogCache } = await import('../server/pricing/planCatalogService');
+    invalidatePlanCatalogCache();
+    const findMany = vi.fn().mockResolvedValue([
+      {
+        id: 'p1',
+        slug: 'single',
+        name: 'Plano Catequista',
+        kind: 'SUBSCRIPTION',
+        level: 'PERSONAL',
+        isSystem: true,
+        isActive: true,
+        isPublic: true,
+        highlight: true,
+        sortOrder: 1,
+        maxClasses: 3,
+        maxCatechumens: 150,
+        maxCatechists: 1,
+        maxParishes: 1,
+        aiMonthlyCredits: 0,
+        aiDailyLimit: 0,
+        aiInitialCredits: 0,
+        socialMaxPostsPerDay: 5,
+        socialMaxMediaPerPost: 4,
+        socialMaxVideoSeconds: 180,
+        features: [],
+        translations: null,
+        prices: [{
+          interval: 'MONTHLY',
+          currency: 'BRL',
+          unitAmountCents: 990,
+          stripePriceId: 'price_db_single',
+          stripeLookupKey: 'single_monthly',
+          isActive: true,
+        }],
+      },
+      {
+        id: 'p2',
+        slug: 'paroquia_plus',
+        name: 'Paróquia Plus',
+        kind: 'SUBSCRIPTION',
+        level: 'INSTITUTIONAL',
+        isSystem: false,
+        isActive: true,
+        isPublic: true,
+        highlight: false,
+        sortOrder: 3,
+        maxClasses: null,
+        maxCatechumens: null,
+        maxCatechists: null,
+        maxParishes: 5,
+        aiMonthlyCredits: 0,
+        aiDailyLimit: 0,
+        aiInitialCredits: 0,
+        socialMaxPostsPerDay: 10,
+        socialMaxMediaPerPost: 4,
+        socialMaxVideoSeconds: 180,
+        features: ['Até 5 paróquias'],
+        translations: null,
+        prices: [{
+          interval: 'MONTHLY',
+          currency: 'BRL',
+          unitAmountCents: 4900,
+          stripePriceId: 'price_db_paroquia',
+          stripeLookupKey: 'paroquia_plus_monthly',
+          isActive: true,
+        }],
+      },
+    ]);
+    const snapshot = await loadPlanCatalog({ entities: { PricingPlan: { findMany } } });
+    expect(snapshot.source).toBe('db');
+    expect(snapshot.bySlug.paroquia_plus.name).toBe('Paróquia Plus');
+    expect(snapshot.bySlug.paroquia_plus.isPublic).toBe(true);
+    expect(snapshot.bySlug.paroquia_plus.limits.maxParishes).toBe(5);
   });
 });

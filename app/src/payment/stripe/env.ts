@@ -22,7 +22,7 @@ export const stripeEnvSchema = z.object({
   // AI credit packs (one-time)
   STRIPE_AI_CREDITS_20_PLAN_ID: z.string().default(''),
   STRIPE_AI_CREDITS_50_PLAN_ID: z.string().default(''),
-  // static (default) = hardcoded DEFAULT_PLANS + env Price IDs
-  // db = PricingPlan tables (admin catalog)
-  PRICING_CATALOG_SOURCE: z.enum(['static', 'db']).optional().default('static'),
+  // db (default) = PricingPlan tables (admin catalog)
+  // static = hardcoded DEFAULT_PLANS + env Price IDs (rollback)
+  PRICING_CATALOG_SOURCE: z.enum(['static', 'db']).optional().default('db'),
 });

@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Link } from "react-router";
 import { ArrowRight, Check } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
-import { useLandingText } from "../hooks/useLandingText";
+import { useLandingText, landingCopy, landingFeatureList } from "../hooks/useLandingText";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import {
   trackLead,
@@ -11,7 +11,6 @@ import {
 import { Button } from "../../client/components/ui/button";
 import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import { formatPrice } from "../../shared/currency";
-import { LAUNCH_CATEQUISTA_ONLY } from "../../shared/pricing";
 
 /**
  * Minimal pricing for the main landing: trial-first, no annual toggle noise.
@@ -36,10 +35,12 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
     });
     // Meta ViewContent when pricing enters viewport (main Meta Ads landing surface).
     trackViewPricing({
-      plan_ids: LAUNCH_CATEQUISTA_ONLY ? ["single"] : ["single", "unlimited"],
+      plan_ids: publicPlans
+        .filter((plan) => plan.kind === "subscription" && plan.slug !== "catechist_free")
+        .map((plan) => plan.slug),
       content_name: "Planos Catechis Landing",
     });
-  }, [isVisible, ns]);
+  }, [isVisible, ns, publicPlans]);
 
   const plans = publicPlans
     .filter((plan) => plan.kind === "subscription" && plan.slug !== "catechist_free")
@@ -81,13 +82,17 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
         {plans.map((plan, index) => {
           const name = localize(plan.id).name;
           const catalogPlan = getBySlug(plan.id);
-          const audience = tr(`plans.${plan.id}.audience`);
-          const features = tr(`plans.${plan.id}.features`, {
-            returnObjects: true,
-          });
-          const featureList = Array.isArray(features)
-            ? (features as string[])
-            : localize(catalogPlan).features;
+          const loc = localize(catalogPlan);
+          const audience = landingCopy(
+            tr,
+            `plans.${plan.id}.audience`,
+            catalogPlan.description || loc.name,
+          );
+          const featureList = landingFeatureList(
+            tr,
+            `plans.${plan.id}.features`,
+            loc.features,
+          );
           const href = `/signup?plan=${plan.id}`;
           const monthlyCents =
             catalogPlan.prices.find(

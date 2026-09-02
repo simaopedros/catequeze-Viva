@@ -19,6 +19,8 @@ services:
     env_file: .env.server
     environment:
       NODE_ENV: production
+      # Live catalog from /admin/planos. Set static on the VPS to roll back.
+      PRICING_CATALOG_SOURCE: db
     expose:
       - "3001"
 

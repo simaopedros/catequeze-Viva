@@ -1,11 +1,12 @@
 /**
  * Server-side plan catalog loader.
  *
- * PRICING_CATALOG_SOURCE=static (default): identical to hardcoded DEFAULT_PLANS
- * plus Stripe Price IDs from env vars. No DB reads on the hot path.
+ * PRICING_CATALOG_SOURCE=db (default): load PricingPlan + prices (including
+ * archived) with a 60s in-memory cache. Empty table falls back to DEFAULT_PLANS.
+ * Admin edits in /admin/planos are what landing, /pricing and entitlements use.
  *
- * PRICING_CATALOG_SOURCE=db: load PricingPlan + prices (including archived)
- * with a 60s in-memory cache. Empty table falls back to DEFAULT_PLANS.
+ * PRICING_CATALOG_SOURCE=static: hardcoded DEFAULT_PLANS plus Stripe Price IDs
+ * from env vars. Rollback switch only — ignores the admin catalog.
  *
  * Stripe Price ID → plan resolution chain:
  *   1. catalog prices (active + archived)
@@ -40,8 +41,8 @@ let cachedAt = 0;
 export type PricingCatalogSource = 'static' | 'db';
 
 export function getPricingCatalogSource(): PricingCatalogSource {
-  const raw = (process.env.PRICING_CATALOG_SOURCE || 'static').trim().toLowerCase();
-  return raw === 'db' ? 'db' : 'static';
+  const raw = (process.env.PRICING_CATALOG_SOURCE || 'db').trim().toLowerCase();
+  return raw === 'static' ? 'static' : 'db';
 }
 
 export function invalidatePlanCatalogCache(): void {
@@ -175,8 +176,22 @@ function rowToCatalogPlan(row: any): CatalogPlan {
   };
 }
 
-async function loadFromDatabase(context: CatalogContext): Promise<PlanCatalogSnapshot | null> {
-  const delegate = context.entities?.PricingPlan;
+async function pricingPlanDelegate(context?: CatalogContext) {
+  if (context?.entities?.PricingPlan?.findMany) {
+    return context.entities.PricingPlan;
+  }
+  try {
+    const wasp = await import('wasp/server');
+    const client = (wasp as { prisma?: { pricingPlan?: { findMany: (args?: any) => Promise<any[]> } } }).prisma;
+    if (client?.pricingPlan?.findMany) return client.pricingPlan;
+  } catch {
+    // Unit tests mock wasp/server without Prisma.
+  }
+  return null;
+}
+
+async function loadFromDatabase(context?: CatalogContext): Promise<PlanCatalogSnapshot | null> {
+  const delegate = await pricingPlanDelegate(context);
   if (!delegate?.findMany) return null;
   try {
     const rows = await delegate.findMany({
@@ -202,7 +217,7 @@ export async function loadPlanCatalog(context?: CatalogContext): Promise<PlanCat
     return cachedSnapshot;
   }
 
-  const fromDb = context ? await loadFromDatabase(context) : null;
+  const fromDb = await loadFromDatabase(context);
   const snapshot = fromDb ?? attachEnvPriceIds(cloneDefaultSnapshot());
   cachedSnapshot = snapshot;
   cachedAt = now;
