@@ -90,9 +90,11 @@ function loadMetaPixel() {
   document.head.appendChild(script);
 
   // Initialize pixel with Advanced Matching (autoConfig) for high EMQ
-  window.fbq("init", META_PIXEL_ID, {}, { autoConfig: true, debug: false });
-  // Fire initial PageView
-  window.fbq("track", "PageView");
+  if (window.fbq) {
+    window.fbq("init", META_PIXEL_ID, {}, { autoConfig: true, debug: false });
+    // Fire initial PageView
+    window.fbq("track", "PageView");
+  }
 }
 
 /**
