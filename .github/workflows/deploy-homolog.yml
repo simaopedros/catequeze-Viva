@@ -50,6 +50,7 @@ jobs:
             --build-arg REACT_APP_API_URL=https://api-homolog.catechis.app \
             --build-arg REACT_APP_FAMILY_PORTAL_HOST=familia-homolog.catechis.app \
             --build-arg REACT_APP_STAFF_PORTAL_HOST=homolog.catechis.app \
+            --build-arg REACT_APP_META_PIXEL_ID=2069332313989772 \
             -t "${IMAGE}:${TAG}" -t "${IMAGE}:homolog-latest" .
           docker push "${IMAGE}:${TAG}"
           docker push "${IMAGE}:homolog-latest"
