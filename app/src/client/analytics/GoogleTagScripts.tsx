@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 
+// Import to ensure global Window type augmentation from metaTracking is visible
+// (fbq: MetaFbq | undefined declared there, avoids duplicate declaration)
+import type {} from "./metaTracking";
+
 declare global {
   interface Window {
     dataLayer: unknown[];
