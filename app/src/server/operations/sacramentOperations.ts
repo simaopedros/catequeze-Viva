@@ -531,7 +531,7 @@ export const listJourneyTemplates = async (
   }
 
   const { parishIds } = await getEffectiveParishScope(context);
-  const parishes =
+  const parishes: any[] =
     parishIds.length === 0
       ? []
       : await context.entities.Parish.findMany({
@@ -539,23 +539,23 @@ export const listJourneyTemplates = async (
           select: { id: true, dioceseId: true, type: true },
         });
 
-  const dioceseIds: string[] = [
+  const dioceseIds = [
     ...new Set(
       parishes
         .map((p: any) => p.dioceseId)
-        .filter((id: unknown): id is string => typeof id === 'string' && id.length > 0),
+        .filter((id: any) => typeof id === 'string' && id.length > 0),
     ),
-  ];
+  ] as string[];
   const hasOnlyPersonal = parishes.length > 0 && parishes.every((p: any) => p.type === 'PERSONAL');
   const where = buildJourneyTemplateListWhere({
     isAdmin: false,
-    parishIds,
+    parishIds: parishIds as string[],
     dioceseIds,
     hasOnlyPersonal,
   });
 
   const templates = await context.entities.SacramentalJourneyTemplate.findMany({
-    where,
+    where: where as any,
     include,
   });
 
