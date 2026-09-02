@@ -1,6 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { assertCanAccessClass, getUserParishRoles, isCatechistOrAboveRole, isCoordinatorOrAboveRole } from '../auth/helpers';
-import { requireWorkspaceAccess } from './sharedScope';
+import { requireWorkspaceAccess, resolveWorkspaceAccess } from './sharedScope';
 
 /** Pastoral report window: meetings older than this are not loaded. */
 const PASTORAL_REPORT_WINDOW_MONTHS = 24;
@@ -18,9 +18,18 @@ async function getBirthdayScope(context: any): Promise<{ parishIds: string[]; cl
   }
 
   const parishRoles = await getUserParishRoles(context);
-  const parishIds = parishRoles
-    .filter((r: any) => isCoordinatorOrAboveRole(r.role))
-    .map((r: any) => r.parishId);
+  const parishIds: string[] = [];
+  const scopedClassIds: string[] = [];
+  for (const r of parishRoles as { parishId: string; role: string }[]) {
+    if (!isCoordinatorOrAboveRole(r.role)) continue;
+    // Scoped community coordinators (vice) contribute their classes, not the parish
+    const access = await resolveWorkspaceAccess(context, r.parishId, { required: false });
+    if (access?.isScopedCoordinator && access.allowedClassIds !== 'ALL') {
+      scopedClassIds.push(...access.allowedClassIds);
+    } else {
+      parishIds.push(r.parishId);
+    }
+  }
 
   const catechistAssignments = await context.entities.ClassCatechist.findMany({
     where: { userId: context.user.id },
@@ -31,7 +40,7 @@ async function getBirthdayScope(context: any): Promise<{ parishIds: string[]; cl
 
   return {
     parishIds: [...new Set([...parishIds, ...assignedParishIds])],
-    classIds: [...new Set(classIds)],
+    classIds: [...new Set([...classIds, ...scopedClassIds])],
   };
 }
 

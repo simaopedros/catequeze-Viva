@@ -282,7 +282,7 @@ export async function assertCanAccessCatechumenProfile(
       enrollments: {
         select: { class: { select: { parishId: true, id: true } } },
       },
-      household: { select: { parishId: true } },
+      household: { select: { parishId: true, communityId: true } },
     },
   });
   if (!catechumen) throw new HttpError(404, 'Catequizando não encontrado.');
@@ -324,9 +324,34 @@ export async function assertCanAccessCatechumenProfile(
     });
     if (!access) continue;
 
-    // Coordinator in THIS workspace only
-    if (access.isCoordinatorOrAbove || access.role === 'PASTORAL_VIEWER') {
+    // Coordinator in THIS workspace only (scoped vice-coordinators fall through
+    // to the class-scope check below)
+    if (
+      (access.isCoordinatorOrAbove && !access.isScopedCoordinator) ||
+      access.role === 'PASTORAL_VIEWER'
+    ) {
       return;
+    }
+
+    // Scoped community coordinator: enrolled in a class of their scope, or
+    // household inside their community
+    if (access.isScopedCoordinator) {
+      const allowed = new Set(
+        access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds,
+      );
+      const enrolledInScope = catechumen.enrollments.some(
+        (e: { class: { id: string; parishId: string } }) =>
+          e.class.parishId === parishId && allowed.has(e.class.id),
+      );
+      if (enrolledInScope) return;
+      if (
+        access.communityId &&
+        catechumen.household?.parishId === parishId &&
+        catechumen.household?.communityId === access.communityId
+      ) {
+        return;
+      }
+      continue;
     }
 
     // Catechist in THIS workspace: must have ClassCatechist on an enrolled class
@@ -394,6 +419,10 @@ export async function assertCanAccessClass(
   const access = await resolveWorkspaceAccess(context, classData.parishId, { required: false });
 
   if (access?.isCoordinatorOrAbove || access?.role === 'PASTORAL_VIEWER') {
+    if (access.isScopedCoordinator) {
+      const { assertClassInScope } = await import('../operations/sharedScope');
+      assertClassInScope(access, classId, 'Acesso negado a esta turma.');
+    }
     return { parishId: classData.parishId };
   }
 

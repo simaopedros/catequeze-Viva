@@ -1216,11 +1216,19 @@ export default function ClassDetailPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge
-                          variant={cc.role === "LEAD" ? "default" : "secondary"}
+                          variant={
+                            cc.role === "LEAD"
+                              ? "default"
+                              : cc.role === "COORDINATOR"
+                                ? "outline"
+                                : "secondary"
+                          }
                         >
                           {cc.role === "LEAD"
                             ? t("detail.role_lead")
-                            : t("detail.role_assistant")}
+                            : cc.role === "COORDINATOR"
+                              ? t("detail.role_class_coordinator")
+                              : t("detail.role_assistant")}
                         </Badge>
                         {canRemove && (
                           <Button

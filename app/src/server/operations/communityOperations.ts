@@ -1,5 +1,5 @@
 import { HttpError } from 'wasp/server';
-import { requireWorkspaceAccess } from './sharedScope';
+import { requireWorkspaceAccess, resolveWorkspaceAccess } from './sharedScope';
 
 export const listCommunities = async (
   args: { parishId?: string; workspaceId?: string },
@@ -147,6 +147,13 @@ export const updateCommunity = async (
       const allowedRoles = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'];
       if (!membership || !allowedRoles.includes(membership.role)) {
         throw new HttpError(403, 'Sem permissão para editar esta comunidade.');
+      }
+      // Scoped community coordinator (vice): only their own community
+      const access = await resolveWorkspaceAccess(context, community.parishId, {
+        required: false,
+      });
+      if (access?.isScopedCoordinator && access.communityId !== args.id) {
+        throw new HttpError(403, 'Esta comunidade está fora do seu escopo de coordenação.');
       }
     }
   }

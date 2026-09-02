@@ -14,6 +14,24 @@ import {
   wrapDateIdPage,
 } from "./listCursor";
 import { meetingDateFromInput } from "../../shared/calendarDate";
+import { resolveWorkspaceAccess, isClassInScope } from "./sharedScope";
+
+/**
+ * Coordinator roles pass the class checks below, except a scoped
+ * COMMUNITY_COORDINATOR (vice) whose scope excludes the class.
+ */
+async function coordinatorCoversClass(
+  context: any,
+  parishId: string,
+  classId: string,
+): Promise<boolean> {
+  const access = await resolveWorkspaceAccess(context, parishId, {
+    required: false,
+  });
+  if (!access) return true;
+  if (!access.isScopedCoordinator) return true;
+  return isClassInScope(access, classId);
+}
 
 function isCoordinatorOrAbove(role: string | null): boolean {
   if (!role) return false;
@@ -115,7 +133,12 @@ async function assertUserBelongsToClass(
 
   const roles = memberships.map((m: { role: string }) => m.role);
 
-  if (roles.some((r: string) => isCoordinatorOrAbove(r))) return;
+  if (
+    roles.some((r: string) => isCoordinatorOrAbove(r)) &&
+    (await coordinatorCoversClass(context, classData.parishId, classId))
+  ) {
+    return;
+  }
 
   if (roles.some((r: string) => isCatechistOrAbove(r))) {
     const isClassCatechist = classData.catechists.some(
@@ -184,7 +207,12 @@ async function assertCanTakeAttendance(
   }
 
   if (context.user.isAdmin) return;
-  if (roles.some(isCoordinatorOrAbove)) return;
+  if (
+    roles.some(isCoordinatorOrAbove) &&
+    (await coordinatorCoversClass(context, classData.parishId, classId))
+  ) {
+    return;
+  }
   if (roles.some((r) => isCatechistOrAbove(r))) {
     const ok = classData.catechists.some(
       (cc: any) => cc.userId === context.user.id,

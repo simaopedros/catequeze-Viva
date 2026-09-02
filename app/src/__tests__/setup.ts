@@ -52,6 +52,10 @@ export const PARISH_SANTA_MARIA = 'bbbbbbbb-2222-4bbb-b222-bbbbbbbbbbbb';
 export const CLASS_CRISMA = 'test-class-crisma-001';
 export const CLASS_INFANTIL = 'test-class-infantil-001';
 export const CLASS_EUCARISTIA = 'test-class-eucaristia-001';
+/** São José class in a second community — outside the community coordinator's scope. */
+export const CLASS_CAPELA = 'test-class-capela-001';
+export const COMMUNITY_SAO_JOSE = 'cccccccc-3333-4ccc-c333-cccccccccccc';
+export const COMMUNITY_SAO_JOSE_CAPELA = 'cccccccc-3333-4ccc-c334-cccccccccccc';
 
 // ═══ User IDs (from seed_test_data.js) ═════════════════════════════════════════
 export const USERS = {

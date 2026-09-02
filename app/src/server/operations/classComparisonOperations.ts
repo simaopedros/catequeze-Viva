@@ -5,6 +5,7 @@
 import { HttpError } from 'wasp/server';
 import { assertCanAccessParishReports } from '../auth/helpers';
 import { assertTwoFactorSessionVerified } from './twoFactorOperations';
+import { resolveWorkspaceAccess, classWhereForAccess } from './sharedScope';
 
 export const getClassComparison = async (args: { parishId: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
@@ -13,8 +14,15 @@ export const getClassComparison = async (args: { parishId: string }, context: an
   await assertTwoFactorSessionVerified(context);
   await assertCanAccessParishReports(context, args.parishId);
 
+  // Scoped community coordinators compare only the classes in their scope
+  let classWhere: Record<string, unknown> = { parishId: args.parishId };
+  if (!context.user.isAdmin) {
+    const access = await resolveWorkspaceAccess(context, args.parishId, { required: false });
+    if (access?.isScopedCoordinator) classWhere = classWhereForAccess(access);
+  }
+
   const classes = await context.entities.CatechesisClass.findMany({
-    where: { parishId: args.parishId, status: { not: 'ARCHIVED' } },
+    where: { ...classWhere, status: { not: 'ARCHIVED' } },
     select: {
       id: true,
       name: true,

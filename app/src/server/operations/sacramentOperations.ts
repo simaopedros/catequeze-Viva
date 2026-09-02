@@ -97,7 +97,8 @@ export const listSacramentalJourneys = async (
   const parishId = access.workspaceId;
 
   // Coordinator+PersonalOwner: journeys in this parish only
-  if (access.isCoordinatorOrAbove) {
+  // (scoped community coordinators use the class-scoped branch below)
+  if (access.isCoordinatorOrAbove && !access.isScopedCoordinator) {
     return context.entities.SacramentalJourney.findMany({
       where: withSearch({
         OR: [
@@ -109,8 +110,8 @@ export const listSacramentalJourneys = async (
     });
   }
 
-  // Catechist: journeys of students in allowed classes (this workspace)
-  if (access.isCatechist) {
+  // Catechist / scoped coordinator: journeys of students in allowed classes
+  if (access.isCatechist || access.isScopedCoordinator) {
     const classIds =
       access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds;
     if (classIds.length === 0) return [];

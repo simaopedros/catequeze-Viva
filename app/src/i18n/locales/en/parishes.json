@@ -120,6 +120,7 @@
   "community_chat_title": "Community: {{name}}",
   "lead_catechist": "Lead",
   "assistant_catechist": "Assistant",
+  "class_coordinator": "Coordinator",
   "type_short_urban": "Urban Comm.",
   "type_short_rural": "Rural Comm.",
   "type_short_urbana": "Urban",

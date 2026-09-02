@@ -50,11 +50,15 @@ export const generateCatechumenUploadToken = async (
         () => null,
       );
       if (!access) continue;
-      if (access.isCoordinatorOrAbove) {
+      if (access.isCoordinatorOrAbove && !access.isScopedCoordinator) {
         authorized = true;
         break;
       }
-      if (access.isCatechist || isCatechist(access.role)) {
+      if (
+        access.isCatechist ||
+        isCatechist(access.role) ||
+        access.isScopedCoordinator
+      ) {
         // Catechist must have class assignment overlapping enrollments
         if (access.allowedClassIds === 'ALL') {
           authorized = true;

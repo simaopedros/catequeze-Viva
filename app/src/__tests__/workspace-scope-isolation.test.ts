@@ -17,9 +17,12 @@ import {
   CLASS_CRISMA,
   CLASS_INFANTIL,
   CLASS_EUCARISTIA,
+  CLASS_CAPELA,
+  COMMUNITY_SAO_JOSE,
 } from './setup';
 import { resolveWorkspaceAccess } from '../server/operations/sharedScope';
-import { listClasses } from '../server/operations/classOperations';
+import { listClasses, getClassDetails } from '../server/operations/classOperations';
+import { assertCanAccessClass } from '../server/auth/helpers';
 import { listCatechumens } from '../server/operations/catechumenOperations';
 import { listCommunities } from '../server/operations/communityOperations';
 import { getParishTeam } from '../server/operations/memberOperations';
@@ -267,6 +270,103 @@ describe('Workspace scope isolation', () => {
       expect(overview.classReports.every((r: any) => r.parishId === PARISH_SAO_JOSE)).toBe(
         true,
       );
+    });
+  });
+
+  describe('COMMUNITY_COORDINATOR — vice-coordination scope', () => {
+    itDb('is scoped to its community classes, never the whole parish', async () => {
+      const ctx = makeOpContext('communityCoord');
+      const access = await resolveWorkspaceAccess(ctx, PARISH_SAO_JOSE);
+      expect(access?.role).toBe('COMMUNITY_COORDINATOR');
+      expect(access?.isCoordinatorOrAbove).toBe(true);
+      expect(access?.isScopedCoordinator).toBe(true);
+      expect(access?.communityId).toBe(COMMUNITY_SAO_JOSE);
+      expect(access?.allowedClassIds).not.toBe('ALL');
+      const ids = access!.allowedClassIds as string[];
+      expect(ids).toContain(CLASS_CRISMA);
+      expect(ids).toContain(CLASS_INFANTIL);
+      expect(ids).not.toContain(CLASS_CAPELA);
+    });
+
+    itDb('listClasses hides classes of other communities', async () => {
+      const ctx = makeOpContext('communityCoord');
+      const rows = await listClasses({ workspaceId: PARISH_SAO_JOSE }, ctx);
+      const ids = rows.map((c: any) => c.id);
+      expect(ids).toContain(CLASS_CRISMA);
+      expect(ids).toContain(CLASS_INFANTIL);
+      expect(ids).not.toContain(CLASS_CAPELA);
+      expect(rows.every((c: any) => c.parishId === PARISH_SAO_JOSE)).toBe(true);
+    });
+
+    itDb('class detail outside the scope is denied (403)', async () => {
+      const ctx = makeOpContext('communityCoord');
+      await expect(getClassDetails({ id: CLASS_CAPELA }, ctx)).rejects.toMatchObject({
+        statusCode: 403,
+      });
+      await expect(assertCanAccessClass(ctx, CLASS_CAPELA)).rejects.toMatchObject({
+        statusCode: 403,
+      });
+      // In-scope class still works
+      const detail = await getClassDetails({ id: CLASS_CRISMA }, ctx);
+      expect(detail.id).toBe(CLASS_CRISMA);
+    });
+
+    itDb('catechumens are limited to the scope (no leak from other communities)', async () => {
+      const ctx = makeOpContext('communityCoord');
+      const list = await listCatechumens({ workspaceId: PARISH_SAO_JOSE, take: 500 }, ctx);
+      for (const cat of list) {
+        const enrolledClassIds = ((cat as any).enrollments || []).map((e: any) => e.class?.id);
+        const onlyOutOfScope =
+          enrolledClassIds.length > 0 &&
+          enrolledClassIds.every((id: string) => id === CLASS_CAPELA);
+        expect(onlyOutOfScope).toBe(false);
+      }
+    });
+
+    itDb('team view excludes members that only belong to other communities', async () => {
+      const ctx = makeOpContext('communityCoord');
+      const team = await getParishTeam({ parishId: PARISH_SAO_JOSE }, ctx);
+      expect(team.permissions.actorRole).toBe('COMMUNITY_COORDINATOR');
+      expect((team.permissions as any).isScopedCoordinator).toBe(true);
+      expect((team.permissions as any).canManageCoordinatorScope).toBe(false);
+      // Members in the team must be self, community members or catechists of scoped classes
+      const scopedClassIds = new Set([CLASS_CRISMA, CLASS_INFANTIL]);
+      for (const m of team.members) {
+        if (m.userId === USERS.communityCoord.id) continue;
+        const sharesClass = (m.classes || []).some((c: any) => scopedClassIds.has(c.id));
+        const sameCommunity = m.community?.id === COMMUNITY_SAO_JOSE;
+        expect(sharesClass || sameCommunity).toBe(true);
+      }
+    });
+
+    itDb('explicit COORDINATOR link widens the scope to a class of another community', async () => {
+      const ctx = makeOpContext('communityCoord');
+      const link = await prisma.classCatechist.create({
+        data: { classId: CLASS_CAPELA, userId: USERS.communityCoord.id, role: 'COORDINATOR' },
+      });
+      try {
+        const access = await resolveWorkspaceAccess(makeOpContext('communityCoord'), PARISH_SAO_JOSE);
+        expect(access!.allowedClassIds).toContain(CLASS_CAPELA);
+        const detail = await getClassDetails({ id: CLASS_CAPELA }, makeOpContext('communityCoord'));
+        expect(detail.id).toBe(CLASS_CAPELA);
+      } finally {
+        await prisma.classCatechist.delete({ where: { id: link.id } }).catch(() => {});
+      }
+      // Scope is back to community-only once the link is removed
+      const after = await resolveWorkspaceAccess(ctx, PARISH_SAO_JOSE);
+      expect(after!.allowedClassIds).not.toContain(CLASS_CAPELA);
+    });
+
+    itDb('PARISH_COORDINATOR still sees every São José class, including the chapel one', async () => {
+      const ctx = makeOpContext('coordSaoJose');
+      const rows = await listClasses({ workspaceId: PARISH_SAO_JOSE }, ctx);
+      const ids = rows.map((c: any) => c.id);
+      expect(ids).toContain(CLASS_CRISMA);
+      expect(ids).toContain(CLASS_INFANTIL);
+      expect(ids).toContain(CLASS_CAPELA);
+      const access = await resolveWorkspaceAccess(ctx, PARISH_SAO_JOSE);
+      expect(access?.allowedClassIds).toBe('ALL');
+      expect(access?.isScopedCoordinator).toBe(false);
     });
   });
 

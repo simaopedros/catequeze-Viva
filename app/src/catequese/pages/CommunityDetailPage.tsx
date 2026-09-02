@@ -345,7 +345,9 @@ export default function CommunityDetailPage() {
                       {c.className} ·{" "}
                       {c.role === "LEAD"
                         ? tp("lead_catechist")
-                        : tp("assistant_catechist")}
+                        : c.role === "COORDINATOR"
+                          ? tp("class_coordinator")
+                          : tp("assistant_catechist")}
                     </p>
                   </div>
                 </div>

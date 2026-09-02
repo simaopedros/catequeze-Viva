@@ -1,6 +1,7 @@
 import { HttpError } from 'wasp/server';
 import { Resend } from 'resend';
 import { MembershipStatus } from '@prisma/client';
+import { resolveWorkspaceAccess, isClassInScope } from './sharedScope';
 
 /** Resend accepts up to 100 emails per batch request. */
 const RESEND_BATCH_SIZE = 100;
@@ -35,7 +36,13 @@ async function assertCanAnnounceToClass(context: any, classId: string): Promise<
     throw new HttpError(403, 'Você não pertence à paróquia desta turma.');
   }
 
-  if (isCoordinatorOrAbove(membership.role)) return;
+  if (isCoordinatorOrAbove(membership.role)) {
+    // Scoped community coordinator (vice): only classes inside their scope
+    const access = await resolveWorkspaceAccess(context, classData.parishId, {
+      required: false,
+    });
+    if (!access?.isScopedCoordinator || isClassInScope(access, classId)) return;
+  }
 
   const isClassCatechist = classData.catechists.some((cc: any) => cc.userId === context.user.id);
   if (!isClassCatechist) throw new HttpError(403, 'Você não é catequista desta turma.');

@@ -12,6 +12,7 @@ import {
   COORDINATOR_ROLES,
 } from '../auth/helpers';
 import { assertTwoFactorSessionVerified } from './twoFactorOperations';
+import { resolveWorkspaceAccess } from './sharedScope';
 import { formatServerDate, getPeriodLabel, resolveUserLocale } from '../i18n/serverLocale';
 
 /** Upper bound of classes scanned per alert query (alerts are counts, not lists). */
@@ -148,6 +149,14 @@ async function resolveScopeParishIds(
   if (args.scope === 'parish') {
     if (!isAdmin) {
       await assertCanAccessParishReports(context, args.scopeId);
+      // Scoped community coordinator (vice): parish view collapses to their community
+      const access = await resolveWorkspaceAccess(context, args.scopeId, { required: false });
+      if (access?.isScopedCoordinator) {
+        if (!access.communityId) {
+          throw new HttpError(403, 'Seu escopo de coordenação não inclui a paróquia inteira.');
+        }
+        return { parishIds: [args.scopeId], communityId: access.communityId, membershipRole: role };
+      }
     }
     return { parishIds: [args.scopeId], membershipRole: isAdmin ? 'SUPER_ADMIN' : role };
   }
@@ -160,6 +169,10 @@ async function resolveScopeParishIds(
     if (!community) throw new HttpError(404, 'Comunidade não encontrada.');
     if (!isAdmin) {
       await assertCanAccessParishReports(context, community.parishId);
+      const access = await resolveWorkspaceAccess(context, community.parishId, { required: false });
+      if (access?.isScopedCoordinator && access.communityId !== args.scopeId) {
+        throw new HttpError(403, 'Esta comunidade está fora do seu escopo de coordenação.');
+      }
     }
     return { parishIds: [community.parishId], communityId: args.scopeId, membershipRole: isAdmin ? 'SUPER_ADMIN' : role };
   }

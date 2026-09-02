@@ -37,7 +37,11 @@ export const listDocuments = async (
   const parishId = access.workspaceId;
 
   // Coordinator+: documents of catechumens / members in this parish only
-  if (access.isCoordinatorOrAbove || access.role === 'PASTORAL_VIEWER') {
+  // (scoped community coordinators use the class-scoped branch below)
+  if (
+    (access.isCoordinatorOrAbove && !access.isScopedCoordinator) ||
+    access.role === 'PASTORAL_VIEWER'
+  ) {
     const parishMembers = await context.entities.Membership.findMany({
       where: { parishId },
       select: { userId: true },
@@ -70,8 +74,8 @@ export const listDocuments = async (
     });
   }
 
-  // Catechist: only documents of catechumens in allowed classes (this workspace)
-  if (access.isCatechist) {
+  // Catechist / scoped coordinator: only documents of catechumens in allowed classes
+  if (access.isCatechist || access.isScopedCoordinator) {
     const classIds =
       access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds;
     if (classIds.length === 0) return [];
@@ -292,8 +296,8 @@ export const verifyDocument = async (args: { id: string }, context: any) => {
       catechumenProfile: {
         select: {
           parishId: true,
-          household: { select: { parishId: true } },
-          enrollments: { select: { class: { select: { parishId: true } } } },
+          household: { select: { parishId: true, communityId: true } },
+          enrollments: { select: { class: { select: { id: true, parishId: true } } } },
         },
       },
     },
@@ -327,8 +331,8 @@ export const rejectDocument = async (args: { id: string; reason?: string }, cont
         select: {
           id: true,
           parishId: true,
-          household: { select: { parishId: true } },
-          enrollments: { select: { class: { select: { parishId: true } } } },
+          household: { select: { parishId: true, communityId: true } },
+          enrollments: { select: { class: { select: { id: true, parishId: true } } } },
         },
       },
     },
@@ -387,8 +391,8 @@ type ReviewableDocument = {
   uploadedById: string | null;
   catechumenProfile: {
     parishId: string | null;
-    household: { parishId: string | null } | null;
-    enrollments: { class: { parishId: string } | null }[];
+    household: { parishId: string | null; communityId?: string | null } | null;
+    enrollments: { class: { id?: string; parishId: string } | null }[];
   } | null;
 };
 
@@ -435,7 +439,24 @@ async function assertCanReviewDocument(
     const access = await resolveWorkspaceAccess(context, parishId, { required: false });
     if (!access) continue;
     hasAnyAccess = true;
-    if (access.isCoordinatorOrAbove) return;
+    if (!access.isCoordinatorOrAbove) continue;
+    if (!access.isScopedCoordinator) return;
+    // Scoped community coordinator: catechumen must be enrolled in a class of
+    // their scope or belong to a household in their community.
+    const allowed = new Set(
+      access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds,
+    );
+    const enrolledInScope = (cat?.enrollments || []).some(
+      (e: any) => e.class?.parishId === parishId && allowed.has(e.class?.id),
+    );
+    if (enrolledInScope) return;
+    if (
+      access.communityId &&
+      cat?.household?.parishId === parishId &&
+      (cat?.household as any)?.communityId === access.communityId
+    ) {
+      return;
+    }
   }
 
   throw new HttpError(403, hasAnyAccess ? deniedMessage : 'Este documento não pertence à sua paróquia.');
