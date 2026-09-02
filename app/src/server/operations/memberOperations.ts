@@ -892,6 +892,14 @@ export const getParishTeam = async (
           'PERSONAL_OWNER',
         ].includes(actorRole) || context.user.isAdmin,
       canCancelInvites: assignableRoles.length > 0,
+      /** Who may bind a community coordinator to a community / set of classes. */
+      canManageCoordinatorScope:
+        ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'PERSONAL_OWNER'].includes(
+          actorRole,
+        ) || context.user.isAdmin,
+      /** Actor's own scope (vice-coordination) so the UI can explain limited views. */
+      isScopedCoordinator: access.isScopedCoordinator,
+      scopeCommunityId: access.communityId,
     },
   };
 };

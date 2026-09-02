@@ -150,6 +150,7 @@
     "no_catechists_desc": "Add assistant catechists to the class.",
     "role_lead": "Lead",
     "role_assistant": "Assistant",
+    "role_class_coordinator": "Coordinator",
     "role_lead_catechist": "Lead Catechist",
     "role_coordinator": "Coordinator",
     "invite_by_email": "Invite by email (not yet in the parish)",

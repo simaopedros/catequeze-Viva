@@ -150,6 +150,7 @@
     "no_catechists_desc": "Adicione catequistas assistentes à turma.",
     "role_lead": "Responsável",
     "role_assistant": "Auxiliar",
+    "role_class_coordinator": "Coordenador(a)",
     "role_lead_catechist": "Catequista Resp.",
     "role_coordinator": "Coordenador",
     "invite_by_email": "Convidar por email (ainda não está na paróquia)",

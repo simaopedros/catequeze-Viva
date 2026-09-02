@@ -10,6 +10,7 @@ import {
   cancelInvitation,
   removeMembership,
   updateMembershipRole,
+  setCoordinatorClasses,
 } from "wasp/client/operations";
 import {
   Users,
@@ -24,6 +25,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   Ban,
+  Target,
 } from "lucide-react";
 import { Link } from "react-router";
 import { Button } from "../../client/components/ui/button";
@@ -42,6 +44,23 @@ import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import { formatDate } from "../../i18n/format";
 import { useLocale } from "../../i18n/useLocale";
 import { isTeamInviteRole } from "../../shared/teamInvitePolicy";
+import {
+  CoordinatorScopeDialog,
+  type CoordinatorScopeMember,
+} from "../components/team/CoordinatorScopeDialog";
+
+/** Short description of a community coordinator's scope for list rows. */
+function coordinatorScopeSummary(
+  m: { community?: { name: string } | null; classes?: { role: string }[] },
+  t: (k: string, o?: Record<string, unknown>) => string,
+): string {
+  const linked = (m.classes || []).filter((c) => c.role === "COORDINATOR").length;
+  const parts: string[] = [];
+  if (m.community?.name) parts.push(m.community.name);
+  if (linked > 0) parts.push(t("team.scope.classes_count", { count: linked }));
+  return parts.length > 0 ? parts.join(" · ") : t("team.scope.full_parish");
+}
+
 function deliveryMessage(
   delivery: string | undefined,
   t: (k: string) => string,
@@ -91,6 +110,12 @@ export default function TeamPage() {
   const assignableRoles: string[] = permissions?.assignableRoles || [];
   const canInvite = Boolean(permissions?.canInvite);
   const canManageRoles = Boolean(permissions?.canManageRoles);
+  const canManageCoordinatorScope = Boolean(
+    (permissions as any)?.canManageCoordinatorScope,
+  );
+  const actorIsScopedCoordinator = Boolean(
+    (permissions as any)?.isScopedCoordinator,
+  );
 
   const teamAssignableRoles = useMemo(
     () => assignableRoles.filter((role) => isTeamInviteRole(role)),
@@ -125,6 +150,27 @@ export default function TeamPage() {
     kind: "pending" | "membership";
   } | null>(null);
   const [removeTarget, setRemoveTarget] = useState<string | null>(null);
+  const [scopeTarget, setScopeTarget] = useState<CoordinatorScopeMember | null>(
+    null,
+  );
+
+  const handleSaveScope = async (args: {
+    communityId: string | null;
+    classIds: string[];
+  }) => {
+    if (!scopeTarget) return;
+    await updateMembershipRole({
+      membershipId: scopeTarget.id,
+      role: scopeTarget.role,
+      communityId: args.communityId,
+    } as any);
+    await setCoordinatorClasses({
+      membershipId: scopeTarget.id,
+      classIds: args.classIds,
+    });
+    toast({ title: t("team.scope.saved") });
+    refetch();
+  };
 
   // Sync default invite role when permissions load
   const effectiveInviteRole =
@@ -135,6 +181,8 @@ export default function TeamPage() {
   const needsClass =
     effectiveInviteRole === "LEAD_CATECHIST" ||
     effectiveInviteRole === "ASSISTANT_CATECHIST";
+  const invitingCommunityCoordinator =
+    effectiveInviteRole === "COMMUNITY_COORDINATOR";
 
   const copyText = async (text: string) => {
     try {
@@ -299,6 +347,12 @@ export default function TeamPage() {
           }
         />
 
+        {actorIsScopedCoordinator && (
+          <p className="text-sm text-muted-foreground">
+            {t("team.scope.viewer_hint")}
+          </p>
+        )}
+
         {canInviteFamilyOnly && (
           <AppPanel className="space-y-2 p-4">
             <p className="text-sm text-muted-foreground">
@@ -380,6 +434,11 @@ export default function TeamPage() {
                 {inviting ? "..." : tp("send")}
               </Button>
             </div>
+            {invitingCommunityCoordinator && (
+              <p className="text-xs text-muted-foreground">
+                {t("team.scope.invite_hint")}
+              </p>
+            )}
             {inviteMsg && (
               <p
                 className={
@@ -659,9 +718,23 @@ export default function TeamPage() {
                         </span>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        {classNames || m.community?.name || "—"}
+                        {m.role === "COMMUNITY_COORDINATOR"
+                          ? coordinatorScopeSummary(m, t)
+                          : classNames || m.community?.name || "—"}
                       </p>
                       <div className="flex flex-wrap items-center gap-2">
+                        {m.role === "COMMUNITY_COORDINATOR" &&
+                          canManageCoordinatorScope && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-11 min-h-11"
+                              onClick={() => setScopeTarget(m)}
+                            >
+                              <Target className="mr-1 h-3.5 w-3.5" />
+                              {t("team.scope.edit")}
+                            </Button>
+                          )}
                         {canManageRoles ? (
                           <select
                             value={m.role}
@@ -768,7 +841,9 @@ export default function TeamPage() {
                             {m.user?.email || "—"}
                           </td>
                           <td className="px-4 py-3 text-xs text-muted-foreground">
-                            {classNames || m.community?.name || "—"}
+                            {m.role === "COMMUNITY_COORDINATOR"
+                              ? coordinatorScopeSummary(m, t)
+                              : classNames || m.community?.name || "—"}
                           </td>
                           <td className="px-4 py-3">
                             {canManageRoles ? (
@@ -822,18 +897,33 @@ export default function TeamPage() {
                             </span>
                           </td>
                           <td className="px-4 py-3 text-right">
-                            {canManageRoles && (
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-11 w-11 text-destructive"
-                                aria-label={t("remove_member")}
-                                title={t("remove_member")}
-                                onClick={() => setRemoveTarget(m.id)}
-                              >
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </Button>
-                            )}
+                            <div className="flex justify-end gap-1">
+                              {m.role === "COMMUNITY_COORDINATOR" &&
+                                canManageCoordinatorScope && (
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="h-11 w-11"
+                                    aria-label={t("team.scope.edit")}
+                                    title={t("team.scope.edit")}
+                                    onClick={() => setScopeTarget(m)}
+                                  >
+                                    <Target className="h-3.5 w-3.5" />
+                                  </Button>
+                                )}
+                              {canManageRoles && (
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-11 w-11 text-destructive"
+                                  aria-label={t("remove_member")}
+                                  title={t("remove_member")}
+                                  onClick={() => setRemoveTarget(m.id)}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       );
@@ -863,6 +953,13 @@ export default function TeamPage() {
         onConfirm={handleRemove}
         confirmLabel={tp("member_remove_title")}
         variant="destructive"
+      />
+      <CoordinatorScopeDialog
+        member={scopeTarget}
+        communities={communities as any[]}
+        classes={classes as any[]}
+        onOpenChange={(open) => !open && setScopeTarget(null)}
+        onSave={handleSaveScope}
       />
     </>
   );
