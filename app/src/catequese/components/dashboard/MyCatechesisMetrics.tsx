@@ -36,10 +36,10 @@ function MetricCell({ metric }: { metric: Metric }) {
 
   const body = (
     <>
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-2.5 sm:gap-3">
         <span
           className={cn(
-            "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
+            "flex h-8 w-8 shrink-0 items-center justify-center rounded-full sm:h-9 sm:w-9",
             metric.iconClass,
           )}
           aria-hidden
@@ -47,20 +47,20 @@ function MetricCell({ metric }: { metric: Metric }) {
           <Icon className="h-4 w-4" />
         </span>
         <div className="min-w-0">
-          <p className="font-sans text-title-sm font-semibold tabular-nums leading-none text-brand-ink">
+          <p className="font-sans text-title-xsm font-semibold tabular-nums leading-none text-brand-ink sm:text-title-sm">
             {metric.value}
           </p>
-          <p className="mt-1 text-xs font-medium text-muted-foreground">
+          <p className="mt-1 text-[11px] font-medium leading-tight text-muted-foreground sm:text-xs">
             {metric.label}
           </p>
           {trend && delta !== 0 && (
             <p
               className={cn(
-                "mt-1 inline-flex items-center gap-1 text-[11px] font-medium",
+                "mt-1 inline-flex items-center gap-1 whitespace-nowrap text-[11px] font-medium",
                 delta < 0 ? "text-destructive" : "text-success",
               )}
             >
-              <TrendIcon className="h-3 w-3" aria-hidden />
+              <TrendIcon className="h-3 w-3 shrink-0" aria-hidden />
               {t(delta < 0 ? "trend_down" : "trend_up", {
                 pct: Math.abs(delta),
               })}
@@ -68,8 +68,9 @@ function MetricCell({ metric }: { metric: Metric }) {
           )}
         </div>
       </div>
+      {/* The whole cell is the link; the label only adds affordance on wider screens. */}
       {metric.href && metric.linkLabel && (
-        <span className="mt-3 block text-center text-xs font-medium text-brand-ink group-hover:underline sm:text-left sm:pl-12">
+        <span className="mt-3 hidden text-xs font-medium text-brand-ink group-hover:underline sm:block sm:pl-12">
           {metric.linkLabel}
         </span>
       )}
@@ -77,7 +78,7 @@ function MetricCell({ metric }: { metric: Metric }) {
   );
 
   const base =
-    "group flex h-full min-w-0 flex-col justify-between rounded-lg border border-border/70 bg-surface-elevated p-4";
+    "group flex h-full min-w-0 flex-col justify-between rounded-lg border border-border/70 bg-surface-elevated p-3 sm:p-4";
 
   if (metric.href) {
     return (
@@ -164,7 +165,7 @@ export function MyCatechesisMetrics({
       </div>
       <div
         data-tour="dashboard-stats"
-        className="grid grid-cols-2 gap-3 xl:grid-cols-4"
+        className="grid grid-cols-2 gap-2 sm:gap-3 xl:grid-cols-4"
       >
         {metrics.map((m) => (
           <MetricCell key={m.id} metric={m} />

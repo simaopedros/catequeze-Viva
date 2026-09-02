@@ -2289,6 +2289,9 @@ export const dashboard_es = {
     "search_placeholder": "Buscar...",
     "next_actions": "Próximas acciones",
     "see_all": "Ver todas",
+    "fact_catechumens": "Catecúmenos",
+    "fact_upcoming_meetings": "Próximos encuentros",
+    "fact_attendance": "Asistencia",
     "priority": {
       "high": "Prioridad alta",
       "important": "Importante",

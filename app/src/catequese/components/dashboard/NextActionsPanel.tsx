@@ -168,28 +168,32 @@ function AllClearBanner({
 }) {
   const { t } = useTranslation("dashboard");
   return (
-    <div className="flex flex-col gap-4 rounded-lg border border-success/20 bg-success/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 rounded-lg border border-success/20 bg-success/5 p-3.5 sm:gap-4 sm:p-4 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex items-start gap-3">
         <span
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-success/10 text-success"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-success/10 text-success sm:h-10 sm:w-10"
           aria-hidden
         >
           <CheckCircle2 className="h-5 w-5" />
         </span>
-        <div>
-          <p className="text-base font-semibold tracking-tight text-brand-ink">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold tracking-tight text-brand-ink sm:text-base">
             {t("status.ok")}
           </p>
-          <p className="text-sm text-muted-foreground">{t("status.ok_desc")}</p>
+          <p className="text-xs text-muted-foreground sm:text-sm">
+            {t("status.ok_desc")}
+          </p>
         </div>
       </div>
-      <dl className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+      <dl className="grid grid-cols-3 divide-x divide-success/15 rounded-md bg-white/60 py-2 text-center lg:flex lg:divide-x-0 lg:bg-transparent lg:py-0 lg:text-left lg:gap-6">
         {facts.map((f) => (
-          <div key={f.label} className="min-w-0">
-            <dt className="text-xs text-muted-foreground">{f.label}</dt>
-            <dd className="font-semibold tabular-nums text-brand-ink">
+          <div key={f.label} className="min-w-0 px-2 lg:px-0">
+            <dd className="text-sm font-semibold tabular-nums text-brand-ink sm:text-base">
               {f.value}
             </dd>
+            <dt className="text-[11px] leading-tight text-muted-foreground sm:text-xs">
+              {f.label}
+            </dt>
           </div>
         ))}
       </dl>

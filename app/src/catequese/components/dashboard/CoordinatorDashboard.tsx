@@ -103,7 +103,6 @@ function FirstStepsPanel() {
 
 export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
   const { t } = useTranslation("dashboard");
-  const { t: tc } = useTranslation("common");
   const { activeParishId } = useActiveParish();
   const { surfaceArg } = useFamilyPortalSurface();
 
@@ -126,15 +125,15 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
 
   const facts = [
     {
-      label: t("active_catechumens"),
+      label: t("fact_catechumens"),
       value: stats?.activeCatechumens ?? 0,
     },
     {
-      label: tc("upcoming_meetings"),
+      label: t("fact_upcoming_meetings"),
       value: stats?.upcomingMeetings?.length ?? 0,
     },
     {
-      label: t("avg_attendance"),
+      label: t("fact_attendance"),
       value: stats?.hasAnyAttendance
         ? `${stats?.avgAttendance ?? 0}%`
         : t("mobile.no_attendance"),
@@ -153,7 +152,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
     }));
 
   return (
-    <div className="space-y-5 sm:space-y-6" data-testid="coordinator-dashboard">
+    <div className="space-y-4 sm:space-y-6" data-testid="coordinator-dashboard">
       {/* 1) Onboarding — one highlighted next step until first value */}
       {showActivationChrome && <ActivationChecklist stats={stats} />}
 
