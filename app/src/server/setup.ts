@@ -6,6 +6,7 @@ import { logger } from './logger';
 import { probeAiHealth } from './api/healthCheck';
 import { preloadReferenceCache } from './cache/referenceCache';
 import { registerLandingHtmlMeta } from './middleware/landingHtmlMeta';
+import { portalRequestContextMiddleware } from './requestPortalContext';
 
 const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
 const TOKEN_QUERY_RE = /([?&](token|key|code|session|access_token)=)[^&#\s]+/gi;
@@ -106,6 +107,9 @@ export const serverSetup: ServerSetupFn = async ({ app, server }) => {
   // We add our own with a size limit. Payment webhooks use raw middleware
   // configured per-route via middlewareConfigFn (Stripe).
   app.use(express.json({ limit: MAX_BODY }));
+
+  // Keep request host available for auth email templates (family vs staff).
+  app.use(portalRequestContextMiddleware);
 
   // ── Session cookies: HttpOnly/Secure/SameSite; optional shared Domain ─
   const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN;
