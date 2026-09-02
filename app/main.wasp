@@ -1015,7 +1015,7 @@ query getInstitutionalDashboardInsights {
 //#region Catequese Viva - Content Library
 query listContentItems {
   fn: import { listContentItems } from "@src/server/operations/contentOperations",
-  entities: [ContentItem, Membership, Parish]
+  entities: [ContentItem, Membership, Parish, ClassCatechist]
 }
 
 query getContentItem {

@@ -119,6 +119,10 @@ function getWorkspaceCache(context: any): Map<string, WorkspaceAccess> {
  * Resolve authorization for a single workspace.
  * Roles from other workspaces are ignored — never combined.
  * Membership grants entry; for catechists, ClassCatechist further scopes data.
+ *
+ * Wasp operations that call this must declare Parish, Membership and
+ * ClassCatechist in their `entities` list (`ClassCatechist` is required for
+ * LEAD_CATECHIST / ASSISTANT_CATECHIST).
  */
 export async function resolveWorkspaceAccess(
   context: any,
@@ -231,8 +235,16 @@ export async function resolveWorkspaceAccess(
   } else if (coordinator) {
     allowedClassIds = 'ALL';
   } else if (isCatechist(role)) {
-    // Class-level isolation: only classes assigned via ClassCatechist in this parish
-    const links = await context.entities.ClassCatechist.findMany({
+    // Class-level isolation: only classes assigned via ClassCatechist in this parish.
+    // Callers must declare ClassCatechist in the Wasp operation entities list.
+    const classCatechist = context.entities.ClassCatechist;
+    if (!classCatechist) {
+      throw new HttpError(
+        500,
+        'ClassCatechist em falta nesta operação. Declare a entidade no main.wasp.',
+      );
+    }
+    const links = await classCatechist.findMany({
       where: {
         userId: context.user.id,
         class: { parishId: id },
