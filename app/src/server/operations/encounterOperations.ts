@@ -33,10 +33,37 @@ function meetingClassWhere(scope: ClassScope): Record<string, unknown> {
   return { classId: { in: scope.classIds } };
 }
 
+/**
+ * Parishes where the actor holds a coordinator-level role, evaluated per
+ * membership (plus personal workspace and DIOCESE_ADMIN expansion). A
+ * coordinator role in one workspace never widens visibility in another.
+ */
+function coordinatorParishIdsFromScope(scope: {
+  memberships: { parishId: string; role: string }[];
+  parishIds: string[];
+  personalWorkspaceId: string | null;
+}): string[] {
+  const ids = new Set<string>();
+  const membershipParishIds = new Set(scope.memberships.map((m) => m.parishId));
+  for (const m of scope.memberships) {
+    if ((COORDINATOR_OR_ABOVE as readonly string[]).includes(m.role)) {
+      ids.add(m.parishId);
+    }
+  }
+  if (scope.personalWorkspaceId) ids.add(scope.personalWorkspaceId);
+  for (const id of scope.parishIds) {
+    if (!membershipParishIds.has(id) && id !== scope.personalWorkspaceId) {
+      ids.add(id);
+    }
+  }
+  return [...ids];
+}
+
 async function resolveFocusClassScope(params: {
   isAdmin: boolean;
   roles: string[];
-  parishIds: string[];
+  /** Parishes with coordinator-level role when no workspace is requested. */
+  coordinatorParishIds: string[];
   workspaceId?: string;
   userId: string;
   dependentId?: string;
@@ -52,19 +79,13 @@ async function resolveFocusClassScope(params: {
   const {
     isAdmin,
     roles,
-    parishIds,
+    coordinatorParishIds,
     workspaceId,
     userId,
     dependentId,
     context,
     surface,
   } = params;
-
-  const parishWhere = workspaceId
-    ? { parishId: workspaceId }
-    : isAdmin
-      ? {}
-      : { parishId: { in: parishIds } };
 
   // Family surface: explicit PORTAL arg (client host), pure family roles, or host when available.
   // Wasp ops do NOT receive req — client must pass surface: 'PORTAL' on familia.*.
@@ -178,9 +199,13 @@ async function resolveFocusClassScope(params: {
     };
   }
 
+  // Platform admin: platform-wide only without a workspace; with one, the
+  // focus card must never surface another tenant's meeting.
   if (isAdmin) {
     return {
-      scope: { kind: 'all' },
+      scope: workspaceId
+        ? { kind: 'parish', parishWhere: { parishId: workspaceId } }
+        : { kind: 'all' },
       guardianHouseholdId,
       roleKind: 'staff',
       dependents,
@@ -188,9 +213,43 @@ async function resolveFocusClassScope(params: {
     };
   }
 
+  // Staff: classes assigned as catechist, restricted to the requested workspace.
+  const myClassIds: string[] =
+    hasCoordinator || hasCatechist
+      ? (
+          await context.entities.ClassCatechist.findMany({
+            where: {
+              userId,
+              ...(workspaceId ? { class: { parishId: workspaceId } } : {}),
+            },
+            select: { classId: true },
+          })
+        ).map((l: any) => l.classId)
+      : [];
+
   if (hasCoordinator) {
+    if (workspaceId) {
+      // Role is workspace-local here (resolveWorkspaceAccess) → whole workspace.
+      return {
+        scope: { kind: 'parish', parishWhere: { parishId: workspaceId } },
+        guardianHouseholdId,
+        roleKind: 'staff',
+        dependents,
+        selectedDependent,
+      };
+    }
+    // No workspace: parishes where the role itself is coordinator-level, plus
+    // classes assigned elsewhere — never every parish the user is a member of.
+    const or: Record<string, unknown>[] = [];
+    if (coordinatorParishIds.length > 0) {
+      or.push({ parishId: { in: coordinatorParishIds } });
+    }
+    if (myClassIds.length > 0) or.push({ id: { in: myClassIds } });
     return {
-      scope: { kind: 'parish', parishWhere },
+      scope:
+        or.length === 0
+          ? { kind: 'classIds', classIds: [] }
+          : { kind: 'parish', parishWhere: or.length === 1 ? or[0] : { OR: or } },
       guardianHouseholdId,
       roleKind: 'staff',
       dependents,
@@ -199,12 +258,8 @@ async function resolveFocusClassScope(params: {
   }
 
   if (hasCatechist) {
-    const links = await context.entities.ClassCatechist.findMany({
-      where: { userId },
-      select: { classId: true },
-    });
     return {
-      scope: { kind: 'classIds', classIds: links.map((l: any) => l.classId) },
+      scope: { kind: 'classIds', classIds: myClassIds },
       guardianHouseholdId,
       roleKind: 'staff',
       dependents,
@@ -275,6 +330,7 @@ export const getEncounterFocus = async (
   // Prefer single-workspace authorization (never merge roles across tenants)
   let roles: string[] = [];
   let parishIds: string[] = [];
+  let coordinatorParishIds: string[] = [];
 
   if (args.workspaceId) {
     if (!isAdmin) {
@@ -294,6 +350,7 @@ export const getEncounterFocus = async (
     const scope = await resolveUserScope(context);
     roles = scope.roles;
     parishIds = scope.parishIds;
+    coordinatorParishIds = coordinatorParishIdsFromScope(scope);
   }
 
   if (parishIds.length === 0 && !isAdmin) {
@@ -308,7 +365,7 @@ export const getEncounterFocus = async (
   } = await resolveFocusClassScope({
     isAdmin,
     roles,
-    parishIds,
+    coordinatorParishIds,
     workspaceId: args.workspaceId,
     userId: context.user.id,
     dependentId: args.dependentId,

@@ -49,6 +49,7 @@ import { completeCoordinatorOnboarding } from '../server/operations/onboardingOp
 import { classWhereAcrossWorkspaces } from '../server/operations/sharedScope';
 import { globalSearch } from '../server/operations/searchOperations';
 import { exportReport } from '../server/operations/missingOperations';
+import { getEncounterFocus } from '../server/operations/encounterOperations';
 
 const { buildClassScopeWhere, coordinatorParishIdsFromScope, resolveMeetingClassScope } =
   __test__;
@@ -411,6 +412,142 @@ describe('getDashboardStats scoping', () => {
     expect(whereOf(calls, 'CatechesisClass', 'findMany')).toEqual([
       { parishId: PARISH_A, status: 'ACTIVE' },
     ]);
+  });
+});
+
+// ─── Encounter focus card ("O que precisa da sua atenção agora") ────────────
+
+function makeFocusEntities(opts: {
+  memberships: { parishId: string; role: string }[];
+  personalWorkspaceId: string | null;
+  classLinks: { classId: string; parishId: string }[];
+}) {
+  const meetingQueries: any[] = [];
+  return {
+    meetingQueries,
+    entities: {
+      Membership: {
+        findMany: async () => opts.memberships,
+        findFirst: async (args: any) => {
+          const wantRole = args?.where?.role;
+          const wantParish = args?.where?.parishId;
+          const m = opts.memberships.find(
+            (x) =>
+              (!wantRole || x.role === wantRole) &&
+              (!wantParish || x.parishId === wantParish),
+          );
+          return m ? { id: `m-${m.parishId}`, role: m.role } : null;
+        },
+      },
+      Parish: {
+        findFirst: async (args: any) => {
+          if (!opts.personalWorkspaceId) return null;
+          const wantId = args?.where?.id;
+          if (wantId && wantId !== opts.personalWorkspaceId) return null;
+          return { id: opts.personalWorkspaceId };
+        },
+      },
+      ClassCatechist: {
+        findMany: async (args: any) => {
+          const wantParish = args?.where?.class?.parishId;
+          return opts.classLinks
+            .filter((l) => !wantParish || l.parishId === wantParish)
+            .map((l) => ({ classId: l.classId }));
+        },
+      },
+      GuardianProfile: { findFirst: async () => null },
+      ClassEnrollment: { findMany: async () => [], count: async () => 0 },
+      AttendanceRecord: { count: async () => 0, findFirst: async () => null },
+      CatechumenProfile: { findMany: async () => [], findFirst: async () => null },
+      Meeting: {
+        findMany: async (args: any) => {
+          meetingQueries.push(args?.where);
+          return [];
+        },
+      },
+    },
+  };
+}
+
+describe('getEncounterFocus scoping', () => {
+  it('platform admin with a workspace never looks at other tenants', async () => {
+    const { entities, meetingQueries } = makeFocusEntities({
+      memberships: [],
+      personalWorkspaceId: null,
+      classLinks: [],
+    });
+    const context = { user: { id: 'admin', isAdmin: true }, entities };
+
+    await getEncounterFocus({ workspaceId: PERSONAL }, context);
+
+    expect(meetingQueries).toEqual([{ class: { parishId: PERSONAL } }]);
+  });
+
+  it('platform admin without workspace keeps the platform-wide focus', async () => {
+    const { entities, meetingQueries } = makeFocusEntities({
+      memberships: [],
+      personalWorkspaceId: null,
+      classLinks: [],
+    });
+    const context = { user: { id: 'admin', isAdmin: true }, entities };
+
+    await getEncounterFocus({}, context);
+
+    expect(meetingQueries).toEqual([{}]);
+  });
+
+  it('catechist in the requested workspace only sees assigned classes there', async () => {
+    const { entities, meetingQueries } = makeFocusEntities({
+      memberships: [
+        { parishId: PERSONAL, role: 'PERSONAL_OWNER' },
+        { parishId: PARISH_B, role: 'ASSISTANT_CATECHIST' },
+      ],
+      personalWorkspaceId: PERSONAL,
+      classLinks: [
+        { classId: 'mine-b', parishId: PARISH_B },
+        { classId: 'mine-a', parishId: PARISH_A },
+      ],
+    });
+    const context = { user: { id: 'u1', isAdmin: false }, entities };
+
+    await getEncounterFocus({ workspaceId: PARISH_B }, context);
+
+    expect(meetingQueries).toEqual([{ classId: { in: ['mine-b'] } }]);
+  });
+
+  it('without workspace, PERSONAL_OWNER + catechist in B is not parish-B-wide', async () => {
+    const { entities, meetingQueries } = makeFocusEntities({
+      memberships: [
+        { parishId: PERSONAL, role: 'PERSONAL_OWNER' },
+        { parishId: PARISH_B, role: 'LEAD_CATECHIST' },
+      ],
+      personalWorkspaceId: PERSONAL,
+      classLinks: [{ classId: 'mine-b', parishId: PARISH_B }],
+    });
+    const context = { user: { id: 'u1', isAdmin: false }, entities };
+
+    await getEncounterFocus({}, context);
+
+    expect(meetingQueries).toEqual([
+      {
+        class: {
+          OR: [{ parishId: { in: [PERSONAL] } }, { id: { in: ['mine-b'] } }],
+        },
+      },
+    ]);
+  });
+
+  it('coordinator in the requested workspace sees the whole workspace', async () => {
+    const { entities, meetingQueries } = makeFocusEntities({
+      memberships: [{ parishId: PARISH_A, role: 'PARISH_COORDINATOR' }],
+      personalWorkspaceId: null,
+      classLinks: [],
+    });
+    const context = { user: { id: 'coord', isAdmin: false }, entities };
+
+    await getEncounterFocus({ workspaceId: PARISH_A }, context);
+
+    expect(meetingQueries).toEqual([{ class: { parishId: PARISH_A } }]);
   });
 });
 
