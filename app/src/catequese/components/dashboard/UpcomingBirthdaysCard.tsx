@@ -41,17 +41,20 @@ export function UpcomingBirthdaysCard({
   return (
     <AppPanel
       density="compact"
-      className={cn("flex flex-col gap-4", className)}
+      className={cn("min-w-0 flex flex-col gap-4", className)}
       data-testid="dashboard-birthdays"
     >
       <div className="flex items-center justify-between gap-3">
-        <AppEyebrow className="inline-flex items-center gap-1.5">
-          <Gift className="h-3.5 w-3.5 text-brand-gold-muted" aria-hidden />
-          {t("upcoming_birthdays")}
+        <AppEyebrow className="flex min-w-0 items-center gap-1.5 truncate">
+          <Gift
+            className="h-3.5 w-3.5 shrink-0 text-brand-gold-muted"
+            aria-hidden
+          />
+          <span className="truncate">{t("upcoming_birthdays")}</span>
         </AppEyebrow>
         <Link
           to="/app/birthdays"
-          className="text-xs font-medium text-brand-ink underline-offset-4 hover:underline"
+          className="shrink-0 text-xs font-medium text-brand-ink underline-offset-4 hover:underline"
         >
           {t("see_all")}
         </Link>

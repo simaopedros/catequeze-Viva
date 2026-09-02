@@ -23,7 +23,7 @@ function QuickActionTile({ action }: { action: QuickAction }) {
   return (
     <Link
       to={action.to}
-      className="group flex min-h-11 flex-col items-center gap-2 rounded-lg border border-border/70 bg-surface-elevated p-3 text-center transition-[box-shadow,border-color] duration-150 hover:border-input hover:shadow-elevation-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+      className="group flex min-h-11 min-w-0 flex-col items-center gap-2 rounded-lg border border-border/70 bg-surface-elevated p-3 text-center transition-[box-shadow,border-color] duration-150 hover:border-input hover:shadow-elevation-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
     >
       <span
         className={cn(
@@ -34,10 +34,10 @@ function QuickActionTile({ action }: { action: QuickAction }) {
       >
         <Icon className="h-4 w-4" />
       </span>
-      <span className="text-xs font-semibold leading-snug tracking-tight text-brand-ink">
+      <span className="max-w-full break-words text-xs font-semibold leading-snug tracking-tight text-brand-ink">
         {action.title}
       </span>
-      <span className="hidden text-[11px] leading-snug text-muted-foreground sm:block">
+      <span className="hidden max-w-full break-words text-[11px] leading-snug text-muted-foreground sm:block">
         {action.description}
       </span>
     </Link>
@@ -92,7 +92,7 @@ export function QuickActionsGrid({ className }: QuickActionsGridProps) {
   return (
     <AppPanel
       density="compact"
-      className={cn("space-y-3", className)}
+      className={cn("min-w-0 space-y-3", className)}
       data-testid="dashboard-quick-actions"
     >
       <AppEyebrow>{t("quick_actions")}</AppEyebrow>

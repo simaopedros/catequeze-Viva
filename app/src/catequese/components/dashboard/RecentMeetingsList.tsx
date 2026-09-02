@@ -39,14 +39,14 @@ export function RecentMeetingsList({
   return (
     <AppPanel
       density="compact"
-      className={cn("space-y-2", className)}
+      className={cn("min-w-0 space-y-2", className)}
       data-testid="dashboard-recent-meetings"
     >
       <div className="flex items-center justify-between gap-3">
         <AppEyebrow>{t("recent_meetings")}</AppEyebrow>
         <Link
           to="/app/calendar"
-          className="text-xs font-medium text-brand-ink underline-offset-4 hover:underline"
+          className="shrink-0 text-xs font-medium text-brand-ink underline-offset-4 hover:underline"
         >
           {t("see_all")}
         </Link>

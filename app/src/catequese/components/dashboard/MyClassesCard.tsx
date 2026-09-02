@@ -193,7 +193,7 @@ export function MyClassesCard({ classes, className }: MyClassesCardProps) {
   return (
     <AppPanel
       density="compact"
-      className={cn("flex flex-col gap-4", className)}
+      className={cn("min-w-0 flex flex-col gap-4", className)}
       data-testid="dashboard-my-classes"
     >
       <div className="flex items-center justify-between gap-3">
@@ -201,7 +201,7 @@ export function MyClassesCard({ classes, className }: MyClassesCardProps) {
         {!single && (
           <Link
             to="/app/classes"
-            className="text-xs font-medium text-brand-ink underline-offset-4 hover:underline"
+            className="shrink-0 text-xs font-medium text-brand-ink underline-offset-4 hover:underline"
           >
             {t("see_all")}
           </Link>

@@ -37,7 +37,7 @@ function PastoralAlerts({
   const { t } = useTranslation("dashboard");
   if (!alerts?.length) return null;
   return (
-    <AppPanel density="compact" className="space-y-3">
+    <AppPanel density="compact" className="min-w-0 space-y-3">
       <AppEyebrow>{t("pastoral_alerts")}</AppEyebrow>
       <ul className="space-y-2">
         {alerts.map((a, i) => (
@@ -158,7 +158,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
       {showActivationChrome && <ActivationChecklist stats={stats} />}
 
       {/* 2) Human, contextual header: greeting, date, search, create CTAs */}
-      <DashboardHero hideActions={showActivationChrome} />
+      <DashboardHero />
 
       {hasClasses ? (
         <>
@@ -169,10 +169,10 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
           <MyCatechesisMetrics stats={stats} />
 
           {/* 5) Class health · people · shortcuts and history */}
-          <div className="grid gap-4 sm:gap-5 xl:grid-cols-[1.15fr_0.95fr_0.95fr]">
+          <div className="grid gap-4 sm:gap-5 md:grid-cols-2 2xl:grid-cols-[1.15fr_0.95fr_0.95fr]">
             <MyClassesCard classes={classInsights} />
             <UpcomingBirthdaysCard birthdays={stats?.upcomingBirthdays ?? []} />
-            <div className="space-y-4 sm:space-y-5">
+            <div className="grid min-w-0 gap-4 sm:gap-5 md:col-span-2 md:grid-cols-2 2xl:col-span-1 2xl:grid-cols-1">
               <QuickActionsGrid />
               <RecentMeetingsList meetings={stats?.recentMeetings ?? []} />
               <PastoralAlerts alerts={stats?.recentAlerts ?? []} />
@@ -206,9 +206,9 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
             </AppPanel>
           )}
         </>
-      ) : showActivationChrome ? (
-        <PastoralAlerts alerts={stats?.recentAlerts ?? []} />
       ) : (
+        // No class yet: the checklist (when not dismissed) drives the first
+        // step; this block guarantees the screen is never empty otherwise.
         <div className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
           <FirstStepsPanel />
           <div className="space-y-5">

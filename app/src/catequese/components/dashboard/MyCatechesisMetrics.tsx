@@ -77,7 +77,7 @@ function MetricCell({ metric }: { metric: Metric }) {
   );
 
   const base =
-    "group flex h-full flex-col justify-between rounded-lg border border-border/70 bg-surface-elevated p-4";
+    "group flex h-full min-w-0 flex-col justify-between rounded-lg border border-border/70 bg-surface-elevated p-4";
 
   if (metric.href) {
     return (
@@ -152,12 +152,12 @@ export function MyCatechesisMetrics({
   ];
 
   return (
-    <AppPanel density="compact" className={cn("space-y-4", className)}>
+    <AppPanel density="compact" className={cn("min-w-0 space-y-4", className)}>
       <div className="flex items-center justify-between gap-3">
         <AppEyebrow>{t("my_catechesis")}</AppEyebrow>
         <Link
           to="/app/reports"
-          className="text-xs font-medium text-brand-ink underline-offset-4 hover:underline"
+          className="shrink-0 text-xs font-medium text-brand-ink underline-offset-4 hover:underline"
         >
           {t("see_full_report")}
         </Link>
