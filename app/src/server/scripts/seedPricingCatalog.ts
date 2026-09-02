@@ -9,6 +9,8 @@ import type { PrismaClient } from '@prisma/client';
 import { DEFAULT_PLAN_LIST, lookupKeyFor, type CatalogPlan, type PricingInterval } from '../../shared/planCatalog';
 import { AI_FEATURES_ENABLED } from '../../shared/aiFeatures';
 import { isUsableStripePriceId } from '../../payment/stripePriceId';
+import { readEnvStripePriceId } from '../../payment/paymentProcessorPlans';
+import { importStripePrice } from '../pricing/stripeCatalogSync';
 
 type CatalogSeedDb = {
   pricingPlan: {
@@ -83,7 +85,6 @@ export function defaultPlansMatchSnapshot(plans: typeof DEFAULT_PLAN_LIST) {
 }
 
 async function resolveStripeImport(plan: CatalogPlan, price: CatalogPlan['prices'][number]) {
-  const { readEnvStripePriceId } = await import('../../payment/paymentProcessorPlans');
   const envPriceId = readEnvStripePriceId(plan.slug, envIntervalFor(price.interval));
   let stripePriceId: string | null = isUsableStripePriceId(envPriceId) ? envPriceId : null;
   let unitAmountCents = price.unitAmountCents;
@@ -92,7 +93,6 @@ async function resolveStripeImport(plan: CatalogPlan, price: CatalogPlan['prices
 
   if (stripePriceId) {
     try {
-      const { importStripePrice } = await import('../pricing/stripeCatalogSync');
       const imported = await importStripePrice(stripePriceId);
       if (imported) {
         unitAmountCents = imported.unitAmountCents || unitAmountCents;
