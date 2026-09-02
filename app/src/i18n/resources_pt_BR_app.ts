@@ -1281,8 +1281,112 @@ export const dashboard_pt_BR_app = {
     "title": "Painel da Catequese",
     "subtitle": "Acompanhe turmas, presença e pendências pastorais.",
     "eyebrow": "Visão geral",
-    "quick_actions": "Atalhos",
-    "search_tip_title": "Busca",
+    "quick_actions": "Ações rápidas",
+    "greeting_morning": "Bom dia, {{name}}!",
+    "greeting_morning_anonymous": "Bom dia!",
+    "greeting_afternoon": "Boa tarde, {{name}}!",
+    "greeting_afternoon_anonymous": "Boa tarde!",
+    "greeting_evening": "Boa noite, {{name}}!",
+    "greeting_evening_anonymous": "Boa noite!",
+    "hero_subtitle": "Aqui está o que precisa da sua atenção hoje.",
+    "search_placeholder": "Buscar...",
+    "next_actions": "Próximas ações",
+    "see_all": "Ver todas",
+    "priority": {
+      "high": "Prioridade alta",
+      "important": "Importante",
+      "attention": "Atenção",
+      "info": "Informação"
+    },
+    "action": {
+      "prepare_meeting": {
+        "title": "Preparar encontro",
+        "subtitle": "{{meetingTitle}} · {{className}}",
+        "context": "Você ainda não adicionou o conteúdo deste encontro.",
+        "cta": "Preparar encontro"
+      },
+      "start_meeting": {
+        "title": "Iniciar encontro",
+        "subtitle": "{{meetingTitle}} · {{className}}",
+        "context": "O roteiro está pronto. Quando a turma chegar, inicie o encontro e faça a chamada.",
+        "cta": "Iniciar encontro"
+      },
+      "continue_attendance": {
+        "title": "Continuar chamada",
+        "subtitle": "{{className}} · {{registered}} de {{total}} registrados",
+        "context": "O encontro está em andamento e ainda faltam presenças para registrar.",
+        "cta": "Continuar chamada"
+      },
+      "complete_meeting": {
+        "title": "Encerrar encontro",
+        "subtitle": "{{meetingTitle}} · {{className}}",
+        "context": "Todas as presenças foram registradas. Encerre o encontro para fechar o registro.",
+        "cta": "Encerrar encontro"
+      },
+      "register_attendance": {
+        "title": "Registrar presença",
+        "subtitle": "{{className}} · {{count}} catequizandos",
+        "context": "A presença do último encontro ainda não foi registrada.",
+        "cta": "Registrar presença"
+      },
+      "low_frequency": {
+        "title": "Frequência baixa",
+        "subtitle": "{{count}} catequizandos",
+        "context": "Com menos de {{threshold}}% de presença. Acompanhe e converse com as famílias para incentivar.",
+        "cta": "Ver detalhes"
+      },
+      "birthday": {
+        "title": "Aniversário próximo",
+        "subtitle": "{{name}}",
+        "context": "Que tal preparar uma lembrança especial para a turma celebrar?",
+        "cta": "Ver catequizando"
+      },
+      "pending_sacraments": {
+        "title": "Pendências sacramentais",
+        "subtitle": "{{count}} pendências",
+        "context": "Há marcos sacramentais aguardando acompanhamento.",
+        "cta": "Ver pendências"
+      }
+    },
+    "status": {
+      "ok": "Sua catequese está em dia",
+      "ok_desc": "Nenhuma ação urgente por agora. Continue acompanhando a turma.",
+      "attention": "Atenção necessária",
+      "action_needed": "Precisa agir"
+    },
+    "birthday_today": "Hoje",
+    "birthday_tomorrow": "Amanhã",
+    "in_days": "Em {{count}} dias",
+    "my_catechesis": "Minha catequese",
+    "see_full_report": "Ver relatório completo",
+    "see_classes": "Ver turmas",
+    "see_report": "Ver relatório",
+    "see_pending": "Ver pendências",
+    "active_class_one": "Turma ativa",
+    "trend_down": "{{pct}}% no último mês",
+    "trend_up": "{{pct}}% no último mês",
+    "my_class": "Minha turma",
+    "catechumens_count_one": "{{count}} catequizando",
+    "catechumens_count_other": "{{count}} catequizandos",
+    "attendance_avg_label": "Presença média",
+    "last_meeting": "Último encontro",
+    "present_count_one": "{{count}} presente",
+    "present_count_other": "{{count}} presentes",
+    "of_registered": "de {{total}} registrados",
+    "no_meetings_yet": "Nenhum encontro realizado ainda.",
+    "low_frequency_count_one": "{{count}} catequizando com baixa frequência",
+    "low_frequency_count_other": "{{count}} catequizandos com baixa frequência",
+    "open_class": "Abrir turma",
+    "class_all_clear": "Nenhum catequizando com frequência baixa.",
+    "upcoming_birthdays": "Próximos aniversários",
+    "no_upcoming_birthdays": "Nenhum aniversário nos próximos 30 dias.",
+    "birthday_hint": "Que tal preparar uma lembrança especial?",
+    "see_birthdays": "Ver aniversariantes",
+    "quick_new_catechumen_desc": "Adicionar um novo catequizando",
+    "quick_import_list": "Importar lista",
+    "quick_import_list_desc": "Importar vários catequizandos",
+    "recent_meetings": "Últimos encontros",
+    "attendance_not_registered": "Presença não registrada",
     "activation": {
       "eyebrow": "Primeiros passos",
       "title": "Deixe sua catequese pronta para o dia a dia",
@@ -1405,9 +1509,7 @@ export const dashboard_pt_BR_app = {
     "empty_class_card_desc": "Crie sua primeira turma para organizar encontros, presença e acompanhamento.",
     "empty_catechumen_card_desc": "Depois da turma, cadastre os catequizandos para começar a jornada pastoral.",
     "registration_section": "Cadastro",
-    "attention_now": "O que precisa da sua atenção agora",
     "import_catechumens": "Importar catequizandos",
-    "metrics_secondary": "Indicadores",
     "mobile": {
       "none_registered": "Nenhum",
       "no_attendance": "Sem registros",

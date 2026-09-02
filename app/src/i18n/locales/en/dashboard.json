@@ -2,8 +2,112 @@
   "title": "Catechesis Dashboard",
   "subtitle": "Track classes, attendance, and pastoral pending items.",
   "eyebrow": "Overview",
-  "quick_actions": "Shortcuts",
-  "search_tip_title": "Search",
+  "quick_actions": "Quick actions",
+  "greeting_morning": "Good morning, {{name}}!",
+  "greeting_morning_anonymous": "Good morning!",
+  "greeting_afternoon": "Good afternoon, {{name}}!",
+  "greeting_afternoon_anonymous": "Good afternoon!",
+  "greeting_evening": "Good evening, {{name}}!",
+  "greeting_evening_anonymous": "Good evening!",
+  "hero_subtitle": "Here is what needs your attention today.",
+  "search_placeholder": "Search...",
+  "next_actions": "Next actions",
+  "see_all": "See all",
+  "priority": {
+    "high": "High priority",
+    "important": "Important",
+    "attention": "Attention",
+    "info": "Information"
+  },
+  "action": {
+    "prepare_meeting": {
+      "title": "Prepare encounter",
+      "subtitle": "{{meetingTitle}} · {{className}}",
+      "context": "You have not added content to this encounter yet.",
+      "cta": "Prepare encounter"
+    },
+    "start_meeting": {
+      "title": "Start encounter",
+      "subtitle": "{{meetingTitle}} · {{className}}",
+      "context": "The plan is ready. When the class arrives, start the encounter and take attendance.",
+      "cta": "Start encounter"
+    },
+    "continue_attendance": {
+      "title": "Continue roll call",
+      "subtitle": "{{className}} · {{registered}} of {{total}} recorded",
+      "context": "The encounter is in progress and some attendance records are still missing.",
+      "cta": "Continue roll call"
+    },
+    "complete_meeting": {
+      "title": "Finish encounter",
+      "subtitle": "{{meetingTitle}} · {{className}}",
+      "context": "All attendance has been recorded. Finish the encounter to close the record.",
+      "cta": "Finish encounter"
+    },
+    "register_attendance": {
+      "title": "Record attendance",
+      "subtitle": "{{className}} · {{count}} catechumens",
+      "context": "Attendance for the last encounter has not been recorded yet.",
+      "cta": "Record attendance"
+    },
+    "low_frequency": {
+      "title": "Low attendance",
+      "subtitle": "{{count}} catechumens",
+      "context": "Below {{threshold}}% attendance. Follow up and talk to the families to encourage them.",
+      "cta": "See details"
+    },
+    "birthday": {
+      "title": "Upcoming birthday",
+      "subtitle": "{{name}}",
+      "context": "How about preparing a special treat for the class to celebrate?",
+      "cta": "See catechumen"
+    },
+    "pending_sacraments": {
+      "title": "Sacramental pending items",
+      "subtitle": "{{count}} pending",
+      "context": "There are sacramental milestones waiting for follow-up.",
+      "cta": "See pending items"
+    }
+  },
+  "status": {
+    "ok": "Your catechesis is up to date",
+    "ok_desc": "No urgent action right now. Keep following up with the class.",
+    "attention": "Attention needed",
+    "action_needed": "Action needed"
+  },
+  "birthday_today": "Today",
+  "birthday_tomorrow": "Tomorrow",
+  "in_days": "In {{count}} days",
+  "my_catechesis": "My catechesis",
+  "see_full_report": "See full report",
+  "see_classes": "See classes",
+  "see_report": "See report",
+  "see_pending": "See pending items",
+  "active_class_one": "Active class",
+  "trend_down": "{{pct}}% in the last month",
+  "trend_up": "{{pct}}% in the last month",
+  "my_class": "My class",
+  "catechumens_count_one": "{{count}} catechumen",
+  "catechumens_count_other": "{{count}} catechumens",
+  "attendance_avg_label": "Average attendance",
+  "last_meeting": "Last encounter",
+  "present_count_one": "{{count}} present",
+  "present_count_other": "{{count}} present",
+  "of_registered": "of {{total}} recorded",
+  "no_meetings_yet": "No encounter held yet.",
+  "low_frequency_count_one": "{{count}} catechumen with low attendance",
+  "low_frequency_count_other": "{{count}} catechumens with low attendance",
+  "open_class": "Open class",
+  "class_all_clear": "No catechumen with low attendance.",
+  "upcoming_birthdays": "Upcoming birthdays",
+  "no_upcoming_birthdays": "No birthdays in the next 30 days.",
+  "birthday_hint": "How about preparing a special treat?",
+  "see_birthdays": "See birthdays",
+  "quick_new_catechumen_desc": "Add a new catechumen",
+  "quick_import_list": "Import list",
+  "quick_import_list_desc": "Import several catechumens",
+  "recent_meetings": "Recent encounters",
+  "attendance_not_registered": "Attendance not recorded",
   "activation": {
     "eyebrow": "Getting started",
     "title": "Get your catechesis ready for daily use",
@@ -126,9 +230,7 @@
   "empty_class_card_desc": "Create your first class to organize meetings, attendance, and follow-up.",
   "empty_catechumen_card_desc": "After the class, register catechumens to begin the pastoral journey.",
   "registration_section": "Registration",
-  "attention_now": "What needs your attention now",
   "import_catechumens": "Import catechumens",
-  "metrics_secondary": "Indicators",
   "mobile": {
     "none_registered": "None",
     "no_attendance": "No records",
