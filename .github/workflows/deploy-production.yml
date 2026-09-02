@@ -143,9 +143,13 @@ jobs:
             sleep 5
             docker compose -f docker-compose.yml run --rm --entrypoint "npx" server prisma migrate deploy --schema=../db/schema.prisma
             sleep 5
-            # Run seed in background (idempotent)
+            # Journey templates must land before the deploy finishes. The old
+            # full seed ran in the background after Bible/Catechism, so a
+            # container recycle left production without global templates.
+            docker compose -f docker-compose.yml run --rm --entrypoint "node" server /app/src/server/scripts/seedJourneyTemplates.mjs
+            # Bible / Catechism / Directory remain background (idempotent)
             nohup docker compose -f docker-compose.yml exec -T server node /app/src/server/scripts/runSeed.mjs > /opt/catechis/seed.log 2>&1 &
-            echo "✅ Seed started in background"
+            echo "✅ Journey templates seeded; remaining seed started in background"
             sleep 10
             curl -fsS https://api.catechis.app/health
         env:

@@ -8,9 +8,15 @@ import {
   parseBirthDateUtc,
   parseCatechumenCsv,
 } from "../shared/csvCatechumenImport";
-import { classEnrollmentCount, meetingAttendanceCount } from "../shared/dashboardCounts";
+import {
+  classEnrollmentCount,
+  meetingAttendanceCount,
+} from "../shared/dashboardCounts";
 import { displayDateToIso, isoToDisplayDate } from "../shared/displayDate";
-import { filterJourneyTemplatesByLocale } from "../shared/journeyTemplateLocale";
+import {
+  filterJourneyTemplatesByLocale,
+  buildJourneyTemplateListWhere,
+} from "../shared/journeyTemplateLocale";
 
 describe("CSV catechumen import", () => {
   it("parses a turma column and quoted fields", () => {
@@ -69,7 +75,9 @@ describe("dashboard counts", () => {
   it("prefers enrollmentCount over missing _count", () => {
     expect(classEnrollmentCount({ enrollmentCount: 15 })).toBe(15);
     expect(classEnrollmentCount({ _count: { enrollments: 0 } })).toBe(0);
-    expect(classEnrollmentCount({ enrollmentCount: 15, _count: { enrollments: 0 } })).toBe(15);
+    expect(
+      classEnrollmentCount({ enrollmentCount: 15, _count: { enrollments: 0 } }),
+    ).toBe(15);
   });
 
   it("reads attendance from _count or dedicated field", () => {
@@ -86,7 +94,7 @@ describe("display dates", () => {
 });
 
 describe("journey template locale", () => {
-  it("keeps only the UI locale plus parish-owned templates without locale", () => {
+  it("keeps only the UI locale plus parish-owned templates", () => {
     const filtered = filterJourneyTemplatesByLocale(
       [
         { id: "1", locale: "pt-BR" },
@@ -101,10 +109,55 @@ describe("journey template locale", () => {
         { id: "10", locale: "pt-BR" },
         { id: "11", locale: "en" },
         { id: "12", locale: "es" },
+        { id: "parish-en", locale: "en", parishId: "p1" },
+        { id: "legacy-global", locale: "" },
       ],
       "pt-BR",
     );
-    expect(filtered).toHaveLength(4);
-    expect(filtered.every((t) => t.locale === "pt-BR")).toBe(true);
+    expect(filtered.map((t) => t.id)).toEqual([
+      "1",
+      "4",
+      "7",
+      "10",
+      "parish-en",
+      "legacy-global",
+    ]);
+  });
+});
+
+describe("journey template list where", () => {
+  it("does not filter admin queries by locale null", () => {
+    expect(
+      buildJourneyTemplateListWhere({
+        isAdmin: true,
+        parishIds: ["p1"],
+        dioceseIds: [],
+        hasOnlyPersonal: false,
+      }),
+    ).toBeUndefined();
+  });
+
+  it("returns global templates when the actor has no parish scope", () => {
+    expect(
+      buildJourneyTemplateListWhere({
+        isAdmin: false,
+        parishIds: [],
+        dioceseIds: [],
+        hasOnlyPersonal: false,
+      }),
+    ).toEqual({ parishId: null });
+  });
+
+  it("includes globals for personal-only workspaces", () => {
+    expect(
+      buildJourneyTemplateListWhere({
+        isAdmin: false,
+        parishIds: ["personal-1"],
+        dioceseIds: [],
+        hasOnlyPersonal: true,
+      }),
+    ).toEqual({
+      OR: [{ parishId: { in: ["personal-1"] } }, { parishId: null }],
+    });
   });
 });

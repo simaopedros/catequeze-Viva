@@ -69,38 +69,36 @@ const TEMPLATES = [
 ];
 
 export async function seedJourneyTemplates() {
-  const count = await prisma.sacramentalJourneyTemplate.count();
-  if (count > 0) {
-    console.log(`Skipped journey template seed — ${count} already exist.`);
-    return;
-  }
-
+  // Prefer src/server/scripts/seedJourneyTemplates.mjs in deploy — this helper
+  // only fills missing pt-BR globals and never deletes existing rows.
   let created = 0;
   for (const tpl of TEMPLATES) {
-    const sacrament = await prisma.sacrament.findFirst({ where: { name: tpl.sacramentName } });
+    const already = await prisma.sacramentalJourneyTemplate.findFirst({
+      where: { name: tpl.name, locale: 'pt-BR', parishId: null },
+      select: { id: true },
+    });
+    if (already) continue;
+
+    let sacrament = await prisma.sacrament.findFirst({ where: { name: tpl.sacramentName } });
     if (!sacrament) {
-      // Create sacrament if it doesn't exist yet
-      const s = await prisma.sacrament.create({ data: { name: tpl.sacramentName, description: tpl.description } });
-      const template = await prisma.sacramentalJourneyTemplate.create({
-        data: { name: tpl.name, description: tpl.description, sacramentId: s.id },
+      sacrament = await prisma.sacrament.create({
+        data: { name: tpl.sacramentName, description: tpl.description },
       });
-      for (const m of tpl.milestones) {
-        await prisma.sacramentalMilestoneTemplate.create({
-          data: { ...m, templateId: template.id },
-        });
-      }
-      created++;
-    } else {
-      const template = await prisma.sacramentalJourneyTemplate.create({
-        data: { name: tpl.name, description: tpl.description, sacramentId: sacrament.id },
-      });
-      for (const m of tpl.milestones) {
-        await prisma.sacramentalMilestoneTemplate.create({
-          data: { ...m, templateId: template.id },
-        });
-      }
-      created++;
     }
+    const template = await prisma.sacramentalJourneyTemplate.create({
+      data: {
+        name: tpl.name,
+        description: tpl.description,
+        locale: 'pt-BR',
+        sacramentId: sacrament.id,
+      },
+    });
+    for (const m of tpl.milestones) {
+      await prisma.sacramentalMilestoneTemplate.create({
+        data: { ...m, locale: 'pt-BR', templateId: template.id },
+      });
+    }
+    created++;
   }
 
   console.log(`Seeded ${created} sacramental journey templates with milestones.`);
