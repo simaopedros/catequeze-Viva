@@ -49,9 +49,11 @@ META_TEST_EVENT_CODE=TEST12345  # OPCIONAL: código de teste do Events Manager
 No cliente (`.env.client`):
 
 ```bash
-# Meta Pixel (cliente)
+# Meta Pixel (cliente) - OBRIGATÓRIO para carregar pixel na landing e app
 REACT_APP_META_PIXEL_ID=2069332313989772
 ```
+
+**⚠️ Importante**: Se `REACT_APP_META_PIXEL_ID` estiver vazio/ausente, o pixel **NÃO será carregado** (fbevents.js não injetado). Isso é intencional para ambientes de desenvolvimento sem pixel configurado.
 
 #### Produção (catechis.app)
 
@@ -59,7 +61,29 @@ REACT_APP_META_PIXEL_ID=2069332313989772
 
 Quando aprovado, adicione as mesmas variáveis no servidor de produção.
 
-### 4. Testar Conversões
+### 4. Verificar Instalação do Pixel
+
+**Antes de testar conversões**, confirme que o pixel está carregando corretamente:
+
+1. **Abra** `https://homolog.catechis.app/` (landing page)
+2. **Abra Console do Navegador** (F12 → Console)
+3. **Verifique**:
+   - Nenhum erro `[meta-pixel]`
+   - Na aba Network: requisição para `fbevents.js` (status 200)
+   - No Console, digite: `window.fbq` → deve retornar `function`
+   - No Console, digite: `window._fbq` → deve retornar `function`
+4. **Meta Pixel Helper** (extensão Chrome/Firefox):
+   - Instale: [Meta Pixel Helper](https://chrome.google.com/webstore/detail/meta-pixel-helper)
+   - Ícone deve mostrar **"1 Pixel Found"** com ID `2069332313989772`
+   - PageView aparece na lista de eventos
+
+**Se pixel NÃO carregar**:
+- ✅ Confirme `REACT_APP_META_PIXEL_ID=2069332313989772` no `.env.client` do servidor
+- ✅ Reinicie o servidor Wasp após alterar `.env.client`
+- ✅ Limpe cache do navegador (Ctrl+Shift+Delete)
+- ✅ Verifique Console por erros CSP (Content Security Policy) bloqueando `connect.facebook.net`
+
+### 5. Testar Conversões
 
 #### Usando Meta Test Events
 
@@ -116,7 +140,7 @@ Para **todos** os eventos CAPI (CompleteRegistration, InitiateCheckout, StartTri
 - `ph` = telefone E.164 (ex: +5531999999999), apenas dígitos hasheados
 - **Phone é opcional**: só enviado se catequista preencheu telefone no perfil
 
-### 5. Remover Test Event Code em Produção
+### 6. Remover Test Event Code em Produção
 
 Quando deploy em produção, **remova** ou comente `META_TEST_EVENT_CODE` para que eventos reais não sejam marcados como teste:
 
