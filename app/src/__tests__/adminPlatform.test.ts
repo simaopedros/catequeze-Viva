@@ -334,6 +334,33 @@ describe("billing admin trial / complimentary", () => {
     expect(result.status).toBe("TRIAL");
   });
 
+  it("accepts seed parish ids that are not RFC-4122 UUIDs", async () => {
+    const seedParishId = "eeeeeeee-5555-4eee-e555-eeeeeeeeeeee";
+    const TenantBilling = {
+      findUnique: vi.fn().mockResolvedValue(null),
+      create: vi.fn().mockResolvedValue({
+        id: "bill-sj",
+        status: "TRIAL",
+        plan: "catechist_free",
+      }),
+      update: vi.fn(),
+    };
+    const Parish = {
+      findUnique: vi
+        .fn()
+        .mockResolvedValue({ id: seedParishId, name: "São João" }),
+    };
+    const result = await extendTenantTrial(
+      { parishId: seedParishId, days: 7 },
+      context(ADMIN, { TenantBilling, Parish, Diocese: {} }),
+    );
+    expect(Parish.findUnique).toHaveBeenCalledWith({
+      where: { id: seedParishId },
+      select: { id: true, name: true },
+    });
+    expect(result.status).toBe("TRIAL");
+  });
+
   it("upserts an ACTIVE complimentary plan locally", async () => {
     const TenantBilling = {
       findUnique: vi

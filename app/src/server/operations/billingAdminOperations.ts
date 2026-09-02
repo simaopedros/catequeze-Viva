@@ -13,10 +13,18 @@ import { SubscriptionStatus } from "../../payment/plans";
 
 const MANAGEABLE = new Set(["trialing", "active", "past_due"]);
 
+const emptyToUndefined = (value: unknown) =>
+  value == null || value === "" ? undefined : value;
+
+const entityIdSchema = z.preprocess(
+  emptyToUndefined,
+  z.string().min(1).max(64).optional(),
+);
+
 const scopeSchema = z
   .object({
-    parishId: z.string().uuid().optional(),
-    dioceseId: z.string().uuid().optional(),
+    parishId: entityIdSchema,
+    dioceseId: entityIdSchema,
   })
   .refine((value) => Boolean(value.parishId) !== Boolean(value.dioceseId), {
     message: "Indique parishId ou dioceseId.",
