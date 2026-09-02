@@ -41,7 +41,8 @@ import {
 import { invalidateShellContext } from "../../client/hooks/shellQueryCache";
 import { Button } from "../../client/components/ui/button";
 import { ChevronLeft } from "lucide-react";
-import { LAUNCH_CATEQUISTA_ONLY } from "../../shared/pricing";
+import { LAUNCH_CATEQUISTA_ONLY, catalogIsCatequistaOnly } from "../../shared/pricing";
+import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 
 type AccountType = "personal" | "manager" | null;
 type Step =
@@ -101,6 +102,8 @@ function clearPersisted() {
 export default function OnboardingPage() {
   const { t } = useTranslation("onboarding");
   const navigate = useNavigate();
+  const { publicPlans } = usePlanCatalog();
+  const launchCatequistaOnly = catalogIsCatequistaOnly(publicPlans);
 
   const persisted = useMemo(() => {
     const raw = loadPersisted();
@@ -565,6 +568,7 @@ export default function OnboardingPage() {
 
       {step === "welcome" && (
         <WelcomeStep
+          launchCatequistaOnly={launchCatequistaOnly}
           onPersonal={() => {
             try {
               sessionStorage.setItem(

@@ -21,6 +21,9 @@ export type PublicCatalogPlan = {
   creditsAmount: number | null;
   highlight: boolean;
   sortOrder: number;
+  isActive?: boolean;
+  isPublic?: boolean;
+  isSystem?: boolean;
   limits: CatalogPlan["limits"];
   ai: CatalogPlan["ai"];
   social: CatalogPlan["social"];
@@ -33,7 +36,7 @@ export type PublicCatalogPlan = {
   }>;
 };
 
-function toCatalogPlan(plan: PublicCatalogPlan): CatalogPlan {
+export function toCatalogPlan(plan: PublicCatalogPlan): CatalogPlan {
   const fallback = DEFAULT_PLANS_BY_SLUG[plan.slug];
   const prices: CatalogPrice[] = (plan.prices || []).map((price) => ({
     interval: price.interval,
@@ -47,9 +50,9 @@ function toCatalogPlan(plan: PublicCatalogPlan): CatalogPlan {
   return {
     ...(fallback ?? {
       slug: plan.slug,
-      isSystem: false,
-      isActive: true,
-      isPublic: true,
+      isSystem: plan.isSystem,
+      isActive: plan.isActive,
+      isPublic: plan.isPublic,
       creditsAmount: plan.creditsAmount,
       stripeProductId: null,
       pricingVersion: 3,
@@ -68,8 +71,9 @@ function toCatalogPlan(plan: PublicCatalogPlan): CatalogPlan {
     social: plan.social,
     features: plan.features,
     translations: plan.translations,
-    isActive: fallback?.isActive ?? true,
-    isPublic: fallback?.isPublic ?? true,
+    isSystem: plan.isSystem ?? fallback?.isSystem ?? false,
+    isActive: plan.isActive ?? fallback?.isActive ?? true,
+    isPublic: plan.isPublic ?? fallback?.isPublic ?? true,
     prices: prices.length ? prices : fallback?.prices ?? [],
   };
 }

@@ -19,3 +19,22 @@ export function useLandingText(ns: string = "landing") {
     return tLanding(key, options as any);
   };
 }
+
+/** Avoid rendering the raw i18n key when a dynamic catalog slug has no copy. */
+export function landingCopy(
+  tr: (key: string, options?: Record<string, unknown>) => any,
+  key: string,
+  fallback: string,
+): string {
+  const value = tr(key);
+  return typeof value === "string" && value !== key ? value : fallback;
+}
+
+export function landingFeatureList(
+  tr: (key: string, options?: Record<string, unknown>) => any,
+  key: string,
+  fallback: string[],
+): string[] {
+  const value = tr(key, { returnObjects: true });
+  return Array.isArray(value) && value.length > 0 ? (value as string[]) : fallback;
+}

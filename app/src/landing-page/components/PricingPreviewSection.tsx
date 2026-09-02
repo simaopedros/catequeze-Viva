@@ -15,7 +15,7 @@ import {
 } from "../../shared/currency";
 import { PLANS } from "../../shared/pricing";
 import { cn } from "../../client/utils";
-import { useLandingText } from "../hooks/useLandingText";
+import { useLandingText, landingCopy, landingFeatureList } from "../hooks/useLandingText";
 import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 
 type BillingInterval = "monthly" | "annual";
@@ -63,11 +63,11 @@ function formatPlanPrice(
 }
 
 /**
- * Pricing preview shown on landing pages. Launch phase: Single plan only.
+ * Pricing preview shown on landing pages. Cards come from the live public catalog.
  */
 export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
   const tr = useLandingText(ns);
-  const { localize, getBySlug } = usePlanCatalog();
+  const { localize, getBySlug, publicPlans } = usePlanCatalog();
   const {
     ref: headerRef,
     className: headerClass,
@@ -75,6 +75,23 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
   } = useScrollReveal();
   const hasTrackedViewRef = useRef(false);
   const [interval, setInterval] = useState<BillingInterval>("monthly");
+
+  const previewPlans = publicPlans
+    .filter((plan) => plan.kind === "subscription" && plan.slug !== "catechist_free")
+    .map((plan) => {
+      const loc = localize(plan);
+      const staticFallback = PRICING_PREVIEW.find((item) => item.planId === plan.slug);
+      return {
+        planId: plan.slug,
+        highlight: plan.highlight,
+        desc: landingCopy(tr, `plans.${plan.slug}.desc`, plan.description || staticFallback?.desc || loc.name),
+        features: landingFeatureList(
+          tr,
+          `plans.${plan.slug}.features`,
+          loc.features.length ? loc.features : staticFallback?.features ?? [],
+        ),
+      };
+    });
 
   useEffect(() => {
     if (!isVisible || hasTrackedViewRef.current) return;
@@ -84,10 +101,10 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
       placement: "landing_pricing_preview",
     });
     trackViewPricing({
-      plan_ids: ["single"],
+      plan_ids: previewPlans.map((plan) => plan.planId),
       content_name: "Planos Catechis Landing Preview",
     });
-  }, [isVisible, ns]);
+  }, [isVisible, ns, previewPlans]);
 
   return (
     <section id="planos" className="scroll-mt-20 max-w-5xl mx-auto px-4 py-20">
@@ -140,9 +157,14 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto">
-        {/* Show only single plan during launch phase */}
-        {[...PRICING_PREVIEW].map((plan, index) => (
+      <div
+        className={
+          previewPlans.length < 2
+            ? "max-w-lg mx-auto"
+            : "grid gap-4 sm:grid-cols-2"
+        }
+      >
+        {previewPlans.map((plan) => (
           <PricingPreviewCard
             key={plan.planId}
             plan={plan}
@@ -184,7 +206,12 @@ function PricingPreviewCard({
   interval,
   getBySlug,
 }: {
-  plan: (typeof PRICING_PREVIEW)[number];
+  plan: {
+    planId: string;
+    highlight: boolean;
+    desc: string;
+    features: string[];
+  };
   delay: number;
   ns: string;
   tr: (key: string, options?: any) => any;
@@ -193,24 +220,17 @@ function PricingPreviewCard({
   getBySlug: ReturnType<typeof usePlanCatalog>["getBySlug"];
 }) {
   const { ref, className } = useScrollReveal({ delay });
-  const audience = (() => {
-    const v = tr(`plans.${plan.planId}.audience`);
-    if (typeof v === "string" && v !== `plans.${plan.planId}.audience`)
-      return v;
-    return plan.planId === "single"
+  const audience = landingCopy(
+    tr,
+    `plans.${plan.planId}.audience`,
+    plan.planId === "single"
       ? "Para catequista individual"
-      : "Para paroquia e diocese";
-  })();
-  const desc = (() => {
-    const v = tr(`plans.${plan.planId}.desc`);
-    return typeof v === "string" && v !== `plans.${plan.planId}.desc`
-      ? v
-      : plan.desc;
-  })();
-  const features = (() => {
-    const v = tr(`plans.${plan.planId}.features`, { returnObjects: true });
-    return Array.isArray(v) ? (v as string[]) : plan.features;
-  })();
+      : plan.planId === "unlimited"
+        ? "Para paroquia e diocese"
+        : "",
+  );
+  const desc = landingCopy(tr, `plans.${plan.planId}.desc`, plan.desc);
+  const features = landingFeatureList(tr, `plans.${plan.planId}.features`, plan.features);
   const priced = formatPlanPrice(plan.planId, interval, getBySlug);
   const signupHref = `/signup?plan=${plan.planId}&interval=${interval}`;
   const ctaLabel =
