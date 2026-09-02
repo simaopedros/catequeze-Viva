@@ -29,7 +29,7 @@ import { SkeletonCard } from "../../client/components/Skeletons";
 import { ResponsiveTable } from "../../client/components/ResponsiveTable";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { useUserContext } from "../../client/hooks/useUserContext";
-import { getPlanLimits } from "../../shared/planLimits";
+import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import { canManageWorkspaceBilling } from "../../shared/billingAccess";
 import { PlanLimitBanner } from "../components/PlanLimitBanner";
 import { useClassFilters, useClassStatusMap } from "../../i18n/useLabels";
@@ -56,6 +56,7 @@ export default function ClassesPage() {
   const { currentLocale } = useLocale();
   const navigate = useNavigate();
   const { workspaceId, workspacePlan, isPersonal } = useActiveWorkspace();
+  const { getBySlug } = usePlanCatalog();
   const { userRole, isAdmin } = useUserContext();
   const canCreateClass = userRole !== "ASSISTANT_CATECHIST";
   const canManageBilling = canManageWorkspaceBilling(userRole, {
@@ -113,7 +114,7 @@ export default function ClassesPage() {
   const filtered = classes;
 
   const effectivePlan = workspacePlan || "catechist_free";
-  const limits = getPlanLimits(effectivePlan);
+  const limits = getBySlug(effectivePlan).limits;
   const activeClassesCount = classes.filter(
     (c: any) => c.status !== "ARCHIVED",
   ).length;

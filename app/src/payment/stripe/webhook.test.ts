@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   cascadeActivatePlanToTenantBillingMock: vi.fn(),
   cascadeCancelToTenantBillingMock: vi.fn(),
   emailSendMock: vi.fn(),
+  resolvePlanByStripePriceIdMock: vi.fn(),
 }));
 
 vi.mock('wasp/server', () => ({
@@ -82,7 +83,12 @@ vi.mock('../billingCascade', () => ({
   cascadeCancelToTenantBilling: mocks.cascadeCancelToTenantBillingMock,
 }));
 
+vi.mock('../../server/pricing/planCatalogService', () => ({
+  resolvePlanByStripePriceId: (...args: unknown[]) => mocks.resolvePlanByStripePriceIdMock(...args),
+}));
+
 import { stripeWebhook } from './webhook';
+import { DEFAULT_PLANS_BY_SLUG } from '../../shared/planCatalog';
 
 function createTrackedEventDelegate() {
   const rows: any[] = [];
@@ -226,6 +232,12 @@ describe('stripeWebhook', () => {
       },
     });
     mocks.retrieveCustomerMock.mockResolvedValue({ id: 'cus_1', email: 'buyer@example.com' });
+    mocks.resolvePlanByStripePriceIdMock.mockImplementation(async (_ctx: unknown, priceId: string) => {
+      if (priceId === 'price_ai20') return DEFAULT_PLANS_BY_SLUG.ai_credits_20;
+      if (priceId === 'price_archived_old') return DEFAULT_PLANS_BY_SLUG.single;
+      if (priceId === 'price_unlimited') return DEFAULT_PLANS_BY_SLUG.unlimited;
+      return DEFAULT_PLANS_BY_SLUG.single;
+    });
   });
 
   it('returns 400 for an invalid signature', async () => {
@@ -396,5 +408,62 @@ describe('stripeWebhook', () => {
     expect(mocks.sendMetaEventMock).not.toHaveBeenCalled();
     expect(mocks.trackPricingEventMock).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ event: 'payment_failed' }));
     expect(mocks.trackPricingEventMock).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ event: 'subscription_canceled' }));
+  });
+
+  it('grants credits for credit-pack invoices without activating a subscription', async () => {
+    mocks.constructEventMock.mockReturnValue({
+      id: 'evt_credits',
+      type: 'invoice.paid',
+      data: {
+        object: paidInvoice({
+          id: 'in_credits',
+          lines: {
+            data: [{ pricing: { price_details: { price: 'price_ai20' } } }],
+          },
+        }),
+      },
+    });
+
+    const response = createResponse();
+    await stripeWebhook(
+      { headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any,
+      response,
+      createContext(),
+    );
+
+    expect(mocks.updateUserCreditsMock).toHaveBeenCalledWith(
+      expect.objectContaining({ numOfCreditsPurchased: 20 }),
+      expect.anything(),
+    );
+    expect(mocks.updateUserSubscriptionMock).not.toHaveBeenCalled();
+    expect(response.status).toHaveBeenCalledWith(204);
+  });
+
+  it('resolves an archived Stripe price to the original subscription plan', async () => {
+    mocks.constructEventMock.mockReturnValue({
+      id: 'evt_archived',
+      type: 'invoice.paid',
+      data: {
+        object: paidInvoice({
+          id: 'in_archived',
+          lines: {
+            data: [{ pricing: { price_details: { price: 'price_archived_old' } } }],
+          },
+        }),
+      },
+    });
+
+    const response = createResponse();
+    await stripeWebhook(
+      { headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any,
+      response,
+      createContext(),
+    );
+
+    expect(mocks.updateUserSubscriptionMock).toHaveBeenCalledWith(
+      expect.objectContaining({ paymentPlanId: 'single' }),
+      expect.anything(),
+    );
+    expect(response.status).toHaveBeenCalledWith(204);
   });
 });

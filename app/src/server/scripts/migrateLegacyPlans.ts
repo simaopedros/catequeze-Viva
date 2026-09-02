@@ -46,12 +46,12 @@ export async function migrateLegacyPlans(prisma: PrismaClient): Promise<{
 
   const tenantUnlimited = await prisma.tenantBilling.updateMany({
     where: { plan: { in: TENANT_TO_UNLIMITED as any }, status: { in: activeBillingStatuses as any } },
-    data: { plan: 'UNLIMITED', pricingVersion: 3 },
+    data: { plan: 'unlimited', pricingVersion: 3 },
   });
 
   const tenantSingle = await prisma.tenantBilling.updateMany({
     where: { plan: { in: TENANT_TO_SINGLE as any }, status: { in: activeBillingStatuses as any } },
-    data: { plan: 'SINGLE', pricingVersion: 3 },
+    data: { plan: 'single', pricingVersion: 3 },
   });
 
   // ── User ─────────────────────────────────────────────────────────────

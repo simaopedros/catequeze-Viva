@@ -2,7 +2,7 @@
  * dashboard-stats-gate.test.ts — PR12a: skip getDashboardStats for institutional view.
  */
 import { describe, it, expect } from "vitest";
-import { shouldUseInstitutionalDashboard } from "../catequese/pages/DashboardPage";
+import { shouldUseInstitutionalDashboard } from "../shared/dashboardGate";
 
 describe("shouldUseInstitutionalDashboard", () => {
   it("is true for parish staff on unlimited plan", () => {

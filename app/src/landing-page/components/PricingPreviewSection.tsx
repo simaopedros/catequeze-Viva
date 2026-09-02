@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
-import { useTranslation } from "react-i18next";
 import { ArrowRight, Check, Star } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
@@ -14,36 +13,51 @@ import {
   formatEquivalentMonthlyPrice,
   formatPrice,
 } from "../../shared/currency";
-import { PLANS, type PlanId } from "../../shared/pricing";
+import { PLANS } from "../../shared/pricing";
 import { cn } from "../../client/utils";
 import { useLandingText } from "../hooks/useLandingText";
+import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 
 type BillingInterval = "monthly" | "annual";
 
 function formatPlanPrice(
   planId: string,
   interval: BillingInterval,
+  getBySlug: (slug: string) => { prices: { interval: string; unitAmountCents: number; isActive: boolean }[] },
 ): {
   display: string;
   periodKey: "per_month" | "per_year";
   monthlyEquivalent?: string;
 } {
-  const def = PLANS[planId as PlanId];
-  if (!def) {
-    return { display: "—", periodKey: "per_month" };
+  const plan = getBySlug(planId);
+  const monthly = plan.prices.find((price) => price.interval === "monthly" && price.isActive);
+  const annual = plan.prices.find((price) => price.interval === "annual" && price.isActive);
+  if (!monthly && !annual) {
+    const def = PLANS[planId];
+    if (!def) return { display: "—", periodKey: "per_month" };
+    if (interval === "annual" && def.prices.annualCents != null) {
+      return {
+        display: formatPrice(def.prices.annualCents),
+        periodKey: "per_year",
+        monthlyEquivalent: formatEquivalentMonthlyPrice(def.prices.annualCents),
+      };
+    }
+    return {
+      display: formatPrice(def.prices.monthlyCents),
+      periodKey: "per_month",
+    };
   }
 
-  if (interval === "annual" && def.prices.annualCents != null) {
-    const annual = def.prices.annualCents;
+  if (interval === "annual" && annual) {
     return {
-      display: formatPrice(annual),
+      display: formatPrice(annual.unitAmountCents),
       periodKey: "per_year",
-      monthlyEquivalent: formatEquivalentMonthlyPrice(annual),
+      monthlyEquivalent: formatEquivalentMonthlyPrice(annual.unitAmountCents),
     };
   }
 
   return {
-    display: formatPrice(def.prices.monthlyCents),
+    display: formatPrice(monthly?.unitAmountCents ?? 0),
     periodKey: "per_month",
   };
 }
@@ -53,7 +67,7 @@ function formatPlanPrice(
  */
 export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
   const tr = useLandingText(ns);
-  const { t: tb } = useTranslation("billing");
+  const { localize, getBySlug } = usePlanCatalog();
   const {
     ref: headerRef,
     className: headerClass,
@@ -135,8 +149,9 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
             delay={0}
             ns={ns}
             tr={tr}
-            tb={tb}
+            name={localize(plan.planId).name}
             interval={interval}
+            getBySlug={getBySlug}
           />
         ))}
       </div>
@@ -165,23 +180,19 @@ function PricingPreviewCard({
   delay,
   ns,
   tr,
-  tb,
+  name,
   interval,
+  getBySlug,
 }: {
   plan: (typeof PRICING_PREVIEW)[number];
   delay: number;
   ns: string;
   tr: (key: string, options?: any) => any;
-  tb: (key: string, options?: any) => any;
+  name: string;
   interval: BillingInterval;
+  getBySlug: ReturnType<typeof usePlanCatalog>["getBySlug"];
 }) {
   const { ref, className } = useScrollReveal({ delay });
-  const name = (() => {
-    const v = tb(`plans.${plan.planId}.name`);
-    return typeof v === "string" && v !== `plans.${plan.planId}.name`
-      ? v
-      : plan.name;
-  })();
   const audience = (() => {
     const v = tr(`plans.${plan.planId}.audience`);
     if (typeof v === "string" && v !== `plans.${plan.planId}.audience`)
@@ -200,7 +211,7 @@ function PricingPreviewCard({
     const v = tr(`plans.${plan.planId}.features`, { returnObjects: true });
     return Array.isArray(v) ? (v as string[]) : plan.features;
   })();
-  const priced = formatPlanPrice(plan.planId, interval);
+  const priced = formatPlanPrice(plan.planId, interval, getBySlug);
   const signupHref = `/signup?plan=${plan.planId}&interval=${interval}`;
   const ctaLabel =
     plan.planId === "unlimited"
@@ -274,11 +285,13 @@ function PricingPreviewCard({
               plan: plan.planId,
               interval,
             });
-            const def = PLANS[plan.planId as PlanId];
+            const catalogPlan = getBySlug(plan.planId);
+            const annual = catalogPlan.prices.find((price) => price.interval === "annual" && price.isActive);
+            const monthly = catalogPlan.prices.find((price) => price.interval === "monthly" && price.isActive);
             const cents =
-              interval === "annual" && def?.prices.annualCents != null
-                ? def.prices.annualCents
-                : def?.prices.monthlyCents;
+              interval === "annual" && annual
+                ? annual.unitAmountCents
+                : monthly?.unitAmountCents;
             trackLead({
               content_name: name,
               plan_id: plan.planId,

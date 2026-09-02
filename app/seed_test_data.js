@@ -138,7 +138,7 @@ async function seed() {
   await p.tenantBilling.create({
     data: {
       dioceseId: DIOCESE_ID,
-      plan: 'DIOCESE',
+      plan: 'unlimited',
       status: 'ACTIVE',
     }
   });
@@ -150,7 +150,7 @@ async function seed() {
     data: { id: PARISH_SAO_JOSE_ID, name: 'Paróquia São José (TESTE)', dioceseId: DIOCESE_ID, city: 'Sorocaba', state: 'SP' }
   });
   await p.tenantBilling.create({
-    data: { parishId: PARISH_SAO_JOSE_ID, plan: 'PARISH', status: 'ACTIVE' }
+    data: { parishId: PARISH_SAO_JOSE_ID, plan: 'unlimited', status: 'ACTIVE' }
   });
 
   // Paróquia Santa Maria (gratuita, pertence à diocese de Sorocaba, então herda plano pago da diocese)
@@ -158,7 +158,7 @@ async function seed() {
     data: { id: PARISH_SANTA_MARIA_ID, name: 'Paróquia Santa Maria (TESTE)', dioceseId: DIOCESE_ID, city: 'Sorocaba', state: 'SP' }
   });
   await p.tenantBilling.create({
-    data: { parishId: PARISH_SANTA_MARIA_ID, plan: 'CATECHIST_FREE', status: 'ACTIVE' }
+    data: { parishId: PARISH_SANTA_MARIA_ID, plan: 'catechist_free', status: 'ACTIVE' }
   });
 
   // Paróquia São João (gratuita e sem diocese, portanto limitada a 1 turma e 20 alunos)
@@ -166,7 +166,7 @@ async function seed() {
     data: { id: PARISH_SAN_JOAO_ID, name: 'Paróquia São João Batista Sem Diocese (TESTE)', dioceseId: null, city: 'Sorocaba', state: 'SP' }
   });
   await p.tenantBilling.create({
-    data: { parishId: PARISH_SAN_JOAO_ID, plan: 'CATECHIST_FREE', status: 'ACTIVE' }
+    data: { parishId: PARISH_SAN_JOAO_ID, plan: 'catechist_free', status: 'ACTIVE' }
   });
   console.log('✅ 3 Paróquias criadas (São José = Plano Pago, Santa Maria = Grátis com herança ativa, São João = Grátis limitada)');
 

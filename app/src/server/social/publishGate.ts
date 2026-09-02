@@ -29,6 +29,8 @@ import {
   resolveAllEffectiveBilling,
 } from '../operations/billingEnforcement';
 import { assertSocialEnabled } from './featureGate';
+import { loadPlanCatalog } from '../pricing/planCatalogService';
+import type { CatalogBySlug } from '../../shared/planCatalog';
 
 export type SocialEntitlementSource = 'personal' | 'trial' | 'institutional' | 'free';
 
@@ -58,8 +60,9 @@ function entitlementFrom(
   plan: PlanId,
   source: SocialEntitlementSource,
   parishId: string | null,
+  catalog?: CatalogBySlug,
 ): SocialEntitlement {
-  const limits = getSocialLimits(plan);
+  const limits = getSocialLimits(plan, catalog);
   return {
     plan,
     source,
@@ -78,8 +81,9 @@ export async function resolveSocialEntitlement(
   userId: string,
 ): Promise<SocialEntitlement> {
   const user = await ensureProductTrial(context, userId);
+  const catalog = (await loadPlanCatalog(context)).bySlug;
 
-  const personalPlan = resolvePlanIdOrFree(getPersonalPlanId(user));
+  const personalPlan = resolvePlanIdOrFree(getPersonalPlanId(user), catalog);
   let best: SocialEntitlement =
     personalPlan === 'catechist_free'
       ? FREE_ENTITLEMENT
@@ -87,6 +91,7 @@ export async function resolveSocialEntitlement(
           personalPlan,
           (user.subscriptionStatus || '').toLowerCase() === 'trialing' ? 'trial' : 'personal',
           null,
+          catalog,
         );
 
   if (best.plan === 'unlimited') return best;
@@ -107,7 +112,7 @@ export async function resolveSocialEntitlement(
     const plan = getInstitutionalPlanId(billings.get(parishId) as any);
     if (!plan) continue;
 
-    const candidate = entitlementFrom(plan, 'institutional', parishId);
+    const candidate = entitlementFrom(plan, 'institutional', parishId, catalog);
     if (plan === 'unlimited') return candidate;
     if (!best.canPublish) best = candidate;
   }

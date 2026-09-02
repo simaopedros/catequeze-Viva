@@ -83,7 +83,7 @@ export const expireSubscriptionsJob = async (
         where: { id: billing.id },
         data: {
           status: "CANCELED",
-          plan: "CATECHIST_FREE",
+          plan: "catechist_free",
         },
       });
       expiredCount++;

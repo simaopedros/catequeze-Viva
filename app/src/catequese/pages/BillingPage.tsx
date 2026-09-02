@@ -44,9 +44,9 @@ import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { toast } from "../../client/hooks/use-toast";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
+import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import { canManageWorkspaceBilling } from "../../shared/billingAccess";
 import {
-  PLANS,
   type PlanId,
   hasPersonalAccess,
   hasInstitutionalAccess,
@@ -58,7 +58,7 @@ import {
   isOnInstitutionalTrial,
   getInstitutionalTrialDaysLeft,
   SUBSCRIPTION_TRIAL_DAYS,
-  LAUNCH_CATEQUISTA_ONLY,
+  formatPriceLabel,
 } from "../../shared/pricing";
 import { BuyCreditsButton } from "../components/BuyCreditsButton";
 import { formatPrice } from "../../shared/currency";
@@ -74,7 +74,7 @@ import type { ReactNode } from "react";
 import { parseUpgradeJourneyReason } from "../lib/upgradeJourney";
 
 interface PlanCard {
-  planId: PaymentPlanId;
+  planId: string;
   planKey: PlanId;
   name: string;
   price: string;
@@ -87,54 +87,6 @@ interface PlanCard {
   color: string;
   highlight: boolean;
   isFree: boolean;
-}
-
-const PLAN_STRUCTURE: Omit<
-  PlanCard,
-  "name" | "price" | "annualPrice" | "features"
->[] = [
-  {
-    planId: PaymentPlanId.Single,
-    planKey: "single",
-    priceCents: PLANS.single.prices.monthlyCents,
-    priceCentsAnnual: PLANS.single.prices.annualCents,
-    maxClasses: PLANS.single.limits.maxClasses,
-    maxCatechumens: PLANS.single.limits.maxCatechumens,
-    color: "border-border",
-    highlight: false,
-    isFree: false,
-  },
-  {
-    planId: PaymentPlanId.Unlimited,
-    planKey: "unlimited",
-    priceCents: PLANS.unlimited.prices.monthlyCents,
-    priceCentsAnnual: PLANS.unlimited.prices.annualCents,
-    maxClasses: PLANS.unlimited.limits.maxClasses,
-    maxCatechumens: PLANS.unlimited.limits.maxCatechumens,
-    color: "border-brand-ink",
-    highlight: true,
-    isFree: false,
-  },
-];
-
-function buildPlanCards(t: any): PlanCard[] {
-  return PLAN_STRUCTURE.map((meta) => {
-    const featuresRaw = (t as any)(`plans.${meta.planKey}.features`, {
-      returnObjects: true,
-    });
-    const features: string[] = Array.isArray(featuresRaw)
-      ? (featuresRaw as string[])
-      : PLANS[meta.planKey].features ?? [];
-    return {
-      ...meta,
-      name: t(`plans.${meta.planKey}.name`),
-      price: t(`plans.${meta.planKey}.price`),
-      annualPrice: meta.priceCentsAnnual
-        ? t(`plans.${meta.planKey}.annual_price`)
-        : undefined,
-      features,
-    };
-  });
 }
 
 function formatPriceFromCents(cents: number): string {
@@ -236,9 +188,34 @@ function UsageRow({
 export default function BillingPage() {
   const { t, i18n } = useTranslation("billing");
   const { t: tp } = useTranslation("public");
-  const allPlans = useMemo(() => buildPlanCards(t), [t]);
+  const { publicPlans, getBySlug, localize } = usePlanCatalog();
 
-  const getPlanDef = (planId: PaymentPlanId): PlanCard =>
+  const allPlans = useMemo((): PlanCard[] => {
+    return publicPlans
+      .filter((plan) => plan.kind === "subscription" && plan.slug !== "catechist_free")
+      .map((plan) => {
+        const loc = localize(plan);
+        const monthly = plan.prices.find((price) => price.interval === "monthly" && price.isActive);
+        const annual = plan.prices.find((price) => price.interval === "annual" && price.isActive);
+        return {
+          planId: plan.slug,
+          planKey: plan.slug,
+          name: loc.name,
+          price: monthly ? formatPriceLabel(monthly.unitAmountCents, "monthly") : "—",
+          priceCents: monthly?.unitAmountCents,
+          annualPrice: annual ? formatPriceLabel(annual.unitAmountCents, "annual") : undefined,
+          priceCentsAnnual: annual?.unitAmountCents,
+          maxClasses: plan.limits.maxClasses,
+          maxCatechumens: plan.limits.maxCatechumens,
+          features: loc.features,
+          color: plan.highlight ? "border-brand-ink" : "border-border",
+          highlight: plan.highlight,
+          isFree: false,
+        };
+      });
+  }, [publicPlans, i18n.language]);
+
+  const getPlanDef = (planId: string): PlanCard =>
     allPlans.find((p) => p.planId === planId) || allPlans[0];
 
   const navigate = useNavigate();
@@ -293,7 +270,7 @@ export default function BillingPage() {
 
   const [billingInterval, setBillingInterval] =
     useState<BillingInterval>(getIntendedInterval);
-  const [upgradingPlan, setUpgradingPlan] = useState<PaymentPlanId | null>(
+  const [upgradingPlan, setUpgradingPlan] = useState<string | null>(
     null,
   );
   const [error, setError] = useState<string | null>(null);
@@ -312,13 +289,9 @@ export default function BillingPage() {
       : requestedPlan === PaymentPlanId.Unlimited
         ? "generic"
         : null);
-  const requestedPlanId = Object.values(PaymentPlanId).includes(
-    requestedPlan as PaymentPlanId,
-  )
-    ? (requestedPlan as PaymentPlanId)
-    : null;
+  const requestedPlanId = requestedPlan ? requestedPlan : null;
   const requestedIsInstitutional = requestedPlanId
-    ? requestedPlanId === PaymentPlanId.Unlimited
+    ? getBySlug(requestedPlanId).level === "institutional"
     : false;
   const autoCheckoutStartedRef = useRef<string | null>(null);
   const pricingViewedRef = useRef(false);
@@ -329,7 +302,7 @@ export default function BillingPage() {
       ? (user.subscriptionPlan as PaymentPlanId)
       : null;
 
-  let effectivePlanId = PaymentPlanId.CatechistFree;
+  let effectivePlanId: PaymentPlanId = PaymentPlanId.CatechistFree;
   let isActive = false;
   let isParishManaged = false;
   let isTrialAccess = false;
@@ -392,13 +365,14 @@ export default function BillingPage() {
       })
     : null;
 
+  const freeLoc = localize("catechist_free");
   const effectivePlan: PlanCard =
     effectivePlanId === PaymentPlanId.CatechistFree
       ? {
           planId: PaymentPlanId.CatechistFree,
           planKey: "catechist_free",
-          name: t("plans.catechist_free.name"),
-          price: t("plans.catechist_free.price"),
+          name: freeLoc.name,
+          price: t("free"),
           maxClasses: 0,
           maxCatechumens: 0,
           features: [],
@@ -436,14 +410,16 @@ export default function BillingPage() {
       ? effectivePlan.priceCents * 12 - effectivePlan.priceCentsAnnual
       : null;
 
+  const unlimitedPublic =
+    getBySlug("unlimited").isPublic && getBySlug("unlimited").isActive;
   const visiblePlans = allPlans.filter((plan) => {
-    if (LAUNCH_CATEQUISTA_ONLY) {
+    if (!unlimitedPublic) {
       return plan.planId === PaymentPlanId.Single;
     }
     if (isPersonal || (!parishId && !parish)) {
-      return plan.planId === PaymentPlanId.Single;
+      return getBySlug(plan.planId).level === "personal";
     }
-    return plan.planId === PaymentPlanId.Unlimited;
+    return getBySlug(plan.planId).level === "institutional";
   });
 
   const classesUsed = stats?.activeClasses ?? 0;
@@ -452,7 +428,7 @@ export default function BillingPage() {
   const maxCatechumens = effectivePlan.maxCatechumens ?? Infinity;
 
   const startCheckout = useCallback(
-    async (planId: PaymentPlanId) => {
+    async (planId: string) => {
       // Product trial uses the same plan id as Single — still allow checkout to convert.
       if (planId === effectivePlanId && !isTrialAccess) return;
       setError(null);
@@ -527,10 +503,10 @@ export default function BillingPage() {
     ],
   );
 
-  const handleUpgrade = async (planId: PaymentPlanId) => {
+  const handleUpgrade = async (planId: string) => {
     trackMarketingEvent("plan_selected", {
       plan: planId,
-      level: planId === PaymentPlanId.Unlimited ? "institutional" : "personal",
+      level: getBySlug(planId).level,
       interval: billingInterval,
       placement: "billing_page",
       workspace: isPersonal ? "personal" : "institutional",

@@ -4,20 +4,13 @@
  */
 import { requirePlatformAdmin } from '../auth/helpers';
 import { formatServerDate, resolveUserLocale } from '../i18n/serverLocale';
-import { PLANS } from '../../shared/pricing';
+import { getPlanPriceCents, resolvePlanIdOrFree, PRISMA_FREE_PLANS } from '../../shared/pricing';
+import { loadPlanCatalog } from '../pricing/planCatalogService';
+import type { CatalogBySlug } from '../../shared/planCatalog';
 
-const PLAN_PRICES: Record<string, number> = {
-  CATECHIST_FREE: 0,
-  SINGLE: PLANS.single.prices.monthlyCents / 100,
-  UNLIMITED: PLANS.unlimited.prices.monthlyCents / 100,
-  // Legacy plan ids (pre-migration) map to the new prices for MRR continuity.
-  CATECHIST_PRO: PLANS.single.prices.monthlyCents / 100,
-  CATECHIST_AI: PLANS.single.prices.monthlyCents / 100,
-  PARISH_ESSENTIAL: PLANS.single.prices.monthlyCents / 100,
-  PARISH: PLANS.unlimited.prices.monthlyCents / 100,
-  PARISH_COMPLETE: PLANS.unlimited.prices.monthlyCents / 100,
-  DIOCESE: PLANS.unlimited.prices.monthlyCents / 100,
-};
+function planPrice(plan: string | null | undefined, catalog?: CatalogBySlug): number {
+  return getPlanPriceCents(resolvePlanIdOrFree(plan, catalog), 'monthly', catalog) / 100;
+}
 
 const FUNNEL_EVENTS = [
   'landing_viewed',
@@ -36,10 +29,6 @@ const FUNNEL_EVENTS = [
 type FunnelEventName = (typeof FUNNEL_EVENTS)[number];
 
 type FunnelCounts = Record<FunnelEventName, number>;
-
-function planPrice(plan: string | null | undefined): number {
-  return PLAN_PRICES[plan?.toUpperCase() || 'CATECHIST_FREE'] || 0;
-}
 
 function createEmptyFunnelCounts(): FunnelCounts {
   return {
@@ -96,18 +85,22 @@ export const getPlatformOverview = async (_args: void, context: any) => {
     context.entities.Parish.count({ where: { active: false } }),
     context.entities.CatechesisClass.count({ where: { status: 'ACTIVE' } }),
     context.entities.ClassEnrollment.count({ where: { status: 'ENROLLED' } }),
-    context.entities.TenantBilling.count({ where: { status: 'ACTIVE', plan: { not: 'CATECHIST_FREE' } } }),
+    context.entities.TenantBilling.count({ where: { status: 'ACTIVE', plan: { notIn: [...PRISMA_FREE_PLANS] } } }),
     context.entities.User.count({ where: { subscriptionStatus: 'active' } }),
     context.entities.TenantBilling.count({
       where: { status: 'TRIAL', trialEndsAt: { gte: now, lte: sevenDaysFromNow } },
     }),
     context.entities.TenantBilling.findMany({
-      where: { status: 'ACTIVE', plan: { not: 'CATECHIST_FREE' } },
+      where: { status: 'ACTIVE', plan: { notIn: [...PRISMA_FREE_PLANS] } },
       select: { plan: true },
     }),
   ]);
 
-  const mrr = activeBillings.reduce((sum: number, b: { plan: string }) => sum + planPrice(b.plan), 0);
+  const catalog = (await loadPlanCatalog(context)).bySlug;
+  const mrr = activeBillings.reduce(
+    (sum: number, b: { plan: string }) => sum + planPrice(b.plan, catalog),
+    0,
+  );
 
   return {
     totalUsers,

@@ -18,10 +18,11 @@ import {
   isProductTrialStatus,
   isProductTrialWindowOpen,
   PRODUCT_TRIAL_PLAN_ID,
-  PLANS,
   SUBSCRIPTION_TRIAL_DAYS,
   type PlanLimits,
 } from "../../shared/planLimits";
+import { loadPlanCatalog } from "../pricing/planCatalogService";
+import { PRISMA_INSTITUTIONAL_PLANS } from "../../shared/pricing";
 
 export type { PlanLimits } from "../../shared/planLimits";
 
@@ -40,12 +41,17 @@ interface TenantBillingStub {
 }
 
 // Institutional plans that can act as an "umbrella" license.
-// In the simplified structure, UNLIMITED is the only institutional plan, but
-// legacy values are kept so pre-migration data still resolves correctly.
-const INSTITUTIONAL_PLANS = ['UNLIMITED', 'PARISH_COMPLETE', 'PARISH_ESSENTIAL', 'DIOCESE', 'PARISH'];
+// Includes lowercase slugs after the TenantBilling.plan string migration
+// plus legacy uppercase/alias values so pre-migration rows still match.
+const INSTITUTIONAL_PLANS = [...PRISMA_INSTITUTIONAL_PLANS];
 
 function isInstPlan(plan: string | null | undefined): boolean {
-  return !!plan && INSTITUTIONAL_PLANS.includes(plan.toUpperCase());
+  return isInstitutionalPlan(plan);
+}
+
+async function catalogLimits(context: any, plan: string | null | undefined) {
+  const snapshot = await loadPlanCatalog(context);
+  return getPlanLimits(plan, snapshot.bySlug);
 }
 
 /**
@@ -438,7 +444,7 @@ export async function assertCanAddCatechist(
   const billing = await resolveEffectiveBilling(context, parishId);
   const effectivePlan = getEffectiveBillingPlan(billing);
   const planId = resolvePlanIdOrFree(effectivePlan);
-  const planLimits = PLANS[planId].limits;
+  const planLimits = await catalogLimits(context, planId);
 
   const maxCatechists = billing?.maxCatechists != null ? billing.maxCatechists : planLimits.maxCatechists;
   if (maxCatechists === null) return;
@@ -481,7 +487,7 @@ export async function assertCanCreateParish(
     ? freshUser?.subscriptionPlan || 'catechist_free'
     : 'catechist_free';
 
-  const limits = getPlanLimits(plan);
+  const limits = await catalogLimits(context, plan);
   if (limits.maxParishes === null) return;
 
   const ownedParishes = await context.entities.Parish.count({
@@ -520,7 +526,7 @@ export async function assertCanCreateClass(
     // Fresh user + heal product trial so onboarding is not blocked by free sentinel.
     const freshUser = await ensureProductTrial(context, context.user.id);
     const plan = getPersonalPlanId(freshUser);
-    const limits = getPlanLimits(plan);
+    const limits = await catalogLimits(context, plan);
     if (limits.maxClasses === null) return;
 
     const activeCount = await context.entities.CatechesisClass.count({
@@ -538,7 +544,7 @@ export async function assertCanCreateClass(
 
   const billing = await resolveEffectiveBilling(context, parishId);
   const effectivePlan = getEffectiveBillingPlan(billing);
-  const planLimits = getPlanLimits(effectivePlan);
+  const planLimits = await catalogLimits(context, effectivePlan);
 
   const maxClasses = billing?.maxClasses != null ? billing.maxClasses : planLimits.maxClasses;
   if (maxClasses === null) return;
@@ -595,7 +601,7 @@ export async function resolveEnrollmentCapacity(
     if (!context.user) throw new HttpError(401);
     const freshUser = await ensureProductTrial(context, context.user.id);
     const plan = getPersonalPlanId(freshUser);
-    const limits = getPlanLimits(plan);
+    const limits = await catalogLimits(context, plan);
     if (limits.maxCatechumens === null) {
       return { maxCatechumens: null, enrolledCount: 0, limitError: () => new HttpError(403) };
     }
@@ -617,7 +623,7 @@ export async function resolveEnrollmentCapacity(
 
   const billing = await resolveEffectiveBilling(context, parishId);
   const effectivePlan = getEffectiveBillingPlan(billing);
-  const planLimits = getPlanLimits(effectivePlan);
+  const planLimits = await catalogLimits(context, effectivePlan);
 
   const maxCatechumens = billing?.maxCatechumens != null ? billing.maxCatechumens : planLimits.maxCatechumens;
   if (maxCatechumens === null) {

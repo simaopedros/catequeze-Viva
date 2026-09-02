@@ -15,8 +15,12 @@ import {
   resolvePlanIdOrFree,
   PLANS,
   PRICING_VERSION,
+  PRISMA_INSTITUTIONAL_PLANS,
+  PRISMA_PAID_PARISH_PLANS,
 } from '../../shared/aiCredits';
 import { getDailyUsage, incrementDailyUsage } from './dailyUsage';
+import { loadPlanCatalog } from '../pricing/planCatalogService';
+import type { CatalogBySlug } from '../../shared/planCatalog';
 
 // ─── Credit check + deduction ──────────────────────────────────────────────
 
@@ -34,9 +38,21 @@ interface CreditContext {
 /** Monthly allowance per parish under a diocese umbrella. */
 const DIOCESE_PER_PARISH_ALLOWANCE = 50;
 
-export function resolveUserAiAllowance(personalPlan: string | null, effectivePlan: string | null): number {
+async function catalogFrom(context?: CreditContext): Promise<CatalogBySlug | undefined> {
+  try {
+    return (await loadPlanCatalog(context as any)).bySlug;
+  } catch {
+    return undefined;
+  }
+}
+
+export function resolveUserAiAllowance(
+  personalPlan: string | null,
+  effectivePlan: string | null,
+  catalog?: CatalogBySlug,
+): number {
   if (!effectivePlan) return 0;
-  return getMonthlyAllowance(effectivePlan);
+  return getMonthlyAllowance(effectivePlan, catalog);
 }
 
 export async function resolveUserEffectivePlanAndStatus(
@@ -73,7 +89,7 @@ export async function resolveUserEffectivePlanAndStatus(
                 { status: 'TRIAL', trialEndsAt: { gte: new Date() } },
               ],
               // Unlimited covers diocese; DIOCESE kept for pre-migration data.
-              plan: { in: ['UNLIMITED', 'DIOCESE'] },
+              plan: { in: [...PRISMA_INSTITUTIONAL_PLANS] },
             },
             select: { pricingVersion: true },
           });
@@ -108,7 +124,7 @@ export async function resolveUserEffectivePlanAndStatus(
               { status: 'ACTIVE' },
               { status: 'TRIAL', trialEndsAt: { gte: new Date() } },
             ],
-            plan: { in: ['UNLIMITED', 'SINGLE', 'PARISH', 'PARISH_ESSENTIAL', 'PARISH_COMPLETE'] },
+            plan: { in: [...PRISMA_PAID_PARISH_PLANS] },
           },
           orderBy: { plan: 'asc' },
         });
@@ -177,7 +193,7 @@ async function assertAndDeductDioceseCredits(
   }
 
   // Enforce daily limit (diocese: 20/day)
-  const dailyLimit = getDailyLimit('diocese');
+  const dailyLimit = getDailyLimit('diocese', await catalogFrom(context));
   if (dailyLimit > 0) {
     const todayUsage = await getDailyUsage(context.entities, userId);
     if (todayUsage + cost > dailyLimit) {
@@ -203,6 +219,7 @@ export async function assertAndDeductCredits(
 ): Promise<{ creditsLeft: number }> {
   if (!context.user) throw new HttpError(401, 'Autenticação necessária');
 
+  const catalog = await catalogFrom(context);
   const user = await context.entities.User.findUnique({
     where: { id: context.user.id },
     select: { subscriptionPlan: true, credits: true },
@@ -235,7 +252,7 @@ export async function assertAndDeductCredits(
   }
 
   if (!credits && !isFreePlan) {
-    const allowance = resolveUserAiAllowance(plan, effectivePlan);
+    const allowance = resolveUserAiAllowance(plan, effectivePlan, catalog);
     credits = await context.entities.UserAiCredits.create({
       data: {
         userId: context.user.id,
@@ -245,8 +262,8 @@ export async function assertAndDeductCredits(
     });
   }
 
-  if (credits && !isFreePlan && planHasAiAccess(effectivePlan)) {
-    const allowance = resolveUserAiAllowance(plan, effectivePlan);
+  if (credits && !isFreePlan && planHasAiAccess(effectivePlan, catalog)) {
+    const allowance = resolveUserAiAllowance(plan, effectivePlan, catalog);
     credits = await healStaleFreeTrialCredits(
       context.entities.UserAiCredits,
       context.user.id,
@@ -265,7 +282,7 @@ export async function assertAndDeductCredits(
   const now = new Date();
   const lastReset = new Date(credits.lastReset);
   if (!isFreePlan && shouldReset(lastReset, now)) {
-    const allowance = resolveUserAiAllowance(plan, effectivePlan);
+    const allowance = resolveUserAiAllowance(plan, effectivePlan, catalog);
     credits = await context.entities.UserAiCredits.update({
       where: { userId: context.user.id },
       data: { creditsLeft: allowance, lastReset: now },
@@ -280,7 +297,7 @@ export async function assertAndDeductCredits(
       );
     }
   } else {
-    if (!planHasAiAccess(effectivePlan)) {
+    if (!planHasAiAccess(effectivePlan, catalog)) {
       throw new HttpError(
         402,
         'PLAN_NO_AI: Plano sem acesso à assistência editorial. Faça upgrade para um plano com assistência em /app/billing.',
@@ -295,7 +312,7 @@ export async function assertAndDeductCredits(
     }
   }
 
-  const dailyLimit = getDailyLimit(effectivePlan ?? user.subscriptionPlan);
+  const dailyLimit = getDailyLimit(effectivePlan ?? user.subscriptionPlan, catalog);
   if (dailyLimit > 0) {
     const todayUsage = await getDailyUsage(context.entities, context.user.id);
     if (todayUsage + cost > dailyLimit) {
@@ -329,11 +346,12 @@ export async function grantSubscriptionAiCredits(
   userId: string,
   subscriptionPlan: string,
 ): Promise<void> {
-  if (!planHasAiAccess(subscriptionPlan)) {
+  const catalog = await catalogFrom();
+  if (!planHasAiAccess(subscriptionPlan, catalog)) {
     return;
   }
 
-  const allowance = getMonthlyAllowance(subscriptionPlan);
+  const allowance = getMonthlyAllowance(subscriptionPlan, catalog);
   if (allowance <= 0) {
     return;
   }
@@ -384,6 +402,7 @@ function shouldReset(lastReset: Date, now: Date): boolean {
 
 export async function resetAllAiCredits(entities: any): Promise<number> {
   const now = new Date();
+  const catalog = await catalogFrom({ entities });
 
   const creditsToReset = await entities.UserAiCredits.findMany({
     where: {
@@ -401,7 +420,7 @@ export async function resetAllAiCredits(entities: any): Promise<number> {
     const lastReset = new Date(record.lastReset);
     if (shouldReset(lastReset, now)) {
       const plan = record.user?.subscriptionPlan;
-      const allowance = getMonthlyAllowance(plan);
+      const allowance = getMonthlyAllowance(plan, catalog);
       await entities.UserAiCredits.update({
         where: { id: record.id },
         data: { creditsLeft: allowance, lastReset: now },
@@ -421,7 +440,7 @@ export async function resetAllAiCredits(entities: any): Promise<number> {
               diocese: {
                 billing: {
                   // Unlimited covers diocese; DIOCESE kept for pre-migration data.
-                  plan: { in: ['UNLIMITED', 'DIOCESE'] },
+                  plan: { in: [...PRISMA_INSTITUTIONAL_PLANS] },
                   status: 'ACTIVE',
                   pricingVersion: { gte: 2 },
                 },
@@ -458,13 +477,14 @@ export async function getCreditsStatus(
     select: { subscriptionPlan: true },
   });
 
+  const catalog = await catalogFrom(context);
   const plan = user?.subscriptionPlan ?? null;
   const { effectivePlan, isFreePlan, dioceseParishId } = await resolveUserEffectivePlanAndStatus(
     context, context.user.id, plan,
   );
 
-  const planHasAccess = planHasAiAccess(effectivePlan);
-  const monthlyAllowance = resolveUserAiAllowance(plan, effectivePlan);
+  const planHasAccess = planHasAiAccess(effectivePlan, catalog);
+  const monthlyAllowance = resolveUserAiAllowance(plan, effectivePlan, catalog);
 
   const credits = await context.entities.UserAiCredits.findUnique({
     where: { userId: context.user.id },

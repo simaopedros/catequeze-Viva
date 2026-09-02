@@ -1,6 +1,6 @@
 import { User } from "wasp/entities";
 import { PrismaClient } from "wasp/server";
-import { PaymentPlanId, SubscriptionStatus } from "./plans";
+import { SubscriptionStatus } from "./plans";
 
 export async function fetchUserPaymentProcessorUserId(
   userId: User["id"],
@@ -40,7 +40,7 @@ export function updateUserPaymentProcessorUserId(
 interface UpdateUserSubscriptionArgs {
   paymentProcessorUserId: NonNullable<User["paymentProcessorUserId"]>;
   subscriptionStatus: SubscriptionStatus;
-  paymentPlanId?: PaymentPlanId;
+  paymentPlanId?: string;
   datePaid?: Date;
 }
 

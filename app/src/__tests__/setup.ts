@@ -12,9 +12,29 @@ import { beforeAll, afterAll } from 'vitest';
 // ═══ Database ═══════════════════════════════════════════════════════════════════
 export const prisma = new PrismaClient();
 
+/**
+ * Prisma/Wasp may populate DATABASE_URL from a generated .env even when
+ * Postgres is not running. Probe once during setup (before test files are
+ * collected) so skipIf(!DATABASE_URL) and $connect both stay consistent.
+ */
+async function probeDatabase() {
+  const g = globalThis as unknown as { __catequeseDbProbed?: boolean };
+  if (g.__catequeseDbProbed) return;
+  g.__catequeseDbProbed = true;
+  if (!process.env.DATABASE_URL) return;
+  try {
+    await prisma.$connect();
+  } catch {
+    console.warn(
+      '[tests] DATABASE_URL is set but the database is unreachable; continuing without DB.',
+    );
+    delete process.env.DATABASE_URL;
+  }
+}
+
+await probeDatabase();
+
 beforeAll(async () => {
-  // Only connect if DATABASE_URL is set (integration tests).
-  // Unit tests don't need a database connection.
   if (process.env.DATABASE_URL) {
     await prisma.$connect();
   }

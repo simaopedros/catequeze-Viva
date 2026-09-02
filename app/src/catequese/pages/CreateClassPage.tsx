@@ -29,7 +29,7 @@ import {
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { MobileActionBar } from "../../client/components/MobileActionBar";
 import { PlanLimitBanner } from "../components/PlanLimitBanner";
-import { getPlanLimits } from "../../shared/planLimits";
+import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import { canManageWorkspaceBilling } from "../../shared/billingAccess";
 import { useUserContext } from "../../client/hooks/useUserContext";
 
@@ -38,6 +38,7 @@ export default function CreateClassPage() {
   const { t: tc } = useTranslation("common");
   const navigate = useNavigate();
   const { workspaceId, workspacePlan, isPersonal } = useActiveWorkspace();
+  const { getBySlug } = usePlanCatalog();
   const { userRole, isAdmin } = useUserContext();
   const canManageBilling = canManageWorkspaceBilling(userRole, {
     isPersonalOwner: isPersonal,
@@ -51,7 +52,7 @@ export default function CreateClassPage() {
   const existingClasses = Array.isArray(classPage)
     ? classPage
     : (classPage as any)?.items || [];
-  const limits = getPlanLimits(workspacePlan || "catechist_free");
+  const limits = getBySlug(workspacePlan || "catechist_free").limits;
   const activeClassesCount = existingClasses.filter(
     (c: any) => c.status !== "ARCHIVED",
   ).length;

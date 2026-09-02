@@ -174,18 +174,20 @@ enum VisibilityScope {
   GLOBAL
 }
 
-enum BillingPlan {
-  CATECHIST_FREE        // sentinel — "no subscription" (access = zero)
-  SINGLE                // Plano Único (personal: 1 paróquia, 3 turmas, 150 catequizandos no total)
-  UNLIMITED             // Plano Ilimitado (institutional: paróquia/diocese, ilimitado)
-  // Legacy values retained for migration compatibility (mapped to SINGLE/UNLIMITED
-  // via pricing.ts PLAN_ALIASES). Do not assign to new rows.
-  CATECHIST_PRO
-  CATECHIST_AI
-  PARISH
-  PARISH_ESSENTIAL
-  PARISH_COMPLETE
-  DIOCESE
+enum PricingPlanKind {
+  SUBSCRIPTION
+  CREDITS
+}
+
+enum PricingPlanLevel {
+  PERSONAL
+  INSTITUTIONAL
+}
+
+enum PricingInterval {
+  MONTHLY
+  ANNUAL
+  ONE_TIME
 }
 
 enum BillingStatus {
@@ -1397,7 +1399,7 @@ model TenantBilling {
   dioceseId String? @unique
   diocese   Diocese? @relation(fields: [dioceseId], references: [id], onDelete: Cascade)
 
-  plan                BillingPlan   @default(CATECHIST_FREE)
+  plan                String        @default("catechist_free")
   status              BillingStatus @default(TRIAL)
   trialEndsAt         DateTime?
   currentPeriodEnd    DateTime?
@@ -1406,6 +1408,70 @@ model TenantBilling {
   maxCatechists       Int?
   maxParishes         Int?
   pricingVersion      Int?          @default(2)
+
+  @@index([plan])
+}
+
+// ─── Pricing catalog (admin-managed, Stripe-linked) ───────────────────────────
+
+model PricingPlan {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  slug        String           @unique
+  name        String
+  description String?
+  kind        PricingPlanKind  @default(SUBSCRIPTION)
+  level       PricingPlanLevel @default(PERSONAL)
+  creditsAmount Int?
+
+  isSystem  Boolean @default(false)
+  isActive  Boolean @default(true)
+  isPublic  Boolean @default(true)
+  highlight Boolean @default(false)
+  sortOrder Int     @default(0)
+
+  maxClasses     Int?
+  maxCatechumens Int?
+  maxCatechists  Int?
+  maxParishes    Int?
+
+  aiMonthlyCredits Int @default(0)
+  aiDailyLimit     Int @default(0)
+  aiInitialCredits Int @default(0)
+
+  socialMaxPostsPerDay   Int?
+  socialMaxMediaPerPost  Int  @default(0)
+  socialMaxVideoSeconds  Int  @default(0)
+
+  features     Json  @default("[]")
+  translations Json?
+
+  stripeProductId String? @unique
+  pricingVersion  Int     @default(3)
+
+  prices PricingPlanPrice[]
+}
+
+model PricingPlanPrice {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  planId String
+  plan   PricingPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  interval        PricingInterval
+  currency        String          @default("BRL")
+  unitAmountCents Int
+  stripePriceId   String?         @unique
+  stripeLookupKey String?         @unique
+  isActive        Boolean         @default(true)
+  archivedAt      DateTime?
+
+  @@index([planId, interval, isActive])
+  @@index([stripePriceId])
 }
 
 // ─── AI Credits ────────────────────────────────────────────────────────────────

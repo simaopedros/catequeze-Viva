@@ -47,7 +47,9 @@ describe('Plan Limits Configuration (simplified plans)', () => {
   });
 });
 
-describe('Parish Billing Records', () => {
+const hasDb = Boolean(process.env.DATABASE_URL);
+
+describe.skipIf(!hasDb)('Parish Billing Records', () => {
 
   it('São José has an active institutional billing record', async () => {
     const billing = await prisma.tenantBilling.findUnique({
@@ -57,17 +59,17 @@ describe('Parish Billing Records', () => {
     expect(billing!.status).toBe('ACTIVE');
   });
 
-  it('Santa Maria has CATECHIST_FREE plan', async () => {
+  it('Santa Maria has catechist_free plan', async () => {
     const billing = await prisma.tenantBilling.findUnique({
       where: { parishId: PARISH_SANTA_MARIA },
     });
     expect(billing).toBeTruthy();
-    expect(billing!.plan).toBe('CATECHIST_FREE');
+    expect(billing!.plan).toBe('catechist_free');
   });
 
 });
 
-describe('Class Limits — São José (paid plan)', () => {
+describe.skipIf(!hasDb)('Class Limits — São José (paid plan)', () => {
 
   it('has multiple classes (no limit)', async () => {
     const classes = await prisma.catechesisClass.count({

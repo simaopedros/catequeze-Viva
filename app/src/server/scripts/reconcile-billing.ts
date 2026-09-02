@@ -7,6 +7,7 @@
  * Modes:
  *   --dry-run   Report inconsistencies without fixing (default)
  *   --apply     Fix detected inconsistencies
+ *   --catalog   Compare PricingPlan rows × DEFAULT_PLANS (run before flipping PRICING_CATALOG_SOURCE=db)
  *   --scope=all|personal|institutional  Filter by scope (default: all)
  */
 
@@ -251,4 +252,106 @@ export function printReconciliationReport(report: ReconciliationReport): string 
 
   lines.push('╚══════════════════════════════════════════════╝');
   return lines.join('\n');
+}
+
+export interface CatalogReconcileReport {
+  divergences: string[];
+  unresolvedUsers: Array<{ id: string; email?: string | null; subscriptionPlan: string | null }>;
+  unresolvedParishes: Array<{ id: string; name?: string | null; plan: string | null }>;
+}
+
+/**
+ * Compare PricingPlan rows × DEFAULT_PLANS × Stripe Price IDs.
+ * Run before flipping PRICING_CATALOG_SOURCE=db. Zero divergences expected.
+ */
+export async function reconcileCatalog(prisma: any): Promise<CatalogReconcileReport> {
+  const { DEFAULT_PLAN_LIST, mapLegacyTenantPlan, resolvePlanId } = await import('../../shared/planCatalog');
+  const { isUsableStripePriceId } = await import('../../payment/stripePriceId');
+  const report: CatalogReconcileReport = {
+    divergences: [],
+    unresolvedUsers: [],
+    unresolvedParishes: [],
+  };
+
+  const dbPlans = await prisma.pricingPlan.findMany({ include: { prices: true } }).catch(() => []);
+  const bySlug = new Map<string, any>((dbPlans || []).map((row: any) => [row.slug, row]));
+
+  for (const expected of DEFAULT_PLAN_LIST) {
+    const row = bySlug.get(expected.slug);
+    if (!row) {
+      report.divergences.push(`missing plan ${expected.slug} in database`);
+      continue;
+    }
+    const monthly = expected.prices.find((p) => p.interval === 'monthly' || p.interval === 'one_time');
+    const dbMonthly = (row.prices || []).find((p: any) =>
+      (p.interval === 'MONTHLY' || p.interval === 'ONE_TIME') && p.isActive,
+    );
+    if (monthly && dbMonthly && dbMonthly.unitAmountCents !== monthly.unitAmountCents) {
+      report.divergences.push(
+        `${expected.slug} monthly/one_time cents db=${dbMonthly.unitAmountCents} expected=${monthly.unitAmountCents}`,
+      );
+    }
+    if (row.isPublic !== expected.isPublic) {
+      report.divergences.push(`${expected.slug} isPublic db=${row.isPublic} expected=${expected.isPublic}`);
+    }
+    if (row.isActive !== expected.isActive && expected.kind === 'subscription') {
+      report.divergences.push(`${expected.slug} isActive db=${row.isActive} expected=${expected.isActive}`);
+    }
+    if (row.maxClasses !== expected.limits.maxClasses) {
+      report.divergences.push(`${expected.slug} maxClasses db=${row.maxClasses} expected=${expected.limits.maxClasses}`);
+    }
+  }
+
+  const users = await prisma.user.findMany({
+    where: { subscriptionPlan: { not: null } },
+    select: { id: true, email: true, subscriptionPlan: true },
+  });
+  for (const user of users) {
+    if (!resolvePlanId(user.subscriptionPlan)) {
+      report.unresolvedUsers.push(user);
+    }
+  }
+
+  const billings = await prisma.tenantBilling.findMany({
+    select: { plan: true, parish: { select: { id: true, name: true } }, dioceseId: true },
+  });
+  for (const billing of billings) {
+    const mapped = mapLegacyTenantPlan(billing.plan);
+    if (!resolvePlanId(mapped)) {
+      report.unresolvedParishes.push({
+        id: billing.parish?.id || billing.dioceseId || 'unknown',
+        name: billing.parish?.name,
+        plan: billing.plan,
+      });
+    }
+  }
+
+  void isUsableStripePriceId;
+  return report;
+}
+
+export function catalogReconcileHasBlockers(report: CatalogReconcileReport): boolean {
+  return (
+    report.divergences.length > 0 ||
+    report.unresolvedUsers.length > 0 ||
+    report.unresolvedParishes.length > 0
+  );
+}
+
+export function parseReconcileCliArgs(argv: string[] = process.argv.slice(2)): {
+  catalog: boolean;
+  apply: boolean;
+  dryRun: boolean;
+  scope: 'all' | 'personal' | 'institutional';
+} {
+  const scopeArg = argv.find((arg) => arg.startsWith('--scope='));
+  const scopeValue = scopeArg?.split('=')[1];
+  const scope =
+    scopeValue === 'personal' || scopeValue === 'institutional' ? scopeValue : 'all';
+  return {
+    catalog: argv.includes('--catalog'),
+    apply: argv.includes('--apply'),
+    dryRun: !argv.includes('--apply'),
+    scope,
+  };
 }
