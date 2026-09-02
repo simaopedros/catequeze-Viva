@@ -24,9 +24,8 @@ export const getSystemHealth = async (_args: void, context: any) => {
   });
   const totalAiCredits = aiUsageThisMonth._sum?.creditsUsed ?? 0;
 
-  // Total users with AI credits
-  const usersWithCredits = await context.entities.User.count({
-    where: { credits: { gt: 0 } },
+  const usersWithCredits = await context.entities.UserAiCredits.count({
+    where: { creditsLeft: { gt: 0 } },
   });
 
   // Daily stats last 7 days

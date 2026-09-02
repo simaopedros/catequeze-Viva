@@ -1,19 +1,26 @@
 import { MessageCircleMore } from "lucide-react";
-import { Link as WaspRouterLink, routes } from "wasp/client/router";
+import { NavLink } from "react-router";
+import { useTranslation } from "react-i18next";
+import { useQuery, getContactUnreadCount } from "wasp/client/operations";
 
 const MessageButton = () => {
+  const { t } = useTranslation("admin");
+  const { data: unread = 0 } = useQuery(getContactUnreadCount);
+
   return (
-    <li className="relative" x-data="{ dropdownOpen: false, notifying: true }">
-      <WaspRouterLink
+    <li className="relative">
+      <NavLink
+        to="/admin/support"
         className="relative flex h-9 w-9 items-center justify-center rounded-sm border border-border/70 bg-white text-[#071A2D] transition-colors hover:bg-muted/40"
-        to={routes.AppMessagesRoute.to}
+        aria-label={t("sidebar.support")}
       >
-        <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-sm bg-[#D39A2B]">
-          {/* TODO: only animate if there are new messages */}
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-sm bg-[#D39A2B] opacity-75"></span>
-        </span>
+        {unread > 0 && (
+          <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-sm bg-[#D39A2B]">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-sm bg-[#D39A2B] opacity-75" />
+          </span>
+        )}
         <MessageCircleMore className="size-5" />
-      </WaspRouterLink>
+      </NavLink>
     </li>
   );
 };

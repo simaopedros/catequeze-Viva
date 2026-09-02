@@ -4,6 +4,7 @@ import { type AuthUser } from "wasp/auth";
 import { Button } from "../../client/components/ui/button";
 import { Input } from "../../client/components/ui/input";
 import { Plus, Church, Edit, Save, X } from "lucide-react";
+import { NavLink } from "react-router";
 import DefaultLayout from "../../admin/layout/DefaultLayout";
 import {
   AppPageHeader,
@@ -202,15 +203,23 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
                             </button>
                           </div>
                         ) : (
-                          <button
-                            onClick={() => {
-                              setEditingId(d.id);
-                              setEditName(d.name);
-                            }}
-                            className="p-1 text-muted-foreground hover:text-brand-ink rounded"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
+                          <div className="flex justify-end gap-2">
+                            <NavLink
+                              to={`/admin/parishes?dioceseId=${d.id}`}
+                              className="text-xs text-[#071A2D] hover:underline"
+                            >
+                              {t("view_parishes")}
+                            </NavLink>
+                            <button
+                              onClick={() => {
+                                setEditingId(d.id);
+                                setEditName(d.name);
+                              }}
+                              className="p-1 text-muted-foreground hover:text-brand-ink rounded"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>

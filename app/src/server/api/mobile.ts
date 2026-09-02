@@ -204,6 +204,11 @@ export async function mobileAuthLogin(req: Request, res: Response, _context: any
     throw createInvalidCredentialsError();
   }
 
+  const suspendedAt = (auth.user as { suspendedAt?: Date | null })?.suspendedAt;
+  if (suspendedAt) {
+    throw new HttpError(403, 'Esta conta está suspensa. Contacte o suporte.');
+  }
+
   const session = await createSession(auth.id);
   const twoFactor = await getMobileTwoFactorState(auth.user.id, session.id);
 
@@ -238,6 +243,14 @@ export async function mobileAuthSession(req: Request, res: Response, _context: a
   const sessionResult = await getSessionAndUserFromBearerToken(req);
   if (!sessionResult) {
     return res.json({ authenticated: false });
+  }
+
+  const suspendedAt = (sessionResult.user as { suspendedAt?: Date | null })?.suspendedAt;
+  if (suspendedAt) {
+    if (sessionResult.session?.id) {
+      await invalidateSession(sessionResult.session.id);
+    }
+    return res.json({ authenticated: false, suspended: true });
   }
 
   const context = {
