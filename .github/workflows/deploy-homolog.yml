@@ -140,9 +140,10 @@ jobs:
               echo "⚠️ migrate deploy failed — check DATABASE_URL in .env.server"
             sleep 5
             docker compose -f docker-compose.homolog.yml run --rm --entrypoint "node" server /app/src/server/scripts/seedJourneyTemplates.mjs
+            docker compose -f docker-compose.homolog.yml run --rm --entrypoint "node" server /app/src/server/scripts/runSeedPricingCatalog.mjs
             # Bible / Catechism / Directory remain background (idempotent)
             nohup docker compose -f docker-compose.homolog.yml exec -T server node /app/src/server/scripts/runSeed.mjs > /opt/catechis/seed.log 2>&1 &
-            echo "✅ Journey templates seeded; remaining seed started in background (check /opt/catechis/seed.log)"
+            echo "✅ Journey templates and pricing catalog seeded; remaining seed started in background (check /opt/catechis/seed.log)"
             sleep 15
             docker compose -f docker-compose.homolog.yml exec -T server node -e "fetch('http://127.0.0.1:3001/health').then(r=>r.json()).then(j=>{if(j.status!=='ok'){console.error(j);process.exit(1)};console.log(JSON.stringify(j))})"
 

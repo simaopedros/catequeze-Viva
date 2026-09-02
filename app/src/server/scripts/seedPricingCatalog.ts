@@ -1,11 +1,26 @@
 /**
  * Idempotent seed of the admin pricing catalog from DEFAULT_PLANS.
  * Imports existing Stripe Price IDs from env vars — never creates Stripe objects.
+ *
+ * Missing default slugs/prices are inserted. Existing admin rows are never
+ * overwritten (so a later deploy cannot wipe edits in /admin/planos).
  */
 import type { PrismaClient } from '@prisma/client';
-import { DEFAULT_PLAN_LIST, lookupKeyFor, type PricingInterval } from '../../shared/planCatalog';
+import { DEFAULT_PLAN_LIST, lookupKeyFor, type CatalogPlan, type PricingInterval } from '../../shared/planCatalog';
 import { AI_FEATURES_ENABLED } from '../../shared/aiFeatures';
 import { isUsableStripePriceId } from '../../payment/stripePriceId';
+
+type CatalogSeedDb = {
+  pricingPlan: {
+    findUnique: (args: any) => Promise<any>;
+    create: (args: any) => Promise<any>;
+    update: (args: any) => Promise<any>;
+  };
+  pricingPlanPrice: {
+    findFirst: (args: any) => Promise<any>;
+    create: (args: any) => Promise<any>;
+  };
+};
 
 function toDbKind(kind: 'subscription' | 'credits') {
   return kind === 'credits' ? 'CREDITS' : 'SUBSCRIPTION';
@@ -25,6 +40,35 @@ function envIntervalFor(interval: PricingInterval): 'monthly' | 'annual' {
   return interval === 'annual' ? 'annual' : 'monthly';
 }
 
+function planRowData(plan: CatalogPlan) {
+  const isCredits = plan.kind === 'credits';
+  return {
+    name: plan.name,
+    description: plan.description ?? null,
+    kind: toDbKind(plan.kind) as any,
+    level: toDbLevel(plan.level) as any,
+    creditsAmount: plan.creditsAmount,
+    isSystem: plan.isSystem,
+    isActive: isCredits ? AI_FEATURES_ENABLED && plan.isActive : plan.isActive,
+    isPublic: isCredits ? AI_FEATURES_ENABLED && plan.isPublic : plan.isPublic,
+    highlight: plan.highlight,
+    sortOrder: plan.sortOrder,
+    maxClasses: plan.limits.maxClasses,
+    maxCatechumens: plan.limits.maxCatechumens,
+    maxCatechists: plan.limits.maxCatechists,
+    maxParishes: plan.limits.maxParishes,
+    aiMonthlyCredits: plan.ai.monthlyCredits,
+    aiDailyLimit: plan.ai.dailyLimit,
+    aiInitialCredits: plan.ai.initialCredits ?? 0,
+    socialMaxPostsPerDay: plan.social.maxPostsPerDay,
+    socialMaxMediaPerPost: plan.social.maxMediaPerPost,
+    socialMaxVideoSeconds: plan.social.maxVideoSeconds,
+    features: plan.features as any,
+    translations: plan.translations as any,
+    pricingVersion: plan.pricingVersion ?? 3,
+  };
+}
+
 export function defaultPlansMatchSnapshot(plans: typeof DEFAULT_PLAN_LIST) {
   return plans.map((plan) => ({
     slug: plan.slug,
@@ -38,101 +82,102 @@ export function defaultPlansMatchSnapshot(plans: typeof DEFAULT_PLAN_LIST) {
   }));
 }
 
-export async function seedPricingCatalog(prismaClient: PrismaClient): Promise<void> {
+async function resolveStripeImport(plan: CatalogPlan, price: CatalogPlan['prices'][number]) {
   const { readEnvStripePriceId } = await import('../../payment/paymentProcessorPlans');
-  const { importStripePrice } = await import('../pricing/stripeCatalogSync');
-  for (const plan of DEFAULT_PLAN_LIST) {
-    const isCredits = plan.kind === 'credits';
-    const data = {
-      name: plan.name,
-      description: plan.description ?? null,
-      kind: toDbKind(plan.kind) as any,
-      level: toDbLevel(plan.level) as any,
-      creditsAmount: plan.creditsAmount,
-      isSystem: plan.isSystem,
-      isActive: isCredits ? AI_FEATURES_ENABLED && plan.isActive : plan.isActive,
-      isPublic: isCredits ? AI_FEATURES_ENABLED && plan.isPublic : plan.isPublic,
-      highlight: plan.highlight,
-      sortOrder: plan.sortOrder,
-      maxClasses: plan.limits.maxClasses,
-      maxCatechumens: plan.limits.maxCatechumens,
-      maxCatechists: plan.limits.maxCatechists,
-      maxParishes: plan.limits.maxParishes,
-      aiMonthlyCredits: plan.ai.monthlyCredits,
-      aiDailyLimit: plan.ai.dailyLimit,
-      aiInitialCredits: plan.ai.initialCredits ?? 0,
-      socialMaxPostsPerDay: plan.social.maxPostsPerDay,
-      socialMaxMediaPerPost: plan.social.maxMediaPerPost,
-      socialMaxVideoSeconds: plan.social.maxVideoSeconds,
-      features: plan.features as any,
-      translations: plan.translations as any,
-      pricingVersion: plan.pricingVersion ?? 3,
-    };
+  const envPriceId = readEnvStripePriceId(plan.slug, envIntervalFor(price.interval));
+  let stripePriceId: string | null = isUsableStripePriceId(envPriceId) ? envPriceId : null;
+  let unitAmountCents = price.unitAmountCents;
+  let lookupKey = price.stripeLookupKey || lookupKeyFor(plan.slug, price.interval);
+  let productId: string | null = null;
 
-    const saved = await prismaClient.pricingPlan.upsert({
-      where: { slug: plan.slug },
-      create: { slug: plan.slug, ...data },
-      update: data,
-    });
+  if (stripePriceId) {
+    try {
+      const { importStripePrice } = await import('../pricing/stripeCatalogSync');
+      const imported = await importStripePrice(stripePriceId);
+      if (imported) {
+        unitAmountCents = imported.unitAmountCents || unitAmountCents;
+        lookupKey = imported.lookupKey || lookupKey;
+        productId = imported.productId || null;
+      }
+    } catch (error) {
+      console.warn('[seedPricingCatalog] could not retrieve Stripe price', stripePriceId, error);
+    }
+  }
+
+  return { stripePriceId, unitAmountCents, lookupKey, productId };
+}
+
+/**
+ * Inserts DEFAULT_PLANS that are missing. Never updates an existing plan or price.
+ */
+export async function ensurePricingCatalogSeeded(db: CatalogSeedDb): Promise<{ createdPlans: number; createdPrices: number }> {
+  let createdPlans = 0;
+  let createdPrices = 0;
+
+  for (const plan of DEFAULT_PLAN_LIST) {
+    let saved = await db.pricingPlan.findUnique({ where: { slug: plan.slug } });
+    if (!saved) {
+      try {
+        saved = await db.pricingPlan.create({
+          data: { slug: plan.slug, ...planRowData(plan) },
+        });
+        createdPlans += 1;
+      } catch (error) {
+        saved = await db.pricingPlan.findUnique({ where: { slug: plan.slug } });
+        if (!saved) throw error;
+      }
+    }
 
     for (const price of plan.prices) {
-      const envPriceId = readEnvStripePriceId(plan.slug, envIntervalFor(price.interval));
-      let stripePriceId: string | null = isUsableStripePriceId(envPriceId) ? envPriceId : null;
-      let unitAmountCents = price.unitAmountCents;
-      let lookupKey = price.stripeLookupKey || lookupKeyFor(plan.slug, price.interval);
-      let productId: string | null = saved.stripeProductId ?? null;
-
-      if (stripePriceId) {
-        try {
-          const imported = await importStripePrice(stripePriceId);
-          if (imported) {
-            unitAmountCents = imported.unitAmountCents || unitAmountCents;
-            lookupKey = imported.lookupKey || lookupKey;
-            productId = imported.productId || productId;
-          }
-        } catch (error) {
-          console.warn('[seedPricingCatalog] could not retrieve Stripe price', stripePriceId, error);
-        }
-      }
-
-      if (productId && productId !== saved.stripeProductId) {
-        await prismaClient.pricingPlan.update({
-          where: { id: saved.id },
-          data: { stripeProductId: productId },
-        });
-      }
-
-      const existing = await prismaClient.pricingPlanPrice.findFirst({
+      const existing = await db.pricingPlanPrice.findFirst({
         where: {
           planId: saved.id,
-          interval: toDbInterval(price.interval) as any,
+          interval: toDbInterval(price.interval),
           isActive: true,
         },
       });
+      if (existing) continue;
 
-      if (existing) {
-        await prismaClient.pricingPlanPrice.update({
-          where: { id: existing.id },
-          data: {
-            unitAmountCents,
-            stripePriceId: stripePriceId ?? existing.stripePriceId,
-            stripeLookupKey: lookupKey,
-            currency: 'BRL',
-          },
+      const imported = await resolveStripeImport(plan, price);
+      if (imported.productId && imported.productId !== saved.stripeProductId) {
+        saved = await db.pricingPlan.update({
+          where: { id: saved.id },
+          data: { stripeProductId: imported.productId },
         });
-      } else {
-        await prismaClient.pricingPlanPrice.create({
+      }
+
+      try {
+        await db.pricingPlanPrice.create({
           data: {
             planId: saved.id,
-            interval: toDbInterval(price.interval) as any,
+            interval: toDbInterval(price.interval),
             currency: 'BRL',
-            unitAmountCents,
-            stripePriceId,
-            stripeLookupKey: lookupKey,
+            unitAmountCents: imported.unitAmountCents,
+            stripePriceId: imported.stripePriceId,
+            stripeLookupKey: imported.lookupKey,
             isActive: true,
           },
         });
+        createdPrices += 1;
+      } catch (error) {
+        const raced = await db.pricingPlanPrice.findFirst({
+          where: {
+            planId: saved.id,
+            interval: toDbInterval(price.interval),
+            isActive: true,
+          },
+        });
+        if (!raced) throw error;
       }
     }
   }
+
+  return { createdPlans, createdPrices };
+}
+
+export async function seedPricingCatalog(prismaClient: PrismaClient): Promise<void> {
+  await ensurePricingCatalogSeeded({
+    pricingPlan: prismaClient.pricingPlan,
+    pricingPlanPrice: prismaClient.pricingPlanPrice,
+  });
 }
