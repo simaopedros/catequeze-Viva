@@ -48,6 +48,9 @@ enum ClassStatus {
 enum CatechistAssignmentRole {
   LEAD
   ASSISTANT
+  /// Vice-coordination link: a COMMUNITY_COORDINATOR explicitly responsible
+  /// for this class (does not count as the class's lead catechist).
+  COORDINATOR
 }
 
 enum EnrollmentStatus {

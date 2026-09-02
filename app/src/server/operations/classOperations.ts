@@ -24,7 +24,11 @@ import { ensureSacramentalJourneyForCatechumen } from "../sacramentHelpers";
 import { logger } from "../logger";
 import {
   requireWorkspaceAccess,
+  resolveWorkspaceAccess,
   classWhereForAccess,
+  memberWhereForAccess,
+  assertClassInScope,
+  isClassInScope,
   isCatechist as isCatechistRole,
 } from "./sharedScope";
 import {
@@ -52,6 +56,23 @@ function isCoordinatorOrAbove(role: string | null): boolean {
 
 function isCatechist(role: string): boolean {
   return isCatechistRole(role);
+}
+
+/**
+ * Vice-coordination: a scoped COMMUNITY_COORDINATOR passes the generic
+ * coordinator checks but may only act on classes inside their scope.
+ * No-op for platform admins and every full-parish role.
+ */
+async function assertCoordinatorClassScope(
+  context: any,
+  parishId: string,
+  classId: string,
+): Promise<void> {
+  if (context.user?.isAdmin) return;
+  const access = await resolveWorkspaceAccess(context, parishId, {
+    required: false,
+  });
+  if (access?.isScopedCoordinator) assertClassInScope(access, classId);
 }
 
 const classListInclude = {
@@ -148,8 +169,8 @@ export const listClasses = async (
     return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
 
-  // Catechist: only assigned classes in this workspace
-  if (access.isCatechist) {
+  // Catechist / scoped community coordinator: only classes in scope
+  if (access.isCatechist || access.isScopedCoordinator) {
     if (access.allowedClassIds.length === 0) return emptyPage(useCursorPage);
     const rows = await context.entities.CatechesisClass.findMany({
       where: withSearchStatusCursor(classWhereForAccess(access, extra)),
@@ -278,11 +299,34 @@ export const createClass = async (args: any, context: any) => {
     await assertCanCreateClass(context, effectiveParishId);
   }
 
+  // Scoped community coordinator: new classes stay inside their community
+  let effectiveCommunityId: string | null = args.communityId || null;
+  if (!context.user.isAdmin) {
+    const access = await resolveWorkspaceAccess(context, effectiveParishId, {
+      required: false,
+    });
+    if (access?.isScopedCoordinator) {
+      if (!access.communityId) {
+        throw new HttpError(
+          403,
+          "Coordenadores com escopo por turmas não podem criar turmas; peça à coordenação geral.",
+        );
+      }
+      if (effectiveCommunityId && effectiveCommunityId !== access.communityId) {
+        throw new HttpError(
+          403,
+          "Você só pode criar turmas na sua comunidade.",
+        );
+      }
+      effectiveCommunityId = access.communityId;
+    }
+  }
+
   const newClass = await context.entities.CatechesisClass.create({
     data: {
       name: args.name,
       parishId: effectiveParishId,
-      communityId: args.communityId || null,
+      communityId: effectiveCommunityId,
       stageId: args.stageId || null,
       sacramentId: args.sacramentId || null,
       yearId: args.yearId || null,
@@ -335,7 +379,16 @@ export const getClassDetails = async (args: { id: string }, context: any) => {
     const role = await getEffectiveParishRole(context, classData.parishId);
 
     // Coordinators (including PERSONAL_OWNER) can access any class in their parish/workspace
-    const isCoordinator = isCoordinatorOrAbove(role);
+    let isCoordinator = isCoordinatorOrAbove(role);
+    if (isCoordinator) {
+      // Scoped community coordinators only see classes inside their scope
+      const access = await resolveWorkspaceAccess(context, classData.parishId, {
+        required: false,
+      });
+      if (access?.isScopedCoordinator && !isClassInScope(access, args.id)) {
+        isCoordinator = false;
+      }
+    }
 
     // Catechists: only classes they're assigned to
     let isCatechistOfClass = false;
@@ -500,6 +553,8 @@ export const updateClass = async (args: any, context: any) => {
           "Apenas coordenadores ou o catequista responsável podem editar turmas.",
         );
       }
+    } else {
+      await assertCoordinatorClassScope(context, classData.parishId, args.id);
     }
   }
 
@@ -542,6 +597,7 @@ export const assignLeadCatechist = async (
         "Apenas coordenadores podem designar catequistas responsáveis.",
       );
     }
+    await assertCoordinatorClassScope(context, classData.parishId, args.classId);
   }
 
   // Validate the target user belongs to the same parish
@@ -605,7 +661,11 @@ export const addAssistantCatechist = async (
 
     // Coordinator (including PERSONAL_OWNER) can add anyone
     if (isCoordinatorOrAbove(role)) {
-      // allowed
+      await assertCoordinatorClassScope(
+        context,
+        classData.parishId,
+        args.classId,
+      );
     } else {
       // Check if caller is the LEAD catechist of this class
       const isLead = await context.entities.ClassCatechist.findFirst({
@@ -668,9 +728,20 @@ export const removeCatechistFromClass = async (
     ) {
       // allowed
     }
-    // Coordinator (including PERSONAL_OWNER) can remove anyone
+    // Coordinator (including PERSONAL_OWNER) can remove anyone in their scope
     else if (isCoordinatorOrAbove(role)) {
-      // allowed
+      await assertCoordinatorClassScope(
+        context,
+        classData.parishId,
+        args.classId,
+      );
+    }
+    // Class COORDINATOR links are managed by the coordination only
+    else if (assignment.role === CatechistAssignmentRole.COORDINATOR) {
+      throw new HttpError(
+        403,
+        "Apenas a coordenação pode remover um coordenador da turma.",
+      );
     }
     // LEAD can remove ASSISTANTs
     else if (assignment.role === CatechistAssignmentRole.ASSISTANT) {
@@ -720,7 +791,12 @@ export const enrollCatechumen = async (
       throw new HttpError(403, "Sem permissão para matricular catequizandos.");
     }
     if (isCoordinatorOrAbove(role)) {
-      // Coordinators (including PERSONAL_OWNER) can enroll in any class in their parish/workspace
+      // Coordinators (including PERSONAL_OWNER) can enroll in any class in their scope
+      await assertCoordinatorClassScope(
+        context,
+        classData.parishId,
+        args.classId,
+      );
     } else if (isCatechist(role)) {
       // Catechists can only enroll in classes they are assigned to
       const assignment = await context.entities.ClassCatechist.findFirst({
@@ -818,7 +894,11 @@ export const bulkEnrollCatechumens = async (
       throw new HttpError(403, "Sem permissão para matricular catequizandos.");
     }
     if (isCoordinatorOrAbove(role)) {
-      // ok
+      await assertCoordinatorClassScope(
+        context,
+        classData.parishId,
+        args.classId,
+      );
     } else if (isCatechist(role)) {
       const assignment = await context.entities.ClassCatechist.findFirst({
         where: { classId: args.classId, userId: context.user.id },
@@ -930,6 +1010,7 @@ export const archiveClass = async (args: { id: string }, context: any) => {
     if (!isCoordinatorOrAbove(role)) {
       throw new HttpError(403, "Apenas coordenadores podem arquivar turmas.");
     }
+    await assertCoordinatorClassScope(context, classData.parishId, args.id);
   }
 
   const activeMeetings = await context.entities.Meeting.count({
@@ -969,7 +1050,12 @@ export const cancelEnrollment = async (
       throw new HttpError(403, "Sem permissão para cancelar inscrições.");
     }
     if (isCoordinatorOrAbove(role)) {
-      // Coordinators (including PERSONAL_OWNER) can cancel any enrollment in their parish/workspace
+      // Coordinators (including PERSONAL_OWNER) can cancel any enrollment in their scope
+      await assertCoordinatorClassScope(
+        context,
+        enrollment.class.parishId,
+        enrollment.class.id,
+      );
     } else if (isCatechist(role)) {
       // Catechists can only cancel enrollments in classes they are assigned to
       const assignment = await context.entities.ClassCatechist.findFirst({
@@ -1004,11 +1090,11 @@ export const listParishCatechists = async (
     throw new HttpError(400, 'parishId é obrigatório.');
   }
 
-  await requireWorkspaceAccess(context, args.parishId.trim());
+  const access = await requireWorkspaceAccess(context, args.parishId.trim());
 
   return context.entities.Membership.findMany({
     where: {
-      parishId: args.parishId.trim(),
+      ...memberWhereForAccess(access, context.user.id),
       status: MembershipStatus.ACTIVE,
       role: {
         in: [

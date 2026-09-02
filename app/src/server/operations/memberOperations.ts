@@ -10,7 +10,13 @@ import {
   ALLOWED_INVITER_ROLES,
   pickBestInviterRole,
 } from '../../shared/inviterRoles';
-import { requireWorkspaceAccess, isCatechist } from './sharedScope';
+import {
+  requireWorkspaceAccess,
+  resolveWorkspaceAccess,
+  isCatechist,
+  isClassInScope,
+  memberWhereForAccess,
+} from './sharedScope';
 import {
   ROLE_ASSIGNMENT_HIERARCHY,
   getAssignableRoles,
@@ -237,6 +243,31 @@ export const inviteUserToParish = async (
     });
     if (!community || community.parishId !== args.parishId) {
       throw new HttpError(400, 'Comunidade não pertence a esta paróquia.');
+    }
+  }
+
+  // Scoped community coordinator (vice): invites stay inside their community
+  // and their classes. Full-parish inviters are unaffected.
+  if (!context.user.isAdmin) {
+    const inviterAccess = await resolveWorkspaceAccess(context, args.parishId, {
+      required: false,
+    });
+    if (inviterAccess?.isScopedCoordinator) {
+      if (args.communityId && args.communityId !== inviterAccess.communityId) {
+        throw new HttpError(403, 'Você só pode convidar para a sua comunidade.');
+      }
+      if (args.classId && !isClassInScope(inviterAccess, args.classId)) {
+        throw new HttpError(403, 'Sem permissão para convidar para esta turma.');
+      }
+      if (!args.communityId && !args.classId) {
+        if (!inviterAccess.communityId) {
+          throw new HttpError(
+            400,
+            'Informe a turma ao convidar membros da equipe.',
+          );
+        }
+        args = { ...args, communityId: inviterAccess.communityId };
+      }
     }
   }
 
@@ -644,8 +675,10 @@ export const getParishTeam = async (
     leadClassIds = leadLinks.map((l: { classId: string }) => l.classId);
   }
 
+  // Scoped community coordinator (vice): community members + catechists of
+  // their classes. Full-parish roles get the plain parish filter (unchanged).
   const memberWhere: any = {
-    parishId: args.parishId,
+    ...memberWhereForAccess(access, context.user.id),
     status: 'ACTIVE',
     role: {
       notIn: ['GUARDIAN', 'CATECHUMEN'],
@@ -737,6 +770,16 @@ export const getParishTeam = async (
       // Invites without class: only if actor can invite parish-wide (they cannot)
       return false;
     });
+  } else if (access.isScopedCoordinator) {
+    // Scoped coordinators: invites into their classes or their community
+    const scopeSet = new Set(
+      access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds,
+    );
+    pending = pending.filter((p: any) => {
+      if (p.classId) return scopeSet.has(p.classId);
+      if (p.communityId) return p.communityId === access.communityId;
+      return false;
+    });
   }
 
   // Legacy INVITED team memberships without PendingInvitation
@@ -757,6 +800,10 @@ export const getParishTeam = async (
   // Catechists should not see legacy parish-wide invites
   if (isCatechistViewer) {
     legacyInvited = [];
+  } else if (access.isScopedCoordinator) {
+    legacyInvited = legacyInvited.filter(
+      (m: any) => !!access.communityId && m.communityId === access.communityId,
+    );
   }
 
   const now = Date.now();
@@ -1399,6 +1446,22 @@ export const removeMembership = async (
       if (!userMembership || !allowedRoles.includes(userMembership.role)) {
         throw new HttpError(403, 'Apenas coordenadores podem remover membros.');
       }
+      // Scoped community coordinator: only members inside their scope
+      const access = await resolveWorkspaceAccess(context, membership.parishId, {
+        required: false,
+      });
+      if (access?.isScopedCoordinator) {
+        const inScope = await context.entities.Membership.findFirst({
+          where: {
+            id: membership.id,
+            ...memberWhereForAccess(access, context.user.id),
+          },
+          select: { id: true },
+        });
+        if (!inScope) {
+          throw new HttpError(403, 'Este membro está fora do seu escopo de coordenação.');
+        }
+      }
     }
   }
 
@@ -1426,6 +1489,14 @@ export const listParishMembers = async (
   await assertCanViewTeam(context, args.parishId);
 
   const where: any = { parishId: args.parishId };
+  if (!context.user.isAdmin) {
+    const access = await resolveWorkspaceAccess(context, args.parishId, {
+      required: false,
+    });
+    if (access?.isScopedCoordinator) {
+      Object.assign(where, memberWhereForAccess(access, context.user.id));
+    }
+  }
   if (args.communityId) {
     where.communityId = args.communityId;
   }
@@ -1443,7 +1514,7 @@ export const listParishMembers = async (
 };
 
 export const updateMembershipRole = async (
-  args: { membershipId: string; role: string },
+  args: { membershipId: string; role: string; communityId?: string | null },
   context: any,
 ) => {
   if (!context.user) throw new HttpError(401);
@@ -1478,9 +1549,106 @@ export const updateMembershipRole = async (
     throw new HttpError(403, `Não pode atribuir o papel "${args.role}".`);
   }
 
+  const data: Record<string, unknown> = { role: args.role as any };
+
+  // Optional community binding (used to scope COMMUNITY_COORDINATOR). Omitted
+  // (undefined) keeps the current value; null clears it.
+  if (args.communityId !== undefined) {
+    if (args.communityId) {
+      const community = await context.entities.Community.findUnique({
+        where: { id: args.communityId },
+        select: { parishId: true },
+      });
+      if (!community || community.parishId !== membership.parishId) {
+        throw new HttpError(400, 'Comunidade não pertence a esta paróquia.');
+      }
+    }
+    data.communityId = args.communityId || null;
+  }
+
   return context.entities.Membership.update({
     where: { id: args.membershipId },
-    data: { role: args.role as any },
+    data,
+  });
+};
+
+/**
+ * Vice-coordination: replace the set of classes a COMMUNITY_COORDINATOR member
+ * is explicitly responsible for (ClassCatechist rows with role COORDINATOR).
+ * Only parish-level coordination (or platform admin) may edit this. LEAD /
+ * ASSISTANT links of the same user are never touched.
+ */
+export const setCoordinatorClasses = async (
+  args: { membershipId: string; classIds: string[] },
+  context: any,
+) => {
+  requireAuth(context.user);
+  if (!args.membershipId) throw new HttpError(400, 'membershipId é obrigatório.');
+  const classIds = [...new Set((args.classIds || []).filter(Boolean))];
+
+  const membership = await context.entities.Membership.findUnique({
+    where: { id: args.membershipId },
+    select: { id: true, userId: true, parishId: true, role: true, status: true },
+  });
+  if (!membership) throw new HttpError(404, 'Membro não encontrado.');
+
+  if (!context.user.isAdmin) {
+    const access = await requireWorkspaceAccess(context, membership.parishId);
+    const canManage =
+      ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'PERSONAL_OWNER'].includes(
+        access.role,
+      );
+    if (!canManage) {
+      throw new HttpError(403, 'Apenas a coordenação paroquial pode definir turmas de um coordenador.');
+    }
+  }
+
+  if (membership.role !== 'COMMUNITY_COORDINATOR') {
+    throw new HttpError(
+      400,
+      'Turmas sob responsabilidade só se aplicam a coordenadores de comunidade.',
+    );
+  }
+
+  if (classIds.length > 0) {
+    const valid = await context.entities.CatechesisClass.count({
+      where: { id: { in: classIds }, parishId: membership.parishId },
+    });
+    if (valid !== classIds.length) {
+      throw new HttpError(400, 'Uma ou mais turmas não pertencem a esta paróquia.');
+    }
+  }
+
+  const existing = await context.entities.ClassCatechist.findMany({
+    where: { userId: membership.userId, class: { parishId: membership.parishId } },
+    select: { id: true, classId: true, role: true },
+  });
+
+  const wanted = new Set(classIds);
+  const toDelete = existing
+    .filter((l: any) => l.role === 'COORDINATOR' && !wanted.has(l.classId))
+    .map((l: any) => l.id);
+  const alreadyLinked = new Set(existing.map((l: any) => l.classId));
+  const toCreate = classIds.filter((id) => !alreadyLinked.has(id));
+
+  if (toDelete.length > 0) {
+    await context.entities.ClassCatechist.deleteMany({ where: { id: { in: toDelete } } });
+  }
+  for (const classId of toCreate) {
+    await context.entities.ClassCatechist.create({
+      data: { classId, userId: membership.userId, role: 'COORDINATOR' },
+    });
+  }
+
+  await writeAuditLog(context, 'UPDATE', 'Membership', membership.id, {
+    operation: 'COORDINATOR_CLASSES_SET',
+    parishId: membership.parishId,
+    classIds,
+  });
+
+  return context.entities.ClassCatechist.findMany({
+    where: { userId: membership.userId, role: 'COORDINATOR', class: { parishId: membership.parishId } },
+    select: { classId: true, class: { select: { id: true, name: true } } },
   });
 };
 

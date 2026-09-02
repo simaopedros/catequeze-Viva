@@ -38,7 +38,7 @@ async function canCoordinatorAccessUploaderDocument(
 
   for (const parishId of candidateParishIds) {
     const access = await resolveWorkspaceAccess(context, parishId, { required: false });
-    if (access?.isCoordinatorOrAbove) return true;
+    if (access?.isCoordinatorOrAbove && !access.isScopedCoordinator) return true;
   }
   return false;
 }

@@ -148,8 +148,27 @@ export const listHouseholds = async (
 
   // Coordinator / pastoral: all households in this workspace only
   if (access.isCoordinatorOrAbove || access.role === 'PASTORAL_VIEWER') {
+    // Scoped community coordinator (vice): households of the community or of
+    // catechumens enrolled in the classes under their responsibility.
+    const scopedWhere =
+      access.isScopedCoordinator && access.allowedClassIds !== 'ALL'
+        ? {
+            OR: [
+              ...(access.communityId ? [{ communityId: access.communityId }] : []),
+              {
+                catechumens: {
+                  some: {
+                    enrollments: {
+                      some: { classId: { in: access.allowedClassIds } },
+                    },
+                  },
+                },
+              },
+            ],
+          }
+        : {};
     const rows = await context.entities.Household.findMany({
-      where: buildWhere(extra),
+      where: buildWhere({ ...extra, ...scopedWhere }),
       orderBy: [{ name: 'asc' }, { id: 'asc' }],
       take,
       skip,

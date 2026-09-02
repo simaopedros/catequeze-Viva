@@ -4,6 +4,7 @@ import {
   isCoordinatorOrAboveRole,
   isCatechistOrAboveRole,
 } from '../auth/helpers';
+import { logger } from '../logger';
 
 // ─── Legacy multi-workspace scope (prefer resolveWorkspaceAccess) ───────────
 
@@ -89,9 +90,18 @@ export type WorkspaceAccess = {
    * Class IDs the actor may see/manage in this workspace.
    * 'ALL' = whole parish (coordinators, personal owners, diocese admins, platform admin).
    * Empty array = membership only, no class data (e.g. catechist without ClassCatechist).
+   * For a scoped COMMUNITY_COORDINATOR: classes of their community plus classes
+   * explicitly linked via ClassCatechist role COORDINATOR.
    */
   allowedClassIds: ClassScope;
   membershipId: string | null;
+  /** Community the membership is bound to (only used to scope COMMUNITY_COORDINATOR). */
+  communityId: string | null;
+  /**
+   * True when the actor is a coordinator whose visibility is limited to a
+   * subset of the parish (vice-coordination). Always false for 'ALL' scopes.
+   */
+  isScopedCoordinator: boolean;
 };
 
 const workspaceAccessCache = new WeakMap<object, Map<string, WorkspaceAccess>>();
@@ -140,6 +150,8 @@ export async function resolveWorkspaceAccess(
       canManageParish: true,
       allowedClassIds: 'ALL',
       membershipId: null,
+      communityId: null,
+      isScopedCoordinator: false,
     };
     cache.set(id, access);
     return access;
@@ -160,6 +172,8 @@ export async function resolveWorkspaceAccess(
       canManageParish: true,
       allowedClassIds: 'ALL',
       membershipId: null,
+      communityId: null,
+      isScopedCoordinator: false,
     };
     cache.set(id, access);
     return access;
@@ -172,11 +186,12 @@ export async function resolveWorkspaceAccess(
       parishId: id,
       status: 'ACTIVE',
     },
-    select: { id: true, role: true },
+    select: { id: true, role: true, communityId: true },
   });
 
   let role: string | null = membership?.role ?? null;
   let membershipId: string | null = membership?.id ?? null;
+  const communityId: string | null = membership?.communityId ?? null;
 
   // Diocese admin may access parishes in their diocese without direct membership
   if (!role) {
@@ -207,7 +222,13 @@ export async function resolveWorkspaceAccess(
   const coordinator = isCoordinatorOrAboveRole(role);
   let allowedClassIds: ClassScope = 'ALL';
 
-  if (coordinator) {
+  if (role === 'COMMUNITY_COORDINATOR') {
+    allowedClassIds = await resolveCommunityCoordinatorScope(
+      context,
+      id,
+      communityId,
+    );
+  } else if (coordinator) {
     allowedClassIds = 'ALL';
   } else if (isCatechist(role)) {
     // Class-level isolation: only classes assigned via ClassCatechist in this parish
@@ -235,9 +256,77 @@ export async function resolveWorkspaceAccess(
     canManageParish: coordinator,
     allowedClassIds,
     membershipId,
+    communityId: role === 'COMMUNITY_COORDINATOR' ? communityId : null,
+    isScopedCoordinator: coordinator && allowedClassIds !== 'ALL',
   };
   cache.set(id, access);
   return access;
+}
+
+/**
+ * Scope of a COMMUNITY_COORDINATOR (vice-coordination) inside one parish:
+ * classes of the membership's community ∪ classes explicitly linked through
+ * ClassCatechist role COORDINATOR.
+ *
+ * Backward compatibility: a membership with no community and no linked classes
+ * keeps the historical parish-wide visibility ('ALL'). An unexpectedly empty
+ * result also falls back to 'ALL' (with a warning) so a misconfigured
+ * coordinator never loses access silently.
+ */
+async function resolveCommunityCoordinatorScope(
+  context: any,
+  parishId: string,
+  communityId: string | null,
+): Promise<ClassScope> {
+  const classCatechist = await entityDelegate(context, 'ClassCatechist');
+  const links = await classCatechist.findMany({
+    where: {
+      userId: context.user.id,
+      role: 'COORDINATOR',
+      class: { parishId },
+    },
+    select: { classId: true },
+  });
+  const linkedIds: string[] = links.map((l: { classId: string }) => l.classId);
+
+  if (!communityId && linkedIds.length === 0) return 'ALL';
+
+  const ids = new Set<string>(linkedIds);
+  if (communityId) {
+    const catechesisClass = await entityDelegate(context, 'CatechesisClass');
+    const communityClasses = await catechesisClass.findMany({
+      where: { parishId, communityId },
+      select: { id: true },
+    });
+    for (const c of communityClasses as { id: string }[]) ids.add(c.id);
+  }
+
+  if (ids.size === 0) {
+    logger.warn('Coordenador de comunidade sem turmas no escopo; mantendo visão da paróquia', {
+      userId: context.user.id,
+      parishId,
+      communityId,
+    });
+    return 'ALL';
+  }
+
+  return [...ids];
+}
+
+/**
+ * Wasp only exposes entities declared on the operation. Scope resolution needs
+ * ClassCatechist / CatechesisClass even in operations that never declared them,
+ * so fall back to the shared Prisma client when the delegate is absent.
+ */
+async function entityDelegate(
+  context: any,
+  name: 'ClassCatechist' | 'CatechesisClass',
+): Promise<any> {
+  const fromContext = context.entities?.[name];
+  if (fromContext) return fromContext;
+  const mod: any = await import('wasp/server');
+  const key = name.charAt(0).toLowerCase() + name.slice(1);
+  return mod.prisma[key];
 }
 
 /** Require access; throws 400/403. */
@@ -268,6 +357,77 @@ export function classWhereForAccess(access: WorkspaceAccess, extra?: Record<stri
   };
 }
 
+/** Whether a class id is inside the actor's class scope for this workspace. */
+export function isClassInScope(access: WorkspaceAccess, classId: string): boolean {
+  if (access.allowedClassIds === 'ALL') return true;
+  return access.allowedClassIds.includes(classId);
+}
+
+/**
+ * Throws 403 when the class is outside the actor's scope. No-op for 'ALL'
+ * scopes, so existing full-parish roles are unaffected.
+ */
+export function assertClassInScope(
+  access: WorkspaceAccess,
+  classId: string,
+  message = 'Esta turma está fora do seu escopo de coordenação.',
+): void {
+  if (!isClassInScope(access, classId)) throw new HttpError(403, message);
+}
+
+/**
+ * Prisma where fragment for CatechumenProfile rows visible to a coordinator-like
+ * actor in this workspace. Full-parish scopes keep the historical query
+ * (enrollment, household or direct parish link). Scoped coordinators see
+ * catechumens enrolled in their classes or whose household belongs to their
+ * community.
+ */
+export function catechumenWhereForAccess(access: WorkspaceAccess): Record<string, unknown> {
+  const parishId = access.workspaceId;
+  if (access.allowedClassIds === 'ALL') {
+    return {
+      OR: [
+        { enrollments: { some: { class: { parishId } } } },
+        { household: { parishId } },
+        { parishId },
+      ],
+    };
+  }
+  const or: Record<string, unknown>[] = [
+    { enrollments: { some: { classId: { in: access.allowedClassIds } } } },
+  ];
+  if (access.communityId) {
+    or.push({ household: { parishId, communityId: access.communityId } });
+  }
+  return { OR: or };
+}
+
+/**
+ * Prisma where fragment for Membership rows a coordinator-like actor may list
+ * in this workspace. Full-parish scopes return the plain parish filter (same as
+ * today). Scoped coordinators see members of their community, catechists of
+ * their classes, and themselves.
+ */
+export function memberWhereForAccess(
+  access: WorkspaceAccess,
+  actorUserId: string,
+): Record<string, unknown> {
+  const parishId = access.workspaceId;
+  if (access.allowedClassIds === 'ALL') return { parishId };
+  const or: Record<string, unknown>[] = [
+    { userId: actorUserId },
+    {
+      user: {
+        catechistOfClasses: {
+          some: { classId: { in: access.allowedClassIds } },
+        },
+      },
+    },
+  ];
+  if (access.communityId) or.push({ communityId: access.communityId });
+  return { parishId, OR: or };
+}
+
 /**
  * Prisma where fragment for classes visible to the actor across several
  * workspaces (search, exports). Resolves the role per workspace — a coordinator
@@ -293,7 +453,7 @@ export async function classWhereAcrossWorkspaces(
       or.push({ parishId: workspaceId });
       continue;
     }
-    if (access.isCatechist) {
+    if (access.isCatechist || access.isScopedCoordinator) {
       if (access.allowedClassIds.length > 0) {
         or.push({ parishId: workspaceId, id: { in: access.allowedClassIds } });
       }

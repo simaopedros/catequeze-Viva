@@ -621,6 +621,8 @@ async function listAllowedConversationContactsInternal(
       canManageParish: true,
       allowedClassIds: 'ALL',
       membershipId: null,
+      communityId: null,
+      isScopedCoordinator: false,
     };
   } else {
     access = await requireWorkspaceAccess(context, args.workspaceId);
@@ -634,7 +636,10 @@ async function listAllowedConversationContactsInternal(
     if (access.role === 'GUARDIAN') {
       return listGuardianScopedContacts(context, access.workspaceId);
     }
-    if (access.isCatechist && !access.isCoordinatorOrAbove) {
+    if (
+      (access.isCatechist && !access.isCoordinatorOrAbove) ||
+      access.isScopedCoordinator
+    ) {
       return listCatechistScopedContacts(context, access);
     }
   }
@@ -937,6 +942,8 @@ export const createConversation = async (
       canManageParish: true,
       allowedClassIds: 'ALL',
       membershipId: null,
+      communityId: null,
+      isScopedCoordinator: false,
     };
   } else {
     const resolved = await resolveWorkspaceAccess(context, args.parishId, {
@@ -960,6 +967,8 @@ export const createConversation = async (
         canManageParish: false,
         allowedClassIds: [],
         membershipId: null,
+        communityId: null,
+        isScopedCoordinator: false,
       };
     } else {
       access = resolved;

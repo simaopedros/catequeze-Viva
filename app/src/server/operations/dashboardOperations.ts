@@ -54,6 +54,8 @@ async function resolveMeetingClassScope(params: {
   isAdmin: boolean;
   /** Platform admin viewing one workspace: parish scope, never platform-wide. */
   workspaceScoped?: boolean;
+  /** Coordinator limited to a subset of classes (vice-coordination). */
+  scopedCoordinator?: boolean;
   roles: string[];
   myClassIds: string[];
   guardianHouseholdId: string | null;
@@ -65,6 +67,10 @@ async function resolveMeetingClassScope(params: {
 
   if (isAdmin) {
     return params.workspaceScoped ? { kind: "parish" } : { kind: "all" };
+  }
+
+  if (params.scopedCoordinator) {
+    return { kind: "classIds", classIds: myClassIds };
   }
 
   const hasCoordinator = roles.some((r) =>
@@ -233,6 +239,8 @@ export const getDashboardStats = async (
       canManageParish: true,
       allowedClassIds: "ALL",
       membershipId: null,
+      communityId: null,
+      isScopedCoordinator: false,
     };
   }
 
@@ -457,7 +465,14 @@ export const getDashboardStats = async (
       },
     },
   });
-  const myClassIds: string[] = myClassLinks.map((c: any) => c.classId);
+  let myClassIds: string[] = myClassLinks.map((c: any) => c.classId);
+
+  // Scoped community coordinator (vice): KPIs over the whole scope (community
+  // classes + explicitly linked classes), not only ClassCatechist links.
+  const scopedCoordinator = !!workspaceAccess?.isScopedCoordinator;
+  if (scopedCoordinator && workspaceAccess && workspaceAccess.allowedClassIds !== "ALL") {
+    myClassIds = [...new Set([...myClassIds, ...workspaceAccess.allowedClassIds])];
+  }
 
   const coordinatorParishIds = requestedWorkspace
     ? []
@@ -660,6 +675,7 @@ export const getDashboardStats = async (
   const meetingScope = await resolveMeetingClassScope({
     isAdmin,
     workspaceScoped: !!requestedWorkspace,
+    scopedCoordinator,
     roles,
     myClassIds,
     guardianHouseholdId,

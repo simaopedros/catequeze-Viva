@@ -5,6 +5,7 @@ import {
   requireWorkspaceAccess,
   isCoordinatorOrAbove,
   isCatechist,
+  catechumenWhereForAccess,
 } from './sharedScope';
 import { deleteDocumentFile } from '../storage/documentStorage';
 import { legacyTake } from './listCursor';
@@ -149,17 +150,12 @@ export const listCatechumens = async (
   if (!workspaceId) return useCursorPage ? { items: [], nextCursor: null } : [];
 
   const access = await requireWorkspaceAccess(context, workspaceId);
-  const parishId = access.workspaceId;
 
   if (access.isCoordinatorOrAbove || access.role === 'PASTORAL_VIEWER') {
+    // Full-parish roles keep the historical query; scoped community
+    // coordinators are limited to their classes / community households.
     const rows = await context.entities.CatechumenProfile.findMany({
-      where: buildWhere({
-        OR: [
-          { enrollments: { some: { class: { parishId } } } },
-          { household: { parishId } },
-          { parishId },
-        ],
-      }),
+      where: buildWhere(catechumenWhereForAccess(access)),
       orderBy,
       take,
       skip,

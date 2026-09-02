@@ -1,5 +1,5 @@
 import { HttpError } from 'wasp/server';
-import { requireWorkspaceAccess } from './sharedScope';
+import { requireWorkspaceAccess, classWhereForAccess } from './sharedScope';
 import {
   attendanceRate,
   emptyAggregate,
@@ -31,7 +31,10 @@ export const getReportsOverview = async (
     if (!access.isCoordinatorOrAbove && !context.user.isAdmin) {
       throw new HttpError(403, 'Apenas coordenadores podem aceder a relatorios.');
     }
-    whereClause = { parishId: access.workspaceId };
+    // Scoped community coordinators only report on their classes
+    whereClause = context.user.isAdmin
+      ? { parishId: access.workspaceId }
+      : classWhereForAccess(access);
   } else if (!context.user.isAdmin) {
     throw new HttpError(403, 'Apenas coordenadores podem aceder a relatorios.');
   }

@@ -627,7 +627,7 @@ action updateDiocese {
 
 query listParishMembers {
   fn: import { listParishMembers } from "@src/server/operations/memberOperations",
-  entities: [Membership, User, Community, Parish]
+  entities: [Membership, User, Community, Parish, ClassCatechist, CatechesisClass]
 }
 
 query getParishTeam {
@@ -672,12 +672,17 @@ query listFamilyPortalInvitations {
 
 action removeMembership {
   fn: import { removeMembership } from "@src/server/operations/memberOperations",
-  entities: [Membership, AuditLog, Parish]
+  entities: [Membership, AuditLog, Parish, ClassCatechist, CatechesisClass]
 }
 
 action updateMembershipRole {
   fn: import { updateMembershipRole } from "@src/server/operations/memberOperations",
-  entities: [Membership]
+  entities: [Membership, Community]
+}
+
+action setCoordinatorClasses {
+  fn: import { setCoordinatorClasses } from "@src/server/operations/memberOperations",
+  entities: [Membership, Parish, ClassCatechist, CatechesisClass, AuditLog]
 }
 
 action joinParish {
@@ -715,7 +720,7 @@ query getClassDetails {
 
 query listParishCatechists {
   fn: import { listParishCatechists } from "@src/server/operations/classOperations",
-  entities: [Membership, User, Parish]
+  entities: [Membership, User, Parish, ClassCatechist, CatechesisClass]
 }
 
 action createClass {

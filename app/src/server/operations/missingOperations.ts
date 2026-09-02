@@ -176,8 +176,11 @@ export const exportReport = async (
     : {};
   if (workspaceId && !context.user.isAdmin) {
     const access = await requireWorkspaceAccess(context, workspaceId);
-    if (!access.isCoordinatorOrAbove && access.role !== 'PASTORAL_VIEWER') {
-      if (!access.isCatechist) {
+    if (
+      (!access.isCoordinatorOrAbove && access.role !== 'PASTORAL_VIEWER') ||
+      access.isScopedCoordinator
+    ) {
+      if (!access.isCatechist && !access.isScopedCoordinator) {
         throw new HttpError(403, 'Apenas a equipe pastoral pode exportar relatórios.');
       }
       classScope = {
