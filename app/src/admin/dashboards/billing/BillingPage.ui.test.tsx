@@ -21,9 +21,7 @@ vi.mock("react-i18next", () => ({
 }));
 
 vi.mock("../../layout/DefaultLayout", () => ({
-  default: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
+  default: ({ children }: { children: unknown }) => <div>{children}</div>,
 }));
 
 vi.mock("../../../i18n/useLocale", () => ({
@@ -67,7 +65,7 @@ const licenses = [
 
 describe("Admin BillingPage — responsável da licença", () => {
   beforeEach(() => {
-    vi.mocked(useQuery).mockImplementation((query: unknown) => {
+    vi.mocked(useQuery).mockImplementation(((query: unknown) => {
       if (query === listAdminLicenses) {
         return {
           data: licenses,
@@ -85,7 +83,7 @@ describe("Admin BillingPage — responsável da licença", () => {
         error: null,
         refetch: vi.fn(),
       };
-    });
+    }) as typeof useQuery);
   });
 
   it("mostra o e-mail da pessoa responsável pelo plano", () => {
