@@ -175,7 +175,7 @@ async function handleCheckoutSessionCompleted(
       });
       userPhone = user?.phone;
     } catch (error) {
-      logger.warn("[webhook] Failed to fetch user phone for StartTrial", {
+      console.warn("[webhook] Failed to fetch user phone for StartTrial", {
         userId: session.client_reference_id,
         error: error instanceof Error ? error.message : String(error),
       });
@@ -219,7 +219,7 @@ async function handleCheckoutSessionCompleted(
     event_source_url: metadata.event_source_url || config.frontendUrl,
     user_data: {
       email: customerEmail,
-      phone: userPhone,
+      phone: userPhone ?? undefined,
       external_id: session.client_reference_id || undefined,
       fbp: metadata.fbp,
       fbc: metadata.fbc,
@@ -420,7 +420,7 @@ async function processPaidInvoice(
           await sendPurchaseToMeta({
             userId: user.id,
             email: customer?.email ?? undefined,
-            phone: user.phone,
+            phone: user.phone ?? undefined,
             eventId: purchaseEventId,
             planId: metadata.plan_id || paymentPlanId,
             planName: metadata.plan_name || prettyPaymentPlanName(paymentPlanId),
