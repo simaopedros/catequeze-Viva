@@ -1086,7 +1086,7 @@ action updateJourney {
 
 query listJourneyTemplates {
   fn: import { listJourneyTemplates } from "@src/server/operations/sacramentOperations",
-  entities: [SacramentalJourneyTemplate, Membership, Parish, Sacrament]
+  entities: [SacramentalJourneyTemplate, SacramentalMilestoneTemplate, Membership, Parish, Sacrament]
 }
 
 action createTemplate {

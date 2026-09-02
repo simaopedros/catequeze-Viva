@@ -4,6 +4,10 @@ import { requireAuth, getEffectiveParishRole, isCoordinatorOrAboveRole, getDioce
 import { ensureSacramentalJourneyForCatechumen } from '../sacramentHelpers';
 import { requireWorkspaceAccess } from './sharedScope';
 import { legacyTake } from './listCursor';
+import {
+  buildJourneyTemplateListWhere,
+  filterJourneyTemplatesByLocale,
+} from '../../shared/journeyTemplateLocale';
 
 /**
  * @deprecated Prefer resolveWorkspaceAccess for authorization.
@@ -516,40 +520,36 @@ export const listJourneyTemplates = async (
     sacrament: { select: { id: true, name: true } },
   };
 
-  const localeWhere = locale
-    ? { OR: [{ locale }, { locale: null }, { locale: '' }] }
-    : {};
+  const applyLocale = (rows: any[]) =>
+    locale ? filterJourneyTemplatesByLocale(rows, locale) : rows;
 
   if (context.user.isAdmin) {
     const templates = await context.entities.SacramentalJourneyTemplate.findMany({
-      where: localeWhere,
       include,
     });
-    return locale
-      ? templates.filter((t: any) => !t.locale || t.locale === locale || t.parishId)
-      : templates;
+    return applyLocale(templates);
   }
 
   const { parishIds } = await getEffectiveParishScope(context);
-  if (parishIds.length === 0) return [];
-  const parishes = await context.entities.Parish.findMany({
-    where: { id: { in: parishIds } },
-    select: { id: true, dioceseId: true, type: true },
-  });
+  const parishes =
+    parishIds.length === 0
+      ? []
+      : await context.entities.Parish.findMany({
+          where: { id: { in: parishIds } },
+          select: { id: true, dioceseId: true, type: true },
+        });
 
   const dioceseIds = [...new Set(parishes.map((p: any) => p.dioceseId).filter(Boolean))];
   const hasOnlyPersonal = parishes.length > 0 && parishes.every((p: any) => p.type === 'PERSONAL');
+  const where = buildJourneyTemplateListWhere({
+    isAdmin: false,
+    parishIds,
+    dioceseIds,
+    hasOnlyPersonal,
+  });
 
   const templates = await context.entities.SacramentalJourneyTemplate.findMany({
-    where: hasOnlyPersonal
-      ? { OR: [{ parishId: { in: parishIds } }, { parishId: null }] }
-      : {
-          OR: [
-            { parishId: { in: parishIds } },
-            { parish: { dioceseId: { in: dioceseIds } } },
-            { parishId: null },
-          ],
-        },
+    where,
     include,
   });
 
@@ -563,10 +563,7 @@ export const listJourneyTemplates = async (
     return score(a) - score(b);
   });
 
-  if (!locale) return templates;
-  return templates.filter(
-    (t: any) => !t.locale || t.locale === locale || Boolean(t.parishId),
-  );
+  return applyLocale(templates);
 };
 
 // ─── Template CRUD ────────────────────────────────────────────────────────────
@@ -615,6 +612,7 @@ export const createTemplate = async (
       description: args.description,
       sacramentId: args.sacramentId,
       parishId: parishId || null,
+      locale: context.user?.locale || 'pt-BR',
     },
   });
 

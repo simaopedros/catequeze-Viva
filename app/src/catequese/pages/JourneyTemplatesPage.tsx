@@ -48,7 +48,11 @@ export default function JourneyTemplatesPage() {
   const isDioceseAdmin = ["SUPER_ADMIN", "DIOCESE_ADMIN"].includes(userRole);
   const canManage = isCoordinator;
 
-  const { data: templates = [], isLoading } = useQuery(listJourneyTemplates, {
+  const {
+    data: templates = [],
+    isLoading,
+    error: templatesError,
+  } = useQuery(listJourneyTemplates, {
     locale: currentLocale,
   } as any);
 
@@ -276,7 +280,17 @@ export default function JourneyTemplatesPage() {
         </AppPanel>
       )}
 
-      {templates.length === 0 ? (
+      {templatesError ? (
+        <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
+          <ClipboardList className="mb-4 h-10 w-10 text-brand-ink" />
+          <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
+            {t("templates.error_create")}
+          </AppDisplayTitle>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {(templatesError as Error).message || t("templates.error_restart")}
+          </p>
+        </div>
+      ) : templates.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
           <ClipboardList className="mb-4 h-10 w-10 text-brand-ink" />
           <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
