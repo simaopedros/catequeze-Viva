@@ -425,6 +425,12 @@ export function buildLeadDataLayerEvent(
 export function buildStartTrialDataLayerEvent(
   payload: StartTrialPayload,
 ): Record<string, unknown> {
+  // Meta requires value > 0 for StartTrial — never send 0 or omit.
+  const trialValue = payload.value && payload.value > 0 ? payload.value : undefined;
+  if (!trialValue) {
+    console.warn("[meta-pixel] StartTrial missing value > 0 — event will be flagged by Meta", payload);
+  }
+  
   return cleanObject({
     meta_event_name: "StartTrial",
     event_id: payload.event_id,
@@ -432,7 +438,7 @@ export function buildStartTrialDataLayerEvent(
     content_category: payload.content_category ?? META_CONTENT_CATEGORY,
     content_ids: payload.content_ids,
     plan_id: payload.plan_id,
-    value: payload.value ?? 0,
+    value: trialValue,
     currency: payload.currency ?? detectCurrency(),
     trial_days: payload.trial_days ?? SUBSCRIPTION_TRIAL_DAYS,
   });

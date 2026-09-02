@@ -114,8 +114,9 @@ Quando deploy em produção, **remova** ou comente `META_TEST_EVENT_CODE` para q
 
 ### StartTrial
 - **Quando**: Trial de 7 dias começa (primeira criação de assinatura no Stripe com trial)
-- **Browser**: `/obrigado?session_id=...` → `StartTrial`
+- **Browser**: `/obrigado?session_id=...` → `StartTrial` com `value: 9.90` (Plano Catequista monthly)
 - **CAPI**: Enviado no webhook `checkout.session.completed` quando `subscription.status === 'trialing'`
+- **⚠️ Importante**: Meta **requer** `value > 0` no StartTrial (valor mensal do plano, ex: 9.90 BRL). Nunca enviar `value: 0` ou omitir.
 
 ### Purchase ⭐ (NOVO)
 - **Quando**: Invoice paga (primeiro pagamento de assinatura ou renovação)
@@ -152,6 +153,30 @@ app/src/payment/meta/
 app/src/payment/stripe/
 └── webhook.ts                   # Integra Purchase CAPI em invoice.paid
 ```
+
+## Meta Events Manager Diagnostics Fixes
+
+### StartTrial: missing value
+
+**Problema**: Meta Events Manager reporta "100% affected — missing value" no evento StartTrial.
+
+**Causa**: `value: 0` ou `value` omitido no browser pixel ou CAPI.
+
+**Solução Implementada**:
+- ✅ Browser pixel (`CheckoutResultPage.tsx`): Usa `PLANS.single.prices.monthlyCents / 100` = 9.90 BRL
+- ✅ CAPI (`webhook.ts`): Usa preço da subscription do Stripe ou fallback 9.90 BRL
+- ✅ Validação em `metaTracking.ts`: Console warning se `value <= 0` ou omitido
+
+**Verificar**:
+```javascript
+// Browser console após /obrigado:
+[meta-pixel] fbq track StartTrial { value: 9.9, currency: "BRL", trial_days: 7 }
+
+// Logs do servidor webhook checkout.session.completed:
+[meta-capi] sending event { eventName: "StartTrial", value: 9.9 }
+```
+
+**⚠️ Nunca enviar StartTrial com `value: 0` ou sem value** — Meta rejeita e marca como "affected".
 
 ## Troubleshooting
 

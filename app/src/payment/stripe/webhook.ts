@@ -179,6 +179,12 @@ async function handleCheckoutSessionCompleted(
     return;
   }
 
+  // Meta requires StartTrial value > 0 (use plan monthly price from metadata or subscription).
+  const paymentPlanId = getPaymentPlanIdFromSubscription(subscription);
+  const planValue = metadata.value 
+    ? Number(metadata.value) 
+    : Number((getSubscriptionPriceMonthlyEquivalent(subscription) / 100).toFixed(2));
+
   await deliverMetaTrackedEvent(trackedEventDelegate, {
     provider: META_PROVIDER,
     eventName: "StartTrial",
@@ -202,8 +208,8 @@ async function handleCheckoutSessionCompleted(
     },
     custom_data: {
       currency: metadata.currency || "BRL",
-      value: 0,
-      content_name: metadata.plan_name || prettyPaymentPlanName(getPaymentPlanIdFromSubscription(subscription)),
+      value: planValue,
+      content_name: metadata.plan_name || prettyPaymentPlanName(paymentPlanId),
       content_category: "subscription",
       content_type: "product",
       content_ids: metadata.plan_id ? [metadata.plan_id] : undefined,
@@ -873,6 +879,25 @@ function getSubscriptionPriceId(
   }
 
   return priceId;
+}
+
+function getSubscriptionPriceMonthlyEquivalent(
+  subscription: Stripe.Subscription,
+): number {
+  const item = subscription.items.data[0];
+  if (!item) {
+    return 990; // fallback: Plano Catequista monthly (R$ 9.90)
+  }
+
+  const price = item.price;
+  const unitAmount = price.unit_amount ?? 0;
+  
+  // If annual, divide by 12 for monthly equivalent
+  if (price.recurring?.interval === "year") {
+    return Math.round(unitAmount / 12);
+  }
+
+  return unitAmount;
 }
 
 function getLegacyInvoiceLinePriceId(
