@@ -1,4 +1,4 @@
-import { LayoutDashboard, Settings, Shield } from 'lucide-react';
+import { LayoutDashboard, Settings, Shield, Mail } from 'lucide-react';
 import { routes } from 'wasp/client/router';
 
 export const userMenuItems = [
@@ -6,6 +6,13 @@ export const userMenuItems = [
     labelKey: 'catechesis_dashboard',
     to: routes.AppDashboardRoute.to,
     icon: LayoutDashboard,
+    isAdminOnly: false,
+    isAuthRequired: true,
+  },
+  {
+    labelKey: 'support_inbox',
+    to: routes.AppSupportRoute.to,
+    icon: Mail,
     isAdminOnly: false,
     isAuthRequired: true,
   },

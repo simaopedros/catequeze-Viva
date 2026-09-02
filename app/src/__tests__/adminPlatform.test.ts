@@ -34,6 +34,13 @@ vi.mock("../server/auth/helpers", () => ({
       throw error;
     }
   },
+  requireAuth: (user: any) => {
+    if (!user) {
+      const error: any = new Error("Auth required");
+      error.statusCode = 401;
+      throw error;
+    }
+  },
   writeAuditLog: vi.fn().mockResolvedValue(undefined),
   getDioceseParishIds: async () => [],
 }));
@@ -96,7 +103,7 @@ import {
   extendTenantTrial,
   setComplimentaryPlan,
 } from "../server/operations/billingAdminOperations";
-import { replyToContactMessage } from "../server/operations/supportOperations";
+import { replyToContactMessage, getMySupportMessages } from "../server/operations/supportOperations";
 import { listWorkspaces } from "../server/operations/workspaceOperations";
 import { updateIsUserAdminById } from "../user/operations";
 import { getSystemHealth } from "../server/operations/systemOperations";
@@ -356,7 +363,7 @@ describe("billing admin trial / complimentary", () => {
 });
 
 describe("replyToContactMessage", () => {
-  it("sends email and sets repliedAt / isRead", async () => {
+  it("sends email, stores replyBody and notifies the matching user", async () => {
     const now = new Date();
     const ContactFormMessage = {
       findUnique: vi.fn().mockResolvedValue({
@@ -364,26 +371,104 @@ describe("replyToContactMessage", () => {
         email: "a@b.com",
         name: "Ana",
         content: "Olá",
+        userId: null,
       }),
       update: vi.fn().mockResolvedValue({
         id: "msg-1",
         isRead: true,
         repliedAt: now,
+        replyBody: "Obrigado pelo contacto.",
       }),
     };
+    const User = {
+      findFirst: vi.fn().mockResolvedValue({ id: "user-1", email: "a@b.com" }),
+      findUnique: vi.fn(),
+    };
+    const Notification = { create: vi.fn().mockResolvedValue({ id: "n1" }) };
+    vi.mocked(emailSender.send).mockResolvedValue(undefined as any);
     const result = await replyToContactMessage(
       { id: "msg-1", body: "Obrigado pelo contacto." },
-      context(ADMIN, { ContactFormMessage }),
+      context(ADMIN, { ContactFormMessage, User, Notification }),
     );
     expect(emailSender.send).toHaveBeenCalledWith(
       expect.objectContaining({ to: "a@b.com" }),
     );
     expect(ContactFormMessage.update).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ isRead: true }),
+        data: expect.objectContaining({
+          isRead: true,
+          replyBody: "Obrigado pelo contacto.",
+        }),
+      }),
+    );
+    expect(Notification.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          userId: "user-1",
+          type: "SYSTEM",
+          link: "/app/suporte",
+        }),
       }),
     );
     expect(result.repliedAt).toBeTruthy();
+    expect(result.emailSent).toBe(true);
+    expect(result.notified).toBe(true);
+  });
+
+  it("keeps the in-app reply if the email sender fails", async () => {
+    vi.mocked(emailSender.send).mockRejectedValueOnce(new Error("SMTP down"));
+    const ContactFormMessage = {
+      findUnique: vi.fn().mockResolvedValue({
+        id: "msg-1",
+        email: "a@b.com",
+        name: "Ana",
+        content: "Olá",
+        userId: "user-1",
+      }),
+      update: vi.fn().mockResolvedValue({
+        id: "msg-1",
+        isRead: true,
+        repliedAt: new Date(),
+        replyBody: "Segue a resposta.",
+      }),
+    };
+    const User = {
+      findUnique: vi
+        .fn()
+        .mockResolvedValue({ id: "user-1", email: "a@b.com" }),
+    };
+    const Notification = { create: vi.fn().mockResolvedValue({ id: "n1" }) };
+    const result = await replyToContactMessage(
+      { id: "msg-1", body: "Segue a resposta." },
+      context(ADMIN, { ContactFormMessage, User, Notification }),
+    );
+    expect(result.emailSent).toBe(false);
+    expect(result.notified).toBe(true);
+    expect(ContactFormMessage.update).toHaveBeenCalled();
+  });
+});
+
+describe("getMySupportMessages", () => {
+  it("returns messages for the signed-in user", async () => {
+    const ContactFormMessage = {
+      findMany: vi.fn().mockResolvedValue([
+        { id: "msg-1", content: "Olá", replyBody: "Ok", repliedAt: new Date() },
+      ]),
+    };
+    const result = await getMySupportMessages(
+      undefined,
+      context({ id: "user-1", email: "a@b.com", isAdmin: false }, {
+        ContactFormMessage,
+      }),
+    );
+    expect(ContactFormMessage.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          OR: expect.arrayContaining([{ userId: "user-1" }]),
+        }),
+      }),
+    );
+    expect(result).toHaveLength(1);
   });
 });
 

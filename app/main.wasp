@@ -525,6 +525,12 @@ page AppSettingsPage {
   component: import SettingsPage from "@src/catequese/pages/SettingsPage"
 }
 
+route AppSupportRoute { path: "/app/suporte", to: AppSupportPage }
+page AppSupportPage {
+  authRequired: true,
+  component: import MySupportPage from "@src/catequese/pages/MySupportPage"
+}
+
 route AppBillingRoute { path: "/app/billing", to: AppBillingPage }
 page AppBillingPage {
   authRequired: true,
@@ -2247,7 +2253,7 @@ query getContactUnreadCount {
 
 action submitContactMessage {
   fn: import { submitContactMessage } from "@src/server/operations/supportOperations",
-  entities: [ContactFormMessage]
+  entities: [ContactFormMessage, User]
 }
 
 action markContactMessageRead {
@@ -2255,9 +2261,15 @@ action markContactMessageRead {
   entities: [ContactFormMessage]
 }
 
+query getMySupportMessages {
+  fn: import { getMySupportMessages } from "@src/server/operations/supportOperations",
+  entities: [ContactFormMessage],
+  auth: true
+}
+
 action replyToContactMessage {
   fn: import { replyToContactMessage } from "@src/server/operations/supportOperations",
-  entities: [ContactFormMessage, AuditLog]
+  entities: [ContactFormMessage, AuditLog, User, Notification]
 }
 
 query getAuditLogs {

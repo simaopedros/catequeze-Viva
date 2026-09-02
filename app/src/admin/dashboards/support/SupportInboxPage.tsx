@@ -38,10 +38,13 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
     setSending(true);
     setError("");
     try {
-      await replyToContactMessage({ id, body: replyBody });
+      const result = await replyToContactMessage({ id, body: replyBody });
       setReplyFor(null);
       setReplyBody("");
-      refetch();
+      await refetch();
+      if (result && (result as any).emailSent === false) {
+        setError(t("pages.support.email_failed"));
+      }
     } catch (err: any) {
       setError(err?.message || t("pages.support.reply_error"));
     } finally {
@@ -116,6 +119,16 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
                     <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                       {msg.content}
                     </p>
+                    {msg.replyBody && (
+                      <div className="mt-3 rounded-sm border-l-[3px] border-[#D39A2B] bg-muted/40 px-3 py-2">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                          {t("pages.support.sent_reply")}
+                        </p>
+                        <p className="mt-1 whitespace-pre-wrap text-sm text-[#071A2D]">
+                          {msg.replyBody}
+                        </p>
+                      </div>
+                    )}
                     <p className="text-xs text-muted-foreground/60 mt-2">
                       {formatDateTime(msg.createdAt, currentLocale)}
                     </p>

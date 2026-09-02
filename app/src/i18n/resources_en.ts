@@ -408,11 +408,13 @@ export const admin_en = {
         "new": "New",
         "replied": "Replied",
         "reply": "Reply",
-        "reply_placeholder": "Write the email reply…",
+        "reply_placeholder": "Write the reply. The user sees it in their inbox and receives an email.",
         "send": "Send",
         "sending": "Sending…",
         "mark_read": "Mark as read",
-        "reply_error": "Could not send the reply."
+        "reply_error": "Could not send the reply.",
+        "sent_reply": "Reply sent",
+        "email_failed": "The reply is in the user's inbox, but the email could not be sent."
       },
       "audit": {
         "title": "Audit",
@@ -2187,6 +2189,15 @@ export const common_en = {
     "leave_anyway": "Leave without saving",
     "more_actions": "More actions",
     "clear": "Clear",
+    "support_inbox": {
+      "title": "Support inbox",
+      "subtitle": "Team replies appear here and are also sent by email.",
+      "your_message": "Your message",
+      "our_reply": "Reply from Catequese Viva",
+      "waiting": "Waiting for a reply.",
+      "empty_title": "No support messages",
+      "empty_desc": "When the team replies to a contact from you, the conversation appears here."
+    },
     "validation": {
       "first_name_required": "Enter the first name.",
       "last_name_required": "Enter the last name.",
@@ -5338,6 +5349,7 @@ export const topbar_en = {
     "noParish": "No parish",
     "requiresPaidPlan": "Requires paid plan",
     "catechesis_dashboard": "Catechesis Dashboard",
+    "support_inbox": "Support inbox",
     "account_settings": "Account Settings",
     "admin_panel": "Administration Panel",
     "sign_out": "Sign out",

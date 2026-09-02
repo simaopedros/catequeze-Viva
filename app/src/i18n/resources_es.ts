@@ -408,11 +408,13 @@ export const admin_es = {
         "new": "Nuevo",
         "replied": "Respondido",
         "reply": "Responder",
-        "reply_placeholder": "Escriba la respuesta por correo…",
+        "reply_placeholder": "Escriba la respuesta. El usuario la ve en su central y también recibe un correo.",
         "send": "Enviar",
         "sending": "Enviando…",
         "mark_read": "Marcar como leído",
-        "reply_error": "No fue posible enviar la respuesta."
+        "reply_error": "No fue posible enviar la respuesta.",
+        "sent_reply": "Respuesta enviada",
+        "email_failed": "La respuesta quedó en la central del usuario, pero el correo no se envió."
       },
       "audit": {
         "title": "Auditoría",
@@ -2187,6 +2189,15 @@ export const common_es = {
     "leave_anyway": "Salir sin guardar",
     "more_actions": "Más acciones",
     "clear": "Limpiar",
+    "support_inbox": {
+      "title": "Central de soporte",
+      "subtitle": "Las respuestas del equipo aparecen aquí y también se envían por correo.",
+      "your_message": "Tu mensaje",
+      "our_reply": "Respuesta de Catequese Viva",
+      "waiting": "Aún a la espera de respuesta.",
+      "empty_title": "Sin mensajes de soporte",
+      "empty_desc": "Cuando el equipo responda a un contacto tuyo, la conversación aparece aquí."
+    },
     "validation": {
       "first_name_required": "Indica el nombre.",
       "last_name_required": "Indica el apellido.",
@@ -5338,6 +5349,7 @@ export const topbar_es = {
     "noParish": "Sin parroquia",
     "requiresPaidPlan": "Requiere plan de pago",
     "catechesis_dashboard": "Panel de Catequesis",
+    "support_inbox": "Central de soporte",
     "account_settings": "Configuración de la Cuenta",
     "admin_panel": "Panel de Administración",
     "sign_out": "Cerrar sesión",

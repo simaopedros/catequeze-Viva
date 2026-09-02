@@ -408,11 +408,13 @@ export const admin_pt_BR_app = {
         "new": "Nova",
         "replied": "Respondida",
         "reply": "Responder",
-        "reply_placeholder": "Escreva a resposta por email…",
+        "reply_placeholder": "Escreva a resposta. O utilizador vê na central e recebe por email.",
         "send": "Enviar",
         "sending": "A enviar…",
         "mark_read": "Marcar como lida",
-        "reply_error": "Não foi possível enviar a resposta."
+        "reply_error": "Não foi possível enviar a resposta.",
+        "sent_reply": "Resposta enviada",
+        "email_failed": "A resposta ficou na central do utilizador, mas o email não foi enviado."
       },
       "audit": {
         "title": "Auditoria",

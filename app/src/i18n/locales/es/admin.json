@@ -299,11 +299,13 @@
       "new": "Nuevo",
       "replied": "Respondido",
       "reply": "Responder",
-      "reply_placeholder": "Escriba la respuesta por correo…",
+      "reply_placeholder": "Escriba la respuesta. El usuario la ve en su central y también recibe un correo.",
       "send": "Enviar",
       "sending": "Enviando…",
       "mark_read": "Marcar como leído",
-      "reply_error": "No fue posible enviar la respuesta."
+      "reply_error": "No fue posible enviar la respuesta.",
+      "sent_reply": "Respuesta enviada",
+      "email_failed": "La respuesta quedó en la central del usuario, pero el correo no se envió."
     },
     "audit": {
       "title": "Auditoría",

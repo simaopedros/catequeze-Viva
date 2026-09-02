@@ -299,11 +299,13 @@
       "new": "New",
       "replied": "Replied",
       "reply": "Reply",
-      "reply_placeholder": "Write the email reply…",
+      "reply_placeholder": "Write the reply. The user sees it in their inbox and receives an email.",
       "send": "Send",
       "sending": "Sending…",
       "mark_read": "Mark as read",
-      "reply_error": "Could not send the reply."
+      "reply_error": "Could not send the reply.",
+      "sent_reply": "Reply sent",
+      "email_failed": "The reply is in the user's inbox, but the email could not be sent."
     },
     "audit": {
       "title": "Audit",
