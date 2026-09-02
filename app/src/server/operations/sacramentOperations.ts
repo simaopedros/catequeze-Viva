@@ -539,7 +539,13 @@ export const listJourneyTemplates = async (
           select: { id: true, dioceseId: true, type: true },
         });
 
-  const dioceseIds = [...new Set(parishes.map((p: any) => p.dioceseId).filter(Boolean))];
+  const dioceseIds: string[] = [
+    ...new Set(
+      parishes
+        .map((p: any) => p.dioceseId)
+        .filter((id: unknown): id is string => typeof id === 'string' && id.length > 0),
+    ),
+  ];
   const hasOnlyPersonal = parishes.length > 0 && parishes.every((p: any) => p.type === 'PERSONAL');
   const where = buildJourneyTemplateListWhere({
     isAdmin: false,
