@@ -24,6 +24,8 @@ const PARISH_SANTA_MARIA_ID = 'bbbbbbbb-2222-4bbb-b222-bbbbbbbbbbbb';
 const PARISH_SAN_JOAO_ID = 'eeeeeeee-5555-4eee-e555-eeeeeeeeeeee'; // Paróquia Rural Sem Diocese
 
 const COMMUNITY_SAO_JOSE_ID = 'cccccccc-3333-4ccc-c333-cccccccccccc';
+// Segunda comunidade de São José: fora do escopo do coordenador de comunidade
+const COMMUNITY_SAO_JOSE_CAPELA_ID = 'cccccccc-3333-4ccc-c334-cccccccccccc';
 const COMMUNITY_SANTA_MARIA_ID = 'dddddddd-4444-4ddd-d444-dddddddddddd';
 const COMMUNITY_SAN_JOAO_ID = 'ffffffff-6666-4fff-f666-ffffffffffff';
 
@@ -175,12 +177,15 @@ async function seed() {
     data: { id: COMMUNITY_SAO_JOSE_ID, name: 'Comunidade São João Batista (TESTE)', parishId: PARISH_SAO_JOSE_ID, type: 'URBAN_COMMUNITY' }
   });
   await p.community.create({
+    data: { id: COMMUNITY_SAO_JOSE_CAPELA_ID, name: 'Capela Santa Rita (TESTE)', parishId: PARISH_SAO_JOSE_ID, type: 'CHAPEL' }
+  });
+  await p.community.create({
     data: { id: COMMUNITY_SANTA_MARIA_ID, name: 'Comunidade N.S. Aparecida (TESTE)', parishId: PARISH_SANTA_MARIA_ID, type: 'URBAN_COMMUNITY' }
   });
   await p.community.create({
     data: { id: COMMUNITY_SAN_JOAO_ID, name: 'Capela Divino Espírito Santo (TESTE)', parishId: PARISH_SAN_JOAO_ID, type: 'CHAPEL' }
   });
-  console.log('✅ 3 Comunidades criadas');
+  console.log('✅ 4 Comunidades criadas');
 
   // ═══ 4. Create Stages ═══
   const yearId = 'test-year-00000001';
@@ -308,16 +313,19 @@ async function seed() {
   const classInfantilId = 'test-class-infantil-001';
   const classEucaristiaId = 'test-class-eucaristia-001';
   const classSanJoaoId = 'test-class-sanjoao-001';
+  // Turma de São José numa comunidade diferente (fora do escopo da vice-coordenação)
+  const classCapelaId = 'test-class-capela-001';
 
   await p.catechesisClass.createMany({
     data: [
       { id: classCrismaId, name: 'Turma Crisma 2026', parishId: PARISH_SAO_JOSE_ID, communityId: COMMUNITY_SAO_JOSE_ID, stageId: stageId2, sacramentId: sacramentoCrismaId, status: 'ACTIVE', maxCapacity: 30, dayOfWeek: '3', startTime: '19:00', endTime: '20:30' },
       { id: classInfantilId, name: 'Turma Infantil 2026', parishId: PARISH_SAO_JOSE_ID, communityId: COMMUNITY_SAO_JOSE_ID, stageId: stageId1, status: 'ACTIVE', maxCapacity: 20, dayOfWeek: '6', startTime: '09:00', endTime: '10:30' },
       { id: classEucaristiaId, name: 'Turma Eucaristia 2026', parishId: PARISH_SANTA_MARIA_ID, communityId: COMMUNITY_SANTA_MARIA_ID, stageId: stageId3, sacramentId: sacramentoEucaristiaId, status: 'ACTIVE', maxCapacity: 15, dayOfWeek: '5', startTime: '14:00', endTime: '15:30' },
-      { id: classSanJoaoId, name: 'Turma Rural 2026', parishId: PARISH_SAN_JOAO_ID, communityId: COMMUNITY_SAN_JOAO_ID, stageId: stageId3, status: 'ACTIVE', maxCapacity: 10, dayOfWeek: '7', startTime: '08:00', endTime: '09:30' }
+      { id: classSanJoaoId, name: 'Turma Rural 2026', parishId: PARISH_SAN_JOAO_ID, communityId: COMMUNITY_SAN_JOAO_ID, stageId: stageId3, status: 'ACTIVE', maxCapacity: 10, dayOfWeek: '7', startTime: '08:00', endTime: '09:30' },
+      { id: classCapelaId, name: 'Turma Capela 2026', parishId: PARISH_SAO_JOSE_ID, communityId: COMMUNITY_SAO_JOSE_CAPELA_ID, stageId: stageId1, status: 'ACTIVE', maxCapacity: 20, dayOfWeek: '6', startTime: '14:00', endTime: '15:30' }
     ]
   });
-  console.log('✅ 4 Turmas criadas (2 em São José, 1 em Santa Maria, 1 em São João)');
+  console.log('✅ 5 Turmas criadas (3 em São José, 1 em Santa Maria, 1 em São João)');
 
   // ═══ 7. Create Users ═══
   const users = [
@@ -641,8 +649,8 @@ async function seed() {
   console.log(`    - São José (Plano PARISH Pago Direto)`);
   console.log(`    - Santa Maria (Plano CATECHIST_FREE - Herança DIOCESE Ativa = Ilimitado)`);
   console.log(`    - São João (Plano CATECHIST_FREE - Sem Diocese = Limitada a 1 turma)`);
-  console.log(`  Comunidades: 3`);
-  console.log(`  Turmas: 4 (Crisma, Infantil, Eucaristia, Rural)`);
+  console.log(`  Comunidades: 4`);
+  console.log(`  Turmas: 5 (Crisma, Infantil, Capela, Eucaristia, Rural)`);
   console.log(`  Catequizandos: ${catechumens.length}`);
   console.log(`  Famílias: 4`);
   console.log(`  Matrículas: ${enrollmentData.length}`);
