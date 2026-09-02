@@ -215,7 +215,7 @@ describe("getSystemHealth credits", () => {
       DailyStats: { findMany: vi.fn().mockResolvedValue([]) },
       Logs: { findMany: vi.fn().mockResolvedValue([]) },
       DailyAiUsage: {
-        aggregate: vi.fn().mockResolvedValue({ _sum: { creditsUsed: 0 } }),
+        aggregate: vi.fn().mockResolvedValue({ _sum: { count: 0 } }),
       },
       UserAiCredits: { count: vi.fn().mockResolvedValue(4) },
     };
@@ -223,6 +223,9 @@ describe("getSystemHealth credits", () => {
     expect(entities.UserAiCredits.count).toHaveBeenCalledWith({
       where: { creditsLeft: { gt: 0 } },
     });
+    expect(entities.DailyAiUsage.aggregate).toHaveBeenCalledWith(
+      expect.objectContaining({ _sum: { count: true } }),
+    );
     expect(result.usersWithCredits).toBe(4);
   });
 });

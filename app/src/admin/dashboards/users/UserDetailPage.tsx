@@ -383,7 +383,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                 >
                   <span>{formatDate(d.date, currentLocale)}</span>
                   <span className="font-semibold tabular-nums tracking-tight text-[#071A2D]">
-                    {t("pages.user.credits_value", { count: d.creditsUsed })}
+                    {t("pages.user.credits_value", { count: d.count })}
                   </span>
                 </div>
               ))}

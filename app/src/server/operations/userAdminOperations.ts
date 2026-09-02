@@ -66,7 +66,7 @@ export const getUserAdminDetail = async (
         where: { userId: args.id },
         orderBy: { date: "desc" },
         take: 30,
-        select: { id: true, date: true, creditsUsed: true },
+        select: { id: true, date: true, count: true },
       }),
       context.entities.UserAiCredits.findUnique({
         where: { userId: args.id },
