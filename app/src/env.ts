@@ -26,6 +26,8 @@ export const operationalEnvSchema = z.object({
 // with `import { env } from 'wasp/server'` instead of using `process.env` directly.
 // https://wasp.sh/docs/project/env-vars#custom-env-var-validations
 //
+// Plausible/GA env schemas are optional placeholders. Daily stats read
+// first-party Postgres data and do not call those providers.
 // If you remove a feature (e.g. an analytics or payment provider), make sure
 // to also remove its env schema import and `.merge(...)` call below.
 export const serverEnvValidationSchema = defineEnvValidationSchema(

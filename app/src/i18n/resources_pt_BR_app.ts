@@ -242,10 +242,10 @@ export const admin_pt_BR_app = {
         "col_date": "Data",
         "col_users": "Usuários",
         "col_paid": "Pagos",
-        "col_views": "Visualizações",
+        "col_views": "Atividade",
         "scheduled_jobs": "Tarefas de manutenção (execução diária)",
         "jobs": {
-          "dailyStats": "Métricas diárias de tráfego e receita",
+          "dailyStats": "Métricas diárias de usuários, atividade e receita",
           "aiCreditsReset": "Reset mensal de créditos de assistência editorial",
           "aiCacheCleanup": "Limpeza do cache editorial",
           "subscriptionExpiration": "Expiração de trials e assinaturas",

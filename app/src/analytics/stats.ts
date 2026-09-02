@@ -1,11 +1,12 @@
 import { type DailyStats } from "wasp/entities";
 import {
-  getDailyPageViews,
-  getSources,
-} from "./providers/plausibleAnalyticsUtils";
-// import { getDailyPageViews, getSources } from './providers/googleAnalyticsUtils';
+  getFirstPartyTraffic,
+  startOfUtcDay,
+  type FirstPartyTraffic,
+} from "./providers/firstPartyAnalyticsUtils";
 import { paymentProcessor } from "../payment/paymentProcessor";
 import { SubscriptionStatus } from "../payment/plans";
+import { logger } from "../server/logger";
 
 export type DailyStatsProps = {
   dailyStats?: DailyStats;
@@ -13,10 +14,14 @@ export type DailyStatsProps = {
   isLoading?: boolean;
 };
 
-export const calculateDailyStats = async (_args: unknown, context: any) => {
+const EMPTY_TRAFFIC: FirstPartyTraffic = {
+  totalViews: 0,
+  prevDayViewsChangePercent: "0",
+  sources: [],
+};
 
-  const nowUTC = new Date(Date.now());
-  nowUTC.setUTCHours(0, 0, 0, 0);
+export const calculateDailyStats = async (_args: unknown, context: any) => {
+  const nowUTC = startOfUtcDay(new Date());
 
   const yesterdayUTC = new Date(nowUTC);
   yesterdayUTC.setUTCDate(yesterdayUTC.getUTCDate() - 1);
@@ -46,9 +51,25 @@ export const calculateDailyStats = async (_args: unknown, context: any) => {
       paidUserDelta -= yesterdaysStats.paidUserCount;
     }
 
-    const totalRevenue = await paymentProcessor.fetchTotalRevenue();
+    let totalRevenue = 0;
+    try {
+      totalRevenue = await paymentProcessor.fetchTotalRevenue();
+    } catch (error: any) {
+      logger.warn("[dailyStats] Stripe revenue unavailable", {
+        error: error?.message ?? String(error),
+      });
+    }
 
-    const { totalViews, prevDayViewsChangePercent } = await getDailyPageViews();
+    let traffic = EMPTY_TRAFFIC;
+    try {
+      traffic = await getFirstPartyTraffic(context, nowUTC);
+    } catch (error: any) {
+      logger.warn("[dailyStats] First-party traffic unavailable", {
+        error: error?.message ?? String(error),
+      });
+    }
+
+    const { totalViews, prevDayViewsChangePercent, sources } = traffic;
 
     let dailyStats = await context.entities.DailyStats.findUnique({
       where: {
@@ -87,7 +108,6 @@ export const calculateDailyStats = async (_args: unknown, context: any) => {
         },
       });
     }
-    const sources = await getSources();
 
     for (const source of sources) {
       let visitors = source.visitors;
@@ -114,6 +134,7 @@ export const calculateDailyStats = async (_args: unknown, context: any) => {
     }
 
     console.table({ dailyStats });
+    return dailyStats;
   } catch (error: any) {
     console.error("Error calculating daily stats: ", error);
     await context.entities.Logs.create({
