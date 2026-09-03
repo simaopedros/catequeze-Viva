@@ -467,33 +467,17 @@ export async function assertCanAddCatechist(
 
 // ─── Parish creation ────────────────────────────────────────────────────────
 
-export async function assertCanCreateParish(
+/** Soft-limit code: UI can offer the 7-day parish trial instead of trapping the user. */
+export const PARISH_TRIAL_AVAILABLE_PREFIX = 'LIMIT:PARISH_TRIAL_AVAILABLE:';
+
+async function countOwnedNonInstitutionalParishes(
   context: any,
-  opts?: { dioceseId?: string | null },
-): Promise<void> {
-  if (!context.user) throw new HttpError(401);
-
-  const coverage = await resolveNewParishBilling(context, { dioceseId: opts?.dioceseId ?? null });
-  if (coverage.skip || isInstPlan(coverage.plan)) return;
-
-  // Fetch fresh user from DB — context.user may be stale (cached at login)
-  const freshUser = await context.entities.User.findUnique({
-    where: { id: context.user.id },
-    select: { subscriptionStatus: true, subscriptionPlan: true },
-  });
-
-  const subscriptionActive = isSubscriptionActiveLike(freshUser?.subscriptionStatus);
-  const plan = subscriptionActive
-    ? freshUser?.subscriptionPlan || 'catechist_free'
-    : 'catechist_free';
-
-  const limits = await catalogLimits(context, plan);
-  if (limits.maxParishes === null) return;
-
-  const ownedParishes = await context.entities.Parish.count({
+  userId: string,
+): Promise<number> {
+  return context.entities.Parish.count({
     where: {
-      ownerId: context.user.id,
-      type: { not: "PERSONAL" },
+      ownerId: userId,
+      type: { not: 'PERSONAL' },
       dioceseId: null,
       OR: [
         { billing: { is: null } },
@@ -501,8 +485,73 @@ export async function assertCanCreateParish(
       ],
     },
   });
+}
+
+/**
+ * Enforce parish-creation limits.
+ *
+ * - Institutional umbrella / diocese coverage → allow
+ * - `startTrial: true` → use the no-card parish trial entitlements (Single for 7 days)
+ * - Otherwise heal personal product trial, then apply personal plan limits
+ * - If still blocked but a parish trial is available, throw PARISH_TRIAL_AVAILABLE
+ *   so the client can offer "Começar 7 dias grátis" instead of a dead end
+ */
+export async function assertCanCreateParish(
+  context: any,
+  opts?: { dioceseId?: string | null; startTrial?: boolean },
+): Promise<void> {
+  if (!context.user) throw new HttpError(401);
+
+  const coverage = await resolveNewParishBilling(context, {
+    dioceseId: opts?.dioceseId ?? null,
+  });
+  if (coverage.skip || isInstPlan(coverage.plan)) return;
+
+  const ownedParishes = await countOwnedNonInstitutionalParishes(
+    context,
+    context.user.id,
+  );
+
+  const trialCoverageAvailable =
+    !coverage.skip && coverage.status === 'TRIAL' && !!coverage.plan;
+
+  // Explicit consent to start the 7-day parish trial (onboarding / create UI).
+  if (opts?.startTrial && trialCoverageAvailable) {
+    await ensureProductTrial(context, context.user.id).catch(() => null);
+    const trialLimits = await catalogLimits(context, coverage.plan);
+    if (trialLimits.maxParishes === null) return;
+    if (ownedParishes >= trialLimits.maxParishes) {
+      throw new HttpError(
+        403,
+        buildLimitMessage(
+          'parish_limit',
+          coverage.plan,
+          ownedParishes,
+          trialLimits.maxParishes,
+        ),
+      );
+    }
+    return;
+  }
+
+  // Heal personal product trial so "trialing" is not treated as free sentinel
+  // (same pattern as assertCanCreateClass for PERSONAL workspaces).
+  const freshUser = await ensureProductTrial(context, context.user.id);
+  const plan = getPersonalPlanId(freshUser);
+  const limits = await catalogLimits(context, plan);
+  if (limits.maxParishes === null) return;
 
   if (ownedParishes >= limits.maxParishes) {
+    if (trialCoverageAvailable) {
+      const trialLimits = await catalogLimits(context, coverage.plan);
+      const trialMax = trialLimits.maxParishes;
+      if (trialMax === null || ownedParishes < trialMax) {
+        throw new HttpError(
+          403,
+          `${PARISH_TRIAL_AVAILABLE_PREFIX} Limite de paróquias do plano ${planName(plan)} atingido (${ownedParishes}/${limits.maxParishes}). Você pode iniciar 7 dias grátis do plano Paróquia para continuar.`,
+        );
+      }
+    }
     throw new HttpError(
       403,
       buildLimitMessage('parish_limit', plan, ownedParishes, limits.maxParishes),

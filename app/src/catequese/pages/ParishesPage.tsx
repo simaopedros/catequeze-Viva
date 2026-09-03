@@ -66,6 +66,7 @@ export default function ParishesPage() {
   );
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState("");
+  const [trialOffer, setTrialOffer] = useState<string | null>(null);
   const [search, setSearch] = useState("");
 
   const filterParishes = useMemo(() => {
@@ -112,7 +113,7 @@ export default function ParishesPage() {
     return tp("coverage_independent");
   })();
 
-  const handleCreate = async () => {
+  const handleCreate = async (startTrial = false) => {
     if (!newName.trim()) return;
     setCreating(true);
     setError("");
@@ -122,15 +123,29 @@ export default function ParishesPage() {
         city: newCity.trim() || undefined,
         state: newState.trim() || undefined,
         dioceseId: newDioceseId || undefined,
+        startTrial: startTrial || undefined,
       });
       setNewName("");
       setNewCity("");
       setNewState("");
       setNewDioceseId("");
       setShowCreate(false);
+      setTrialOffer(null);
     } catch (e: any) {
+      const message = e.message || tp("create_error");
       if (
-        handlePlanLimitError(e.message || e, {
+        !startTrial &&
+        (message.includes("PARISH_TRIAL_AVAILABLE") ||
+          (message.startsWith("LIMIT:") &&
+            /par[oó]quia/i.test(message) &&
+            /\(0\/0\)/.test(message)))
+      ) {
+        setTrialOffer(message);
+        setCreating(false);
+        return;
+      }
+      if (
+        handlePlanLimitError(message || e, {
           currentPlan: ownerPlan,
           isPersonalWorkspace: true,
         })
@@ -138,7 +153,7 @@ export default function ParishesPage() {
         setCreating(false);
         return;
       }
-      setError(e.message || tp("create_error"));
+      setError(message || tp("create_error"));
     }
     setCreating(false);
   };
@@ -241,7 +256,7 @@ export default function ParishesPage() {
             )}
             <Button
               size="sm"
-              onClick={handleCreate}
+              onClick={() => handleCreate(!!trialOffer)}
               disabled={
                 creating ||
                 !newName.trim() ||
@@ -251,11 +266,21 @@ export default function ParishesPage() {
             >
               {creating ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
+              ) : trialOffer ? (
+                tp("trial_offer_cta")
               ) : (
                 tp("create")
               )}
             </Button>
           </div>
+          {trialOffer && (
+            <div className="space-y-1 rounded-sm border border-brand-ink/20 bg-muted/30 px-3 py-2 text-sm">
+              <p className="font-semibold tracking-tight text-brand-ink">
+                {tp("trial_offer_title")}
+              </p>
+              <p className="text-muted-foreground">{tp("trial_offer_body")}</p>
+            </div>
+          )}
           <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
             <ShieldCheck className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
             {coverageNote}
