@@ -101,4 +101,25 @@ describe("ParishBillingConversion", () => {
     await user.click(screen.getByTestId("billing-offer-cta"));
     expect(onSubscribe).toHaveBeenLastCalledWith("monthly");
   });
+
+  it("renders Catequista conversion without diocese sales copy", () => {
+    renderConversion({
+      variant: "catechist",
+      parishName: "Meu espaço pessoal",
+      planName: "Plano Catequista",
+      planClassLimit: 3,
+      planCatechumenLimit: 150,
+    });
+
+    expect(
+      screen.getByTestId("personal-billing-conversion"),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("personal-conversion-plan")).toHaveTextContent(
+      "R$ 82,50",
+    );
+    expect(
+      screen.queryByTestId("parish-conversion-diocese"),
+    ).not.toBeInTheDocument();
+    expect(screen.getAllByTestId("billing-offer-cta")).toHaveLength(1);
+  });
 });

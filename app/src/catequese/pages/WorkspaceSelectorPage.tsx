@@ -248,6 +248,7 @@ export default function WorkspaceSelectorPage() {
                 planInherited={ws.planInherited}
                 dioceseName={ws.dioceseName}
                 billingStatus={ws.billingStatus}
+                hidePlanDetails={!opts?.canManage}
                 className="text-xs font-medium text-brand-ink"
               />
             </span>

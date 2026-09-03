@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { Star, Check, CreditCard, PiggyBank, Building2 } from "lucide-react";
+import { Star, Check, CreditCard, Lock, Building2 } from "lucide-react";
 import { PublicNavbar } from "../PublicNavbar";
 import { PublicFooter } from "../PublicFooter";
 import { SalesWhatsAppCta } from "../../client/components/SalesWhatsAppCta";
@@ -12,11 +12,14 @@ import {
   getIntendedInterval,
   type BillingInterval,
 } from "../lib/intendedPlan";
+import { Button } from "../../client/components/ui/button";
 import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import {
-  formatEquivalentMonthlyPrice,
+  annualDiscountPercent,
+  formatMonthlyFromAnnualCents,
   formatPrice,
 } from "../../shared/currency";
+import { BillingIntervalToggle } from "../components/BillingIntervalToggle";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import {
   trackLead,
@@ -51,7 +54,7 @@ function translatedString(
 }
 
 function equivalentMonthlyPrice(annualCents: number): string {
-  return formatEquivalentMonthlyPrice(annualCents);
+  return formatMonthlyFromAnnualCents(annualCents);
 }
 
 function annualSavings(monthlyCents: number, annualCents: number): string {
@@ -71,7 +74,10 @@ export default function PricingPage() {
     trackMarketingEvent("pricing_viewed", { placement: "pricing_page" });
     trackViewPricing({
       plan_ids: publicPlans
-        .filter((plan) => plan.kind === "subscription" && plan.slug !== "catechist_free")
+        .filter(
+          (plan) =>
+            plan.kind === "subscription" && plan.slug !== "catechist_free",
+        )
         .map((plan) => plan.slug),
       content_name: "Planos Catechis",
     });
@@ -79,16 +85,27 @@ export default function PricingPage() {
 
   const pricingPlans = useMemo((): PricingPlan[] => {
     return publicPlans
-      .filter((plan) => plan.kind === "subscription" && plan.slug !== "catechist_free")
+      .filter(
+        (plan) =>
+          plan.kind === "subscription" && plan.slug !== "catechist_free",
+      )
       .map((plan) => {
         const loc = localize(plan);
-        const monthly = plan.prices.find((price) => price.interval === "monthly" && price.isActive);
-        const annual = plan.prices.find((price) => price.interval === "annual" && price.isActive);
+        const monthly = plan.prices.find(
+          (price) => price.interval === "monthly" && price.isActive,
+        );
+        const annual = plan.prices.find(
+          (price) => price.interval === "annual" && price.isActive,
+        );
         return {
           planId: plan.slug,
           level: plan.level,
           name: loc.name,
-          desc: translatedString(tp, `pricing.plan_desc.${plan.slug}`, plan.description || loc.name),
+          desc: translatedString(
+            tp,
+            `pricing.plan_desc.${plan.slug}`,
+            plan.description || loc.name,
+          ),
           features: loc.features,
           highlight: plan.highlight,
           cta: translatedString(tp, "pricing.cta_paid", "Comecar agora"),
@@ -133,16 +150,15 @@ export default function PricingPage() {
     return (
       <div
         key={plan.planId}
-        className={`relative flex flex-col rounded-sm border border-border/70 bg-white p-6 transition-colors ${
-          plan.highlight
-            ? "border-brand-ink ring-1 ring-brand-ink/15"
-            : "border-border"
+        className={`relative flex flex-col rounded-sm border bg-white p-6 transition-colors ${
+          plan.highlight ? "border-2 border-brand-gold/70" : "border-border/70"
         }`}
       >
         {plan.highlight && (
-          <div className="inline-flex items-center gap-1 rounded-sm bg-brand-ink text-white text-caption font-semibold px-3 py-1 mb-3 self-start">
-            <Star className="h-3 w-3" /> {tp("pricing.most_popular")}
-          </div>
+          <span className="absolute -top-3 right-5 inline-flex items-center gap-1 rounded-full bg-brand-gold px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-ink">
+            <Star className="h-3 w-3" aria-hidden />
+            {tp("pricing.most_popular")}
+          </span>
         )}
         <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
           {plan.name}
@@ -183,40 +199,42 @@ export default function PricingPage() {
             </div>
           </div>
         ) : hasAnnual ? (
-          <div className="space-y-1 text-xs text-muted-foreground mt-1">
-            <div className="flex items-center gap-1">
-              <PiggyBank className="h-3 w-3" />
-              <span>
-                {tp("pricing.annual_compare", {
-                  price: equivalentMonthlyPrice(plan.priceCentsAnnual!),
-                })}
-              </span>
-            </div>
-            <div>
+          <div className="mt-1 space-y-1 text-sm text-muted-foreground">
+            <p>
+              {tp("pricing.annual_compare", {
+                price: equivalentMonthlyPrice(plan.priceCentsAnnual!),
+              })}
+            </p>
+            <p>
               {tp("pricing.annual_billed_as", {
                 price: formatPrice(plan.priceCentsAnnual!),
               })}
-            </div>
+            </p>
           </div>
         ) : null}
-        <ul className="mt-5 space-y-2.5 text-sm flex-1">
+        <ul className="mt-5 grid flex-1 gap-2.5 sm:grid-cols-1">
           {plan.features.map((f) => (
-            <li key={f} className="flex items-start gap-2.5">
-              <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-ink" />
+            <li
+              key={f}
+              className="flex items-start gap-2 text-sm text-brand-ink"
+            >
+              <Check className="mt-0.5 h-4 w-4 shrink-0 text-success" />
               <span>{f}</span>
             </li>
           ))}
         </ul>
-        <button
+        <Button
+          size="lg"
+          className="mt-6 h-12 w-full rounded-sm text-sm font-semibold"
+          variant={plan.highlight ? "default" : "outline"}
           onClick={() => handleSelect(plan)}
-          className={`mt-6 block w-full text-center rounded-sm px-4 py-3 text-sm font-semibold transition-all ${
-            plan.highlight
-              ? "bg-brand-ink text-white hover:bg-brand-ink-soft"
-              : "bg-muted hover:bg-muted/80"
-          }`}
         >
           {plan.cta}
-        </button>
+        </Button>
+        <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+          <Lock className="h-3.5 w-3.5" aria-hidden />
+          {tp("pricing.secure_payment")}
+        </p>
       </div>
     );
   };
@@ -234,40 +252,34 @@ export default function PricingPage() {
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground sm:text-xl">
             {tp("pricing.subtitle")}
           </p>
-          <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground pt-2 flex-wrap">
+          <div className="flex items-center justify-center gap-6 pt-2 text-sm text-muted-foreground flex-wrap">
             <span className="flex items-center gap-1">
               <CreditCard className="h-4 w-4" /> {tp("pricing.payment_card")}
             </span>
             <span className="flex items-center gap-1">
-              <PiggyBank className="h-4 w-4" /> {tp("pricing.annual_savings")}
+              <Lock className="h-4 w-4" /> {tp("pricing.secure_payment")}
             </span>
           </div>
-          <div className="mt-4 inline-flex items-center rounded-sm border border-border/70 bg-muted/30 p-0.5">
-            <button
-              type="button"
-              onClick={() => setBillingInterval("monthly")}
-              className={`px-4 py-2 text-sm font-medium rounded-sm transition-all ${
-                billingInterval === "monthly"
-                  ? "bg-white font-semibold tracking-tight text-brand-ink"
-                  : "text-muted-foreground hover:text-brand-ink"
-              }`}
-            >
-              {tp("pricing.monthly_tab")}
-            </button>
-            <button
-              type="button"
-              onClick={() => setBillingInterval("annual")}
-              className={`px-4 py-2 text-sm font-medium rounded-sm transition-all flex items-center gap-1.5 ${
-                billingInterval === "annual"
-                  ? "bg-white font-semibold tracking-tight text-brand-ink"
-                  : "text-muted-foreground hover:text-brand-ink"
-              }`}
-            >
-              {tp("pricing.annual_tab")}
-              <span className="rounded-sm bg-brand-gold/15 px-1.5 py-0.5 text-caption font-semibold text-brand-gold-muted">
-                {tp("pricing.annual_savings_badge")}
-              </span>
-            </button>
+          <div className="mt-6">
+            <BillingIntervalToggle
+              interval={billingInterval}
+              onChange={(next) => {
+                setBillingInterval(next);
+                setIntendedInterval(next);
+              }}
+              discountPercent={
+                pricingPlans[0]?.priceCents && pricingPlans[0]?.priceCentsAnnual
+                  ? annualDiscountPercent(
+                      pricingPlans[0].priceCents,
+                      pricingPlans[0].priceCentsAnnual,
+                    )
+                  : 0
+              }
+              monthlyLabel={tp("pricing.monthly_tab")}
+              annualLabel={tp("pricing.annual_tab")}
+              ariaLabel={tp("pricing.interval_aria")}
+              discountLabel={tp("pricing.annual_savings_badge")}
+            />
           </div>
         </section>
 
@@ -323,7 +335,9 @@ function DiocesePricingCard({
 }: {
   tp: (key: string, options?: any) => any;
 }) {
-  const featuresResult = tp("pricing.diocese_features", { returnObjects: true });
+  const featuresResult = tp("pricing.diocese_features", {
+    returnObjects: true,
+  });
   const features = Array.isArray(featuresResult)
     ? (featuresResult as string[])
     : [];

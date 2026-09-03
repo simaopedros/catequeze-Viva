@@ -113,4 +113,26 @@ describe("PersonalBillingActive", () => {
     await user.click(screen.getByTestId("personal-active-cancel"));
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
+
+  it("renders the parish active panel without the organize-parish upsell", () => {
+    renderActive({
+      variant: "institutional",
+      workspaceName: "Paróquia Jesus Cristo",
+      planName: "Plano Paróquia",
+      maxClasses: Infinity,
+      maxCatechumens: Infinity,
+      nextStep: <div data-testid="institutional-next-step" />,
+    });
+
+    expect(
+      screen.getByTestId("institutional-billing-active"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("organize-parish-card"),
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId("institutional-next-step")).toBeInTheDocument();
+    expect(screen.getByTestId("institutional-active-cancel").className).toMatch(
+      /text-xs/,
+    );
+  });
 });

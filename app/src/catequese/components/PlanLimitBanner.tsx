@@ -3,10 +3,7 @@ import { Link } from "react-router";
 import { useTranslation, Trans } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";
-import {
-  resolvePlanIdOrFree,
-  type PlanLimits,
-} from "../../shared/planLimits";
+import { resolvePlanIdOrFree, type PlanLimits } from "../../shared/planLimits";
 import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import {
   buildBillingJourneyHrefFromContext,
@@ -75,7 +72,10 @@ export function PlanLimitBanner({
   const defaultUpgradePlanKey =
     normalizedPlan === "single" ? "unlimited" : "single";
   const defaultUpgradePlan = localize(defaultUpgradePlanKey).name;
-  const defaultUpgradePrice = priceLabel(getBySlug(defaultUpgradePlanKey), "monthly");
+  const defaultUpgradePrice = priceLabel(
+    getBySlug(defaultUpgradePlanKey),
+    "monthly",
+  );
   const journeyReason: UpgradeJourneyReason =
     type === "ai_credits" ? "generic" : type;
   const upgradeHref = buildBillingJourneyHrefFromContext({
@@ -141,7 +141,8 @@ export function PlanLimitBanner({
         <Icon className="h-3.5 w-3.5 shrink-0 text-brand-ink" />
         <span className="min-w-0 truncate text-xs font-medium tracking-tight text-brand-ink">
           {currentCount}/{maxAllowed === null ? "∞" : maxAllowed} {label}
-          {plural} · {currentPlanName}
+          {plural}
+          {showAction ? ` · ${currentPlanName}` : ""}
         </span>
         {showAction && (
           <Button

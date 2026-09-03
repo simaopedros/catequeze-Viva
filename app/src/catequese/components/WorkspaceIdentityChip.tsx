@@ -1,14 +1,15 @@
 import { useTranslation } from "react-i18next";
 import { cn } from "../../client/utils";
 import {
-  catalogDisplayName,
   describeEffectivePlan,
+  formatEffectivePlanCopy,
   workspaceKindAccentClass,
   workspaceKindDotClass,
   workspaceKindFromParishType,
-  type EffectivePlanPresentation,
   type WorkspaceKind,
 } from "../../shared/workspaceIdentity";
+
+export { formatEffectivePlanCopy };
 
 export function WorkspaceKindBadge({
   kind,
@@ -35,32 +36,6 @@ export function WorkspaceKindBadge({
   );
 }
 
-export function formatEffectivePlanCopy(
-  presentation: EffectivePlanPresentation,
-  t: (key: string, opts?: Record<string, string>) => string,
-): string {
-  const plan = catalogDisplayName(presentation.planKey);
-  if (presentation.source === "diocese") {
-    if (presentation.dioceseName) {
-      return t("plan.covered_by_named", { name: presentation.dioceseName });
-    }
-    return t("plan.covered_by_diocese");
-  }
-  if (presentation.source === "parish") {
-    return t("plan.parish_license", { plan });
-  }
-  if (presentation.source === "parish_trial") {
-    return t("plan.parish_trial");
-  }
-  if (presentation.source === "parish_needs_license") {
-    return t("plan.parish_needs_license");
-  }
-  if (presentation.source === "personal") {
-    return t("plan.personal", { plan });
-  }
-  return t("plan.free");
-}
-
 export function WorkspacePlanLabel({
   parishType,
   parishPlan,
@@ -68,6 +43,7 @@ export function WorkspacePlanLabel({
   dioceseName,
   personalPlan,
   billingStatus,
+  hidePlanDetails,
   className,
 }: {
   parishType?: string | null;
@@ -76,6 +52,8 @@ export function WorkspacePlanLabel({
   dioceseName?: string | null;
   personalPlan?: string | null;
   billingStatus?: string | null;
+  /** Auxiliary / guest: who manages, never plan name or subscribe copy. */
+  hidePlanDetails?: boolean;
   className?: string;
 }) {
   const { t } = useTranslation("topbar");
@@ -89,7 +67,10 @@ export function WorkspacePlanLabel({
   });
   return (
     <span className={cn("truncate text-xs text-muted-foreground", className)}>
-      {formatEffectivePlanCopy(presentation, t)}
+      {formatEffectivePlanCopy(presentation, t, {
+        hidePlanDetails,
+        kind: workspaceKindFromParishType(parishType),
+      })}
     </span>
   );
 }

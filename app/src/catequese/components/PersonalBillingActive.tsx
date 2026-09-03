@@ -1,8 +1,10 @@
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import {
   BookOpen,
   Check,
   CheckCircle,
+  Church,
   CreditCard,
   History,
   Loader2,
@@ -41,6 +43,8 @@ export type PersonalBillingActiveProps = {
   switchingInterval?: boolean;
   annualSavingsLabel?: string | null;
   error?: string | null;
+  variant?: "personal" | "institutional";
+  nextStep?: ReactNode;
 };
 
 export function usageBarPercent(used: number, limit: number): number {
@@ -67,17 +71,19 @@ function UsageRow({
       <p className="text-sm font-semibold tracking-tight text-brand-ink">
         {label}
       </p>
-      <div className="h-1.5 w-full rounded-sm bg-muted">
-        <div
-          className="h-1.5 rounded-sm bg-brand-ink"
-          role="progressbar"
-          aria-label={ariaLabel}
-          aria-valuenow={used}
-          aria-valuemin={0}
-          aria-valuemax={finite ? limit : 0}
-          style={{ width: `${width}%` }}
-        />
-      </div>
+      {finite ? (
+        <div className="h-1.5 w-full rounded-sm bg-muted">
+          <div
+            className="h-1.5 rounded-sm bg-brand-ink"
+            role="progressbar"
+            aria-label={ariaLabel}
+            aria-valuenow={used}
+            aria-valuemin={0}
+            aria-valuemax={limit}
+            style={{ width: `${width}%` }}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -102,8 +108,18 @@ export function PersonalBillingActive({
   switchingInterval,
   annualSavingsLabel,
   error,
+  variant = "personal",
+  nextStep,
 }: PersonalBillingActiveProps) {
   const { t } = useTranslation("billing");
+  const ns =
+    variant === "institutional" ? "institutional_active" : "personal_active";
+  const rootTestId =
+    variant === "institutional"
+      ? "institutional-billing-active"
+      : "personal-billing-active";
+  const prefix =
+    variant === "institutional" ? "institutional-active" : "personal-active";
   const hasAnnual = typeof annualCents === "number" && annualCents > 0;
   const hasMonthly = typeof monthlyCents === "number" && monthlyCents > 0;
   const priceLabel =
@@ -114,19 +130,16 @@ export function PersonalBillingActive({
         : "—";
 
   return (
-    <div
-      className="mx-auto max-w-3xl space-y-8"
-      data-testid="personal-billing-active"
-    >
+    <div className="mx-auto max-w-3xl space-y-8" data-testid={rootTestId}>
       <section
-        data-testid="personal-active-hero"
+        data-testid={`${prefix}-hero`}
         className="relative overflow-hidden rounded-sm border border-border/70 bg-white px-5 py-6 sm:px-8 sm:py-8"
       >
         <div className="relative z-[1] space-y-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="min-w-0 space-y-1">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                {t("personal_active.workspace_eyebrow")}
+                {t(`${ns}.workspace_eyebrow`)}
               </p>
               <p className="truncate text-sm font-semibold tracking-tight text-brand-ink sm:text-base">
                 {planName}
@@ -140,7 +153,7 @@ export function PersonalBillingActive({
             </div>
             <span
               className="inline-flex items-center gap-1.5 rounded-full border border-success/20 bg-success/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-success"
-              data-testid="personal-active-badge"
+              data-testid={`${prefix}-badge`}
             >
               <span
                 className="h-1.5 w-1.5 rounded-full bg-success"
@@ -148,7 +161,7 @@ export function PersonalBillingActive({
               />
               {cancelScheduled
                 ? t("cancel_scheduled")
-                : t("personal_active.active_badge")}
+                : t(`${ns}.active_badge`)}
             </span>
           </div>
 
@@ -159,12 +172,12 @@ export function PersonalBillingActive({
             />
             <div className="max-w-xl space-y-1">
               <h1 className="font-sans text-title-sm font-semibold tracking-tight text-brand-ink sm:text-title-md">
-                {t("personal_active.headline")}
+                {t(`${ns}.headline`)}
               </h1>
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-body">
                 {cancelScheduled
                   ? t("cancel_scheduled_desc")
-                  : t("personal_active.result")}
+                  : t(`${ns}.result`)}
               </p>
             </div>
           </div>
@@ -182,7 +195,7 @@ export function PersonalBillingActive({
             <Button
               size="lg"
               className="h-11 rounded-sm px-5"
-              data-testid="personal-active-manage"
+              data-testid={`${prefix}-manage`}
               onClick={onManage}
               disabled={manageLoading}
             >
@@ -191,49 +204,55 @@ export function PersonalBillingActive({
               ) : (
                 <CreditCard className="h-4 w-4" />
               )}
-              {manageLoading ? t("redirecting") : t("personal_active.manage")}
+              {manageLoading ? t("redirecting") : t(`${ns}.manage`)}
             </Button>
             {!cancelScheduled && (
               <div>
                 <button
                   type="button"
-                  data-testid="personal-active-cancel"
+                  data-testid={`${prefix}-cancel`}
                   onClick={onCancel}
                   disabled={cancelling}
                   className="text-xs text-muted-foreground underline-offset-2 hover:text-destructive hover:underline"
                 >
-                  {cancelling
-                    ? t("cancelling")
-                    : t("personal_active.cancel_link")}
+                  {cancelling ? t("cancelling") : t(`${ns}.cancel_link`)}
                 </button>
               </div>
             )}
           </div>
 
           <p className="text-xs leading-relaxed text-muted-foreground">
-            {t("personal_active.scope_hint")}
+            {t(`${ns}.scope_hint`)}
           </p>
         </div>
-        <BookOpen
-          className="pointer-events-none absolute -bottom-6 -right-4 hidden h-36 w-36 text-brand-ink/10 sm:block"
-          strokeWidth={1}
-          aria-hidden
-        />
+        {variant === "institutional" ? (
+          <Church
+            className="pointer-events-none absolute -bottom-6 -right-4 hidden h-36 w-36 text-brand-ink/10 sm:block"
+            strokeWidth={1}
+            aria-hidden
+          />
+        ) : (
+          <BookOpen
+            className="pointer-events-none absolute -bottom-6 -right-4 hidden h-36 w-36 text-brand-ink/10 sm:block"
+            strokeWidth={1}
+            aria-hidden
+          />
+        )}
       </section>
 
       <section
-        data-testid="personal-active-plan"
+        data-testid={`${prefix}-plan`}
         className="rounded-sm border border-border/70 bg-white p-5 sm:p-7"
       >
         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-          {t("personal_active.your_plan")}
+          {t(`${ns}.your_plan`)}
         </p>
         <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
           <h2 className="text-lg font-semibold tracking-tight text-brand-ink">
             {planName}
           </h2>
           <span className="rounded-sm border border-border/70 bg-muted/40 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-ink">
-            {t("personal_active.current_badge")}
+            {t(`${ns}.current_badge`)}
           </span>
         </div>
 
@@ -243,19 +262,19 @@ export function PersonalBillingActive({
               {priceLabel}
             </span>
             <span className="text-sm text-muted-foreground">
-              {t("personal_active.per_month")}
+              {t(`${ns}.per_month`)}
             </span>
           </p>
           {billedAnnually && hasAnnual && (
             <p className="mt-1 text-sm text-muted-foreground">
-              {t("personal_active.billed_annually", {
+              {t(`${ns}.billed_annually`, {
                 price: formatPrice(annualCents),
               })}
             </p>
           )}
           {billedAnnually && annualSavingsLabel && (
             <p className="mt-0.5 text-sm font-semibold text-brand-gold-muted">
-              {t("personal_active.save_year", { price: annualSavingsLabel })}
+              {t(`${ns}.save_year`, { price: annualSavingsLabel })}
             </p>
           )}
           {!billedAnnually && onSwitchAnnual && annualSavingsLabel && (
@@ -267,7 +286,7 @@ export function PersonalBillingActive({
             >
               {switchingInterval
                 ? t("switching")
-                : t("personal_active.switch_annual", {
+                : t(`${ns}.switch_annual`, {
                     savings: annualSavingsLabel,
                   })}
             </button>
@@ -291,10 +310,10 @@ export function PersonalBillingActive({
 
         <div className="mt-6 space-y-4 border-t border-border/60 pt-5">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            {t("personal_active.usage_title")}
+            {t(`${ns}.usage_title`)}
           </p>
           <UsageRow
-            label={t("personal_active.usage_classes", {
+            label={t(`${ns}.usage_classes`, {
               used: classesUsed,
               limit: Number.isFinite(maxClasses) ? maxClasses : "∞",
             })}
@@ -303,7 +322,7 @@ export function PersonalBillingActive({
             ariaLabel={t("classes_quota_label")}
           />
           <UsageRow
-            label={t("personal_active.usage_catechumens", {
+            label={t(`${ns}.usage_catechumens`, {
               used: catechumensUsed,
               limit: Number.isFinite(maxCatechumens) ? maxCatechumens : "∞",
             })}
@@ -311,16 +330,22 @@ export function PersonalBillingActive({
             limit={maxCatechumens}
             ariaLabel={t("catechumens_quota_label")}
           />
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            <span className="font-semibold text-brand-ink">
-              {t("personal_active.usage_bridge")}{" "}
-            </span>
-            {t("personal_active.usage_bridge_desc")}
-          </p>
+          {variant === "personal" && (
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              <span className="font-semibold text-brand-ink">
+                {t(`${ns}.usage_bridge`)}{" "}
+              </span>
+              {t(`${ns}.usage_bridge_desc`)}
+            </p>
+          )}
         </div>
       </section>
 
-      <OrganizeParishCard variant="upsell" />
+      {variant === "personal" ? (
+        <OrganizeParishCard variant="upsell" />
+      ) : (
+        nextStep
+      )}
 
       <Accordion
         type="single"
@@ -328,7 +353,7 @@ export function PersonalBillingActive({
         className="rounded-sm border border-border/60 bg-white px-5"
       >
         <AccordionItem value="history" className="border-b-0">
-          <AccordionTrigger data-testid="personal-active-history">
+          <AccordionTrigger data-testid={`${prefix}-history`}>
             <span className="inline-flex items-center gap-2">
               <History className="h-4 w-4 text-muted-foreground" aria-hidden />
               {t("payment_history")}
@@ -343,17 +368,17 @@ export function PersonalBillingActive({
       </Accordion>
 
       <footer
-        data-testid="personal-active-support"
+        data-testid={`${prefix}-support`}
         className="flex flex-col items-center gap-2 border-t border-border/60 pt-6 text-center"
       >
         <p className="text-sm text-muted-foreground">
-          {t("personal_active.support_question")}
+          {t(`${ns}.support_question`)}
         </p>
         <SalesWhatsAppCta
           placement="billing_plans"
           variant="row"
           className="justify-center"
-          cta={t("personal_active.support_cta")}
+          cta={t(`${ns}.support_cta`)}
         />
       </footer>
     </div>

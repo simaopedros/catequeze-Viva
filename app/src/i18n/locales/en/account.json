@@ -26,5 +26,7 @@
   "workspace_role": "Your role",
   "workspace_plan": "Effective plan",
   "manage_workspace_billing": "Manage workspace billing",
-  "no_active_workspace": "No active workspace"
+  "no_active_workspace": "No active workspace",
+  "workspace_managed_desc": "You take part in this workspace. Plans and payments stay with whoever administers it.",
+  "workspace_managed_hint": "Questions about the plan? Talk to the coordination."
 }

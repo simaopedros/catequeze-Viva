@@ -45,6 +45,10 @@
     "parish_needs_license": "Suscríbete al Plan Parroquia para este espacio",
     "covered_by_diocese": "Cubierta por la diócesis",
     "covered_by_named": "Cubierta por {{name}}",
-    "free": "Sin suscripción"
+    "free": "Sin suscripción",
+    "managed_by_coordination": "Gestionado por la coordinación",
+    "managed_by_diocese": "Gestionado por la diócesis",
+    "managed_by_named": "Gestionado por {{name}}",
+    "managed_by_owner": "Gestionado por el catequista responsable"
   }
 }

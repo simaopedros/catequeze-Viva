@@ -45,6 +45,10 @@
     "parish_needs_license": "Assine o Plano Paróquia para este espaço",
     "covered_by_diocese": "Coberta pela diocese",
     "covered_by_named": "Coberta por {{name}}",
-    "free": "Sem assinatura"
+    "free": "Sem assinatura",
+    "managed_by_coordination": "Gerido pela coordenação",
+    "managed_by_diocese": "Gerido pela diocese",
+    "managed_by_named": "Gerido por {{name}}",
+    "managed_by_owner": "Gerido pelo catequista responsável"
   }
 }

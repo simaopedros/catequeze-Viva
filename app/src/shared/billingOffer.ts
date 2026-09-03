@@ -101,3 +101,52 @@ export function shouldShowPersonalActiveBilling(opts: {
 }): boolean {
   return opts.isPersonal && opts.isPaidActive && opts.canManageBilling;
 }
+
+/** Catequista trial / unpaid: same conversion hierarchy as the parish offer. */
+export function shouldShowPersonalConversion(opts: {
+  isPersonal: boolean;
+  isPaidActive: boolean;
+  canManageBilling: boolean;
+}): boolean {
+  return opts.isPersonal && !opts.isPaidActive && opts.canManageBilling;
+}
+
+/**
+ * Paid parish/community license the coordinator manages (not diocese cover).
+ */
+export function shouldShowInstitutionalActiveBilling(opts: {
+  isPersonal: boolean;
+  isPaidActive: boolean;
+  canManageBilling: boolean;
+  planInherited?: boolean;
+  workspaceType?: string | null;
+}): boolean {
+  if (!opts.canManageBilling || opts.isPersonal || !opts.isPaidActive) {
+    return false;
+  }
+  if (opts.planInherited || opts.workspaceType === "DIOCESE") return false;
+  return true;
+}
+
+/** Parish covered by an inherited diocese license — who manages, no SKU. */
+export function shouldShowCoveredWorkspaceBilling(opts: {
+  canManageBilling: boolean;
+  planInherited?: boolean;
+}): boolean {
+  return opts.canManageBilling && Boolean(opts.planInherited);
+}
+
+/** Diocese workspace: assisted sales, never a self-serve catalog. */
+export function shouldShowDioceseWorkspaceBilling(opts: {
+  canManageBilling: boolean;
+  workspaceType?: string | null;
+}): boolean {
+  return opts.canManageBilling && opts.workspaceType === "DIOCESE";
+}
+
+/** Auxiliary, class guest, viewer: who manages, no plan/price copy. */
+export function shouldShowCollaboratorBilling(opts: {
+  canManageBilling: boolean;
+}): boolean {
+  return !opts.canManageBilling;
+}

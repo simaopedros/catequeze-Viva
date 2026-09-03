@@ -26,5 +26,7 @@
   "workspace_role": "Tu rol",
   "workspace_plan": "Plan efectivo",
   "manage_workspace_billing": "Gestionar cobro del espacio",
-  "no_active_workspace": "Ningún espacio activo"
+  "no_active_workspace": "Ningún espacio activo",
+  "workspace_managed_desc": "Participas en este espacio. Los planes y pagos quedan con quien lo administra.",
+  "workspace_managed_hint": "¿Dudas sobre el plan? Habla con la coordinación."
 }
