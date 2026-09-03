@@ -23,16 +23,29 @@ type SalesWhatsAppCtaProps = {
   placement: string;
   variant?: "card" | "inline" | "row";
   className?: string;
+  /** Optional overrides for onboarding / contextual CTAs. */
+  prefill?: string;
+  question?: string;
+  helper?: string;
+  cta?: string;
 };
 
 export function SalesWhatsAppCta({
   placement,
   variant = "card",
   className,
+  prefill,
+  question,
+  helper,
+  cta,
 }: SalesWhatsAppCtaProps) {
   const { t } = useTranslation("public");
-  const href = getSalesWhatsAppUrl(t("sales_whatsapp.prefill"));
+  const href = getSalesWhatsAppUrl(prefill ?? t("sales_whatsapp.prefill"));
   const ariaLabel = t("sales_whatsapp.aria");
+  const questionText = question ?? t("sales_whatsapp.question");
+  const helperText = helper ?? t("sales_whatsapp.helper");
+  const ctaText = cta ?? t("sales_whatsapp.cta");
+  const ctaShort = cta ?? t("sales_whatsapp.cta_short");
 
   const onClick = () => {
     trackMarketingEvent("secondary_cta_clicked", {
@@ -58,7 +71,7 @@ export function SalesWhatsAppCta({
         <WhatsAppIcon className="h-5 w-5 shrink-0 text-brand-ink" />
         <span>
           <span className="block text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {t("sales_whatsapp.cta_short")}
+            {ctaShort}
           </span>
           <span className="text-sm text-brand-ink">
             {SALES_WHATSAPP_DISPLAY}
@@ -76,7 +89,7 @@ export function SalesWhatsAppCta({
           className,
         )}
       >
-        {t("sales_whatsapp.question")}{" "}
+        {questionText}{" "}
         <a
           href={href}
           target="_blank"
@@ -86,7 +99,7 @@ export function SalesWhatsAppCta({
           className="inline-flex items-center gap-1.5 font-medium text-brand-ink underline underline-offset-2 hover:text-brand-ink-soft"
         >
           <WhatsAppIcon className="h-3.5 w-3.5 shrink-0" />
-          {t("sales_whatsapp.cta")}
+          {ctaText}
         </a>
       </p>
     );
@@ -99,12 +112,8 @@ export function SalesWhatsAppCta({
         className,
       )}
     >
-      <p className="text-sm font-medium text-brand-ink">
-        {t("sales_whatsapp.question")}
-      </p>
-      <p className="mt-1 text-sm text-muted-foreground">
-        {t("sales_whatsapp.helper")}
-      </p>
+      <p className="text-sm font-medium text-brand-ink">{questionText}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{helperText}</p>
       <a
         href={href}
         target="_blank"
@@ -114,7 +123,7 @@ export function SalesWhatsAppCta({
         className="mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-sm bg-brand-ink px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-ink-soft"
       >
         <WhatsAppIcon className="h-4 w-4 shrink-0" />
-        {t("sales_whatsapp.cta")}
+        {ctaText}
       </a>
       <p className="mt-2 text-xs text-muted-foreground">
         {SALES_WHATSAPP_DISPLAY}
