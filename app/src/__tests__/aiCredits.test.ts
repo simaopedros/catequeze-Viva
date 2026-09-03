@@ -162,15 +162,15 @@ describe('Plan Limits (simplified plans)', () => {
   describe('planName', () => {
     it('returns display names for current plans', () => {
       expect(planName('single')).toBe('Plano Catequista');
-      expect(planName('unlimited')).toBe('Plano Ilimitado');
+      expect(planName('unlimited')).toBe('Plano Paróquia');
       expect(planName('catechist_free')).toBe('Sem assinatura');
     });
 
     it('resolves legacy aliases to their canonical plan name', () => {
       expect(planName('catechist_pro')).toBe('Plano Catequista');
-      expect(planName('parish_complete')).toBe('Plano Ilimitado');
-      expect(planName('diocese')).toBe('Plano Ilimitado');
-      expect(planName('parish')).toBe('Plano Ilimitado');
+      expect(planName('parish_complete')).toBe('Plano Paróquia');
+      expect(planName('diocese')).toBe('Plano Paróquia');
+      expect(planName('parish')).toBe('Plano Paróquia');
     });
   });
 });

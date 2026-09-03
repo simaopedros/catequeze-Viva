@@ -28,6 +28,12 @@ export type { PlanLimits } from "../../shared/planLimits";
 
 export { isBillingActive, getEffectiveBillingPlan, isInstitutionalPlan };
 
+/** Diocese umbrella covers parishes when TenantBilling is ACTIVE with unlimited/diocese. */
+export function isDioceseUmbrellaPlan(plan: string | null | undefined): boolean {
+  const key = String(plan || "").trim().toUpperCase();
+  return key === "UNLIMITED" || key === "DIOCESE";
+}
+
 // ─── Effective billing plan ────────────────────────────────────────────────
 
 interface TenantBillingStub {
@@ -146,7 +152,7 @@ async function resolveEffectiveBillingUncached(
       },
     });
 
-    if (dioceseBilling && isBillingActive(dioceseBilling) && (dioceseBilling.plan === 'UNLIMITED' || dioceseBilling.plan === 'DIOCESE')) {
+    if (dioceseBilling && isBillingActive(dioceseBilling) && isDioceseUmbrellaPlan(dioceseBilling.plan)) {
       return {
         plan: dioceseBilling.plan,
         status: dioceseBilling.status,
@@ -235,7 +241,7 @@ export async function resolveAllEffectiveBilling(
     // 1. Diocese umbrella
     if (parish.dioceseId && dioceseBillingMap.has(parish.dioceseId)) {
       const db: any = dioceseBillingMap.get(parish.dioceseId);
-      if (isBillingActive(db) && (db.plan === 'UNLIMITED' || db.plan === 'DIOCESE')) {
+      if (isBillingActive(db) && isDioceseUmbrellaPlan(db.plan)) {
         result.set(parish.id, { plan: db.plan as any, status: db.status, trialEndsAt: db.trialEndsAt, maxClasses: db.maxClasses, maxCatechumens: db.maxCatechumens, maxCatechists: db.maxCatechists, maxParishes: db.maxParishes });
         continue;
       }
@@ -298,7 +304,7 @@ export async function resolveNewParishBilling(
       where: { dioceseId: opts.dioceseId },
       select: { plan: true, status: true, trialEndsAt: true },
     });
-    if (dioceseBilling && isBillingActive(dioceseBilling) && (dioceseBilling.plan === 'UNLIMITED' || dioceseBilling.plan === 'DIOCESE')) {
+    if (dioceseBilling && isBillingActive(dioceseBilling) && isDioceseUmbrellaPlan(dioceseBilling.plan)) {
       return { skip: true };
     }
   }
@@ -398,9 +404,8 @@ export async function ensureProductTrial(
 
 function requiredPlan(currentPlan: string | null): string {
   const p = resolvePlanIdOrFree(currentPlan);
-  if (p === 'unlimited') return 'Ilimitado';
-  // catechist_free (no subscription) or single → suggest upgrading to Unlimited.
-  return 'Ilimitado';
+  if (p === 'unlimited') return 'Plano Paróquia';
+  return 'Plano Paróquia';
 }
 
 function buildLimitMessage(

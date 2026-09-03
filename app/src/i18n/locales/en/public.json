@@ -36,8 +36,8 @@
     "aria": "Open a conversation on the sales WhatsApp"
   },
   "pricing": {
-    "title": "One simple plan, at the service of your mission",
-    "subtitle": "Catechist Plan: R$ 9.90/month (or R$ 99/year) for up to 3 classes. Start with a 7-day free trial, no card.",
+    "title": "Three paths: catechist, parish, and diocese",
+    "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7-day free trial, no card.",
     "payment_card": "Card",
     "annual_savings": "Save 17% on annual",
     "monthly_tab": "Monthly",
@@ -49,8 +49,19 @@
     "cta_paid": "Start the 7 days",
     "most_popular": "Built for the catechist",
     "plan_desc": {
-      "single": "For you to care for your class — attendance, history, and calendar in one place, with more time left for people. Covers up to 3 classes if you walk with more than one."
+      "single": "For you to care for your class — attendance, history, and calendar in one place, with more time left for people. Covers up to 3 classes if you walk with more than one.",
+      "unlimited": "For the parish: unlimited classes, catechumens, and team in an institutional workspace."
     },
+    "diocese_name": "Diocese Plan",
+    "diocese_audience": "For the diocese — assisted sales",
+    "diocese_desc": "Umbrella license that covers the diocese's parishes. No public checkout.",
+    "diocese_price": "On request",
+    "diocese_cta": "Talk to sales about the diocese",
+    "diocese_features": [
+      "Coverage for the diocese's parishes",
+      "One contract, many parishes",
+      "License assigned by the sales team"
+    ],
     "faq": [
       {
         "q": "How can I try the platform before subscribing?",
@@ -70,7 +81,7 @@
       },
       {
         "q": "What if my catechesis grows?",
-        "a": "The plan covers up to 3 classes and 150 catechumens. If you ever need more, talk to us — your data and class history are preserved in any change."
+        "a": "The Catechist Plan covers up to 3 classes and 150 catechumens. If you need a team and more classes, organize as a parish (Parish Plan). If the diocese takes over, talk to sales — the diocese license covers the parishes. Your data and class history are preserved."
       },
       {
         "q": "Is my data secure?",
@@ -116,11 +127,13 @@
     "covered_by_diocese": "Covered by {{name}} license",
     "covered_by_license": "Covered by your license",
     "plans": {
-      "catechist_free": "Catechist Free",
-      "catechist_pro": "Catechist Pro",
-      "catechist_ai": "Catechist AI",
-      "parish": "Parish",
-      "diocese": "Diocese",
+      "catechist_free": "No subscription",
+      "single": "Catechist Plan",
+      "unlimited": "Parish Plan",
+      "catechist_pro": "Catechist Plan",
+      "catechist_ai": "Catechist Plan",
+      "parish": "Parish Plan",
+      "diocese": "Diocese Plan",
       "community": "Community"
     },
     "roles": {
@@ -133,7 +146,8 @@
       "PASTORAL_VIEWER": "Pastoral viewer",
       "CONTENT_REVIEWER": "Content reviewer",
       "GUARDIAN": "Guardian",
-      "CATECHUMEN": "Catechumen"
+      "CATECHUMEN": "Catechumen",
+      "PERSONAL_OWNER": "Owner"
     }
   },
   "upload_docs": {

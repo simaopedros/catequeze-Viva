@@ -5,7 +5,7 @@ import { AI_FEATURES_ENABLED } from "../shared/aiFeatures";
 import { LAUNCH_CATEQUISTA_ONLY, DEFAULT_PLANS_BY_SLUG } from "../shared/pricing";
 
 describe("getCheckoutPlanRejection", () => {
-  it("allows Plano Único during launch", () => {
+  it("allows Plano Catequista", () => {
     expect(getCheckoutPlanRejection(PaymentPlanId.Single)).toBeNull();
   });
 
@@ -15,11 +15,12 @@ describe("getCheckoutPlanRejection", () => {
     );
   });
 
-  it("rejects Ilimitado while launch-phase is on", () => {
-    expect(LAUNCH_CATEQUISTA_ONLY).toBe(true);
-    expect(getCheckoutPlanRejection(PaymentPlanId.Unlimited)).toMatch(
-      /Ilimitado/i,
-    );
+  it("allows Plano Paróquia from the public catalog", () => {
+    expect(LAUNCH_CATEQUISTA_ONLY).toBe(false);
+    expect(getCheckoutPlanRejection(PaymentPlanId.Unlimited)).toBeNull();
+    expect(
+      getCheckoutPlanRejection("unlimited", DEFAULT_PLANS_BY_SLUG.unlimited),
+    ).toBeNull();
   });
 
   it("rejects AI credit packs while AI is off", () => {
@@ -32,13 +33,6 @@ describe("getCheckoutPlanRejection", () => {
     );
   });
 
-  it("uses catalog isActive when a plan object is provided", () => {
-    expect(
-      getCheckoutPlanRejection("unlimited", DEFAULT_PLANS_BY_SLUG.unlimited),
-    ).toMatch(/Ilimitado/i);
-    expect(getCheckoutPlanRejection("single", DEFAULT_PLANS_BY_SLUG.single)).toBeNull();
-  });
-
   it("rejects plans that are active but not public", () => {
     expect(
       getCheckoutPlanRejection("unlimited", {
@@ -46,7 +40,7 @@ describe("getCheckoutPlanRejection", () => {
         isActive: true,
         isPublic: false,
       }),
-    ).toMatch(/Ilimitado|não está disponível/i);
+    ).toMatch(/não está disponível/i);
   });
 
   it("allows a plan when both isActive and isPublic are true", () => {

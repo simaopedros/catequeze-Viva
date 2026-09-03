@@ -74,8 +74,9 @@ describe('getPlanCatalog', () => {
 });
 
 describe('catalogIsCatequistaOnly', () => {
-  it('is true for the static public catalog and false when an institutional plan is on sale', () => {
-    expect(catalogIsCatequistaOnly(publicCatalogPlans())).toBe(true);
+  it('is false when the static catalog includes Plano Paróquia', () => {
+    expect(catalogIsCatequistaOnly(publicCatalogPlans())).toBe(false);
+    expect(catalogIsCatequistaOnly([DEFAULT_PLANS_BY_SLUG.single])).toBe(true);
     expect(catalogIsCatequistaOnly([DEFAULT_PLANS_BY_SLUG.single, customPublishedPlan()])).toBe(
       false,
     );

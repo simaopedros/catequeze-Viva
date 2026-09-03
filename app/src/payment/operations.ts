@@ -145,7 +145,7 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     if (!ownedParish && !coordinatorMembership) {
       throw new HttpError(
         403,
-        "O plano Ilimitado requer que você crie ou seja administrador de uma paróquia ou diocese antes de contratá-lo. O Plano Catequista cobre o seu espaço pessoal.",
+        "O Plano Paróquia requer um workspace institucional. Organize como paróquia primeiro — o Plano Catequista cobre o espaço pessoal.",
       );
     }
   }

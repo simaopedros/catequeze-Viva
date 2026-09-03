@@ -36,8 +36,8 @@
     "aria": "Abrir conversación en el WhatsApp de ventas"
   },
   "pricing": {
-    "title": "Un plan simple, al servicio de tu misión",
-    "subtitle": "Plan Catequista: R$ 9,90/mes (o R$ 99/año) para hasta 3 grupos. Empieza con 7 días de prueba gratis, sin tarjeta.",
+    "title": "Tres caminos: catequista, parroquia y diócesis",
+    "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis, sin tarjeta.",
     "payment_card": "Tarjeta",
     "annual_savings": "Ahorre 17% en anual",
     "monthly_tab": "Mensual",
@@ -49,8 +49,19 @@
     "cta_paid": "Empezar los 7 días",
     "most_popular": "Hecho para el catequista",
     "plan_desc": {
-      "single": "Para que cuides de tu grupo — asistencia, historial y calendario en el mismo lugar, con más tiempo para las personas. Cubre hasta 3 grupos si acompañas más de uno."
+      "single": "Para que cuides de tu grupo — asistencia, historial y calendario en el mismo lugar, con más tiempo para las personas. Cubre hasta 3 grupos si acompañas más de uno.",
+      "unlimited": "Para la parroquia: grupos, catecúmenos y equipo ilimitados en el espacio institucional."
     },
+    "diocese_name": "Plan Diócesis",
+    "diocese_audience": "Para la diócesis — venta asistida",
+    "diocese_desc": "Licencia paraguas que cubre las parroquias de la diócesis. Sin checkout público.",
+    "diocese_price": "A consulta",
+    "diocese_cta": "Hablar con ventas sobre la diócesis",
+    "diocese_features": [
+      "Cobertura de las parroquias de la diócesis",
+      "Un contrato, varias parroquias",
+      "La licencia la asigna el equipo"
+    ],
     "faq": [
       {
         "q": "¿Cómo conozco la plataforma antes de suscribirme?",
@@ -70,7 +81,7 @@
       },
       {
         "q": "¿Y si mi catequesis crece?",
-        "a": "El plan cubre hasta 3 grupos y 150 catecúmenos. Si algún día necesitas más, habla con nosotros — tus datos y el historial del grupo se preservan en cualquier cambio."
+        "a": "El Plan Catequista cubre hasta 3 grupos y 150 catecúmenos. Si necesitas equipo y más grupos, organízate como parroquia (Plan Parroquia). Si la diócesis asume, habla con ventas — la licencia diocesana cubre las parroquias. Tus datos y el historial se preservan."
       },
       {
         "q": "¿Los datos están seguros?",
@@ -116,11 +127,13 @@
     "covered_by_diocese": "Cubierta por la licencia de {{name}}",
     "covered_by_license": "Cubierta por su licencia",
     "plans": {
-      "catechist_free": "Catequista Gratis",
-      "catechist_pro": "Catequista Pro",
-      "catechist_ai": "Catequista editorial",
-      "parish": "Parroquia",
-      "diocese": "Diócesis",
+      "catechist_free": "Sin suscripción",
+      "single": "Plan Catequista",
+      "unlimited": "Plan Parroquia",
+      "catechist_pro": "Plan Catequista",
+      "catechist_ai": "Plan Catequista",
+      "parish": "Plan Parroquia",
+      "diocese": "Plan Diócesis",
       "community": "Comunidad"
     },
     "roles": {
@@ -133,7 +146,8 @@
       "PASTORAL_VIEWER": "Visitante pastoral",
       "CONTENT_REVIEWER": "Revisor de contenido",
       "GUARDIAN": "Responsable",
-      "CATECHUMEN": "Catecúmeno"
+      "CATECHUMEN": "Catecúmeno",
+      "PERSONAL_OWNER": "Propietario"
     }
   },
   "upload_docs": {

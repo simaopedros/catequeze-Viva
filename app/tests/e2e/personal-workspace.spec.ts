@@ -98,11 +98,9 @@ test.describe('Personal Workspace — Billing & Upgrade', () => {
     // Should show billing page
     await expect(page.locator('h1:has-text("Assinatura"), h2:has-text("Assinatura")')).toBeVisible({ timeout: 10000 });
 
-    // Should show individual plans (not Parish/Diocese)
-    const hasCatechistPro = page.locator('text=Catequista Pro');
-    const hasParishPlan = page.locator('text=Paróquia');
-    await expect(hasCatechistPro.first()).toBeVisible({ timeout: 5000 });
-    // Parish plan should not appear or be disabled for personal workspace
+    // Should show Catequista plan (not the retired Catequista Pro name)
+    const hasCatechistPlan = page.getByText(/Plano Catequista|Catechist Plan/i);
+    await expect(hasCatechistPlan.first()).toBeVisible({ timeout: 5000 });
   });
 
   test('Sidebar shows billing/assinatura menu option in personal workspace', async ({ page }) => {

@@ -160,9 +160,9 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
 
       <div
         className={
-          previewPlans.length < 2
+          previewPlans.length + 1 < 2
             ? "max-w-lg mx-auto"
-            : "grid gap-4 sm:grid-cols-2"
+            : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
         }
       >
         {previewPlans.map((plan) => (
@@ -177,6 +177,7 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
             getBySlug={getBySlug}
           />
         ))}
+        <DioceseContactCard tr={tr} ns={ns} />
       </div>
 
       <p className="text-center text-sm text-muted-foreground mt-8">
@@ -335,6 +336,63 @@ function PricingPreviewCard({
           <ArrowRight className="h-4 w-4 shrink-0" />
         </Link>
       </Button>
+    </div>
+  );
+}
+
+function DioceseContactCard({
+  tr,
+  ns,
+}: {
+  tr: (key: string, options?: any) => any;
+  ns: string;
+}) {
+  const { ref, className } = useScrollReveal({ delay: 80 });
+  const name = landingCopy(tr, "plans.diocese.name", "Plano Diocese");
+  const audience = landingCopy(
+    tr,
+    "plans.diocese.audience",
+    "Para a diocese — venda assistida",
+  );
+  const desc = landingCopy(
+    tr,
+    "plans.diocese.desc",
+    "Licença guarda-chuva que cobre as paróquias.",
+  );
+  const features = landingFeatureList(tr, "plans.diocese.features", []);
+
+  return (
+    <div
+      ref={ref as any}
+      id="planos-diocese"
+      className={`relative flex scroll-mt-24 flex-col rounded-lg border border-border bg-card p-6 shadow-elevation-sm ${className}`}
+    >
+      <div className="mb-3 flex min-h-7 items-start" />
+      <div className="mb-3 inline-flex self-start rounded-full bg-muted px-3 py-1 text-[11px] font-medium text-muted-foreground">
+        {audience}
+      </div>
+      <h3 className="text-xl font-semibold tracking-tight text-brand-ink">
+        {name}
+      </h3>
+      <p className="mt-3 text-2xl font-semibold tracking-tight text-brand-ink">
+        {landingCopy(tr, "plans.diocese.price", "Sob consulta")}
+      </p>
+      <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
+      <ul className="mt-4 flex-1 space-y-2 text-sm">
+        {features.map((f) => (
+          <li key={f} className="flex items-start gap-2">
+            <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-ink" />
+            <span>{f}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-6">
+        <SalesWhatsAppCta
+          placement={`${ns}_pricing_diocese`}
+          variant="inline"
+          cta={String(tr("price_cta_diocese"))}
+        />
+      </div>
     </div>
   );
 }

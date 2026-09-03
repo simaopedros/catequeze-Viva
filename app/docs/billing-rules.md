@@ -2,6 +2,8 @@
 
 Canonical source of truth for how billing state governs access across scopes.
 
+Public catalog (self-serve Stripe): **Catequista** (`single`, R$ 9,90 / R$ 99) and **Paróquia** (`unlimited`, R$ 99 / R$ 990). **Diocese** is assisted sales (WhatsApp + admin license), not a public SKU.
+
 ---
 
 ## 1. Scopes
@@ -11,7 +13,7 @@ Canonical source of truth for how billing state governs access across scopes.
 | Personal workspace | `User.subscriptionStatus` + `User.subscriptionPlan` | `User` model |
 | Institutional workspace | `TenantBilling.status` + `TenantBilling.plan` | `TenantBilling` model |
 
-A user may have **both** a personal subscription AND be part of an institutional workspace with its own license. These are independent.
+A user may have **both** a personal subscription AND be part of an institutional workspace with its own license. These are independent. Organizing as a parish does **not** convert the personal account; the personal subscription stays until canceled in the portal.
 
 ---
 
@@ -23,22 +25,24 @@ A user's **personal** access is determined solely by `User.subscriptionStatus` a
 
 | `subscriptionStatus` | Has access? | Notes |
 |---------------------|-------------|-------|
-| `active` | **Yes** | Full paid access if plan is `catechist_pro` or `catechist_ai` |
+| `active` | **Yes** | Full paid access if plan is `single` (legacy aliases `catechist_pro`, `catechist_ai` resolve to `single`) |
 | `cancel_at_period_end` | **Yes** — until `currentPeriodEnd` | Stripe: `cancel_at_period_end = true` on the subscription |
 | `past_due` | **Yes** (grace period) | Stripe: payment failed, retrying. Access preserved during dunning. |
 | `deleted` | **No** | Subscription fully canceled/expired |
-| `null` / `undefined` | **No** (free plan) | Never subscribed or trial expired |
+| `null` / `undefined` | **No** (free plan) | Never subscribed or product trial expired |
+
+Product trial is **7 days**, no card required (`SUBSCRIPTION_TRIAL_DAYS`).
 
 ### 2.2. Personal plan resolution
 
-- If `subscriptionStatus` is active-like (`active`, `cancel_at_period_end`, `past_due`) AND `subscriptionPlan` is a personal plan (`catechist_pro`, `catechist_ai`), the user has that plan.
+- If `subscriptionStatus` is active-like (`active`, `cancel_at_period_end`, `past_due`) AND `subscriptionPlan` is a personal plan (`single` or legacy `catechist_pro` / `catechist_ai`), the user has **Plano Catequista**.
 - In all other cases, the user has `catechist_free`.
-- Institutional plan values (`parish_essential`, `parish_complete`, `diocese`) on `User.subscription*` fields are **never** treated as personal plans. They indicate the user purchased an institutional plan and the fields are vestigial; institutional access is resolved through `TenantBilling`.
+- Institutional plan values (`unlimited`, legacy `parish_*`, `diocese`) on `User.subscription*` fields are **never** treated as personal plans. Institutional access is resolved through `TenantBilling`.
 
 ### 2.3. Personal transitions
 
 ```
-null → trial (no Stripe subscription, just free trial credits)
+null → trial (no Stripe subscription, 7-day product trial)
 null → active (checkout completed, webhook sets active)
 active → cancel_at_period_end (user cancels; Stripe sets cancel_at_period_end)
 cancel_at_period_end → active (user reactivates before period end)
@@ -56,17 +60,17 @@ A **parish's** institutional access is determined by `TenantBilling`, resolved i
 
 ### 3.1. Coverage resolution order (highest to lowest)
 
-1. **Diocese umbrella** — If the parish belongs to a diocese that has an **active** `TenantBilling` with plan `DIOCESE`, all parishes under that diocese are covered.
-2. **Parish own billing** — If the parish has its own **active** `TenantBilling` with any institutional plan (`PARISH_ESSENTIAL`, `PARISH_COMPLETE`, `PARISH`/legacy), that plan applies.
-3. **Owner umbrella** — If the parish owner (`ownerId`) has an **active** personal subscription with an institutional plan (`parish_complete`, `parish_essential`, `diocese`), OR owns another parish that has an active institutional `TenantBilling`, that coverage extends.
+1. **Diocese umbrella** — If the parish belongs to a diocese that has an **ACTIVE** `TenantBilling` with plan `UNLIMITED` or `DIOCESE`, all parishes under that diocese are covered (“coberta pela diocese”).
+2. **Parish own billing** — If the parish has its own **active** `TenantBilling` with an institutional plan (`unlimited` / Plano Paróquia, or legacy parish slugs), that plan applies.
+3. **Owner umbrella** — If the parish owner (`ownerId`) has an **active** personal subscription with an institutional plan, OR owns another parish that has an active institutional `TenantBilling`, that coverage extends.
 4. **Free fallback** — If none of the above apply, the parish has `CATECHIST_FREE`.
 
 ### 3.2. Status semantics for institutional access
 
 | `TenantBilling.status` | Has access? | Notes |
 |------------------------|-------------|-------|
-| `ACTIVE` | **Yes** | Paid license |
-| `TRIAL` | **Yes** — if `trialEndsAt >= now` | 30-day trial for new parishes |
+| `ACTIVE` | **Yes** | Paid license or complimentary (admin) |
+| `TRIAL` | **Yes** — if `trialEndsAt >= now` | **7-day** trial aligned with the product trial |
 | `TRIAL` | **No** — if `trialEndsAt < now` | Trial expired |
 | `PAST_DUE` | **Yes** (grace period) | Payment failed, retrying |
 | `CANCELED` | **No** | License canceled |
@@ -82,7 +86,7 @@ ACTIVE → PAST_DUE (payment fails)
 ACTIVE → CANCELED (owner cancels subscription; cascadeCancel fires)
 PAST_DUE → ACTIVE (payment recovered)
 PAST_DUE → CANCELED (dunning exhausted)
-CANCELED → ACTIVE (new subscription purchased)
+CANCELED → ACTIVE (new subscription purchased or admin complimentary)
 ```
 
 ---
@@ -91,9 +95,11 @@ CANCELED → ACTIVE (new subscription purchased)
 
 When a new institutional parish (type ≠ `PERSONAL`) is created:
 
-1. If the parish has a `dioceseId` and the diocese has an **active** `TenantBilling` with plan `DIOCESE` → **no `TenantBilling` created** (covered by diocese umbrella).
+1. If the parish has a `dioceseId` and the diocese has an **ACTIVE** `TenantBilling` with plan `UNLIMITED` or `DIOCESE` → **no `TenantBilling` created** (covered by diocese umbrella).
 2. If the creator (`ownerId`) has an **active** personal subscription with an institutional plan → the parish gets `ACTIVE` `TenantBilling` with the creator's plan.
-3. Otherwise → `TRIAL` for 30 days with `CATECHIST_FREE`.
+3. Otherwise → `TRIAL` for **7 days** with `CATECHIST_FREE`.
+
+Checkout of Plano Paróquia (`unlimited`) requires a non-personal workspace. Personal → parish is a migration that **creates** a `PARISH` workspace; it does not convert the personal space.
 
 ---
 
@@ -138,12 +144,15 @@ Rules:
 ### 6.3. New subscription
 - Only allowed when **no active subscription** exists for that scope
 - Creates a new Stripe Checkout session
+- Plano Paróquia (`unlimited`) checkout requires a non-personal workspace
+- Diocese is **not** sold via checkout; admin assigns `UNLIMITED`/`DIOCESE` on the diocese `TenantBilling`
 
 ### 6.4. Cancel
 - Default: schedule cancel at period end (`cancel_at_period_end: true`)
 - Access preserved until `currentPeriodEnd`
 - Immediate cancel (admin-only) requires explicit override
 - Never zero out plan locally before the final webhook
+- Canceling personal `single` does not cancel parish `TenantBilling`, and vice versa
 
 ### 6.5. Duplicate prevention
 - One active subscription per scope per customer
@@ -182,12 +191,12 @@ Rules:
 
 | User.subscriptionStatus | TenantBilling.status | Personal access | Institutional access |
 |------------------------|---------------------|-----------------|---------------------|
-| `active` (personal) | — | Pro/IA plan | — |
-| `cancel_at_period_end` | — | Pro/IA plan (until end) | — |
-| `past_due` | — | Pro/IA plan (grace) | — |
-| `deleted` / null | `ACTIVE` | Free | Parish plan |
-| `active` (institutional) | `ACTIVE` | Free | Parish plan |
-| `deleted` / null | `TRIAL` (valid) | Free | Free (trial) |
+| `active` (`single`) | — | Plano Catequista | — |
+| `cancel_at_period_end` | — | Plano Catequista (until end) | — |
+| `past_due` | — | Plano Catequista (grace) | — |
+| `deleted` / null | `ACTIVE` (`unlimited`) | Free | Plano Paróquia |
+| `active` (institutional vestigial) | `ACTIVE` | Free | Parish plan |
+| `deleted` / null | `TRIAL` (valid) | Free | Free (7-day trial) |
 | `deleted` / null | `TRIAL` (expired) | Free | Free |
 | `deleted` / null | `CANCELED` / null | Free | Free |
-| `deleted` / null | Diocese `ACTIVE` | Free | Diocese umbrella |
+| `deleted` / null | Diocese `ACTIVE` (`UNLIMITED`/`DIOCESE`) | Free | Diocese umbrella |

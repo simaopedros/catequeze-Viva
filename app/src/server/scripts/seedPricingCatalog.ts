@@ -172,7 +172,36 @@ export async function ensurePricingCatalogSeeded(db: CatalogSeedDb): Promise<{ c
     }
   }
 
+  await reopenParishPlanIfLaunchHidden(db);
+
   return { createdPlans, createdPrices };
+}
+
+/** Existing DBs still have unlimited hidden from the catequista-only launch. */
+async function reopenParishPlanIfLaunchHidden(db: CatalogSeedDb) {
+  const unlimited = await db.pricingPlan.findUnique({ where: { slug: 'unlimited' } });
+  if (!unlimited) return;
+  const launchHidden = unlimited.isPublic === false && unlimited.isActive === false;
+  const staleName =
+    unlimited.name === 'Plano Ilimitado' ||
+    unlimited.name === 'Unlimited Plan' ||
+    unlimited.name === 'Plan Ilimitado';
+  if (!launchHidden && !staleName) return;
+
+  const parish = DEFAULT_PLAN_LIST.find((plan) => plan.slug === 'unlimited');
+  if (!parish) return;
+
+  await db.pricingPlan.update({
+    where: { id: unlimited.id },
+    data: {
+      name: parish.name,
+      description: parish.description ?? null,
+      isActive: parish.isActive,
+      isPublic: parish.isPublic,
+      features: parish.features as any,
+      translations: parish.translations as any,
+    },
+  });
 }
 
 export async function seedPricingCatalog(prismaClient: PrismaClient): Promise<void> {

@@ -29,11 +29,20 @@
       {
         "id": "paroquia",
         "title": "Coordeno a catequese da paróquia",
-        "desc": "Nesta fase, a Catequese Viva é para o catequista cuidar da própria turma. Paróquias e dioceses entram depois.",
+        "desc": "Turmas, equipe e presença da paróquia no mesmo espaço institucional.",
         "href": "/#planos",
-        "cta": "Ver o plano do catequista",
-        "pill": "Paróquias em breve",
-        "micro": "Hoje o foco é você e a sua turma. Coordenação vem depois."
+        "cta": "Ver Plano Paróquia",
+        "pill": "Para a coordenação da paróquia",
+        "micro": "Equipe e turmas ilimitadas no workspace da paróquia."
+      },
+      {
+        "id": "diocese",
+        "title": "Sou da diocese",
+        "desc": "Licença que cobre as paróquias da diocese. Venda assistida com a equipe.",
+        "href": "/#planos",
+        "cta": "Falar com vendas",
+        "pill": "Venda assistida",
+        "micro": "A diocese assume a licença; as paróquias ficam cobertas."
       }
     ],
     "click_trigger": "Funciona no celular · Feito para a rotina da catequese",
@@ -169,8 +178,8 @@
     }
   ],
   "steps_cta": "Começar minha caminhada — 7 dias grátis",
-  "pricing_title": "Um plano simples, a serviço da sua missão",
-  "pricing_subtitle": "R$ 9,90/mês para até 3 turmas. Comece com 7 dias de teste gratuito — sem cartão e sem cobrança agora.",
+  "pricing_title": "Três caminhos: catequista, paróquia e diocese",
+  "pricing_subtitle": "Catequista R$ 9,90/mês. Paróquia a partir de R$ 99/mês. Diocese com a equipe de vendas. 7 dias de teste no Plano Catequista — sem cartão.",
   "plans": {
     "single": {
       "name": "Plano Catequista",
@@ -182,6 +191,29 @@
         "Chamada e histórico no celular",
         "Calendário da sua turma",
         "Portal para as famílias da sua turma"
+      ]
+    },
+    "unlimited": {
+      "name": "Plano Paróquia",
+      "audience": "Para a coordenação da paróquia",
+      "desc": "Turmas, catequizandos e equipe ilimitados no workspace da paróquia.",
+      "price": "R$ 99",
+      "features": [
+        "Turmas e equipe ilimitadas",
+        "Catequizandos ilimitados",
+        "Espaço institucional da paróquia",
+        "Comunicação com as famílias"
+      ]
+    },
+    "diocese": {
+      "name": "Plano Diocese",
+      "audience": "Para a diocese — venda assistida",
+      "desc": "Licença guarda-chuva que cobre as paróquias. Sem checkout público.",
+      "price": "Sob consulta",
+      "features": [
+        "Cobertura das paróquias da diocese",
+        "Licença atribuída pela equipe",
+        "Acompanhamento com vendas no WhatsApp"
       ]
     }
   },
@@ -212,7 +244,7 @@
     },
     {
       "q": "Preciso da paróquia para começar?",
-      "a": "Não. A conta é sua e a turma é sua: você cria, organiza e usa sem depender de coordenação. Paróquias e dioceses entram na plataforma numa fase futura."
+      "a": "Não. Você pode começar no espaço pessoal com o Plano Catequista. Quando precisar de equipe e mais turmas, organize como paróquia. A diocese entra por venda assistida e cobre as paróquias com licença ativa."
     },
     {
       "q": "Funciona no celular?",
@@ -462,7 +494,8 @@
   "faq_cta": "Começar minha caminhada — 7 dias grátis",
   "faq_cta_helper": "Sem cobrança agora · use no seu próximo encontro",
   "price_cta_single": "Começar os 7 dias na minha turma",
-  "price_cta_unlimited": "Começar teste gratuito de 7 dias",
+  "price_cta_unlimited": "Começar o Plano Paróquia",
+  "price_cta_diocese": "Falar com vendas sobre a diocese",
   "price_annual_equivalent": "Equivale a {{price}}/mês",
   "demo": {
     "badge": "Experimente sem criar conta",

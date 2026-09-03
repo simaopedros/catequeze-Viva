@@ -42,8 +42,8 @@ describe('seedPricingCatalog snapshot', () => {
         maxClasses: null,
         maxCatechumens: null,
         isSystem: false,
-        isPublic: false,
-        isActive: false,
+        isPublic: true,
+        isActive: true,
       },
       {
         slug: 'ai_credits_20',
@@ -147,5 +147,23 @@ describe('ensurePricingCatalogSeeded', () => {
     expect(createSpy.mock.calls.some((call: any) => call[0].data.slug === 'single')).toBe(false);
     expect(updateSpy).not.toHaveBeenCalled();
     expect(plans.get('single').name).toBe('Nome editado');
+  });
+
+  it('reopens a launch-hidden Plano Ilimitado as Plano Paróquia', async () => {
+    const { db, plans } = memoryCatalogDb();
+    plans.set('unlimited', {
+      id: 'u1',
+      slug: 'unlimited',
+      name: 'Plano Ilimitado',
+      isPublic: false,
+      isActive: false,
+      stripeProductId: null,
+    });
+
+    await ensurePricingCatalogSeeded(db);
+
+    expect(plans.get('unlimited').name).toBe('Plano Paróquia');
+    expect(plans.get('unlimited').isPublic).toBe(true);
+    expect(plans.get('unlimited').isActive).toBe(true);
   });
 });

@@ -36,8 +36,8 @@
     "aria": "Abrir conversa no WhatsApp de vendas"
   },
   "pricing": {
-    "title": "Um plano simples, a serviço da sua missão",
-    "subtitle": "Plano Catequista: R$ 9,90/mês (ou R$ 99/ano) para até 3 turmas. Comece com 7 dias de teste gratuito, sem cartão.",
+    "title": "Três caminhos: catequista, paróquia e diocese",
+    "subtitle": "Catequista R$ 9,90/mês (ou R$ 99/ano). Paróquia a partir de R$ 99/mês. Diocese sob consulta. 7 dias grátis, sem cartão.",
     "payment_card": "Cartão",
     "annual_savings": "Economize 17% no anual",
     "monthly_tab": "Mensal",
@@ -49,8 +49,19 @@
     "cta_paid": "Começar os 7 dias",
     "most_popular": "Feito para o catequista",
     "plan_desc": {
-      "single": "Para você cuidar da sua turma — chamada, histórico e calendário no mesmo lugar, com mais tempo para as pessoas. Cobre até 3 turmas, se você acompanhar mais de uma."
+      "single": "Para você cuidar da sua turma — chamada, histórico e calendário no mesmo lugar, com mais tempo para as pessoas. Cobre até 3 turmas, se você acompanhar mais de uma.",
+      "unlimited": "Para a paróquia: turmas, catequizandos e equipe ilimitados no espaço institucional."
     },
+    "diocese_name": "Plano Diocese",
+    "diocese_audience": "Para a diocese — venda assistida",
+    "diocese_desc": "Licença guarda-chuva que cobre as paróquias da diocese. Sem checkout público.",
+    "diocese_price": "Sob consulta",
+    "diocese_cta": "Falar com vendas sobre a diocese",
+    "diocese_features": [
+      "Cobertura das paróquias da diocese",
+      "Um contrato, várias paróquias",
+      "Atribuição da licença pela equipe"
+    ],
     "faq": [
       {
         "q": "Como conheço a plataforma antes de assinar?",
@@ -70,7 +81,7 @@
       },
       {
         "q": "E se a minha catequese crescer?",
-        "a": "O plano cobre até 3 turmas e 150 catequizandos. Se um dia você precisar de mais, fale com a gente — seus dados e o histórico da turma são preservados em qualquer mudança."
+        "a": "O Plano Catequista cobre até 3 turmas e 150 catequizandos. Se precisar de equipe e mais turmas, organize como paróquia (Plano Paróquia). Se a diocese assume, fale com vendas — a licença diocesana cobre as paróquias. Seus dados e o histórico da turma são preservados."
       },
       {
         "q": "Os dados ficam seguros?",
@@ -116,11 +127,13 @@
     "covered_by_diocese": "Coberta pela licença da {{name}}",
     "covered_by_license": "Coberta pela sua licença",
     "plans": {
-      "catechist_free": "Catequista Grátis",
-      "catechist_pro": "Catequista Pro",
-      "catechist_ai": "Catequista editorial",
-      "parish": "Paróquia",
-      "diocese": "Diocese",
+      "catechist_free": "Sem assinatura",
+      "single": "Plano Catequista",
+      "unlimited": "Plano Paróquia",
+      "catechist_pro": "Plano Catequista",
+      "catechist_ai": "Plano Catequista",
+      "parish": "Plano Paróquia",
+      "diocese": "Plano Diocese",
       "community": "Comunidade"
     },
     "roles": {
@@ -133,7 +146,8 @@
       "PASTORAL_VIEWER": "Visitante pastoral",
       "CONTENT_REVIEWER": "Revisor de conteúdo",
       "GUARDIAN": "Responsável",
-      "CATECHUMEN": "Catequizando"
+      "CATECHUMEN": "Catequizando",
+      "PERSONAL_OWNER": "Proprietário"
     }
   },
   "upload_docs": {
