@@ -391,6 +391,8 @@ model User {
   reviewedSocialReports  SocialReport[]   @relation("SocialReportReviewer")
   socialFollowing        SocialFollow[]   @relation("SocialFollower")
   socialFollowers        SocialFollow[]   @relation("SocialFollowed")
+
+  emailPreferences       EmailPreference[]
 }
 
 // ─── Multi-tenant ─────────────────────────────────────────────────────────────
@@ -1937,6 +1939,88 @@ model SocialFollow {
 
   @@unique([followerId, authorId])
   @@index([authorId])
+}
+
+// ─── Email platform (provider-agnostic outbox) ───────────────────────────────
+
+enum EmailMessageStatus {
+  QUEUED
+  SENDING
+  SENT
+  DELIVERED
+  BOUNCED
+  FAILED
+  SUPPRESSED
+  CANCELLED
+}
+
+enum EmailSuppressionReason {
+  HARD_BOUNCE
+  COMPLAINT
+  UNSUBSCRIBE
+}
+
+enum EmailTopic {
+  LIFECYCLE
+  PRODUCT_UPDATES
+  PASTORAL_ANNOUNCEMENTS
+}
+
+model EmailMessage {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  scheduledAt DateTime @default(now())
+  sentAt    DateTime?
+
+  messageId         String
+  topic             EmailTopic?
+  stream            String   @default("transactional")
+  to                String
+  toHash            String
+  userId            String?
+  subject           String
+  provider          String   @default("resend")
+  providerMessageId String?
+  status            EmailMessageStatus @default(QUEUED)
+  idempotencyKey    String   @unique
+  payload           Json
+  attempts          Int      @default(0)
+  lastError         String?
+
+  @@index([status, scheduledAt])
+  @@index([providerMessageId])
+  @@index([toHash, messageId])
+  @@index([userId, messageId])
+}
+
+model EmailSuppression {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  email     String
+  emailHash String
+  reason    EmailSuppressionReason
+  source    String
+
+  @@unique([emailHash, reason])
+  @@index([emailHash])
+}
+
+model EmailPreference {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  email      String
+  topic      EmailTopic
+  optedOutAt DateTime?
+
+  @@unique([email, topic])
+  @@index([userId])
 }
 
 

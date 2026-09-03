@@ -1931,12 +1931,12 @@ export const legal_pt_BR_core = {
         },
         "rights": {
           "title": "5. Seus direitos (LGPD)",
-          "text": "Acessar, corrigir, exportar ou solicitar exclusão dos seus dados. Para exercer esses direitos, acesse as Configurações no aplicativo ou entre em contato pelo email contato@catequeseviva.com.br."
+          "text": "Acessar, corrigir, exportar ou solicitar exclusão dos seus dados. Para exercer esses direitos, acesse as Configurações no aplicativo ou entre em contato pelo email contato@catechis.app."
         },
         "dpo": {
           "title": "6. Contato do DPO",
           "email_label": "Email:",
-          "email": "privacidade@catequeseviva.com.br"
+          "email": "privacidade@catechis.app"
         }
       }
     }
@@ -2091,7 +2091,7 @@ export const public_pt_BR_core = {
         },
         {
           "q": "E o reembolso do plano anual?",
-          "a": "Planos anuais não têm reembolso automático. O cancelamento encerra a renovação, mas o acesso continua até o fim do período pago. Reembolso proporcional é avaliado caso a caso via contato@catequeseviva.com.br."
+          "a": "Planos anuais não têm reembolso automático. O cancelamento encerra a renovação, mas o acesso continua até o fim do período pago. Reembolso proporcional é avaliado caso a caso via contato@catechis.app."
         },
         {
           "q": "E se a minha catequese crescer?",

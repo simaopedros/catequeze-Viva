@@ -224,7 +224,7 @@ action changeSubscriptionPlan {
 
 api paymentsWebhook {
   fn: import { paymentsWebhook } from "@src/payment/webhook",
-  entities: [User, UserAiCredits, TenantBilling, Diocese, Parish, Membership, PricingEvent, TrackedEvent, PricingPlan, PricingPlanPrice],
+  entities: [User, UserAiCredits, TenantBilling, Diocese, Parish, Membership, PricingEvent, TrackedEvent, PricingPlan, PricingPlanPrice, EmailMessage, EmailSuppression, EmailPreference],
   middlewareConfigFn: import { paymentsMiddlewareConfigFn } from "@src/payment/webhook",
   httpRoute: (POST, "/payments-webhook")
 }
@@ -647,7 +647,7 @@ query getParishTeam {
 
 action inviteUserToParish {
   fn: import { inviteUserToParish } from "@src/server/operations/memberOperations",
-  entities: [Membership, User, Parish, Community, AuditLog, PendingInvitation, GuardianProfile, CatechumenProfile, Household, CatechesisClass, ClassCatechist]
+  entities: [Membership, User, Parish, Community, AuditLog, PendingInvitation, GuardianProfile, CatechumenProfile, Household, CatechesisClass, ClassCatechist, EmailMessage, EmailSuppression, EmailPreference]
 }
 
 action acceptInvitation {
@@ -667,7 +667,7 @@ action acceptInvitationByToken {
 
 action resendInvitation {
   fn: import { resendInvitation } from "@src/server/operations/memberOperations",
-  entities: [PendingInvitation, Membership, Parish, User, AuditLog, CatechesisClass]
+  entities: [PendingInvitation, Membership, Parish, User, AuditLog, CatechesisClass, EmailMessage, EmailSuppression, EmailPreference]
 }
 
 action cancelInvitation {
@@ -735,7 +735,7 @@ query listParishCatechists {
 
 action createClass {
   fn: import { createClass } from "@src/server/operations/classOperations",
-  entities: [CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, PricingPlan, PricingPlanPrice]
+  entities: [CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, PricingPlan, PricingPlanPrice, EmailMessage, EmailSuppression, EmailPreference]
 }
 
 action updateClass {
@@ -760,7 +760,7 @@ action removeCatechistFromClass {
 
 action enrollCatechumen {
   fn: import { enrollCatechumen } from "@src/server/operations/classOperations",
-  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, PricingPlan, PricingPlanPrice]
+  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, PricingPlan, PricingPlanPrice, EmailMessage, EmailSuppression, EmailPreference]
 }
 
 action bulkEnrollCatechumens {
@@ -915,7 +915,7 @@ query listMeetingsForClasses {
 
 action saveAttendance {
   fn: import { saveAttendance } from "@src/server/operations/meetingOperations",
-  entities: [AttendanceRecord, Membership, Meeting, CatechesisClass, ClassEnrollment]
+  entities: [AttendanceRecord, Membership, Meeting, CatechesisClass, ClassEnrollment, EmailMessage, EmailSuppression, EmailPreference]
 }
 
 action saveAttendanceBatch {
@@ -1614,13 +1614,31 @@ api readinessCheckApi {
 api maintenanceApi {
   fn: import { maintenanceHandler } from "@src/server/api/maintenance",
   httpRoute: (POST, "/api/internal/maintenance"),
-  entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish, SocialMedia, LifecycleEmailLog, Membership, ClassEnrollment, AttendanceRecord, PricingPlan, PricingPlanPrice, PricingEvent]
+  entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish, SocialMedia, LifecycleEmailLog, Membership, ClassEnrollment, AttendanceRecord, PricingPlan, PricingPlanPrice, PricingEvent, EmailMessage, EmailSuppression, EmailPreference]
 }
 
 api lifecycleUnsubscribeApi {
   fn: import { lifecycleUnsubscribeHandler } from "@src/server/api/lifecycleUnsubscribe",
   httpRoute: (GET, "/api/lifecycle/unsubscribe"),
-  entities: [User]
+  entities: [User, EmailPreference]
+}
+
+api emailUnsubscribeApi {
+  fn: import { emailUnsubscribeHandler } from "@src/server/api/emailUnsubscribe",
+  httpRoute: (GET, "/api/email/unsubscribe"),
+  entities: [User, EmailPreference]
+}
+
+api emailUnsubscribeOneClickApi {
+  fn: import { emailUnsubscribeHandler } from "@src/server/api/emailUnsubscribe",
+  httpRoute: (POST, "/api/email/unsubscribe"),
+  entities: [User, EmailPreference]
+}
+
+api emailWebhookApi {
+  fn: import { emailWebhookHandler } from "@src/server/api/emailWebhook",
+  httpRoute: (POST, "/api/email/webhooks/resend"),
+  entities: [User, EmailMessage, EmailSuppression, EmailPreference]
 }
 
 action generateCatechumenUploadToken {
@@ -1792,7 +1810,7 @@ page PricingPage {
 //#region Resend Email Sender
 action sendMessageEmail {
   fn: import { sendMessageEmail } from "@src/server/operations/sendMessageOperation",
-  entities: [User, Membership, Parish, CatechumenProfile, GuardianProfile, Household, PendingInvitation]
+  entities: [User, Membership, Parish, CatechumenProfile, GuardianProfile, Household, PendingInvitation, EmailMessage, EmailSuppression, EmailPreference]
 }
 //#endregion
 
@@ -2015,7 +2033,7 @@ action markMessageAsRead {
 
 action sendClassAnnouncementByEmail {
   fn: import { sendClassAnnouncementByEmail } from "@src/server/operations/announcementEmailOperations",
-  entities: [ClassEnrollment, CatechumenProfile, Household, GuardianProfile, CatechesisClass, ClassCatechist, Membership, Parish]
+  entities: [ClassEnrollment, CatechumenProfile, Household, GuardianProfile, CatechesisClass, ClassCatechist, Membership, Parish, EmailMessage, EmailSuppression, EmailPreference]
 }
 
 query getMessageReadReceipts {
@@ -2278,7 +2296,19 @@ query getMySupportMessages {
 
 action replyToContactMessage {
   fn: import { replyToContactMessage } from "@src/server/operations/supportOperations",
-  entities: [ContactFormMessage, AuditLog, User, Notification]
+  entities: [ContactFormMessage, AuditLog, User, Notification, EmailMessage, EmailSuppression, EmailPreference]
+}
+
+query getMyEmailPreferences {
+  fn: import { getMyEmailPreferences } from "@src/server/operations/emailPreferenceOperations",
+  entities: [User, EmailPreference],
+  auth: true
+}
+
+action updateMyEmailPreferences {
+  fn: import { updateMyEmailPreferences } from "@src/server/operations/emailPreferenceOperations",
+  entities: [User, EmailPreference],
+  auth: true
 }
 
 query getAuditLogs {

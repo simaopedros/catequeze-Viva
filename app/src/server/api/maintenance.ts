@@ -8,6 +8,7 @@ import { sendRemindersJob } from "../scripts/remindersJob";
 import { reconcileSocialMediaJob } from "../scripts/socialMediaReconcileJob";
 import { expireSubscriptionsJob } from "../scripts/subscriptionExpirationJob";
 import { lifecycleNudgeJob } from "../scripts/lifecycleNudgeJob";
+import { processEmailOutbox } from "../email/service";
 
 type MaintenanceTask = {
   name: string;
@@ -93,6 +94,10 @@ export async function maintenanceHandler(
       {
         name: "lifecycleNudge",
         run: () => lifecycleNudgeJob(undefined, context),
+      },
+      {
+        name: "emailOutbox",
+        run: () => processEmailOutbox(context, 100),
       },
       { name: "dailyStats", run: () => calculateDailyStats(undefined, context) },
     ],

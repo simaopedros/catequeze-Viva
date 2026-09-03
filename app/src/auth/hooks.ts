@@ -6,6 +6,8 @@ import { config } from 'wasp/server';
 import { PRODUCT_TRIAL_PLAN_ID } from '../shared/pricing';
 import { isMetaCapiConfigured, sendMetaEvent } from '../payment/meta/metaCapi';
 import { logger } from '../server/logger';
+import { emitProductEventSafe } from '../server/email/events';
+import { PRODUCT_EVENT } from '../shared/emailCatalog';
 
 interface OnAfterSignupArgs {
   user: { id: string; email: string | null };
@@ -113,6 +115,24 @@ export const onAfterSignup = async ({
         error: error instanceof Error ? error.message : String(error),
       });
     }
+  }
+
+  if (email && !isFamilyPortalSignup) {
+    emitProductEventSafe({
+      name: PRODUCT_EVENT.USER_SIGNED_UP,
+      email,
+      userId: user.id,
+      isFamilyPortal: false,
+      locale: 'pt-BR',
+      context: {
+        entities: {
+          EmailMessage: prisma.emailMessage,
+          EmailSuppression: prisma.emailSuppression,
+          EmailPreference: prisma.emailPreference,
+          User: prisma.user,
+        },
+      },
+    });
   }
 
   if (!email) return;

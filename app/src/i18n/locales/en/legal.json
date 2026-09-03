@@ -46,8 +46,8 @@
         ]
       },
       "minors": { "title": "4. Protection of minors' data", "text": "Children's and adolescents' data receives special protection: minimal collection, mandatory parental consent, restricted access, and no sharing with third parties." },
-      "rights": { "title": "5. Your rights (LGPD)", "text": "Access, correct, export, or request deletion of your data. To exercise these rights, go to Settings in the app or contact contato@catequeseviva.com.br." },
-      "dpo": { "title": "6. DPO Contact", "email_label": "Email:", "email": "privacidade@catequeseviva.com.br" }
+      "rights": { "title": "5. Your rights (LGPD)", "text": "Access, correct, export, or request deletion of your data. To exercise these rights, go to Settings in the app or contact contato@catechis.app." },
+      "dpo": { "title": "6. DPO Contact", "email_label": "Email:", "email": "privacidade@catechis.app" }
     }
   }
 }

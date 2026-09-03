@@ -2770,6 +2770,73 @@ export const emails_es = {
     "unsubscribed_body": "Ya no recibirás correos de seguimiento de tu cuenta en Catequese Viva.",
     "unsubscribe_invalid_title": "Enlace no válido",
     "unsubscribe_invalid_body": "Este enlace para cancelar la suscripción no es válido o ha caducado.",
+    "welcome": {
+      "subject": "Bienvenido a Catequese Viva, {{name}}",
+      "heading": "Tu catequesis empieza aquí",
+      "body": "Hola, {{name}}. Tu cuenta está lista. Crea el primer grupo para pasar lista y preparar encuentros en el mismo lugar.",
+      "cta": "Abrir el panel"
+    },
+    "invite": {
+      "family": {
+        "subject": "Invitación al Portal de la Familia — {{location}}",
+        "heading": "Te invitaron al Portal de la Familia",
+        "body": "Te invitaron al Portal de la Familia de \"{{location}}\" como {{role}}.\n\nEn este portal sigues la catequesis de tu familia (encuentros, asistencia y documentos).\n\nPara aceptar, abre: {{link}}\n\nEsta invitación caduca en 30 días.",
+        "cta": "Aceptar invitación"
+      },
+      "staff": {
+        "subject": "Invitación al equipo de catequesis — {{location}}",
+        "heading": "Invitación al equipo de catequesis",
+        "body": "Te invitaron a integrar el equipo de catequesis de \"{{location}}\" como {{role}}.\n\nEste acceso es del panel pastoral (coordinación y catequistas), no del Portal de la Familia.\n\nPara aceptar, abre: {{link}}\n\nEsta invitación caduca en 30 días.",
+        "cta": "Aceptar invitación"
+      },
+      "footer": "— Equipo Catequese Viva"
+    },
+    "support_reply": {
+      "subject": "Respuesta del soporte — Catequese Viva",
+      "heading": "Respuesta del soporte",
+      "greeting": "Hola {{name}},",
+      "intro": "Recibimos tu mensaje. Nuestra respuesta es:",
+      "outro": "También puedes ver esta respuesta en el centro de soporte de Catequese Viva.",
+      "cta": "Abrir soporte",
+      "footer": "Catequese Viva · soporte"
+    },
+    "billing": {
+      "footer": "Catequese Viva · suscripción",
+      "canceled": {
+        "subject": "Tu suscripción se encerrará",
+        "heading": "El acceso sigue hasta el fin del período pagado",
+        "body": "Hola, {{name}}. Recibimos la cancelación. Sigues con acceso hasta el fin del período ya pagado. Si cambiaste de opinión, reactívala en Suscripción.",
+        "cta": "Ver suscripción"
+      },
+      "payment_failed": {
+        "subject": "No pudimos procesar el pago",
+        "heading": "Falló el pago de la suscripción",
+        "body": "Hola, {{name}}. Actualiza el método de pago para no perder el acceso a la catequesis.",
+        "cta": "Actualizar pago"
+      },
+      "institutional_trial_d3": {
+        "subject": "Quedan 3 días de la prueba de la parroquia",
+        "heading": "Quedan 3 días de la prueba de la parroquia",
+        "body": "Hola, {{name}}. El período de prueba de {{parishName}} termina en 3 días. Abre Suscripción para continuar.",
+        "cta": "Ver suscripción"
+      },
+      "institutional_trial_d1": {
+        "subject": "La prueba de la parroquia termina mañana",
+        "heading": "La prueba de la parroquia termina mañana",
+        "body": "Hola, {{name}}. El período de prueba de {{parishName}} termina mañana. Abre Suscripción para continuar.",
+        "cta": "Ver suscripción"
+      }
+    },
+    "preferences": {
+      "title": "Preferencias de correo",
+      "lifecycle": "Consejos de activación, prueba y retorno a la cuenta",
+      "product_updates": "Novedades del producto y boletín",
+      "pastoral_announcements": "Comunicados de los grupos y de la parroquia",
+      "transactional_note": "Los correos de acceso, invitación y factura no se pueden desactivar."
+    },
+    "broadcast": {
+      "footer": "Recibes este correo porque te suscribiste a las novedades de Catequese Viva."
+    },
     "campaigns": {
       "activate_create_class": {
         "subject": "Crea tu primer grupo en Catequese Viva",
@@ -3868,12 +3935,12 @@ export const legal_es = {
         },
         "rights": {
           "title": "5. Sus derechos (LGPD)",
-          "text": "Acceder, corregir, exportar o solicitar eliminación de sus datos. Para ejercer estos derechos, acceda a Configuración en la aplicación o contacte contato@catequeseviva.com.br."
+          "text": "Acceder, corregir, exportar o solicitar eliminación de sus datos. Para ejercer estos derechos, acceda a Configuración en la aplicación o contacte contato@catechis.app."
         },
         "dpo": {
           "title": "6. Contacto del DPO",
           "email_label": "Email:",
-          "email": "privacidade@catequeseviva.com.br"
+          "email": "privacidade@catechis.app"
         }
       }
     }
@@ -4854,7 +4921,7 @@ export const public_es = {
         },
         {
           "q": "¿Y el reembolso del plan anual?",
-          "a": "Los planes anuales no tienen reembolso automático. La cancelación detiene la renovación, pero el acceso continúa hasta el fin del período pagado. El reembolso proporcional se evalúa caso a caso vía contato@catequeseviva.com.br."
+          "a": "Los planes anuales no tienen reembolso automático. La cancelación detiene la renovación, pero el acceso continúa hasta el fin del período pagado. El reembolso proporcional se evalúa caso a caso vía contato@catechis.app."
         },
         {
           "q": "¿Y si mi catequesis crece?",
@@ -5222,7 +5289,13 @@ export const settings_es = {
     "different_parishes": "Las parroquias de origen y destino deben ser diferentes.",
     "migration_success": "¡Migración completada! {{classes}} grupos, {{households}} familias, {{members}} miembros transferidos.",
     "migration_error": "Error al ejecutar migración.",
-    "privacy_notice": "Sus datos están protegidos conforme a la LGPD. Ningún dato se comparte sin consentimiento."
+    "privacy_notice": "Sus datos están protegidos conforme a la LGPD. Ningún dato se comparte sin consentimiento.",
+    "email_preferences": "Preferencias de correo",
+    "email_preferences_desc": "Elige qué correos de Catequese Viva quieres recibir. Acceso, invitaciones y facturas siguen activos.",
+    "email_pref_lifecycle": "Consejos de activación, prueba y retorno a la cuenta",
+    "email_pref_product": "Novedades del producto y boletín",
+    "email_pref_pastoral": "Comunicados de los grupos y de la parroquia",
+    "email_pref_saved": "Preferencias de correo guardadas."
   } as const;
 
 export const social_es = {

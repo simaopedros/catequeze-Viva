@@ -31,6 +31,38 @@ type EmailsNs = {
   unsubscribed_body: string;
   unsubscribe_invalid_title: string;
   unsubscribe_invalid_body: string;
+  welcome: SimpleCampaignCopy;
+  invite: {
+    family: SimpleCampaignCopy;
+    staff: SimpleCampaignCopy;
+    footer: string;
+  };
+  support_reply: {
+    subject: string;
+    heading: string;
+    greeting: string;
+    intro: string;
+    outro: string;
+    cta: string;
+    footer: string;
+  };
+  billing: {
+    footer: string;
+    canceled: SimpleCampaignCopy;
+    payment_failed: SimpleCampaignCopy;
+    institutional_trial_d3: SimpleCampaignCopy;
+    institutional_trial_d1: SimpleCampaignCopy;
+  };
+  preferences: {
+    title: string;
+    lifecycle: string;
+    product_updates: string;
+    pastoral_announcements: string;
+    transactional_note: string;
+  };
+  broadcast: {
+    footer: string;
+  };
   campaigns: {
     activate_create_class: SimpleCampaignCopy;
     activate_add_people: SimpleCampaignCopy;

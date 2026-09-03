@@ -1,12 +1,16 @@
 import { logger } from "../logger";
 import { SUBSCRIPTION_TRIAL_DAYS } from "../../shared/pricing";
-import { Resend } from "resend";
+import { EMAIL_MESSAGE, PRODUCT_EVENT } from "../../shared/emailCatalog";
+import { enqueueEmail } from "../email/service";
+import { emitProductEventSafe } from "../email/events";
+import { appBaseUrl } from "../email/config";
+import { resolveUserLocale } from "../i18n/serverLocale";
 
 /**
  * Daily job:
  * 1. Expire TenantBilling TRIAL past trialEndsAt
  * 2. Expire User product trials past SUBSCRIPTION_TRIAL_DAYS from createdAt
- * 3. Send D-3 / D-1 reminders for institutional TenantBilling TRIAL
+ * 3. Queue D-3 / D-1 reminders for institutional TenantBilling TRIAL
  *
  * Personal product-trial D-3/D-1 emails live in lifecycleNudgeJob.
  */
@@ -20,38 +24,6 @@ function startOfDay(d: Date) {
 function daysBetween(from: Date, to: Date) {
   const ms = startOfDay(to).getTime() - startOfDay(from).getTime();
   return Math.round(ms / (24 * 60 * 60 * 1000));
-}
-
-async function sendTrialEmail(to: string, subject: string, body: string) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey || !to) return false;
-  try {
-    const resend = new Resend(apiKey);
-    const { error } = await resend.emails.send({
-      from: "Catequese Viva <noreply@catechis.app>",
-      to,
-      subject,
-      html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;line-height:1.5">
-        <h2 style="color:#071A2D">${subject}</h2>
-        <p style="color:#334155">${body.replace(/\n/g, "<br/>")}</p>
-        <p style="margin-top:24px"><a href="${
-          process.env.WASP_WEB_CLIENT_URL || "https://app.catechis.app"
-        }/app/billing"
-          style="display:inline-block;background:#071A2D;color:#fff;padding:10px 16px;text-decoration:none;border-radius:4px">
-          Ver assinatura
-        </a></p>
-        <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0"/>
-        <p style="color:#94a3b8;font-size:12px">Catequese Viva · período de teste</p>
-      </div>`,
-    });
-    return !error;
-  } catch (e: any) {
-    logger.warn("[subscriptionExpirationJob] trial email failed", {
-      to,
-      error: e?.message,
-    });
-    return false;
-  }
 }
 
 export const expireSubscriptionsJob = async (
@@ -69,7 +41,6 @@ export const expireSubscriptionsJob = async (
   let remindersSent = 0;
 
   try {
-    // 1. Expire trials on TenantBilling
     const expiredTrials = await context.entities.TenantBilling.findMany({
       where: {
         status: "TRIAL",
@@ -89,7 +60,6 @@ export const expireSubscriptionsJob = async (
       expiredCount++;
     }
 
-    // 2. Expire product trials on User
     const trialCutoff = new Date(
       now.getTime() - SUBSCRIPTION_TRIAL_DAYS * 24 * 60 * 60 * 1000,
     );
@@ -99,7 +69,12 @@ export const expireSubscriptionsJob = async (
         paymentProcessorUserId: null,
         createdAt: { lt: trialCutoff },
       },
-      select: { id: true },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        locale: true,
+      },
     });
 
     for (const user of expiredUserTrials) {
@@ -111,9 +86,18 @@ export const expireSubscriptionsJob = async (
         },
       });
       expiredCount++;
+      if (user.email) {
+        emitProductEventSafe({
+          name: PRODUCT_EVENT.TRIAL_EXPIRED,
+          email: user.email,
+          userId: user.id,
+          firstName: user.firstName,
+          locale: resolveUserLocale(user),
+          context,
+        });
+      }
     }
 
-    // 3. D-3 / D-1 for institutional TenantBilling TRIAL (notify parish owner)
     const soon = new Date(now.getTime() + 4 * 24 * 60 * 60 * 1000);
     const billingTrials = await context.entities.TenantBilling.findMany({
       where: {
@@ -155,37 +139,45 @@ export const expireSubscriptionsJob = async (
         if (existing) continue;
       }
 
-      const isPt = !owner.locale || owner.locale.startsWith("pt");
-      const title =
+      const locale = resolveUserLocale(owner);
+      const messageId =
         daysLeft === 1
-          ? isPt
-            ? "Teste da paróquia termina amanhã"
-            : "Parish trial ends tomorrow"
-          : isPt
-            ? "Restam 3 dias do teste da paróquia"
-            : "3 days left on parish trial";
-      const body = isPt
-        ? `O período de teste de ${
-            billing.parish.name || "sua paróquia"
-          } termina em ${daysLeft} dia(s). Acesse Assinatura para continuar.`
-        : `The trial for ${
-            billing.parish.name || "your parish"
-          } ends in ${daysLeft} day(s). Open Billing to continue.`;
+          ? EMAIL_MESSAGE.BILLING_INSTITUTIONAL_TRIAL_D1
+          : EMAIL_MESSAGE.BILLING_INSTITUTIONAL_TRIAL_D3;
 
       if (context.entities.Notification) {
         await context.entities.Notification.create({
           data: {
             userId: owner.id,
             type: "SYSTEM",
-            title,
-            body,
+            title:
+              daysLeft === 1
+                ? "Teste da paróquia termina amanhã"
+                : "Restam 3 dias do teste da paróquia",
+            body: `O período de teste de ${
+              billing.parish.name || "sua paróquia"
+            } termina em ${daysLeft} dia(s).`,
             link: "/app/billing",
             entityType: "TRIAL_REMINDER",
             entityId: marker,
           },
         });
       }
-      if (owner.email) await sendTrialEmail(owner.email, title, body);
+      if (owner.email) {
+        await enqueueEmail({
+          messageId,
+          to: owner.email,
+          userId: owner.id,
+          locale,
+          payload: {
+            name: owner.firstName || "",
+            parishName: billing.parish.name || "",
+            ctaUrl: `${appBaseUrl()}/app/billing`,
+          },
+          idempotencyKey: `billing.institutional_trial:${billing.id}:d${daysLeft}`,
+          context,
+        });
+      }
       remindersSent++;
     }
 

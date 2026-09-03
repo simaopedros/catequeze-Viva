@@ -46,8 +46,8 @@
         ]
       },
       "minors": { "title": "4. Protección de datos de menores", "text": "Los datos de niños y adolescentes reciben protección especial: recopilación mínima, consentimiento parental obligatorio, acceso restringido y no compartición con terceros." },
-      "rights": { "title": "5. Sus derechos (LGPD)", "text": "Acceder, corregir, exportar o solicitar eliminación de sus datos. Para ejercer estos derechos, acceda a Configuración en la aplicación o contacte contato@catequeseviva.com.br." },
-      "dpo": { "title": "6. Contacto del DPO", "email_label": "Email:", "email": "privacidade@catequeseviva.com.br" }
+      "rights": { "title": "5. Sus derechos (LGPD)", "text": "Acceder, corregir, exportar o solicitar eliminación de sus datos. Para ejercer estos derechos, acceda a Configuración en la aplicación o contacte contato@catechis.app." },
+      "dpo": { "title": "6. Contacto del DPO", "email_label": "Email:", "email": "privacidade@catechis.app" }
     }
   }
 }

@@ -1,14 +1,8 @@
 import { HttpError } from 'wasp/server';
-import { Resend } from 'resend';
 import { MembershipStatus } from '@prisma/client';
 import { resolveWorkspaceAccess, isClassInScope } from './sharedScope';
-
-/** Resend accepts up to 100 emails per batch request. */
-const RESEND_BATCH_SIZE = 100;
-
-function escapeHtml(unsafe: string): string {
-  return unsafe.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-}
+import { EMAIL_MESSAGE } from '../../shared/emailCatalog';
+import { enqueueEmail } from '../email/service';
 
 function isCoordinatorOrAbove(role: string): boolean {
   return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(role);
@@ -60,9 +54,6 @@ export const sendClassAnnouncementByEmail = async (
 
   await assertCanAnnounceToClass(context, args.classId);
 
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) throw new HttpError(500, 'Email não configurado.');
-
   const enrollments = await context.entities.ClassEnrollment.findMany({
     where: { classId: args.classId, status: 'ENROLLED' },
     include: {
@@ -87,40 +78,27 @@ export const sendClassAnnouncementByEmail = async (
     throw new HttpError(400, 'Nenhum responsável com email encontrado nesta turma.');
   }
 
-  const resend = new Resend(apiKey);
-  const safeBody = escapeHtml(args.body).replace(/\n/g, '<br>');
-  const html = `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px">
-<h2 style="color:#4f46e5">${escapeHtml(args.subject)}</h2>
-<div style="line-height:1.6;color:#333;margin:16px 0">${safeBody}</div>
-<hr style="border:none;border-top:1px solid #e5e7eb"/>
-<p style="color:#6b7280;font-size:12px">Enviado pela Catequese Viva • Gerencie suas notificações em Configurações</p>
-</div>`;
-
-  // One batch API call per RESEND_BATCH_SIZE recipients instead of one HTTP
-  // request per guardian; batches run sequentially to respect provider limits.
   const recipients = [...guardianEmails];
   let sent = 0;
   let failed = 0;
-  for (let i = 0; i < recipients.length; i += RESEND_BATCH_SIZE) {
-    const chunk = recipients.slice(i, i + RESEND_BATCH_SIZE);
+  const batchId = `${args.classId}:${Date.now()}`;
+  for (const to of recipients) {
     try {
-      const { data, error } = await resend.batch.send(
-        chunk.map((to) => ({
-          from: 'Catequese Viva <comunicados@catequeseviva.com.br>',
-          to,
+      const result = await enqueueEmail({
+        messageId: EMAIL_MESSAGE.PASTORAL_ANNOUNCEMENT,
+        to,
+        payload: {
           subject: args.subject,
-          html,
-        })),
-      );
-      if (error) {
-        failed += chunk.length;
-      } else {
-        const accepted = data?.data?.length ?? chunk.length;
-        sent += accepted;
-        failed += chunk.length - accepted;
-      }
+          heading: args.subject,
+          body: args.body,
+        },
+        idempotencyKey: `pastoral.announcement:${batchId}:${to}`,
+        context,
+      });
+      if (result.skipped) failed += 1;
+      else sent += 1;
     } catch {
-      failed += chunk.length;
+      failed += 1;
     }
   }
 

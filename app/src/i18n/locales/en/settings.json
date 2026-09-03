@@ -49,5 +49,11 @@
   "different_parishes": "Source and destination parishes must be different.",
   "migration_success": "Migration complete! {{classes}} classes, {{households}} families, {{members}} members transferred.",
   "migration_error": "Error executing migration.",
-  "privacy_notice": "Your data is protected under LGPD. No data is shared without consent."
+  "privacy_notice": "Your data is protected under LGPD. No data is shared without consent.",
+  "email_preferences": "Email preferences",
+  "email_preferences_desc": "Choose which Catequese Viva emails you want to receive. Login, invites, and invoices stay on.",
+  "email_pref_lifecycle": "Activation tips, trial, and win-back emails",
+  "email_pref_product": "Product news and newsletter",
+  "email_pref_pastoral": "Class and parish announcements",
+  "email_pref_saved": "Email preferences saved."
 }

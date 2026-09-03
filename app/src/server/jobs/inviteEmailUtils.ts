@@ -3,7 +3,8 @@ import {
   STAFF_PORTAL_HOST,
   isFamilyPortalRole,
 } from '../../shared/portal';
-import { sendRawTransactionalEmail } from '../operations/sendMessageOperation';
+import { EMAIL_MESSAGE } from '../../shared/emailCatalog';
+import { enqueueEmail } from '../email/service';
 
 export function inviteLink(token: string, role?: string): string {
   const host =
@@ -86,12 +87,21 @@ export function buildInviteEmailContent(
 
 export async function deliverInviteEmail(
   payload: InviteEmailPayload,
-  _context: any,
+  context?: any,
 ): Promise<void> {
   const content = buildInviteEmailContent(payload);
-  await sendRawTransactionalEmail({
+  await enqueueEmail({
+    messageId:
+      content.portal === 'family'
+        ? EMAIL_MESSAGE.INVITE_FAMILY
+        : EMAIL_MESSAGE.INVITE_STAFF,
     to: payload.to,
-    subject: content.subject,
-    body: content.body,
+    payload: {
+      location: payload.location,
+      roleLabel: roleLabel(payload.role),
+      link: content.link,
+    },
+    idempotencyKey: `invite:${payload.token}`,
+    context,
   });
 }

@@ -9,7 +9,6 @@ import { computeActivationFlags } from "../../shared/activation";
 import { logger } from "../logger";
 import { formatServerDate, resolveUserLocale } from "../i18n/serverLocale";
 import { resolveCampaignCopy } from "../lifecycle/copy";
-import { sendLifecycleEmail } from "../lifecycle/mailer";
 import {
   computeTrialClock,
   isLifecycleAudience,
@@ -18,21 +17,11 @@ import {
   selectLifecycleCampaign,
   startOfDay,
 } from "../lifecycle/selectCampaign";
-import { renderLifecycleEmailHtml } from "../lifecycle/templates";
-import {
-  createUnsubscribeToken,
-  getLifecycleEmailSecret,
-} from "../lifecycle/unsubscribeToken";
+import { LIFECYCLE_CAMPAIGN_TO_MESSAGE } from "../../shared/emailCatalog";
+import { enqueueEmail } from "../email/service";
 
 function appBaseUrl(): string {
   return (process.env.WASP_WEB_CLIENT_URL || "https://catechis.app").replace(
-    /\/$/,
-    "",
-  );
-}
-
-function serverBaseUrl(): string {
-  return (process.env.WASP_SERVER_URL || "https://api.catechis.app").replace(
     /\/$/,
     "",
   );
@@ -119,7 +108,6 @@ export const lifecycleNudgeJob = async (
 ): Promise<{ considered: number; sent: number }> => {
   const now = new Date();
   const todayStart = startOfDay(now);
-  const secret = getLifecycleEmailSecret();
   const baseUrl = appBaseUrl();
   const price = formatPrice(PLANS.single.prices.monthlyCents);
 
@@ -240,30 +228,26 @@ export const lifecycleNudgeJob = async (
       firstClassId: activation.firstClassId,
     });
     const ctaUrl = `${baseUrl}${ctaPath}`;
-    const unsubscribeUrl = secret
-      ? `${serverBaseUrl()}/api/lifecycle/unsubscribe?token=${encodeURIComponent(
-          createUnsubscribeToken(user.id, secret),
-        )}`
-      : `${baseUrl}/app/account`;
-
-    const html = renderLifecycleEmailHtml({
-      heading: copy.heading,
-      body: copy.body,
-      ctaLabel: copy.cta,
-      ctaUrl,
-      footerReason: copy.footerReason,
-      unsubscribeLabel: copy.unsubscribeLabel,
-      unsubscribeUrl,
+    const result = await enqueueEmail({
+      messageId: LIFECYCLE_CAMPAIGN_TO_MESSAGE[campaign],
+      to: user.email,
+      userId: user.id,
+      locale,
+      payload: {
+        name: user.firstName || "",
+        className: activation.className || "",
+        trialEndsAt: formatServerDate(clock.endsAt, locale),
+        price,
+        hasClasses: activation.hasClasses,
+        hasPeople: activation.hasPeople,
+        firstValueReached: activation.firstValueReached,
+        ctaUrl,
+      },
+      idempotencyKey: `lifecycle.${campaign}:${user.id}`,
+      context,
     });
-
-    const resendConfigured = Boolean(process.env.RESEND_API_KEY);
-    if (resendConfigured) {
-      const delivered = await sendLifecycleEmail({
-        to: user.email,
-        subject: copy.subject,
-        html,
-      });
-      if (!delivered) continue;
+    if (result.skipped === "suppressed" || result.skipped === "opted_out") {
+      continue;
     }
 
     try {
@@ -308,7 +292,7 @@ export const lifecycleNudgeJob = async (
     logger.info("[lifecycleNudgeJob] sent", {
       userId: user.id,
       campaign,
-      emailed: resendConfigured,
+      emailed: result.status === "SENT" || result.status === "QUEUED",
     });
   }
 

@@ -2,20 +2,11 @@
  * Support inbox operations — ContactFormMessage management.
  */
 import { HttpError } from "wasp/server";
-import { emailSender } from "wasp/server/email";
 import { requireAuth, requirePlatformAdmin, writeAuditLog } from "../auth/helpers";
 import { logger } from "../logger";
-
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-function htmlParagraphs(value: string) {
-  return escapeHtml(value).replace(/\n/g, "<br/>");
-}
+import { EMAIL_MESSAGE } from "../../shared/emailCatalog";
+import { enqueueEmail } from "../email/service";
+import { appBaseUrl } from "../email/config";
 
 async function findUserByContactEmail(context: any, email?: string | null) {
   const trimmed = email?.trim();
@@ -173,18 +164,20 @@ export const replyToContactMessage = async (
   }
 
   let emailSent = false;
-  const greeting = message.name ? `Olá ${message.name},` : "Olá,";
   try {
-    await emailSender.send({
+    const result = await enqueueEmail({
+      messageId: EMAIL_MESSAGE.SUPPORT_REPLY,
       to: message.email,
-      subject: "Resposta do suporte — Catequese Viva",
-      text: `${greeting}\n\nRecebemos a sua mensagem e a nossa resposta é:\n\n${body}\n\nTambém pode ver esta resposta na central de notificações da Catequese Viva.\n`,
-      html: `<p>${escapeHtml(greeting)}</p>
-<p>Recebemos a sua mensagem e a nossa resposta é:</p>
-<blockquote style="margin:0;padding:12px 16px;border-left:3px solid #D39A2B;background:#f7f4ee">${htmlParagraphs(body)}</blockquote>
-<p style="color:#666;font-size:13px">Também pode ver esta resposta na <a href="https://catechis.app/app/suporte">central de suporte</a> da Catequese Viva.</p>`,
+      userId: recipient?.id,
+      payload: {
+        name: message.name || "",
+        body,
+        ctaUrl: `${appBaseUrl()}/app/suporte`,
+      },
+      idempotencyKey: `support.reply:${message.id}`,
+      context,
     });
-    emailSent = true;
+    emailSent = !result.skipped;
   } catch (error) {
     logger.error("[support] failed to send reply email", {
       error: error instanceof Error ? error.message : String(error),

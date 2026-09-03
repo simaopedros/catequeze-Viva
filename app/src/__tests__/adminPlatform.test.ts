@@ -26,6 +26,10 @@ vi.mock("wasp/server/email", () => ({
   },
 }));
 
+vi.mock("../server/email/service", () => ({
+  enqueueEmail: vi.fn().mockResolvedValue({ id: "email-1", status: "SENT" }),
+}));
+
 vi.mock("../server/auth/helpers", () => ({
   requirePlatformAdmin: (user: any) => {
     if (!user?.isAdmin) {
@@ -90,7 +94,7 @@ vi.mock("../payment/stripe/stripeClient", () => ({
 
 import { prisma } from "wasp/server";
 import { createSession } from "wasp/auth/session";
-import { emailSender } from "wasp/server/email";
+import { enqueueEmail } from "../server/email/service";
 import { stripeClient } from "../payment/stripe/stripeClient";
 import { buildCumulativeGrowthSeries } from "../server/operations/platformOperations";
 import {
@@ -577,12 +581,12 @@ describe("replyToContactMessage", () => {
       findUnique: vi.fn(),
     };
     const Notification = { create: vi.fn().mockResolvedValue({ id: "n1" }) };
-    vi.mocked(emailSender.send).mockResolvedValue(undefined as any);
+    vi.mocked(enqueueEmail).mockResolvedValue({ id: "email-1", status: "SENT" } as any);
     const result = await replyToContactMessage(
       { id: "msg-1", body: "Obrigado pelo contacto." },
       context(ADMIN, { ContactFormMessage, User, Notification }),
     );
-    expect(emailSender.send).toHaveBeenCalledWith(
+    expect(enqueueEmail).toHaveBeenCalledWith(
       expect.objectContaining({ to: "a@b.com" }),
     );
     expect(ContactFormMessage.update).toHaveBeenCalledWith(
@@ -608,7 +612,7 @@ describe("replyToContactMessage", () => {
   });
 
   it("keeps the in-app reply if the email sender fails", async () => {
-    vi.mocked(emailSender.send).mockRejectedValueOnce(new Error("SMTP down"));
+    vi.mocked(enqueueEmail).mockRejectedValueOnce(new Error("SMTP down"));
     const ContactFormMessage = {
       findUnique: vi.fn().mockResolvedValue({
         id: "msg-1",

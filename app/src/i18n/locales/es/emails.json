@@ -7,6 +7,73 @@
   "unsubscribed_body": "Ya no recibirás correos de seguimiento de tu cuenta en Catequese Viva.",
   "unsubscribe_invalid_title": "Enlace no válido",
   "unsubscribe_invalid_body": "Este enlace para cancelar la suscripción no es válido o ha caducado.",
+  "welcome": {
+    "subject": "Bienvenido a Catequese Viva, {{name}}",
+    "heading": "Tu catequesis empieza aquí",
+    "body": "Hola, {{name}}. Tu cuenta está lista. Crea el primer grupo para pasar lista y preparar encuentros en el mismo lugar.",
+    "cta": "Abrir el panel"
+  },
+  "invite": {
+    "family": {
+      "subject": "Invitación al Portal de la Familia — {{location}}",
+      "heading": "Te invitaron al Portal de la Familia",
+      "body": "Te invitaron al Portal de la Familia de \"{{location}}\" como {{role}}.\n\nEn este portal sigues la catequesis de tu familia (encuentros, asistencia y documentos).\n\nPara aceptar, abre: {{link}}\n\nEsta invitación caduca en 30 días.",
+      "cta": "Aceptar invitación"
+    },
+    "staff": {
+      "subject": "Invitación al equipo de catequesis — {{location}}",
+      "heading": "Invitación al equipo de catequesis",
+      "body": "Te invitaron a integrar el equipo de catequesis de \"{{location}}\" como {{role}}.\n\nEste acceso es del panel pastoral (coordinación y catequistas), no del Portal de la Familia.\n\nPara aceptar, abre: {{link}}\n\nEsta invitación caduca en 30 días.",
+      "cta": "Aceptar invitación"
+    },
+    "footer": "— Equipo Catequese Viva"
+  },
+  "support_reply": {
+    "subject": "Respuesta del soporte — Catequese Viva",
+    "heading": "Respuesta del soporte",
+    "greeting": "Hola {{name}},",
+    "intro": "Recibimos tu mensaje. Nuestra respuesta es:",
+    "outro": "También puedes ver esta respuesta en el centro de soporte de Catequese Viva.",
+    "cta": "Abrir soporte",
+    "footer": "Catequese Viva · soporte"
+  },
+  "billing": {
+    "footer": "Catequese Viva · suscripción",
+    "canceled": {
+      "subject": "Tu suscripción se encerrará",
+      "heading": "El acceso sigue hasta el fin del período pagado",
+      "body": "Hola, {{name}}. Recibimos la cancelación. Sigues con acceso hasta el fin del período ya pagado. Si cambiaste de opinión, reactívala en Suscripción.",
+      "cta": "Ver suscripción"
+    },
+    "payment_failed": {
+      "subject": "No pudimos procesar el pago",
+      "heading": "Falló el pago de la suscripción",
+      "body": "Hola, {{name}}. Actualiza el método de pago para no perder el acceso a la catequesis.",
+      "cta": "Actualizar pago"
+    },
+    "institutional_trial_d3": {
+      "subject": "Quedan 3 días de la prueba de la parroquia",
+      "heading": "Quedan 3 días de la prueba de la parroquia",
+      "body": "Hola, {{name}}. El período de prueba de {{parishName}} termina en 3 días. Abre Suscripción para continuar.",
+      "cta": "Ver suscripción"
+    },
+    "institutional_trial_d1": {
+      "subject": "La prueba de la parroquia termina mañana",
+      "heading": "La prueba de la parroquia termina mañana",
+      "body": "Hola, {{name}}. El período de prueba de {{parishName}} termina mañana. Abre Suscripción para continuar.",
+      "cta": "Ver suscripción"
+    }
+  },
+  "preferences": {
+    "title": "Preferencias de correo",
+    "lifecycle": "Consejos de activación, prueba y retorno a la cuenta",
+    "product_updates": "Novedades del producto y boletín",
+    "pastoral_announcements": "Comunicados de los grupos y de la parroquia",
+    "transactional_note": "Los correos de acceso, invitación y factura no se pueden desactivar."
+  },
+  "broadcast": {
+    "footer": "Recibes este correo porque te suscribiste a las novedades de Catequese Viva."
+  },
   "campaigns": {
     "activate_create_class": {
       "subject": "Crea tu primer grupo en Catequese Viva",

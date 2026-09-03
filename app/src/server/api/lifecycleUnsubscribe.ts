@@ -6,6 +6,8 @@ import {
   getLifecycleEmailSecret,
   verifyUnsubscribeToken,
 } from "../lifecycle/unsubscribeToken";
+import { setEmailPreference } from "../email/preferences";
+import { EMAIL_TOPIC } from "../../shared/emailCatalog";
 
 function queryToken(req: Request): string {
   const raw = req.query.token;
@@ -53,6 +55,20 @@ export async function lifecycleUnsubscribeHandler(
     await context.entities.User.update({
       where: { id: user.id },
       data: { lifecycleEmailsOptOutAt: new Date() },
+    });
+  }
+
+  const userWithEmail = await context.entities.User.findUnique({
+    where: { id: user.id },
+    select: { email: true },
+  });
+  if (userWithEmail?.email) {
+    await setEmailPreference({
+      email: userWithEmail.email,
+      userId: user.id,
+      topic: EMAIL_TOPIC.LIFECYCLE,
+      optedIn: false,
+      context,
     });
   }
 
