@@ -110,36 +110,53 @@ export function ParishStep({
 
   const handleCreate = async () => {
     if (!newName.trim()) return;
+    if (!searchCity.trim() || !searchState.trim()) {
+      setError(t("parish.city_state_required"));
+      return;
+    }
     setCreating(true);
     setError("");
     try {
       const result = await createParish({
         name: newName.trim(),
-        city: searchCity || undefined,
-        state: searchState || undefined,
+        city: searchCity.trim(),
+        state: searchState.trim(),
         dioceseId: diocese?.id,
       });
       if (result?.existingParishId) {
         onSelect({
           id: result.id,
           name: newName.trim(),
-          city: searchCity,
-          state: searchState,
+          city: searchCity.trim(),
+          state: searchState.trim(),
           isNew: false,
         });
+        setShowCreate(false);
+        setNewName("");
         return;
       }
       if (result?.id) {
         onSelect({
           id: result.id,
           name: newName.trim(),
-          city: searchCity,
-          state: searchState,
+          city: searchCity.trim(),
+          state: searchState.trim(),
           isNew: true,
         });
+        setShowCreate(false);
+        setNewName("");
       }
     } catch (e: any) {
-      setError(e.message || t("parish.create_error"));
+      const message =
+        e?.data?.message ||
+        e?.response?.data?.message ||
+        e?.message ||
+        t("parish.create_error");
+      setError(
+        typeof message === "string" && !message.includes("status code")
+          ? message
+          : t("parish.create_error"),
+      );
     } finally {
       setCreating(false);
     }
@@ -360,7 +377,12 @@ export function ParishStep({
               size="sm"
               className="rounded-md"
               onClick={handleCreate}
-              disabled={creating || !newName.trim()}
+              disabled={
+                creating ||
+                !newName.trim() ||
+                !searchCity.trim() ||
+                !searchState.trim()
+              }
             >
               {creating ? t("parish.creating") : t("parish.create_btn")}
             </Button>

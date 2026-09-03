@@ -4309,6 +4309,7 @@ export const onboarding_pt_BR = {
       "duplicate_warning": "Já existe uma paróquia semelhante:",
       "use_this": "Usar esta →",
       "create_error": "Erro ao criar paróquia.",
+      "city_state_required": "Informe a cidade e o estado (UF) antes de criar a paróquia.",
       "creating": "Criando...",
       "create_btn": "Criar paróquia",
       "default_name": "Paróquia",

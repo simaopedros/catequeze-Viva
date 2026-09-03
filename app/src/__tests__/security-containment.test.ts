@@ -141,6 +141,16 @@ describe('Critical containment — parish migration', () => {
 });
 
 describe('Critical containment — createParish role ignore', () => {
+  it('rejects createParish without city or state', async () => {
+    const ctx = makeOpContext('admin');
+    await expect(
+      createParish({ name: 'Paróquia Sem Local', city: 'Sorocaba' } as any, ctx),
+    ).rejects.toMatchObject({ statusCode: 400 });
+    await expect(
+      createParish({ name: 'Paróquia Sem Local', state: 'SP' } as any, ctx),
+    ).rejects.toMatchObject({ statusCode: 400 });
+  });
+
   itDb('client-supplied SUPER_ADMIN is ignored', async () => {
     // Platform admin bypasses plan limits; role still forced to PARISH_COORDINATOR
     const ctx = makeOpContext('admin');
