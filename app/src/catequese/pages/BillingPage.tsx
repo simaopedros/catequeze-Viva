@@ -78,6 +78,12 @@ import {
   WorkspacePlanLabel,
   workspaceKindOf,
 } from "../components/WorkspaceIdentityChip";
+import {
+  checkoutPlanIdForTrial,
+  filterCatalogPlansForWorkspace,
+  isInstitutionalTrialDisplay,
+  offerPlanIdForWorkspace,
+} from "../../shared/billingOffer";
 import { OrganizeParishCard } from "../components/OrganizeParishCard";
 import { RequestDioceseCoverageCard } from "../components/RequestDioceseCoverageCard";
 
@@ -200,18 +206,29 @@ export default function BillingPage() {
 
   const allPlans = useMemo((): PlanCard[] => {
     return publicPlans
-      .filter((plan) => plan.kind === "subscription" && plan.slug !== "catechist_free")
+      .filter(
+        (plan) =>
+          plan.kind === "subscription" && plan.slug !== "catechist_free",
+      )
       .map((plan) => {
         const loc = localize(plan);
-        const monthly = plan.prices.find((price) => price.interval === "monthly" && price.isActive);
-        const annual = plan.prices.find((price) => price.interval === "annual" && price.isActive);
+        const monthly = plan.prices.find(
+          (price) => price.interval === "monthly" && price.isActive,
+        );
+        const annual = plan.prices.find(
+          (price) => price.interval === "annual" && price.isActive,
+        );
         return {
           planId: plan.slug,
           planKey: plan.slug,
           name: loc.name,
-          price: monthly ? formatPriceLabel(monthly.unitAmountCents, "monthly") : "—",
+          price: monthly
+            ? formatPriceLabel(monthly.unitAmountCents, "monthly")
+            : "—",
           priceCents: monthly?.unitAmountCents,
-          annualPrice: annual ? formatPriceLabel(annual.unitAmountCents, "annual") : undefined,
+          annualPrice: annual
+            ? formatPriceLabel(annual.unitAmountCents, "annual")
+            : undefined,
           priceCentsAnnual: annual?.unitAmountCents,
           maxClasses: plan.limits.maxClasses,
           maxCatechumens: plan.limits.maxCatechumens,
@@ -229,7 +246,13 @@ export default function BillingPage() {
   const navigate = useNavigate();
   const { data: user } = useAuth();
   const { parishId, userRole, isAdmin } = useUserContext();
-  const { isPersonal, workspaceId, workspace } = useActiveWorkspace();
+  const {
+    isPersonal,
+    workspaceId,
+    workspace,
+    availableWorkspaces,
+    switchWorkspace,
+  } = useActiveWorkspace();
   const canManageBilling = canManageWorkspaceBilling(
     workspace?.role || userRole,
     { isPersonalOwner: isPersonal, isAdmin },
@@ -255,18 +278,18 @@ export default function BillingPage() {
     { parishId: usageParishId },
     { enabled: Boolean(usageParishId) },
   );
-  
+
   // AI credits: mock when AI disabled
   const [aiCredits, setAiCredits] = useState(MOCK_AI_STATUS);
   const refetchCredits = useCallback(async () => {
     const status = await getAiCreditsStatus();
     setAiCredits(status);
   }, []);
-  
+
   useEffect(() => {
     refetchCredits();
   }, [refetchCredits]);
-  
+
   const { data: subscriptionDetails, refetch: refetchSubscription } = useQuery(
     getSubscriptionDetails,
   );
@@ -278,9 +301,7 @@ export default function BillingPage() {
 
   const [billingInterval, setBillingInterval] =
     useState<BillingInterval>(getIntendedInterval);
-  const [upgradingPlan, setUpgradingPlan] = useState<string | null>(
-    null,
-  );
+  const [upgradingPlan, setUpgradingPlan] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [managePaymentLoading, setManagePaymentLoading] = useState(false);
@@ -418,8 +439,27 @@ export default function BillingPage() {
       ? effectivePlan.priceCents * 12 - effectivePlan.priceCentsAnnual
       : null;
 
-  // Show every public subscription plan. Level mismatch only affects CTA/checkout.
-  const visiblePlans = allPlans;
+  // Only the SKU that belongs to this workspace: Catequista on personal,
+  // Plano Paróquia on parish/diocese/community. The other plan is a different scope.
+  const visiblePlans = filterCatalogPlansForWorkspace(
+    allPlans,
+    isPersonal,
+    (planId) => getBySlug(planId).level,
+  );
+  const offerPlanId = offerPlanIdForWorkspace(isPersonal);
+  const subscribePlanId = checkoutPlanIdForTrial({
+    isPersonal,
+    effectivePlanId,
+  });
+  const showInstitutionalTrial = isInstitutionalTrialDisplay(
+    isPersonal,
+    isTrialAccess,
+    effectivePlanId,
+  );
+  const offerPlanCard =
+    visiblePlans.find((plan) => plan.planId === offerPlanId) ??
+    visiblePlans[0] ??
+    null;
 
   const classesUsed = stats?.activeClasses ?? 0;
   const catechumensUsed = stats?.activeCatechumens ?? 0;
@@ -532,6 +572,12 @@ export default function BillingPage() {
     } catch {
       // handled upstream
     }
+  };
+
+  const goToPersonalBilling = () => {
+    const personal = availableWorkspaces.find((item) => item.isPersonal);
+    if (personal) switchWorkspace(personal.id);
+    navigate("/app/billing?plan=single");
   };
 
   const handleCancel = () => {
@@ -686,7 +732,10 @@ export default function BillingPage() {
       // Fire Meta Purchase event after successful checkout (first paid invoice).
       // Same event_id as server CAPI Purchase for deduplication.
       // Only fire when returning from a checkout session (not on manual subscription status success).
-      if (returnedSessionId && effectivePlanId !== PaymentPlanId.CatechistFree) {
+      if (
+        returnedSessionId &&
+        effectivePlanId !== PaymentPlanId.CatechistFree
+      ) {
         const plan = getPlanDef(effectivePlanId);
         const purchaseValue = getPlanCheckoutValue(plan, billingInterval);
         trackPurchaseBrowser({
@@ -729,7 +778,7 @@ export default function BillingPage() {
   const recommendedPlanCard =
     requestedPlanCard && requestedPlanLevelMatches
       ? requestedPlanCard
-      : visiblePlans[0] ?? null;
+      : offerPlanCard;
   const upgradePlanCard =
     !isConversionMode && journeyReason
       ? requestedPlanCard && requestedPlanLevelMatches
@@ -806,6 +855,9 @@ export default function BillingPage() {
         : t("institutional_scope", {
             name: parish?.name || t("this_institution"),
           });
+  const heroPlanName = showInstitutionalTrial
+    ? t("institutional_trial_plan_label")
+    : effectivePlan.name;
   const supportingCopy = isUpgradeJourney
     ? t("upgrade_supporting_copy")
     : !isConversionMode
@@ -868,7 +920,9 @@ export default function BillingPage() {
               {t("dual_scope_personal")}
             </p>
             <p className="text-sm font-semibold tracking-tight text-brand-ink">
-              {prettyPaymentPlanName(user?.subscriptionPlan || "catechist_free")}
+              {prettyPaymentPlanName(
+                user?.subscriptionPlan || "catechist_free",
+              )}
             </p>
             <p className="text-xs text-muted-foreground">
               {user?.subscriptionStatus || t("free_plan")}
@@ -890,6 +944,7 @@ export default function BillingPage() {
               planInherited={workspace?.planInherited}
               dioceseName={workspace?.dioceseName}
               personalPlan={user?.subscriptionPlan}
+              billingStatus={workspace?.billingStatus}
               className="block text-sm text-brand-ink"
             />
           </div>
@@ -901,15 +956,13 @@ export default function BillingPage() {
         {isPersonal && canManageBilling && (
           <OrganizeParishCard workspaceId={workspaceId} />
         )}
-        {!isPersonal &&
-          workspace?.type === "PARISH" &&
-          canManageBilling && (
-            <RequestDioceseCoverageCard
-              parishName={workspace?.name || parish?.name || ""}
-              dioceseName={workspace?.dioceseName}
-              planInherited={Boolean(workspace?.planInherited)}
-            />
-          )}
+        {!isPersonal && workspace?.type === "PARISH" && canManageBilling && (
+          <RequestDioceseCoverageCard
+            parishName={workspace?.name || parish?.name || ""}
+            dioceseName={workspace?.dioceseName}
+            planInherited={Boolean(workspace?.planInherited)}
+          />
+        )}
 
         <section className="border-b border-border/70 pb-8">
           <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
@@ -941,7 +994,7 @@ export default function BillingPage() {
                     <AppDisplayTitle>{heroTitle}</AppDisplayTitle>
                     {!isConversionMode && (
                       <span className="rounded-sm border border-border/70 bg-white px-3 py-1 text-sm font-medium text-muted-foreground">
-                        {effectivePlan.name}
+                        {heroPlanName}
                       </span>
                     )}
                     {!isConversionMode &&
@@ -968,10 +1021,19 @@ export default function BillingPage() {
                   <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-body">
                     {isTrialAccess
                       ? trialDaysLeft === 1
-                        ? t("trial_hero_subtitle_one")
-                        : t("trial_hero_subtitle_other", {
-                            count: trialDaysLeft ?? SUBSCRIPTION_TRIAL_DAYS,
-                          })
+                        ? t(
+                            isPersonal
+                              ? "trial_hero_subtitle_one"
+                              : "trial_hero_subtitle_institutional_one",
+                          )
+                        : t(
+                            isPersonal
+                              ? "trial_hero_subtitle_other"
+                              : "trial_hero_subtitle_institutional_other",
+                            {
+                              count: trialDaysLeft ?? SUBSCRIPTION_TRIAL_DAYS,
+                            },
+                          )
                       : heroSubtitle}
                   </p>
 
@@ -984,40 +1046,34 @@ export default function BillingPage() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                {primaryPlanCard &&
-                  (isConversionMode || isUpgradeJourney) &&
-                  (!requestedPlanId || requestedPlanLevelMatches) && (
-                    <Button
-                      size="lg"
-                      className="h-11 rounded-sm px-5"
-                      onClick={() => handleUpgrade(primaryPlanCard.planId)}
-                      disabled={upgradingPlan === primaryPlanCard.planId}
-                    >
-                      {upgradingPlan === primaryPlanCard.planId ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          {t("redirecting")}
-                        </>
-                      ) : (
-                        <>
-                          {primaryCtaLabel}
-                          <ArrowUpRight className="ml-2 h-4 w-4" />
-                        </>
-                      )}
-                    </Button>
-                  )}
+                {primaryPlanCard && (isConversionMode || isUpgradeJourney) && (
+                  <Button
+                    size="lg"
+                    className="h-11 rounded-sm px-5"
+                    data-testid="billing-offer-cta"
+                    onClick={() => handleUpgrade(primaryPlanCard.planId)}
+                    disabled={upgradingPlan === primaryPlanCard.planId}
+                  >
+                    {upgradingPlan === primaryPlanCard.planId ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t("redirecting")}
+                      </>
+                    ) : (
+                      <>
+                        {primaryCtaLabel}
+                        <ArrowUpRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                )}
 
                 {!isUpgradeJourney && !isConversionMode && isTrialAccess && (
                   <Button
                     size="lg"
                     className="h-11 rounded-sm px-5"
-                    onClick={() =>
-                      handleUpgrade(
-                        effectivePlanId === PaymentPlanId.CatechistFree
-                          ? PaymentPlanId.Single
-                          : effectivePlanId,
-                      )
-                    }
+                    data-testid="billing-offer-cta"
+                    onClick={() => handleUpgrade(subscribePlanId)}
                     disabled={!!upgradingPlan}
                   >
                     {upgradingPlan ? (
@@ -1027,7 +1083,9 @@ export default function BillingPage() {
                       </>
                     ) : (
                       <>
-                        {t("trial_subscribe_cta")}
+                        {t("trial_subscribe_plan", {
+                          plan: getPlanDef(subscribePlanId).name,
+                        })}
                         <ArrowUpRight className="ml-2 h-4 w-4" />
                       </>
                     )}
@@ -1086,7 +1144,10 @@ export default function BillingPage() {
               </div>
 
               {requestedPlanId && !requestedPlanLevelMatches && (
-                <div className="rounded-sm border border-border/70 bg-muted/30 px-4 py-3 text-sm font-medium tracking-tight text-brand-ink">
+                <div
+                  data-testid="billing-plan-mismatch"
+                  className="rounded-sm border border-border/70 bg-muted/30 px-4 py-3 text-sm font-medium tracking-tight text-brand-ink"
+                >
                   <p>
                     {requestedIsInstitutional
                       ? t("plan_mismatch_institutional")
@@ -1102,6 +1163,17 @@ export default function BillingPage() {
                       <a href="#organizar-paroquia">
                         {t("plan_mismatch_institutional_cta")}
                       </a>
+                    </Button>
+                  )}
+                  {!requestedIsInstitutional && !isPersonal && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-3 bg-white"
+                      data-testid="billing-mismatch-personal-cta"
+                      onClick={goToPersonalBilling}
+                    >
+                      {t("plan_mismatch_personal_cta")}
                     </Button>
                   )}
                 </div>
@@ -1234,6 +1306,11 @@ export default function BillingPage() {
                       accent="bg-brand-ink"
                       ariaLabel={t("catechumens_quota_label")}
                     />
+                    {showInstitutionalTrial && (
+                      <p className="text-xs leading-relaxed text-muted-foreground">
+                        {t("trial_usage_caption")}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -1264,10 +1341,20 @@ export default function BillingPage() {
                       <p className="text-sm leading-relaxed text-muted-foreground">
                         {isTrialAccess
                           ? trialDaysLeft === 1
-                            ? t("trial_status_desc_one")
-                            : t("trial_status_desc_other", {
-                                count: trialDaysLeft ?? SUBSCRIPTION_TRIAL_DAYS,
-                              })
+                            ? t(
+                                isPersonal
+                                  ? "trial_status_desc_one"
+                                  : "trial_status_desc_institutional_one",
+                              )
+                            : t(
+                                isPersonal
+                                  ? "trial_status_desc_other"
+                                  : "trial_status_desc_institutional_other",
+                                {
+                                  count:
+                                    trialDaysLeft ?? SUBSCRIPTION_TRIAL_DAYS,
+                                },
+                              )
                           : isPaidActive
                             ? t("active_desc")
                             : effectivePlan.isFree
@@ -1440,7 +1527,9 @@ export default function BillingPage() {
                     ? t("conversion_plans_subtitle")
                     : isUpgradeJourney
                       ? t("upgrade_plans_subtitle")
-                      : t("pricing_section_subtitle")}
+                      : isPersonal
+                        ? t("pricing_section_subtitle_personal")
+                        : t("pricing_section_subtitle_institutional")}
                 </p>
               </div>
               <div className="inline-flex items-center rounded-sm border border-border/70 bg-white/90 p-1 ">
@@ -1486,9 +1575,11 @@ export default function BillingPage() {
                 "grid gap-5",
                 visiblePlans.length === 1 ? "max-w-md" : "md:grid-cols-2",
               )}
+              data-testid="billing-plan-catalog"
             >
               {visiblePlans.map((plan) => {
-                const isCurrent = plan.planId === effectivePlanId;
+                const isCurrent =
+                  plan.planId === effectivePlanId && !showInstitutionalTrial;
                 const isUpgrading = upgradingPlan === plan.planId;
                 const isRequested =
                   !!requestedPlanId &&
@@ -1501,19 +1592,17 @@ export default function BillingPage() {
                 const planLevelMatches = isPersonal
                   ? catalogPlan.level === "personal"
                   : catalogPlan.level === "institutional";
+                const emphasizePlan = !isCurrent && isRecommended;
 
                 return (
                   <div
                     key={plan.planId}
+                    data-testid={`billing-plan-card-${plan.planId}`}
                     className={cn(
                       "flex flex-col rounded-sm border bg-white/90 p-5   transition-all duration-200 hover:border-brand-ink/30",
                       isCurrent
                         ? "border-brand-ink ring-1 ring-brand-ink/10"
-                        : (
-                              isConversionMode || isUpgradeJourney
-                                ? isRecommended
-                                : plan.highlight
-                            )
+                        : emphasizePlan
                           ? "border-brand-ink ring-1 ring-brand-ink/15"
                           : "border-border/70",
                       isRequested && "ring-2 ring-accent",
@@ -1524,22 +1613,15 @@ export default function BillingPage() {
                         <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
                           {plan.name}
                         </AppDisplayTitle>
-                        {((isConversionMode && isRecommended) ||
-                          (isUpgradeJourney && isRecommended) ||
-                          (!isConversionMode &&
-                            !isUpgradeJourney &&
-                            plan.highlight)) &&
-                          !isCurrent && (
-                            <p className="mt-1 text-sm text-brand-ink">
-                              {isUpgradeJourney
-                                ? t("upgrade_journey_badge")
-                                : isConversionMode
-                                  ? isPersonal
-                                    ? t("recommended_plan_personal")
-                                    : t("recommended_plan_institutional")
-                                  : t("most_popular")}
-                            </p>
-                          )}
+                        {emphasizePlan && (
+                          <p className="mt-1 text-sm text-brand-ink">
+                            {isUpgradeJourney
+                              ? t("upgrade_journey_badge")
+                              : isPersonal
+                                ? t("recommended_plan_personal")
+                                : t("recommended_plan_institutional")}
+                          </p>
+                        )}
                       </div>
                       {isCurrent && isTrialAccess && (
                         <Badge className="rounded-sm border border-border/70 bg-muted/30 font-semibold tracking-tight text-brand-ink">
@@ -1663,6 +1745,14 @@ export default function BillingPage() {
                             {t("plan_mismatch_institutional_cta")}
                           </a>
                         </Button>
+                      ) : catalogPlan.level === "personal" && !isPersonal ? (
+                        <Button
+                          variant="outline"
+                          className="mt-5 w-full rounded-sm text-sm"
+                          onClick={goToPersonalBilling}
+                        >
+                          {t("plan_mismatch_personal_cta")}
+                        </Button>
                       ) : (
                         <Button
                           variant="outline"
@@ -1676,7 +1766,7 @@ export default function BillingPage() {
                         >
                           {catalogPlan.level === "institutional"
                             ? t("institutional_plan_btn")
-                            : t("plan_mismatch_personal")}
+                            : t("plan_mismatch_personal_cta")}
                         </Button>
                       )
                     ) : plan.planId === PaymentPlanId.Unlimited &&
@@ -1696,15 +1786,7 @@ export default function BillingPage() {
                     ) : (
                       <Button
                         className="mt-5 w-full rounded-sm text-sm"
-                        variant={
-                          (
-                            isConversionMode || isUpgradeJourney
-                              ? isRecommended
-                              : plan.highlight
-                          )
-                            ? "default"
-                            : "outline"
-                        }
+                        variant={emphasizePlan ? "default" : "outline"}
                         onClick={() => handleUpgrade(plan.planId)}
                         disabled={isUpgrading}
                       >
@@ -1715,11 +1797,13 @@ export default function BillingPage() {
                           </>
                         ) : (
                           <>
-                            {isConversionMode
-                              ? t("conversion_trial_cta")
-                              : isUpgradeJourney && isRecommended
-                                ? primaryCtaLabel
-                                : t("subscribe_plan", { plan: plan.name })}
+                            {isTrialAccess
+                              ? t("trial_subscribe_plan", { plan: plan.name })
+                              : isConversionMode
+                                ? t("conversion_trial_cta")
+                                : isUpgradeJourney && isRecommended
+                                  ? primaryCtaLabel
+                                  : t("subscribe_plan", { plan: plan.name })}
                             <ArrowUpRight className="ml-2 h-4 w-4" />
                           </>
                         )}

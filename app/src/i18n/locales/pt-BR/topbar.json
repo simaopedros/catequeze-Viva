@@ -41,6 +41,8 @@
   "plan": {
     "personal": "{{plan}}",
     "parish_license": "Licença da paróquia · {{plan}}",
+    "parish_trial": "Período de teste · assine o Plano Paróquia",
+    "parish_needs_license": "Assine o Plano Paróquia para este espaço",
     "covered_by_diocese": "Coberta pela diocese",
     "covered_by_named": "Coberta por {{name}}",
     "free": "Sem assinatura"

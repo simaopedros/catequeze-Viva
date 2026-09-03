@@ -25,7 +25,13 @@ export function isInstitutionalCoverPlan(
   );
 }
 
-export type EffectivePlanSource = "personal" | "parish" | "diocese" | "free";
+export type EffectivePlanSource =
+  | "personal"
+  | "parish"
+  | "diocese"
+  | "free"
+  | "parish_trial"
+  | "parish_needs_license";
 
 export type EffectivePlanPresentation = {
   source: EffectivePlanSource;
@@ -34,12 +40,18 @@ export type EffectivePlanPresentation = {
   dioceseName: string | null;
 };
 
+function isTrialBillingStatus(status: string | null | undefined): boolean {
+  const key = (status ?? "").trim().toUpperCase();
+  return key === "TRIAL" || key === "TRIALING";
+}
+
 export function describeEffectivePlan(opts: {
   parishType?: string | null;
   parishPlan?: string | null;
   planInherited?: boolean;
   dioceseName?: string | null;
   personalPlan?: string | null;
+  billingStatus?: string | null;
 }): EffectivePlanPresentation {
   const dioceseName = opts.dioceseName?.trim() || null;
   const parishPlan = opts.parishPlan?.trim() || null;
@@ -73,12 +85,29 @@ export function describeEffectivePlan(opts: {
         dioceseName: null,
       };
     }
+    return {
+      source: "free",
+      planKey: PaymentPlanId.CatechistFree,
+      inherited: false,
+      dioceseName: null,
+    };
+  }
+
+  // Institutional workspace without cover is never "Catequista license".
+  // Trial (and leftover SINGLE on TenantBilling) should point to Plano Paróquia.
+  if (isTrialBillingStatus(opts.billingStatus)) {
+    return {
+      source: "parish_trial",
+      planKey: PaymentPlanId.Unlimited,
+      inherited: false,
+      dioceseName,
+    };
   }
 
   if (parishPlan && parishPlan !== PaymentPlanId.CatechistFree) {
     return {
-      source: kind === "PERSONAL" ? "personal" : "parish",
-      planKey: parishPlan,
+      source: "parish_needs_license",
+      planKey: PaymentPlanId.Unlimited,
       inherited: false,
       dioceseName,
     };

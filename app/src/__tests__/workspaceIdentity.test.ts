@@ -54,4 +54,34 @@ describe("workspaceIdentity", () => {
     expect(result.source).toBe("parish");
     expect(result.inherited).toBe(false);
   });
+
+  it("does not present parish trial as a Catequista license", () => {
+    const result = describeEffectivePlan({
+      parishType: "PARISH",
+      parishPlan: "single",
+      billingStatus: "TRIAL",
+      personalPlan: "single",
+    });
+    expect(result.source).toBe("parish_trial");
+    expect(result.planKey).toBe("unlimited");
+  });
+
+  it("points leftover single on a parish to Plano Paróquia", () => {
+    const result = describeEffectivePlan({
+      parishType: "PARISH",
+      parishPlan: "single",
+      billingStatus: "ACTIVE",
+    });
+    expect(result.source).toBe("parish_needs_license");
+    expect(result.planKey).toBe("unlimited");
+  });
+
+  it("keeps community trial off the Catequista label", () => {
+    const result = describeEffectivePlan({
+      parishType: "COMMUNITY",
+      parishPlan: "single",
+      billingStatus: "TRIAL",
+    });
+    expect(result.source).toBe("parish_trial");
+  });
 });

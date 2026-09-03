@@ -49,6 +49,12 @@ export function formatEffectivePlanCopy(
   if (presentation.source === "parish") {
     return t("plan.parish_license", { plan });
   }
+  if (presentation.source === "parish_trial") {
+    return t("plan.parish_trial");
+  }
+  if (presentation.source === "parish_needs_license") {
+    return t("plan.parish_needs_license");
+  }
   if (presentation.source === "personal") {
     return t("plan.personal", { plan });
   }
@@ -61,6 +67,7 @@ export function WorkspacePlanLabel({
   planInherited,
   dioceseName,
   personalPlan,
+  billingStatus,
   className,
 }: {
   parishType?: string | null;
@@ -68,6 +75,7 @@ export function WorkspacePlanLabel({
   planInherited?: boolean;
   dioceseName?: string | null;
   personalPlan?: string | null;
+  billingStatus?: string | null;
   className?: string;
 }) {
   const { t } = useTranslation("topbar");
@@ -77,6 +85,7 @@ export function WorkspacePlanLabel({
     planInherited,
     dioceseName,
     personalPlan,
+    billingStatus,
   });
   return (
     <span className={cn("truncate text-xs text-muted-foreground", className)}>

@@ -155,6 +155,7 @@ export function ContextSelector() {
                   planInherited={workspace?.planInherited}
                   dioceseName={workspace?.dioceseName}
                   personalPlan={personalPlan}
+                  billingStatus={workspace?.billingStatus}
                   className="text-[11px]"
                 />
               </span>
@@ -183,7 +184,9 @@ export function ContextSelector() {
               </div>
               {g.items.slice(0, MAX_PER_GROUP).map((ws) => {
                 const isActive = ws.id === workspace?.id;
-                const kind = workspaceKindOf(ws.isPersonal ? "PERSONAL" : ws.type);
+                const kind = workspaceKindOf(
+                  ws.isPersonal ? "PERSONAL" : ws.type,
+                );
                 const rowRole =
                   roleLabels[ws.role as keyof typeof roleLabels] || ws.role;
                 return (
@@ -217,6 +220,7 @@ export function ContextSelector() {
                           planInherited={ws.planInherited}
                           dioceseName={ws.dioceseName}
                           personalPlan={personalPlan}
+                          billingStatus={ws.billingStatus}
                         />
                       </div>
                     </div>

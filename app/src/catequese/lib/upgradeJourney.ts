@@ -72,11 +72,14 @@ export function getSuggestedUpgradePlan(opts: {
 }): PaymentPlanId | null {
   const normalizedPlan = resolvePlanIdOrFree(opts.currentPlan);
 
+  if (opts.isPersonalWorkspace) {
+    // Catequista is the personal SKU. Hitting its limits is a parish migration,
+    // not a checkout of Plano Paróquia from the personal workspace.
+    return normalizedPlan === "single" ? null : PaymentPlanId.Single;
+  }
+
   if (normalizedPlan === "unlimited") return null;
-  if (normalizedPlan === "single") return PaymentPlanId.Unlimited;
-  return opts.isPersonalWorkspace
-    ? PaymentPlanId.Single
-    : PaymentPlanId.Unlimited;
+  return PaymentPlanId.Unlimited;
 }
 
 export function buildBillingJourneyHref({

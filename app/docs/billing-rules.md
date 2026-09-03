@@ -101,6 +101,8 @@ When a new institutional parish (type ≠ `PERSONAL`) is created:
 
 Checkout of Plano Paróquia (`unlimited`) requires a non-personal workspace. Personal → parish is a migration that **creates** a `PARISH` workspace; it does not convert the personal space.
 
+The billing page catalog is **scoped to the active workspace**: personal shows only Catequista (`single`); parish/community/diocese shows only Plano Paróquia (`unlimited`). A `?plan=` query for the other scope must not hide the local offer. Parish trial uses Catequista *limits* (3 turmas / 150) but is never presented or checked out as Plano Catequista.
+
 ---
 
 ## 5. Entitlement helper contract
