@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { PaymentPlanId } from "../payment/plans";
 import {
   checkoutPlanIdForTrial,
+  ensureWorkspaceOfferPlan,
   filterCatalogPlansForWorkspace,
   isInstitutionalTrialDisplay,
   offerPlanIdForWorkspace,
@@ -65,5 +66,21 @@ describe("billingOffer", () => {
     expect(planMatchesWorkspaceLevel("personal", true)).toBe(true);
     expect(planMatchesWorkspaceLevel("institutional", false)).toBe(true);
     expect(planMatchesWorkspaceLevel("personal", false)).toBe(false);
+  });
+
+  it("still offers Plano Paróquia when the public catalog only has Catequista", () => {
+    const catequistaOnly = [{ planId: "single", name: "Plano Catequista" }];
+    const parishPlans = ensureWorkspaceOfferPlan(
+      filterCatalogPlansForWorkspace(catequistaOnly, false, (planId) =>
+        planId === "single" ? "personal" : "institutional",
+      ),
+      false,
+      (planId) =>
+        planId === PaymentPlanId.Unlimited
+          ? { planId: "unlimited", name: "Plano Paróquia" }
+          : null,
+    );
+    expect(parishPlans.map((plan) => plan.planId)).toEqual(["unlimited"]);
+    expect(parishPlans[0]?.name).toBe("Plano Paróquia");
   });
 });

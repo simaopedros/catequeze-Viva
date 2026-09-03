@@ -5,12 +5,17 @@
  * Missing default slugs/prices are inserted. Existing admin rows are never
  * overwritten (so a later deploy cannot wipe edits in /admin/planos).
  */
-import type { PrismaClient } from '@prisma/client';
-import { DEFAULT_PLAN_LIST, lookupKeyFor, type CatalogPlan, type PricingInterval } from '../../shared/planCatalog';
-import { AI_FEATURES_ENABLED } from '../../shared/aiFeatures';
-import { isUsableStripePriceId } from '../../payment/stripePriceId';
-import { readEnvStripePriceId } from '../../payment/paymentProcessorPlans';
-import { importStripePrice } from '../pricing/stripeCatalogSync';
+import type { PrismaClient } from "@prisma/client";
+import {
+  DEFAULT_PLAN_LIST,
+  lookupKeyFor,
+  type CatalogPlan,
+  type PricingInterval,
+} from "../../shared/planCatalog";
+import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
+import { isUsableStripePriceId } from "../../payment/stripePriceId";
+import { readEnvStripePriceId } from "../../payment/paymentProcessorPlans";
+import { importStripePrice } from "../pricing/stripeCatalogSync";
 
 type CatalogSeedDb = {
   pricingPlan: {
@@ -24,26 +29,26 @@ type CatalogSeedDb = {
   };
 };
 
-function toDbKind(kind: 'subscription' | 'credits') {
-  return kind === 'credits' ? 'CREDITS' : 'SUBSCRIPTION';
+function toDbKind(kind: "subscription" | "credits") {
+  return kind === "credits" ? "CREDITS" : "SUBSCRIPTION";
 }
 
-function toDbLevel(level: 'personal' | 'institutional') {
-  return level === 'institutional' ? 'INSTITUTIONAL' : 'PERSONAL';
+function toDbLevel(level: "personal" | "institutional") {
+  return level === "institutional" ? "INSTITUTIONAL" : "PERSONAL";
 }
 
 function toDbInterval(interval: PricingInterval) {
-  if (interval === 'annual') return 'ANNUAL';
-  if (interval === 'one_time') return 'ONE_TIME';
-  return 'MONTHLY';
+  if (interval === "annual") return "ANNUAL";
+  if (interval === "one_time") return "ONE_TIME";
+  return "MONTHLY";
 }
 
-function envIntervalFor(interval: PricingInterval): 'monthly' | 'annual' {
-  return interval === 'annual' ? 'annual' : 'monthly';
+function envIntervalFor(interval: PricingInterval): "monthly" | "annual" {
+  return interval === "annual" ? "annual" : "monthly";
 }
 
 function planRowData(plan: CatalogPlan) {
-  const isCredits = plan.kind === 'credits';
+  const isCredits = plan.kind === "credits";
   return {
     name: plan.name,
     description: plan.description ?? null,
@@ -74,8 +79,12 @@ function planRowData(plan: CatalogPlan) {
 export function defaultPlansMatchSnapshot(plans: typeof DEFAULT_PLAN_LIST) {
   return plans.map((plan) => ({
     slug: plan.slug,
-    monthlyCents: plan.prices.find((p) => p.interval === 'monthly' || p.interval === 'one_time')?.unitAmountCents ?? 0,
-    annualCents: plan.prices.find((p) => p.interval === 'annual')?.unitAmountCents ?? null,
+    monthlyCents:
+      plan.prices.find(
+        (p) => p.interval === "monthly" || p.interval === "one_time",
+      )?.unitAmountCents ?? 0,
+    annualCents:
+      plan.prices.find((p) => p.interval === "annual")?.unitAmountCents ?? null,
     maxClasses: plan.limits.maxClasses,
     maxCatechumens: plan.limits.maxCatechumens,
     isSystem: plan.isSystem,
@@ -84,11 +93,20 @@ export function defaultPlansMatchSnapshot(plans: typeof DEFAULT_PLAN_LIST) {
   }));
 }
 
-async function resolveStripeImport(plan: CatalogPlan, price: CatalogPlan['prices'][number]) {
-  const envPriceId = readEnvStripePriceId(plan.slug, envIntervalFor(price.interval));
-  let stripePriceId: string | null = isUsableStripePriceId(envPriceId) ? envPriceId : null;
+async function resolveStripeImport(
+  plan: CatalogPlan,
+  price: CatalogPlan["prices"][number],
+) {
+  const envPriceId = readEnvStripePriceId(
+    plan.slug,
+    envIntervalFor(price.interval),
+  );
+  let stripePriceId: string | null = isUsableStripePriceId(envPriceId)
+    ? envPriceId
+    : null;
   let unitAmountCents = price.unitAmountCents;
-  let lookupKey = price.stripeLookupKey || lookupKeyFor(plan.slug, price.interval);
+  let lookupKey =
+    price.stripeLookupKey || lookupKeyFor(plan.slug, price.interval);
   let productId: string | null = null;
 
   if (stripePriceId) {
@@ -100,7 +118,11 @@ async function resolveStripeImport(plan: CatalogPlan, price: CatalogPlan['prices
         productId = imported.productId || null;
       }
     } catch (error) {
-      console.warn('[seedPricingCatalog] could not retrieve Stripe price', stripePriceId, error);
+      console.warn(
+        "[seedPricingCatalog] could not retrieve Stripe price",
+        stripePriceId,
+        error,
+      );
     }
   }
 
@@ -110,7 +132,9 @@ async function resolveStripeImport(plan: CatalogPlan, price: CatalogPlan['prices
 /**
  * Inserts DEFAULT_PLANS that are missing. Never updates an existing plan or price.
  */
-export async function ensurePricingCatalogSeeded(db: CatalogSeedDb): Promise<{ createdPlans: number; createdPrices: number }> {
+export async function ensurePricingCatalogSeeded(
+  db: CatalogSeedDb,
+): Promise<{ createdPlans: number; createdPrices: number }> {
   let createdPlans = 0;
   let createdPrices = 0;
 
@@ -151,7 +175,7 @@ export async function ensurePricingCatalogSeeded(db: CatalogSeedDb): Promise<{ c
           data: {
             planId: saved.id,
             interval: toDbInterval(price.interval),
-            currency: 'BRL',
+            currency: "BRL",
             unitAmountCents: imported.unitAmountCents,
             stripePriceId: imported.stripePriceId,
             stripeLookupKey: imported.lookupKey,
@@ -179,16 +203,19 @@ export async function ensurePricingCatalogSeeded(db: CatalogSeedDb): Promise<{ c
 
 /** Existing DBs still have unlimited hidden from the catequista-only launch. */
 async function reopenParishPlanIfLaunchHidden(db: CatalogSeedDb) {
-  const unlimited = await db.pricingPlan.findUnique({ where: { slug: 'unlimited' } });
+  const unlimited = await db.pricingPlan.findUnique({
+    where: { slug: "unlimited" },
+  });
   if (!unlimited) return;
-  const launchHidden = unlimited.isPublic === false && unlimited.isActive === false;
+  const launchHidden =
+    unlimited.isPublic === false || unlimited.isActive === false;
   const staleName =
-    unlimited.name === 'Plano Ilimitado' ||
-    unlimited.name === 'Unlimited Plan' ||
-    unlimited.name === 'Plan Ilimitado';
+    unlimited.name === "Plano Ilimitado" ||
+    unlimited.name === "Unlimited Plan" ||
+    unlimited.name === "Plan Ilimitado";
   if (!launchHidden && !staleName) return;
 
-  const parish = DEFAULT_PLAN_LIST.find((plan) => plan.slug === 'unlimited');
+  const parish = DEFAULT_PLAN_LIST.find((plan) => plan.slug === "unlimited");
   if (!parish) return;
 
   await db.pricingPlan.update({
@@ -204,7 +231,9 @@ async function reopenParishPlanIfLaunchHidden(db: CatalogSeedDb) {
   });
 }
 
-export async function seedPricingCatalog(prismaClient: PrismaClient): Promise<void> {
+export async function seedPricingCatalog(
+  prismaClient: PrismaClient,
+): Promise<void> {
   await ensurePricingCatalogSeeded({
     pricingPlan: prismaClient.pricingPlan,
     pricingPlanPrice: prismaClient.pricingPlanPrice,

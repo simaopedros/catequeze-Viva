@@ -26,6 +26,26 @@ export function filterCatalogPlansForWorkspace<T extends { planId: string }>(
 }
 
 /**
+ * Keep the workspace SKU visible even when the live public catalog hid it
+ * (e.g. launch leftover with unlimited.isPublic = false).
+ */
+export function ensureWorkspaceOfferPlan<T extends { planId: string }>(
+  plans: T[],
+  isPersonal: boolean,
+  resolveOffer: (planId: PaymentPlanId) => T | null | undefined,
+): T[] {
+  const offerId = offerPlanIdForWorkspace(isPersonal);
+  if (plans.some((plan) => plan.planId === offerId)) {
+    return plans;
+  }
+  const extra = resolveOffer(offerId);
+  if (!extra || extra.planId !== offerId) {
+    return plans;
+  }
+  return [extra, ...plans];
+}
+
+/**
  * Checkout target while the current workspace is on a product/institutional trial.
  * Parish trial uses Catequista *limits* but must never start a personal Catequista checkout.
  */
