@@ -24,7 +24,11 @@ import {
   CreditCard,
 } from "lucide-react";
 import type { BillingInterval } from "../lib/intendedPlan";
-import { getIntendedInterval } from "../lib/intendedPlan";
+import {
+  getIntendedInterval,
+  peekIntendedInterval,
+  setIntendedInterval,
+} from "../lib/intendedPlan";
 import {
   useQuery,
   getDashboardStats,
@@ -84,10 +88,12 @@ import {
   filterCatalogPlansForWorkspace,
   isInstitutionalTrialDisplay,
   offerPlanIdForWorkspace,
+  shouldShowParishBillingConversion,
 } from "../../shared/billingOffer";
 import type { CatalogPlan } from "../../shared/planCatalog";
 import { OrganizeParishCard } from "../components/OrganizeParishCard";
 import { RequestDioceseCoverageCard } from "../components/RequestDioceseCoverageCard";
+import { ParishBillingConversion } from "../components/ParishBillingConversion";
 
 function toPlanCard(
   plan: CatalogPlan,
@@ -388,6 +394,13 @@ export default function BillingPage() {
   }
 
   const isPaidActive = isActive && !isTrialAccess;
+  const showParishConversion = shouldShowParishBillingConversion({
+    isPersonal,
+    isParishManaged,
+    isPaidActive,
+    canManageBilling,
+    workspaceType: workspace?.type,
+  });
   const trialEndsLabel = trialEndsAt
     ? trialEndsAt.toLocaleDateString(i18n.language || "pt-BR", {
         day: "2-digit",
@@ -473,7 +486,7 @@ export default function BillingPage() {
   const maxCatechumens = effectivePlan.maxCatechumens ?? Infinity;
 
   const startCheckout = useCallback(
-    async (planId: string) => {
+    async (planId: string, interval: BillingInterval = billingInterval) => {
       // Product trial uses the same plan id as Single — still allow checkout to convert.
       if (planId === effectivePlanId && !isTrialAccess) return;
       const targetLevel = getBySlug(planId).level;
@@ -492,7 +505,7 @@ export default function BillingPage() {
       setUpgradingPlan(planId);
       try {
         const plan = getPlanDef(planId);
-        const checkoutValue = getPlanCheckoutValue(plan, billingInterval);
+        const checkoutValue = getPlanCheckoutValue(plan, interval);
         const tracking = buildCheckoutTrackingFields({
           planId,
           planName: plan.name,
@@ -512,7 +525,7 @@ export default function BillingPage() {
 
         trackMarketingEvent("checkout_started", {
           plan: planId,
-          interval: billingInterval,
+          interval,
           placement: "billing_page",
           workspace: isPersonal ? "personal" : "institutional",
           source: journeySource,
@@ -521,7 +534,7 @@ export default function BillingPage() {
         });
         const result = await generateCheckoutSession({
           planId,
-          interval: billingInterval,
+          interval,
           planName: plan.name,
           value: checkoutValue,
           currency: "BRL",
@@ -561,11 +574,14 @@ export default function BillingPage() {
     ],
   );
 
-  const handleUpgrade = async (planId: string) => {
+  const handleUpgrade = async (
+    planId: string,
+    interval: BillingInterval = billingInterval,
+  ) => {
     trackMarketingEvent("plan_selected", {
       plan: planId,
       level: getBySlug(planId).level,
-      interval: billingInterval,
+      interval,
       placement: "billing_page",
       workspace: isPersonal ? "personal" : "institutional",
       source: journeySource,
@@ -574,7 +590,7 @@ export default function BillingPage() {
     });
 
     try {
-      await startCheckout(planId);
+      await startCheckout(planId, interval);
     } catch {
       // handled upstream
     }
@@ -696,7 +712,11 @@ export default function BillingPage() {
   useEffect(() => {
     if (!requestedPlanId || !allowAutoCheckout) return;
 
-    const checkoutKey = `${requestedPlanId}:${billingInterval}`;
+    const checkoutInterval =
+      showParishConversion && peekIntendedInterval() === null
+        ? "annual"
+        : billingInterval;
+    const checkoutKey = `${requestedPlanId}:${checkoutInterval}`;
     if (autoCheckoutStartedRef.current === checkoutKey) return;
 
     try {
@@ -709,7 +729,7 @@ export default function BillingPage() {
 
     autoCheckoutStartedRef.current = checkoutKey;
 
-    startCheckout(requestedPlanId).catch(() => {
+    startCheckout(requestedPlanId, checkoutInterval).catch(() => {
       autoCheckoutStartedRef.current = null;
       try {
         sessionStorage.removeItem(AUTO_CHECKOUT_SESSION_KEY);
@@ -717,7 +737,13 @@ export default function BillingPage() {
         // ignore storage failures
       }
     });
-  }, [allowAutoCheckout, billingInterval, requestedPlanId, startCheckout]);
+  }, [
+    allowAutoCheckout,
+    billingInterval,
+    requestedPlanId,
+    showParishConversion,
+    startCheckout,
+  ]);
 
   // Handle Stripe checkout redirect: when returning with ?status=success, the
   // subscription may not yet be reflected (webhook can lag). Refetch everything
@@ -909,6 +935,36 @@ export default function BillingPage() {
           ))}
         </div>
       </div>
+    );
+  }
+
+  if (showParishConversion) {
+    const offer =
+      visiblePlans.find((plan) => plan.planId === subscribePlanId) ??
+      offerPlanCard ??
+      getPlanDef(subscribePlanId);
+
+    return (
+      <ParishBillingConversion
+        parishName={workspace?.name || parish?.name || t("this_institution")}
+        isTrial={isTrialAccess}
+        trialDaysLeft={trialDaysLeft}
+        trialEndsLabel={trialEndsLabel}
+        classesUsed={classesUsed}
+        catechumensUsed={catechumensUsed}
+        planName={offer.name}
+        features={offer.features}
+        monthlyCents={offer.priceCents}
+        annualCents={offer.priceCentsAnnual}
+        defaultInterval={peekIntendedInterval() ?? "annual"}
+        onIntervalChange={(next) => {
+          setBillingInterval(next);
+          setIntendedInterval(next);
+        }}
+        onSubscribe={(interval) => handleUpgrade(subscribePlanId, interval)}
+        upgrading={!!upgradingPlan}
+        error={error}
+      />
     );
   }
 

@@ -37,3 +37,18 @@ export function formatPrice(cents: number, _currency?: Currency): string {
 export function formatEquivalentMonthlyPrice(annualCents: number): string {
   return formatPrice(Math.round(annualCents / 12 / 100) * 100);
 }
+
+/** Exact monthly equivalent of an annual price (`99000` → `R$ 82,50`). */
+export function formatMonthlyFromAnnualCents(annualCents: number): string {
+  return formatPrice(Math.round(annualCents / 12));
+}
+
+/** Percent saved by paying annually vs 12 monthly charges (`9900`/`99000` → 17). */
+export function annualDiscountPercent(
+  monthlyCents: number,
+  annualCents: number,
+): number {
+  const fullYear = monthlyCents * 12;
+  if (fullYear <= 0) return 0;
+  return Math.round((1 - annualCents / fullYear) * 100);
+}

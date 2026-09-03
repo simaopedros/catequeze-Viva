@@ -42,13 +42,17 @@ export function setIntendedInterval(interval: BillingInterval): void {
   }
 }
 
-export function getIntendedInterval(): BillingInterval {
+export function peekIntendedInterval(): BillingInterval | null {
   try {
     const v = localStorage.getItem(INTENDED_INTERVAL_KEY);
-    return v === "annual" ? "annual" : "monthly";
+    return v === "annual" || v === "monthly" ? v : null;
   } catch {
-    return "monthly";
+    return null;
   }
+}
+
+export function getIntendedInterval(): BillingInterval {
+  return peekIntendedInterval() ?? "monthly";
 }
 
 export function isInstitutionalPlanId(

@@ -1,7 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  annualDiscountPercent,
   detectCurrency,
   formatEquivalentMonthlyPrice,
+  formatMonthlyFromAnnualCents,
   formatPrice,
 } from "../shared/currency";
 
@@ -63,5 +65,13 @@ describe("formatPrice", () => {
 
   it("shows annual equivalent as ~R$ 8 for R$ 99/year", () => {
     expect(formatEquivalentMonthlyPrice(9900)).toBe("R$ 8");
+  });
+
+  it("keeps cents on the parish annual monthly equivalent", () => {
+    expect(formatMonthlyFromAnnualCents(99000)).toBe("R$ 82,50");
+  });
+
+  it("computes the annual discount percent without rounding the price", () => {
+    expect(annualDiscountPercent(9900, 99000)).toBe(17);
   });
 });

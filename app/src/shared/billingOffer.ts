@@ -71,3 +71,21 @@ export function isInstitutionalTrialDisplay(
 ): boolean {
   return !isPersonal && isTrial && !isInstitutionalCoverPlan(effectivePlanId);
 }
+
+/**
+ * Short commercial billing page: status → usage contrast → parish offer.
+ * Personal spaces, paid licenses, diocese workspaces and inherited coverage
+ * keep the existing management layout.
+ */
+export function shouldShowParishBillingConversion(opts: {
+  isPersonal: boolean;
+  isParishManaged: boolean;
+  isPaidActive: boolean;
+  canManageBilling: boolean;
+  workspaceType?: string | null;
+}): boolean {
+  if (!opts.canManageBilling || opts.isPersonal) return false;
+  if (opts.isParishManaged || opts.isPaidActive) return false;
+  if (opts.workspaceType === "DIOCESE") return false;
+  return true;
+}
