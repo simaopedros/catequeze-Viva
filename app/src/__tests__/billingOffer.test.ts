@@ -7,6 +7,7 @@ import {
   isInstitutionalTrialDisplay,
   offerPlanIdForWorkspace,
   planMatchesWorkspaceLevel,
+  shouldShowParishBillingConversion,
 } from "../shared/billingOffer";
 
 const catalog = [
@@ -82,5 +83,49 @@ describe("billingOffer", () => {
     );
     expect(parishPlans.map((plan) => plan.planId)).toEqual(["unlimited"]);
     expect(parishPlans[0]?.name).toBe("Plano Paróquia");
+  });
+});
+
+describe("shouldShowParishBillingConversion", () => {
+  const base = {
+    isPersonal: false,
+    isParishManaged: false,
+    isPaidActive: false,
+    canManageBilling: true,
+    workspaceType: "PARISH" as const,
+  };
+
+  it("shows the conversion page for an unpaid parish manager", () => {
+    expect(shouldShowParishBillingConversion(base)).toBe(true);
+  });
+
+  it("shows the conversion page for a community workspace on trial", () => {
+    expect(
+      shouldShowParishBillingConversion({
+        ...base,
+        workspaceType: "COMMUNITY",
+      }),
+    ).toBe(true);
+  });
+
+  it("keeps personal, paid, diocese and inherited billing on the management page", () => {
+    expect(
+      shouldShowParishBillingConversion({ ...base, isPersonal: true }),
+    ).toBe(false);
+    expect(
+      shouldShowParishBillingConversion({ ...base, isPaidActive: true }),
+    ).toBe(false);
+    expect(
+      shouldShowParishBillingConversion({ ...base, isParishManaged: true }),
+    ).toBe(false);
+    expect(
+      shouldShowParishBillingConversion({
+        ...base,
+        workspaceType: "DIOCESE",
+      }),
+    ).toBe(false);
+    expect(
+      shouldShowParishBillingConversion({ ...base, canManageBilling: false }),
+    ).toBe(false);
   });
 });
