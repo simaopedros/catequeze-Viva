@@ -52,7 +52,11 @@ const STATUS_KEYS: Record<string, { key: string; color: string }> = {
 export default function ParishesPage() {
   const { t: tp } = useTranslation("parishes");
   const navigate = useNavigate();
-  const { data: parishes = [], isLoading: loading } = useQuery(listParishes);
+  const { data: allParishes = [], isLoading: loading } = useQuery(listParishes);
+  const parishes = useMemo(
+    () => allParishes.filter((p: any) => p.type !== "PERSONAL"),
+    [allParishes],
+  );
   const { data: manageContext } = useQuery(getInstitutionalManageContext);
   const [searchParams] = useSearchParams();
   const [showCreate, setShowCreate] = useState(

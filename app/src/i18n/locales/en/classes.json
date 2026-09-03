@@ -56,6 +56,12 @@
   "end": "End",
   "name_placeholder": "Ex: Confirmation Class 2026",
   "location_placeholder": "Ex: Parish Hall",
+  "community": "Community",
+  "parish": "Parish",
+  "community_placeholder": "Parish (no specific community)",
+  "community_optional": "Optional — link to a community or chapel.",
+  "create_parish_first": "Create a parish before adding institutional classes.",
+  "create_parish_cta": "Create parish",
   "days": {
     "0": "Sunday",
     "1": "Monday",

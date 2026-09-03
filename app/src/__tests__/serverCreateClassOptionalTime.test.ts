@@ -24,4 +24,14 @@ describe("server createClassSchema optional times", () => {
     expect(parsed.endTime).toBeUndefined();
     expect(parsed.dayOfWeek).toBeUndefined();
   });
+
+  it("accepts communityId null to unlink a class from a community", async () => {
+    const { createClassSchema } = await import("../server/validation");
+    const parsed = createClassSchema.parse({
+      name: "Turma de Crisma",
+      parishId: "11111111-1111-4111-8111-111111111111",
+      communityId: null,
+    });
+    expect(parsed.communityId).toBeNull();
+  });
 });

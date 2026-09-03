@@ -7,6 +7,7 @@ import {
   workspaceStore,
 } from "./workspaceStore";
 import { SHELL_QUERY_OPTIONS } from "./shellQueryCache";
+import { pickDefaultWorkspaceId } from "../../shared/workspace";
 
 interface Workspace {
   id: string;
@@ -52,38 +53,20 @@ export function useActiveWorkspace(): UseActiveWorkspaceReturn {
   useEffect(() => {
     if (!isLoading && workspaces.length > 0) {
       const storedId = getStoredWorkspaceId();
-      if (!storedId) {
-        const personal = workspaces.find((w: Workspace) => w.isPersonal);
-        const firstId = personal?.id || workspaces[0]?.id;
-        if (firstId) {
-          setActiveWorkspaceId(firstId);
-        }
-      } else {
-        const exists = workspaces.some((w: Workspace) => w.id === storedId);
-        if (!exists) {
-          const personal = workspaces.find((w: Workspace) => w.isPersonal);
-          const firstId = personal?.id || workspaces[0]?.id;
-          if (firstId) {
-            setActiveWorkspaceId(firstId);
-          }
-        }
+      const nextId = pickDefaultWorkspaceId(workspaces, storedId);
+      if (nextId && nextId !== storedId) {
+        setActiveWorkspaceId(nextId);
       }
     }
   }, [workspaces, isLoading]);
 
   const workspace = useMemo(() => {
-    if (!activeWorkspaceId) {
-      return (
-        workspaces.find((w: Workspace) => w.isPersonal) ||
-        workspaces[0] ||
-        null
-      );
-    }
-    return (
-      workspaces.find((w: Workspace) => w.id === activeWorkspaceId) ||
-      workspaces[0] ||
-      null
+    const fallbackId = pickDefaultWorkspaceId(
+      workspaces,
+      activeWorkspaceId || null,
     );
+    if (!fallbackId) return null;
+    return workspaces.find((w: Workspace) => w.id === fallbackId) || null;
   }, [activeWorkspaceId, workspaces]);
 
   const workspacePlan =

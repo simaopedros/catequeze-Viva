@@ -303,6 +303,18 @@ export const createClass = async (args: any, context: any) => {
 
   // Scoped community coordinator: new classes stay inside their community
   let effectiveCommunityId: string | null = args.communityId || null;
+  if (effectiveCommunityId) {
+    const community = await context.entities.Community.findUnique({
+      where: { id: effectiveCommunityId },
+      select: { parishId: true },
+    });
+    if (!community || community.parishId !== effectiveParishId) {
+      throw new HttpError(
+        400,
+        "A comunidade não pertence à paróquia selecionada.",
+      );
+    }
+  }
   if (!context.user.isAdmin) {
     const access = await resolveWorkspaceAccess(context, effectiveParishId, {
       required: false,
@@ -462,7 +474,12 @@ export const getClassDetails = async (args: { id: string }, context: any) => {
         catechists: {
           include: {
             user: {
-              select: { id: true, firstName: true, lastName: true, email: true },
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
             },
           },
         },
@@ -571,9 +588,10 @@ export const updateClass = async (args: any, context: any) => {
     }
   }
 
-  const { id, ...data } = args;
+  const { id, parishId: _ignoredParishId, ...data } = args;
 
-  // Validate communityId belongs to the same parish if provided
+  // Validate communityId belongs to the same parish if provided.
+  // null unlinks the class from any community (stays on the parish).
   if (data.communityId) {
     const community = await context.entities.Community.findUnique({
       where: { id: data.communityId },
@@ -584,6 +602,20 @@ export const updateClass = async (args: any, context: any) => {
         400,
         "A comunidade não pertence à mesma paróquia da turma.",
       );
+    }
+  }
+
+  if (!context.user.isAdmin && data.communityId !== undefined) {
+    const access = await resolveWorkspaceAccess(context, classData.parishId, {
+      required: false,
+    });
+    if (access?.isScopedCoordinator) {
+      if (access.communityId && data.communityId !== access.communityId) {
+        throw new HttpError(
+          403,
+          "Você só pode vincular turmas à sua comunidade.",
+        );
+      }
     }
   }
 
@@ -610,7 +642,11 @@ export const assignLeadCatechist = async (
         "Apenas coordenadores podem designar catequistas responsáveis.",
       );
     }
-    await assertCoordinatorClassScope(context, classData.parishId, args.classId);
+    await assertCoordinatorClassScope(
+      context,
+      classData.parishId,
+      args.classId,
+    );
   }
 
   // Validate the target user belongs to the same parish
@@ -903,7 +939,10 @@ export const bulkEnrollCatechumens = async (
     ),
   ];
   if (ids.length === 0) {
-    return { enrolled: 0, failed: [] as { id: string; name: string; reason: string }[] };
+    return {
+      enrolled: 0,
+      failed: [] as { id: string; name: string; reason: string }[],
+    };
   }
 
   const classData = await context.entities.CatechesisClass.findUnique({
@@ -970,7 +1009,10 @@ export const bulkEnrollCatechumens = async (
       failed.push({ id, name, reason: "Já está inscrito." });
       continue;
     }
-    if (classData.maxCapacity && enrolledCount + toEnroll.length >= classData.maxCapacity) {
+    if (
+      classData.maxCapacity &&
+      enrolledCount + toEnroll.length >= classData.maxCapacity
+    ) {
       failed.push({ id, name, reason: "Turma lotada." });
       continue;
     }
@@ -1002,10 +1044,13 @@ export const bulkEnrollCatechumens = async (
             context,
           );
         } catch (e: any) {
-          logger.warn("Failed to auto-create sacramental journey on bulk enrollment", {
-            catechumenProfileId,
-            error: e instanceof Error ? e.message : String(e),
-          });
+          logger.warn(
+            "Failed to auto-create sacramental journey on bulk enrollment",
+            {
+              catechumenProfileId,
+              error: e instanceof Error ? e.message : String(e),
+            },
+          );
         }
       }
     } catch (e: any) {
@@ -1111,7 +1156,7 @@ export const listParishCatechists = async (
 ) => {
   if (!context.user) throw new HttpError(401);
   if (!args.parishId?.trim()) {
-    throw new HttpError(400, 'parishId é obrigatório.');
+    throw new HttpError(400, "parishId é obrigatório.");
   }
 
   const access = await requireWorkspaceAccess(context, args.parishId.trim());

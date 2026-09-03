@@ -38,6 +38,7 @@ describe('Navigation Role Filtering', () => {
 
     it('sees parish management items', () => {
       expect(paths).toContain('/app/parishes');
+      expect(paths).toContain('/app/communities');
       expect(paths).toContain('/app/families');
       expect(paths).toContain('/app/classes');
     });
@@ -181,6 +182,12 @@ describe('Workspace filter (UX, not AuthZ)', () => {
     }
   });
 
+  it('does not hide parishes or communities in PERSONAL workspace', () => {
+    const filtered = filterByWorkspace(ALL_NAV_ITEMS, 'PERSONAL');
+    expect(filtered.map((i) => i.iconKey)).toContain('parishes');
+    expect(filtered.map((i) => i.iconKey)).toContain('communities');
+  });
+
   it('does not hide institutional items for PARISH', () => {
     const filtered = filterByWorkspace(ALL_NAV_ITEMS, 'PARISH');
     expect(filtered.map((i) => i.iconKey)).toContain('parishes');
@@ -288,18 +295,29 @@ describe('getVisibleNavigation SSOT', () => {
     expect(nav.sheetItems.map((i) => i.iconKey)).toContain('billing');
   });
 
-  it('PERSONAL workspace hides institutional destinations in all surfaces', () => {
+  it('PERSONAL workspace hides reports and catechetical years, but keeps parish management', () => {
     const nav = getVisibleNavigation({
       role: 'PERSONAL_OWNER',
       isAdmin: false,
       workspaceType: 'PERSONAL',
     });
     const keys = nav.all.map((i) => i.iconKey);
-    expect(keys).not.toContain('parishes');
-    expect(keys).not.toContain('communities');
+    expect(keys).toContain('parishes');
+    expect(keys).toContain('communities');
     expect(keys).not.toContain('reports');
     expect(keys).not.toContain('catechetical_years');
-    expect(nav.sheetItems.map((i) => i.iconKey)).not.toContain('parishes');
+    expect(nav.sheetItems.map((i) => i.iconKey)).toContain('parishes');
+    expect(nav.sheetItems.map((i) => i.iconKey)).toContain('communities');
+  });
+
+  it('coordinator in PERSONAL workspace still sees parish and community management', () => {
+    const nav = getVisibleNavigation({
+      role: 'PARISH_COORDINATOR',
+      isAdmin: false,
+      workspaceType: 'PERSONAL',
+    });
+    expect(nav.all.map((i) => i.iconKey)).toContain('parishes');
+    expect(nav.all.map((i) => i.iconKey)).toContain('communities');
   });
 
   it('institutional PARISH still shows parishes for staff role', () => {

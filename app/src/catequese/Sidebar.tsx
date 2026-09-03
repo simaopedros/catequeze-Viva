@@ -229,8 +229,9 @@ export function Sidebar() {
   const { t: tn } = useTranslation("navigation");
   const [collapsed, setCollapsed] = useState(false);
   // Secondary groups start collapsed to reduce cognitive load; operation stays open.
+  // Management stays open so coordinators can find parishes and communities.
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    () => new Set(["people"]),
+    () => new Set(["people", "management"]),
   );
   const { userRole, isAdmin } = useUserContext();
   const { workspaceType, workspaceId } = useActiveWorkspace();

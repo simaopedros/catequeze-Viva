@@ -49,10 +49,15 @@ const optionalBlankString = z.preprocess(
   z.string().optional(),
 );
 
+const optionalUuidOrNull = z.preprocess(
+  (value) => (value === '' || value === undefined ? undefined : value),
+  z.string().uuid().nullable().optional(),
+);
+
 export const createClassSchema = z.object({
   name: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres').max(100),
   parishId: z.string().uuid().optional(),
-  communityId: z.string().uuid().optional(),
+  communityId: optionalUuidOrNull,
   stageId: z.string().uuid().optional(),
   sacramentId: z.string().uuid().optional(),
   yearId: z.string().uuid().optional(),

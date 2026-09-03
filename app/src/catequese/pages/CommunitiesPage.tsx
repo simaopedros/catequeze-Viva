@@ -1,10 +1,18 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
 import { QueryErrorState } from "../../client/components/QueryErrorState";
 import { Textarea } from "../../client/components/ui/textarea";
-import { Building2, Plus, Loader2, Check, X, Search } from "lucide-react";
+import {
+  Building2,
+  Plus,
+  Loader2,
+  Check,
+  X,
+  Search,
+  Church,
+} from "lucide-react";
 import { useCommunityTypeOptions } from "../../i18n/useLabels";
 import {
   useQuery,
@@ -12,7 +20,7 @@ import {
   createCommunity,
   updateCommunity,
 } from "wasp/client/operations";
-import { useActiveParish } from "../../client/hooks/useActiveParish";
+import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { toast } from "../../client/hooks/use-toast";
 import { CommunityCreateForm } from "../components/community/CommunityCreateForm";
 import { CommunityCard } from "../components/community/CommunityCard";
@@ -21,6 +29,7 @@ import { AppPageHeader } from "../../client/components/brand/AppChrome";
 import { SearchInput } from "../../client/components/SearchInput";
 import { EmptyState } from "../../client/components/EmptyState";
 import { SkeletonCard } from "../../client/components/Skeletons";
+import { isInstitutionalWorkspaceType } from "../../shared/workspace";
 
 export default function CommunitiesPage() {
   const { t } = useTranslation("common");
@@ -28,13 +37,49 @@ export default function CommunitiesPage() {
   const { t: tn } = useTranslation("navigation");
   const communityTypeOptions = useCommunityTypeOptions();
   const navigate = useNavigate();
-  const { activeParishId } = useActiveParish();
+  const { workspaceId, isPersonal, availableWorkspaces, switchWorkspace } =
+    useActiveWorkspace();
+
+  const institutionalParishes = useMemo(
+    () =>
+      availableWorkspaces.filter(
+        (w) => !w.isPersonal && isInstitutionalWorkspaceType(w.type),
+      ),
+    [availableWorkspaces],
+  );
+
+  const [parishId, setParishId] = useState("");
+
+  useEffect(() => {
+    if (parishId && institutionalParishes.some((w) => w.id === parishId)) {
+      return;
+    }
+    const fromWorkspace =
+      !isPersonal && institutionalParishes.some((w) => w.id === workspaceId)
+        ? workspaceId
+        : "";
+    const next = fromWorkspace || institutionalParishes[0]?.id || "";
+    setParishId(next);
+    if (next && isPersonal) switchWorkspace(next);
+  }, [
+    institutionalParishes,
+    isPersonal,
+    parishId,
+    switchWorkspace,
+    workspaceId,
+  ]);
+
+  const handleParishChange = (id: string) => {
+    setParishId(id);
+    if (id) switchWorkspace(id);
+  };
+
   const {
     data: communities = [],
     isLoading: loading,
     error: communitiesError,
     refetch: refetchCommunities,
-  } = useQuery(listCommunities, { parishId: activeParishId });
+  } = useQuery(listCommunities, { parishId }, { enabled: Boolean(parishId) });
 
   const [showCreate, setShowCreate] = useState(false);
   const [search, setSearch] = useState("");
@@ -149,20 +194,37 @@ export default function CommunitiesPage() {
         title={tn("communities")}
         subtitle={tp("communities_page_subtitle")}
         actions={
-          <Button
-            size="sm"
-            className="h-10 rounded-md"
-            onClick={() => setShowCreate(!showCreate)}
-          >
-            <Plus className="mr-1 h-4 w-4" />
-            {tp("new_community_btn")}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            {institutionalParishes.length > 1 && (
+              <select
+                aria-label={tp("select_parish_to_manage")}
+                value={parishId}
+                onChange={(e) => handleParishChange(e.target.value)}
+                className="h-10 min-w-[12rem] rounded-md border border-input bg-background px-3 text-sm"
+              >
+                {institutionalParishes.map((w) => (
+                  <option key={w.id} value={w.id}>
+                    {w.name}
+                  </option>
+                ))}
+              </select>
+            )}
+            <Button
+              size="sm"
+              className="h-10 rounded-md"
+              onClick={() => setShowCreate(!showCreate)}
+              disabled={!parishId}
+            >
+              <Plus className="mr-1 h-4 w-4" />
+              {tp("new_community_btn")}
+            </Button>
+          </div>
         }
       />
 
-      {showCreate && activeParishId && (
+      {showCreate && parishId && (
         <CommunityCreateForm
-          parishId={activeParishId}
+          parishId={parishId}
           onCreate={handleCreate}
           onCancel={() => setShowCreate(false)}
         />
@@ -199,13 +261,30 @@ export default function CommunitiesPage() {
         ) : (
           <EmptyState
             icon={Building2}
-            title={tp("no_community")}
-            description={
-              activeParishId
-                ? tp("no_communities_desc")
-                : tp("select_parish_hint")
+            title={
+              institutionalParishes.length === 0
+                ? tp("no_institutional_parish")
+                : tp("no_community")
             }
-          />
+            description={
+              institutionalParishes.length === 0
+                ? tp("no_institutional_parish_desc")
+                : parishId
+                  ? tp("no_communities_desc")
+                  : tp("select_parish_to_manage")
+            }
+          >
+            {institutionalParishes.length === 0 && (
+              <Button
+                size="sm"
+                className="mt-3"
+                onClick={() => navigate("/app/parishes?new=true")}
+              >
+                <Church className="mr-1 h-4 w-4" />
+                {tp("create_first")}
+              </Button>
+            )}
+          </EmptyState>
         )
       ) : (
         <div className="grid gap-3 md:grid-cols-2">
