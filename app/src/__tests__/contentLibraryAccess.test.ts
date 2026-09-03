@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
+const { prismaClassCatechist } = vi.hoisted(() => ({
+  prismaClassCatechist: {
+    findMany: vi.fn().mockResolvedValue([{ classId: "class-prisma" }]),
+  },
+}));
+
 vi.mock("wasp/server", () => ({
   HttpError: class HttpError extends Error {
     statusCode: number;
@@ -7,6 +13,10 @@ vi.mock("wasp/server", () => ({
       super(message);
       this.statusCode = statusCode;
     }
+  },
+  prisma: {
+    classCatechist: prismaClassCatechist,
+    parish: { findFirst: async () => null },
   },
 }));
 
@@ -46,20 +56,22 @@ describe("resolveWorkspaceAccess for catechists", () => {
     expect(ClassCatechist.findMany).toHaveBeenCalled();
   });
 
-  it("throws a typed error when ClassCatechist is not injected", async () => {
-    await expect(
-      resolveWorkspaceAccess(
-        context({
-          Parish: { findFirst: vi.fn().mockResolvedValue(null) },
-          Membership: {
-            findFirst: vi
-              .fn()
-              .mockResolvedValue({ id: "m-1", role: "LEAD_CATECHIST" }),
-          },
-        }),
-        PARISH_ID,
-      ),
-    ).rejects.toMatchObject({ statusCode: 500 });
+  it("falls back to Prisma when ClassCatechist is not injected", async () => {
+    prismaClassCatechist.findMany.mockClear();
+    const access = await resolveWorkspaceAccess(
+      context({
+        Parish: { findFirst: vi.fn().mockResolvedValue(null) },
+        Membership: {
+          findFirst: vi
+            .fn()
+            .mockResolvedValue({ id: "m-1", role: "LEAD_CATECHIST" }),
+        },
+      }),
+      PARISH_ID,
+    );
+    expect(access?.role).toBe("LEAD_CATECHIST");
+    expect(access?.allowedClassIds).toEqual(["class-prisma"]);
+    expect(prismaClassCatechist.findMany).toHaveBeenCalled();
   });
 });
 
