@@ -12,9 +12,10 @@ describe("sales WhatsApp contact", () => {
   });
 
   it("builds a wa.me link with optional prefilled message", () => {
+    const message = "Olá! Quero saber mais sobre os planos.";
     expect(getSalesWhatsAppUrl()).toBe("https://wa.me/5511936244752");
-    expect(getSalesWhatsAppUrl("Olá! Quero saber mais sobre os planos.")).toBe(
-      "https://wa.me/5511936244752?text=Ol%C3%A1%21%20Quero%20saber%20mais%20sobre%20os%20planos.",
+    expect(getSalesWhatsAppUrl(message)).toBe(
+      `https://wa.me/${SALES_WHATSAPP_E164}?text=${encodeURIComponent(message)}`,
     );
   });
 });
