@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { ACCESS_MATRIX_ROLES } from "../../shared/workspaceIdentity";
-import { AppPanel } from "../../client/components/brand/AppChrome";
-import { useRoleLabels } from "../../i18n/useLabels";
+import { ACCESS_MATRIX_ROLES } from "../../../shared/workspaceIdentity";
+import { AppPanel } from "../../../client/components/brand/AppChrome";
+import { useRoleLabels } from "../../../i18n/useLabels";
 
 export function RoleAccessMatrix({
   personal,

@@ -539,9 +539,11 @@ async function copyPersonalClassesToParish(
             householdId: orig.householdId,
           },
         });
+        if (!copiedProfile?.id) continue;
         newProfileId = copiedProfile.id;
-        profileMap.set(enr.catechumenProfileId, newProfileId);
+        profileMap.set(enr.catechumenProfileId, copiedProfile.id);
       }
+      if (!newProfileId) continue;
       try {
         await context.entities.ClassEnrollment.create({
           data: {
