@@ -13,7 +13,8 @@ import { useUserContext } from "../client/hooks/useUserContext";
 import { Button } from "../client/components/ui/button";
 import { Card, CardContent, CardHeader } from "../client/components/ui/card";
 import { Separator } from "../client/components/ui/separator";
-import { Church, User as UserIcon, CreditCard, Coins } from "lucide-react";
+import { Church, User as UserIcon, Coins, Building2 } from "lucide-react";
+import { Link } from "react-router";
 import {
   SubscriptionStatus,
   parsePaymentPlanId,
@@ -24,11 +25,24 @@ import {
   getProductTrialDaysLeft,
   getProductTrialEndsAt,
 } from "../shared/pricing";
+import { useActiveWorkspace } from "../client/hooks/useActiveWorkspace";
+import { useRoleLabels } from "../i18n/useLabels";
+import {
+  WorkspaceKindBadge,
+  WorkspacePlanLabel,
+  workspaceKindOf,
+} from "../catequese/components/WorkspaceIdentityChip";
 
 export default function AccountPage() {
   const { t } = useTranslation("account");
   const { data: user } = useAuth();
   const { parishName: ctxParishName } = useUserContext();
+  const { workspace, workspaceName, workspaceType } = useActiveWorkspace();
+  const roleLabels = useRoleLabels();
+  const workspaceKind = workspaceKindOf(workspaceType);
+  const workspaceRole = workspace?.role
+    ? roleLabels[workspace.role as keyof typeof roleLabels] || workspace.role
+    : "";
 
   if (!user) return null;
 
@@ -98,24 +112,83 @@ export default function AccountPage() {
         </CardContent>
       </Card>
 
-      {/* Plan */}
-      <Card className="rounded-sm border-border/70">
-        <CardHeader className="space-y-1.5">
-          <AppEyebrow className="flex items-center gap-2">
-            <CreditCard className="h-3.5 w-3.5" />
-            {t("plan")}
-          </AppEyebrow>
-          <AppGoldRule className="w-8" />
-        </CardHeader>
-        <CardContent>
-          <UserCurrentSubscriptionPlan
-            subscriptionPlan={user.subscriptionPlan}
-            subscriptionStatus={user.subscriptionStatus}
-            datePaid={user.datePaid}
-            createdAt={user.createdAt}
-          />
-        </CardContent>
-      </Card>
+      <div className="space-y-2">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          {t("scopes_title")}
+        </p>
+        <p className="text-sm text-muted-foreground">{t("scopes_hint")}</p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Card className="rounded-sm border-border/70" data-testid="account-personal-scope">
+          <CardHeader className="space-y-1.5">
+            <AppEyebrow className="flex items-center gap-2">
+              <UserIcon className="h-3.5 w-3.5" />
+              {t("personal_scope_title")}
+            </AppEyebrow>
+            <AppGoldRule className="w-8" />
+            <p className="text-xs text-muted-foreground">
+              {t("personal_scope_desc")}
+            </p>
+          </CardHeader>
+          <CardContent>
+            <UserCurrentSubscriptionPlan
+              subscriptionPlan={user.subscriptionPlan}
+              subscriptionStatus={user.subscriptionStatus}
+              datePaid={user.datePaid}
+              createdAt={user.createdAt}
+            />
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-sm border-border/70" data-testid="account-workspace-scope">
+          <CardHeader className="space-y-1.5">
+            <AppEyebrow className="flex items-center gap-2">
+              <Building2 className="h-3.5 w-3.5" />
+              {t("workspace_scope_title")}
+            </AppEyebrow>
+            <AppGoldRule className="w-8" />
+            <p className="text-xs text-muted-foreground">
+              {t("workspace_scope_desc")}
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {workspace ? (
+              <>
+                <div className="flex flex-wrap items-center gap-2">
+                  <WorkspaceKindBadge kind={workspaceKind} />
+                  <span className="text-sm font-semibold tracking-tight text-brand-ink">
+                    {workspaceName}
+                  </span>
+                </div>
+                {workspaceRole && (
+                  <p className="text-sm text-muted-foreground">
+                    {t("workspace_role")}: {workspaceRole}
+                  </p>
+                )}
+                <WorkspacePlanLabel
+                  parishType={workspaceType}
+                  parishPlan={workspace.plan}
+                  planInherited={workspace.planInherited}
+                  dioceseName={workspace.dioceseName}
+                  personalPlan={user.subscriptionPlan}
+                  className="block text-sm font-medium text-brand-ink"
+                />
+                <Link
+                  to="/app/billing"
+                  className="inline-block text-sm font-medium text-brand-ink hover:underline"
+                >
+                  {t("manage_workspace_billing")}
+                </Link>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {t("no_active_workspace")}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Credits */}
       <Card className="rounded-sm border-border/70">

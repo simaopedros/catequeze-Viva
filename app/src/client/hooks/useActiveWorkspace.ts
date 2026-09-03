@@ -9,15 +9,21 @@ import {
 import { SHELL_QUERY_OPTIONS } from "./shellQueryCache";
 import { pickDefaultWorkspaceId } from "../../shared/workspace";
 
-interface Workspace {
+export interface Workspace {
   id: string;
   name: string;
+  subtitle?: string;
   type: "PERSONAL" | "PARISH" | "DIOCESE" | "COMMUNITY";
   role: string;
   plan: string;
   billingStatus?: string | null;
+  trialEndsAt?: string | Date | null;
   isPersonal: boolean;
   billing?: { plan: string; status: string | null };
+  dioceseId?: string | null;
+  dioceseName?: string | null;
+  planInherited?: boolean;
+  membershipStatus?: "ACTIVE" | "INVITED";
 }
 
 interface UseActiveWorkspaceReturn {

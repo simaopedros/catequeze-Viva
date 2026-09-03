@@ -15,5 +15,16 @@
   "buy_credits": "Buy More Credits",
   "plan_past_due": "Your {{plan}} plan payment is past due. Please update your subscription payment details.",
   "plan_cancel_at_period_end": "Your {{plan}} subscription has been cancelled, but remains active until the end of the current billing period: {{date}}",
-  "plan_deleted": "Your previous subscription has been cancelled and is no longer active."
+  "plan_deleted": "Your previous subscription has been cancelled and is no longer active.",
+  "scopes_title": "Two billing scopes",
+  "scopes_hint": "Your personal subscription and the institutional workspace license are independent. Cancelling one does not end the other.",
+  "personal_scope_title": "Personal subscription",
+  "personal_scope_desc": "Covers your Personal workspace (Catechist Plan).",
+  "workspace_scope_title": "This workspace license",
+  "workspace_scope_desc": "Covers the active workspace — parish, diocese, or community.",
+  "workspace_kind": "Type",
+  "workspace_role": "Your role",
+  "workspace_plan": "Effective plan",
+  "manage_workspace_billing": "Manage workspace billing",
+  "no_active_workspace": "No active workspace"
 }

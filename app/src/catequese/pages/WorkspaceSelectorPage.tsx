@@ -32,6 +32,12 @@ import {
   AppDisplayTitle,
   AppGoldRule,
 } from "../../client/components/brand/AppChrome";
+import {
+  WorkspaceKindBadge,
+  WorkspacePlanLabel,
+  workspaceKindOf,
+} from "../components/WorkspaceIdentityChip";
+import { isInstitutionalCoverPlan } from "../../shared/workspaceIdentity";
 
 interface Workspace {
   id: string;
@@ -233,8 +239,15 @@ export default function WorkspaceSelectorPage() {
             {ws.name}
           </p>
           <div className="mt-1 flex flex-wrap items-center gap-2">
+            <WorkspaceKindBadge kind={workspaceKindOf(ws.type)} />
             <span className="rounded-sm bg-brand-ink/8 px-2 py-0.5 text-xs font-medium text-brand-ink">
-              {planLabel(ws.plan, t)}
+              <WorkspacePlanLabel
+                parishType={ws.type}
+                parishPlan={ws.plan}
+                planInherited={ws.planInherited}
+                dioceseName={ws.dioceseName}
+                className="text-xs font-medium text-brand-ink"
+              />
             </span>
             {opts?.showRole && (
               <span className="text-xs text-muted-foreground">
@@ -268,11 +281,14 @@ export default function WorkspaceSelectorPage() {
   );
 
   const coverageLabel = (ws: Workspace): string | undefined => {
-    if (!ws.planInherited) return undefined;
-    if (ws.dioceseName)
-      return t("workspace.covered_by_diocese", { name: ws.dioceseName });
-    if (ws.plan === "parish" || ws.plan === "diocese")
+    if (ws.planInherited) {
+      if (ws.dioceseName)
+        return t("workspace.covered_by_diocese", { name: ws.dioceseName });
       return t("workspace.covered_by_license");
+    }
+    if (isInstitutionalCoverPlan(ws.plan) && ws.dioceseName) {
+      return t("workspace.covered_by_diocese", { name: ws.dioceseName });
+    }
     return undefined;
   };
 
@@ -440,6 +456,7 @@ export default function WorkspaceSelectorPage() {
                         {personal.subtitle}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
+                        <WorkspaceKindBadge kind="PERSONAL" />
                         <span className="rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
                           {planLabel(personal.plan, t)}
                         </span>
