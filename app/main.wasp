@@ -574,12 +574,15 @@ query searchParishesForOnboarding {
 
 action createParish {
   fn: import { createParish } from "@src/server/operations/parishOperations",
-  entities: [Parish, Membership, TenantBilling, PricingPlan, PricingPlanPrice]
+  // User is required by resolveNewParishBilling / assertCanCreateParish (fresh subscription lookup).
+  // AuditLog is required by writeAuditLog after create.
+  entities: [Parish, Membership, TenantBilling, PricingPlan, PricingPlanPrice, User, AuditLog]
 }
 
 action completeCoordinatorOnboarding {
   fn: import { completeCoordinatorOnboarding } from "@src/server/operations/onboardingOperations",
-  entities: [Parish, Membership, TenantBilling, CatecheticalYear, CatechesisClass, PricingPlan, PricingPlanPrice]
+  // User is required by resolveNewParishBilling (fresh subscription lookup).
+  entities: [Parish, Membership, TenantBilling, CatecheticalYear, CatechesisClass, PricingPlan, PricingPlanPrice, User]
 }
 
 action updateParish {
@@ -605,7 +608,8 @@ query getParishById {
 
 action getOrCreateParishByOsmId {
   fn: import { getOrCreateParishByOsmId } from "@src/server/operations/parishOperations",
-  entities: [Parish, Membership, TenantBilling, PricingPlan, PricingPlanPrice]
+  // User is required by resolveNewParishBilling (fresh subscription lookup).
+  entities: [Parish, Membership, TenantBilling, PricingPlan, PricingPlanPrice, User]
 }
 // ── Diocese Management ───────────────────────────────────────────────────
 

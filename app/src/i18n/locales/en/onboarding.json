@@ -129,6 +129,7 @@
     "duplicate_warning": "A similar parish already exists:",
     "use_this": "Use this →",
     "create_error": "Error creating parish.",
+    "city_state_required": "Enter the city and state before creating the parish.",
     "creating": "Creating...",
     "create_btn": "Create parish",
     "default_name": "Parish",

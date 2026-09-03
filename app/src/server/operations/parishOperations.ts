@@ -230,6 +230,19 @@ export const createParish = async (
 ): Promise<{ id: string; existingParishId?: string }> => {
   if (!context.user) throw new HttpError(401);
 
+  const name = args.name?.trim() || '';
+  if (name.length < 3) {
+    throw new HttpError(400, 'Nome da paróquia deve ter pelo menos 3 caracteres.');
+  }
+  const city = args.city?.trim() || '';
+  const state = args.state?.trim() || '';
+  if (!city || city.length < 2) {
+    throw new HttpError(400, 'Informe a cidade da paróquia.');
+  }
+  if (!state) {
+    throw new HttpError(400, 'Informe o estado (UF) da paróquia.');
+  }
+
   if (!context.user.isAdmin) {
     await assertCanCreateParish(context, { dioceseId: args.dioceseId || null });
   }
@@ -242,7 +255,10 @@ export const createParish = async (
   }
 
   // Check for duplicate by name + city + state
-  const existing = await findParishDuplicate(args, context);
+  const existing = await findParishDuplicate(
+    { name, city, state },
+    context,
+  );
   if (existing) {
     const existingMembership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, parishId: existing.id },
@@ -292,9 +308,9 @@ export const createParish = async (
 
   const parish = await context.entities.Parish.create({
     data: {
-      name: args.name.trim(),
-      city: args.city?.trim() || null,
-      state: args.state?.trim()?.toUpperCase() || null,
+      name,
+      city,
+      state: state.toUpperCase(),
       dioceseId: args.dioceseId || null,
       ownerId: context.user.id,
       locale: context.user.locale || 'pt-BR',

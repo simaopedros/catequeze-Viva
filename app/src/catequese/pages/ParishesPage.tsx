@@ -242,7 +242,12 @@ export default function ParishesPage() {
             <Button
               size="sm"
               onClick={handleCreate}
-              disabled={creating || !newName.trim()}
+              disabled={
+                creating ||
+                !newName.trim() ||
+                !newCity.trim() ||
+                !newState.trim()
+              }
             >
               {creating ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
