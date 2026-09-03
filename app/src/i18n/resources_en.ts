@@ -31,7 +31,9 @@ export const account_en = {
     "workspace_role": "Your role",
     "workspace_plan": "Effective plan",
     "manage_workspace_billing": "Manage workspace billing",
-    "no_active_workspace": "No active workspace"
+    "no_active_workspace": "No active workspace",
+    "workspace_managed_desc": "You take part in this workspace. Plans and payments stay with whoever administers it.",
+    "workspace_managed_hint": "Questions about the plan? Talk to the coordination."
   } as const;
 
 export const activities_en = {
@@ -1166,7 +1168,7 @@ export const billing_en = {
     "limit_reached_title": "Plan limit reached",
     "limit_reached_label": "{{label}} limit reached",
     "limit_reached_description": "Your <1>{{currentPlanName}}</1> plan allows up to <2>{{maxAllowed}} {{label}}{{plural}}</2>. You already have <3>{{currentCount}}</3>. Upgrade now to continue.",
-    "limit_reached_contact": "Talk to the <1>parish coordinator</1> to expand plan limits.",
+    "limit_reached_contact": "Talk to the <1>parish coordinator</1> to raise the limits of this workspace.",
     "upgrade_to": "Upgrade to {{plan}}",
     "upgrade_btn": "Upgrade",
     "limit_labels": {
@@ -1334,6 +1336,88 @@ export const billing_en = {
       "parish_feature_docs": "Documents and certificates",
       "support_question": "Questions about the subscription?",
       "support_cta": "WhatsApp"
+    },
+    "checkout_success_badge": "Confirmed",
+    "catechist_offer": {
+      "trial_badge": "In trial",
+      "headline_trial_one": "Your trial ends in 1 day",
+      "headline_trial_other": "Your trial ends in {{count}} days",
+      "headline_trial_ended": "Your trial has ended",
+      "headline_trial_active": "Your trial is active",
+      "headline_no_trial": "Keep your catechesis in the personal workspace",
+      "result_trial": "Subscribe to the Catechist Plan and continue without interruption.",
+      "result_no_trial": "The Catechist Plan covers your personal workspace: classes, attendance, and calendar.",
+      "usage_aria": "Current usage compared with the Catechist Plan",
+      "usage_trial_label": "Your trial",
+      "usage_plan_label": "Catechist Plan",
+      "usage_class_one": "{{count}} class",
+      "usage_class_other": "{{count}} classes",
+      "usage_catechumen_one": "{{count}} catechumen",
+      "usage_catechumen_other": "{{count}} catechumens",
+      "usage_unlimited_classes": "∞ classes",
+      "usage_unlimited_catechumens": "∞ catechumens",
+      "usage_plan_classes_one": "up to {{count}} class",
+      "usage_plan_classes_other": "up to {{count}} classes",
+      "usage_plan_catechumens_one": "up to {{count}} catechumen",
+      "usage_plan_catechumens_other": "up to {{count}} catechumens",
+      "interval_aria": "Billing interval",
+      "interval_monthly": "Monthly",
+      "interval_annual": "Annual",
+      "annual_discount": "{{percent}}% off",
+      "most_popular": "For the catechist",
+      "plan_result": "Your personal catechesis, with calendar and attendance",
+      "plan_audience": "For the catechist in the personal workspace",
+      "per_month": "/month",
+      "billed_annually": "billed annually: {{price}}",
+      "save_year": "save {{price}}",
+      "cta": "Subscribe to the Catechist Plan",
+      "secure_payment": "Secure payment via Stripe",
+      "support_question": "Questions about the subscription?",
+      "support_cta": "WhatsApp"
+    },
+    "institutional_active": {
+      "workspace_eyebrow": "Institutional workspace",
+      "active_badge": "Active",
+      "headline": "The parish license is active",
+      "result": "The whole team uses this workspace under the parish license.",
+      "manage": "Manage subscription",
+      "cancel_link": "Cancel subscription",
+      "scope_hint": "This license covers the pastoral workspace. Each person's Catechist subscription is independent.",
+      "your_plan": "Current license",
+      "current_badge": "Current plan",
+      "per_month": "/month",
+      "billed_annually": "billed annually: {{price}}",
+      "save_year": "save {{price}}",
+      "switch_annual": "Switch to annual and save {{savings}}",
+      "usage_title": "Usage in this workspace",
+      "usage_classes": "{{used}} of {{limit}} classes",
+      "usage_catechumens": "{{used}} of {{limit}} catechumens",
+      "support_question": "Questions about the subscription?",
+      "support_cta": "WhatsApp"
+    },
+    "managed_notice": {
+      "eyebrow": "This workspace",
+      "badge": "Participating",
+      "collaborator_headline": "Who manages this workspace",
+      "collaborator_result": "You take part in this workspace's catechesis. Plans and payments stay with whoever administers it.",
+      "collaborator_result_role": "You take part as {{role}}. Plans and payments stay with whoever administers it.",
+      "covered_headline": "This workspace is managed by the diocese",
+      "covered_headline_named": "This workspace is managed by the diocese {{name}}",
+      "covered_result": "The license comes from the diocese. Plan and payment questions stay with them.",
+      "covered_result_named": "The license comes from the diocese {{name}}. Plan and payment questions stay with them.",
+      "diocese_headline": "The Diocese Plan is contracted with the sales team",
+      "diocese_result": "There is no self-serve checkout here. Parish coverage is arranged with sales.",
+      "who_title": "Who manages it",
+      "who_desc": "We don't show prices or plan limits in this workspace to people who only take part.",
+      "manager_coordination": "Coordination of {{name}}",
+      "manager_person": "{{name}}",
+      "manager_diocese": "Diocese {{name}}",
+      "diocese_manager": "Catequese Viva sales team",
+      "your_role": "Your role in this workspace: {{role}}",
+      "diocese_sales_title": "Talk about the diocese license",
+      "diocese_sales_desc": "Parish coverage is assisted sales.",
+      "diocese_cta": "Talk to sales about the diocese",
+      "diocese_prefill": "Hi! I would like to talk about the Diocese Plan for {{name}} on Catequese Viva."
     }
   } as const;
 
@@ -5151,7 +5235,9 @@ export const public_en = {
       ],
       "annual_compare": "on annual, it comes to {{price}}/month",
       "annual_billed_as": "billed as {{price}}/year",
-      "annual_save_amount": "save {{price}} per year"
+      "annual_save_amount": "save {{price}} per year",
+      "secure_payment": "Secure payment via Stripe",
+      "interval_aria": "Billing interval"
     },
     "workspace": {
       "app_name": "Catequese Viva",
@@ -5703,7 +5789,11 @@ export const topbar_en = {
       "parish_needs_license": "Subscribe to the Parish Plan for this workspace",
       "covered_by_diocese": "Covered by the diocese",
       "covered_by_named": "Covered by {{name}}",
-      "free": "No subscription"
+      "free": "No subscription",
+      "managed_by_coordination": "Managed by the coordination",
+      "managed_by_diocese": "Managed by the diocese",
+      "managed_by_named": "Managed by {{name}}",
+      "managed_by_owner": "Managed by the lead catechist"
     }
   } as const;
 

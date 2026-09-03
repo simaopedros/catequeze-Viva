@@ -7,8 +7,13 @@ import {
   isInstitutionalTrialDisplay,
   offerPlanIdForWorkspace,
   planMatchesWorkspaceLevel,
+  shouldShowCollaboratorBilling,
+  shouldShowCoveredWorkspaceBilling,
+  shouldShowDioceseWorkspaceBilling,
+  shouldShowInstitutionalActiveBilling,
   shouldShowParishBillingConversion,
   shouldShowPersonalActiveBilling,
+  shouldShowPersonalConversion,
 } from "../shared/billingOffer";
 
 const catalog = [
@@ -162,6 +167,125 @@ describe("shouldShowPersonalActiveBilling", () => {
         isPersonal: true,
         isPaidActive: true,
         canManageBilling: false,
+      }),
+    ).toBe(false);
+  });
+});
+
+describe("shouldShowPersonalConversion", () => {
+  it("shows Catequista conversion for an unpaid personal manager", () => {
+    expect(
+      shouldShowPersonalConversion({
+        isPersonal: true,
+        isPaidActive: false,
+        canManageBilling: true,
+      }),
+    ).toBe(true);
+  });
+
+  it("does not replace paid or institutional billing", () => {
+    expect(
+      shouldShowPersonalConversion({
+        isPersonal: true,
+        isPaidActive: true,
+        canManageBilling: true,
+      }),
+    ).toBe(false);
+    expect(
+      shouldShowPersonalConversion({
+        isPersonal: false,
+        isPaidActive: false,
+        canManageBilling: true,
+      }),
+    ).toBe(false);
+    expect(
+      shouldShowPersonalConversion({
+        isPersonal: true,
+        isPaidActive: false,
+        canManageBilling: false,
+      }),
+    ).toBe(false);
+  });
+});
+
+describe("shouldShowInstitutionalActiveBilling", () => {
+  it("shows the active panel for a paid parish license the coordinator manages", () => {
+    expect(
+      shouldShowInstitutionalActiveBilling({
+        isPersonal: false,
+        isPaidActive: true,
+        canManageBilling: true,
+        planInherited: false,
+        workspaceType: "PARISH",
+      }),
+    ).toBe(true);
+  });
+
+  it("skips diocese cover, diocese workspaces and collaborators", () => {
+    expect(
+      shouldShowInstitutionalActiveBilling({
+        isPersonal: false,
+        isPaidActive: true,
+        canManageBilling: true,
+        planInherited: true,
+        workspaceType: "PARISH",
+      }),
+    ).toBe(false);
+    expect(
+      shouldShowInstitutionalActiveBilling({
+        isPersonal: false,
+        isPaidActive: true,
+        canManageBilling: true,
+        workspaceType: "DIOCESE",
+      }),
+    ).toBe(false);
+    expect(
+      shouldShowInstitutionalActiveBilling({
+        isPersonal: false,
+        isPaidActive: true,
+        canManageBilling: false,
+        workspaceType: "PARISH",
+      }),
+    ).toBe(false);
+  });
+});
+
+describe("managed billing surfaces", () => {
+  it("shows collaborator notice when the user cannot manage billing", () => {
+    expect(shouldShowCollaboratorBilling({ canManageBilling: false })).toBe(
+      true,
+    );
+    expect(shouldShowCollaboratorBilling({ canManageBilling: true })).toBe(
+      false,
+    );
+  });
+
+  it("shows covered notice for inherited diocese license", () => {
+    expect(
+      shouldShowCoveredWorkspaceBilling({
+        canManageBilling: true,
+        planInherited: true,
+      }),
+    ).toBe(true);
+    expect(
+      shouldShowCoveredWorkspaceBilling({
+        canManageBilling: true,
+        planInherited: false,
+      }),
+    ).toBe(false);
+  });
+
+  it("shows diocese workspace notice for diocese managers", () => {
+    expect(
+      shouldShowDioceseWorkspaceBilling({
+        canManageBilling: true,
+        workspaceType: "DIOCESE",
+      }),
+    ).toBe(true);
+    expect(
+      shouldShowDioceseWorkspaceBilling({
+        canManageBilling: true,
+        workspaceType: "PARISH",
       }),
     ).toBe(false);
   });

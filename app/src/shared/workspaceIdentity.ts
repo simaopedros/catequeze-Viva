@@ -125,6 +125,46 @@ export function catalogDisplayName(planKey: string): string {
   return planName(planKey);
 }
 
+export function formatEffectivePlanCopy(
+  presentation: EffectivePlanPresentation,
+  t: (key: string, opts?: Record<string, string>) => string,
+  opts?: { hidePlanDetails?: boolean; kind?: WorkspaceKind },
+): string {
+  if (opts?.hidePlanDetails) {
+    if (presentation.source === "diocese") {
+      if (presentation.dioceseName) {
+        return t("plan.managed_by_named", { name: presentation.dioceseName });
+      }
+      return t("plan.managed_by_diocese");
+    }
+    if (opts.kind === "PERSONAL" || presentation.source === "personal") {
+      return t("plan.managed_by_owner");
+    }
+    return t("plan.managed_by_coordination");
+  }
+
+  const plan = catalogDisplayName(presentation.planKey);
+  if (presentation.source === "diocese") {
+    if (presentation.dioceseName) {
+      return t("plan.covered_by_named", { name: presentation.dioceseName });
+    }
+    return t("plan.covered_by_diocese");
+  }
+  if (presentation.source === "parish") {
+    return t("plan.parish_license", { plan });
+  }
+  if (presentation.source === "parish_trial") {
+    return t("plan.parish_trial");
+  }
+  if (presentation.source === "parish_needs_license") {
+    return t("plan.parish_needs_license");
+  }
+  if (presentation.source === "personal") {
+    return t("plan.personal", { plan });
+  }
+  return t("plan.free");
+}
+
 export function workspaceKindAccentClass(kind: WorkspaceKind): string {
   switch (kind) {
     case "PERSONAL":

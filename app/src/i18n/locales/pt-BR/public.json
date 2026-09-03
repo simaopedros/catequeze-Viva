@@ -94,7 +94,9 @@
     ],
     "annual_compare": "no anual, sai por {{price}}/mês",
     "annual_billed_as": "cobrado como {{price}}/ano",
-    "annual_save_amount": "economize {{price}} por ano"
+    "annual_save_amount": "economize {{price}} por ano",
+    "secure_payment": "Pagamento seguro via Stripe",
+    "interval_aria": "Periodicidade da assinatura"
   },
   "workspace": {
     "app_name": "Catequese Viva",

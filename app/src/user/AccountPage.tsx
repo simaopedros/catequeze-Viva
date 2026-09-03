@@ -27,6 +27,7 @@ import {
 } from "../shared/pricing";
 import { useActiveWorkspace } from "../client/hooks/useActiveWorkspace";
 import { useRoleLabels } from "../i18n/useLabels";
+import { canManageWorkspaceBilling } from "../shared/billingAccess";
 import {
   WorkspaceKindBadge,
   WorkspacePlanLabel,
@@ -37,12 +38,18 @@ export default function AccountPage() {
   const { t } = useTranslation("account");
   const { data: user } = useAuth();
   const { parishName: ctxParishName } = useUserContext();
-  const { workspace, workspaceName, workspaceType } = useActiveWorkspace();
+  const { workspace, workspaceName, workspaceType, isPersonal } =
+    useActiveWorkspace();
   const roleLabels = useRoleLabels();
   const workspaceKind = workspaceKindOf(workspaceType);
   const workspaceRole = workspace?.role
     ? roleLabels[workspace.role as keyof typeof roleLabels] || workspace.role
     : "";
+  const canManageBilling = canManageWorkspaceBilling(workspace?.role, {
+    isPersonalOwner: Boolean(
+      isPersonal && (!workspace?.role || workspace.role === "PERSONAL_OWNER"),
+    ),
+  });
 
   if (!user) return null;
 
@@ -155,7 +162,9 @@ export default function AccountPage() {
             </AppEyebrow>
             <AppGoldRule className="w-8" />
             <p className="text-xs text-muted-foreground">
-              {t("workspace_scope_desc")}
+              {canManageBilling
+                ? t("workspace_scope_desc")
+                : t("workspace_managed_desc")}
             </p>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -179,14 +188,21 @@ export default function AccountPage() {
                   dioceseName={workspace.dioceseName}
                   personalPlan={user.subscriptionPlan}
                   billingStatus={workspace.billingStatus}
+                  hidePlanDetails={!canManageBilling}
                   className="block text-sm font-medium text-brand-ink"
                 />
-                <Link
-                  to="/app/billing"
-                  className="inline-block text-sm font-medium text-brand-ink hover:underline"
-                >
-                  {t("manage_workspace_billing")}
-                </Link>
+                {canManageBilling ? (
+                  <Link
+                    to="/app/billing"
+                    className="inline-block text-sm font-medium text-brand-ink hover:underline"
+                  >
+                    {t("manage_workspace_billing")}
+                  </Link>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {t("workspace_managed_hint")}
+                  </p>
+                )}
               </>
             ) : (
               <p className="text-sm text-muted-foreground">

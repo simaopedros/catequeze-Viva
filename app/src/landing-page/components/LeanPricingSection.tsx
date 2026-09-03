@@ -2,7 +2,11 @@ import { useEffect, useRef } from "react";
 import { Link } from "react-router";
 import { ArrowRight, Check } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
-import { useLandingText, landingCopy, landingFeatureList } from "../hooks/useLandingText";
+import {
+  useLandingText,
+  landingCopy,
+  landingFeatureList,
+} from "../hooks/useLandingText";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import {
   trackLead,
@@ -36,18 +40,24 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
     // Meta ViewContent when pricing enters viewport (main Meta Ads landing surface).
     trackViewPricing({
       plan_ids: publicPlans
-        .filter((plan) => plan.kind === "subscription" && plan.slug !== "catechist_free")
+        .filter(
+          (plan) =>
+            plan.kind === "subscription" && plan.slug !== "catechist_free",
+        )
         .map((plan) => plan.slug),
       content_name: "Planos Catechis Landing",
     });
   }, [isVisible, ns, publicPlans]);
 
   const plans = publicPlans
-    .filter((plan) => plan.kind === "subscription" && plan.slug !== "catechist_free")
+    .filter(
+      (plan) => plan.kind === "subscription" && plan.slug !== "catechist_free",
+    )
     .map((plan) => ({
       id: plan.slug,
       price: formatPrice(
-        plan.prices.find((item) => item.interval === "monthly" && item.isActive)?.unitAmountCents ?? 0,
+        plan.prices.find((item) => item.interval === "monthly" && item.isActive)
+          ?.unitAmountCents ?? 0,
       ),
       highlight: plan.highlight,
     }));
@@ -74,9 +84,7 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
 
       <div
         className={
-          plans.length < 2
-            ? "max-w-lg mx-auto"
-            : "grid gap-4 sm:grid-cols-2"
+          plans.length < 2 ? "max-w-lg mx-auto" : "grid gap-4 sm:grid-cols-2"
         }
       >
         {plans.map((plan, index) => {
@@ -181,12 +189,12 @@ function PlanCard({
       ref={ref as any}
       className={`rounded-sm border p-5 flex flex-col ${className} ${
         highlight
-          ? "border-brand-ink/40 bg-brand-ink/[0.03]"
+          ? "border-2 border-brand-gold/70 bg-white"
           : "border-border/70 bg-card"
       }`}
     >
       {highlight && (
-        <span className="mb-2 self-start text-[11px] font-semibold uppercase tracking-wide text-brand-ink">
+        <span className="mb-2 self-start rounded-full bg-brand-gold px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-ink">
           {popularLabel}
         </span>
       )}
@@ -203,7 +211,7 @@ function PlanCard({
       <ul className="mt-4 space-y-2 text-sm flex-1">
         {features.slice(0, 4).map((f) => (
           <li key={f} className="flex items-start gap-2">
-            <Check className="h-4 w-4 text-brand-ink shrink-0 mt-0.5" />
+            <Check className="h-4 w-4 text-success shrink-0 mt-0.5" />
             <span>{f}</span>
           </li>
         ))}

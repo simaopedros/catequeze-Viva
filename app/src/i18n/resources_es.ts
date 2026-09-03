@@ -31,7 +31,9 @@ export const account_es = {
     "workspace_role": "Tu rol",
     "workspace_plan": "Plan efectivo",
     "manage_workspace_billing": "Gestionar cobro del espacio",
-    "no_active_workspace": "Ningún espacio activo"
+    "no_active_workspace": "Ningún espacio activo",
+    "workspace_managed_desc": "Participas en este espacio. Los planes y pagos quedan con quien lo administra.",
+    "workspace_managed_hint": "¿Dudas sobre el plan? Habla con la coordinación."
   } as const;
 
 export const activities_es = {
@@ -1166,7 +1168,7 @@ export const billing_es = {
     "limit_reached_title": "Límite del plan alcanzado",
     "limit_reached_label": "Límite de {{label}} alcanzado",
     "limit_reached_description": "Tu plan <1>{{currentPlanName}}</1> permite hasta <2>{{maxAllowed}} {{label}}{{plural}}</2>. Ya tienes <3>{{currentCount}}</3>. Haz upgrade ahora para continuar.",
-    "limit_reached_contact": "Habla con el <1>coordinador de la parroquia</1> para ampliar los límites del plan.",
+    "limit_reached_contact": "Habla con el <1>coordinador de la parroquia</1> para ampliar los límites de este espacio.",
     "upgrade_to": "Mejorar a {{plan}}",
     "upgrade_btn": "Mejorar",
     "limit_labels": {
@@ -1334,6 +1336,88 @@ export const billing_es = {
       "parish_feature_docs": "Documentos y certificados",
       "support_question": "¿Dudas sobre la suscripción?",
       "support_cta": "WhatsApp"
+    },
+    "checkout_success_badge": "Confirmado",
+    "catechist_offer": {
+      "trial_badge": "En prueba",
+      "headline_trial_one": "Tu prueba termina en 1 día",
+      "headline_trial_other": "Tu prueba termina en {{count}} días",
+      "headline_trial_ended": "Tu período de prueba terminó",
+      "headline_trial_active": "Tu período de prueba está activo",
+      "headline_no_trial": "Continúa tu catequesis en el espacio personal",
+      "result_trial": "Suscríbete al Plan Catequista y continúa sin interrupción.",
+      "result_no_trial": "El Plan Catequista cubre tu espacio personal: grupos, asistencia y calendario.",
+      "usage_aria": "Comparación del uso actual con el Plan Catequista",
+      "usage_trial_label": "Tu prueba",
+      "usage_plan_label": "Plan Catequista",
+      "usage_class_one": "{{count}} grupo",
+      "usage_class_other": "{{count}} grupos",
+      "usage_catechumen_one": "{{count}} catecúmeno",
+      "usage_catechumen_other": "{{count}} catecúmenos",
+      "usage_unlimited_classes": "∞ grupos",
+      "usage_unlimited_catechumens": "∞ catecúmenos",
+      "usage_plan_classes_one": "hasta {{count}} grupo",
+      "usage_plan_classes_other": "hasta {{count}} grupos",
+      "usage_plan_catechumens_one": "hasta {{count}} catecúmeno",
+      "usage_plan_catechumens_other": "hasta {{count}} catecúmenos",
+      "interval_aria": "Periodicidad de la suscripción",
+      "interval_monthly": "Mensual",
+      "interval_annual": "Anual",
+      "annual_discount": "{{percent}}% de descuento",
+      "most_popular": "Para el catequista",
+      "plan_result": "Tu catequesis personal, con calendario y asistencia",
+      "plan_audience": "Para el catequista en el espacio personal",
+      "per_month": "/mes",
+      "billed_annually": "cobrado anualmente: {{price}}",
+      "save_year": "ahorra {{price}}",
+      "cta": "Suscribirse al Plan Catequista",
+      "secure_payment": "Pago seguro a través de Stripe",
+      "support_question": "¿Dudas sobre la suscripción?",
+      "support_cta": "WhatsApp"
+    },
+    "institutional_active": {
+      "workspace_eyebrow": "Espacio institucional",
+      "active_badge": "Activo",
+      "headline": "La licencia parroquial está activa",
+      "result": "Todo el equipo usa este espacio con la licencia de la parroquia.",
+      "manage": "Gestionar suscripción",
+      "cancel_link": "Cancelar suscripción",
+      "scope_hint": "Esta licencia cubre el espacio pastoral. La suscripción Catequista de cada persona es independiente.",
+      "your_plan": "Licencia actual",
+      "current_badge": "Plan actual",
+      "per_month": "/mes",
+      "billed_annually": "cobrado anualmente: {{price}}",
+      "save_year": "ahorra {{price}}",
+      "switch_annual": "Cambiar a anual y ahorrar {{savings}}",
+      "usage_title": "Uso de este espacio",
+      "usage_classes": "{{used}} de {{limit}} grupos",
+      "usage_catechumens": "{{used}} de {{limit}} catecúmenos",
+      "support_question": "¿Dudas sobre la suscripción?",
+      "support_cta": "WhatsApp"
+    },
+    "managed_notice": {
+      "eyebrow": "Este espacio",
+      "badge": "Participando",
+      "collaborator_headline": "Quién gestiona este espacio",
+      "collaborator_result": "Participas en la catequesis de este espacio. Los planes y pagos quedan con quien lo administra.",
+      "collaborator_result_role": "Participas como {{role}}. Los planes y pagos quedan con quien lo administra.",
+      "covered_headline": "Este espacio lo gestiona la diócesis",
+      "covered_headline_named": "Este espacio lo gestiona la diócesis {{name}}",
+      "covered_result": "La licencia viene de la diócesis. Las dudas de plan y pago quedan con ella.",
+      "covered_result_named": "La licencia viene de la diócesis {{name}}. Las dudas de plan y pago quedan con ella.",
+      "diocese_headline": "El Plan Diócesis se contrata con el equipo comercial",
+      "diocese_result": "No hay checkout aquí. La cobertura de las parroquias se acuerda con ventas.",
+      "who_title": "Quién gestiona",
+      "who_desc": "No mostramos precios ni límites de plan en este espacio a quien solo participa.",
+      "manager_coordination": "Coordinación de {{name}}",
+      "manager_person": "{{name}}",
+      "manager_diocese": "Diócesis {{name}}",
+      "diocese_manager": "Equipo comercial de Catequese Viva",
+      "your_role": "Tu rol en este espacio: {{role}}",
+      "diocese_sales_title": "Hablar sobre la licencia de la diócesis",
+      "diocese_sales_desc": "La cobertura de las parroquias es venta asistida.",
+      "diocese_cta": "Hablar con ventas sobre la diócesis",
+      "diocese_prefill": "Hola! Quisiera hablar sobre el Plan Diócesis para {{name}} en Catequese Viva."
     }
   } as const;
 
@@ -5151,7 +5235,9 @@ export const public_es = {
       ],
       "annual_compare": "en anual, queda en {{price}}/mes",
       "annual_billed_as": "cobrado como {{price}}/año",
-      "annual_save_amount": "ahorra {{price}} por año"
+      "annual_save_amount": "ahorra {{price}} por año",
+      "secure_payment": "Pago seguro a través de Stripe",
+      "interval_aria": "Periodicidad de la suscripción"
     },
     "workspace": {
       "app_name": "Catequesis Viva",
@@ -5703,7 +5789,11 @@ export const topbar_es = {
       "parish_needs_license": "Suscríbete al Plan Parroquia para este espacio",
       "covered_by_diocese": "Cubierta por la diócesis",
       "covered_by_named": "Cubierta por {{name}}",
-      "free": "Sin suscripción"
+      "free": "Sin suscripción",
+      "managed_by_coordination": "Gestionado por la coordinación",
+      "managed_by_diocese": "Gestionado por la diócesis",
+      "managed_by_named": "Gestionado por {{name}}",
+      "managed_by_owner": "Gestionado por el catequista responsable"
     }
   } as const;
 

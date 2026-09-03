@@ -45,6 +45,10 @@
     "parish_needs_license": "Subscribe to the Parish Plan for this workspace",
     "covered_by_diocese": "Covered by the diocese",
     "covered_by_named": "Covered by {{name}}",
-    "free": "No subscription"
+    "free": "No subscription",
+    "managed_by_coordination": "Managed by the coordination",
+    "managed_by_diocese": "Managed by the diocese",
+    "managed_by_named": "Managed by {{name}}",
+    "managed_by_owner": "Managed by the lead catechist"
   }
 }

@@ -23,6 +23,7 @@ import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { useRoleLabels } from "../../i18n/useLabels";
 import { useAuth } from "wasp/client/auth";
+import { canManageWorkspaceBilling } from "../../shared/billingAccess";
 import {
   WorkspaceKindBadge,
   WorkspacePlanLabel,
@@ -45,10 +46,21 @@ export function ContextSelector() {
   const { activeMembership, availableMemberships, switchMembership } =
     useActiveMembership();
   const { activeParishName, switchParish } = useActiveParish();
-  const { allMemberships } = useUserContext();
+  const { allMemberships, isAdmin } = useUserContext();
   const pendingCount = (allMemberships || []).filter(
     (m) => m.status === "INVITED",
   ).length;
+
+  const hidePlanDetailsFor = (
+    role?: string | null,
+    isPersonalWorkspace?: boolean,
+  ) =>
+    !canManageWorkspaceBilling(role, {
+      isPersonalOwner: Boolean(
+        isPersonalWorkspace && (!role || role === "PERSONAL_OWNER"),
+      ),
+      isAdmin,
+    });
 
   const hasWorkspaces = availableWorkspaces.length > 0;
   const hasMultipleRoles = availableMemberships.length > 1;
@@ -156,6 +168,10 @@ export function ContextSelector() {
                   dioceseName={workspace?.dioceseName}
                   personalPlan={personalPlan}
                   billingStatus={workspace?.billingStatus}
+                  hidePlanDetails={hidePlanDetailsFor(
+                    workspace?.role,
+                    workspaceType === "PERSONAL" || workspace?.isPersonal,
+                  )}
                   className="text-[11px]"
                 />
               </span>
@@ -221,6 +237,10 @@ export function ContextSelector() {
                           dioceseName={ws.dioceseName}
                           personalPlan={personalPlan}
                           billingStatus={ws.billingStatus}
+                          hidePlanDetails={hidePlanDetailsFor(
+                            ws.role,
+                            ws.isPersonal,
+                          )}
                         />
                       </div>
                     </div>

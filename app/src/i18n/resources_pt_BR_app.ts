@@ -31,7 +31,9 @@ export const account_pt_BR_app = {
     "workspace_role": "Seu papel",
     "workspace_plan": "Plano efetivo",
     "manage_workspace_billing": "Gerenciar cobrança do espaço",
-    "no_active_workspace": "Nenhum espaço ativo"
+    "no_active_workspace": "Nenhum espaço ativo",
+    "workspace_managed_desc": "Você participa deste espaço. Planos e pagamentos ficam com quem administra.",
+    "workspace_managed_hint": "Dúvidas de plano? Fale com a coordenação."
   } as const;
 
 export const activities_pt_BR_app = {
