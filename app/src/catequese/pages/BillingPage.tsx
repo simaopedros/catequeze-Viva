@@ -410,13 +410,8 @@ export default function BillingPage() {
       ? effectivePlan.priceCents * 12 - effectivePlan.priceCentsAnnual
       : null;
 
-  const visiblePlans = allPlans.filter((plan) => {
-    const catalogPlan = getBySlug(plan.planId);
-    if (isPersonal || (!parishId && !parish)) {
-      return catalogPlan.level === "personal";
-    }
-    return catalogPlan.level === "institutional";
-  });
+  // Show every public subscription plan. Level mismatch only affects CTA/checkout.
+  const visiblePlans = allPlans;
 
   const classesUsed = stats?.activeClasses ?? 0;
   const catechumensUsed = stats?.activeCatechumens ?? 0;
@@ -427,6 +422,18 @@ export default function BillingPage() {
     async (planId: string) => {
       // Product trial uses the same plan id as Single — still allow checkout to convert.
       if (planId === effectivePlanId && !isTrialAccess) return;
+      const targetLevel = getBySlug(planId).level;
+      const levelMatches = isPersonal
+        ? targetLevel === "personal"
+        : targetLevel === "institutional";
+      if (!levelMatches) {
+        setError(
+          targetLevel === "institutional"
+            ? t("plan_mismatch_institutional")
+            : t("plan_mismatch_personal"),
+        );
+        return;
+      }
       setError(null);
       setUpgradingPlan(planId);
       try {
@@ -496,6 +503,7 @@ export default function BillingPage() {
       journeySource,
       t,
       getPlanDef,
+      getBySlug,
     ],
   );
 
@@ -1429,6 +1437,10 @@ export default function BillingPage() {
                 const hasAnnual = !!plan.priceCentsAnnual;
                 const isRecommended =
                   recommendedPlanCard?.planId === plan.planId;
+                const catalogPlan = getBySlug(plan.planId);
+                const planLevelMatches = isPersonal
+                  ? catalogPlan.level === "personal"
+                  : catalogPlan.level === "institutional";
 
                 return (
                   <div
@@ -1580,6 +1592,33 @@ export default function BillingPage() {
                       >
                         {t("base_plan_btn")}
                       </Button>
+                    ) : !planLevelMatches ? (
+                      catalogPlan.level === "institutional" && isPersonal ? (
+                        <Button
+                          asChild
+                          variant="outline"
+                          className="mt-5 w-full rounded-sm text-sm"
+                        >
+                          <a href="/app/parishes?new=true">
+                            {t("plan_mismatch_institutional_cta")}
+                          </a>
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          className="mt-5 w-full rounded-sm text-sm"
+                          disabled
+                          title={
+                            catalogPlan.level === "institutional"
+                              ? t("plan_mismatch_institutional")
+                              : t("plan_mismatch_personal")
+                          }
+                        >
+                          {catalogPlan.level === "institutional"
+                            ? t("institutional_plan_btn")
+                            : t("plan_mismatch_personal")}
+                        </Button>
+                      )
                     ) : plan.planId === PaymentPlanId.Unlimited &&
                       !user?.isAdmin &&
                       parish?.ownerId !== user?.id &&

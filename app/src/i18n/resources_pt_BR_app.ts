@@ -201,8 +201,8 @@ export const admin_pt_BR_app = {
         "field_level": "Nível",
         "field_credits": "Créditos",
         "field_description": "Descrição",
-        "field_active": "Vendável",
-        "field_public": "Visível em /pricing e landing",
+        "field_active": "Vendável (necessário para venda)",
+        "field_public": "Público na vitrine (/pricing e landing)",
         "field_highlight": "Destacar",
         "field_features": "Recursos (um por linha)",
         "field_name_en": "Nome e recursos em inglês",
@@ -229,7 +229,8 @@ export const admin_pt_BR_app = {
         "limit_reduction_warning": "{{count}} assinante(s) ficariam acima do novo limite. Confirme para continuar.",
         "confirm_reduce": "Confirmar redução",
         "move_up": "Subir",
-        "move_down": "Descer"
+        "move_down": "Descer",
+        "field_visibility_help": "Para aparecer em /pricing, landing e billing, o plano precisa estar Vendável e Público. Arquivar desliga os dois."
       },
       "system": {
         "title": "Sistema",

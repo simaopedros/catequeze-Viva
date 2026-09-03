@@ -16,7 +16,7 @@ export function getCheckoutPlanRejection(
   }
 
   if (plan) {
-    if (!plan.isActive) {
+    if (!plan.isActive || !plan.isPublic) {
       if (plan.slug === PaymentPlanId.Unlimited) {
         return "O Plano Ilimitado não está disponível nesta fase. Assine o Plano Catequista.";
       }

@@ -38,4 +38,24 @@ describe("getCheckoutPlanRejection", () => {
     ).toMatch(/Ilimitado/i);
     expect(getCheckoutPlanRejection("single", DEFAULT_PLANS_BY_SLUG.single)).toBeNull();
   });
+
+  it("rejects plans that are active but not public", () => {
+    expect(
+      getCheckoutPlanRejection("unlimited", {
+        ...DEFAULT_PLANS_BY_SLUG.unlimited,
+        isActive: true,
+        isPublic: false,
+      }),
+    ).toMatch(/Ilimitado|não está disponível/i);
+  });
+
+  it("allows a plan when both isActive and isPublic are true", () => {
+    expect(
+      getCheckoutPlanRejection("unlimited", {
+        ...DEFAULT_PLANS_BY_SLUG.unlimited,
+        isActive: true,
+        isPublic: true,
+      }),
+    ).toBeNull();
+  });
 });
