@@ -80,12 +80,44 @@ import {
 } from "../components/WorkspaceIdentityChip";
 import {
   checkoutPlanIdForTrial,
+  ensureWorkspaceOfferPlan,
   filterCatalogPlansForWorkspace,
   isInstitutionalTrialDisplay,
   offerPlanIdForWorkspace,
 } from "../../shared/billingOffer";
+import type { CatalogPlan } from "../../shared/planCatalog";
 import { OrganizeParishCard } from "../components/OrganizeParishCard";
 import { RequestDioceseCoverageCard } from "../components/RequestDioceseCoverageCard";
+
+function toPlanCard(
+  plan: CatalogPlan,
+  localize: (plan: CatalogPlan) => { name: string; features: string[] },
+): PlanCard {
+  const loc = localize(plan);
+  const monthly = plan.prices.find(
+    (price) => price.interval === "monthly" && price.isActive,
+  );
+  const annual = plan.prices.find(
+    (price) => price.interval === "annual" && price.isActive,
+  );
+  return {
+    planId: plan.slug,
+    planKey: plan.slug,
+    name: loc.name,
+    price: monthly ? formatPriceLabel(monthly.unitAmountCents, "monthly") : "—",
+    priceCents: monthly?.unitAmountCents,
+    annualPrice: annual
+      ? formatPriceLabel(annual.unitAmountCents, "annual")
+      : undefined,
+    priceCentsAnnual: annual?.unitAmountCents,
+    maxClasses: plan.limits.maxClasses,
+    maxCatechumens: plan.limits.maxCatechumens,
+    features: loc.features,
+    color: plan.highlight ? "border-brand-ink" : "border-border",
+    highlight: plan.highlight,
+    isFree: false,
+  };
+}
 
 interface PlanCard {
   planId: string;
@@ -210,38 +242,12 @@ export default function BillingPage() {
         (plan) =>
           plan.kind === "subscription" && plan.slug !== "catechist_free",
       )
-      .map((plan) => {
-        const loc = localize(plan);
-        const monthly = plan.prices.find(
-          (price) => price.interval === "monthly" && price.isActive,
-        );
-        const annual = plan.prices.find(
-          (price) => price.interval === "annual" && price.isActive,
-        );
-        return {
-          planId: plan.slug,
-          planKey: plan.slug,
-          name: loc.name,
-          price: monthly
-            ? formatPriceLabel(monthly.unitAmountCents, "monthly")
-            : "—",
-          priceCents: monthly?.unitAmountCents,
-          annualPrice: annual
-            ? formatPriceLabel(annual.unitAmountCents, "annual")
-            : undefined,
-          priceCentsAnnual: annual?.unitAmountCents,
-          maxClasses: plan.limits.maxClasses,
-          maxCatechumens: plan.limits.maxCatechumens,
-          features: loc.features,
-          color: plan.highlight ? "border-brand-ink" : "border-border",
-          highlight: plan.highlight,
-          isFree: false,
-        };
-      });
-  }, [publicPlans, i18n.language]);
+      .map((plan) => toPlanCard(plan, localize));
+  }, [publicPlans, i18n.language, localize]);
 
   const getPlanDef = (planId: string): PlanCard =>
-    allPlans.find((p) => p.planId === planId) || allPlans[0];
+    allPlans.find((p) => p.planId === planId) ??
+    toPlanCard(getBySlug(planId), localize);
 
   const navigate = useNavigate();
   const { data: user } = useAuth();
@@ -326,10 +332,6 @@ export default function BillingPage() {
   const pricingViewedRef = useRef(false);
 
   const hasPersonalPlan = hasPersonalAccess(user);
-  const userPersonalPlanId =
-    hasPersonalPlan && user?.subscriptionPlan
-      ? (user.subscriptionPlan as PaymentPlanId)
-      : null;
 
   let effectivePlanId: PaymentPlanId = PaymentPlanId.CatechistFree;
   let isActive = false;
@@ -441,10 +443,14 @@ export default function BillingPage() {
 
   // Only the SKU that belongs to this workspace: Catequista on personal,
   // Plano Paróquia on parish/diocese/community. The other plan is a different scope.
-  const visiblePlans = filterCatalogPlansForWorkspace(
-    allPlans,
+  const visiblePlans = ensureWorkspaceOfferPlan(
+    filterCatalogPlansForWorkspace(
+      allPlans,
+      isPersonal,
+      (planId) => getBySlug(planId).level,
+    ),
     isPersonal,
-    (planId) => getBySlug(planId).level,
+    (planId) => toPlanCard(getBySlug(planId), localize),
   );
   const offerPlanId = offerPlanIdForWorkspace(isPersonal);
   const subscribePlanId = checkoutPlanIdForTrial({
@@ -860,13 +866,15 @@ export default function BillingPage() {
     : effectivePlan.name;
   const supportingCopy = isUpgradeJourney
     ? t("upgrade_supporting_copy")
-    : !isConversionMode
-      ? isActive
-        ? t("active_desc")
-        : effectivePlan.isFree
-          ? t("upgrade_desc")
-          : t("payment_desc")
-      : null;
+    : isTrialAccess
+      ? null
+      : !isConversionMode
+        ? isActive
+          ? t("active_desc")
+          : effectivePlan.isFree
+            ? t("upgrade_desc")
+            : t("payment_desc")
+        : null;
   const conversionChecklist = [
     t("conversion_step_account_ready"),
     isPersonal
@@ -955,13 +963,6 @@ export default function BillingPage() {
 
         {isPersonal && canManageBilling && (
           <OrganizeParishCard workspaceId={workspaceId} />
-        )}
-        {!isPersonal && workspace?.type === "PARISH" && canManageBilling && (
-          <RequestDioceseCoverageCard
-            parishName={workspace?.name || parish?.name || ""}
-            dioceseName={workspace?.dioceseName}
-            planInherited={Boolean(workspace?.planInherited)}
-          />
         )}
 
         <section className="border-b border-border/70 pb-8">
@@ -1232,18 +1233,6 @@ export default function BillingPage() {
                       {t("contact_manager")}
                     </p>
                   </div>
-                </div>
-              )}
-
-              {!isPersonal && userPersonalPlanId && (
-                <div className="rounded-sm border border-border/70 bg-white/75 px-4 py-3 text-sm text-muted-foreground">
-                  <span className="inline-flex items-center gap-2">
-                    <UserIcon className="h-4 w-4 text-muted-foreground" />
-                    {t("your_personal_plan")}:
-                    <Badge variant="outline" className="text-xs">
-                      {getPlanDef(userPersonalPlanId).name}
-                    </Badge>
-                  </span>
                 </div>
               )}
             </div>
@@ -1532,42 +1521,44 @@ export default function BillingPage() {
                         : t("pricing_section_subtitle_institutional")}
                 </p>
               </div>
-              <div className="inline-flex items-center rounded-sm border border-border/70 bg-white/90 p-1 ">
-                <button
-                  type="button"
-                  onClick={() => setBillingInterval("monthly")}
-                  className={cn(
-                    "rounded-sm px-4 py-2 text-sm font-medium transition-all",
-                    billingInterval === "monthly"
-                      ? "bg-brand-ink text-white"
-                      : "text-muted-foreground hover:text-brand-ink",
-                  )}
-                >
-                  {t("monthly")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setBillingInterval("annual")}
-                  className={cn(
-                    "rounded-sm px-4 py-2 text-sm font-medium transition-all flex items-center gap-2",
-                    billingInterval === "annual"
-                      ? "bg-brand-ink text-white"
-                      : "text-muted-foreground hover:text-brand-ink",
-                  )}
-                >
-                  {t("annual")}
-                  <span
+              {visiblePlans.length > 0 && (
+                <div className="inline-flex items-center rounded-sm border border-border/70 bg-white/90 p-1 ">
+                  <button
+                    type="button"
+                    onClick={() => setBillingInterval("monthly")}
                     className={cn(
-                      "rounded-sm px-2 py-0.5 text-[11px] font-semibold",
-                      billingInterval === "annual"
-                        ? "bg-white/15 text-[#F4CF7A]"
-                        : "border border-border/70 bg-muted/30 text-brand-ink",
+                      "rounded-sm px-4 py-2 text-sm font-medium transition-all",
+                      billingInterval === "monthly"
+                        ? "bg-brand-ink text-white"
+                        : "text-muted-foreground hover:text-brand-ink",
                     )}
                   >
-                    {t("annual_savings")}
-                  </span>
-                </button>
-              </div>
+                    {t("monthly")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBillingInterval("annual")}
+                    className={cn(
+                      "rounded-sm px-4 py-2 text-sm font-medium transition-all flex items-center gap-2",
+                      billingInterval === "annual"
+                        ? "bg-brand-ink text-white"
+                        : "text-muted-foreground hover:text-brand-ink",
+                    )}
+                  >
+                    {t("annual")}
+                    <span
+                      className={cn(
+                        "rounded-sm px-2 py-0.5 text-[11px] font-semibold",
+                        billingInterval === "annual"
+                          ? "bg-white/15 text-[#F4CF7A]"
+                          : "border border-border/70 bg-muted/30 text-brand-ink",
+                      )}
+                    >
+                      {t("annual_savings")}
+                    </span>
+                  </button>
+                </div>
+              )}
             </div>
 
             <div
@@ -1813,7 +1804,6 @@ export default function BillingPage() {
                 );
               })}
             </div>
-            <SalesWhatsAppCta placement="billing_plans" className="mt-6" />
           </section>
         )}
 
@@ -1823,6 +1813,18 @@ export default function BillingPage() {
               {t("payment_history_desc")}
             </p>
           </SurfaceSection>
+        )}
+
+        {!isPersonal && workspace?.type === "PARISH" && canManageBilling && (
+          <RequestDioceseCoverageCard
+            parishName={workspace?.name || parish?.name || ""}
+            dioceseName={workspace?.dioceseName}
+            planInherited={Boolean(workspace?.planInherited)}
+          />
+        )}
+
+        {canManageBilling && !isParishManaged && (
+          <SalesWhatsAppCta placement="billing_plans" />
         )}
       </div>
 

@@ -1,22 +1,28 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from "vitest";
 
-vi.mock('../payment/paymentProcessorPlans', () => ({
-  readEnvStripePriceId: () => '',
+vi.mock("../payment/paymentProcessorPlans", () => ({
+  readEnvStripePriceId: () => "",
 }));
 
-vi.mock('../server/pricing/stripeCatalogSync', () => ({
+vi.mock("../server/pricing/stripeCatalogSync", () => ({
   importStripePrice: vi.fn().mockResolvedValue(null),
 }));
 
-import { DEFAULT_PLAN_LIST, DEFAULT_PLANS_BY_SLUG } from '../shared/planCatalog';
-import { defaultPlansMatchSnapshot, ensurePricingCatalogSeeded } from '../server/scripts/seedPricingCatalog';
+import {
+  DEFAULT_PLAN_LIST,
+  DEFAULT_PLANS_BY_SLUG,
+} from "../shared/planCatalog";
+import {
+  defaultPlansMatchSnapshot,
+  ensurePricingCatalogSeeded,
+} from "../server/scripts/seedPricingCatalog";
 
-describe('seedPricingCatalog snapshot', () => {
-  it('seed snapshot matches DEFAULT_PLANS', () => {
+describe("seedPricingCatalog snapshot", () => {
+  it("seed snapshot matches DEFAULT_PLANS", () => {
     const snapshot = defaultPlansMatchSnapshot(DEFAULT_PLAN_LIST);
     expect(snapshot).toEqual([
       {
-        slug: 'catechist_free',
+        slug: "catechist_free",
         monthlyCents: 0,
         annualCents: null,
         maxClasses: 0,
@@ -26,7 +32,7 @@ describe('seedPricingCatalog snapshot', () => {
         isActive: false,
       },
       {
-        slug: 'single',
+        slug: "single",
         monthlyCents: 990,
         annualCents: 9900,
         maxClasses: 3,
@@ -36,7 +42,7 @@ describe('seedPricingCatalog snapshot', () => {
         isActive: true,
       },
       {
-        slug: 'unlimited',
+        slug: "unlimited",
         monthlyCents: 9900,
         annualCents: 99000,
         maxClasses: null,
@@ -46,7 +52,7 @@ describe('seedPricingCatalog snapshot', () => {
         isActive: true,
       },
       {
-        slug: 'ai_credits_20',
+        slug: "ai_credits_20",
         monthlyCents: 2500,
         annualCents: null,
         maxClasses: 0,
@@ -56,7 +62,7 @@ describe('seedPricingCatalog snapshot', () => {
         isActive: false,
       },
       {
-        slug: 'ai_credits_50',
+        slug: "ai_credits_50",
         monthlyCents: 4500,
         annualCents: null,
         maxClasses: 0,
@@ -70,7 +76,7 @@ describe('seedPricingCatalog snapshot', () => {
     expect(DEFAULT_PLANS_BY_SLUG.catechist_free.isSystem).toBe(true);
   });
 
-  it('is idempotent in shape (running twice yields the same snapshot)', () => {
+  it("is idempotent in shape (running twice yields the same snapshot)", () => {
     expect(defaultPlansMatchSnapshot(DEFAULT_PLAN_LIST)).toEqual(
       defaultPlansMatchSnapshot(DEFAULT_PLAN_LIST),
     );
@@ -92,7 +98,9 @@ function memoryCatalogDb() {
           return row;
         },
         update: async ({ where, data }: any) => {
-          const current = [...plans.values()].find((row) => row.id === where.id);
+          const current = [...plans.values()].find(
+            (row) => row.id === where.id,
+          );
           Object.assign(current, data);
           return current;
         },
@@ -115,20 +123,23 @@ function memoryCatalogDb() {
   };
 }
 
-describe('ensurePricingCatalogSeeded', () => {
-  it('inserts the five current DEFAULT_PLANS and their prices, then no-ops', async () => {
+describe("ensurePricingCatalogSeeded", () => {
+  it("inserts the five current DEFAULT_PLANS and their prices, then no-ops", async () => {
     const { db, plans } = memoryCatalogDb();
-    const expectedPrices = DEFAULT_PLAN_LIST.reduce((sum, plan) => sum + plan.prices.length, 0);
+    const expectedPrices = DEFAULT_PLAN_LIST.reduce(
+      (sum, plan) => sum + plan.prices.length,
+      0,
+    );
 
     const first = await ensurePricingCatalogSeeded(db);
     expect(first.createdPlans).toBe(5);
     expect(first.createdPrices).toBe(expectedPrices);
     expect([...plans.keys()].sort()).toEqual([
-      'ai_credits_20',
-      'ai_credits_50',
-      'catechist_free',
-      'single',
-      'unlimited',
+      "ai_credits_20",
+      "ai_credits_50",
+      "catechist_free",
+      "single",
+      "unlimited",
     ]);
 
     const second = await ensurePricingCatalogSeeded(db);
@@ -136,25 +147,32 @@ describe('ensurePricingCatalogSeeded', () => {
     expect(second.createdPrices).toBe(0);
   });
 
-  it('does not overwrite a plan already edited in admin', async () => {
+  it("does not overwrite a plan already edited in admin", async () => {
     const { db, plans } = memoryCatalogDb();
-    plans.set('single', { id: 'keep', slug: 'single', name: 'Nome editado', stripeProductId: null });
-    const createSpy = vi.spyOn(db.pricingPlan, 'create');
-    const updateSpy = vi.spyOn(db.pricingPlan, 'update');
+    plans.set("single", {
+      id: "keep",
+      slug: "single",
+      name: "Nome editado",
+      stripeProductId: null,
+    });
+    const createSpy = vi.spyOn(db.pricingPlan, "create");
+    const updateSpy = vi.spyOn(db.pricingPlan, "update");
 
     await ensurePricingCatalogSeeded(db);
 
-    expect(createSpy.mock.calls.some((call: any) => call[0].data.slug === 'single')).toBe(false);
+    expect(
+      createSpy.mock.calls.some((call: any) => call[0].data.slug === "single"),
+    ).toBe(false);
     expect(updateSpy).not.toHaveBeenCalled();
-    expect(plans.get('single').name).toBe('Nome editado');
+    expect(plans.get("single").name).toBe("Nome editado");
   });
 
-  it('reopens a launch-hidden Plano Ilimitado as Plano Paróquia', async () => {
+  it("reopens a launch-hidden Plano Ilimitado as Plano Paróquia", async () => {
     const { db, plans } = memoryCatalogDb();
-    plans.set('unlimited', {
-      id: 'u1',
-      slug: 'unlimited',
-      name: 'Plano Ilimitado',
+    plans.set("unlimited", {
+      id: "u1",
+      slug: "unlimited",
+      name: "Plano Ilimitado",
       isPublic: false,
       isActive: false,
       stripeProductId: null,
@@ -162,8 +180,25 @@ describe('ensurePricingCatalogSeeded', () => {
 
     await ensurePricingCatalogSeeded(db);
 
-    expect(plans.get('unlimited').name).toBe('Plano Paróquia');
-    expect(plans.get('unlimited').isPublic).toBe(true);
-    expect(plans.get('unlimited').isActive).toBe(true);
+    expect(plans.get("unlimited").name).toBe("Plano Paróquia");
+    expect(plans.get("unlimited").isPublic).toBe(true);
+    expect(plans.get("unlimited").isActive).toBe(true);
+  });
+
+  it("reopens unlimited when only isPublic is false", async () => {
+    const { db, plans } = memoryCatalogDb();
+    plans.set("unlimited", {
+      id: "u2",
+      slug: "unlimited",
+      name: "Plano Paróquia",
+      isPublic: false,
+      isActive: true,
+      stripeProductId: null,
+    });
+
+    await ensurePricingCatalogSeeded(db);
+
+    expect(plans.get("unlimited").isPublic).toBe(true);
+    expect(plans.get("unlimited").isActive).toBe(true);
   });
 });
