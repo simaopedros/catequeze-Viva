@@ -8,6 +8,7 @@ import {
   offerPlanIdForWorkspace,
   planMatchesWorkspaceLevel,
   shouldShowParishBillingConversion,
+  shouldShowPersonalActiveBilling,
 } from "../shared/billingOffer";
 
 const catalog = [
@@ -126,6 +127,42 @@ describe("shouldShowParishBillingConversion", () => {
     ).toBe(false);
     expect(
       shouldShowParishBillingConversion({ ...base, canManageBilling: false }),
+    ).toBe(false);
+  });
+});
+
+describe("shouldShowPersonalActiveBilling", () => {
+  it("shows the management panel for a paid Catequista subscriber", () => {
+    expect(
+      shouldShowPersonalActiveBilling({
+        isPersonal: true,
+        isPaidActive: true,
+        canManageBilling: true,
+      }),
+    ).toBe(true);
+  });
+
+  it("does not replace trial, unpaid or institutional billing", () => {
+    expect(
+      shouldShowPersonalActiveBilling({
+        isPersonal: true,
+        isPaidActive: false,
+        canManageBilling: true,
+      }),
+    ).toBe(false);
+    expect(
+      shouldShowPersonalActiveBilling({
+        isPersonal: false,
+        isPaidActive: true,
+        canManageBilling: true,
+      }),
+    ).toBe(false);
+    expect(
+      shouldShowPersonalActiveBilling({
+        isPersonal: true,
+        isPaidActive: true,
+        canManageBilling: false,
+      }),
     ).toBe(false);
   });
 });

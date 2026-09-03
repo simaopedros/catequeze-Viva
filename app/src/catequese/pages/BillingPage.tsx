@@ -89,11 +89,13 @@ import {
   isInstitutionalTrialDisplay,
   offerPlanIdForWorkspace,
   shouldShowParishBillingConversion,
+  shouldShowPersonalActiveBilling,
 } from "../../shared/billingOffer";
 import type { CatalogPlan } from "../../shared/planCatalog";
 import { OrganizeParishCard } from "../components/OrganizeParishCard";
 import { RequestDioceseCoverageCard } from "../components/RequestDioceseCoverageCard";
 import { ParishBillingConversion } from "../components/ParishBillingConversion";
+import { PersonalBillingActive } from "../components/PersonalBillingActive";
 
 function toPlanCard(
   plan: CatalogPlan,
@@ -400,6 +402,11 @@ export default function BillingPage() {
     isPaidActive,
     canManageBilling,
     workspaceType: workspace?.type,
+  });
+  const showPersonalActive = shouldShowPersonalActiveBilling({
+    isPersonal,
+    isPaidActive,
+    canManageBilling,
   });
   const trialEndsLabel = trialEndsAt
     ? trialEndsAt.toLocaleDateString(i18n.language || "pt-BR", {
@@ -965,6 +972,53 @@ export default function BillingPage() {
         upgrading={!!upgradingPlan}
         error={error}
       />
+    );
+  }
+
+  if (showPersonalActive) {
+    const annualSavings =
+      effectivePlan.priceCents && effectivePlan.priceCentsAnnual
+        ? formatPrice(
+            effectivePlan.priceCents * 12 - effectivePlan.priceCentsAnnual,
+          )
+        : null;
+
+    return (
+      <>
+        <PersonalBillingActive
+          workspaceName={workspace?.name || ""}
+          planName={effectivePlan.name}
+          features={effectivePlan.features}
+          monthlyCents={effectivePlan.priceCents}
+          annualCents={effectivePlan.priceCentsAnnual}
+          billedAnnually={isAnnual}
+          classesUsed={classesUsed}
+          catechumensUsed={catechumensUsed}
+          maxClasses={Number.isFinite(maxClasses) ? maxClasses : 0}
+          maxCatechumens={Number.isFinite(maxCatechumens) ? maxCatechumens : 0}
+          onManage={handleManagePayment}
+          manageLoading={managePaymentLoading}
+          onCancel={handleCancel}
+          cancelling={cancelling}
+          cancelScheduled={user?.subscriptionStatus === "cancel_at_period_end"}
+          onSwitchAnnual={
+            canSwitchInterval && isMonthly ? handleSwitchInterval : undefined
+          }
+          switchingInterval={switchingInterval}
+          annualSavingsLabel={annualSavings}
+          error={error}
+        />
+        <ConfirmDialog
+          open={showCancelConfirm}
+          onOpenChange={setShowCancelConfirm}
+          title={t("cancel_dialog_title")}
+          description={t("cancel_dialog_desc")}
+          confirmLabel={t("cancel_confirm")}
+          cancelLabel={t("cancel_keep")}
+          variant="destructive"
+          onConfirm={confirmCancel}
+        />
+      </>
     );
   }
 

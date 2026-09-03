@@ -427,6 +427,37 @@ export const billing_pt_BR_core = {
       "diocese_question": "Precisa de cobertura para várias paróquias?",
       "support_question": "Dúvidas sobre a assinatura?",
       "support_cta": "WhatsApp"
+    },
+    "personal_active": {
+      "workspace_eyebrow": "Meu espaço pessoal",
+      "active_badge": "Ativo",
+      "headline": "Sua assinatura está ativa",
+      "result": "Tudo pronto para você continuar sua catequese.",
+      "manage": "Gerenciar assinatura",
+      "cancel_link": "Cancelar assinatura",
+      "scope_hint": "A assinatura Catequista é pessoal. Um espaço de paróquia tem licença própria.",
+      "your_plan": "Seu plano",
+      "current_badge": "Plano atual",
+      "per_month": "/mês",
+      "billed_annually": "cobrado anualmente: {{price}}",
+      "save_year": "economize {{price}}",
+      "switch_annual": "Trocar para anual e economizar {{savings}}",
+      "usage_title": "Seu uso",
+      "usage_classes": "{{used}} de {{limit}} turmas",
+      "usage_catechumens": "{{used}} de {{limit}} catequizandos",
+      "usage_bridge": "Precisa de mais espaço?",
+      "usage_bridge_desc": "Organize sua paróquia com turmas e catequizandos ilimitados.",
+      "next_step": "Próximo passo",
+      "parish_title": "Leve sua catequese para toda a paróquia",
+      "parish_desc": "Convide sua equipe, crie turmas ilimitadas e acompanhe todos os catequizandos em um único espaço.",
+      "parish_cta": "Organizar como paróquia",
+      "parish_feature_classes": "Turmas e equipe ilimitadas",
+      "parish_feature_catechumens": "Catequizandos ilimitados",
+      "parish_feature_team": "Espaço institucional da paróquia",
+      "parish_feature_comms": "Comunicação com famílias",
+      "parish_feature_docs": "Documentos e certificados",
+      "support_question": "Dúvidas sobre a assinatura?",
+      "support_cta": "WhatsApp"
     }
   } as const;
 
