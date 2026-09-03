@@ -91,6 +91,16 @@ describe("public launch-phase copy", () => {
     }
   });
 
+  it("exposes the sales WhatsApp number in public copy", () => {
+    for (const lang of LANGS) {
+      const pub = JSON.parse(
+        fs.readFileSync(path.join(LOCALES_DIR, lang, "public.json"), "utf8"),
+      );
+      expect(pub.sales_whatsapp.cta).toBeTruthy();
+      expect(JSON.stringify(pub.pricing.faq)).toContain("93624-4752");
+    }
+  });
+
   it("meetings namespace has create and classes days_long keys", () => {
     const meetings = JSON.parse(
       fs.readFileSync(path.join(LOCALES_DIR, "pt-BR", "meetings.json"), "utf8"),

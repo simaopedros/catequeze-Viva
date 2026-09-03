@@ -8,6 +8,7 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
+import { SalesWhatsAppCta } from "../../client/components/SalesWhatsAppCta";
 import { Textarea } from "../../client/components/ui/textarea";
 import { Input } from "../../client/components/ui/input";
 import { Label } from "../../client/components/ui/label";
@@ -66,6 +67,7 @@ export default function ContactPage() {
 
         <div className="grid gap-8 md:grid-cols-5">
           <div className="space-y-4 md:col-span-2">
+            <SalesWhatsAppCta variant="row" placement="contact_page" />
             <div className="flex items-center gap-3 text-muted-foreground">
               <Mail className="h-5 w-5 text-brand-ink" />
               <span>contato@catechis.app</span>

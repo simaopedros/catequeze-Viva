@@ -3171,6 +3171,10 @@ export const landing_en = {
       {
         "q": "Are children's data protected?",
         "a": "Yes. Access control, consent flows, and LGPD-oriented features are built in."
+      },
+      {
+        "q": "I still have questions about the plan. How do I reach you?",
+        "a": "Talk to the sales team on WhatsApp at (11) 93624-4752. We'll answer subscription questions and help you choose a plan."
       }
     ],
     "cta_title": "Get back the time for what called you to catechesis",
@@ -4810,6 +4814,14 @@ export const public_en = {
       "success": "Message sent successfully!",
       "error": "Error sending. Please try again."
     },
+    "sales_whatsapp": {
+      "question": "Questions about the subscription or plans?",
+      "cta": "Talk to sales on WhatsApp",
+      "cta_short": "Sales WhatsApp",
+      "helper": "Our sales team can help you choose a plan and answer subscription questions.",
+      "prefill": "Hi! I'd like to know more about Catequese Viva plans.",
+      "aria": "Open a conversation on the sales WhatsApp"
+    },
     "pricing": {
       "title": "One simple plan, at the service of your mission",
       "subtitle": "Catechist Plan: R$ 9.90/month (or R$ 99/year) for up to 3 classes. Start with a 7-day free trial, no card.",
@@ -4850,6 +4862,10 @@ export const public_en = {
         {
           "q": "Is my data secure?",
           "a": "Yes. We follow LGPD with encryption in transit and at rest. Children's data receives special protection."
+        },
+        {
+          "q": "I still have questions about the plan. How do I reach you?",
+          "a": "Talk to the sales team on WhatsApp at (11) 93624-4752. We'll answer subscription questions and help you choose a plan."
         }
       ],
       "annual_compare": "on annual, it comes to {{price}}/month",

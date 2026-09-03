@@ -70,6 +70,7 @@ import {
   trackPurchaseBrowser,
 } from "../../client/analytics/metaTracking";
 import { cn } from "../../client/utils";
+import { SalesWhatsAppCta } from "../../client/components/SalesWhatsAppCta";
 import type { ReactNode } from "react";
 import { parseUpgradeJourneyReason } from "../lib/upgradeJourney";
 
@@ -1669,6 +1670,7 @@ export default function BillingPage() {
                 );
               })}
             </div>
+            <SalesWhatsAppCta placement="billing_plans" className="mt-6" />
           </section>
         )}
 

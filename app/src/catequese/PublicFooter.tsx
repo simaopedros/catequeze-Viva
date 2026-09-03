@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { BrandLockup } from "../client/components/brand/Brand";
+import { SalesWhatsAppCta } from "../client/components/SalesWhatsAppCta";
 import { trackMarketingEvent } from "../client/analytics/marketingAnalytics";
 import { useLocale, SupportedLocale } from "../i18n/useLocale";
 import { cn } from "../client/utils";
@@ -98,6 +99,11 @@ export function PublicFooter({
             >
               {t("cta")}
             </Link>
+            <SalesWhatsAppCta
+              variant="inline"
+              placement="public_footer"
+              className="mt-4 text-sm text-[#A8B8C9] md:ml-auto md:max-w-[16rem] md:text-right [&_a]:text-[#F4CF7A] [&_a]:hover:text-white"
+            />
           </div>
         </div>
 

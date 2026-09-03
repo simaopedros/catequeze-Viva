@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { Star, Check, CreditCard, PiggyBank } from "lucide-react";
 import { PublicNavbar } from "../PublicNavbar";
 import { PublicFooter } from "../PublicFooter";
+import { SalesWhatsAppCta } from "../../client/components/SalesWhatsAppCta";
 import { useAuth } from "wasp/client/auth";
 import {
   setIntendedPlan,
@@ -280,6 +281,10 @@ export default function PricingPage() {
           >
             {pricingPlans.map(renderCard)}
           </div>
+          <SalesWhatsAppCta
+            placement="pricing_page"
+            className="mx-auto mt-8 max-w-lg"
+          />
         </section>
 
         <section className="bg-muted/30 border-t">

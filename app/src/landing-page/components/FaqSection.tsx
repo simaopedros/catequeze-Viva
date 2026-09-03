@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { ArrowRight, Plus } from "lucide-react";
 import { useLandingText } from "../hooks/useLandingText";
 import { Button } from "../../client/components/ui/button";
+import { SalesWhatsAppCta } from "../../client/components/SalesWhatsAppCta";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 
 export function FaqSection({
@@ -56,6 +57,11 @@ export function FaqSection({
                 <p className="mt-3 text-xs text-muted-foreground">
                   {tr("faq_cta_helper")}
                 </p>
+                <SalesWhatsAppCta
+                  variant="inline"
+                  placement={`${ns}_faq`}
+                  className="mt-4"
+                />
               </div>
             )}
           </div>

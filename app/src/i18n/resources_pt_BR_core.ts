@@ -1234,6 +1234,10 @@ export const landing_pt_BR_core = {
       {
         "q": "Os dados das crianças ficam protegidos?",
         "a": "Sim. Há controle de acesso, consentimentos e recursos alinhados à LGPD."
+      },
+      {
+        "q": "Ainda tenho dúvidas sobre o plano. Como falo com vocês?",
+        "a": "Fale com a equipe de vendas no WhatsApp (11) 93624-4752. Tiramos dúvidas sobre a assinatura e ajudamos a escolher o plano."
       }
     ],
     "cta_title": "Volte a ter tempo para o que chamou você à catequese",
@@ -2048,6 +2052,14 @@ export const public_pt_BR_core = {
       "success": "Mensagem enviada com sucesso!",
       "error": "Erro ao enviar. Tente novamente."
     },
+    "sales_whatsapp": {
+      "question": "Dúvidas sobre a assinatura ou os planos?",
+      "cta": "Fale com vendas no WhatsApp",
+      "cta_short": "WhatsApp de vendas",
+      "helper": "A equipe de vendas tira suas dúvidas sobre o plano e a assinatura.",
+      "prefill": "Olá! Quero saber mais sobre os planos da Catequese Viva.",
+      "aria": "Abrir conversa no WhatsApp de vendas"
+    },
     "pricing": {
       "title": "Um plano simples, a serviço da sua missão",
       "subtitle": "Plano Catequista: R$ 9,90/mês (ou R$ 99/ano) para até 3 turmas. Comece com 7 dias de teste gratuito, sem cartão.",
@@ -2088,6 +2100,10 @@ export const public_pt_BR_core = {
         {
           "q": "Os dados ficam seguros?",
           "a": "Sim. Seguimos a LGPD, com criptografia em trânsito e em repouso. Dados de crianças recebem proteção especial."
+        },
+        {
+          "q": "Ainda tenho dúvidas sobre o plano. Como falo com vocês?",
+          "a": "Fale com a equipe de vendas no WhatsApp (11) 93624-4752. Tiramos dúvidas sobre a assinatura e ajudamos a escolher o plano."
         }
       ],
       "annual_compare": "no anual, sai por {{price}}/mês",
