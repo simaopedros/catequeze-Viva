@@ -29,6 +29,7 @@ import {
   AppDisplayTitle,
   AppGoldRule,
 } from "../client/components/brand/AppChrome";
+import { SalesWhatsAppCta } from "../client/components/SalesWhatsAppCta";
 import { Alert } from "../client/components/ui/alert";
 
 type CustomSignupFormProps = {
@@ -498,6 +499,11 @@ export default function CustomSignupForm({
           {t("signup_login_link")}
         </a>
       </p>
+      <SalesWhatsAppCta
+        variant="inline"
+        placement="signup_form"
+        className="text-center"
+      />
 
       <ul className="space-y-2 border-t border-border/60 pt-5 lg:hidden">
         {(Array.isArray(t("signup_panel_points", { returnObjects: true }))

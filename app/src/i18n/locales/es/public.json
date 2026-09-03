@@ -27,6 +27,14 @@
     "success": "¡Mensaje enviado con éxito!",
     "error": "Error al enviar. Intente nuevamente."
   },
+  "sales_whatsapp": {
+    "question": "¿Dudas sobre la suscripción o los planes?",
+    "cta": "Habla con ventas por WhatsApp",
+    "cta_short": "WhatsApp de ventas",
+    "helper": "El equipo de ventas resuelve tus dudas sobre el plan y la suscripción.",
+    "prefill": "¡Hola! Quiero saber más sobre los planes de Catequese Viva.",
+    "aria": "Abrir conversación en el WhatsApp de ventas"
+  },
   "pricing": {
     "title": "Un plan simple, al servicio de tu misión",
     "subtitle": "Plan Catequista: R$ 9,90/mes (o R$ 99/año) para hasta 3 grupos. Empieza con 7 días de prueba gratis, sin tarjeta.",
@@ -67,6 +75,10 @@
       {
         "q": "¿Los datos están seguros?",
         "a": "Sí. Seguimos la LGPD, con cifrado en tránsito y en reposo. Los datos de menores reciben protección especial."
+      },
+      {
+        "q": "Todavía tengo dudas sobre el plan. ¿Cómo hablo con ustedes?",
+        "a": "Habla con el equipo de ventas por WhatsApp al (11) 93624-4752. Resolvemos dudas sobre la suscripción y te ayudamos a elegir el plan."
       }
     ],
     "annual_compare": "en anual, queda en {{price}}/mes",

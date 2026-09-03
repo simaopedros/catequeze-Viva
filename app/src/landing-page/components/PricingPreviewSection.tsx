@@ -9,6 +9,7 @@ import {
 } from "../../client/analytics/metaTracking";
 import { PRICING_PREVIEW } from "../content/landingContent";
 import { Button } from "../../client/components/ui/button";
+import { SalesWhatsAppCta } from "../../client/components/SalesWhatsAppCta";
 import {
   formatEquivalentMonthlyPrice,
   formatPrice,
@@ -193,6 +194,10 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
           {tr("compare_plans")}
         </Link>
       </p>
+      <SalesWhatsAppCta
+        placement={`${ns}_pricing_preview`}
+        className="mx-auto mt-6 max-w-lg"
+      />
     </section>
   );
 }

@@ -35,7 +35,9 @@ test.describe("landing funnel — meta and conversion surfaces", () => {
         .poll(async () => page.title(), { timeout: 10000 })
         .not.toBe("");
       const title = await page.title();
-      expect(title.toLowerCase()).toMatch(/catequese|trial|assistência|chamada|gestão|sistema/i);
+      expect(title.toLowerCase()).toMatch(
+        /catequese|trial|assistência|chamada|gestão|sistema/i,
+      );
 
       const campaign = await page
         .locator('meta[name="catequese:campaign"]')
@@ -73,6 +75,8 @@ test.describe("landing funnel — meta and conversion surfaces", () => {
     // Scroll into view — lazy section
     await pricing.scrollIntoViewIfNeeded();
     await expect(pricing).toBeVisible({ timeout: 10000 });
+    const wa = pricing.locator('a[href*="wa.me/5511936244752"]');
+    await expect(wa).toBeVisible({ timeout: 10000 });
   });
 
   test("viewport meta never pins maximum-scale=1", async ({ page }) => {
