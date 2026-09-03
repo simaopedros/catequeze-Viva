@@ -133,10 +133,10 @@
       "col_date": "Fecha",
       "col_users": "Usuarios",
       "col_paid": "De pago",
-      "col_views": "Vistas",
+      "col_views": "Actividad",
       "scheduled_jobs": "Tareas de mantenimiento (ejecución diaria)",
       "jobs": {
-        "dailyStats": "Métricas diarias de tráfico e ingresos",
+        "dailyStats": "Métricas diarias de usuarios, actividad e ingresos",
         "aiCreditsReset": "Reinicio mensual de créditos de asistencia editorial",
         "aiCacheCleanup": "Limpieza de la caché editorial",
         "subscriptionExpiration": "Expiración de pruebas y suscripciones",
