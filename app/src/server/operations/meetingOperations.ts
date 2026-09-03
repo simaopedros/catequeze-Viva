@@ -1,6 +1,8 @@
 import { HttpError, prisma } from "wasp/server";
 import { AttendanceStatus, MembershipStatus } from "@prisma/client";
 import { logger } from "../logger";
+import { emitProductEventSafe } from "../email/events";
+import { PRODUCT_EVENT } from "../../shared/emailCatalog";
 import {
   isFamilyPortalRole,
   isFamilySurface,
@@ -836,7 +838,7 @@ export const saveAttendance = async (args: any, context: any) => {
       },
     });
   }
-  return context.entities.AttendanceRecord.create({
+  const created = await context.entities.AttendanceRecord.create({
     data: {
       meetingId: args.meetingId,
       catechumenProfileId: args.catechumenProfileId,
@@ -845,6 +847,17 @@ export const saveAttendance = async (args: any, context: any) => {
       recordedById: context.user.id,
     },
   });
+  if (context.user.email) {
+    emitProductEventSafe({
+      name: PRODUCT_EVENT.FIRST_VALUE_REACHED,
+      email: context.user.email,
+      userId: context.user.id,
+      firstName: context.user.firstName,
+      properties: { meetingId: args.meetingId },
+      context,
+    });
+  }
+  return created;
 };
 
 export const justifyAbsence = async (

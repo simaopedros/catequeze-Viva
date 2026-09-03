@@ -1,20 +1,12 @@
 import { HttpError } from 'wasp/server';
 import { validateOrThrow, sendMessageSchema } from '../validation';
-import { Resend } from 'resend';
 import { requireWorkspaceAccess } from './sharedScope';
-
-/** Escapa caracteres HTML para prevenir XSS em emails */
-function escapeHtml(unsafe: string): string {
-  return unsafe
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
+import { EMAIL_MESSAGE } from '../../shared/emailCatalog';
+import { enqueueEmail } from '../email/service';
+import { resolveEmailProviderName } from '../email/config';
 
 /**
- * Low-level Resend sender for trusted server jobs (e.g. invite delivery).
+ * Low-level sender for trusted server jobs (e.g. invite delivery).
  * Not exposed as a Wasp operation — no auth.
  */
 export async function sendRawTransactionalEmail(args: {
@@ -22,34 +14,16 @@ export async function sendRawTransactionalEmail(args: {
   subject: string;
   body: string;
 }): Promise<{ success: boolean; id?: string }> {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    throw new HttpError(500, 'Configuração de email não encontrada. Contacte o administrador.');
+  const result = await enqueueEmail({
+    messageId: EMAIL_MESSAGE.PASTORAL_MESSAGE,
+    to: args.to,
+    payload: { subject: args.subject, heading: args.subject, body: args.body },
+    idempotencyKey: `pastoral.message:${args.to}:${args.subject}:${Date.now()}`,
+  });
+  if (result.skipped === 'suppressed' || result.skipped === 'opted_out') {
+    throw new HttpError(400, 'Este destinatário não pode receber este email.');
   }
-
-  const resend = new Resend(apiKey);
-  const safeSubject = escapeHtml(args.subject);
-  const safeBody = escapeHtml(args.body).replace(/\n/g, '<br>');
-
-  try {
-    const { data, error } = await resend.emails.send({
-      from: 'Catequese Viva <noreply@catechis.app>',
-      to: args.to,
-      subject: args.subject,
-      html:
-        '<div style="font-family:sans-serif;max-width:600px;margin:0 auto"><h2>' +
-        safeSubject +
-        '</h2><p>' +
-        safeBody +
-        '</p><hr/><p style="color:#666;font-size:12px">Enviado pela Catequese Viva</p></div>',
-    });
-
-    if (error) throw new HttpError(500, 'Falha no envio: ' + error.message);
-    return { success: true, id: data?.id };
-  } catch (e: any) {
-    if (e instanceof HttpError) throw e;
-    throw new HttpError(500, 'Falha ao conectar ao serviço de email: ' + (e.message || 'Erro de rede'));
-  }
+  return { success: true, id: result.id };
 }
 
 async function assertRecipientInWorkspace(
@@ -130,10 +104,20 @@ export const sendMessageEmail = async (
       !access.isCatechist &&
       access.role !== 'PERSONAL_OWNER'
     ) {
-      throw new HttpError(403, 'Apenas a equipa pastoral pode enviar emails deste workspace.');
+      throw new HttpError(403, 'Apenas a equipe pastoral pode enviar emails deste workspace.');
     }
   }
 
+  if (resolveEmailProviderName() === 'fake' && !process.env.RESEND_API_KEY && process.env.NODE_ENV === 'production') {
+    throw new HttpError(500, 'Configuração de email não encontrada. Contacte o administrador.');
+  }
+
   await assertRecipientInWorkspace(context, workspaceId, args.to);
-  return sendRawTransactionalEmail(args);
+  return enqueueEmail({
+    messageId: EMAIL_MESSAGE.PASTORAL_MESSAGE,
+    to: args.to,
+    payload: { subject: args.subject, heading: args.subject, body: args.body },
+    idempotencyKey: `pastoral.message:${workspaceId}:${args.to}:${args.subject}:${Date.now()}`,
+    context,
+  });
 };

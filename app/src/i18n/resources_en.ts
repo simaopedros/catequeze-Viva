@@ -2770,6 +2770,73 @@ export const emails_en = {
     "unsubscribed_body": "You will no longer receive account follow-up emails from Catequese Viva.",
     "unsubscribe_invalid_title": "Invalid link",
     "unsubscribe_invalid_body": "This unsubscribe link is invalid or has expired.",
+    "welcome": {
+      "subject": "Welcome to Catequese Viva, {{name}}",
+      "heading": "Your catechesis starts here",
+      "body": "Hi, {{name}}. Your account is ready. Create the first class to take attendance and prepare meetings in one place.",
+      "cta": "Open the dashboard"
+    },
+    "invite": {
+      "family": {
+        "subject": "Invitation to the Family Portal — {{location}}",
+        "heading": "You were invited to the Family Portal",
+        "body": "You were invited to the Family Portal of \"{{location}}\" as {{role}}.\n\nIn this portal you follow your family's catechesis (meetings, attendance, and documents).\n\nTo accept, open: {{link}}\n\nThis invitation expires in 30 days.",
+        "cta": "Accept invitation"
+      },
+      "staff": {
+        "subject": "Invitation to the catechesis team — {{location}}",
+        "heading": "Invitation to the catechesis team",
+        "body": "You were invited to join the catechesis team of \"{{location}}\" as {{role}}.\n\nThis access is for the pastoral dashboard (coordinators and catechists), not the Family Portal.\n\nTo accept, open: {{link}}\n\nThis invitation expires in 30 days.",
+        "cta": "Accept invitation"
+      },
+      "footer": "— Catequese Viva team"
+    },
+    "support_reply": {
+      "subject": "Support reply — Catequese Viva",
+      "heading": "Support reply",
+      "greeting": "Hi {{name}},",
+      "intro": "We received your message. Our reply is:",
+      "outro": "You can also see this reply in the Catequese Viva support inbox.",
+      "cta": "Open support",
+      "footer": "Catequese Viva · support"
+    },
+    "billing": {
+      "footer": "Catequese Viva · billing",
+      "canceled": {
+        "subject": "Your subscription will end",
+        "heading": "Access continues until the paid period ends",
+        "body": "Hi, {{name}}. We received your cancellation. You keep access until the end of the period already paid. If you changed your mind, reactivate in Billing.",
+        "cta": "View subscription"
+      },
+      "payment_failed": {
+        "subject": "We could not process your payment",
+        "heading": "Subscription payment failed",
+        "body": "Hi, {{name}}. Update your payment method so you don't lose access to catechesis.",
+        "cta": "Update payment"
+      },
+      "institutional_trial_d3": {
+        "subject": "3 days left on the parish trial",
+        "heading": "3 days left on the parish trial",
+        "body": "Hi, {{name}}. The trial for {{parishName}} ends in 3 days. Open Billing to continue.",
+        "cta": "View subscription"
+      },
+      "institutional_trial_d1": {
+        "subject": "The parish trial ends tomorrow",
+        "heading": "The parish trial ends tomorrow",
+        "body": "Hi, {{name}}. The trial for {{parishName}} ends tomorrow. Open Billing to continue.",
+        "cta": "View subscription"
+      }
+    },
+    "preferences": {
+      "title": "Email preferences",
+      "lifecycle": "Activation tips, trial, and win-back emails",
+      "product_updates": "Product news and newsletter",
+      "pastoral_announcements": "Class and parish announcements",
+      "transactional_note": "Login, invite, and billing emails cannot be turned off."
+    },
+    "broadcast": {
+      "footer": "You receive this email because you subscribed to Catequese Viva updates."
+    },
     "campaigns": {
       "activate_create_class": {
         "subject": "Create your first class on Catequese Viva",
@@ -3868,12 +3935,12 @@ export const legal_en = {
         },
         "rights": {
           "title": "5. Your rights (LGPD)",
-          "text": "Access, correct, export, or request deletion of your data. To exercise these rights, go to Settings in the app or contact contato@catequeseviva.com.br."
+          "text": "Access, correct, export, or request deletion of your data. To exercise these rights, go to Settings in the app or contact contato@catechis.app."
         },
         "dpo": {
           "title": "6. DPO Contact",
           "email_label": "Email:",
-          "email": "privacidade@catequeseviva.com.br"
+          "email": "privacidade@catechis.app"
         }
       }
     }
@@ -4860,7 +4927,7 @@ export const public_en = {
         },
         {
           "q": "What about annual plan refunds?",
-          "a": "Annual plans have no automatic refund. Cancellation stops renewal, but access continues until the paid period ends. Proportional refunds are evaluated case by case via contato@catequeseviva.com.br."
+          "a": "Annual plans have no automatic refund. Cancellation stops renewal, but access continues until the paid period ends. Proportional refunds are evaluated case by case via contato@catechis.app."
         },
         {
           "q": "What if my catechesis grows?",
@@ -5228,7 +5295,13 @@ export const settings_en = {
     "different_parishes": "Source and destination parishes must be different.",
     "migration_success": "Migration complete! {{classes}} classes, {{households}} families, {{members}} members transferred.",
     "migration_error": "Error executing migration.",
-    "privacy_notice": "Your data is protected under LGPD. No data is shared without consent."
+    "privacy_notice": "Your data is protected under LGPD. No data is shared without consent.",
+    "email_preferences": "Email preferences",
+    "email_preferences_desc": "Choose which Catequese Viva emails you want to receive. Login, invites, and invoices stay on.",
+    "email_pref_lifecycle": "Activation tips, trial, and win-back emails",
+    "email_pref_product": "Product news and newsletter",
+    "email_pref_pastoral": "Class and parish announcements",
+    "email_pref_saved": "Email preferences saved."
   } as const;
 
 export const social_en = {

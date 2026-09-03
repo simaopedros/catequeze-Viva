@@ -22,6 +22,8 @@ import {
 import { ensurePersonalWorkspace } from "./workspaceOperations";
 import { ensureSacramentalJourneyForCatechumen } from "../sacramentHelpers";
 import { logger } from "../logger";
+import { emitProductEventSafe } from "../email/events";
+import { PRODUCT_EVENT } from "../../shared/emailCatalog";
 import {
   requireWorkspaceAccess,
   resolveWorkspaceAccess,
@@ -359,6 +361,17 @@ export const createClass = async (args: any, context: any) => {
         },
       });
     }
+  }
+
+  if (context.user.email) {
+    emitProductEventSafe({
+      name: PRODUCT_EVENT.CLASS_CREATED,
+      email: context.user.email,
+      userId: context.user.id,
+      firstName: context.user.firstName,
+      properties: { classId: newClass.id, parishId: effectiveParishId },
+      context,
+    });
   }
 
   return newClass;
@@ -861,6 +874,17 @@ export const enrollCatechumen = async (
         error: e instanceof Error ? e.message : String(e),
       });
     }
+  }
+
+  if (context.user.email) {
+    emitProductEventSafe({
+      name: PRODUCT_EVENT.PEOPLE_ADDED,
+      email: context.user.email,
+      userId: context.user.id,
+      firstName: context.user.firstName,
+      properties: { classId: args.classId },
+      context,
+    });
   }
 
   return enrollment;

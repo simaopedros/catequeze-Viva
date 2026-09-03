@@ -3,7 +3,9 @@ import express from "express";
 import type { Stripe } from "stripe";
 import { config, env, type MiddlewareConfigFn } from "wasp/server";
 import { type PaymentsWebhook } from "wasp/server/api";
-import { emailSender } from "wasp/server/email";
+import { emitProductEventSafe } from "../../server/email/events";
+import { PRODUCT_EVENT } from "../../shared/emailCatalog";
+import { resolveUserLocale } from "../../server/i18n/serverLocale";
 import { UnhandledWebhookEventError } from "../errors";
 import {
   paymentPlans,
@@ -473,7 +475,7 @@ async function handleInvoicePaymentFailed(
   const customerId = getCustomerId(invoice.customer);
   const user = await prismaUserDelegate.findUnique({
     where: { paymentProcessorUserId: customerId },
-    select: { id: true },
+    select: { id: true, email: true, firstName: true, locale: true },
   });
 
   await trackPricingEvent(context, {
@@ -481,6 +483,17 @@ async function handleInvoicePaymentFailed(
     event: "payment_failed",
     processor: STRIPE_PROVIDER,
   });
+
+  if (user?.email) {
+    emitProductEventSafe({
+      name: PRODUCT_EVENT.PAYMENT_FAILED,
+      email: user.email,
+      userId: user.id,
+      firstName: user.firstName,
+      locale: resolveUserLocale(user),
+      context,
+    });
+  }
 }
 
 async function handleCustomerSubscriptionUpdated(
@@ -518,6 +531,17 @@ async function handleCustomerSubscriptionUpdated(
       user.id,
       paymentPlanId,
     );
+    if (user.email) {
+      emitProductEventSafe({
+        name: PRODUCT_EVENT.SUBSCRIPTION_STARTED,
+        email: user.email,
+        userId: user.id,
+        firstName: user.firstName,
+        locale: resolveUserLocale(user),
+        isPaid: true,
+        context,
+      });
+    }
   }
 
   if (catalogPlan.level === "institutional" && subscriptionStatus === SubscriptionStatus.Active) {
@@ -525,11 +549,13 @@ async function handleCustomerSubscriptionUpdated(
   }
 
   if (subscription.cancel_at_period_end && user.email) {
-    await emailSender.send({
-      to: user.email,
-      subject: "We hate to see you go :(",
-      text: "We hate to see you go. Here is a sweet offer...",
-      html: "We hate to see you go. Here is a sweet offer...",
+    emitProductEventSafe({
+      name: PRODUCT_EVENT.SUBSCRIPTION_CANCELED,
+      email: user.email,
+      userId: user.id,
+      firstName: user.firstName,
+      locale: resolveUserLocale(user),
+      context,
     });
   }
 }

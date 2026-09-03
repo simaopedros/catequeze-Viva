@@ -7,6 +7,7 @@ import { stripeEnvSchema } from './payment/stripe/env'
 import { fileUploadEnvSchema } from './file-upload/env'
 import { plausibleEnvSchema, googleAnalyticsEnvSchema } from './analytics/env'
 import { aiEnvSchema } from './server/ai/env'
+import { emailEnvSchema } from './server/email/env'
 
 // Operational env vars (connection pooling, job worker control).
 // These are consumed at the infrastructure / generated-SDK layer, not by
@@ -39,5 +40,6 @@ export const serverEnvValidationSchema = defineEnvValidationSchema(
     .merge(plausibleEnvSchema)
     .merge(googleAnalyticsEnvSchema)
     .merge(operationalEnvSchema)
+    .merge(emailEnvSchema)
 )
 

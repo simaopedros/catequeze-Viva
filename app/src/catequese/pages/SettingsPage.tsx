@@ -33,7 +33,11 @@ import {
   useQuery,
   listParishes,
   executeParishMigration,
+  getMyEmailPreferences,
+  updateMyEmailPreferences,
 } from "wasp/client/operations";
+import { Switch } from "../../client/components/ui/switch";
+import { EMAIL_TOPIC } from "../../shared/emailCatalog";
 import PhoneMaskInput from "../../client/components/PhoneMaskInput";
 import TwoFactorSetup from "../components/TwoFactorSetup";
 import {
@@ -72,6 +76,9 @@ export default function SettingsPage() {
   const [targetParishId, setTargetParishId] = useState("");
   const [migrationConfirm, setMigrationConfirm] = useState("");
   const { data: userParishes = [] } = useQuery(listParishes);
+  const { data: emailPrefs } = useQuery(getMyEmailPreferences);
+  const [prefSaving, setPrefSaving] = useState<string | null>(null);
+  const [prefSaved, setPrefSaved] = useState(false);
 
   // Profile form: RHF + zod (PhoneMaskInput is wired through Controller).
   const profileForm = useForm<UpdateProfileValues>({
@@ -518,6 +525,44 @@ export default function SettingsPage() {
           </Button>
         </AppPanel>
       )}
+
+      <AppPanel className="space-y-4">
+        <AppEyebrow>{t("email_preferences")}</AppEyebrow>
+        <p className="text-xs text-muted-foreground">
+          {t("email_preferences_desc")}
+        </p>
+        {(
+          [
+            [EMAIL_TOPIC.LIFECYCLE, "email_pref_lifecycle"],
+            [EMAIL_TOPIC.PRODUCT_UPDATES, "email_pref_product"],
+            [EMAIL_TOPIC.PASTORAL_ANNOUNCEMENTS, "email_pref_pastoral"],
+          ] as const
+        ).map(([topic, labelKey]) => (
+          <div key={topic} className="flex items-center justify-between gap-3">
+            <p className="text-sm text-brand-ink">{t(labelKey)}</p>
+            <Switch
+              checked={emailPrefs?.[topic] !== false}
+              disabled={prefSaving === topic}
+              onCheckedChange={async (checked) => {
+                setPrefSaving(topic);
+                try {
+                  await updateMyEmailPreferences({ topic, optedIn: checked });
+                  setPrefSaved(true);
+                  setTimeout(() => setPrefSaved(false), 2500);
+                } finally {
+                  setPrefSaving(null);
+                }
+              }}
+            />
+          </div>
+        ))}
+        {prefSaved && (
+          <p className="text-xs text-success flex items-center gap-1">
+            <CheckCircle className="h-3 w-3" />
+            {t("email_pref_saved")}
+          </p>
+        )}
+      </AppPanel>
 
       {/* Privacy notice */}
       <AppPanel className="flex items-center gap-3" padded>

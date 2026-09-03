@@ -1766,6 +1766,73 @@ export const emails_pt_BR_app = {
     "unsubscribed_body": "Você não receberá mais e-mails de acompanhamento da sua conta no Catequese Viva.",
     "unsubscribe_invalid_title": "Link inválido",
     "unsubscribe_invalid_body": "Este link de descadastro é inválido ou já expirou.",
+    "welcome": {
+      "subject": "Bem-vindo à Catequese Viva, {{name}}",
+      "heading": "Sua catequese começa aqui",
+      "body": "Olá, {{name}}. Sua conta está pronta. Crie a primeira turma para marcar presença e preparar encontros no mesmo lugar.",
+      "cta": "Abrir o painel"
+    },
+    "invite": {
+      "family": {
+        "subject": "Convite para o Portal da Família — {{location}}",
+        "heading": "Você foi convidado(a) para o Portal da Família",
+        "body": "Você foi convidado(a) para o Portal da Família de \"{{location}}\" como {{role}}.\n\nNesse portal você acompanha a catequese da sua família (encontros, presença e documentos).\n\nPara aceitar, acesse: {{link}}\n\nEste convite expira em 30 dias.",
+        "cta": "Aceitar convite"
+      },
+      "staff": {
+        "subject": "Convite para a equipe de catequese — {{location}}",
+        "heading": "Convite para a equipe de catequese",
+        "body": "Você foi convidado(a) para integrar a equipe de catequese de \"{{location}}\" como {{role}}.\n\nEsse acesso é do painel pastoral (coordenação e catequistas), não do Portal da Família.\n\nPara aceitar, acesse: {{link}}\n\nEste convite expira em 30 dias.",
+        "cta": "Aceitar convite"
+      },
+      "footer": "— Equipe Catequese Viva"
+    },
+    "support_reply": {
+      "subject": "Resposta do suporte — Catequese Viva",
+      "heading": "Resposta do suporte",
+      "greeting": "Olá {{name}},",
+      "intro": "Recebemos a sua mensagem e a nossa resposta é:",
+      "outro": "Também pode ver esta resposta na central de suporte da Catequese Viva.",
+      "cta": "Abrir suporte",
+      "footer": "Catequese Viva · suporte"
+    },
+    "billing": {
+      "footer": "Catequese Viva · assinatura",
+      "canceled": {
+        "subject": "Sua assinatura será encerrada",
+        "heading": "A assinatura segue até o fim do período",
+        "body": "Olá, {{name}}. Recebemos o pedido de cancelamento. Você continua com acesso até o fim do período já pago. Se mudou de ideia, reative em Assinatura.",
+        "cta": "Ver assinatura"
+      },
+      "payment_failed": {
+        "subject": "Não conseguimos processar o pagamento",
+        "heading": "O pagamento da assinatura falhou",
+        "body": "Olá, {{name}}. Atualize o método de pagamento para não perder o acesso à catequese.",
+        "cta": "Atualizar pagamento"
+      },
+      "institutional_trial_d3": {
+        "subject": "Restam 3 dias do teste da paróquia",
+        "heading": "Restam 3 dias do teste da paróquia",
+        "body": "Olá, {{name}}. O período de teste de {{parishName}} termina em 3 dias. Acesse Assinatura para continuar.",
+        "cta": "Ver assinatura"
+      },
+      "institutional_trial_d1": {
+        "subject": "O teste da paróquia termina amanhã",
+        "heading": "O teste da paróquia termina amanhã",
+        "body": "Olá, {{name}}. O período de teste de {{parishName}} termina amanhã. Acesse Assinatura para continuar.",
+        "cta": "Ver assinatura"
+      }
+    },
+    "preferences": {
+      "title": "Preferências de email",
+      "lifecycle": "Dicas de ativação, teste e retorno à conta",
+      "product_updates": "Novidades do produto e newsletter",
+      "pastoral_announcements": "Comunicados das turmas e da paróquia",
+      "transactional_note": "Emails de login, convite e fatura não podem ser desativados."
+    },
+    "broadcast": {
+      "footer": "Você recebe este email porque assinou as novidades da Catequese Viva."
+    },
     "campaigns": {
       "activate_create_class": {
         "subject": "Crie sua primeira turma no Catequese Viva",
@@ -3012,7 +3079,13 @@ export const settings_pt_BR_app = {
     "different_parishes": "As paróquias de origem e destino devem ser diferentes.",
     "migration_success": "Migração concluída! {{classes}} turmas, {{households}} famílias, {{members}} membros transferidos.",
     "migration_error": "Erro ao executar migração.",
-    "privacy_notice": "Seus dados são protegidos conforme a LGPD. Nenhum dado é compartilhado sem consentimento."
+    "privacy_notice": "Seus dados são protegidos conforme a LGPD. Nenhum dado é compartilhado sem consentimento.",
+    "email_preferences": "Preferências de email",
+    "email_preferences_desc": "Escolha quais emails da Catequese Viva você quer receber. Login, convites e faturas continuam ativos.",
+    "email_pref_lifecycle": "Dicas de ativação, teste e retorno à conta",
+    "email_pref_product": "Novidades do produto e newsletter",
+    "email_pref_pastoral": "Comunicados das turmas e da paróquia",
+    "email_pref_saved": "Preferências de email salvas."
   } as const;
 
 export const social_pt_BR_app = {
