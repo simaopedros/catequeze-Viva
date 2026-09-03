@@ -119,8 +119,15 @@
     "GUARDIAN": "Responsável familiar",
     "CATECHUMEN": "Catequizando",
     "CONTENT_REVIEWER": "Revisor",
-    "PASTORAL_VIEWER": "Pastoral",
+    "PASTORAL_VIEWER": "Visitante",
     "PERSONAL_OWNER": "Proprietário"
+  },
+  "roles_desc": {
+    "PARISH_COORDINATOR": "Coordena a catequese deste espaço: equipe, turmas, convites e configurações.",
+    "LEAD_CATECHIST": "Responsável pela turma: chamada, encontros e convite de auxiliar ou família.",
+    "ASSISTANT_CATECHIST": "Ajuda na turma; convites só para a família.",
+    "PASTORAL_VIEWER": "Consulta turmas e relatórios, sem editar.",
+    "GUARDIAN": "Acompanha os catequizandos da família pelo portal."
   },
   "membership_status": {
     "ACTIVE": "Ativo",
@@ -538,8 +545,11 @@
       "viewer_hint": "Você vê apenas a equipe das turmas e da comunidade sob sua coordenação.",
       "invite_hint": "Escolha a comunidade que esta pessoa vai coordenar. Turmas específicas podem ser definidas depois, em \"Definir escopo\"."
     },
-    "title": "Equipe",
-    "subtitle": "{{members}} membros ativos · {{pending}} convites pendentes",
+    "title": "Pessoas e acessos",
+    "subtitle": "{{members}} pessoas ativas · {{pending}} convites pendentes",
+    "matrix_title": "O que cada papel pode fazer",
+    "personal_invite_hint": "No espaço pessoal você convida auxiliar da sua turma — não é a equipe da paróquia. Família entra pelos convites da família.",
+    "empty_cta": "Convidar pessoa",
     "invite_member": "Convidar membro da equipe",
     "invite_sent": "Convite enviado por email.",
     "invite_saved": "Convite salvo.",
