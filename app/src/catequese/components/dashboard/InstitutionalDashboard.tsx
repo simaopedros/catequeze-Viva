@@ -302,6 +302,10 @@ export function InstitutionalDashboard() {
   );
 
   const overview = core?.overview;
+  const emptyOverview =
+    !!overview &&
+    Number(overview.classes?.[0]?.value ?? 0) === 0 &&
+    Number(overview.people?.[0]?.value ?? 0) === 0;
   // Critical alerts from core; full list arrives with insights
   const coreAlerts = core?.alerts;
 
@@ -493,9 +497,7 @@ export function InstitutionalDashboard() {
 
       <AlertBanner alerts={alerts} />
 
-      {overview &&
-      Number(overview.classes?.[0]?.value ?? 0) === 0 &&
-      Number(overview.people?.[0]?.value ?? 0) === 0 ? (
+      {emptyOverview ? (
         <EmptyState
           icon={BookOpen}
           title={t("no_classes_yet")}
@@ -560,7 +562,7 @@ export function InstitutionalDashboard() {
             />
           )}
         </div>
-      )}
+      ) : null}
 
       {/* Charts — lazy recharts chunk */}
       {trendChartData.length > 0 && (
