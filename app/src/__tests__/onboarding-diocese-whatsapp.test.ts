@@ -38,4 +38,17 @@ describe("onboarding diocese WhatsApp help copy", () => {
     expect(json.diocese.continue_without.toLowerCase()).toContain("sem diocese");
     expect(json.diocese.whatsapp_prefill.toLowerCase()).toContain("diocese");
   });
+
+  it("welcome step exposes catechist, parish, and diocese paths", () => {
+    const raw = readFileSync(
+      resolve(__dirname, "../i18n/locales/pt-BR/onboarding.json"),
+      "utf8",
+    );
+    const json = JSON.parse(raw);
+    expect(json.welcome.personal_title).toBeTruthy();
+    expect(json.welcome.manager_title).toBeTruthy();
+    expect(json.welcome.diocese_title).toBeTruthy();
+    expect(json.welcome.invite_hint.toLowerCase()).toContain("convite");
+    expect(json.completion.talk_sales).toBeTruthy();
+  });
 });

@@ -6,6 +6,7 @@ import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import { BrowserFrame } from "./BrowserFrame";
+import { AppProductMock } from "./mockups/AppProductMock";
 
 /**
  * Editorial hero: brand type, split layout, product in browser frame.
@@ -194,28 +195,7 @@ export function HeroSection({
           WebP); the 425KB PNG is no longer shipped.
         */}
         {visual === "product" ? (
-          <picture>
-            <source
-              type="image/avif"
-              srcSet="/landing/hero-mobile-light-640.avif 640w, /landing/hero-mobile-light-960.avif 960w, /landing/hero-mobile-light-1280.avif 1280w, /landing/hero-mobile-light-1896.avif 1896w"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 560px"
-            />
-            <source
-              type="image/webp"
-              srcSet="/landing/hero-mobile-light-640.webp 640w, /landing/hero-mobile-light-960.webp 960w, /landing/hero-mobile-light-1280.webp 1280w, /landing/hero-mobile-light-1896.webp 1896w"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 560px"
-            />
-            <img
-              src="/landing/hero-mobile-light-960.webp"
-              alt={tr("hero.image_alt")}
-              width={1896}
-              height={867}
-              className="block h-auto w-full"
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-            />
-          </picture>
+          <AppProductMock ns={ns} />
         ) : (
           <CampaignHeroVisual
             visual={visual}

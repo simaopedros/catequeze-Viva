@@ -20,7 +20,18 @@ export const account_pt_BR_app = {
     "buy_credits": "Comprar Mais Créditos",
     "plan_past_due": "O pagamento do seu plano {{plan}} está em atraso. Atualize as informações de pagamento da sua assinatura.",
     "plan_cancel_at_period_end": "Sua assinatura do plano {{plan}} foi cancelada, mas permanece ativa até o fim do período de cobrança atual: {{date}}",
-    "plan_deleted": "Sua assinatura anterior foi cancelada e não está mais ativa."
+    "plan_deleted": "Sua assinatura anterior foi cancelada e não está mais ativa.",
+    "scopes_title": "Dois escopos de cobrança",
+    "scopes_hint": "A assinatura pessoal e a licença do espaço institucional são independentes. Cancelar uma não encerra a outra.",
+    "personal_scope_title": "Assinatura pessoal",
+    "personal_scope_desc": "Cobre o seu espaço Pessoal (Plano Catequista).",
+    "workspace_scope_title": "Licença deste espaço",
+    "workspace_scope_desc": "Cobre o workspace ativo — paróquia, diocese ou comunidade.",
+    "workspace_kind": "Tipo",
+    "workspace_role": "Seu papel",
+    "workspace_plan": "Plano efetivo",
+    "manage_workspace_billing": "Gerenciar cobrança do espaço",
+    "no_active_workspace": "Nenhum espaço ativo"
   } as const;
 
 export const activities_pt_BR_app = {
@@ -266,6 +277,13 @@ export const admin_pt_BR_app = {
         "col_plan": "Plano",
         "col_owner": "Responsável",
         "col_members": "Membros",
+        "col_type": "Tipo",
+        "col_covered_by": "Coberta por",
+        "type_PERSONAL": "Pessoal",
+        "type_PARISH": "Paróquia",
+        "type_DIOCESE": "Diocese",
+        "type_COMMUNITY": "Comunidade",
+        "covered_by": "Coberta por {{name}}",
         "archived": "Arquivada",
         "total": "Total de paróquias",
         "active": "Paróquias ativas",
@@ -320,6 +338,13 @@ export const admin_pt_BR_app = {
         "status": "Status",
         "ai_credits": "Créditos editoriais",
         "stripe_id": "ID Stripe",
+        "workspaces": "Espaços",
+        "roles": "Papéis",
+        "license": "Licença",
+        "billing_timeline": "Linha do tempo de cobrança",
+        "no_billing_timeline": "Nenhum evento de cobrança.",
+        "personal_plan": "Plano pessoal",
+        "memberships": "Membros",
         "parishes": "Paróquias ({{count}})",
         "no_parishes": "Nenhuma paróquia.",
         "community_prefix": "Comunidade: {{name}} · ",
@@ -439,7 +464,11 @@ export const admin_pt_BR_app = {
       },
       "users": {
         "title": "Utilizadores",
-        "subtitle": "Gerir todos os utilizadores da plataforma."
+        "subtitle": "Gerir todos os utilizadores da plataforma.",
+        "col_plan": "Plano pessoal",
+        "col_workspaces": "Espaços",
+        "col_roles": "Papéis",
+        "no_workspaces": "Nenhum espaço"
       },
       "licenses": {
         "title": "Licenças",
@@ -456,6 +485,7 @@ export const admin_pt_BR_app = {
         "open_owner": "Abrir responsável {{email}}",
         "extend_trial": "Estender trial",
         "complimentary": "Plano cortesia",
+        "assign_diocese": "Atribuir Plano Diocese",
         "cancel_license": "Cancelar licença",
         "cancel_stripe": "Cancelar Stripe",
         "extend_title": "Estender trial",
@@ -2278,7 +2308,10 @@ export const onboarding_pt_BR_app = {
       "manager_features": [],
       "helper": "Você pode mudar de caminho depois, se precisar.",
       "launch_question": "Vamos preparar o espaço da sua turma.",
-      "launch_helper": "Nesta fase o acesso é para catequistas. Paróquia e diocese vêm depois.",
+      "launch_helper": "Comece pela sua turma. Depois você pode organizar como paróquia ou pedir cobertura da diocese.",
+      "diocese_title": "Sou da diocese",
+      "diocese_desc": "Licença guarda-chuva para várias paróquias. Fale com vendas — não há checkout público.",
+      "invite_hint": "Já tem convite para uma paróquia? Entre pelo e-mail do convite. Não crie outro espaço.",
       "eyebrow": "Primeiros passos"
     },
     "personal_setup": {
@@ -2453,7 +2486,11 @@ export const onboarding_pt_BR_app = {
       "personal_class_ready_title": "Sua turma está pronta",
       "personal_class_ready_desc": "Turma criada e com catequizandos. Você já pode registrar presença e acompanhar a caminhada.",
       "personal_class_empty_title": "Turma criada",
-      "personal_class_empty_desc": "A turma existe. Inclua catequizandos quando quiser para usar a chamada com nomes reais."
+      "personal_class_empty_desc": "A turma existe. Inclua catequizandos quando quiser para usar a chamada com nomes reais.",
+      "diocese_ready_title": "Fale com vendas para a licença diocesana",
+      "diocese_ready_desc": "Não há checkout público para diocese. A licença cobre as paróquias quando a equipe atribuir o Plano Diocese no admin.",
+      "talk_sales": "Falar com vendas no WhatsApp",
+      "diocese_account": "Caminho da diocese"
     },
     "roles": {
       "coordinator": {
@@ -2524,7 +2561,9 @@ export const onboarding_pt_BR_app = {
       "personal_class_title": "Primeira turma",
       "personal_class_subtitle": "Dê um nome claro — o restante você ajusta quando quiser.",
       "personal_people_title": "Quem faz parte da turma",
-      "personal_people_subtitle": "Sem pessoas, a chamada e o acompanhamento ficam vazios."
+      "personal_people_subtitle": "Sem pessoas, a chamada e o acompanhamento ficam vazios.",
+      "diocese_title": "Licença da diocese",
+      "diocese_subtitle": "Não há checkout público. Fale com vendas e, se quiser, escolha a diocese."
     },
     "back_clean": "Voltar",
     "change_diocese_clean": "Alterar",
@@ -2534,7 +2573,8 @@ export const onboarding_pt_BR_app = {
       "catechumens": "Catequizandos",
       "done": "Pronto",
       "institution": "Paróquia",
-      "setup": "Organização"
+      "setup": "Organização",
+      "diocese": "Diocese"
     },
     "class_setup": {
       "eyebrow": "Passo da turma",
@@ -2673,10 +2713,10 @@ export const parishes_pt_BR_app = {
     "past_due": "Em atraso",
     "canceled": "Cancelada",
     "plan_free": "Sem assinatura",
-    "plan_catechist_pro": "Catequista Pro",
-    "plan_catechist_ai": "Catequista editorial",
-    "plan_parish": "Paróquia",
-    "plan_diocese": "Diocese",
+    "plan_catechist_pro": "Plano Catequista",
+    "plan_catechist_ai": "Plano Catequista",
+    "plan_parish": "Plano Paróquia",
+    "plan_diocese": "Plano Diocese",
     "breadcrumb_details": "Detalhes",
     "parish_members_title": "Membros da Paróquia",
     "tab_data": "Dados",

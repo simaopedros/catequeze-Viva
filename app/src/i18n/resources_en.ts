@@ -20,7 +20,18 @@ export const account_en = {
     "buy_credits": "Buy More Credits",
     "plan_past_due": "Your {{plan}} plan payment is past due. Please update your subscription payment details.",
     "plan_cancel_at_period_end": "Your {{plan}} subscription has been cancelled, but remains active until the end of the current billing period: {{date}}",
-    "plan_deleted": "Your previous subscription has been cancelled and is no longer active."
+    "plan_deleted": "Your previous subscription has been cancelled and is no longer active.",
+    "scopes_title": "Two billing scopes",
+    "scopes_hint": "Your personal subscription and the institutional workspace license are independent. Cancelling one does not end the other.",
+    "personal_scope_title": "Personal subscription",
+    "personal_scope_desc": "Covers your Personal workspace (Catechist Plan).",
+    "workspace_scope_title": "This workspace license",
+    "workspace_scope_desc": "Covers the active workspace — parish, diocese, or community.",
+    "workspace_kind": "Type",
+    "workspace_role": "Your role",
+    "workspace_plan": "Effective plan",
+    "manage_workspace_billing": "Manage workspace billing",
+    "no_active_workspace": "No active workspace"
   } as const;
 
 export const activities_en = {
@@ -266,6 +277,13 @@ export const admin_en = {
         "col_plan": "Plan",
         "col_owner": "Owner",
         "col_members": "Members",
+        "col_type": "Type",
+        "col_covered_by": "Covered by",
+        "type_PERSONAL": "Personal",
+        "type_PARISH": "Parish",
+        "type_DIOCESE": "Diocese",
+        "type_COMMUNITY": "Community",
+        "covered_by": "Covered by {{name}}",
         "archived": "Archived",
         "total": "Total parishes",
         "active": "Active parishes",
@@ -320,6 +338,13 @@ export const admin_en = {
         "status": "Status",
         "ai_credits": "Editorial credits",
         "stripe_id": "Stripe ID",
+        "workspaces": "Workspaces",
+        "roles": "Roles",
+        "license": "License",
+        "billing_timeline": "Billing timeline",
+        "no_billing_timeline": "No billing events.",
+        "personal_plan": "Personal plan",
+        "memberships": "Memberships",
         "parishes": "Parishes ({{count}})",
         "no_parishes": "No parishes.",
         "community_prefix": "Community: {{name}} · ",
@@ -439,7 +464,11 @@ export const admin_en = {
       },
       "users": {
         "title": "Users",
-        "subtitle": "Manage every user on the platform."
+        "subtitle": "Manage every user on the platform.",
+        "col_plan": "Personal plan",
+        "col_workspaces": "Workspaces",
+        "col_roles": "Roles",
+        "no_workspaces": "No workspaces"
       },
       "licenses": {
         "title": "Licenses",
@@ -456,6 +485,7 @@ export const admin_en = {
         "open_owner": "Open owner {{email}}",
         "extend_trial": "Extend trial",
         "complimentary": "Complimentary plan",
+        "assign_diocese": "Assign Diocese Plan",
         "cancel_license": "Cancel license",
         "cancel_stripe": "Cancel Stripe",
         "extend_title": "Extend trial",
@@ -947,7 +977,7 @@ export const auth_en = {
       "Prepare the next meeting with ease"
     ],
     "signup_plan_single": "Catechist Plan",
-    "signup_plan_unlimited": "Unlimited Plan",
+    "signup_plan_unlimited": "Parish Plan",
     "signup_interval_monthly": "monthly billing",
     "signup_interval_annual": "annual billing",
     "signup_context_no_card": "7 days free, no card",
@@ -1022,6 +1052,25 @@ export const billing_en = {
     "coordinator_responsible": "Responsible coordinator:",
     "contact_manager": "Please contact the person indicated for any plan changes or questions.",
     "your_personal_plan": "Your personal plan",
+    "dual_scope_title": "Two independent scopes",
+    "dual_scope_hint": "Your personal Catechist subscription and this workspace license do not mix. Cancelling one does not end the other.",
+    "dual_scope_personal": "Personal",
+    "dual_scope_workspace": "This workspace",
+    "migrate_to_parish_title": "Organize as a parish",
+    "migrate_to_parish_desc": "Create an institutional workspace for unlimited teams and classes. Your personal space and Catechist subscription remain until you cancel them in the portal.",
+    "migrate_to_parish_cta": "Organize as a parish",
+    "migrate_bring_classes": "Bring classes and catechumens into the new space",
+    "migrate_bring_classes_hint": "A copy lives in the parish workspace. Original history stays in the personal space.",
+    "migrate_parish_name": "Parish name",
+    "migrate_parish_city": "City",
+    "migrate_parish_state": "State",
+    "migrate_success": "Parish workspace created. Subscribe to the Parish Plan in this workspace.",
+    "migrate_error": "Could not create the parish workspace.",
+    "request_diocese_title": "Ask the diocese for coverage",
+    "request_diocese_desc": "When the diocese has an active license, this parish shows as covered. Talk to sales to link it and assign the Diocese Plan.",
+    "request_diocese_cta": "Talk to sales about diocesan coverage",
+    "request_diocese_prefill": "Hello! I would like diocesan coverage for parish {{name}} on Catequese Viva.",
+    "covered_by_named": "Covered by {{name}}",
     "usage_title": "Plan usage",
     "classes": "Classes",
     "catechumens": "Catechumens",
@@ -1147,7 +1196,7 @@ export const billing_en = {
     "subscribe_plan": "Subscribe to {{plan}}",
     "recommended_plan_personal": "To start your first class",
     "recommended_plan_institutional": "To unlock your team",
-    "plan_mismatch_institutional_cta": "Create parish workspace",
+    "plan_mismatch_institutional_cta": "Organize as a parish",
     "upgrade_supporting_copy": "The upgrade appears exactly when your usage has already proven value. Keep what you built and unlock the next step without rework.",
     "upgrade_journey_badge": "Plan expansion",
     "upgrade_plans_title": "Unlock the next step",
@@ -1837,8 +1886,15 @@ export const common_en = {
       "GUARDIAN": "Family Guardian",
       "CATECHUMEN": "Catechumen",
       "CONTENT_REVIEWER": "Reviewer",
-      "PASTORAL_VIEWER": "Pastoral",
+      "PASTORAL_VIEWER": "Visitor",
       "PERSONAL_OWNER": "Owner"
+    },
+    "roles_desc": {
+      "PARISH_COORDINATOR": "Coordinates catechesis in this space: team, classes, invites, and settings.",
+      "LEAD_CATECHIST": "Responsible for the class: attendance, meetings, and inviting an assistant or family.",
+      "ASSISTANT_CATECHIST": "Helps in the class; invites are family-only.",
+      "PASTORAL_VIEWER": "Views classes and reports without editing.",
+      "GUARDIAN": "Follows the family's catechumens in the family portal."
     },
     "membership_status": {
       "ACTIVE": "Active",
@@ -2177,8 +2233,11 @@ export const common_en = {
         "viewer_hint": "You only see the team of the classes and community you coordinate.",
         "invite_hint": "Pick the community this person will coordinate. Specific classes can be set later via \"Set scope\"."
       },
-      "title": "Team",
-      "subtitle": "{{members}} active members · {{pending}} pending invites",
+      "title": "People and access",
+      "subtitle": "{{members}} active people · {{pending}} pending invites",
+      "matrix_title": "What each role can do",
+      "personal_invite_hint": "In the personal space you invite an assistant for your class — this is not the parish team. Families join through family invites.",
+      "empty_cta": "Invite someone",
       "invite_member": "Invite team member",
       "invite_sent": "Invitation email sent.",
       "invite_saved": "Invitation saved.",
@@ -3048,11 +3107,20 @@ export const landing_en = {
         {
           "id": "parish",
           "title": "I coordinate parish catechesis",
-          "desc": "In this phase, Catequese Viva is for catechists running their own class. Parishes and dioceses come later.",
+          "desc": "Classes, team, and attendance in one institutional parish workspace.",
           "href": "/#planos",
-          "cta": "See the catechist plan",
-          "pill": "Parishes coming later",
-          "micro": "Right now the focus is you and your class. Coordination comes later."
+          "cta": "See the Parish Plan",
+          "pill": "For parish coordination",
+          "micro": "Unlimited team and classes in the parish workspace."
+        },
+        {
+          "id": "diocese",
+          "title": "I work with the diocese",
+          "desc": "A license that covers the diocese parishes. Assisted sales with the team.",
+          "href": "/#planos",
+          "cta": "Talk to sales",
+          "pill": "Assisted sales",
+          "micro": "The diocese holds the license; parishes show as covered."
         }
       ],
       "click_trigger": "Works on mobile · Built for catechesis routines",
@@ -3188,8 +3256,8 @@ export const landing_en = {
       }
     ],
     "steps_cta": "Begin my journey — 7 days free",
-    "pricing_title": "One simple plan, at the service of your mission",
-    "pricing_subtitle": "R$ 9.90/month for up to 3 classes. Start with a 7-day trial — no card and no charge now.",
+    "pricing_title": "Three paths: catechist, parish, and diocese",
+    "pricing_subtitle": "Catechist R$ 9.90/month. Parish from R$ 99/month. Diocese with the sales team. 7-day trial on the Catechist Plan — no card.",
     "plans": {
       "single": {
         "name": "Catechist Plan",
@@ -3201,6 +3269,29 @@ export const landing_en = {
           "Attendance history on mobile",
           "Your class calendar",
           "Portal for the families in your class"
+        ]
+      },
+      "unlimited": {
+        "name": "Parish Plan",
+        "audience": "For parish coordination",
+        "desc": "Unlimited classes, catechumens, and team in the parish workspace.",
+        "price": "R$ 99",
+        "features": [
+          "Unlimited classes and team",
+          "Unlimited catechumens",
+          "Institutional parish workspace",
+          "Family communication"
+        ]
+      },
+      "diocese": {
+        "name": "Diocese Plan",
+        "audience": "For the diocese — assisted sales",
+        "desc": "Umbrella license covering parishes. No public checkout.",
+        "price": "Talk to sales",
+        "features": [
+          "Coverage for diocese parishes",
+          "License assigned by the team",
+          "Follow-up with sales on WhatsApp"
         ]
       }
     },
@@ -3231,7 +3322,7 @@ export const landing_en = {
       },
       {
         "q": "Do I need my parish to get started?",
-        "a": "No. The account is yours and the class is yours: you create it, organize it, and use it without depending on coordination. Parishes and dioceses join the platform in a future phase."
+        "a": "No. You can start in a personal workspace with the Catechist Plan. When you need a team and more classes, organize as a parish. The diocese joins through assisted sales and covers parishes with an active license."
       },
       {
         "q": "Does it work on mobile?",
@@ -3481,7 +3572,8 @@ export const landing_en = {
     "faq_cta": "Begin my journey — 7 days free",
     "faq_cta_helper": "No charge now · use it at your next meeting",
     "price_cta_single": "Start my 7 days with my class",
-    "price_cta_unlimited": "Start 7-day trial",
+    "price_cta_unlimited": "Start the Parish Plan",
+    "price_cta_diocese": "Talk to sales about the diocese",
     "price_annual_equivalent": "Equals {{price}}/month",
     "demo": {
       "badge": "Try without creating an account",
@@ -4175,7 +4267,7 @@ export const navigation_en = {
     "classes": "Classes",
     "catechumens": "Catechumens",
     "families": "Families",
-    "team": "Team",
+    "team": "People and access",
     "family_portal_invites": "Family portal invites",
     "content_library": "Library",
     "ai_hub": "Editorial assistance",
@@ -4298,7 +4390,10 @@ export const onboarding_en = {
       "manager_features": [],
       "helper": "You can change path later if needed.",
       "launch_question": "Let's set up your class workspace.",
-      "launch_helper": "This launch is for catechists. Parish and diocese paths come later.",
+      "launch_helper": "Start with your class. Later you can organize as a parish or ask the diocese for coverage.",
+      "diocese_title": "I represent a diocese",
+      "diocese_desc": "Umbrella license for several parishes. Talk to sales — there is no public checkout.",
+      "invite_hint": "Already invited to a parish? Join from the invite email. Do not create another space.",
       "eyebrow": "First steps"
     },
     "personal_setup": {
@@ -4473,7 +4568,11 @@ export const onboarding_en = {
       "personal_class_ready_title": "Your class is ready",
       "personal_class_ready_desc": "Class created with catechumens. You can take attendance and follow the journey.",
       "personal_class_empty_title": "Class created",
-      "personal_class_empty_desc": "The class exists. Add catechumens when you want attendance with real names."
+      "personal_class_empty_desc": "The class exists. Add catechumens when you want attendance with real names.",
+      "diocese_ready_title": "Talk to sales for the diocese license",
+      "diocese_ready_desc": "There is no public checkout for dioceses. The license covers parishes after the team assigns Diocese Plan in admin.",
+      "talk_sales": "Talk to sales on WhatsApp",
+      "diocese_account": "Diocese path"
     },
     "roles": {
       "coordinator": {
@@ -4544,7 +4643,9 @@ export const onboarding_en = {
       "personal_class_title": "First class",
       "personal_class_subtitle": "Give it a clear name — you can refine the rest later.",
       "personal_people_title": "Who is in this class",
-      "personal_people_subtitle": "Without people, attendance and follow-up stay empty."
+      "personal_people_subtitle": "Without people, attendance and follow-up stay empty.",
+      "diocese_title": "Diocese license",
+      "diocese_subtitle": "There is no public checkout. Talk to sales and, if you want, pick the diocese."
     },
     "back_clean": "Back",
     "change_diocese_clean": "Change",
@@ -4554,7 +4655,8 @@ export const onboarding_en = {
       "catechumens": "Catechumens",
       "done": "Done",
       "institution": "Parish",
-      "setup": "Setup"
+      "setup": "Setup",
+      "diocese": "Diocese"
     },
     "class_setup": {
       "eyebrow": "Class step",
@@ -4693,10 +4795,10 @@ export const parishes_en = {
     "past_due": "Past due",
     "canceled": "Canceled",
     "plan_free": "No subscription",
-    "plan_catechist_pro": "Catechist Pro",
-    "plan_catechist_ai": "Catechist AI",
-    "plan_parish": "Parish",
-    "plan_diocese": "Diocese",
+    "plan_catechist_pro": "Catechist Plan",
+    "plan_catechist_ai": "Catechist Plan",
+    "plan_parish": "Parish Plan",
+    "plan_diocese": "Diocese Plan",
     "breadcrumb_details": "Details",
     "parish_members_title": "Parish Members",
     "tab_data": "Data",
@@ -4914,8 +5016,8 @@ export const public_en = {
       "aria": "Open a conversation on the sales WhatsApp"
     },
     "pricing": {
-      "title": "One simple plan, at the service of your mission",
-      "subtitle": "Catechist Plan: R$ 9.90/month (or R$ 99/year) for up to 3 classes. Start with a 7-day free trial, no card.",
+      "title": "Three paths: catechist, parish, and diocese",
+      "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7-day free trial, no card.",
       "payment_card": "Card",
       "annual_savings": "Save 17% on annual",
       "monthly_tab": "Monthly",
@@ -4927,8 +5029,19 @@ export const public_en = {
       "cta_paid": "Start the 7 days",
       "most_popular": "Built for the catechist",
       "plan_desc": {
-        "single": "For you to care for your class — attendance, history, and calendar in one place, with more time left for people. Covers up to 3 classes if you walk with more than one."
+        "single": "For you to care for your class — attendance, history, and calendar in one place, with more time left for people. Covers up to 3 classes if you walk with more than one.",
+        "unlimited": "For the parish: unlimited classes, catechumens, and team in an institutional workspace."
       },
+      "diocese_name": "Diocese Plan",
+      "diocese_audience": "For the diocese — assisted sales",
+      "diocese_desc": "Umbrella license that covers the diocese's parishes. No public checkout.",
+      "diocese_price": "On request",
+      "diocese_cta": "Talk to sales about the diocese",
+      "diocese_features": [
+        "Coverage for the diocese's parishes",
+        "One contract, many parishes",
+        "License assigned by the sales team"
+      ],
       "faq": [
         {
           "q": "How can I try the platform before subscribing?",
@@ -4948,7 +5061,7 @@ export const public_en = {
         },
         {
           "q": "What if my catechesis grows?",
-          "a": "The plan covers up to 3 classes and 150 catechumens. If you ever need more, talk to us — your data and class history are preserved in any change."
+          "a": "The Catechist Plan covers up to 3 classes and 150 catechumens. If you need a team and more classes, organize as a parish (Parish Plan). If the diocese takes over, talk to sales — the diocese license covers the parishes. Your data and class history are preserved."
         },
         {
           "q": "Is my data secure?",
@@ -4994,11 +5107,13 @@ export const public_en = {
       "covered_by_diocese": "Covered by {{name}} license",
       "covered_by_license": "Covered by your license",
       "plans": {
-        "catechist_free": "Catechist Free",
-        "catechist_pro": "Catechist Pro",
-        "catechist_ai": "Catechist AI",
-        "parish": "Parish",
-        "diocese": "Diocese",
+        "catechist_free": "No subscription",
+        "single": "Catechist Plan",
+        "unlimited": "Parish Plan",
+        "catechist_pro": "Catechist Plan",
+        "catechist_ai": "Catechist Plan",
+        "parish": "Parish Plan",
+        "diocese": "Diocese Plan",
         "community": "Community"
       },
       "roles": {
@@ -5011,7 +5126,8 @@ export const public_en = {
         "PASTORAL_VIEWER": "Pastoral viewer",
         "CONTENT_REVIEWER": "Content reviewer",
         "GUARDIAN": "Guardian",
-        "CATECHUMEN": "Catechumen"
+        "CATECHUMEN": "Catechumen",
+        "PERSONAL_OWNER": "Owner"
       }
     },
     "upload_docs": {
@@ -5496,7 +5612,20 @@ export const topbar_en = {
     "search": "Open search",
     "clearSearch": "Clear search",
     "closeSearch": "Close search",
-    "user_menu": "Open user menu"
+    "user_menu": "Open user menu",
+    "kind": {
+      "personal": "Personal",
+      "parish": "Parish",
+      "diocese": "Diocese",
+      "community": "Community"
+    },
+    "plan": {
+      "personal": "{{plan}}",
+      "parish_license": "Parish license · {{plan}}",
+      "covered_by_diocese": "Covered by the diocese",
+      "covered_by_named": "Covered by {{name}}",
+      "free": "No subscription"
+    }
   } as const;
 
 export const tour_en = {

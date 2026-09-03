@@ -20,7 +20,18 @@ export const account_es = {
     "buy_credits": "Comprar Más Créditos",
     "plan_past_due": "El pago de tu plan {{plan}} está vencido. Actualiza los datos de pago de tu suscripción.",
     "plan_cancel_at_period_end": "Tu suscripción al plan {{plan}} ha sido cancelada, pero permanece activa hasta el final del período de facturación actual: {{date}}",
-    "plan_deleted": "Tu suscripción anterior ha sido cancelada y ya no está activa."
+    "plan_deleted": "Tu suscripción anterior ha sido cancelada y ya no está activa.",
+    "scopes_title": "Dos alcances de cobro",
+    "scopes_hint": "La suscripción personal y la licencia del espacio institucional son independientes. Cancelar una no cierra la otra.",
+    "personal_scope_title": "Suscripción personal",
+    "personal_scope_desc": "Cubre tu espacio Personal (Plan Catequista).",
+    "workspace_scope_title": "Licencia de este espacio",
+    "workspace_scope_desc": "Cubre el espacio de trabajo activo — parroquia, diócesis o comunidad.",
+    "workspace_kind": "Tipo",
+    "workspace_role": "Tu rol",
+    "workspace_plan": "Plan efectivo",
+    "manage_workspace_billing": "Gestionar cobro del espacio",
+    "no_active_workspace": "Ningún espacio activo"
   } as const;
 
 export const activities_es = {
@@ -266,6 +277,13 @@ export const admin_es = {
         "col_plan": "Plan",
         "col_owner": "Responsable",
         "col_members": "Miembros",
+        "col_type": "Tipo",
+        "col_covered_by": "Cubierta por",
+        "type_PERSONAL": "Personal",
+        "type_PARISH": "Parroquia",
+        "type_DIOCESE": "Diócesis",
+        "type_COMMUNITY": "Comunidad",
+        "covered_by": "Cubierta por {{name}}",
         "archived": "Archivada",
         "total": "Total de parroquias",
         "active": "Parroquias activas",
@@ -320,6 +338,13 @@ export const admin_es = {
         "status": "Estado",
         "ai_credits": "Créditos editoriales",
         "stripe_id": "ID de Stripe",
+        "workspaces": "Espacios",
+        "roles": "Roles",
+        "license": "Licencia",
+        "billing_timeline": "Línea de tiempo de facturación",
+        "no_billing_timeline": "Ningún evento de facturación.",
+        "personal_plan": "Plan personal",
+        "memberships": "Membresías",
         "parishes": "Parroquias ({{count}})",
         "no_parishes": "Ninguna parroquia.",
         "community_prefix": "Comunidad: {{name}} · ",
@@ -439,7 +464,11 @@ export const admin_es = {
       },
       "users": {
         "title": "Usuarios",
-        "subtitle": "Gestionar todos los usuarios de la plataforma."
+        "subtitle": "Gestionar todos los usuarios de la plataforma.",
+        "col_plan": "Plan personal",
+        "col_workspaces": "Espacios",
+        "col_roles": "Roles",
+        "no_workspaces": "Ningún espacio"
       },
       "licenses": {
         "title": "Licencias",
@@ -456,6 +485,7 @@ export const admin_es = {
         "open_owner": "Abrir responsable {{email}}",
         "extend_trial": "Extender prueba",
         "complimentary": "Plan de cortesía",
+        "assign_diocese": "Asignar Plan Diócesis",
         "cancel_license": "Cancelar licencia",
         "cancel_stripe": "Cancelar Stripe",
         "extend_title": "Extender prueba",
@@ -947,7 +977,7 @@ export const auth_es = {
       "Prepara el próximo encuentro con tranquilidad"
     ],
     "signup_plan_single": "Plan Catequista",
-    "signup_plan_unlimited": "Plan Ilimitado",
+    "signup_plan_unlimited": "Plan Parroquia",
     "signup_interval_monthly": "facturación mensual",
     "signup_interval_annual": "facturación anual",
     "signup_context_no_card": "7 días gratis, sin tarjeta",
@@ -1022,6 +1052,25 @@ export const billing_es = {
     "coordinator_responsible": "Coordinador responsable:",
     "contact_manager": "Por favor, contacte al responsable indicado para cualquier cambio o duda sobre el plan.",
     "your_personal_plan": "Tu plan personal",
+    "dual_scope_title": "Dos alcances independientes",
+    "dual_scope_hint": "La suscripción personal Catequista y la licencia de este espacio no se mezclan. Cancelar una no cierra la otra.",
+    "dual_scope_personal": "Personal",
+    "dual_scope_workspace": "Este espacio",
+    "migrate_to_parish_title": "Organizar como parroquia",
+    "migrate_to_parish_desc": "Crea un espacio institucional para equipo y grupos ilimitados. Tu espacio personal y la suscripción Catequista siguen existiendo hasta que las canceles en el portal.",
+    "migrate_to_parish_cta": "Organizar como parroquia",
+    "migrate_bring_classes": "Traer grupos y catecúmenos al nuevo espacio",
+    "migrate_bring_classes_hint": "Una copia queda en el espacio parroquial. El historial original permanece en el espacio personal.",
+    "migrate_parish_name": "Nombre de la parroquia",
+    "migrate_parish_city": "Ciudad",
+    "migrate_parish_state": "Estado",
+    "migrate_success": "Espacio parroquial creado. Suscríbete al Plan Parroquia en este workspace.",
+    "migrate_error": "No fue posible crear el espacio parroquial.",
+    "request_diocese_title": "Pedir cobertura de la diócesis",
+    "request_diocese_desc": "Cuando la diócesis tenga licencia activa, esta parroquia aparece como cubierta. Habla con ventas para vincularla y asignar el Plan Diócesis.",
+    "request_diocese_cta": "Hablar con ventas sobre cobertura diocesana",
+    "request_diocese_prefill": "Hola! Quisiera pedir cobertura de la diócesis para la parroquia {{name}} en Catequese Viva.",
+    "covered_by_named": "Cubierta por {{name}}",
     "usage_title": "Uso del plan",
     "classes": "Grupos",
     "catechumens": "Catecúmenos",
@@ -1147,7 +1196,7 @@ export const billing_es = {
     "subscribe_plan": "Suscribirse a {{plan}}",
     "recommended_plan_personal": "Para iniciar tu primera turma",
     "recommended_plan_institutional": "Para liberar tu equipo",
-    "plan_mismatch_institutional_cta": "Crear espacio parroquial",
+    "plan_mismatch_institutional_cta": "Organizar como parroquia",
     "upgrade_supporting_copy": "La mejora aparece justo cuando tu uso ya probó valor. Conservas lo que construiste y desbloqueas el siguiente paso sin rehacer trabajo.",
     "upgrade_journey_badge": "Ampliación del plan",
     "upgrade_plans_title": "Desbloquea el siguiente paso",
@@ -1758,8 +1807,15 @@ export const common_es = {
       "GUARDIAN": "Responsable familiar",
       "CATECHUMEN": "Catecúmeno",
       "CONTENT_REVIEWER": "Revisor",
-      "PASTORAL_VIEWER": "Pastoral",
+      "PASTORAL_VIEWER": "Visitante",
       "PERSONAL_OWNER": "Propietario"
+    },
+    "roles_desc": {
+      "PARISH_COORDINATOR": "Coordina la catequesis de este espacio: equipo, grupos, invitaciones y ajustes.",
+      "LEAD_CATECHIST": "Responsable del grupo: asistencia, encuentros e invitación de auxiliar o familia.",
+      "ASSISTANT_CATECHIST": "Ayuda en el grupo; las invitaciones son solo para la familia.",
+      "PASTORAL_VIEWER": "Consulta grupos e informes, sin editar.",
+      "GUARDIAN": "Acompaña a los catequizandos de la familia en el portal."
     },
     "membership_status": {
       "ACTIVE": "Activo",
@@ -2177,8 +2233,11 @@ export const common_es = {
         "viewer_hint": "Solo ves el equipo de los grupos y la comunidad que coordinas.",
         "invite_hint": "Elige la comunidad que esta persona coordinará. Los grupos específicos pueden definirse después en \"Definir ámbito\"."
       },
-      "title": "Equipo",
-      "subtitle": "{{members}} miembros activos · {{pending}} invitaciones pendientes",
+      "title": "Personas y accesos",
+      "subtitle": "{{members}} personas activas · {{pending}} invitaciones pendientes",
+      "matrix_title": "Qué puede hacer cada rol",
+      "personal_invite_hint": "En el espacio personal invitáis a un auxiliar de vuestro grupo — no es el equipo de la parroquia. La familia entra por las invitaciones de familia.",
+      "empty_cta": "Invitar a alguien",
       "invite_member": "Invitar miembro del equipo",
       "invite_sent": "Invitación enviada por correo.",
       "invite_saved": "Invitación guardada.",
@@ -3048,11 +3107,20 @@ export const landing_es = {
         {
           "id": "parroquia",
           "title": "Coordino la catequesis de la parroquia",
-          "desc": "En esta fase, Catequese Viva es para el catequista que cuida su propio grupo. Parroquias y diócesis llegan después.",
+          "desc": "Grupos, equipo y asistencia en un espacio institucional parroquial.",
           "href": "/#planos",
-          "cta": "Ver el plan del catequista",
-          "pill": "Parroquias más adelante",
-          "micro": "Hoy el foco eres tú y tu grupo. La coordinación llega después."
+          "cta": "Ver Plan Parroquia",
+          "pill": "Para la coordinación parroquial",
+          "micro": "Equipo y grupos ilimitados en el workspace de la parroquia."
+        },
+        {
+          "id": "diocesis",
+          "title": "Soy de la diócesis",
+          "desc": "Licencia que cubre las parroquias de la diócesis. Venta asistida con el equipo.",
+          "href": "/#planos",
+          "cta": "Hablar con ventas",
+          "pill": "Venta asistida",
+          "micro": "La diócesis asume la licencia; las parroquias quedan cubiertas."
         }
       ],
       "click_trigger": "Funciona en el celular · Hecho para la rutina de catequesis",
@@ -3188,8 +3256,8 @@ export const landing_es = {
       }
     ],
     "steps_cta": "Comenzar mi camino — 7 días gratis",
-    "pricing_title": "Un plan simple, al servicio de tu misión",
-    "pricing_subtitle": "R$ 9,90/mes para hasta 3 grupos. Empieza con 7 días de trial — sin tarjeta y sin cobro ahora.",
+    "pricing_title": "Tres caminos: catequista, parroquia y diócesis",
+    "pricing_subtitle": "Catequista R$ 9,90/mes. Parroquia desde R$ 99/mes. Diócesis con el equipo de ventas. 7 días de prueba en el Plan Catequista — sin tarjeta.",
     "plans": {
       "single": {
         "name": "Plan Catequista",
@@ -3201,6 +3269,29 @@ export const landing_es = {
           "Asistencia e historial en el celular",
           "Calendario de tu grupo",
           "Portal para las familias de tu grupo"
+        ]
+      },
+      "unlimited": {
+        "name": "Plan Parroquia",
+        "audience": "Para la coordinación parroquial",
+        "desc": "Grupos, catecúmenos y equipo ilimitados en el workspace parroquial.",
+        "price": "R$ 99",
+        "features": [
+          "Grupos y equipo ilimitados",
+          "Catecúmenos ilimitados",
+          "Espacio institucional de la parroquia",
+          "Comunicación con las familias"
+        ]
+      },
+      "diocese": {
+        "name": "Plan Diócesis",
+        "audience": "Para la diócesis — venta asistida",
+        "desc": "Licencia paraguas que cubre las parroquias. Sin checkout público.",
+        "price": "Consultar",
+        "features": [
+          "Cobertura de las parroquias de la diócesis",
+          "Licencia asignada por el equipo",
+          "Acompañamiento con ventas en WhatsApp"
         ]
       }
     },
@@ -3231,7 +3322,7 @@ export const landing_es = {
       },
       {
         "q": "¿Necesito a la parroquia para empezar?",
-        "a": "No. La cuenta es tuya y el grupo es tuyo: lo creas, lo organizas y lo usas sin depender de la coordinación. Parroquias y diócesis entran en una fase futura."
+        "a": "No. Puedes empezar en el espacio personal con el Plan Catequista. Cuando necesites equipo y más grupos, organízalo como parroquia. La diócesis entra por venta asistida y cubre las parroquias con licencia activa."
       },
       {
         "q": "¿Funciona en el celular?",
@@ -3481,7 +3572,8 @@ export const landing_es = {
     "faq_cta": "Comenzar mi camino — 7 días gratis",
     "faq_cta_helper": "Sin cobro ahora · úsalo en tu próximo encuentro",
     "price_cta_single": "Empezar mis 7 días con mi grupo",
-    "price_cta_unlimited": "Empezar trial de 7 días",
+    "price_cta_unlimited": "Empezar el Plan Parroquia",
+    "price_cta_diocese": "Hablar con ventas sobre la diócesis",
     "price_annual_equivalent": "Equivale a {{price}}/mes",
     "demo": {
       "badge": "Prueba sin crear cuenta",
@@ -4175,7 +4267,7 @@ export const navigation_es = {
     "classes": "Grupos",
     "catechumens": "Catecúmenos",
     "families": "Familias",
-    "team": "Equipo",
+    "team": "Personas y accesos",
     "family_portal_invites": "Invitaciones de familia",
     "content_library": "Biblioteca",
     "ai_hub": "Asistencia editorial",
@@ -4298,7 +4390,10 @@ export const onboarding_es = {
       "manager_features": [],
       "helper": "Puedes cambiar de camino después si lo necesitas.",
       "launch_question": "Vamos a preparar el espacio de tu grupo.",
-      "launch_helper": "En esta fase el acceso es para catequistas. Parroquia y diócesis vienen después.",
+      "launch_helper": "Empieza por tu grupo. Después puedes organizar como parroquia o pedir cobertura de la diócesis.",
+      "diocese_title": "Soy de la diócesis",
+      "diocese_desc": "Licencia paraguas para varias parroquias. Hable con ventas — no hay checkout público.",
+      "invite_hint": "¿Ya tiene invitación a una parroquia? Entre por el correo. No cree otro espacio.",
       "eyebrow": "Primeros pasos"
     },
     "personal_setup": {
@@ -4473,7 +4568,11 @@ export const onboarding_es = {
       "personal_class_ready_title": "Tu grupo está listo",
       "personal_class_ready_desc": "Grupo creado con catequizandos. Ya puedes registrar asistencia y seguir el camino.",
       "personal_class_empty_title": "Grupo creado",
-      "personal_class_empty_desc": "El grupo existe. Incluye catequizandos cuando quieras para usar la lista con nombres reales."
+      "personal_class_empty_desc": "El grupo existe. Incluye catequizandos cuando quieras para usar la lista con nombres reales.",
+      "diocese_ready_title": "Hable con ventas para la licencia diocesana",
+      "diocese_ready_desc": "No hay checkout público para diócesis. La licencia cubre las parroquias cuando el equipo asigne el Plan Diócesis en admin.",
+      "talk_sales": "Hablar con ventas en WhatsApp",
+      "diocese_account": "Camino de la diócesis"
     },
     "roles": {
       "coordinator": {
@@ -4544,7 +4643,9 @@ export const onboarding_es = {
       "personal_class_title": "Primer grupo",
       "personal_class_subtitle": "Pon un nombre claro — el resto lo ajustas cuando quieras.",
       "personal_people_title": "Quién forma parte del grupo",
-      "personal_people_subtitle": "Sin personas, la asistencia y el seguimiento quedan vacíos."
+      "personal_people_subtitle": "Sin personas, la asistencia y el seguimiento quedan vacíos.",
+      "diocese_title": "Licencia de la diócesis",
+      "diocese_subtitle": "No hay checkout público. Hable con ventas y, si quiere, elija la diócesis."
     },
     "back_clean": "Volver",
     "change_diocese_clean": "Cambiar",
@@ -4554,7 +4655,8 @@ export const onboarding_es = {
       "catechumens": "Catequizandos",
       "done": "Listo",
       "institution": "Parroquia",
-      "setup": "Organización"
+      "setup": "Organización",
+      "diocese": "Diócesis"
     },
     "class_setup": {
       "eyebrow": "Paso del grupo",
@@ -4693,10 +4795,10 @@ export const parishes_es = {
     "past_due": "Vencido",
     "canceled": "Cancelada",
     "plan_free": "Sin suscripción",
-    "plan_catechist_pro": "Catequista Pro",
-    "plan_catechist_ai": "Catequista editorial",
-    "plan_parish": "Parroquia",
-    "plan_diocese": "Diócesis",
+    "plan_catechist_pro": "Plan Catequista",
+    "plan_catechist_ai": "Plan Catequista",
+    "plan_parish": "Plan Parroquia",
+    "plan_diocese": "Plan Diócesis",
     "breadcrumb_details": "Detalles",
     "parish_members_title": "Miembros de la Parroquia",
     "tab_data": "Datos",
@@ -4914,8 +5016,8 @@ export const public_es = {
       "aria": "Abrir conversación en el WhatsApp de ventas"
     },
     "pricing": {
-      "title": "Un plan simple, al servicio de tu misión",
-      "subtitle": "Plan Catequista: R$ 9,90/mes (o R$ 99/año) para hasta 3 grupos. Empieza con 7 días de prueba gratis, sin tarjeta.",
+      "title": "Tres caminos: catequista, parroquia y diócesis",
+      "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis, sin tarjeta.",
       "payment_card": "Tarjeta",
       "annual_savings": "Ahorre 17% en anual",
       "monthly_tab": "Mensual",
@@ -4927,8 +5029,19 @@ export const public_es = {
       "cta_paid": "Empezar los 7 días",
       "most_popular": "Hecho para el catequista",
       "plan_desc": {
-        "single": "Para que cuides de tu grupo — asistencia, historial y calendario en el mismo lugar, con más tiempo para las personas. Cubre hasta 3 grupos si acompañas más de uno."
+        "single": "Para que cuides de tu grupo — asistencia, historial y calendario en el mismo lugar, con más tiempo para las personas. Cubre hasta 3 grupos si acompañas más de uno.",
+        "unlimited": "Para la parroquia: grupos, catecúmenos y equipo ilimitados en el espacio institucional."
       },
+      "diocese_name": "Plan Diócesis",
+      "diocese_audience": "Para la diócesis — venta asistida",
+      "diocese_desc": "Licencia paraguas que cubre las parroquias de la diócesis. Sin checkout público.",
+      "diocese_price": "A consulta",
+      "diocese_cta": "Hablar con ventas sobre la diócesis",
+      "diocese_features": [
+        "Cobertura de las parroquias de la diócesis",
+        "Un contrato, varias parroquias",
+        "La licencia la asigna el equipo"
+      ],
       "faq": [
         {
           "q": "¿Cómo conozco la plataforma antes de suscribirme?",
@@ -4948,7 +5061,7 @@ export const public_es = {
         },
         {
           "q": "¿Y si mi catequesis crece?",
-          "a": "El plan cubre hasta 3 grupos y 150 catecúmenos. Si algún día necesitas más, habla con nosotros — tus datos y el historial del grupo se preservan en cualquier cambio."
+          "a": "El Plan Catequista cubre hasta 3 grupos y 150 catecúmenos. Si necesitas equipo y más grupos, organízate como parroquia (Plan Parroquia). Si la diócesis asume, habla con ventas — la licencia diocesana cubre las parroquias. Tus datos y el historial se preservan."
         },
         {
           "q": "¿Los datos están seguros?",
@@ -4994,11 +5107,13 @@ export const public_es = {
       "covered_by_diocese": "Cubierta por la licencia de {{name}}",
       "covered_by_license": "Cubierta por su licencia",
       "plans": {
-        "catechist_free": "Catequista Gratis",
-        "catechist_pro": "Catequista Pro",
-        "catechist_ai": "Catequista editorial",
-        "parish": "Parroquia",
-        "diocese": "Diócesis",
+        "catechist_free": "Sin suscripción",
+        "single": "Plan Catequista",
+        "unlimited": "Plan Parroquia",
+        "catechist_pro": "Plan Catequista",
+        "catechist_ai": "Plan Catequista",
+        "parish": "Plan Parroquia",
+        "diocese": "Plan Diócesis",
         "community": "Comunidad"
       },
       "roles": {
@@ -5011,7 +5126,8 @@ export const public_es = {
         "PASTORAL_VIEWER": "Visitante pastoral",
         "CONTENT_REVIEWER": "Revisor de contenido",
         "GUARDIAN": "Responsable",
-        "CATECHUMEN": "Catecúmeno"
+        "CATECHUMEN": "Catecúmeno",
+        "PERSONAL_OWNER": "Propietario"
       }
     },
     "upload_docs": {
@@ -5496,7 +5612,20 @@ export const topbar_es = {
     "search": "Abrir búsqueda",
     "clearSearch": "Limpiar búsqueda",
     "closeSearch": "Cerrar búsqueda",
-    "user_menu": "Abrir menú de usuario"
+    "user_menu": "Abrir menú de usuario",
+    "kind": {
+      "personal": "Personal",
+      "parish": "Parroquia",
+      "diocese": "Diócesis",
+      "community": "Comunidad"
+    },
+    "plan": {
+      "personal": "{{plan}}",
+      "parish_license": "Licencia parroquial · {{plan}}",
+      "covered_by_diocese": "Cubierta por la diócesis",
+      "covered_by_named": "Cubierta por {{name}}",
+      "free": "Sin suscripción"
+    }
   } as const;
 
 export const tour_es = {

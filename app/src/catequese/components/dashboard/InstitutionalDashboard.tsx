@@ -42,6 +42,9 @@ import {
   Minus,
 } from "lucide-react";
 import { Alert } from "../../../client/components/ui/alert";
+import { EmptyState } from "../../../client/components/EmptyState";
+import { Button } from "../../../client/components/ui/button";
+import { Link } from "react-router";
 
 const InstitutionalChartsPanel = lazy(() =>
   import("./InstitutionalChartsPanel").then((m) => ({
@@ -490,8 +493,21 @@ export function InstitutionalDashboard() {
 
       <AlertBanner alerts={alerts} />
 
-      {/* KPI Grid by Domain */}
-      {overview && (
+      {overview &&
+      Number(overview.classes?.[0]?.value ?? 0) === 0 &&
+      Number(overview.people?.[0]?.value ?? 0) === 0 ? (
+        <EmptyState
+          icon={BookOpen}
+          title={t("no_classes_yet")}
+          description={t("no_classes_description")}
+        >
+          <Button asChild className="mt-4 h-11 min-h-11 rounded-sm">
+            <Link to="/app/classes/new">
+              {t("create_class")}
+            </Link>
+          </Button>
+        </EmptyState>
+      ) : overview ? (
         <div className="space-y-6">
           <DomainSection
             title={t("domain_people")}

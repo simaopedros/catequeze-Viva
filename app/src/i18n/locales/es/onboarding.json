@@ -45,7 +45,10 @@
     "manager_features": [],
     "helper": "Puedes cambiar de camino después si lo necesitas.",
     "launch_question": "Vamos a preparar el espacio de tu grupo.",
-    "launch_helper": "En esta fase el acceso es para catequistas. Parroquia y diócesis vienen después.",
+    "launch_helper": "Empieza por tu grupo. Después puedes organizar como parroquia o pedir cobertura de la diócesis.",
+    "diocese_title": "Soy de la diócesis",
+    "diocese_desc": "Licencia paraguas para varias parroquias. Hable con ventas — no hay checkout público.",
+    "invite_hint": "¿Ya tiene invitación a una parroquia? Entre por el correo. No cree otro espacio.",
     "eyebrow": "Primeros pasos"
   },
   "personal_setup": {
@@ -220,7 +223,11 @@
     "personal_class_ready_title": "Tu grupo está listo",
     "personal_class_ready_desc": "Grupo creado con catequizandos. Ya puedes registrar asistencia y seguir el camino.",
     "personal_class_empty_title": "Grupo creado",
-    "personal_class_empty_desc": "El grupo existe. Incluye catequizandos cuando quieras para usar la lista con nombres reales."
+    "personal_class_empty_desc": "El grupo existe. Incluye catequizandos cuando quieras para usar la lista con nombres reales.",
+    "diocese_ready_title": "Hable con ventas para la licencia diocesana",
+    "diocese_ready_desc": "No hay checkout público para diócesis. La licencia cubre las parroquias cuando el equipo asigne el Plan Diócesis en admin.",
+    "talk_sales": "Hablar con ventas en WhatsApp",
+    "diocese_account": "Camino de la diócesis"
   },
   "roles": {
     "coordinator": {
@@ -291,7 +298,9 @@
     "personal_class_title": "Primer grupo",
     "personal_class_subtitle": "Pon un nombre claro — el resto lo ajustas cuando quieras.",
     "personal_people_title": "Quién forma parte del grupo",
-    "personal_people_subtitle": "Sin personas, la asistencia y el seguimiento quedan vacíos."
+    "personal_people_subtitle": "Sin personas, la asistencia y el seguimiento quedan vacíos.",
+    "diocese_title": "Licencia de la diócesis",
+    "diocese_subtitle": "No hay checkout público. Hable con ventas y, si quiere, elija la diócesis."
   },
   "back_clean": "Volver",
   "change_diocese_clean": "Cambiar",
@@ -301,7 +310,8 @@
     "catechumens": "Catequizandos",
     "done": "Listo",
     "institution": "Parroquia",
-    "setup": "Organización"
+    "setup": "Organización",
+    "diocese": "Diócesis"
   },
   "class_setup": {
     "eyebrow": "Paso del grupo",
