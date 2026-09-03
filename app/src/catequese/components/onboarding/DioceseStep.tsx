@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "wasp/client/auth";
 import { Button } from "../../../client/components/ui/button";
 import { Input } from "../../../client/components/ui/input";
 import { Label } from "../../../client/components/ui/label";
@@ -17,6 +18,7 @@ import {
   AppDisplayTitle,
   AppGoldRule,
 } from "../../../client/components/brand/AppChrome";
+import { SalesWhatsAppCta } from "../../../client/components/SalesWhatsAppCta";
 
 export interface DioceseSelection {
   id?: string;
@@ -41,9 +43,12 @@ export function DioceseStep({
 }: DioceseStepProps) {
   const { t } = useTranslation("onboarding");
   const { t: tc } = useTranslation("common");
+  const { data: user } = useAuth();
+  const isPlatformAdmin = Boolean(user?.isAdmin);
   const [searchQuery, setSearchQuery] = useState("");
   const [stateFilter, setStateFilter] = useState("");
   const [showCreate, setShowCreate] = useState(false);
+  const [showNotFoundHelp, setShowNotFoundHelp] = useState(false);
   const [newName, setNewName] = useState("");
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState("");
@@ -131,7 +136,18 @@ export function DioceseStep({
         setError(t("diocese.create_error"));
       }
     } catch (e: any) {
-      setError(e.message || t("diocese.create_error_generic"));
+      const message = e.message || t("diocese.create_error_generic");
+      // Non-admins cannot create dioceses — surface the consult/skip path instead.
+      if (
+        !isPlatformAdmin ||
+        /administradores da plataforma|platform administrators/i.test(message)
+      ) {
+        setShowCreate(false);
+        setShowNotFoundHelp(true);
+        setError("");
+      } else {
+        setError(message);
+      }
     } finally {
       setCreating(false);
     }
@@ -288,12 +304,57 @@ export function DioceseStep({
           )}
       </div>
 
-      {!showCreate ? (
+      {!isPlatformAdmin ? (
+        !showNotFoundHelp ? (
+          <button
+            type="button"
+            onClick={() => setShowNotFoundHelp(true)}
+            className="w-full border border-dashed border-border/80 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors rounded-sm hover:border-brand-ink/40 hover:text-brand-ink"
+          >
+            {t("diocese.not_found_link")}
+          </button>
+        ) : (
+          <div className="space-y-3 border border-border/70 p-4 rounded-sm">
+            <p className="text-sm font-semibold tracking-tight text-brand-ink">
+              {t("diocese.not_found_title")}
+            </p>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              {t("diocese.not_found_body")}
+            </p>
+            <SalesWhatsAppCta
+              placement="onboarding_diocese"
+              variant="card"
+              className="border-0 bg-muted/30 px-4 py-4"
+              question={t("diocese.whatsapp_question")}
+              helper={t("diocese.whatsapp_helper")}
+              cta={t("diocese.whatsapp_cta")}
+              prefill={t("diocese.whatsapp_prefill")}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 w-full rounded-md"
+              onClick={onSkip}
+            >
+              {t("diocese.continue_without")}
+              <ArrowRight className="ml-1 h-4 w-4" />
+            </Button>
+            <button
+              type="button"
+              onClick={() => setShowNotFoundHelp(false)}
+              className="w-full py-1 text-center text-xs text-muted-foreground hover:text-brand-ink"
+            >
+              {tc("cancel")}
+            </button>
+          </div>
+        )
+      ) : !showCreate ? (
         <button
           type="button"
           onClick={() => {
             setShowCreate(true);
             setNewName(searchQuery);
+            setError("");
           }}
           className="w-full border border-dashed border-border/80 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors rounded-sm hover:border-brand-ink/40 hover:text-brand-ink"
         >
