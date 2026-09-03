@@ -22,6 +22,9 @@ export const setComplimentaryPlan = vi.fn();
 export const cancelTenantLicense = vi.fn();
 export const cancelUserSubscriptionImmediate = vi.fn();
 
+export const searchDiocesesForOnboarding = vi.fn();
+export const createDiocese = vi.fn();
+
 export const useQuery = vi.fn((_query?: unknown) => ({
   data: undefined,
   isLoading: false,
