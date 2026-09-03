@@ -1157,7 +1157,7 @@ action publishTemplate {
 //#region Catequese Viva - Reports
 query getReportsOverview {
   fn: import { getReportsOverview } from "@src/server/operations/reportOperations",
-  entities: [CatechesisClass, Meeting, AttendanceRecord, Membership]
+  entities: [CatechesisClass, Meeting, AttendanceRecord, Membership, Parish, ClassCatechist]
 }
 
 query getClassPastoralReport {

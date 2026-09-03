@@ -1,24 +1,32 @@
 /**
- * Regression: createParish / onboarding billing look up context.entities.User.
- * Wasp only injects entities listed in main.wasp — missing User caused production 500s.
+ * Regression: Wasp only injects entities listed in main.wasp.
+ * Missing User caused onboarding 500s; missing Parish caused Relatórios 500s.
  */
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-function entitiesForAction(waspSource: string, actionName: string): string[] {
+function entitiesForOperation(
+  waspSource: string,
+  kind: 'action' | 'query',
+  name: string,
+): string[] {
   const re = new RegExp(
-    `action\\s+${actionName}\\s*\\{[\\s\\S]*?entities:\\s*\\[([^\\]]+)\\]`,
+    `${kind}\\s+${name}\\s*\\{[\\s\\S]*?entities:\\s*\\[([^\\]]+)\\]`,
     'm',
   );
   const match = waspSource.match(re);
   if (!match) {
-    throw new Error(`Action ${actionName} not found in main.wasp`);
+    throw new Error(`${kind} ${name} not found in main.wasp`);
   }
   return match[1]
     .split(',')
     .map((part) => part.replace(/\/\/.*$/gm, '').trim())
     .filter(Boolean);
+}
+
+function entitiesForAction(waspSource: string, actionName: string): string[] {
+  return entitiesForOperation(waspSource, 'action', actionName);
 }
 
 describe('Wasp entities for parish onboarding actions', () => {
@@ -54,5 +62,17 @@ describe('Wasp entities for parish onboarding actions', () => {
     );
     expect(entities).toContain('User');
     expect(entities).toContain('TenantBilling');
+  });
+
+  it('getReportsOverview declares Parish and ClassCatechist for workspace access', () => {
+    const entities = entitiesForOperation(
+      waspSource,
+      'query',
+      'getReportsOverview',
+    );
+    expect(entities).toContain('Parish');
+    expect(entities).toContain('ClassCatechist');
+    expect(entities).toContain('Membership');
+    expect(entities).toContain('CatechesisClass');
   });
 });

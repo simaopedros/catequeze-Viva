@@ -38,7 +38,8 @@ export async function resolveUserScope(context: any): Promise<ResolvedScope> {
 
   let personalWorkspaceId: string | null = null;
   if (!isAdmin) {
-    const personal = await context.entities.Parish.findFirst({
+    const parish = await entityDelegate(context, 'Parish');
+    const personal = await parish.findFirst({
       where: { ownerId: context.user.id, type: 'PERSONAL' },
       select: { id: true },
     });
@@ -120,9 +121,9 @@ function getWorkspaceCache(context: any): Map<string, WorkspaceAccess> {
  * Roles from other workspaces are ignored — never combined.
  * Membership grants entry; for catechists, ClassCatechist further scopes data.
  *
- * Wasp operations that call this must declare Parish, Membership and
- * ClassCatechist in their `entities` list (`ClassCatechist` is required for
- * LEAD_CATECHIST / ASSISTANT_CATECHIST).
+ * Wasp operations that call this should declare Parish, Membership and
+ * ClassCatechist in their `entities` list. Missing delegates fall back to
+ * the shared Prisma client so a forgotten entity does not 500 Relatórios.
  */
 export async function resolveWorkspaceAccess(
   context: any,
@@ -162,7 +163,8 @@ export async function resolveWorkspaceAccess(
   }
 
   // Personal workspace owner
-  const personal = await context.entities.Parish.findFirst({
+  const parish = await entityDelegate(context, 'Parish');
+  const personal = await parish.findFirst({
     where: { id, ownerId: context.user.id, type: 'PERSONAL' },
     select: { id: true },
   });
@@ -236,14 +238,7 @@ export async function resolveWorkspaceAccess(
     allowedClassIds = 'ALL';
   } else if (isCatechist(role)) {
     // Class-level isolation: only classes assigned via ClassCatechist in this parish.
-    // Callers must declare ClassCatechist in the Wasp operation entities list.
-    const classCatechist = context.entities.ClassCatechist;
-    if (!classCatechist) {
-      throw new HttpError(
-        500,
-        'ClassCatechist em falta nesta operação. Declare a entidade no main.wasp.',
-      );
-    }
+    const classCatechist = await entityDelegate(context, 'ClassCatechist');
     const links = await classCatechist.findMany({
       where: {
         userId: context.user.id,
@@ -327,12 +322,13 @@ async function resolveCommunityCoordinatorScope(
 
 /**
  * Wasp only exposes entities declared on the operation. Scope resolution needs
- * ClassCatechist / CatechesisClass even in operations that never declared them,
- * so fall back to the shared Prisma client when the delegate is absent.
+ * Parish / ClassCatechist / CatechesisClass even in operations that never
+ * declared them, so fall back to the shared Prisma client when the delegate
+ * is absent. Missing Parish previously 500'd Relatórios for coordinators.
  */
 async function entityDelegate(
   context: any,
-  name: 'ClassCatechist' | 'CatechesisClass',
+  name: 'Parish' | 'ClassCatechist' | 'CatechesisClass',
 ): Promise<any> {
   const fromContext = context.entities?.[name];
   if (fromContext) return fromContext;

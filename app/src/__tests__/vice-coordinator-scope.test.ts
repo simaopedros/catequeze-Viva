@@ -15,6 +15,17 @@ vi.mock('wasp/server', () => ({
       this.statusCode = statusCode;
     }
   },
+  prisma: {
+    parish: {
+      findFirst: async () => null,
+    },
+    classCatechist: {
+      findMany: async () => [],
+    },
+    catechesisClass: {
+      findMany: async () => [],
+    },
+  },
 }));
 
 import {
@@ -225,6 +236,17 @@ describe('COMMUNITY_COORDINATOR scope resolution', () => {
 });
 
 describe('other roles are unchanged', () => {
+  it('does not 500 when Parish is omitted from the Wasp operation context', async () => {
+    const ctx = makeContext({
+      userId: 'coord',
+      memberships: [membership('coord', 'PARISH_COORDINATOR')],
+    });
+    delete (ctx.entities as { Parish?: unknown }).Parish;
+    const access = await resolveWorkspaceAccess(ctx, PARISH);
+    expect(access?.role).toBe('PARISH_COORDINATOR');
+    expect(access?.allowedClassIds).toBe('ALL');
+  });
+
   it('PARISH_COORDINATOR keeps whole-parish access even with a communityId on the membership', async () => {
     const ctx = makeContext({
       userId: 'coord',
