@@ -263,12 +263,23 @@ export function PlanEditorDialog({
 
           <div className="flex items-center justify-between rounded-sm border border-border/70 px-3 py-2">
             <Label>{t("pages.plans.field_active")}</Label>
-            <Switch checked={values.isActive} onCheckedChange={(checked) => update("isActive", checked)} />
+            <Switch
+              checked={values.isActive}
+              onCheckedChange={(checked) => {
+                update("isActive", checked);
+                if (checked && !values.isPublic) {
+                  update("isPublic", true);
+                }
+              }}
+            />
           </div>
           <div className="flex items-center justify-between rounded-sm border border-border/70 px-3 py-2">
             <Label>{t("pages.plans.field_public")}</Label>
             <Switch checked={values.isPublic} onCheckedChange={(checked) => update("isPublic", checked)} />
           </div>
+          <p className="text-xs text-muted-foreground sm:col-span-2">
+            {t("pages.plans.field_visibility_help")}
+          </p>
           <div className="flex items-center justify-between rounded-sm border border-border/70 px-3 py-2 sm:col-span-2">
             <Label>{t("pages.plans.field_highlight")}</Label>
             <Switch checked={values.highlight} onCheckedChange={(checked) => update("highlight", checked)} />

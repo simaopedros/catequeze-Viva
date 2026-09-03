@@ -201,8 +201,8 @@ export const admin_en = {
         "field_level": "Level",
         "field_credits": "Credits",
         "field_description": "Description",
-        "field_active": "Sellable",
-        "field_public": "Visible on /pricing and landing",
+        "field_active": "Sellable (required for checkout)",
+        "field_public": "Public on /pricing and landing",
         "field_highlight": "Highlight",
         "field_features": "Features (one per line)",
         "field_name_en": "English name and features",
@@ -229,7 +229,8 @@ export const admin_en = {
         "limit_reduction_warning": "{{count}} subscriber(s) would be over the new limit. Confirm to continue.",
         "confirm_reduce": "Confirm reduction",
         "move_up": "Move up",
-        "move_down": "Move down"
+        "move_down": "Move down",
+        "field_visibility_help": "To show on /pricing, landing, and billing, the plan must be both Sellable and Public. Archiving turns both off."
       },
       "system": {
         "title": "System",

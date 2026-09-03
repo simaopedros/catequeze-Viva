@@ -1,3 +1,4 @@
+import { lazy } from "react";
 import { FaqSection } from "./components/FaqSection";
 import { HeroSection } from "./components/HeroSection";
 import { LandingShell } from "./components/LandingShell";
@@ -17,6 +18,11 @@ const loadProof = () =>
   import("./components/ProofSection").then((m) => ({
     default: m.ProofSection,
   }));
+const PricingPreviewSection = lazy(() =>
+  import("./components/PricingPreviewSection").then((m) => ({
+    default: m.PricingPreviewSection,
+  })),
+);
 const loadCta = () =>
   import("./components/CtaSection").then((m) => ({
     default: function Cta() {
@@ -25,9 +31,9 @@ const loadCta = () =>
   }));
 
 /**
- * Main landing: promise → value → proof → CTA.
- * The price lives only on /pricing (single Plano Catequista card);
- * the home sells the trial, not the number.
+ * Main landing: promise → value → proof → pricing → CTA.
+ * Plan cards come from the live public catalog (Admin isPublic + isActive),
+ * same source as /pricing and ads landings.
  * Below-fold sections mount near viewport with independent Suspense boundaries.
  */
 export default function LandingPage() {
@@ -37,6 +43,9 @@ export default function LandingPage() {
       <LazySection loader={loadOutcomes} />
       <LazySection loader={loadSteps} />
       <LazySection loader={loadProof} />
+      <LazySection>
+        <PricingPreviewSection ns="landing" />
+      </LazySection>
       <FaqSection />
       <LazySection loader={loadCta} />
     </LandingShell>

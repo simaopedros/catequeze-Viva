@@ -271,7 +271,15 @@ export default function PricingPage() {
         </section>
 
         <section className="max-w-4xl mx-auto px-4 pb-20">
-          <div className="max-w-lg mx-auto">{pricingPlans.map(renderCard)}</div>
+          <div
+            className={
+              pricingPlans.length < 2
+                ? "max-w-lg mx-auto"
+                : "grid gap-4 sm:grid-cols-2"
+            }
+          >
+            {pricingPlans.map(renderCard)}
+          </div>
         </section>
 
         <section className="bg-muted/30 border-t">
