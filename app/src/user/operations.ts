@@ -61,7 +61,7 @@ export const updateIsUserAdminById: UpdateIsUserAdminById<
 };
 
 type GetPaginatedUsersOutput = {
-  users: Pick<
+  users: (Pick<
     User,
     | "id"
     | "email"
@@ -70,10 +70,19 @@ type GetPaginatedUsersOutput = {
     | "lastName"
     | "createdAt"
     | "subscriptionStatus"
+    | "subscriptionPlan"
     | "paymentProcessorUserId"
     | "isAdmin"
     | "suspendedAt"
-  >[];
+  > & {
+    workspaces: {
+      id: string;
+      name: string;
+      type: string;
+      role: string;
+      status: string;
+    }[];
+  })[];
   totalPages: number;
 };
 
@@ -161,6 +170,7 @@ export const getPaginatedUsers: GetPaginatedUsers<
       createdAt: true,
       isAdmin: true,
       subscriptionStatus: true,
+      subscriptionPlan: true,
       paymentProcessorUserId: true,
       suspendedAt: true,
     },
@@ -175,8 +185,50 @@ export const getPaginatedUsers: GetPaginatedUsers<
   ]);
   const totalPages = Math.ceil(totalUsers / pageSize);
 
+  const userIds = pageOfUsers.map((u: { id: string }) => u.id);
+  const memberships =
+    userIds.length === 0
+      ? []
+      : await prisma.membership.findMany({
+          where: { userId: { in: userIds } },
+          select: {
+            userId: true,
+            role: true,
+            status: true,
+            parish: { select: { id: true, name: true, type: true } },
+          },
+          orderBy: { createdAt: "desc" },
+        });
+
+  const workspacesByUser = new Map<
+    string,
+    {
+      id: string;
+      name: string;
+      type: string;
+      role: string;
+      status: string;
+    }[]
+  >();
+  for (const row of memberships) {
+    const list = workspacesByUser.get(row.userId) ?? [];
+    if (row.parish) {
+      list.push({
+        id: row.parish.id,
+        name: row.parish.name,
+        type: row.parish.type,
+        role: row.role,
+        status: row.status,
+      });
+    }
+    workspacesByUser.set(row.userId, list);
+  }
+
   return {
-    users: pageOfUsers,
+    users: pageOfUsers.map((user: any) => ({
+      ...user,
+      workspaces: workspacesByUser.get(user.id) ?? [],
+    })),
     totalPages,
   };
 };

@@ -105,55 +105,91 @@ const UsersTable = () => {
           )}
         </div>
 
-        <div className="grid grid-cols-7 border-t-2 bg-muted/20 px-4 py-3 md:px-6">
-          <div className="col-span-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            {t("email")}
-          </div>
-          <div className="col-span-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            {t("name")}
-          </div>
-          <div className="col-span-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            {t("admin")}
-          </div>
-          <div className="col-span-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            {t("created_at")}
-          </div>
-          <div className="col-span-1 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            {t("columns.actions")}
-          </div>
-        </div>
-
-        {isLoading && <LoadingSpinner />}
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="border-t-2 bg-muted/20">
+            <tr>
+              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {t("email")}
+              </th>
+              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {t("name")}
+              </th>
+              <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:table-cell">
+                {t("pages.users.col_plan")}
+              </th>
+              <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground xl:table-cell">
+                {t("pages.users.col_workspaces")}
+              </th>
+              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {t("admin")}
+              </th>
+              <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground md:table-cell">
+                {t("created_at")}
+              </th>
+              <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {t("columns.actions")}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+        {isLoading && (
+          <tr>
+            <td colSpan={7} className="p-6">
+              <LoadingSpinner />
+            </td>
+          </tr>
+        )}
         {data?.users?.length === 0 && (
-          <div className="p-8 text-center text-sm text-muted-foreground">
-            {t("user_not_found")}
-          </div>
+          <tr>
+            <td colSpan={7} className="p-8 text-center text-sm text-muted-foreground">
+              {t("user_not_found")}
+            </td>
+          </tr>
         )}
         {data?.users?.map((user: any) => (
-          <div
-            key={user.id}
-            className="py-3 grid grid-cols-7 gap-4 px-4 md:px-6 border-t"
-          >
-            <div className="col-span-2 flex items-center gap-2 truncate text-sm font-semibold tracking-tight text-[#071A2D]">
-              <span className="truncate">{user.email || "—"}</span>
-              {user.suspendedAt && (
-                <span className="shrink-0 rounded-sm bg-destructive/10 px-1.5 py-0.5 text-[10px] font-medium text-destructive">
-                  {t("pages.user.suspended")}
-                </span>
-              )}
-            </div>
-            <div className="col-span-2 flex items-center text-sm text-muted-foreground truncate">
+          <tr key={user.id} className="border-t">
+            <td className="px-4 py-3">
+              <div className="flex items-center gap-2 truncate text-sm font-semibold tracking-tight text-[#071A2D]">
+                <span className="truncate">{user.email || "—"}</span>
+                {user.suspendedAt && (
+                  <span className="shrink-0 rounded-sm bg-destructive/10 px-1.5 py-0.5 text-[10px] font-medium text-destructive">
+                    {t("pages.user.suspended")}
+                  </span>
+                )}
+              </div>
+            </td>
+            <td className="px-4 py-3 text-sm text-muted-foreground truncate">
               {user.firstName
                 ? `${user.firstName} ${user.lastName || ""}`
                 : "—"}
-            </div>
-            <div className="col-span-1 flex items-center">
+            </td>
+            <td className="hidden px-4 py-3 text-xs text-[#071A2D] lg:table-cell">
+              {user.subscriptionPlan || "—"}
+              {user.subscriptionStatus ? (
+                <span className="ml-1 text-muted-foreground">
+                  · {user.subscriptionStatus}
+                </span>
+              ) : null}
+            </td>
+            <td className="hidden px-4 py-3 text-xs text-muted-foreground xl:table-cell">
+              {(user.workspaces || []).length === 0
+                ? t("pages.users.no_workspaces")
+                : (user.workspaces as any[])
+                    .slice(0, 3)
+                    .map(
+                      (w) =>
+                        `${w.name} (${w.role}${w.type ? ` · ${w.type}` : ""})`,
+                    )
+                    .join(", ")}
+            </td>
+            <td className="px-4 py-3">
               <AdminSwitch {...user} />
-            </div>
-            <div className="col-span-1 flex items-center text-xs text-muted-foreground">
+            </td>
+            <td className="hidden px-4 py-3 text-xs text-muted-foreground md:table-cell">
               {user.createdAt ? formatDate(user.createdAt, currentLocale) : "—"}
-            </div>
-            <div className="col-span-1 flex items-center justify-end">
+            </td>
+            <td className="px-4 py-3 text-right">
               <Button
                 variant="ghost"
                 size="sm"
@@ -162,9 +198,12 @@ const UsersTable = () => {
               >
                 {t("details")}
               </Button>
-            </div>
-          </div>
+            </td>
+          </tr>
         ))}
+          </tbody>
+        </table>
+        </div>
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
-import Logo from "../../client/static/logo.webp";
+import { BrandLockup } from "../../client/components/brand/Brand";
 import { cn } from "../../client/utils";
 import { SOCIAL_FEATURES_ENABLED } from "../../shared/socialFeatures";
 
@@ -85,8 +85,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       )}
     >
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
-        <NavLink to="/">
-          <img src={Logo} alt="Logo" width={50} />
+        <NavLink to="/" className="min-w-0">
+          <BrandLockup compact hideBadge className="max-w-full" />
         </NavLink>
         <button
           ref={trigger}

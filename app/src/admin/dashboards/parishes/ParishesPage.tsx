@@ -106,6 +106,9 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                   <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {t("pages.parishes.col_name")}
                   </th>
+                  <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground md:table-cell">
+                    {t("pages.parishes.col_type")}
+                  </th>
                   <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:table-cell">
                     {t("pages.parishes.col_diocese")}
                   </th>
@@ -151,6 +154,18 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                           )}
                         </div>
                       </div>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-muted-foreground hidden md:table-cell">
+                      {t(`pages.parishes.type_${p.type || "PARISH"}`, {
+                        defaultValue: p.type || "PARISH",
+                      })}
+                      {p.coveredByName ? (
+                        <span className="mt-0.5 block text-[11px] text-brand-ink">
+                          {t("pages.parishes.covered_by", {
+                            name: p.coveredByName,
+                          })}
+                        </span>
+                      ) : null}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
                       <span className="flex items-center gap-1">

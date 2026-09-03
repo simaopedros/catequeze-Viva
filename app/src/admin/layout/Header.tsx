@@ -2,18 +2,20 @@ import { type AuthUser } from "wasp/auth";
 import { cn } from "../../client/utils";
 import { UserDropdown } from "../../user/UserDropdown";
 import MessageButton from "../dashboards/messages/MessageButton";
+import { BrandLockup } from "../../client/components/brand/Brand";
+import { AppEyebrow } from "../../client/components/brand/AppChrome";
+import { useTranslation } from "react-i18next";
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
   user: AuthUser;
 }) => {
+  const { t } = useTranslation("admin");
   return (
     <header className="sticky top-0 z-10 flex w-full border-b border-border/70 bg-white">
-      <div className="flex grow items-center justify-between px-4 py-3 sm:justify-end sm:gap-5">
-        <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
-          {/* <!-- Hamburger Toggle BTN --> */}
-
+      <div className="flex grow items-center justify-between px-4 py-3 sm:gap-5">
+        <div className="flex items-center gap-3">
           <button
             aria-controls="sidebar"
             onClick={(e) => {
@@ -69,20 +71,15 @@ const Header = (props: {
               </span>
             </span>
           </button>
-
-          {/* <!-- Hamburger Toggle BTN --> */}
+          <BrandLockup compact hideBadge className="lg:hidden" />
+          <div className="hidden lg:block">
+            <AppEyebrow>{t("pages.admin")}</AppEyebrow>
+          </div>
         </div>
 
-        <ul className="2xsm:gap-4 flex items-center gap-2">
-          {/* <!-- Chat Notification Area --> */}
+        <div className="flex items-center gap-3">
           <MessageButton />
-          {/* <!-- Chat Notification Area --> */}
-        </ul>
-
-        <div className="2xsm:gap-7 flex items-center gap-3">
-          {/* <!-- User Area --> */}
           <UserDropdown user={props.user} />
-          {/* <!-- User Area --> */}
         </div>
       </div>
     </header>
