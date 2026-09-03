@@ -26,6 +26,7 @@ import {
   enqueueProductBroadcast,
 } from "../server/email";
 import { fromForStream } from "../server/email/config";
+import { listUnsubscribeHeaders } from "../server/email/headers";
 import { suppressEmail } from "../server/email/suppression";
 import { setEmailPreference } from "../server/email/preferences";
 import { emailWebhookHandler } from "../server/api/emailWebhook";
@@ -166,6 +167,34 @@ describe("broadcasts", () => {
     });
     expect(result).toEqual({ skipped: "opted_out" });
     expect(getFakeBroadcasts()).toHaveLength(0);
+  });
+});
+
+describe("list-unsubscribe headers", () => {
+  it("returns only string values so Wasp tsc accepts Record<string, string>", () => {
+    const transactional = listUnsubscribeHeaders(
+      "tok",
+      EMAIL_MESSAGE.AUTH_VERIFY,
+    );
+    expect(transactional).toEqual({});
+    expect(
+      Object.values(transactional).every((value) => typeof value === "string"),
+    ).toBe(true);
+
+    const pastoral = listUnsubscribeHeaders(
+      "tok",
+      EMAIL_MESSAGE.PASTORAL_ANNOUNCEMENT,
+    );
+    expect(pastoral["List-Unsubscribe"]).toContain(
+      "/api/email/unsubscribe?token=tok",
+    );
+    expect(pastoral["List-Unsubscribe-Post"]).toBe(
+      "List-Unsubscribe=One-Click",
+    );
+
+    expect(listUnsubscribeHeaders("", EMAIL_MESSAGE.PASTORAL_ANNOUNCEMENT)).toEqual(
+      {},
+    );
   });
 });
 
