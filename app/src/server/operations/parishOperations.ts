@@ -225,7 +225,15 @@ async function findParishDuplicate(args: { name: string; city?: string; state?: 
 }
 
 export const createParish = async (
-  args: { name: string; city?: string; state?: string; dioceseId?: string; role?: string },
+  args: {
+    name: string;
+    city?: string;
+    state?: string;
+    dioceseId?: string;
+    role?: string;
+    /** User accepted the 7-day parish trial to unlock creation. */
+    startTrial?: boolean;
+  },
   context: any
 ): Promise<{ id: string; existingParishId?: string }> => {
   if (!context.user) throw new HttpError(401);
@@ -244,7 +252,10 @@ export const createParish = async (
   }
 
   if (!context.user.isAdmin) {
-    await assertCanCreateParish(context, { dioceseId: args.dioceseId || null });
+    await assertCanCreateParish(context, {
+      dioceseId: args.dioceseId || null,
+      startTrial: args.startTrial === true,
+    });
   }
 
   // When attaching the new parish to a diocese, the creator must be allowed to

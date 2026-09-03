@@ -57,6 +57,9 @@ export function ParishStep({
   const [newName, setNewName] = useState("");
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState("");
+  const [trialOffer, setTrialOffer] = useState<{
+    message: string;
+  } | null>(null);
 
   const { data: dbParishes = [] } = useQuery(searchParishesForOnboarding, {
     name: searchQuery,
@@ -108,7 +111,60 @@ export function ParishStep({
     });
   };
 
-  const handleCreate = async () => {
+  const extractErrorMessage = (e: any) => {
+    const message =
+      e?.data?.message ||
+      e?.response?.data?.message ||
+      e?.message ||
+      t("parish.create_error");
+    if (typeof message !== "string" || message.includes("status code")) {
+      return t("parish.create_error");
+    }
+    return message;
+  };
+
+  const isParishTrialAvailableError = (message: string) =>
+    message.includes("PARISH_TRIAL_AVAILABLE") ||
+    (message.startsWith("LIMIT:") &&
+      /par[oó]quia/i.test(message) &&
+      /\(0\/0\)/.test(message));
+
+  const createParishRequest = async (startTrial: boolean) => {
+    const result = await createParish({
+      name: newName.trim(),
+      city: searchCity.trim(),
+      state: searchState.trim(),
+      dioceseId: diocese?.id,
+      startTrial: startTrial || undefined,
+    });
+    if (result?.existingParishId) {
+      onSelect({
+        id: result.id,
+        name: newName.trim(),
+        city: searchCity.trim(),
+        state: searchState.trim(),
+        isNew: false,
+      });
+      setShowCreate(false);
+      setNewName("");
+      setTrialOffer(null);
+      return;
+    }
+    if (result?.id) {
+      onSelect({
+        id: result.id,
+        name: newName.trim(),
+        city: searchCity.trim(),
+        state: searchState.trim(),
+        isNew: true,
+      });
+      setShowCreate(false);
+      setNewName("");
+      setTrialOffer(null);
+    }
+  };
+
+  const handleCreate = async (startTrial = false) => {
     if (!newName.trim()) return;
     if (!searchCity.trim() || !searchState.trim()) {
       setError(t("parish.city_state_required"));
@@ -116,47 +172,17 @@ export function ParishStep({
     }
     setCreating(true);
     setError("");
+    if (!startTrial) setTrialOffer(null);
     try {
-      const result = await createParish({
-        name: newName.trim(),
-        city: searchCity.trim(),
-        state: searchState.trim(),
-        dioceseId: diocese?.id,
-      });
-      if (result?.existingParishId) {
-        onSelect({
-          id: result.id,
-          name: newName.trim(),
-          city: searchCity.trim(),
-          state: searchState.trim(),
-          isNew: false,
-        });
-        setShowCreate(false);
-        setNewName("");
-        return;
-      }
-      if (result?.id) {
-        onSelect({
-          id: result.id,
-          name: newName.trim(),
-          city: searchCity.trim(),
-          state: searchState.trim(),
-          isNew: true,
-        });
-        setShowCreate(false);
-        setNewName("");
-      }
+      await createParishRequest(startTrial);
     } catch (e: any) {
-      const message =
-        e?.data?.message ||
-        e?.response?.data?.message ||
-        e?.message ||
-        t("parish.create_error");
-      setError(
-        typeof message === "string" && !message.includes("status code")
-          ? message
-          : t("parish.create_error"),
-      );
+      const message = extractErrorMessage(e);
+      if (!startTrial && isParishTrialAvailableError(message)) {
+        setTrialOffer({ message });
+        setError("");
+      } else {
+        setError(message);
+      }
     } finally {
       setCreating(false);
     }
@@ -363,25 +389,50 @@ export function ParishStep({
               </button>
             </div>
           )}
+          {trialOffer && (
+            <div className="space-y-3 border border-brand-ink/20 bg-muted/30 px-3 py-3 rounded-sm">
+              <p className="text-sm font-semibold tracking-tight text-brand-ink">
+                {t("parish.trial_offer_title")}
+              </p>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                {t("parish.trial_offer_body")}
+              </p>
+              <Button
+                size="sm"
+                className="w-full rounded-md"
+                onClick={() => handleCreate(true)}
+                disabled={creating}
+              >
+                {creating
+                  ? t("parish.creating")
+                  : t("parish.trial_offer_cta")}
+              </Button>
+            </div>
+          )}
           {error && <p className="text-xs text-destructive">{error}</p>}
           <div className="flex gap-2">
             <Button
               size="sm"
               variant="outline"
               className="rounded-sm"
-              onClick={() => setShowCreate(false)}
+              onClick={() => {
+                setShowCreate(false);
+                setTrialOffer(null);
+                setError("");
+              }}
             >
               {tc("cancel")}
             </Button>
             <Button
               size="sm"
               className="rounded-md"
-              onClick={handleCreate}
+              onClick={() => handleCreate(false)}
               disabled={
                 creating ||
                 !newName.trim() ||
                 !searchCity.trim() ||
-                !searchState.trim()
+                !searchState.trim() ||
+                !!trialOffer
               }
             >
               {creating ? t("parish.creating") : t("parish.create_btn")}
