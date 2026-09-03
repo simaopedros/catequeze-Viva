@@ -89,3 +89,15 @@ export function shouldShowParishBillingConversion(opts: {
   if (opts.workspaceType === "DIOCESE") return false;
   return true;
 }
+
+/**
+ * Compact management page for a paid Catequista subscriber.
+ * Trial, unpaid conversion and institutional workspaces keep other layouts.
+ */
+export function shouldShowPersonalActiveBilling(opts: {
+  isPersonal: boolean;
+  isPaidActive: boolean;
+  canManageBilling: boolean;
+}): boolean {
+  return opts.isPersonal && opts.isPaidActive && opts.canManageBilling;
+}
