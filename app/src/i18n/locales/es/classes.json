@@ -56,6 +56,12 @@
   "end": "Fin",
   "name_placeholder": "Ej: Grupo de Confirmación 2026",
   "location_placeholder": "Ej: Salón Parroquial",
+  "community": "Comunidad",
+  "parish": "Parroquia",
+  "community_placeholder": "Parroquia (sin comunidad específica)",
+  "community_optional": "Opcional — vincule a una comunidad o capilla.",
+  "create_parish_first": "Registre una parroquia para crear grupos institucionales.",
+  "create_parish_cta": "Crear parroquia",
   "days": {
     "0": "Domingo",
     "1": "Lunes",

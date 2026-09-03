@@ -1,10 +1,7 @@
 // ---- Navigation Item Config (without icon component — icons mapped per component) ----
 import { AI_FEATURES_ENABLED, shouldShowAiNavItem } from "./aiFeatures";
 import { shouldShowSocialNavItem } from "./socialFeatures";
-import {
-  NAV_GROUP_LABEL_KEYS,
-  type NavGroupId,
-} from "./uiPresentation";
+import { NAV_GROUP_LABEL_KEYS, type NavGroupId } from "./uiPresentation";
 
 export interface NavItemConfig {
   to: string;
@@ -88,7 +85,11 @@ const CATECHIST_ROLES = [
   "ASSISTANT_CATECHIST",
   "PERSONAL_OWNER",
 ];
-const VIEWER_ROLES = [...CATECHIST_ROLES, "PASTORAL_VIEWER", "CONTENT_REVIEWER"];
+const VIEWER_ROLES = [
+  ...CATECHIST_ROLES,
+  "PASTORAL_VIEWER",
+  "CONTENT_REVIEWER",
+];
 const LEARNER_ROLES = [...VIEWER_ROLES, "GUARDIAN", "CATECHUMEN"];
 
 const COORDINATOR_ROLES = new Set([
@@ -99,18 +100,17 @@ const COORDINATOR_ROLES = new Set([
   "PERSONAL_OWNER",
 ]);
 
-const CATECHIST_ONLY_ROLES = new Set([
-  "LEAD_CATECHIST",
-  "ASSISTANT_CATECHIST",
-]);
+const CATECHIST_ONLY_ROLES = new Set(["LEAD_CATECHIST", "ASSISTANT_CATECHIST"]);
 
 /**
  * Hidden in PERSONAL workspace chrome (sidebar / bottom / More sheet).
  * Navigation filter is UX only — server access-control remains authoritative.
+ *
+ * Parishes and communities stay visible: coordinators (and personal owners
+ * creating their first parish) need those destinations even from the personal
+ * workspace, otherwise they cannot set up the institutional structure.
  */
 export const PERSONAL_HIDDEN_ICON_KEYS = new Set([
-  "parishes",
-  "communities",
   "catechetical_years",
   "reports",
 ]);
@@ -386,7 +386,10 @@ export const BOTTOM_NAV_KEYS = [
  * - Coordination: Início, Turmas, Agenda, Pessoas (catechumens)
  * - Family portal: Início, Agenda, Mensagens (+ catechumens for guardian)
  */
-export function getBottomNavKeysForRole(role: string, isAdmin: boolean): string[] {
+export function getBottomNavKeysForRole(
+  role: string,
+  isAdmin: boolean,
+): string[] {
   if (isAdmin) {
     return ["dashboard", "classes", "calendar", "messages"];
   }
@@ -507,4 +510,6 @@ export function getVisibleNavigation(
 }
 
 // ---- Flatten all items for lookup ----
-export const ALL_NAV_ITEMS: NavItemConfig[] = NAV_GROUPS.flatMap((g) => g.items);
+export const ALL_NAV_ITEMS: NavItemConfig[] = NAV_GROUPS.flatMap(
+  (g) => g.items,
+);

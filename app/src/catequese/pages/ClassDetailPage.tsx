@@ -41,6 +41,7 @@ import {
   addAssistantCatechist,
   removeCatechistFromClass,
   listParishCatechists,
+  listCommunities,
   getMonthlyPlan,
   inviteUserToParish,
 } from "wasp/client/operations";
@@ -107,6 +108,12 @@ export default function ClassDetailPage() {
   );
   const canEnroll = isCoordinator || isClassCatechist;
 
+  const { data: parishCommunities = [] } = useQuery(
+    listCommunities,
+    { parishId: cls?.parish?.id || "" },
+    { enabled: Boolean(cls?.parish?.id) && isCoordinator },
+  );
+
   const { data: allCatechumens = [] } = useQuery(
     listCatechumens,
     {
@@ -152,6 +159,7 @@ export default function ClassDetailPage() {
   const [editEnd, setEditEnd] = useState("10:30");
   const [editLocation, setEditLocation] = useState("");
   const [editCapacity, setEditCapacity] = useState(30);
+  const [editCommunityId, setEditCommunityId] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
   const [selectedAvailable, setSelectedAvailable] = useState<Set<string>>(
     new Set(),
@@ -208,6 +216,7 @@ export default function ClassDetailPage() {
       setEditEnd(cls.endTime || "10:30");
       setEditLocation(cls.location || "");
       setEditCapacity(cls.maxCapacity || 30);
+      setEditCommunityId(cls.community?.id || "");
     }
   }, [cls]);
 
@@ -223,6 +232,7 @@ export default function ClassDetailPage() {
         endTime: editEnd,
         location: editLocation || undefined,
         maxCapacity: editCapacity,
+        communityId: editCommunityId || null,
       });
       toast({ title: t("updated_success") });
       setEditing(false);
@@ -677,6 +687,30 @@ export default function ClassDetailPage() {
                   aria-label={t("location")}
                 />
               </div>
+              {isCoordinator && parishCommunities.length > 0 && (
+                <div className="sm:col-span-2">
+                  <label
+                    className="text-xs font-medium"
+                    htmlFor="edit-community"
+                  >
+                    {t("community")}
+                  </label>
+                  <select
+                    id="edit-community"
+                    aria-label={t("community")}
+                    value={editCommunityId}
+                    onChange={(e) => setEditCommunityId(e.target.value)}
+                    className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
+                  >
+                    <option value="">{t("community_placeholder")}</option>
+                    {parishCommunities.map((c: any) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
             <div className="flex gap-2 justify-end">
               <Button
@@ -925,7 +959,9 @@ export default function ClassDetailPage() {
                                 return next;
                               });
                             }}
-                            aria-label={`${t("detail.enroll_btn")} ${c.firstName} ${c.lastName}`}
+                            aria-label={`${t("detail.enroll_btn")} ${
+                              c.firstName
+                            } ${c.lastName}`}
                           />
                           <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-xs font-semibold text-brand-ink">
                             {c.firstName?.[0]}

@@ -735,7 +735,7 @@ query listParishCatechists {
 
 action createClass {
   fn: import { createClass } from "@src/server/operations/classOperations",
-  entities: [CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, PricingPlan, PricingPlanPrice, EmailMessage, EmailSuppression, EmailPreference]
+  entities: [CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Community, Diocese, User, PricingPlan, PricingPlanPrice, EmailMessage, EmailSuppression, EmailPreference]
 }
 
 action updateClass {

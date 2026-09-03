@@ -22,7 +22,8 @@ import {
 } from "wasp/client/operations";
 import { useCommunityTypeLabels } from "../../i18n/useLabels";
 import { AppPageHeader } from "../../client/components/brand/AppChrome";
-import { useActiveParish } from "../../client/hooks/useActiveParish";
+import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
+import { isInstitutionalWorkspaceType } from "../../shared/workspace";
 
 const AVATAR_COLORS = ["border border-border/70 bg-muted/30 text-brand-ink"];
 
@@ -32,30 +33,36 @@ export default function CommunityDetailPage() {
   const typeLabels = useCommunityTypeLabels();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { activeParishId } = useActiveParish();
+  const { workspaceId, isPersonal, availableWorkspaces } = useActiveWorkspace();
+  const queryParishId =
+    !isPersonal && workspaceId
+      ? workspaceId
+      : availableWorkspaces.find(
+          (w) => !w.isPersonal && isInstitutionalWorkspaceType(w.type),
+        )?.id || "";
   const { data: communities = [], isLoading: loading } = useQuery(
     listCommunities,
-    { parishId: activeParishId || undefined } as any,
-    { enabled: Boolean(activeParishId) },
+    { parishId: queryParishId },
+    { enabled: Boolean(queryParishId) },
   );
   const community = communities.find((c: any) => c.id === id);
-  const workspaceId = community?.parishId || activeParishId || undefined;
+  const classWorkspaceId = community?.parishId || queryParishId || undefined;
 
   const { data: classes = [] } = useQuery(
     listClasses,
     {
       communityId: id!,
-      workspaceId,
+      workspaceId: classWorkspaceId,
     } as any,
-    { enabled: Boolean(id && workspaceId) },
+    { enabled: Boolean(id && classWorkspaceId) },
   );
   const { data: households = [] } = useQuery(
     listHouseholds,
     {
       communityId: id!,
-      parishId: workspaceId,
+      parishId: classWorkspaceId,
     } as any,
-    { enabled: Boolean(id && workspaceId) },
+    { enabled: Boolean(id && classWorkspaceId) },
   );
 
   const [tab, setTab] = useState<"turmas" | "familias" | "catequistas">(

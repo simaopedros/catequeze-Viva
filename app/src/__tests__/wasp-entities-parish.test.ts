@@ -41,6 +41,12 @@ describe('Wasp entities for parish onboarding actions', () => {
     expect(entities).toContain('TenantBilling');
   });
 
+  it('createClass declares Community so parish/community linking can be validated', () => {
+    const entities = entitiesForAction(waspSource, 'createClass');
+    expect(entities).toContain('Community');
+    expect(entities).toContain('Parish');
+  });
+
   it('completeCoordinatorOnboarding declares User', () => {
     const entities = entitiesForAction(
       waspSource,

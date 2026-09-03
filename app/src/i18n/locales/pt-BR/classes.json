@@ -56,6 +56,12 @@
   "end": "Fim",
   "name_placeholder": "Ex: Turma de Crisma 2026",
   "location_placeholder": "Ex: Salão Paroquial",
+  "community": "Comunidade",
+  "parish": "Paróquia",
+  "community_placeholder": "Paróquia (sem comunidade específica)",
+  "community_optional": "Opcional — vincule a uma comunidade ou capela.",
+  "create_parish_first": "Cadastre uma paróquia para criar turmas institucionais.",
+  "create_parish_cta": "Criar paróquia",
   "days": {
     "0": "Domingo",
     "1": "Segunda",
