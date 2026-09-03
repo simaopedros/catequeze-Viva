@@ -276,9 +276,9 @@ export async function resolveWorkspaceAccess(
  * ClassCatechist role COORDINATOR.
  *
  * Backward compatibility: a membership with no community and no linked classes
- * keeps the historical parish-wide visibility ('ALL'). An unexpectedly empty
- * result also falls back to 'ALL' (with a warning) so a misconfigured
- * coordinator never loses access silently.
+ * keeps the historical parish-wide visibility ('ALL'). A bound community (or
+ * linked classes) with an empty result stays scoped to that empty set — never
+ * silently widen to the whole parish.
  */
 async function resolveCommunityCoordinatorScope(
   context: any,
@@ -309,12 +309,12 @@ async function resolveCommunityCoordinatorScope(
   }
 
   if (ids.size === 0) {
-    logger.warn('Coordenador de comunidade sem turmas no escopo; mantendo visão da paróquia', {
+    logger.warn('Coordenador de comunidade sem turmas no escopo; recusando visão da paróquia inteira', {
       userId: context.user.id,
       parishId,
       communityId,
     });
-    return 'ALL';
+    return [];
   }
 
   return [...ids];

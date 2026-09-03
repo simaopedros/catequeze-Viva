@@ -119,8 +119,15 @@
     "GUARDIAN": "Responsable familiar",
     "CATECHUMEN": "Catecúmeno",
     "CONTENT_REVIEWER": "Revisor",
-    "PASTORAL_VIEWER": "Pastoral",
+    "PASTORAL_VIEWER": "Visitante",
     "PERSONAL_OWNER": "Propietario"
+  },
+  "roles_desc": {
+    "PARISH_COORDINATOR": "Coordina la catequesis de este espacio: equipo, grupos, invitaciones y ajustes.",
+    "LEAD_CATECHIST": "Responsable del grupo: asistencia, encuentros e invitación de auxiliar o familia.",
+    "ASSISTANT_CATECHIST": "Ayuda en el grupo; las invitaciones son solo para la familia.",
+    "PASTORAL_VIEWER": "Consulta grupos e informes, sin editar.",
+    "GUARDIAN": "Acompaña a los catequizandos de la familia en el portal."
   },
   "membership_status": {
     "ACTIVE": "Activo",
@@ -538,8 +545,11 @@
       "viewer_hint": "Solo ves el equipo de los grupos y la comunidad que coordinas.",
       "invite_hint": "Elige la comunidad que esta persona coordinará. Los grupos específicos pueden definirse después en \"Definir ámbito\"."
     },
-    "title": "Equipo",
-    "subtitle": "{{members}} miembros activos · {{pending}} invitaciones pendientes",
+    "title": "Personas y accesos",
+    "subtitle": "{{members}} personas activas · {{pending}} invitaciones pendientes",
+    "matrix_title": "Qué puede hacer cada rol",
+    "personal_invite_hint": "En el espacio personal invitáis a un auxiliar de vuestro grupo — no es el equipo de la parroquia. La familia entra por las invitaciones de familia.",
+    "empty_cta": "Invitar a alguien",
     "invite_member": "Invitar miembro del equipo",
     "invite_sent": "Invitación enviada por correo.",
     "invite_saved": "Invitación guardada.",

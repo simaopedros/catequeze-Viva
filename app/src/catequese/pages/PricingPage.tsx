@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { Star, Check, CreditCard, PiggyBank } from "lucide-react";
+import { Star, Check, CreditCard, PiggyBank, Building2 } from "lucide-react";
 import { PublicNavbar } from "../PublicNavbar";
 import { PublicFooter } from "../PublicFooter";
 import { SalesWhatsAppCta } from "../../client/components/SalesWhatsAppCta";
@@ -271,15 +271,16 @@ export default function PricingPage() {
           </div>
         </section>
 
-        <section className="max-w-4xl mx-auto px-4 pb-20">
+        <section className="max-w-5xl mx-auto px-4 pb-20">
           <div
             className={
-              pricingPlans.length < 2
+              pricingPlans.length + 1 < 2
                 ? "max-w-lg mx-auto"
-                : "grid gap-4 sm:grid-cols-2"
+                : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
             }
           >
             {pricingPlans.map(renderCard)}
+            <DiocesePricingCard tp={tp} />
           </div>
           <SalesWhatsAppCta
             placement="pricing_page"
@@ -313,6 +314,65 @@ export default function PricingPage() {
       </main>
 
       <PublicFooter />
+    </div>
+  );
+}
+
+function DiocesePricingCard({
+  tp,
+}: {
+  tp: (key: string, options?: any) => any;
+}) {
+  const featuresResult = tp("pricing.diocese_features", { returnObjects: true });
+  const features = Array.isArray(featuresResult)
+    ? (featuresResult as string[])
+    : [];
+
+  return (
+    <div
+      data-testid="pricing-diocese-card"
+      className="relative flex flex-col rounded-sm border border-border/70 bg-white p-6"
+    >
+      <div className="mb-3 inline-flex items-center gap-1.5 self-start rounded-sm bg-muted px-3 py-1 text-[11px] font-medium text-muted-foreground">
+        <Building2 className="h-3.5 w-3.5" />
+        {translatedString(
+          tp,
+          "pricing.diocese_audience",
+          "Para a diocese — venda assistida",
+        )}
+      </div>
+      <AppDisplayTitle as="h3" className="text-lg sm:text-lg">
+        {translatedString(tp, "pricing.diocese_name", "Plano Diocese")}
+      </AppDisplayTitle>
+      <p className="mt-1 text-sm text-muted-foreground">
+        {translatedString(
+          tp,
+          "pricing.diocese_desc",
+          "Licença guarda-chuva que cobre as paróquias.",
+        )}
+      </p>
+      <p className="mt-4 mb-1 text-2xl font-semibold tracking-tight text-brand-ink">
+        {translatedString(tp, "pricing.diocese_price", "Sob consulta")}
+      </p>
+      <ul className="mt-5 space-y-2.5 text-sm flex-1">
+        {features.map((f) => (
+          <li key={f} className="flex items-start gap-2.5">
+            <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-ink" />
+            <span>{f}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-6">
+        <SalesWhatsAppCta
+          placement="pricing_page_diocese"
+          variant="inline"
+          cta={translatedString(
+            tp,
+            "pricing.diocese_cta",
+            "Falar com vendas sobre a diocese",
+          )}
+        />
+      </div>
     </div>
   );
 }

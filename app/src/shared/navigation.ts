@@ -106,13 +106,15 @@ const CATECHIST_ONLY_ROLES = new Set(["LEAD_CATECHIST", "ASSISTANT_CATECHIST"]);
  * Hidden in PERSONAL workspace chrome (sidebar / bottom / More sheet).
  * Navigation filter is UX only — server access-control remains authoritative.
  *
- * Parishes and communities stay visible: coordinators (and personal owners
- * creating their first parish) need those destinations even from the personal
- * workspace, otherwise they cannot set up the institutional structure.
+ * Parishes, communities, catechetical years and network reports stay hidden
+ * in PERSONAL chrome. Institutional setup happens via “Organizar como paróquia”
+ * (billing) and invites — not via parish-management destinations.
  */
 export const PERSONAL_HIDDEN_ICON_KEYS = new Set([
   "catechetical_years",
   "reports",
+  "parishes",
+  "communities",
 ]);
 
 function item(

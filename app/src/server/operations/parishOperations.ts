@@ -608,6 +608,7 @@ export const listParishesAdmin = async (_args: void, context: any) => {
   );
 
   return parishes.map((parish: any) => {
+    const ownPlan = parish.billing?.plan;
     const resolvedBilling = billingMap.get(parish.id);
     if (resolvedBilling) {
       parish.billing = {
@@ -617,6 +618,14 @@ export const listParishesAdmin = async (_args: void, context: any) => {
         trialEndsAt: resolvedBilling.trialEndsAt,
       };
     }
+    const resolvedPlan = String(resolvedBilling?.plan || "").toUpperCase();
+    const ownPlanNorm = String(ownPlan || "").toUpperCase();
+    const dioceseCover =
+      Boolean(parish.diocese?.name) &&
+      (resolvedPlan === "UNLIMITED" || resolvedPlan === "DIOCESE") &&
+      ownPlanNorm !== resolvedPlan;
+    parish.coveredByName = dioceseCover ? parish.diocese.name : null;
+    parish.workspaceType = parish.type;
     return parish;
   });
 };

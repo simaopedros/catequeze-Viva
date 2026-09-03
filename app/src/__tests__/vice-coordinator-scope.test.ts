@@ -188,15 +188,15 @@ describe('COMMUNITY_COORDINATOR scope resolution', () => {
     expect(classWhereForAccess(access!)).toEqual({ parishId: PARISH });
   });
 
-  it('community without classes yet → falls back to whole parish instead of locking out', async () => {
+  it('community without classes yet → stays scoped empty (never whole parish)', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const ctx = makeContext({
       userId: 'vice',
       memberships: [membership('vice', 'COMMUNITY_COORDINATOR', 'community-empty')],
     });
     const access = await resolveWorkspaceAccess(ctx, PARISH);
-    expect(access?.allowedClassIds).toBe('ALL');
-    expect(access?.isScopedCoordinator).toBe(false);
+    expect(access?.allowedClassIds).toEqual([]);
+    expect(access?.isScopedCoordinator).toBe(true);
     expect(warn).toHaveBeenCalled();
     warn.mockRestore();
   });

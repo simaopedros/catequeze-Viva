@@ -11,17 +11,20 @@ import {
 interface WelcomeStepProps {
   onPersonal: () => void;
   onManager: () => void;
+  onDiocese?: () => void;
   launchCatequistaOnly?: boolean;
 }
 
 export function WelcomeStep({
   onPersonal,
   onManager,
-  launchCatequistaOnly = true,
+  onDiocese,
+  launchCatequistaOnly = false,
 }: WelcomeStepProps) {
   const { t } = useTranslation("onboarding");
   const { data: user } = useAuth();
   const firstName = user?.firstName || "";
+  const showInstitutional = !launchCatequistaOnly;
 
   return (
     <div className="space-y-8">
@@ -34,9 +37,9 @@ export function WelcomeStep({
         </AppDisplayTitle>
         <AppGoldRule />
         <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-          {launchCatequistaOnly
-            ? t("welcome.launch_question")
-            : t("welcome.question")}
+          {showInstitutional
+            ? t("welcome.question")
+            : t("welcome.launch_question")}
         </p>
       </div>
 
@@ -46,20 +49,32 @@ export function WelcomeStep({
           description={t("welcome.personal_desc")}
           onClick={onPersonal}
         />
-        {!launchCatequistaOnly && (
+        {showInstitutional && (
           <PathOption
             label={t("welcome.manager_title")}
             description={t("welcome.manager_desc")}
             onClick={onManager}
           />
         )}
+        {showInstitutional && onDiocese && (
+          <PathOption
+            label={t("welcome.diocese_title")}
+            description={t("welcome.diocese_desc")}
+            onClick={onDiocese}
+          />
+        )}
       </div>
 
       <p className="text-xs text-muted-foreground">
-        {launchCatequistaOnly
-          ? t("welcome.launch_helper")
-          : t("welcome.helper")}
+        {showInstitutional
+          ? t("welcome.helper")
+          : t("welcome.launch_helper")}
       </p>
+      {showInstitutional && (
+        <p className="text-xs text-muted-foreground">
+          {t("welcome.invite_hint")}
+        </p>
+      )}
     </div>
   );
 }

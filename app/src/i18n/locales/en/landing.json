@@ -29,11 +29,20 @@
       {
         "id": "parish",
         "title": "I coordinate parish catechesis",
-        "desc": "In this phase, Catequese Viva is for catechists running their own class. Parishes and dioceses come later.",
+        "desc": "Classes, team, and attendance in one institutional parish workspace.",
         "href": "/#planos",
-        "cta": "See the catechist plan",
-        "pill": "Parishes coming later",
-        "micro": "Right now the focus is you and your class. Coordination comes later."
+        "cta": "See the Parish Plan",
+        "pill": "For parish coordination",
+        "micro": "Unlimited team and classes in the parish workspace."
+      },
+      {
+        "id": "diocese",
+        "title": "I work with the diocese",
+        "desc": "A license that covers the diocese parishes. Assisted sales with the team.",
+        "href": "/#planos",
+        "cta": "Talk to sales",
+        "pill": "Assisted sales",
+        "micro": "The diocese holds the license; parishes show as covered."
       }
     ],
     "click_trigger": "Works on mobile · Built for catechesis routines",
@@ -169,8 +178,8 @@
     }
   ],
   "steps_cta": "Begin my journey — 7 days free",
-  "pricing_title": "One simple plan, at the service of your mission",
-  "pricing_subtitle": "R$ 9.90/month for up to 3 classes. Start with a 7-day trial — no card and no charge now.",
+  "pricing_title": "Three paths: catechist, parish, and diocese",
+  "pricing_subtitle": "Catechist R$ 9.90/month. Parish from R$ 99/month. Diocese with the sales team. 7-day trial on the Catechist Plan — no card.",
   "plans": {
     "single": {
       "name": "Catechist Plan",
@@ -182,6 +191,29 @@
         "Attendance history on mobile",
         "Your class calendar",
         "Portal for the families in your class"
+      ]
+    },
+    "unlimited": {
+      "name": "Parish Plan",
+      "audience": "For parish coordination",
+      "desc": "Unlimited classes, catechumens, and team in the parish workspace.",
+      "price": "R$ 99",
+      "features": [
+        "Unlimited classes and team",
+        "Unlimited catechumens",
+        "Institutional parish workspace",
+        "Family communication"
+      ]
+    },
+    "diocese": {
+      "name": "Diocese Plan",
+      "audience": "For the diocese — assisted sales",
+      "desc": "Umbrella license covering parishes. No public checkout.",
+      "price": "Talk to sales",
+      "features": [
+        "Coverage for diocese parishes",
+        "License assigned by the team",
+        "Follow-up with sales on WhatsApp"
       ]
     }
   },
@@ -212,7 +244,7 @@
     },
     {
       "q": "Do I need my parish to get started?",
-      "a": "No. The account is yours and the class is yours: you create it, organize it, and use it without depending on coordination. Parishes and dioceses join the platform in a future phase."
+      "a": "No. You can start in a personal workspace with the Catechist Plan. When you need a team and more classes, organize as a parish. The diocese joins through assisted sales and covers parishes with an active license."
     },
     {
       "q": "Does it work on mobile?",
@@ -462,7 +494,8 @@
   "faq_cta": "Begin my journey — 7 days free",
   "faq_cta_helper": "No charge now · use it at your next meeting",
   "price_cta_single": "Start my 7 days with my class",
-  "price_cta_unlimited": "Start 7-day trial",
+  "price_cta_unlimited": "Start the Parish Plan",
+  "price_cta_diocese": "Talk to sales about the diocese",
   "price_annual_equivalent": "Equals {{price}}/month",
   "demo": {
     "badge": "Try without creating an account",

@@ -15,5 +15,16 @@
   "buy_credits": "Comprar Mais Créditos",
   "plan_past_due": "O pagamento do seu plano {{plan}} está em atraso. Atualize as informações de pagamento da sua assinatura.",
   "plan_cancel_at_period_end": "Sua assinatura do plano {{plan}} foi cancelada, mas permanece ativa até o fim do período de cobrança atual: {{date}}",
-  "plan_deleted": "Sua assinatura anterior foi cancelada e não está mais ativa."
+  "plan_deleted": "Sua assinatura anterior foi cancelada e não está mais ativa.",
+  "scopes_title": "Dois escopos de cobrança",
+  "scopes_hint": "A assinatura pessoal e a licença do espaço institucional são independentes. Cancelar uma não encerra a outra.",
+  "personal_scope_title": "Assinatura pessoal",
+  "personal_scope_desc": "Cobre o seu espaço Pessoal (Plano Catequista).",
+  "workspace_scope_title": "Licença deste espaço",
+  "workspace_scope_desc": "Cobre o workspace ativo — paróquia, diocese ou comunidade.",
+  "workspace_kind": "Tipo",
+  "workspace_role": "Seu papel",
+  "workspace_plan": "Plano efetivo",
+  "manage_workspace_billing": "Gerenciar cobrança do espaço",
+  "no_active_workspace": "Nenhum espaço ativo"
 }

@@ -43,15 +43,17 @@ import { Button } from "../../client/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { LAUNCH_CATEQUISTA_ONLY, catalogIsCatequistaOnly } from "../../shared/pricing";
 import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
+import { getSalesWhatsAppUrl } from "../../shared/salesContact";
 
-type AccountType = "personal" | "manager" | null;
+type AccountType = "personal" | "manager" | "diocese" | null;
 type Step =
   | "welcome"
   | "class"
   | "catechumens"
   | "completion"
   | "parish"
-  | "details";
+  | "details"
+  | "diocese";
 
 interface CompletionSummary {
   role: string;
@@ -110,8 +112,10 @@ export default function OnboardingPage() {
     if (
       LAUNCH_CATEQUISTA_ONLY &&
       (raw.accountType === "manager" ||
+        raw.accountType === "diocese" ||
         raw.step === "parish" ||
-        raw.step === "details")
+        raw.step === "details" ||
+        raw.step === "diocese")
     ) {
       return {};
     }
@@ -192,11 +196,17 @@ export default function OnboardingPage() {
     { id: "completion", label: t("progress.done") },
   ];
 
+  const dioceseSteps: ProgressStep[] = [
+    { id: "welcome", label: t("progress.welcome") },
+    { id: "diocese", label: t("progress.diocese") },
+    { id: "completion", label: t("progress.done") },
+  ];
+
   const steps =
     accountType === "manager"
       ? managerSteps
-      : accountType === "personal"
-        ? personalSteps
+      : accountType === "diocese"
+        ? dioceseSteps
         : personalSteps;
 
   const panelCopy = (() => {
@@ -226,6 +236,11 @@ export default function OnboardingPage() {
       return {
         title: t("shell.manager_parish_title"),
         subtitle: t("shell.manager_parish_subtitle"),
+      };
+    if (step === "diocese")
+      return {
+        title: t("shell.diocese_title"),
+        subtitle: t("shell.diocese_subtitle"),
       };
     if (step === "details")
       return {
@@ -261,7 +276,7 @@ export default function OnboardingPage() {
     }
     trackOnboardingCompleted({
       account_type: accountType || "personal",
-      profile: accountType === "manager" ? "institutional" : "personal",
+      profile: accountType === "manager" || accountType === "diocese" ? "institutional" : "personal",
       path,
       duration_ms:
         duration_ms != null && Number.isFinite(duration_ms)
@@ -301,6 +316,12 @@ export default function OnboardingPage() {
       setDiocese(null);
       setDioceseStepDone(false);
       setParish(null);
+      return;
+    }
+    if (step === "diocese") {
+      setStep("welcome");
+      setAccountType(null);
+      setDiocese(null);
       return;
     }
     if (step === "details") {
@@ -408,6 +429,31 @@ export default function OnboardingPage() {
       ],
       primaryActionLabel: next.label,
       primaryActionTo: next.to,
+    });
+    setStep("completion");
+    clearPersisted();
+  };
+
+  const finishDiocesePath = () => {
+    const salesUrl = getSalesWhatsAppUrl(
+      t("diocese.whatsapp_prefill", { defaultValue: "" }),
+    );
+    setCompletionData({
+      role: "diocese",
+      title: t("completion.diocese_ready_title"),
+      description: t("completion.diocese_ready_desc"),
+      items: [
+        {
+          label: t("summary.type"),
+          value: t("completion.diocese_account"),
+        },
+        {
+          label: t("summary.diocese"),
+          value: diocese?.name || "—",
+        },
+      ],
+      primaryActionLabel: t("completion.talk_sales"),
+      primaryActionTo: salesUrl,
     });
     setStep("completion");
     clearPersisted();
@@ -601,6 +647,22 @@ export default function OnboardingPage() {
             setAccountType("manager");
             setStep("parish");
           }}
+          onDiocese={() => {
+            try {
+              sessionStorage.setItem(
+                "cv-onboarding-started-at",
+                String(Date.now()),
+              );
+            } catch {
+              /* ignore */
+            }
+            trackMarketingEvent("onboarding_started", {
+              account_type: "diocese",
+              intent: "talk_to_sales",
+            });
+            setAccountType("diocese");
+            setStep("diocese");
+          }}
         />
       )}
 
@@ -697,6 +759,15 @@ export default function OnboardingPage() {
         />
       )}
 
+      {step === "diocese" && accountType === "diocese" && (
+        <DioceseStep
+          selected={diocese}
+          onSelect={setDiocese}
+          onSkip={finishDiocesePath}
+          onContinue={finishDiocesePath}
+        />
+      )}
+
       {step === "completion" && completionData && (
         <CompletionStep
           summary={{
@@ -708,6 +779,10 @@ export default function OnboardingPage() {
           onPrimaryAction={() => {
             clearPersisted();
             emitOnboardingCompleted(completionData.primaryActionTo);
+            if (/^https?:\/\//i.test(completionData.primaryActionTo)) {
+              window.location.assign(completionData.primaryActionTo);
+              return;
+            }
             navigate(completionData.primaryActionTo);
           }}
           onSecondaryAction={handleSecondaryCompletionAction}

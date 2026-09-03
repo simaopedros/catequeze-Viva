@@ -45,7 +45,10 @@
     "manager_features": [],
     "helper": "Você pode mudar de caminho depois, se precisar.",
     "launch_question": "Vamos preparar o espaço da sua turma.",
-    "launch_helper": "Nesta fase o acesso é para catequistas. Paróquia e diocese vêm depois.",
+    "launch_helper": "Comece pela sua turma. Depois você pode organizar como paróquia ou pedir cobertura da diocese.",
+    "diocese_title": "Sou da diocese",
+    "diocese_desc": "Licença guarda-chuva para várias paróquias. Fale com vendas — não há checkout público.",
+    "invite_hint": "Já tem convite para uma paróquia? Entre pelo e-mail do convite. Não crie outro espaço.",
     "eyebrow": "Primeiros passos"
   },
   "personal_setup": {
@@ -220,7 +223,11 @@
     "personal_class_ready_title": "Sua turma está pronta",
     "personal_class_ready_desc": "Turma criada e com catequizandos. Você já pode registrar presença e acompanhar a caminhada.",
     "personal_class_empty_title": "Turma criada",
-    "personal_class_empty_desc": "A turma existe. Inclua catequizandos quando quiser para usar a chamada com nomes reais."
+    "personal_class_empty_desc": "A turma existe. Inclua catequizandos quando quiser para usar a chamada com nomes reais.",
+    "diocese_ready_title": "Fale com vendas para a licença diocesana",
+    "diocese_ready_desc": "Não há checkout público para diocese. A licença cobre as paróquias quando a equipe atribuir o Plano Diocese no admin.",
+    "talk_sales": "Falar com vendas no WhatsApp",
+    "diocese_account": "Caminho da diocese"
   },
   "roles": {
     "coordinator": {
@@ -291,7 +298,9 @@
     "personal_class_title": "Primeira turma",
     "personal_class_subtitle": "Dê um nome claro — o restante você ajusta quando quiser.",
     "personal_people_title": "Quem faz parte da turma",
-    "personal_people_subtitle": "Sem pessoas, a chamada e o acompanhamento ficam vazios."
+    "personal_people_subtitle": "Sem pessoas, a chamada e o acompanhamento ficam vazios.",
+    "diocese_title": "Licença da diocese",
+    "diocese_subtitle": "Não há checkout público. Fale com vendas e, se quiser, escolha a diocese."
   },
   "back_clean": "Voltar",
   "change_diocese_clean": "Alterar",
@@ -301,7 +310,8 @@
     "catechumens": "Catequizandos",
     "done": "Pronto",
     "institution": "Paróquia",
-    "setup": "Organização"
+    "setup": "Organização",
+    "diocese": "Diocese"
   },
   "class_setup": {
     "eyebrow": "Passo da turma",

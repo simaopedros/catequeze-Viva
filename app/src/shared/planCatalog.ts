@@ -182,7 +182,8 @@ function price(
 
 /**
  * Static catalog — must stay in lockstep with the previous hardcoded PLANS.
- * Launch flags: unlimited and AI packs are not public/vendable.
+ * Catequista (`single`) and Paróquia (`unlimited`) are public self-serve.
+ * Diocese is sales-assisted (WhatsApp + admin license), not a Stripe SKU.
  */
 export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
   {
@@ -269,14 +270,14 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
   },
   {
     slug: 'unlimited',
-    name: 'Plano Ilimitado',
-    description: 'Paróquia/diocese — tudo ilimitado.',
+    name: 'Plano Paróquia',
+    description: 'Paróquia — turmas, catequizandos e equipe ilimitados.',
     kind: 'subscription',
     level: 'institutional',
     creditsAmount: null,
     isSystem: false,
-    isActive: false,
-    isPublic: false,
+    isActive: true,
+    isPublic: true,
     highlight: false,
     sortOrder: 2,
     limits: {
@@ -288,27 +289,29 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
     ai: { monthlyCredits: 0, dailyLimit: 0, scope: 'user' },
     social: { maxPostsPerDay: 30, maxMediaPerPost: 10, maxVideoSeconds: 900 },
     features: [
-      'Paróquias e turmas ilimitadas',
-      'Catequizandos e catequistas ilimitados',
+      'Turmas e equipe ilimitadas',
+      'Catequizandos ilimitados',
+      'Espaço institucional da paróquia',
       'Comunicação integrada (pais/catequizandos)',
       'Documentos e certidões',
-      'Publicar na Comunidade',
     ],
     translations: {
       en: {
-        name: 'Unlimited Plan',
+        name: 'Parish Plan',
         features: [
-          'Unlimited parishes and classes',
-          'Unlimited catechumens and catechists',
+          'Unlimited classes and team',
+          'Unlimited catechumens',
+          'Institutional parish workspace',
           'Integrated communication',
           'Documents and certificates',
         ],
       },
       es: {
-        name: 'Plan Ilimitado',
+        name: 'Plan Parroquia',
         features: [
-          'Parroquias y grupos ilimitados',
-          'Catecúmenos y catequistas ilimitados',
+          'Grupos y equipo ilimitados',
+          'Catecúmenos ilimitados',
+          'Espacio institucional de la parroquia',
           'Comunicación integrada',
           'Documentos y certificados',
         ],
@@ -402,9 +405,8 @@ export function snapshotFromPlans(
 export const DEFAULT_CATALOG_SNAPSHOT = snapshotFromPlans(DEFAULT_PLAN_LIST, 'static');
 
 /**
- * Launch-phase hide Unlimited. Derived from DEFAULT_PLANS so the static catalog
- * stays the single source of truth. Public UI should prefer plan.isPublic from
- * the live catalog (PRICING_CATALOG_SOURCE=db, the default).
+ * True while the static catalog hides Unlimited. Derived from DEFAULT_PLANS.
+ * Public UI should prefer plan.isPublic from the live catalog.
  */
 export const LAUNCH_CATEQUISTA_ONLY = !DEFAULT_PLANS.unlimited.isPublic;
 

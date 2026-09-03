@@ -289,68 +289,31 @@ export default function ClassesPage() {
       </AppPanel>
 
       {filtered.length === 0 && !search && !filter ? (
-        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-          <AppPanel className="p-6 lg:p-8">
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <AppEyebrow>{t("first_classes")}</AppEyebrow>
-                <AppDisplayTitle as="h2">{t("no_classes")}</AppDisplayTitle>
-                <AppGoldRule />
-                <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-                  {t("no_classes_desc")}
-                </p>
-              </div>
-
-              <div className="hidden gap-3 sm:grid sm:grid-cols-3">
-                {[t("empty_step1"), t("empty_step2"), t("empty_step3")].map(
-                  (step, i) => (
-                    <AppPanel key={i} className="px-4 py-4" padded={false}>
-                      <p className="text-sm font-semibold tracking-tight text-brand-ink">
-                        {i + 1}. {step}
-                      </p>
-                    </AppPanel>
-                  ),
-                )}
-              </div>
-
-              {isClassLimitReached ? (
-                <PlanLimitBanner
-                  type="class_limit"
-                  currentCount={activeClassesCount}
-                  userPlan={effectivePlan}
-                  isParishManaged={!isPersonal}
-                  isPersonalWorkspace={isPersonal}
-                  canManageBilling={canManageBilling}
-                />
-              ) : canCreateClass ? (
-                <Button className="h-11 min-h-11 rounded-sm px-5" asChild>
-                  <Link to="/app/classes/new">
-                    <Plus className="mr-2 h-4 w-4" />
-                    {t("create")}
-                  </Link>
-                </Button>
-              ) : null}
+        <EmptyState
+          icon={Plus}
+          title={t("no_classes")}
+          description={t("no_classes_desc")}
+        >
+          {isClassLimitReached ? (
+            <div className="mt-4 w-full max-w-md">
+              <PlanLimitBanner
+                type="class_limit"
+                currentCount={activeClassesCount}
+                userPlan={effectivePlan}
+                isParishManaged={!isPersonal}
+                isPersonalWorkspace={isPersonal}
+                canManageBilling={canManageBilling}
+              />
             </div>
-          </AppPanel>
-
-          <AppPanel className="hidden sm:block">
-            <div className="mb-4 space-y-1.5">
-              <AppEyebrow>{t("suggested_structure")}</AppEyebrow>
-              <AppGoldRule className="w-8" />
-            </div>
-            <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
-              <AppPanel className="px-4 py-3" padded={false}>
-                {t("suggested_1")}
-              </AppPanel>
-              <AppPanel className="px-4 py-3" padded={false}>
-                {t("suggested_2")}
-              </AppPanel>
-              <AppPanel className="px-4 py-3" padded={false}>
-                {t("suggested_3")}
-              </AppPanel>
-            </div>
-          </AppPanel>
-        </div>
+          ) : canCreateClass ? (
+            <Button className="mt-4 h-11 min-h-11 rounded-sm px-5" asChild>
+              <Link to="/app/classes/new">
+                <Plus className="mr-2 h-4 w-4" />
+                {t("create")}
+              </Link>
+            </Button>
+          ) : null}
+        </EmptyState>
       ) : filtered.length === 0 ? (
         <AppPanel>
           <EmptyState

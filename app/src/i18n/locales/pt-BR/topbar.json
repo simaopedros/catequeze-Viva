@@ -31,5 +31,18 @@
   "search": "Abrir pesquisa",
   "clearSearch": "Limpar pesquisa",
   "closeSearch": "Fechar pesquisa",
-  "user_menu": "Abrir menu do usuário"
+  "user_menu": "Abrir menu do usuário",
+  "kind": {
+    "personal": "Pessoal",
+    "parish": "Paróquia",
+    "diocese": "Diocese",
+    "community": "Comunidade"
+  },
+  "plan": {
+    "personal": "{{plan}}",
+    "parish_license": "Licença da paróquia · {{plan}}",
+    "covered_by_diocese": "Coberta pela diocese",
+    "covered_by_named": "Coberta por {{name}}",
+    "free": "Sem assinatura"
+  }
 }

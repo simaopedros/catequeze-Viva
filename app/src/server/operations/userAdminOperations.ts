@@ -45,7 +45,7 @@ export const getUserAdminDetail = async (
           role: true,
           status: true,
           createdAt: true,
-          parish: { select: { id: true, name: true, active: true } },
+          parish: { select: { id: true, name: true, active: true, type: true } },
           community: { select: { id: true, name: true } },
         },
       }),
@@ -79,9 +79,69 @@ export const getUserAdminDetail = async (
       context.entities.Parish.findMany({
         where: { ownerId: args.id },
         orderBy: { name: "asc" },
-        select: { id: true, name: true, type: true, active: true },
+        select: { id: true, name: true, type: true, active: true, dioceseId: true },
       }),
     ]);
+
+  const parishIds = [
+    ...new Set(
+      [
+        ...ownedParishes.map((p: { id: string }) => p.id),
+        ...memberships.map((m: any) => m.parish?.id).filter(Boolean),
+      ] as string[],
+    ),
+  ];
+  const dioceseIds = [
+    ...new Set(
+      ownedParishes
+        .map((p: { dioceseId?: string | null }) => p.dioceseId)
+        .filter(Boolean) as string[],
+    ),
+  ];
+
+  const tenantBillings =
+    parishIds.length === 0 && dioceseIds.length === 0
+      ? []
+      : await context.entities.TenantBilling.findMany({
+          where: {
+            OR: [
+              parishIds.length ? { parishId: { in: parishIds } } : undefined,
+              dioceseIds.length ? { dioceseId: { in: dioceseIds } } : undefined,
+            ].filter(Boolean),
+          },
+          orderBy: { updatedAt: "desc" },
+          select: {
+            id: true,
+            plan: true,
+            status: true,
+            trialEndsAt: true,
+            updatedAt: true,
+            parishId: true,
+            dioceseId: true,
+            parish: { select: { id: true, name: true, type: true } },
+            diocese: { select: { id: true, name: true } },
+          },
+        });
+
+  const billingTimeline = [
+    {
+      id: `user-${user.id}`,
+      at: user.createdAt,
+      source: "personal" as const,
+      name: user.email,
+      plan: user.subscriptionPlan,
+      status: user.subscriptionStatus,
+    },
+    ...tenantBillings.map((row: any) => ({
+      id: row.id,
+      at: row.updatedAt,
+      source: row.dioceseId ? ("diocese" as const) : ("parish" as const),
+      name: row.diocese?.name || row.parish?.name || row.id,
+      plan: row.plan,
+      status: row.status,
+      trialEndsAt: row.trialEndsAt,
+    })),
+  ];
 
   return {
     ...user,
@@ -91,6 +151,7 @@ export const getUserAdminDetail = async (
     auditLog,
     aiUsage,
     ownedParishes,
+    billingTimeline,
   };
 };
 

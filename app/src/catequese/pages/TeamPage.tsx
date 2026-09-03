@@ -48,6 +48,8 @@ import {
   CoordinatorScopeDialog,
   type CoordinatorScopeMember,
 } from "../components/team/CoordinatorScopeDialog";
+import { RoleAccessMatrix } from "../components/team/RoleAccessMatrix";
+import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 
 /** Short description of a community coordinator's scope for list rows. */
 function coordinatorScopeSummary(
@@ -82,6 +84,7 @@ export default function TeamPage() {
   const statusLabels = useMembershipStatusLabels();
   const { currentLocale } = useLocale();
   const { activeParishId } = useActiveParish();
+  const { isPersonal } = useActiveWorkspace();
 
   const {
     data: team,
@@ -117,10 +120,13 @@ export default function TeamPage() {
     (permissions as any)?.isScopedCoordinator,
   );
 
-  const teamAssignableRoles = useMemo(
-    () => assignableRoles.filter((role) => isTeamInviteRole(role)),
-    [assignableRoles],
-  );
+  const teamAssignableRoles = useMemo(() => {
+    const roles = assignableRoles.filter((role) => isTeamInviteRole(role));
+    if (!isPersonal) return roles;
+    return roles.filter(
+      (role) => role === "LEAD_CATECHIST" || role === "ASSISTANT_CATECHIST",
+    );
+  }, [assignableRoles, isPersonal]);
 
   const inviteRoleOptions = useMemo(
     () =>
@@ -347,11 +353,19 @@ export default function TeamPage() {
           }
         />
 
+        {isPersonal && canInviteTeam && (
+          <p className="text-sm text-muted-foreground">
+            {t("team.personal_invite_hint")}
+          </p>
+        )}
+
         {actorIsScopedCoordinator && (
           <p className="text-sm text-muted-foreground">
             {t("team.scope.viewer_hint")}
           </p>
         )}
+
+        <RoleAccessMatrix personal={isPersonal} />
 
         {canInviteFamilyOnly && (
           <AppPanel className="space-y-2 p-4">
@@ -392,6 +406,7 @@ export default function TeamPage() {
                   </option>
                 ))}
               </select>
+              {!isPersonal && (
               <select
                 value={inviteCommunityId}
                 onChange={(e) => setInviteCommunityId(e.target.value)}
@@ -404,6 +419,7 @@ export default function TeamPage() {
                   </option>
                 ))}
               </select>
+              )}
               {needsClass &&
                 (permissions?.actorRole === "LEAD_CATECHIST" ||
                   (classes as any[]).length > 0) && (
@@ -674,8 +690,20 @@ export default function TeamPage() {
               compact
               icon={Users}
               title={tp("no_members")}
-              description={tp("no_members_desc")}
-            />
+              description={
+                isPersonal ? t("team.personal_invite_hint") : tp("no_members_desc")
+              }
+            >
+              {canInviteTeam ? (
+                <Button
+                  className="mt-4 h-11 min-h-11 rounded-sm"
+                  onClick={() => setShowInvite(true)}
+                >
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  {t("team.empty_cta")}
+                </Button>
+              ) : null}
+            </EmptyState>
           ) : (
             <>
               {/* Mobile cards */}

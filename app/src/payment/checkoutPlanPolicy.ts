@@ -3,9 +3,9 @@ import { AI_FEATURES_ENABLED } from "../shared/aiFeatures";
 import type { CatalogPlan } from "../shared/planCatalog";
 
 /**
- * Launch-phase / catalog checkout policy.
- * isActive/isPublic on the catalog replace LAUNCH_CATEQUISTA_ONLY for sale.
+ * Catalog checkout policy. isActive/isPublic on the catalog gate sale.
  * AI packs additionally require AI_FEATURES_ENABLED.
+ * Institutional vs personal workspace is enforced at checkout, not here.
  */
 export function getCheckoutPlanRejection(
   planId: string,
@@ -17,9 +17,6 @@ export function getCheckoutPlanRejection(
 
   if (plan) {
     if (!plan.isActive || !plan.isPublic) {
-      if (plan.slug === PaymentPlanId.Unlimited) {
-        return "O Plano Ilimitado não está disponível nesta fase. Assine o Plano Catequista.";
-      }
       if (plan.kind === "credits") {
         return "Pacotes de créditos editoriais não estão disponíveis nesta fase.";
       }
@@ -31,9 +28,6 @@ export function getCheckoutPlanRejection(
     return null;
   }
 
-  if (planId === PaymentPlanId.Unlimited) {
-    return "O Plano Ilimitado não está disponível nesta fase. Assine o Plano Catequista.";
-  }
   if (
     !AI_FEATURES_ENABLED &&
     (planId === PaymentPlanId.AiCredits20 || planId === PaymentPlanId.AiCredits50)

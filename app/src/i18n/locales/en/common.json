@@ -198,8 +198,15 @@
     "GUARDIAN": "Family Guardian",
     "CATECHUMEN": "Catechumen",
     "CONTENT_REVIEWER": "Reviewer",
-    "PASTORAL_VIEWER": "Pastoral",
+    "PASTORAL_VIEWER": "Visitor",
     "PERSONAL_OWNER": "Owner"
+  },
+  "roles_desc": {
+    "PARISH_COORDINATOR": "Coordinates catechesis in this space: team, classes, invites, and settings.",
+    "LEAD_CATECHIST": "Responsible for the class: attendance, meetings, and inviting an assistant or family.",
+    "ASSISTANT_CATECHIST": "Helps in the class; invites are family-only.",
+    "PASTORAL_VIEWER": "Views classes and reports without editing.",
+    "GUARDIAN": "Follows the family's catechumens in the family portal."
   },
   "membership_status": {
     "ACTIVE": "Active",
@@ -538,8 +545,11 @@
       "viewer_hint": "You only see the team of the classes and community you coordinate.",
       "invite_hint": "Pick the community this person will coordinate. Specific classes can be set later via \"Set scope\"."
     },
-    "title": "Team",
-    "subtitle": "{{members}} active members · {{pending}} pending invites",
+    "title": "People and access",
+    "subtitle": "{{members}} active people · {{pending}} pending invites",
+    "matrix_title": "What each role can do",
+    "personal_invite_hint": "In the personal space you invite an assistant for your class — this is not the parish team. Families join through family invites.",
+    "empty_cta": "Invite someone",
     "invite_member": "Invite team member",
     "invite_sent": "Invitation email sent.",
     "invite_saved": "Invitation saved.",

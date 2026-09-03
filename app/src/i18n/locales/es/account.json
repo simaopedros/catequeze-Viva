@@ -15,5 +15,16 @@
   "buy_credits": "Comprar Más Créditos",
   "plan_past_due": "El pago de tu plan {{plan}} está vencido. Actualiza los datos de pago de tu suscripción.",
   "plan_cancel_at_period_end": "Tu suscripción al plan {{plan}} ha sido cancelada, pero permanece activa hasta el final del período de facturación actual: {{date}}",
-  "plan_deleted": "Tu suscripción anterior ha sido cancelada y ya no está activa."
+  "plan_deleted": "Tu suscripción anterior ha sido cancelada y ya no está activa.",
+  "scopes_title": "Dos alcances de cobro",
+  "scopes_hint": "La suscripción personal y la licencia del espacio institucional son independientes. Cancelar una no cierra la otra.",
+  "personal_scope_title": "Suscripción personal",
+  "personal_scope_desc": "Cubre tu espacio Personal (Plan Catequista).",
+  "workspace_scope_title": "Licencia de este espacio",
+  "workspace_scope_desc": "Cubre el espacio de trabajo activo — parroquia, diócesis o comunidad.",
+  "workspace_kind": "Tipo",
+  "workspace_role": "Tu rol",
+  "workspace_plan": "Plan efectivo",
+  "manage_workspace_billing": "Gestionar cobro del espacio",
+  "no_active_workspace": "Ningún espacio activo"
 }

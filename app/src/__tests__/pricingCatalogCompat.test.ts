@@ -40,9 +40,11 @@ describe('compatibility regression', () => {
     expect(workspace.source).toBe('trial');
   });
 
-  it('static catalog matches launch flags', () => {
-    expect(LAUNCH_CATEQUISTA_ONLY).toBe(true);
-    expect(DEFAULT_PLANS_BY_SLUG.unlimited.isPublic).toBe(false);
+  it('static catalog matches parish self-serve flags', () => {
+    expect(LAUNCH_CATEQUISTA_ONLY).toBe(false);
+    expect(DEFAULT_PLANS_BY_SLUG.unlimited.isPublic).toBe(true);
+    expect(DEFAULT_PLANS_BY_SLUG.unlimited.isActive).toBe(true);
+    expect(DEFAULT_PLANS_BY_SLUG.unlimited.name).toBe('Plano Paróquia');
     expect(DEFAULT_PLANS_BY_SLUG.single.prices.find((p) => p.interval === 'monthly')?.unitAmountCents).toBe(990);
   });
 

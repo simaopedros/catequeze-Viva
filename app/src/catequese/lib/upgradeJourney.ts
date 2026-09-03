@@ -101,6 +101,9 @@ export function buildBillingJourneyHrefFromContext({
   reason,
   required,
 }: BillingJourneyFromContextOptions): string {
+  if (isPersonalWorkspace) {
+    return "/app/billing#organizar-paroquia";
+  }
   return buildBillingJourneyHref({
     source,
     reason,

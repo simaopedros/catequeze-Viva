@@ -43,7 +43,8 @@ describe('planCatalogService', () => {
     expect(snapshot.source).toBe('static');
     expect(snapshot.bySlug.single.limits.maxClasses).toBe(DEFAULT_PLANS_BY_SLUG.single.limits.maxClasses);
     expect(snapshot.bySlug.single.prices.find((p) => p.interval === 'monthly')?.stripePriceId).toBe(ENV_SINGLE_MONTHLY);
-    expect(snapshot.bySlug.unlimited.isPublic).toBe(false);
+    expect(snapshot.bySlug.unlimited.isPublic).toBe(true);
+    expect(snapshot.bySlug.unlimited.prices.find((p) => p.interval === 'monthly')?.stripePriceId).toBe(ENV_UNLIMITED_MONTHLY);
   });
 
   it('defaults to db when PRICING_CATALOG_SOURCE is unset', async () => {

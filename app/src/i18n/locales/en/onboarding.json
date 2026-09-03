@@ -45,7 +45,10 @@
     "manager_features": [],
     "helper": "You can change path later if needed.",
     "launch_question": "Let's set up your class workspace.",
-    "launch_helper": "This launch is for catechists. Parish and diocese paths come later.",
+    "launch_helper": "Start with your class. Later you can organize as a parish or ask the diocese for coverage.",
+    "diocese_title": "I represent a diocese",
+    "diocese_desc": "Umbrella license for several parishes. Talk to sales — there is no public checkout.",
+    "invite_hint": "Already invited to a parish? Join from the invite email. Do not create another space.",
     "eyebrow": "First steps"
   },
   "personal_setup": {
@@ -220,7 +223,11 @@
     "personal_class_ready_title": "Your class is ready",
     "personal_class_ready_desc": "Class created with catechumens. You can take attendance and follow the journey.",
     "personal_class_empty_title": "Class created",
-    "personal_class_empty_desc": "The class exists. Add catechumens when you want attendance with real names."
+    "personal_class_empty_desc": "The class exists. Add catechumens when you want attendance with real names.",
+    "diocese_ready_title": "Talk to sales for the diocese license",
+    "diocese_ready_desc": "There is no public checkout for dioceses. The license covers parishes after the team assigns Diocese Plan in admin.",
+    "talk_sales": "Talk to sales on WhatsApp",
+    "diocese_account": "Diocese path"
   },
   "roles": {
     "coordinator": {
@@ -291,7 +298,9 @@
     "personal_class_title": "First class",
     "personal_class_subtitle": "Give it a clear name — you can refine the rest later.",
     "personal_people_title": "Who is in this class",
-    "personal_people_subtitle": "Without people, attendance and follow-up stay empty."
+    "personal_people_subtitle": "Without people, attendance and follow-up stay empty.",
+    "diocese_title": "Diocese license",
+    "diocese_subtitle": "There is no public checkout. Talk to sales and, if you want, pick the diocese."
   },
   "back_clean": "Back",
   "change_diocese_clean": "Change",
@@ -301,7 +310,8 @@
     "catechumens": "Catechumens",
     "done": "Done",
     "institution": "Parish",
-    "setup": "Setup"
+    "setup": "Setup",
+    "diocese": "Diocese"
   },
   "class_setup": {
     "eyebrow": "Class step",

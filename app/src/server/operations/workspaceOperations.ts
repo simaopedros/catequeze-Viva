@@ -4,6 +4,7 @@ import {
   resolveAllEffectiveBilling,
   getEffectiveBillingPlan,
   isBillingActive,
+  isDioceseUmbrellaPlan,
   ensureProductTrial,
 } from './billingEnforcement';
 import { getPersonalPlanId, isSubscriptionActiveLike } from '../../shared/planLimits';
@@ -155,7 +156,11 @@ export const listWorkspaces = async (_args: void, context: any) => {
       // Only honor the paid plan while the subscription is active — mirrors the
       // server-side enforcement in billingEnforcement.ts.
       plan: getPersonalPlan(freshUser),
+      billingStatus: freshUser?.subscriptionStatus ?? null,
       isPersonal: true,
+      planInherited: false,
+      dioceseId: null,
+      dioceseName: null,
     });
   }
 
@@ -379,7 +384,7 @@ export const getInstitutionalManageContext = async (_args: void, context: any) =
       const licensed =
         !!dioceseBilling &&
         isBillingActive(dioceseBilling) &&
-        (dioceseBilling.plan === 'UNLIMITED' || dioceseBilling.plan === 'DIOCESE');
+        isDioceseUmbrellaPlan(dioceseBilling.plan);
       return { id: diocese.id, name: diocese.name, licensed };
     });
   }
@@ -395,3 +400,163 @@ export const getInstitutionalManageContext = async (_args: void, context: any) =
     ownerPlan: canCreateUnderOwnerPlan ? ownerPlanRaw : null,
   };
 };
+
+/**
+ * Personal → Parish: create a PARISH workspace without converting the personal
+ * space. Optional copy of classes/catechumens so data does not disappear.
+ */
+export const organizeAsParish = async (
+  args: {
+    name: string;
+    city: string;
+    state: string;
+    bringClasses?: boolean;
+  },
+  context: any,
+) => {
+  if (!context.user) throw new HttpError(401);
+
+  const existingParish = await context.entities.Parish.findFirst({
+    where: { ownerId: context.user.id, type: 'PARISH' },
+    orderBy: { createdAt: 'asc' },
+    select: { id: true },
+  });
+
+  let parishId: string | undefined = existingParish?.id;
+  let existingParishId: string | undefined = existingParish?.id;
+
+  if (!parishId) {
+    const { createParish } = await import('./parishOperations');
+    const created = await createParish(
+      {
+        name: args.name,
+        city: args.city,
+        state: args.state,
+        startTrial: true,
+      },
+      context,
+    );
+    parishId = created?.id;
+    existingParishId = created?.existingParishId;
+  }
+
+  if (!parishId) {
+    throw new HttpError(500, 'Não foi possível criar o espaço da paróquia.');
+  }
+
+  let copiedClasses = 0;
+  if (args.bringClasses) {
+    copiedClasses = await copyPersonalClassesToParish(context, parishId);
+  }
+
+  await writeAuditIfPossible(context, parishId, copiedClasses);
+
+  return { id: parishId, existingParishId, copiedClasses };
+};
+
+async function writeAuditIfPossible(
+  context: any,
+  parishId: string,
+  copiedClasses: number,
+) {
+  try {
+    const { writeAuditLog } = await import('../auth/helpers');
+    await writeAuditLog(context, 'CREATE', 'Parish', parishId, {
+      parishId,
+      operation: 'ORGANIZE_AS_PARISH',
+      copiedClasses,
+    });
+  } catch {
+    /* audit is best-effort */
+  }
+}
+
+async function copyPersonalClassesToParish(
+  context: any,
+  targetParishId: string,
+): Promise<number> {
+  const personal = await context.entities.Parish.findFirst({
+    where: { ownerId: context.user.id, type: 'PERSONAL' },
+    select: { id: true },
+  });
+  if (!personal || personal.id === targetParishId) return 0;
+
+  const classes = await context.entities.CatechesisClass.findMany({
+    where: { parishId: personal.id },
+    include: { enrollments: true, catechists: true },
+  });
+
+  const profileMap = new Map<string, string>();
+  let copied = 0;
+
+  for (const cls of classes) {
+    const newClass = await context.entities.CatechesisClass.create({
+      data: {
+        name: cls.name,
+        status: cls.status,
+        maxCapacity: cls.maxCapacity,
+        dayOfWeek: cls.dayOfWeek,
+        startTime: cls.startTime,
+        endTime: cls.endTime,
+        location: cls.location,
+        parishId: targetParishId,
+        stageId: cls.stageId,
+        sacramentId: cls.sacramentId,
+      },
+    });
+    copied += 1;
+
+    for (const cat of cls.catechists || []) {
+      try {
+        await context.entities.ClassCatechist.create({
+          data: {
+            classId: newClass.id,
+            userId: cat.userId,
+            role: cat.role,
+          },
+        });
+      } catch {
+        /* unique constraint — skip */
+      }
+    }
+
+    for (const enr of cls.enrollments || []) {
+      if (!enr.catechumenProfileId) continue;
+      let newProfileId = profileMap.get(enr.catechumenProfileId);
+      if (!newProfileId) {
+        const orig = await context.entities.CatechumenProfile.findUnique({
+          where: { id: enr.catechumenProfileId },
+        });
+        if (!orig) continue;
+        const copiedProfile = await context.entities.CatechumenProfile.create({
+          data: {
+            firstName: orig.firstName,
+            lastName: orig.lastName,
+            email: orig.email,
+            birthDate: orig.birthDate,
+            photoUrl: orig.photoUrl,
+            parishId: targetParishId,
+            householdId: orig.householdId,
+          },
+        });
+        if (!copiedProfile?.id) continue;
+        newProfileId = copiedProfile.id;
+        profileMap.set(enr.catechumenProfileId, copiedProfile.id);
+      }
+      if (!newProfileId) continue;
+      try {
+        await context.entities.ClassEnrollment.create({
+          data: {
+            classId: newClass.id,
+            catechumenProfileId: newProfileId,
+            status: enr.status,
+          },
+        });
+      } catch {
+        /* unique constraint — skip */
+      }
+    }
+  }
+
+  return copied;
+}

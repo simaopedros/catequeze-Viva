@@ -194,6 +194,7 @@ describe("getUserAdminDetail / credits", () => {
           .mockResolvedValue({ enabled: true, verified: true }),
       },
       Parish: { findMany: vi.fn().mockResolvedValue([]) },
+      TenantBilling: { findMany: vi.fn().mockResolvedValue([]) },
     };
 
     const result = await getUserAdminDetail(

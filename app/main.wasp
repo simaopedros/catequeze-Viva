@@ -714,6 +714,11 @@ query getInstitutionalManageContext {
   fn: import { getInstitutionalManageContext } from "@src/server/operations/workspaceOperations",
   entities: [Membership, Parish, Diocese, TenantBilling, User]
 }
+
+action organizeAsParish {
+  fn: import { organizeAsParish } from "@src/server/operations/workspaceOperations",
+  entities: [Parish, Membership, TenantBilling, Diocese, User, CatechesisClass, ClassCatechist, ClassEnrollment, CatechumenProfile, AuditLog, PricingPlan, PricingPlanPrice]
+}
 //#endregion
 
 
@@ -2250,7 +2255,7 @@ query getParishAdminDetail {
 
 query getUserAdminDetail {
   fn: import { getUserAdminDetail } from "@src/server/operations/userAdminOperations",
-  entities: [User, Membership, AuditLog, DailyAiUsage, Parish, Community, UserAiCredits, UserTwoFactor]
+  entities: [User, Membership, AuditLog, DailyAiUsage, Parish, Community, UserAiCredits, UserTwoFactor, TenantBilling, Diocese]
 }
 
 action adjustUserAiCredits {
@@ -2375,7 +2380,7 @@ action cancelUserSubscriptionImmediate {
 
 query getPaginatedUsers {
   fn: import { getPaginatedUsers } from "@src/user/operations",
-  entities: [User]
+  entities: [User, Membership, Parish]
 }
 
 action updateIsUserAdminById {

@@ -298,6 +298,23 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
                           >
                             {t("pages.licenses.complimentary")}
                           </Button>
+                          {row.kind === "diocese" && (
+                            <Button
+                              size="xs"
+                              variant="outline"
+                              disabled={busy}
+                              onClick={() =>
+                                void run(async () => {
+                                  await setComplimentaryPlan({
+                                    dioceseId: row.entityId,
+                                    planSlug: "unlimited",
+                                  });
+                                })
+                              }
+                            >
+                              {t("pages.licenses.assign_diocese")}
+                            </Button>
+                          )}
                           {row.billingId && (
                             <Button
                               size="xs"

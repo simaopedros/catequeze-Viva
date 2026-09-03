@@ -22,12 +22,19 @@ import { useActiveMembership } from "../../client/hooks/useActiveMembership";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { useRoleLabels } from "../../i18n/useLabels";
+import { useAuth } from "wasp/client/auth";
+import {
+  WorkspaceKindBadge,
+  WorkspacePlanLabel,
+  workspaceKindOf,
+} from "./WorkspaceIdentityChip";
 
 export function ContextSelector() {
   const { t } = useTranslation("topbar");
   const { t: tc } = useTranslation("common");
   const navigate = useNavigate();
   const roleLabels = useRoleLabels();
+  const { data: authUser } = useAuth();
   const {
     workspace,
     workspaceName,
@@ -38,7 +45,7 @@ export function ContextSelector() {
   const { activeMembership, availableMemberships, switchMembership } =
     useActiveMembership();
   const { activeParishName, switchParish } = useActiveParish();
-  const { hasPendingInvitations, allMemberships } = useUserContext();
+  const { allMemberships } = useUserContext();
   const pendingCount = (allMemberships || []).filter(
     (m) => m.status === "INVITED",
   ).length;
@@ -46,12 +53,14 @@ export function ContextSelector() {
   const hasWorkspaces = availableWorkspaces.length > 0;
   const hasMultipleRoles = availableMemberships.length > 1;
   const hasLegacyParishes = !hasWorkspaces && !!activeParishName;
+  const personalPlan = authUser?.subscriptionPlan || null;
 
-  // Current display: workspace name + role, or parish name
   const currentRoleLabel = activeMembership
     ? roleLabels[activeMembership.role as keyof typeof roleLabels] ||
       activeMembership.role
-    : "";
+    : workspace?.role
+      ? roleLabels[workspace.role as keyof typeof roleLabels] || workspace.role
+      : "";
 
   const wsIcon = (type: string) => {
     if (type === "PERSONAL")
@@ -71,35 +80,35 @@ export function ContextSelector() {
       "COMMUNITY_COORDINATOR",
     ].includes(role) && role !== "PERSONAL_OWNER";
 
-  // ---- Workspace-driven selector (new unified) ----
   if (hasWorkspaces) {
     const MAX_PER_GROUP = 5;
+    const activeKind = workspaceKindOf(workspaceType);
 
     const groups = [
       {
         key: "personal",
         label: t("workspaceGroups.personal"),
-        items: availableWorkspaces.filter((w: any) => w.isPersonal),
+        items: availableWorkspaces.filter((w) => w.isPersonal),
       },
       {
         key: "parish",
         label: t("workspaceGroups.parish"),
         items: availableWorkspaces.filter(
-          (w: any) => !w.isPersonal && w.type === "PARISH",
+          (w) => !w.isPersonal && w.type === "PARISH",
         ),
       },
       {
         key: "diocese",
         label: t("workspaceGroups.diocese"),
         items: availableWorkspaces.filter(
-          (w: any) => !w.isPersonal && w.type === "DIOCESE",
+          (w) => !w.isPersonal && w.type === "DIOCESE",
         ),
       },
       {
         key: "community",
         label: t("workspaceGroups.community"),
         items: availableWorkspaces.filter(
-          (w: any) => !w.isPersonal && w.type === "COMMUNITY",
+          (w) => !w.isPersonal && w.type === "COMMUNITY",
         ),
       },
     ].filter((g) => g.items.length > 0);
@@ -110,27 +119,46 @@ export function ContextSelector() {
           <Button
             variant="ghost"
             size="sm"
-            className="relative flex h-11 min-w-0 max-w-[150px] items-center gap-1.5 rounded-sm border border-transparent px-1.5 text-muted-foreground hover:bg-accent/50 hover:text-brand-ink min-[360px]:max-w-[180px] sm:max-w-[240px] sm:gap-2 sm:border-input sm:px-3 xl:max-w-[280px]"
+            data-testid="workspace-context-trigger"
+            className="relative flex h-auto min-h-11 min-w-0 max-w-[11.5rem] items-center gap-1.5 rounded-sm border border-transparent px-1.5 py-1 text-muted-foreground hover:bg-accent/50 hover:text-brand-ink min-[360px]:max-w-[14rem] sm:max-w-[18rem] sm:gap-2 sm:border-input sm:px-3 xl:max-w-[22rem]"
             aria-label={
               pendingCount > 0
                 ? tc("pending_invite.banner_many", { count: pendingCount })
-                : undefined
+                : t("context")
             }
           >
             <span className="hidden sm:inline-flex">
               {wsIcon(workspaceType || "PERSONAL")}
             </span>
-            <span className="min-w-0 truncate text-sm font-semibold tracking-tight text-brand-ink">
-              {workspaceName}
-            </span>
-            {currentRoleLabel && (
-              <>
-                <span className="text-border hidden sm:inline shrink-0">·</span>
-                <span className="text-xs text-muted-foreground truncate hidden sm:inline min-w-0">
-                  {currentRoleLabel}
+            <span className="min-w-0 flex-1 text-left">
+              <span className="flex min-w-0 items-center gap-1.5">
+                <WorkspaceKindBadge
+                  kind={activeKind}
+                  className="hidden shrink-0 sm:inline-flex"
+                />
+                <span className="min-w-0 truncate text-sm font-semibold tracking-tight text-brand-ink">
+                  {workspaceName}
                 </span>
-              </>
-            )}
+              </span>
+              <span className="mt-0.5 hidden min-w-0 items-center gap-1.5 sm:flex">
+                {currentRoleLabel && (
+                  <span className="truncate text-[11px] text-muted-foreground">
+                    {currentRoleLabel}
+                  </span>
+                )}
+                {currentRoleLabel && (
+                  <span className="shrink-0 text-border">·</span>
+                )}
+                <WorkspacePlanLabel
+                  parishType={workspaceType}
+                  parishPlan={workspace?.plan}
+                  planInherited={workspace?.planInherited}
+                  dioceseName={workspace?.dioceseName}
+                  personalPlan={personalPlan}
+                  className="text-[11px]"
+                />
+              </span>
+            </span>
             {pendingCount > 0 && (
               <span
                 data-testid="workspace-pending-invite-badge"
@@ -140,24 +168,28 @@ export function ContextSelector() {
                 {pendingCount > 9 ? "9+" : pendingCount}
               </span>
             )}
-            <ChevronDown className="h-3.5 w-3.5 opacity-60 shrink-0" />
+            <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-60" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
           sideOffset={4}
-          className="w-[min(22rem,calc(100vw-1rem))] p-2 max-h-[70vh] overflow-y-auto"
+          className="w-[min(24rem,calc(100vw-1rem))] p-2 max-h-[70vh] overflow-y-auto"
         >
           {groups.map((g) => (
             <div key={g.key}>
               <div className="px-2 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {g.label} ({g.items.length})
               </div>
-              {g.items.slice(0, MAX_PER_GROUP).map((ws: any) => {
+              {g.items.slice(0, MAX_PER_GROUP).map((ws) => {
                 const isActive = ws.id === workspace?.id;
+                const kind = workspaceKindOf(ws.isPersonal ? "PERSONAL" : ws.type);
+                const rowRole =
+                  roleLabels[ws.role as keyof typeof roleLabels] || ws.role;
                 return (
                   <button
                     key={ws.id}
+                    type="button"
                     onClick={() => switchWorkspace(ws.id)}
                     className={cn(
                       "w-full flex items-center gap-3 text-sm px-2 py-2 rounded-sm hover:bg-accent transition-colors cursor-pointer",
@@ -166,14 +198,26 @@ export function ContextSelector() {
                   >
                     {wsIcon(ws.isPersonal ? "PERSONAL" : ws.type)}
                     <div className="flex-1 text-left min-w-0">
-                      <div className="truncate text-sm font-semibold tracking-tight text-brand-ink">
-                        {ws.name}
+                      <div className="flex min-w-0 items-center gap-1.5">
+                        <WorkspaceKindBadge kind={kind} />
+                        <span className="truncate text-sm font-semibold tracking-tight text-brand-ink">
+                          {ws.name}
+                        </span>
                       </div>
-                      <div className="text-overline text-muted-foreground truncate">
-                        {ws.isPersonal
-                          ? ws.subtitle || t("personalSpace")
-                          : roleLabels[ws.role as keyof typeof roleLabels] ||
-                            ws.role}
+                      <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-x-1.5 text-overline text-muted-foreground">
+                        <span className="truncate">
+                          {ws.isPersonal
+                            ? ws.subtitle || t("personalSpace")
+                            : rowRole}
+                        </span>
+                        <span aria-hidden>·</span>
+                        <WorkspacePlanLabel
+                          parishType={ws.isPersonal ? "PERSONAL" : ws.type}
+                          parishPlan={ws.plan}
+                          planInherited={ws.planInherited}
+                          dioceseName={ws.dioceseName}
+                          personalPlan={personalPlan}
+                        />
                       </div>
                     </div>
                     {isActive && (
@@ -184,6 +228,7 @@ export function ContextSelector() {
               })}
               {g.items.length > MAX_PER_GROUP && (
                 <button
+                  type="button"
                   onClick={() => navigate("/app/select-workspace")}
                   className="w-full px-2 py-1 text-left text-caption font-medium text-brand-ink underline-offset-2 hover:underline"
                 >
@@ -192,7 +237,6 @@ export function ContextSelector() {
               )}
             </div>
           ))}
-          {/* Role switch within current workspace */}
           {hasMultipleRoles && (
             <div className="border-t mt-2 pt-2">
               <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -204,6 +248,7 @@ export function ContextSelector() {
                 return (
                   <button
                     key={m.id}
+                    type="button"
                     onClick={() => {
                       switchMembership(m.id);
                       if (m.parishId) switchParish(m.parishId);
@@ -259,6 +304,7 @@ export function ContextSelector() {
               </button>
             )}
             <button
+              type="button"
               onClick={() => navigate("/app/select-workspace")}
               className="w-full text-xs text-muted-foreground hover:text-brand-ink px-2 py-1.5 rounded-sm hover:bg-accent transition-colors text-left"
             >
@@ -270,7 +316,6 @@ export function ContextSelector() {
     );
   }
 
-  // ---- Legacy parish selector (backward compat, no workspaces yet) ----
   if (hasLegacyParishes) {
     const yearLabel = new Date().getFullYear().toString();
     return (
@@ -305,6 +350,7 @@ export function ContextSelector() {
             {t("workspaceGroups.parish")}
           </div>
           <button
+            type="button"
             onClick={() => {}}
             className="w-full flex items-center gap-2 text-sm px-2 py-1.5 rounded-sm hover:bg-accent transition-colors cursor-pointer"
           >

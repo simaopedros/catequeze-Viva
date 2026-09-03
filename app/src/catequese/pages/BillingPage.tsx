@@ -39,7 +39,7 @@ import { getAiCreditsStatus } from "../lib/aiOperations";
 import { MOCK_AI_STATUS } from "../lib/aiFeatureFlag";
 import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 import { useAuth } from "wasp/client/auth";
-import { PaymentPlanId } from "../../payment/plans";
+import { PaymentPlanId, prettyPaymentPlanName } from "../../payment/plans";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { toast } from "../../client/hooks/use-toast";
 import { useUserContext } from "../../client/hooks/useUserContext";
@@ -73,6 +73,13 @@ import { cn } from "../../client/utils";
 import { SalesWhatsAppCta } from "../../client/components/SalesWhatsAppCta";
 import type { ReactNode } from "react";
 import { parseUpgradeJourneyReason } from "../lib/upgradeJourney";
+import {
+  WorkspaceKindBadge,
+  WorkspacePlanLabel,
+  workspaceKindOf,
+} from "../components/WorkspaceIdentityChip";
+import { OrganizeParishCard } from "../components/OrganizeParishCard";
+import { RequestDioceseCoverageCard } from "../components/RequestDioceseCoverageCard";
 
 interface PlanCard {
   planId: string;
@@ -614,7 +621,7 @@ export default function BillingPage() {
     pricingViewedRef.current = true;
     trackViewPricing({
       plan_ids: isPersonal ? ["single"] : ["unlimited"],
-      content_name: isPersonal ? "Plano Unico" : "Plano Ilimitado",
+      content_name: isPersonal ? "Plano Catequista" : "Plano Paróquia",
     });
     trackMarketingEvent("pricing_viewed", {
       placement: "billing_page",
@@ -852,6 +859,58 @@ export default function BillingPage() {
   return (
     <>
       <div className="mx-auto max-w-6xl space-y-8">
+        <section
+          className="grid gap-3 sm:grid-cols-2"
+          data-testid="billing-dual-scopes"
+        >
+          <div className="rounded-sm border border-border/70 bg-white p-4 space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              {t("dual_scope_personal")}
+            </p>
+            <p className="text-sm font-semibold tracking-tight text-brand-ink">
+              {prettyPaymentPlanName(user?.subscriptionPlan || "catechist_free")}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {user?.subscriptionStatus || t("free_plan")}
+            </p>
+          </div>
+          <div className="rounded-sm border border-border/70 bg-white p-4 space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              {t("dual_scope_workspace")}
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <WorkspaceKindBadge kind={workspaceKindOf(workspace?.type)} />
+              <span className="text-sm font-semibold tracking-tight text-brand-ink">
+                {workspace?.name || parish?.name || t("this_institution")}
+              </span>
+            </div>
+            <WorkspacePlanLabel
+              parishType={workspace?.type}
+              parishPlan={workspace?.plan}
+              planInherited={workspace?.planInherited}
+              dioceseName={workspace?.dioceseName}
+              personalPlan={user?.subscriptionPlan}
+              className="block text-sm text-brand-ink"
+            />
+          </div>
+          <p className="sm:col-span-2 text-xs text-muted-foreground">
+            {t("dual_scope_hint")}
+          </p>
+        </section>
+
+        {isPersonal && canManageBilling && (
+          <OrganizeParishCard workspaceId={workspaceId} />
+        )}
+        {!isPersonal &&
+          workspace?.type === "PARISH" &&
+          canManageBilling && (
+            <RequestDioceseCoverageCard
+              parishName={workspace?.name || parish?.name || ""}
+              dioceseName={workspace?.dioceseName}
+              planInherited={Boolean(workspace?.planInherited)}
+            />
+          )}
+
         <section className="border-b border-border/70 pb-8">
           <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
             <div className="space-y-6">
@@ -1040,7 +1099,7 @@ export default function BillingPage() {
                       variant="outline"
                       className="mt-3 bg-white"
                     >
-                      <a href="/app/parishes?new=true">
+                      <a href="#organizar-paroquia">
                         {t("plan_mismatch_institutional_cta")}
                       </a>
                     </Button>
@@ -1600,7 +1659,7 @@ export default function BillingPage() {
                           variant="outline"
                           className="mt-5 w-full rounded-sm text-sm"
                         >
-                          <a href="/app/parishes?new=true">
+                          <a href="#organizar-paroquia">
                             {t("plan_mismatch_institutional_cta")}
                           </a>
                         </Button>

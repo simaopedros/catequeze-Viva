@@ -228,10 +228,9 @@ export function Sidebar() {
   const { t: tc } = useTranslation("common");
   const { t: tn } = useTranslation("navigation");
   const [collapsed, setCollapsed] = useState(false);
-  // Secondary groups start collapsed to reduce cognitive load; operation stays open.
-  // Management stays open so coordinators can find parishes and communities.
+  // Operação is non-collapsible (always open). People starts open; Gestão stays closed.
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    () => new Set(["people", "management"]),
+    () => new Set(["people"]),
   );
   const { userRole, isAdmin } = useUserContext();
   const { workspaceType, workspaceId } = useActiveWorkspace();
