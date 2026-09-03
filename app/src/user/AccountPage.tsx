@@ -120,7 +120,10 @@ export default function AccountPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Card className="rounded-sm border-border/70" data-testid="account-personal-scope">
+        <Card
+          className="rounded-sm border-border/70"
+          data-testid="account-personal-scope"
+        >
           <CardHeader className="space-y-1.5">
             <AppEyebrow className="flex items-center gap-2">
               <UserIcon className="h-3.5 w-3.5" />
@@ -141,7 +144,10 @@ export default function AccountPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-sm border-border/70" data-testid="account-workspace-scope">
+        <Card
+          className="rounded-sm border-border/70"
+          data-testid="account-workspace-scope"
+        >
           <CardHeader className="space-y-1.5">
             <AppEyebrow className="flex items-center gap-2">
               <Building2 className="h-3.5 w-3.5" />
@@ -172,6 +178,7 @@ export default function AccountPage() {
                   planInherited={workspace.planInherited}
                   dioceseName={workspace.dioceseName}
                   personalPlan={user.subscriptionPlan}
+                  billingStatus={workspace.billingStatus}
                   className="block text-sm font-medium text-brand-ink"
                 />
                 <Link

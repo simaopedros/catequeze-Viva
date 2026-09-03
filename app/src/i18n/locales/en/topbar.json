@@ -41,6 +41,8 @@
   "plan": {
     "personal": "{{plan}}",
     "parish_license": "Parish license · {{plan}}",
+    "parish_trial": "Trial period · subscribe to the Parish Plan",
+    "parish_needs_license": "Subscribe to the Parish Plan for this workspace",
     "covered_by_diocese": "Covered by the diocese",
     "covered_by_named": "Covered by {{name}}",
     "free": "No subscription"

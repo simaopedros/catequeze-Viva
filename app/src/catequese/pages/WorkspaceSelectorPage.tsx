@@ -53,6 +53,7 @@ interface Workspace {
   dioceseName?: string | null;
   planInherited?: boolean;
   isManager?: boolean;
+  billingStatus?: string | null;
 }
 
 interface ManageDiocese {
@@ -246,6 +247,7 @@ export default function WorkspaceSelectorPage() {
                 parishPlan={ws.plan}
                 planInherited={ws.planInherited}
                 dioceseName={ws.dioceseName}
+                billingStatus={ws.billingStatus}
                 className="text-xs font-medium text-brand-ink"
               />
             </span>
