@@ -332,6 +332,8 @@
     "location_placeholder": "Ej.: Salón parroquial",
     "saving": "Creando grupo…",
     "continue": "Continuar",
+    "start_time_invalid": "Horario de inicio inválido. Usa el formato HH:mm (ej.: 19:00).",
+    "end_time_invalid": "Horario de fin inválido. Usa el formato HH:mm (ej.: 20:30).",
     "days": {
       "0": "Domingo",
       "1": "Lunes",

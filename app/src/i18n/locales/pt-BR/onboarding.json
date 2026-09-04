@@ -332,6 +332,8 @@
     "location_placeholder": "Ex.: Salão paroquial",
     "saving": "Criando turma…",
     "continue": "Continuar",
+    "start_time_invalid": "Horário de início inválido. Use o formato HH:mm (ex.: 19:00).",
+    "end_time_invalid": "Horário de término inválido. Use o formato HH:mm (ex.: 20:30).",
     "days": {
       "0": "Domingo",
       "1": "Segunda",

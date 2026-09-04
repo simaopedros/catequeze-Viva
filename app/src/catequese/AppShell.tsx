@@ -1,4 +1,12 @@
-import { ReactNode, useEffect, useMemo, useRef, lazy, Suspense } from "react";
+import {
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  lazy,
+  Suspense,
+} from "react";
 import { SkipToContent } from "../client/components/SkipToContent";
 import { useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -19,6 +27,10 @@ import { trackMarketingEvent } from "../client/analytics/marketingAnalytics";
 import { toast } from "../client/hooks/use-toast";
 import { Breadcrumbs } from "./components/Breadcrumbs";
 import { AI_FEATURES_ENABLED } from "../shared/aiFeatures";
+import {
+  isMobileOperationalRoute,
+  MOBILE_MAX_WIDTH_PX,
+} from "./lib/shellChrome";
 
 const AIHelperWidget = lazy(() =>
   import("./components/AIHelperWidget").then((m) => ({
@@ -71,6 +83,26 @@ export function AppShell({ children }: AppShellProps) {
     const path = location.pathname;
     return path === "/app/onboarding" || path === "/app/select-workspace";
   }, [location.pathname]);
+
+  const [isMobileViewport, setIsMobileViewport] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia(`(max-width: ${MOBILE_MAX_WIDTH_PX}px)`).matches
+      : false,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${MOBILE_MAX_WIDTH_PX}px)`);
+    const apply = () => setIsMobileViewport(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  const hideOperationalChrome = useMemo(
+    () =>
+      isMobileViewport && isMobileOperationalRoute(location.pathname),
+    [isMobileViewport, location.pathname],
+  );
 
   useEffect(() => {
     if (isLoading || isFetching) return;
@@ -198,7 +230,7 @@ export function AppShell({ children }: AppShellProps) {
               >
                 <TopBar />
               </ErrorBoundary>
-              <ProductTrialBanner />
+              {!hideOperationalChrome && <ProductTrialBanner />}
             </div>
             <main
               id="main-content"
@@ -217,7 +249,7 @@ export function AppShell({ children }: AppShellProps) {
                 className="content-transition print:contents"
               >
                 <ErrorBoundary variant="page">
-                  <Breadcrumbs />
+                  {!hideOperationalChrome && <Breadcrumbs />}
                   <SubscriptionGate>{children}</SubscriptionGate>
                 </ErrorBoundary>
               </div>

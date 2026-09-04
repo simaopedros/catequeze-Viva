@@ -34,4 +34,16 @@ describe("server createClassSchema optional times", () => {
     });
     expect(parsed.communityId).toBeNull();
   });
+
+  it("accepts null startTime/endTime", async () => {
+    const { createClassSchema } = await import("../server/validation");
+    const parsed = createClassSchema.parse({
+      name: "Turma de Crisma",
+      parishId: "11111111-1111-4111-8111-111111111111",
+      startTime: null,
+      endTime: null,
+    });
+    expect(parsed.startTime).toBeUndefined();
+    expect(parsed.endTime).toBeUndefined();
+  });
 });

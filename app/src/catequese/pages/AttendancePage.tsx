@@ -235,6 +235,7 @@ export default function AttendancePage() {
 
   const statusLetter = (key: string) => {
     if (key === "PRESENT") return t("matrix.present_letter");
+    if (key === "LATE") return t("matrix.late_letter");
     if (key === "ABSENT") return t("matrix.absent_letter");
     return t("matrix.justified_letter");
   };
@@ -551,7 +552,12 @@ export default function AttendancePage() {
               catechumens: tcl("catechumens_count", {
                 count: catechumens.length,
               }),
-              meetings: t("matrix.meetings_count", { count: meetings.length }),
+              meetings:
+                meetings.length === 1
+                  ? t("matrix.meetings_count_one", { count: meetings.length })
+                  : t("matrix.meetings_count_plural", {
+                      count: meetings.length,
+                    }),
             })}
             actions={
               <Button

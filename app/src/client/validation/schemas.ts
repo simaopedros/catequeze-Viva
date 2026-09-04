@@ -1,10 +1,20 @@
 import { z } from 'zod';
 
-const emptyToUndefined = (value: unknown) =>
-  typeof value === 'string' && value.trim() === '' ? undefined : value;
+const emptyToUndefined = (value: unknown) => {
+  if (value === null || value === undefined) return undefined;
+  if (typeof value === 'string' && value.trim() === '') return undefined;
+  return value;
+};
+
+const normalizeHhMm = (value: unknown) => {
+  const normalized = emptyToUndefined(value);
+  if (typeof normalized !== 'string') return normalized;
+  const match = normalized.match(/^(\d{2}:\d{2})(:\d{2})?$/);
+  return match ? match[1] : normalized;
+};
 
 const optionalHhMm = z.preprocess(
-  emptyToUndefined,
+  normalizeHhMm,
   z.string().regex(/^\d{2}:\d{2}$/, 'Formato inválido (HH:mm)').optional(),
 );
 
