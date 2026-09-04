@@ -20,14 +20,11 @@ import {
   Check,
   ChevronDown,
   ClipboardList,
-  Clock,
   CloudOff,
   Loader2,
-  Minus,
   Search,
   Undo2,
   Users,
-  X,
 } from "lucide-react";
 import { cn } from "../../../client/utils";
 import { trackMarketingEvent } from "../../../client/analytics/marketingAnalytics";
@@ -262,6 +259,20 @@ export function MeetingAttendanceSheet({
       : -1;
     const next = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
     void markOne(catechumenProfileId, next);
+  };
+
+  const nextStatusFor = (current: string | null | undefined) => {
+    const idx = current
+      ? STATUS_CYCLE.indexOf(current as (typeof STATUS_CYCLE)[number])
+      : -1;
+    return STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+  };
+
+  const statusLetter = (status: (typeof STATUS_CYCLE)[number]) => {
+    if (status === "PRESENT") return t("matrix.present_letter");
+    if (status === "LATE") return t("matrix.late_letter");
+    if (status === "ABSENT") return t("matrix.absent_letter");
+    return t("matrix.justified_letter");
   };
 
   const undoLast = () => {
@@ -675,6 +686,8 @@ export function MeetingAttendanceSheet({
       <ul className="mt-3 divide-y divide-border/70">
         {participants.map((p: any) => {
           const st = localStatus[p.catechumenProfileId];
+          const nextSt = nextStatusFor(st);
+          const nextLetter = statusLetter(nextSt);
           const sync = rowSync[p.catechumenProfileId] || "idle";
           const pending = pendingMap[p.catechumenProfileId];
           return (
@@ -709,14 +722,14 @@ export function MeetingAttendanceSheet({
                     "inline-flex h-11 min-h-11 min-w-11 items-center justify-center rounded-sm border text-xs font-semibold transition-colors motion-reduce:transition-none",
                     statusButtonClass(st),
                   )}
-                  aria-label={t("sheet.change_status", {
+                  aria-label={`${t("sheet.change_status", {
                     name: `${p.firstName} ${p.lastName}`,
-                  })}
+                  })} — ${t(`sheet.status.${nextSt}`, { defaultValue: nextSt })} (${nextLetter})`}
                 >
                   {sync === "saving" ? (
                     <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
                   ) : (
-                    statusIcon(st)
+                    <span aria-hidden="true">{nextLetter}</span>
                   )}
                 </button>
               </div>
@@ -810,14 +823,6 @@ export function MeetingAttendanceSheet({
       />
     </div>
   );
-}
-
-function statusIcon(st: string | null | undefined) {
-  if (st === "PRESENT") return <Check className="h-4 w-4" />;
-  if (st === "LATE") return <Clock className="h-4 w-4" />;
-  if (st === "ABSENT") return <X className="h-4 w-4" />;
-  if (st === "JUSTIFIED") return <Clock className="h-4 w-4" />;
-  return <Minus className="h-4 w-4" />;
 }
 
 function statusButtonClass(st: string | null | undefined) {
