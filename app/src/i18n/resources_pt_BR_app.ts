@@ -781,8 +781,8 @@ export const attendance_pt_BR_app = {
       "no_permission": "Sem permissão.",
       "meetings_count": "{{count}} encontros",
       "present_letter": "P",
-      "absent_letter": "F",
       "late_letter": "T",
+      "absent_letter": "F",
       "justified_letter": "J",
       "meetings_count_one": "{{count}} encontro",
       "meetings_count_plural": "{{count}} encontros",
@@ -833,6 +833,7 @@ export const attendance_pt_BR_app = {
       "conflict_keep_server": "Manter servidor",
       "conflict_detail": "Local: {{mine}} · Servidor: {{server}}",
       "change_status": "Alterar presença de {{name}}",
+      "next_status_hint": "{{current}} · próximo toque: {{next}}",
       "status": {
         "PRESENT": "Presente",
         "ABSENT": "Ausente",
@@ -2115,6 +2116,9 @@ export const meetings_pt_BR_app = {
     "content_main": "Conteúdo",
     "content_materials": "Materiais",
     "content_activity": "Atividade",
+    "prep_open_bible": "Consultar a Bíblia",
+    "prep_open_catechism": "Consultar o Catecismo",
+    "prep_missing_body": "Use a Bíblia e o Catecismo para preparar o encontro antes de vincular um roteiro.",
     "encounter": {
       "focus_kind": {
         "in_progress": "Em andamento agora",
@@ -2140,6 +2144,8 @@ export const meetings_pt_BR_app = {
         "none_calendar": "Ver agenda"
       },
       "secondary": {
+        "bible": "Bíblia",
+        "catechism": "Catecismo",
         "roteiro": "Abrir roteiro",
         "class": "Ver turma",
         "messages": "Avisar famílias",

@@ -84,7 +84,11 @@ export function BottomNav() {
           }}
         >
           {visible.map((item) => {
-            const label = t(item.labelKey);
+            const labelKey =
+              item.labelKey === "catechumens"
+                ? "catechumens_short"
+                : item.labelKey;
+            const label = t(labelKey, { defaultValue: t(item.labelKey) });
             return (
               <NavLink
                 key={item.to}
@@ -118,12 +122,8 @@ export function BottomNav() {
                     >
                       <item.Icon className="h-5 w-5 shrink-0" />
                     </span>
-                    {/* Abaixo de 360px sobram ~56px por coluna e rótulos longos
-                        viravam "Cate…", pior que ícone puro. O nome continua no
-                        aria-label, então nada se perde para leitor de tela.
-                        hidden/block e não sr-only/not-sr-only: not-sr-only reseta
-                        overflow e white-space, anulando o truncate. */}
-                    <span className="hidden max-w-full truncate min-[360px]:block">
+                    {/* Abaixo de 400px só ícone; rótulos curtos evitam "Catequiz…" em 360px. */}
+                    <span className="hidden max-w-full truncate min-[400px]:block">
                       {label}
                     </span>
                   </>
@@ -147,7 +147,7 @@ export function BottomNav() {
               <span className="flex h-6 w-11 items-center justify-center">
                 <Menu className="h-5 w-5" />
               </span>
-              <span className="hidden max-w-full truncate min-[360px]:block">
+              <span className="hidden max-w-full truncate min-[400px]:block">
                 {t("more", { ns: "common" })}
               </span>
               {unreadCount > 0 && (

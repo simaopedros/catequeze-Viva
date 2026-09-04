@@ -1,14 +1,14 @@
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "wasp/client/auth";
-import { Calendar, Plus, Search, UserPlus } from "lucide-react";
+import { Calendar, Plus, UserPlus } from "lucide-react";
 import { Button } from "../../../client/components/ui/button";
 import { AppDisplayTitle } from "../../../client/components/brand/AppChrome";
 import { usePageTitle } from "../../../client/hooks/usePageTitle";
-import { openGlobalSearch } from "../../../client/utils/globalSearchEvent";
 import { formatDate } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
 import { cn } from "../../../client/utils";
+import { getUserDisplayFirstName } from "../../../shared/displayName";
 
 export function getGreetingKey(
   hour: number,
@@ -32,13 +32,12 @@ export function DashboardHero({
 }: DashboardHeroProps) {
   const { t } = useTranslation("dashboard");
   const { t: tc } = useTranslation("common");
-  const { t: tTop } = useTranslation("topbar");
   const { currentLocale } = useLocale();
   const { data: user } = useAuth();
 
   usePageTitle(t("title"));
 
-  const firstName = user?.firstName?.trim() || user?.username?.trim() || null;
+  const firstName = getUserDisplayFirstName(user);
   const greeting = t(getGreetingKey(now.getHours()), {
     name: firstName ?? "",
     context: firstName ? undefined : "anonymous",
@@ -78,20 +77,6 @@ export function DashboardHero({
       </div>
 
       <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center lg:w-auto lg:shrink-0">
-        {/* Mobile already has the TopBar search icon; the field only helps on wider screens. */}
-        <button
-          type="button"
-          onClick={openGlobalSearch}
-          className="group hidden h-11 min-h-11 w-full items-center gap-2 rounded-md border border-border bg-card px-3 text-left text-sm text-muted-foreground shadow-elevation-xs transition-colors hover:border-input hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 sm:flex sm:w-56"
-          aria-label={tTop("searchPlaceholder")}
-        >
-          <Search className="h-4 w-4 shrink-0" aria-hidden />
-          <span className="flex-1 truncate">{t("search_placeholder")}</span>
-          <kbd className="hidden rounded-sm border border-border/70 bg-muted/50 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline-flex">
-            Ctrl K
-          </kbd>
-        </button>
-
         {!hideActions && (
           <div className="flex gap-2">
             <Button

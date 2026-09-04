@@ -781,8 +781,8 @@ export const attendance_es = {
       "no_permission": "Sin permiso.",
       "meetings_count": "{{count}} encuentros",
       "present_letter": "P",
-      "absent_letter": "F",
       "late_letter": "T",
+      "absent_letter": "F",
       "justified_letter": "J",
       "meetings_count_one": "{{count}} encuentro",
       "meetings_count_plural": "{{count}} encuentros",
@@ -833,6 +833,7 @@ export const attendance_es = {
       "conflict_keep_server": "Mantener servidor",
       "conflict_detail": "Local: {{mine}} · Servidor: {{server}}",
       "change_status": "Cambiar asistencia de {{name}}",
+      "next_status_hint": "{{current}} · siguiente toque: {{next}}",
       "status": {
         "PRESENT": "Presente",
         "ABSENT": "Ausente",
@@ -3245,7 +3246,7 @@ export const landing_es = {
       "headline_line2": "Nosotros organizamos el grupo.",
       "subheadline": "Catequese Viva cuida de la asistencia, la preparación del encuentro y el acompañamiento de cada catequizando, para que llegues cada semana con el corazón libre para lo esencial: presentar a Jesús a tu grupo.",
       "badge": "Para quien dice sí a la misión de catequizar",
-      "cta_primary": "Comenzar mi camino — 7 días gratis",
+      "cta_primary": "Empezar 7 días gratis",
       "cta_secondary": "Cómo funciona",
       "trust_signals": "Sin cobro ahora • Sin tarjeta para empezar • Funciona en el celular",
       "cta_secondary_href": "/#como",
@@ -3624,7 +3625,7 @@ export const landing_es = {
     "mobile_cta": {
       "title": "7 días para sentir la diferencia con tu grupo",
       "subtitle": "Sin cobro ahora · sin tarjeta",
-      "button": "Comenzar mi camino"
+      "button": "Empezar 7 días gratis"
     },
     "proof": {
       "badge": "Empieza con tranquilidad",
@@ -4275,6 +4276,9 @@ export const meetings_es = {
     "content_main": "Contenido",
     "content_materials": "Materiales",
     "content_activity": "Actividad",
+    "prep_open_bible": "Consultar la Biblia",
+    "prep_open_catechism": "Consultar el Catecismo",
+    "prep_missing_body": "Use la Biblia y el Catecismo para preparar el encuentro antes de vincular un guion.",
     "encounter": {
       "focus_kind": {
         "in_progress": "En curso ahora",
@@ -4300,6 +4304,8 @@ export const meetings_es = {
         "none_calendar": "Ver agenda"
       },
       "secondary": {
+        "bible": "Biblia",
+        "catechism": "Catecismo",
         "roteiro": "Abrir guion",
         "class": "Ver grupo",
         "messages": "Avisar a las familias",
@@ -4429,6 +4435,7 @@ export const navigation_es = {
     "dashboard": "Panel",
     "classes": "Grupos",
     "catechumens": "Catecúmenos",
+    "catechumens_short": "Alumnos",
     "families": "Familias",
     "team": "Personas y accesos",
     "family_portal_invites": "Invitaciones de familia",
@@ -5335,12 +5342,12 @@ export const publicNav_es = {
     "privacy": "Privacidad",
     "terms": "Términos",
     "login": "Iniciar sesión",
-    "signup": "Empezar los 7 días",
+    "signup": "Empezar 7 días gratis",
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
     "tagline": "Hecha para servir la misión del catequista: tu grupo, tus encuentros y las familias en el mismo lugar.",
     "audience": "hecho para catequistas",
-    "cta": "Empezar los 7 días",
+    "cta": "Empezar 7 días gratis",
     "share": "Compartir",
     "share_copied": "Enlace copiado para compartir",
     "share_error": "No fue posible compartir ahora",

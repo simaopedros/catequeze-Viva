@@ -66,6 +66,9 @@
   "content_main": "Conteúdo",
   "content_materials": "Materiais",
   "content_activity": "Atividade",
+  "prep_open_bible": "Consultar a Bíblia",
+  "prep_open_catechism": "Consultar o Catecismo",
+  "prep_missing_body": "Use a Bíblia e o Catecismo para preparar o encontro antes de vincular um roteiro.",
   "encounter": {
     "focus_kind": {
       "in_progress": "Em andamento agora",
@@ -91,6 +94,8 @@
       "none_calendar": "Ver agenda"
     },
     "secondary": {
+      "bible": "Bíblia",
+      "catechism": "Catecismo",
       "roteiro": "Abrir roteiro",
       "class": "Ver turma",
       "messages": "Avisar famílias",

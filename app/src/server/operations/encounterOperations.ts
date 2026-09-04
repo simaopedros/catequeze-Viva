@@ -490,6 +490,16 @@ export const getEncounterFocus = async (
   if (roleKind === 'staff') {
     secondaryActions.push(
       {
+        id: 'bible',
+        labelKey: 'encounter.secondary.bible',
+        href: '/app/bible',
+      },
+      {
+        id: 'catechism',
+        labelKey: 'encounter.secondary.catechism',
+        href: '/app/catechism',
+      },
+      {
         id: 'roteiro',
         labelKey: 'encounter.secondary.roteiro',
         href: `/app/meetings/${m.id}`,

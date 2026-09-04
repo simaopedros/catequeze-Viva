@@ -25,7 +25,6 @@ import {
   Church,
   Building2,
   Shield,
-  Clock,
   Mail,
 } from "lucide-react";
 import { useAuth } from "wasp/client/auth";
@@ -42,14 +41,6 @@ import {
 import { cn } from "../client/utils";
 import { ContextSelector } from "./components/ContextSelector";
 import { MobileSearchDialog } from "./components/MobileSearchDialog";
-import {
-  isOnProductTrial,
-  getProductTrialDaysLeft,
-  isOnInstitutionalTrial,
-  getInstitutionalTrialDaysLeft,
-} from "../shared/pricing";
-import { useActiveWorkspace } from "../client/hooks/useActiveWorkspace";
-import { Link } from "react-router";
 import { OPEN_SEARCH_EVENT } from "../client/utils/globalSearchEvent";
 
 const MODULE_ICONS: Record<string, React.ComponentType<any>> = {
@@ -79,32 +70,9 @@ export const TopBar = memo(function TopBar() {
   const { t } = useTranslation("common");
   const { t: tTop } = useTranslation("topbar");
   const { t: tNav } = useTranslation("navigation");
-  const { t: tBilling } = useTranslation("billing");
   const { currentLocale } = useLocale();
   const { data: user } = useAuth();
-  const { isPersonal, workspace } = useActiveWorkspace();
   const navigate = useNavigate();
-
-  const personalTrial = isPersonal && isOnProductTrial(user);
-  const instBilling =
-    !isPersonal && workspace?.billingStatus
-      ? {
-          plan: workspace.plan || "SINGLE",
-          status: workspace.billingStatus,
-          trialEndsAt:
-            (workspace as { trialEndsAt?: string | Date | null }).trialEndsAt ??
-            null,
-        }
-      : null;
-  const institutionalTrial = Boolean(
-    instBilling && isOnInstitutionalTrial(instBilling),
-  );
-  const onTrial = personalTrial || institutionalTrial;
-  const trialDaysLeft = personalTrial
-    ? getProductTrialDaysLeft(user)
-    : getInstitutionalTrialDaysLeft(instBilling);
-
-  // Search state
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [focused, setFocused] = useState(false);
@@ -430,18 +398,7 @@ export const TopBar = memo(function TopBar() {
       {/* Right section — hidden when search expanded on mobile */}
       {!searchExpanded && (
         <div className="ml-auto flex min-w-0 items-center gap-1 sm:gap-2">
-          {onTrial && (
-            <Link
-              to="/app/billing"
-              className="hidden items-center gap-1.5 rounded-sm border border-border/70 bg-muted/30 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-brand-ink transition-colors hover:bg-muted/50 sm:inline-flex"
-              title={tBilling("trial_status_title")}
-            >
-              <Clock className="h-3 w-3 shrink-0" aria-hidden />
-              {trialDaysLeft === 1
-                ? tBilling("trial_topbar_one")
-                : tBilling("trial_topbar_other", { count: trialDaysLeft ?? 0 })}
-            </Link>
-          )}
+          {/* Trial chrome lives in ProductTrialBanner only — avoid pill + strip. */}
           {/* Unified context selector: workspace + role */}
           <ContextSelector />
 

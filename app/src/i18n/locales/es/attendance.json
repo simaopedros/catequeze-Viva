@@ -41,6 +41,7 @@
     "no_permission": "Sin permiso.",
     "meetings_count": "{{count}} encuentros",
     "present_letter": "P",
+    "late_letter": "T",
     "absent_letter": "F",
     "late_letter": "T",
     "justified_letter": "J",
@@ -93,6 +94,7 @@
     "conflict_keep_server": "Mantener servidor",
     "conflict_detail": "Local: {{mine}} · Servidor: {{server}}",
     "change_status": "Cambiar asistencia de {{name}}",
+    "next_status_hint": "{{current}} · siguiente toque: {{next}}",
     "status": {
       "PRESENT": "Presente",
       "ABSENT": "Ausente",

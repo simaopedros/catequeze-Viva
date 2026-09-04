@@ -66,6 +66,9 @@
   "content_main": "Content",
   "content_materials": "Materials",
   "content_activity": "Activity",
+  "prep_open_bible": "Open Bible",
+  "prep_open_catechism": "Open Catechism",
+  "prep_missing_body": "Use the Bible and Catechism to prepare this meeting before linking an outline.",
   "encounter": {
     "focus_kind": {
       "in_progress": "Happening now",
@@ -91,6 +94,8 @@
       "none_calendar": "View calendar"
     },
     "secondary": {
+      "bible": "Bible",
+      "catechism": "Catechism",
       "roteiro": "Open outline",
       "class": "View class",
       "messages": "Message families",

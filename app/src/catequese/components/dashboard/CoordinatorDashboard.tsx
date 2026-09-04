@@ -15,6 +15,7 @@ import { useActiveParish } from "../../../client/hooks/useActiveParish";
 import { useFamilyPortalSurface } from "../../../client/hooks/useFamilyPortalSurface";
 import { computeActivationFlags } from "../../../shared/activation";
 import { buildNextActions } from "../../../shared/dashboardActions";
+import { formatDashboardAvgAttendance } from "../../../shared/displayName";
 import type { EncounterFocus } from "../../../shared/encounter";
 import { ActivationChecklist } from "./ActivationChecklist";
 import { DashboardHero } from "./DashboardHero";
@@ -134,9 +135,12 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
     },
     {
       label: t("fact_attendance"),
-      value: stats?.hasAnyAttendance
-        ? `${stats?.avgAttendance ?? 0}%`
-        : t("mobile.no_attendance"),
+      value: formatDashboardAvgAttendance({
+        hasAnyAttendance: stats?.hasAnyAttendance,
+        avgAttendance: stats?.avgAttendance,
+        openRollCallIncomplete: stats?.openRollCallIncomplete,
+        noDataLabel: t("mobile.no_attendance"),
+      }),
     },
   ];
 

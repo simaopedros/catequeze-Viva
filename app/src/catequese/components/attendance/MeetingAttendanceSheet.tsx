@@ -686,8 +686,6 @@ export function MeetingAttendanceSheet({
       <ul className="mt-3 divide-y divide-border/70">
         {participants.map((p: any) => {
           const st = localStatus[p.catechumenProfileId];
-          const nextSt = nextStatusFor(st);
-          const nextLetter = statusLetter(nextSt);
           const sync = rowSync[p.catechumenProfileId] || "idle";
           const pending = pendingMap[p.catechumenProfileId];
           return (
@@ -722,14 +720,19 @@ export function MeetingAttendanceSheet({
                     "inline-flex h-11 min-h-11 min-w-11 items-center justify-center rounded-sm border text-xs font-semibold transition-colors motion-reduce:transition-none",
                     statusButtonClass(st),
                   )}
+                  title={statusButtonTitle(st, t)}
                   aria-label={`${t("sheet.change_status", {
                     name: `${p.firstName} ${p.lastName}`,
-                  })} — ${t(`sheet.status.${nextSt}`, { defaultValue: nextSt })} (${nextLetter})`}
+                  })} — ${st ? t(`sheet.status.${st}`, { defaultValue: st }) : t("sheet.status.none")}`}
                 >
                   {sync === "saving" ? (
                     <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
                   ) : (
-                    <span aria-hidden="true">{nextLetter}</span>
+                    <span aria-hidden="true">
+                      {st
+                        ? statusLetter(st as (typeof STATUS_CYCLE)[number])
+                        : "—"}
+                    </span>
                   )}
                 </button>
               </div>
@@ -823,6 +826,25 @@ export function MeetingAttendanceSheet({
       />
     </div>
   );
+}
+
+function nextStatusKey(st: string | null | undefined) {
+  const idx = st
+    ? STATUS_CYCLE.indexOf(st as (typeof STATUS_CYCLE)[number])
+    : -1;
+  return STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+}
+
+function statusButtonTitle(
+  st: string | null | undefined,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+) {
+  const current = st
+    ? t(`sheet.status.${st}`, { defaultValue: st })
+    : t("sheet.status.none");
+  const nextKey = nextStatusKey(st);
+  const next = t(`sheet.status.${nextKey}`, { defaultValue: nextKey });
+  return t("sheet.next_status_hint", { current, next });
 }
 
 function statusButtonClass(st: string | null | undefined) {
