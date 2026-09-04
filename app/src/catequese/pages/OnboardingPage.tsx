@@ -44,6 +44,7 @@ import { ChevronLeft } from "lucide-react";
 import { LAUNCH_CATEQUISTA_ONLY, catalogIsCatequistaOnly } from "../../shared/pricing";
 import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import { createClassSchema } from "../../client/validation/schemas";
+import { getSalesWhatsAppUrl } from "../../shared/salesContact";
 
 type AccountType = "personal" | "manager" | "diocese" | null;
 type Step =
