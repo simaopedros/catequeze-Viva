@@ -20,14 +20,11 @@ import {
   Check,
   ChevronDown,
   ClipboardList,
-  Clock,
   CloudOff,
   Loader2,
-  Minus,
   Search,
   Undo2,
   Users,
-  X,
 } from "lucide-react";
 import { cn } from "../../../client/utils";
 import { trackMarketingEvent } from "../../../client/analytics/marketingAnalytics";
@@ -262,6 +259,20 @@ export function MeetingAttendanceSheet({
       : -1;
     const next = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
     void markOne(catechumenProfileId, next);
+  };
+
+  const nextStatusFor = (current: string | null | undefined) => {
+    const idx = current
+      ? STATUS_CYCLE.indexOf(current as (typeof STATUS_CYCLE)[number])
+      : -1;
+    return STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+  };
+
+  const statusLetter = (status: (typeof STATUS_CYCLE)[number]) => {
+    if (status === "PRESENT") return t("matrix.present_letter");
+    if (status === "LATE") return t("matrix.late_letter");
+    if (status === "ABSENT") return t("matrix.absent_letter");
+    return t("matrix.justified_letter");
   };
 
   const undoLast = () => {
@@ -710,14 +721,18 @@ export function MeetingAttendanceSheet({
                     statusButtonClass(st),
                   )}
                   title={statusButtonTitle(st, t)}
-                  aria-label={t("sheet.change_status", {
+                  aria-label={`${t("sheet.change_status", {
                     name: `${p.firstName} ${p.lastName}`,
-                  })}
+                  })} — ${st ? t(`sheet.status.${st}`, { defaultValue: st }) : t("sheet.status.none")}`}
                 >
                   {sync === "saving" ? (
                     <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
                   ) : (
-                    statusLetter(st, t)
+                    <span aria-hidden="true">
+                      {st
+                        ? statusLetter(st as (typeof STATUS_CYCLE)[number])
+                        : "—"}
+                    </span>
                   )}
                 </button>
               </div>
@@ -813,17 +828,6 @@ export function MeetingAttendanceSheet({
   );
 }
 
-function statusLetter(
-  st: string | null | undefined,
-  t: (key: string, opts?: Record<string, unknown>) => string,
-) {
-  if (st === "PRESENT") return t("matrix.present_letter");
-  if (st === "LATE") return t("matrix.late_letter");
-  if (st === "ABSENT") return t("matrix.absent_letter");
-  if (st === "JUSTIFIED") return t("matrix.justified_letter");
-  return "—";
-}
-
 function nextStatusKey(st: string | null | undefined) {
   const idx = st
     ? STATUS_CYCLE.indexOf(st as (typeof STATUS_CYCLE)[number])
@@ -838,9 +842,8 @@ function statusButtonTitle(
   const current = st
     ? t(`sheet.status.${st}`, { defaultValue: st })
     : t("sheet.status.none");
-  const next = t(`sheet.status.${nextStatusKey(st)}`, {
-    defaultValue: nextStatusKey(st),
-  });
+  const nextKey = nextStatusKey(st);
+  const next = t(`sheet.status.${nextKey}`, { defaultValue: nextKey });
   return t("sheet.next_status_hint", { current, next });
 }
 

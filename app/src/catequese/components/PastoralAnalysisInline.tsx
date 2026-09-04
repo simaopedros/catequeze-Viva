@@ -40,6 +40,18 @@ function initialsFromName(name: string) {
     .join("");
 }
 
+function catechistsSuffix(catechists: string[] | undefined, label: string) {
+  const names = (catechists || []).filter(
+    (name) =>
+      name &&
+      name.trim() !== "" &&
+      name !== "Usuário" &&
+      !/\bnull\b/i.test(name),
+  );
+  if (!names.length) return "";
+  return `- ${label}: ${names.join(", ")}`;
+}
+
 function PastoralAvatar({
   name,
   photoUrl,
@@ -259,9 +271,7 @@ export function PastoralAnalysisInline({
                 </h4>
                 <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>
                   {cls.name}{" "}
-                  {cls.catechists?.length
-                    ? `- ${t("catechists")}: ${cls.catechists.join(", ")}`
-                    : ""}
+                  {catechistsSuffix(cls.catechists, t("catechists"))}
                 </p>
               </div>
             </div>
@@ -817,9 +827,7 @@ export function PastoralAnalysisInline({
                 </h4>
                 <p className="text-xs text-muted-foreground">
                   {cls.name}{" "}
-                  {cls.catechists?.length
-                    ? `- ${t("catechists")}: ${cls.catechists.join(", ")}`
-                    : ""}
+                  {catechistsSuffix(cls.catechists, t("catechists"))}
                 </p>
               </div>
             </div>

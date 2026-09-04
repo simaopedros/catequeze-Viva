@@ -552,7 +552,12 @@ export default function AttendancePage() {
               catechumens: tcl("catechumens_count", {
                 count: catechumens.length,
               }),
-              meetings: t("matrix.meetings_count", { count: meetings.length }),
+              meetings:
+                meetings.length === 1
+                  ? t("matrix.meetings_count_one", { count: meetings.length })
+                  : t("matrix.meetings_count_plural", {
+                      count: meetings.length,
+                    }),
             })}
             actions={
               <Button

@@ -1,6 +1,7 @@
 import { HttpError } from 'wasp/server';
 import { assertCanAccessClass, getUserParishRoles, isCatechistOrAboveRole, isCoordinatorOrAboveRole } from '../auth/helpers';
 import { requireWorkspaceAccess, resolveWorkspaceAccess } from './sharedScope';
+import { buildDisplayName } from './conversationPolicies';
 
 /** Pastoral report window: meetings older than this are not loaded. */
 const PASTORAL_REPORT_WINDOW_MONTHS = 24;
@@ -63,7 +64,7 @@ export const getClassPastoralReport = async (args: { classId: string }, context:
     where: { id: args.classId },
     select: {
       id: true, name: true,
-      catechists: { select: { user: { select: { id: true, firstName: true, lastName: true } }, role: true } },
+      catechists: { select: { user: { select: { id: true, firstName: true, lastName: true, email: true } }, role: true } },
       enrollments: {
         select: {
           id: true, status: true, startedAt: true, endedAt: true, notes: true, origin: true,
@@ -121,7 +122,9 @@ export const getClassPastoralReport = async (args: { classId: string }, context:
   const totalActiveCatechumens = activeEnrollments.length;
   const totalMeetings = cls.meetings.length;
 
-  const catechistNames = cls.catechists.map((cc: any) => `${cc.user.firstName} ${cc.user.lastName}`);
+  const catechistNames = cls.catechists
+    .map((cc: any) => buildDisplayName(cc.user))
+    .filter((name: string) => name && name !== 'Usuário');
 
   // UPCOMING BIRTHDAYS (next 30 days)
   const now = new Date();
@@ -286,7 +289,7 @@ export const getCatechumenPastoralAnalysis = async (args: { catechumenId: string
       class: {
         select: {
           id: true, name: true,
-          catechists: { select: { user: { select: { id: true, firstName: true, lastName: true } }, role: true } },
+          catechists: { select: { user: { select: { id: true, firstName: true, lastName: true, email: true } }, role: true } },
           meetings: {
             orderBy: { date: 'asc' },
             select: {
@@ -320,7 +323,9 @@ export const getCatechumenPastoralAnalysis = async (args: { catechumenId: string
   const cls = enrollment.class;
   const meetings = cls.meetings;
 
-  const catechists = cls.catechists.map((cc: any) => `${cc.user.firstName} ${cc.user.lastName}`);
+  const catechists = cls.catechists
+    .map((cc: any) => buildDisplayName(cc.user))
+    .filter((name: string) => name && name !== 'Usuário');
   const activeEnrollments = cls.enrollments.filter((e: any) => e.status === 'ENROLLED');
   const startedAt = enrollment.startedAt;
   const endedAt = enrollment.endedAt;

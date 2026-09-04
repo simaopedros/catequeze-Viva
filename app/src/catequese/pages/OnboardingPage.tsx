@@ -43,6 +43,7 @@ import { Button } from "../../client/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { LAUNCH_CATEQUISTA_ONLY, catalogIsCatequistaOnly } from "../../shared/pricing";
 import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
+import { createClassSchema } from "../../client/validation/schemas";
 import { getSalesWhatsAppUrl } from "../../shared/salesContact";
 
 type AccountType = "personal" | "manager" | "diocese" | null;
@@ -351,13 +352,35 @@ export default function OnboardingPage() {
         step: "workspace_ready",
       });
 
-      const created = await createClass({
+      const classPayload = {
         name: details.className.trim(),
+        dayOfWeek: details.dayOfWeek,
+        startTime: details.startTime,
+        endTime: details.endTime,
+        location: details.location,
+      };
+      const validated = createClassSchema.safeParse(classPayload);
+      if (!validated.success) {
+        const field = validated.error.issues[0]?.path[0];
+        if (field === "startTime") {
+          setError(t("class_setup.start_time_invalid"));
+        } else if (field === "endTime") {
+          setError(t("class_setup.end_time_invalid"));
+        } else if (field === "name") {
+          setError(t("class_setup.name_required"));
+        } else {
+          setError(t("finish_error"));
+        }
+        return;
+      }
+
+      const created = await createClass({
+        name: validated.data.name,
         parishId: personalParish.id,
-        dayOfWeek: details.dayOfWeek || undefined,
-        startTime: details.startTime || undefined,
-        endTime: details.endTime || undefined,
-        location: details.location || personalParish.name,
+        dayOfWeek: validated.data.dayOfWeek || undefined,
+        startTime: validated.data.startTime || undefined,
+        endTime: validated.data.endTime || undefined,
+        location: validated.data.location || personalParish.name,
       });
 
       trackMarketingEvent("first_class_created", {

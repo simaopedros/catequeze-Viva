@@ -51,13 +51,28 @@ export function ClassSetupStep({
       return;
     }
     setLocalError("");
-    onComplete({
+    const optionalOpen = showOptional;
+    const payload: ClassSetupDetails = {
       className: name,
-      dayOfWeek: dayOfWeek || undefined,
-      startTime: startTime || undefined,
-      endTime: endTime || undefined,
-      location: location.trim() || undefined,
-    });
+      dayOfWeek: optionalOpen && dayOfWeek ? dayOfWeek : undefined,
+      startTime: optionalOpen && startTime ? startTime : undefined,
+      endTime: optionalOpen && endTime ? endTime : undefined,
+      location: optionalOpen && location.trim() ? location.trim() : undefined,
+    };
+
+    if (optionalOpen) {
+      const timePattern = /^\d{2}:\d{2}$/;
+      if (startTime && !timePattern.test(startTime)) {
+        setLocalError(t("class_setup.start_time_invalid"));
+        return;
+      }
+      if (endTime && !timePattern.test(endTime)) {
+        setLocalError(t("class_setup.end_time_invalid"));
+        return;
+      }
+    }
+
+    onComplete(payload);
   };
 
   return (

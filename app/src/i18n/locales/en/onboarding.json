@@ -332,6 +332,8 @@
     "location_placeholder": "E.g. Parish hall",
     "saving": "Creating class…",
     "continue": "Continue",
+    "start_time_invalid": "Invalid start time. Use HH:mm format (e.g. 7:00 PM as 19:00).",
+    "end_time_invalid": "Invalid end time. Use HH:mm format (e.g. 8:30 PM as 20:30).",
     "days": {
       "0": "Sunday",
       "1": "Monday",
