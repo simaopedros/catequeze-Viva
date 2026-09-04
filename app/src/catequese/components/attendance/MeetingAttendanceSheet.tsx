@@ -709,6 +709,7 @@ export function MeetingAttendanceSheet({
                     "inline-flex h-11 min-h-11 min-w-11 items-center justify-center rounded-sm border text-xs font-semibold transition-colors motion-reduce:transition-none",
                     statusButtonClass(st),
                   )}
+                  title={statusButtonTitle(st, t)}
                   aria-label={t("sheet.change_status", {
                     name: `${p.firstName} ${p.lastName}`,
                   })}
@@ -716,7 +717,7 @@ export function MeetingAttendanceSheet({
                   {sync === "saving" ? (
                     <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
                   ) : (
-                    statusIcon(st)
+                    statusLetter(st, t)
                   )}
                 </button>
               </div>
@@ -812,12 +813,35 @@ export function MeetingAttendanceSheet({
   );
 }
 
-function statusIcon(st: string | null | undefined) {
-  if (st === "PRESENT") return <Check className="h-4 w-4" />;
-  if (st === "LATE") return <Clock className="h-4 w-4" />;
-  if (st === "ABSENT") return <X className="h-4 w-4" />;
-  if (st === "JUSTIFIED") return <Clock className="h-4 w-4" />;
-  return <Minus className="h-4 w-4" />;
+function statusLetter(
+  st: string | null | undefined,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+) {
+  if (st === "PRESENT") return t("matrix.present_letter");
+  if (st === "LATE") return t("matrix.late_letter");
+  if (st === "ABSENT") return t("matrix.absent_letter");
+  if (st === "JUSTIFIED") return t("matrix.justified_letter");
+  return "—";
+}
+
+function nextStatusKey(st: string | null | undefined) {
+  const idx = st
+    ? STATUS_CYCLE.indexOf(st as (typeof STATUS_CYCLE)[number])
+    : -1;
+  return STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+}
+
+function statusButtonTitle(
+  st: string | null | undefined,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+) {
+  const current = st
+    ? t(`sheet.status.${st}`, { defaultValue: st })
+    : t("sheet.status.none");
+  const next = t(`sheet.status.${nextStatusKey(st)}`, {
+    defaultValue: nextStatusKey(st),
+  });
+  return t("sheet.next_status_hint", { current, next });
 }
 
 function statusButtonClass(st: string | null | undefined) {

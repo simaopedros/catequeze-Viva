@@ -7,6 +7,13 @@ interface BreadcrumbItem {
   to?: string;
 }
 
+function isMobileEncounterRoute(pathname: string): boolean {
+  return (
+    /^\/app\/meetings\/.+/.test(pathname) ||
+    /^\/app\/classes\/[^/]+\/attendance/.test(pathname)
+  );
+}
+
 const BREADCRUMB_ROUTE_KEYS = new Set([
   "new",
   "edit",
@@ -22,11 +29,12 @@ function segmentToNavKey(seg: string): string {
   return seg.replace(/-/g, "_");
 }
 
-export function Breadcrumbs() {
+export function Breadcrumbs({ className }: { className?: string }) {
   const location = useLocation();
   const { t } = useTranslation("navigation");
 
   const segments = location.pathname.split("/").filter(Boolean);
+  const hideOnMobileEncounter = isMobileEncounterRoute(location.pathname);
 
   // Só rotas profundas (/app/classes/:id em diante). Em /app e /app/classes o
   // AppPageHeader já diz onde o usuário está — a trilha seria ruído duplicado.
@@ -74,7 +82,9 @@ export function Breadcrumbs() {
 
   return (
     <nav
-      className="flex items-center gap-1 text-sm text-muted-foreground px-1 py-2 overflow-x-auto"
+      className={`flex items-center gap-1 overflow-x-auto px-1 py-2 text-sm text-muted-foreground ${
+        hideOnMobileEncounter ? "hidden lg:flex" : ""
+      } ${className ?? ""}`}
       aria-label={t("breadcrumb.ariaLabel")}
     >
       {/* min-h/min-w-8 nos links: como texto puro eles ficavam com 14–20px de

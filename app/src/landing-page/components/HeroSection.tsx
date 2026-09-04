@@ -97,14 +97,14 @@ export function HeroSection({
       {trustParts.length > 0 ? (
         <ul
           className={cn(
-            "flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground",
+            "flex flex-wrap gap-x-4 gap-y-1.5 text-xs font-medium text-brand-ink/85",
             !isEditorial && "justify-center",
           )}
         >
           {trustParts.map((part) => (
             <li key={part} className="inline-flex items-center gap-1.5">
               <span
-                className="h-1 w-1 rounded-full bg-brand-gold"
+                className="h-1 w-1 rounded-full bg-brand-ink/70"
                 aria-hidden
               />
               {part}

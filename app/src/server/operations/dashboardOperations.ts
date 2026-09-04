@@ -258,6 +258,7 @@ export const getDashboardStats = async (
       activeCatechumens: 0,
       activeClasses: 0,
       avgAttendance: 0,
+      openRollCallIncomplete: false,
       pendingSacraments: 0,
       recentAlerts: [],
       aniversariantes: [],
@@ -304,6 +305,7 @@ export const getDashboardStats = async (
       activeCatechumens: 0,
       activeClasses: 0,
       avgAttendance: 0,
+      openRollCallIncomplete: false,
       pendingSacraments: 0,
       recentAlerts: [],
       aniversariantes: [],
@@ -1025,10 +1027,36 @@ export const getDashboardStats = async (
     });
   }
 
+  const inProgressMeetings = await context.entities.Meeting.findMany({
+    where: {
+      ...meetingScopeWhere,
+      status: "IN_PROGRESS",
+    },
+    select: {
+      classId: true,
+      _count: { select: { attendance: true } },
+    },
+  });
+  const enrollmentByClassId = new Map(
+    myClasses.map((c) => [c.id, c.enrollmentCount]),
+  );
+  let openRollCallIncomplete = false;
+  for (const m of inProgressMeetings) {
+    const enrolled =
+      enrollmentByClassId.get(m.classId) ??
+      pastEnrollmentByClass.get(m.classId) ??
+      0;
+    if (enrolled > 0 && m._count.attendance < enrolled) {
+      openRollCallIncomplete = true;
+      break;
+    }
+  }
+
   return {
     activeCatechumens: enrolledCatechumens.length,
     activeClasses,
     avgAttendance,
+    openRollCallIncomplete,
     pendingSacraments,
     dependents,
     totalUsers,

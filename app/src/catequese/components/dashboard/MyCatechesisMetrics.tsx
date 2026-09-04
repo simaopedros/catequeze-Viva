@@ -15,6 +15,7 @@ import {
 } from "../../../client/components/brand/AppChrome";
 import { cn } from "../../../client/utils";
 import type { AttendanceTrend } from "../../../shared/dashboardActions";
+import { formatDashboardAvgAttendance } from "../../../shared/displayName";
 
 type Metric = {
   id: string;
@@ -134,9 +135,12 @@ export function MyCatechesisMetrics({
       icon: BarChart3,
       iconClass: "bg-success/10 text-success",
       label: t("avg_attendance"),
-      value: stats?.hasAnyAttendance
-        ? `${stats?.avgAttendance ?? 0}%`
-        : t("mobile.no_attendance"),
+      value: formatDashboardAvgAttendance({
+        hasAnyAttendance: stats?.hasAnyAttendance,
+        avgAttendance: stats?.avgAttendance,
+        openRollCallIncomplete: stats?.openRollCallIncomplete,
+        noDataLabel: t("mobile.no_attendance"),
+      }),
       href: "/app/reports",
       linkLabel: t("see_report"),
       trend: stats?.attendanceTrend ?? null,

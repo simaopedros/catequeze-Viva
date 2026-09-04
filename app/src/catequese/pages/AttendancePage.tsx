@@ -235,6 +235,7 @@ export default function AttendancePage() {
 
   const statusLetter = (key: string) => {
     if (key === "PRESENT") return t("matrix.present_letter");
+    if (key === "LATE") return t("matrix.late_letter");
     if (key === "ABSENT") return t("matrix.absent_letter");
     return t("matrix.justified_letter");
   };

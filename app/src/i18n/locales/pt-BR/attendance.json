@@ -41,6 +41,7 @@
     "no_permission": "Sem permissão.",
     "meetings_count": "{{count}} encontros",
     "present_letter": "P",
+    "late_letter": "T",
     "absent_letter": "F",
     "justified_letter": "A",
     "percent_column": "%",
@@ -91,6 +92,7 @@
     "conflict_keep_server": "Manter servidor",
     "conflict_detail": "Local: {{mine}} · Servidor: {{server}}",
     "change_status": "Alterar presença de {{name}}",
+    "next_status_hint": "{{current}} · próximo toque: {{next}}",
     "status": {
       "PRESENT": "Presente",
       "ABSENT": "Ausente",

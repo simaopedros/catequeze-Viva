@@ -781,6 +781,7 @@ export const attendance_en = {
       "no_permission": "No permission.",
       "meetings_count": "{{count}} meetings",
       "present_letter": "P",
+      "late_letter": "L",
       "absent_letter": "A",
       "justified_letter": "E",
       "percent_column": "%",
@@ -831,6 +832,7 @@ export const attendance_en = {
       "conflict_keep_server": "Keep server",
       "conflict_detail": "Local: {{mine}} · Server: {{server}}",
       "change_status": "Change attendance for {{name}}",
+      "next_status_hint": "{{current}} · next tap: {{next}}",
       "status": {
         "PRESENT": "Present",
         "ABSENT": "Absent",
@@ -3243,7 +3245,7 @@ export const landing_en = {
       "headline_line2": "We organize the class.",
       "subheadline": "Catequese Viva takes care of attendance, meeting prep, and walking with each catechumen, so you arrive each week with your heart free for what matters most: bringing Jesus to your class.",
       "badge": "For those who say yes to the mission of catechesis",
-      "cta_primary": "Begin my journey — 7 days free",
+      "cta_primary": "Start 7 days free",
       "cta_secondary": "How it works",
       "trust_signals": "No charge now • No card to start • Works on mobile",
       "cta_secondary_href": "/#como",
@@ -3622,7 +3624,7 @@ export const landing_en = {
     "mobile_cta": {
       "title": "7 days to feel the difference with your class",
       "subtitle": "No charge now · no card",
-      "button": "Begin my journey"
+      "button": "Start 7 days free"
     },
     "proof": {
       "badge": "Start with confidence",
@@ -4273,6 +4275,9 @@ export const meetings_en = {
     "content_main": "Content",
     "content_materials": "Materials",
     "content_activity": "Activity",
+    "prep_open_bible": "Open Bible",
+    "prep_open_catechism": "Open Catechism",
+    "prep_missing_body": "Use the Bible and Catechism to prepare this meeting before linking an outline.",
     "encounter": {
       "focus_kind": {
         "in_progress": "Happening now",
@@ -4298,6 +4303,8 @@ export const meetings_en = {
         "none_calendar": "View calendar"
       },
       "secondary": {
+        "bible": "Bible",
+        "catechism": "Catechism",
         "roteiro": "Open outline",
         "class": "View class",
         "messages": "Message families",
@@ -4427,6 +4434,7 @@ export const navigation_en = {
     "dashboard": "Dashboard",
     "classes": "Classes",
     "catechumens": "Catechumens",
+    "catechumens_short": "Students",
     "families": "Families",
     "team": "People and access",
     "family_portal_invites": "Family portal invites",
@@ -5331,12 +5339,12 @@ export const publicNav_en = {
     "privacy": "Privacy",
     "terms": "Terms",
     "login": "Log in",
-    "signup": "Start your 7 days",
+    "signup": "Start 7 days free",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "tagline": "Made to serve the catechist's mission: your class, your meetings, and the families in one place.",
     "audience": "built for catechists",
-    "cta": "Start your 7 days",
+    "cta": "Start 7 days free",
     "share": "Share",
     "share_copied": "Link copied to share",
     "share_error": "Could not share right now",

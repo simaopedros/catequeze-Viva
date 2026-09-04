@@ -781,6 +781,7 @@ export const attendance_pt_BR = {
       "no_permission": "Sem permissão.",
       "meetings_count": "{{count}} encontros",
       "present_letter": "P",
+      "late_letter": "T",
       "absent_letter": "F",
       "justified_letter": "A",
       "percent_column": "%",
@@ -831,6 +832,7 @@ export const attendance_pt_BR = {
       "conflict_keep_server": "Manter servidor",
       "conflict_detail": "Local: {{mine}} · Servidor: {{server}}",
       "change_status": "Alterar presença de {{name}}",
+      "next_status_hint": "{{current}} · próximo toque: {{next}}",
       "status": {
         "PRESENT": "Presente",
         "ABSENT": "Ausente",
@@ -3243,7 +3245,7 @@ export const landing_pt_BR = {
       "headline_line2": "A gente organiza a turma.",
       "subheadline": "A Catequese Viva cuida da chamada, do preparo do encontro e do acompanhamento de cada catequizando, para você chegar a cada semana com o coração livre para o essencial: apresentar Jesus à sua turma.",
       "badge": "Para quem diz sim à missão de catequizar",
-      "cta_primary": "Começar minha caminhada — 7 dias grátis",
+      "cta_primary": "Começar 7 dias grátis",
       "cta_secondary": "Como funciona",
       "trust_signals": "Sem cobrança agora • Sem cartão para começar • Funciona no celular",
       "cta_secondary_href": "/#como",
@@ -3622,7 +3624,7 @@ export const landing_pt_BR = {
     "mobile_cta": {
       "title": "7 dias para sentir a diferença na sua turma",
       "subtitle": "Sem cobrança agora · sem cartão",
-      "button": "Começar minha caminhada"
+      "button": "Começar 7 dias grátis"
     },
     "proof": {
       "badge": "Comece com tranquilidade",
@@ -4273,6 +4275,9 @@ export const meetings_pt_BR = {
     "content_main": "Conteúdo",
     "content_materials": "Materiais",
     "content_activity": "Atividade",
+    "prep_open_bible": "Consultar a Bíblia",
+    "prep_open_catechism": "Consultar o Catecismo",
+    "prep_missing_body": "Use a Bíblia e o Catecismo para preparar o encontro antes de vincular um roteiro.",
     "encounter": {
       "focus_kind": {
         "in_progress": "Em andamento agora",
@@ -4298,6 +4303,8 @@ export const meetings_pt_BR = {
         "none_calendar": "Ver agenda"
       },
       "secondary": {
+        "bible": "Bíblia",
+        "catechism": "Catecismo",
         "roteiro": "Abrir roteiro",
         "class": "Ver turma",
         "messages": "Avisar famílias",
@@ -4427,6 +4434,7 @@ export const navigation_pt_BR = {
     "dashboard": "Painel",
     "classes": "Turmas",
     "catechumens": "Catequizandos",
+    "catechumens_short": "Quizandos",
     "families": "Famílias",
     "team": "Pessoas e acessos",
     "family_portal_invites": "Convites da família",
@@ -5331,12 +5339,12 @@ export const publicNav_pt_BR = {
     "privacy": "Privacidade",
     "terms": "Termos",
     "login": "Entrar",
-    "signup": "Começar os 7 dias",
+    "signup": "Começar 7 dias grátis",
     "openMenu": "Abrir menu",
     "closeMenu": "Fechar menu",
     "tagline": "Feita para servir a missão do catequista: sua turma, seus encontros e as famílias no mesmo lugar.",
     "audience": "feito para catequistas",
-    "cta": "Começar os 7 dias",
+    "cta": "Começar 7 dias grátis",
     "share": "Compartilhar",
     "share_copied": "Link copiado para compartilhar",
     "share_error": "Não foi possível compartilhar agora",

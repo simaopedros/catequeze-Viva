@@ -198,7 +198,11 @@ export function AppShell({ children }: AppShellProps) {
               >
                 <TopBar />
               </ErrorBoundary>
-              <ProductTrialBanner />
+              <ProductTrialBanner
+                hideOnMobileEncounter={/^\/app\/meetings\/.+/.test(
+                  location.pathname,
+                ) || /^\/app\/classes\/[^/]+\/attendance/.test(location.pathname)}
+              />
             </div>
             <main
               id="main-content"

@@ -160,28 +160,99 @@ export default function MeetingDetailPage() {
   const canTakeAttendance = !onFamilyPortal && Boolean(perms.canTakeAttendance);
   const canChangeStatus = !onFamilyPortal && Boolean(perms.canChangeStatus);
 
-  const primaryStaffAction =
-    canChangeStatus && meeting.status === "NOT_STARTED"
-      ? {
-          label: t("action_start"),
-          onClick: () => changeStatus("IN_PROGRESS"),
-          icon: Play,
-        }
-      : canChangeStatus && meeting.status === "IN_PROGRESS"
-        ? {
-            label: t("action_complete"),
-            onClick: () => changeStatus("COMPLETED"),
-            icon: CheckCircle2,
-          }
-        : canTakeAttendance
-          ? {
-              label: t("action_attendance"),
-              href: meeting.class?.id
-                ? `/app/classes/${meeting.class.id}/attendance?meetingId=${meeting.id}`
-                : "/app/classes",
-              icon: ClipboardList,
-            }
-          : null;
+  const attendanceHref = meeting.class?.id
+    ? `/app/classes/${meeting.class.id}/attendance?meetingId=${meeting.id}`
+    : "/app/classes";
+  const registered = meeting.attendanceSummary?.registered ?? 0;
+  const totalActive = meeting.attendanceSummary?.totalActive ?? 0;
+  const rollCallIncomplete =
+    meeting.status === "IN_PROGRESS" &&
+    totalActive > 0 &&
+    registered < totalActive;
+
+  type StaffAction = {
+    label: string;
+    icon: typeof Play;
+    href?: string;
+    onClick?: () => void;
+    variant?: "default" | "outline";
+  };
+
+  let primaryStaffAction: StaffAction | null = null;
+  let secondaryStaffAction: StaffAction | null = null;
+
+  if (canChangeStatus && meeting.status === "NOT_STARTED") {
+    primaryStaffAction = {
+      label: t("action_start"),
+      onClick: () => changeStatus("IN_PROGRESS"),
+      icon: Play,
+    };
+  } else if (canChangeStatus && meeting.status === "IN_PROGRESS") {
+    if (rollCallIncomplete && canTakeAttendance) {
+      primaryStaffAction = {
+        label: t("action_attendance"),
+        href: attendanceHref,
+        icon: ClipboardList,
+      };
+      secondaryStaffAction = {
+        label: t("action_complete"),
+        onClick: () => changeStatus("COMPLETED"),
+        icon: CheckCircle2,
+        variant: "outline",
+      };
+    } else {
+      primaryStaffAction = {
+        label: t("action_complete"),
+        onClick: () => changeStatus("COMPLETED"),
+        icon: CheckCircle2,
+      };
+      if (canTakeAttendance) {
+        secondaryStaffAction = {
+          label: t("action_attendance"),
+          href: attendanceHref,
+          icon: ClipboardList,
+          variant: "outline",
+        };
+      }
+    }
+  } else if (canTakeAttendance) {
+    primaryStaffAction = {
+      label: t("action_attendance"),
+      href: attendanceHref,
+      icon: ClipboardList,
+    };
+  }
+
+  const renderStaffAction = (action: StaffAction, key?: string) => {
+    const variant = action.variant ?? "default";
+    if (action.href) {
+      return (
+        <Button
+          key={key}
+          asChild
+          variant={variant}
+          className="h-11 min-h-11 rounded-md"
+        >
+          <Link to={action.href}>
+            <action.icon className="mr-2 h-4 w-4" />
+            {action.label}
+          </Link>
+        </Button>
+      );
+    }
+    return (
+      <Button
+        key={key}
+        variant={variant}
+        className="h-11 min-h-11 rounded-md"
+        disabled={saving}
+        onClick={action.onClick}
+      >
+        <action.icon className="mr-2 h-4 w-4" />
+        {action.label}
+      </Button>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -201,31 +272,13 @@ export default function MeetingDetailPage() {
                 {tc("back")}
               </Link>
             </Button>
-            {primaryStaffAction &&
-              ("href" in primaryStaffAction && primaryStaffAction.href ? (
-                <Button
-                  asChild
-                  className="h-11 min-h-11 rounded-md"
-                >
-                  <Link to={primaryStaffAction.href}>
-                    <primaryStaffAction.icon className="mr-2 h-4 w-4" />
-                    {primaryStaffAction.label}
-                  </Link>
-                </Button>
-              ) : (
-                <Button
-                  className="h-11 min-h-11 rounded-md"
-                  disabled={saving}
-                  onClick={
-                    "onClick" in primaryStaffAction
-                      ? primaryStaffAction.onClick
-                      : undefined
-                  }
-                >
-                  <primaryStaffAction.icon className="mr-2 h-4 w-4" />
-                  {primaryStaffAction.label}
-                </Button>
-              ))}
+            {primaryStaffAction && (
+              <div className="hidden flex-wrap gap-2 sm:flex">
+                {renderStaffAction(primaryStaffAction, "primary")}
+                {secondaryStaffAction &&
+                  renderStaffAction(secondaryStaffAction, "secondary")}
+              </div>
+            )}
           </div>
         }
       />
@@ -285,7 +338,7 @@ export default function MeetingDetailPage() {
         </dl>
 
         {canChangeStatus && meeting.status !== "CANCELLED" && (
-          <div className="flex flex-wrap gap-2 pt-2 border-t border-border/70">
+          <div className="flex flex-wrap gap-2 border-t border-border/70 pt-2">
             {meeting.status === "NOT_STARTED" && (
               <Button
                 className="h-11 min-h-11 rounded-sm"
@@ -297,14 +350,50 @@ export default function MeetingDetailPage() {
               </Button>
             )}
             {meeting.status === "IN_PROGRESS" && (
-              <Button
-                className="h-11 min-h-11 rounded-sm"
-                disabled={saving}
-                onClick={() => changeStatus("COMPLETED")}
-              >
-                <CheckCircle2 className="mr-2 h-4 w-4" />
-                {t("action_complete")}
-              </Button>
+              <>
+                {rollCallIncomplete && canTakeAttendance ? (
+                  <>
+                    <Button asChild className="h-11 min-h-11 rounded-sm">
+                      <Link to={attendanceHref}>
+                        <ClipboardList className="mr-2 h-4 w-4" />
+                        {t("action_attendance")}
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-11 min-h-11 rounded-sm"
+                      disabled={saving}
+                      onClick={() => changeStatus("COMPLETED")}
+                    >
+                      <CheckCircle2 className="mr-2 h-4 w-4" />
+                      {t("action_complete")}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      className="h-11 min-h-11 rounded-sm"
+                      disabled={saving}
+                      onClick={() => changeStatus("COMPLETED")}
+                    >
+                      <CheckCircle2 className="mr-2 h-4 w-4" />
+                      {t("action_complete")}
+                    </Button>
+                    {canTakeAttendance && (
+                      <Button
+                        asChild
+                        variant="outline"
+                        className="h-11 min-h-11 rounded-sm"
+                      >
+                        <Link to={attendanceHref}>
+                          <ClipboardList className="mr-2 h-4 w-4" />
+                          {t("action_attendance")}
+                        </Link>
+                      </Button>
+                    )}
+                  </>
+                )}
+              </>
             )}
             {(meeting.status === "NOT_STARTED" ||
               meeting.status === "IN_PROGRESS") && (
@@ -318,29 +407,11 @@ export default function MeetingDetailPage() {
                 {t("action_cancel")}
               </Button>
             )}
-            {canTakeAttendance && (
-              <Button
-                asChild
-                variant="outline"
-                className="h-11 min-h-11 rounded-sm"
-              >
-                <Link
-                  to={
-                    meeting.class?.id
-                      ? `/app/classes/${meeting.class.id}/attendance?meetingId=${meeting.id}`
-                      : "/app/classes"
-                  }
-                >
-                  <ClipboardList className="mr-2 h-4 w-4" />
-                  {t("action_attendance")}
-                </Link>
-              </Button>
-            )}
           </div>
         )}
       </AppPanel>
 
-      {meeting.content && (
+      {(meeting.content || canChangeStatus) && (
         <AppPanel className="space-y-3">
           <div className="space-y-1.5">
             <AppEyebrow className="flex items-center gap-1.5">
@@ -349,6 +420,18 @@ export default function MeetingDetailPage() {
             </AppEyebrow>
             <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
+          {canChangeStatus && meeting.status !== "CANCELLED" && (
+            <div className="flex flex-wrap gap-2">
+              <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
+                <Link to="/app/bible">{t("prep_open_bible")}</Link>
+              </Button>
+              <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
+                <Link to="/app/catechism">{t("prep_open_catechism")}</Link>
+              </Button>
+            </div>
+          )}
+          {meeting.content ? (
+            <>
           <h3 className="text-base font-semibold text-brand-ink">
             {meeting.content.title}
           </h3>
@@ -407,6 +490,10 @@ export default function MeetingDetailPage() {
                 {t("open_content")}
               </Link>
             </Button>
+          )}
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">{t("prep_missing_body")}</p>
           )}
         </AppPanel>
       )}

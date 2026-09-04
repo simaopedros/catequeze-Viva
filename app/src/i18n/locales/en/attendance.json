@@ -41,6 +41,7 @@
     "no_permission": "No permission.",
     "meetings_count": "{{count}} meetings",
     "present_letter": "P",
+    "late_letter": "L",
     "absent_letter": "A",
     "justified_letter": "E",
     "percent_column": "%",
@@ -91,6 +92,7 @@
     "conflict_keep_server": "Keep server",
     "conflict_detail": "Local: {{mine}} · Server: {{server}}",
     "change_status": "Change attendance for {{name}}",
+    "next_status_hint": "{{current}} · next tap: {{next}}",
     "status": {
       "PRESENT": "Present",
       "ABSENT": "Absent",

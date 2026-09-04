@@ -91,6 +91,9 @@ export function PastoralAnalysisInline({
   classId: string;
 }) {
   const { t, i18n } = useTranslation("pastoralAnalysis");
+  const { t: tReport } = useTranslation("pastoralReport");
+  const enrollmentStatusLabel = (status: string) =>
+    tReport(`enrollment_status.${status}`, { defaultValue: status });
   const { data, isLoading } = useQuery(
     getCatechumenPastoralAnalysis,
     { catechumenId, classId },
@@ -289,7 +292,7 @@ export function PastoralAnalysisInline({
                 padding: "2px 8px",
               }}
             >
-              {t("enrollmentStatus")}: {enrollment.status}
+              {t("enrollmentStatus")}: {enrollmentStatusLabel(enrollment.status)}
             </span>
             {enrollment.origin && (
               <span
@@ -861,7 +864,7 @@ export function PastoralAnalysisInline({
               {t("periodLabel")}: {periodLabel}
             </span>
             <span className="rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5">
-              {t("enrollmentStatus")}: {enrollment.status}
+              {t("enrollmentStatus")}: {enrollmentStatusLabel(enrollment.status)}
             </span>
             {enrollment.origin && (
               <span className="rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5">
