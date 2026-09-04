@@ -783,7 +783,6 @@ export const attendance_pt_BR = {
       "present_letter": "P",
       "late_letter": "T",
       "absent_letter": "F",
-      "late_letter": "T",
       "justified_letter": "J",
       "meetings_count_one": "{{count}} encontro",
       "meetings_count_plural": "{{count}} encontros",
