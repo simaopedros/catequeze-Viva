@@ -29,21 +29,21 @@ app OpenSaaS {
     // LCP hero (mobile-first): discover image before JS hydrates
     "<link rel='preload' as='image' type='image/avif' imageSrcSet='/landing/hero-mobile-light-640.avif 640w, /landing/hero-mobile-light-960.avif 960w, /landing/hero-mobile-light-1280.avif 1280w, /landing/hero-mobile-light-1896.avif 1896w' imageSizes='(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 560px' fetchPriority='high' />",
 
-    "<meta name='description' content='Organize sua turma, prepare encontros e acompanhe famílias no mesmo fluxo pastoral — sem depender de papel, planilha e improviso.' />",
+    "<meta name='description' content='Mais presença no encontro, menos tempo organizando. Prepare encontros, acompanhe catequizandos e registre presenças. 7 dias grátis, sem cartão.' />",
     "<meta name='author' content='Catequese Viva' />",
     "<meta name='keywords' content='catequese, católica, paróquia, pastoral, crisma, primeira eucaristia, igreja, gestão paroquial' />",
 
     "<meta property='og:type' content='website' />",
-    "<meta property='og:title' content='Catequese Viva — Sua próxima catequese preparada sem correria' />",
+    "<meta property='og:title' content='Você semeia a fé. A gente organiza a turma. | Catequese Viva' />",
     "<meta property='og:site_name' content='Catequese Viva' />",
     "<meta property='og:url' content='https://catechis.app' />",
-    "<meta property='og:description' content='Organize turma, prepare encontros e acompanhe famílias com mais clareza pastoral e menos improviso.' />",
+    "<meta property='og:description' content='Mais presença no encontro, menos tempo organizando. Prepare encontros, acompanhe catequizandos e registre presenças. 7 dias grátis, sem cartão.' />",
     "<meta property='og:image' content='https://catechis.app/public-banner.webp' />",
     "<meta property='og:image:width' content='1200' />",
     "<meta property='og:image:height' content='630' />",
     "<meta name='twitter:card' content='summary_large_image' />",
-    "<meta name='twitter:title' content='Catequese Viva — Sua próxima catequese preparada sem correria' />",
-    "<meta name='twitter:description' content='Organize turma, prepare encontros e acompanhe famílias com mais clareza pastoral e menos improviso.' />",
+    "<meta name='twitter:title' content='Você semeia a fé. A gente organiza a turma. | Catequese Viva' />",
+    "<meta name='twitter:description' content='Mais presença no encontro, menos tempo organizando. Prepare encontros, acompanhe catequizandos e registre presenças. 7 dias grátis, sem cartão.' />",
     "<meta name='twitter:image' content='https://catechis.app/public-banner.webp' />",
   ],
 

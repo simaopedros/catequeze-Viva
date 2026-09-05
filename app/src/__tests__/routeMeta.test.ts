@@ -57,4 +57,13 @@ describe("landing route meta", () => {
       document.querySelector('link[rel="canonical"]')?.getAttribute("href"),
     ).toBe(`${SITE_ORIGIN}/`);
   });
+
+  it("positions the home title around presence, not a management system", () => {
+    applyLandingRouteMeta("/");
+    expect(document.title).toMatch(/semeia a fé/i);
+    expect(document.title).not.toMatch(/sistema de gestão/i);
+    expect(
+      document.querySelector('meta[name="description"]')?.getAttribute("content"),
+    ).toMatch(/presença/i);
+  });
 });

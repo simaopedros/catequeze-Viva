@@ -3855,8 +3855,8 @@ export const landing_en = {
       ]
     },
     "transform": {
-      "eyebrow": "Less organization.",
-      "title": "More meeting.",
+      "eyebrow": "",
+      "title": "Less organizing. More encounter.",
       "col_before": "Before",
       "col_after": "With Catequese Viva",
       "rows": [

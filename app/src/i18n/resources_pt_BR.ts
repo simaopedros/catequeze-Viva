@@ -3855,8 +3855,8 @@ export const landing_pt_BR = {
       ]
     },
     "transform": {
-      "eyebrow": "Menos organização.",
-      "title": "Mais encontro.",
+      "eyebrow": "",
+      "title": "Menos organização. Mais encontro.",
       "col_before": "Antes",
       "col_after": "Com Catequese Viva",
       "rows": [
