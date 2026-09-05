@@ -13,7 +13,7 @@ describe('resolveStripeCheckoutTrialDays', () => {
       resolveStripeCheckoutTrialDays({
         isCredits: true,
         user: {
-          subscriptionStatus: 'trialing',
+          subscriptionStatus: null,
           createdAt: new Date('2026-03-08T12:00:00.000Z'),
         },
         now,
@@ -21,7 +21,20 @@ describe('resolveStripeCheckoutTrialDays', () => {
     ).toBe(0);
   });
 
-  it('returns 0 even mid product-trial — Assinar must not start a Stripe trial', () => {
+  it('returns 7 for a new user with no Stripe subscription', () => {
+    expect(
+      resolveStripeCheckoutTrialDays({
+        user: {
+          subscriptionStatus: null,
+          subscriptionPlan: 'catechist_free',
+          createdAt: now,
+        },
+        now,
+      }),
+    ).toBe(SUBSCRIPTION_TRIAL_DAYS);
+  });
+
+  it('returns remaining days for a grandfather in-app trial', () => {
     expect(
       resolveStripeCheckoutTrialDays({
         user: {
@@ -31,24 +44,10 @@ describe('resolveStripeCheckoutTrialDays', () => {
         },
         now,
       }),
-    ).toBe(0);
+    ).toBe(5);
   });
 
-  it('returns 0 on signup day (in-app trial is enough)', () => {
-    expect(
-      resolveStripeCheckoutTrialDays({
-        user: {
-          subscriptionStatus: 'trialing',
-          subscriptionPlan: 'single',
-          createdAt: now,
-        },
-        now,
-      }),
-    ).toBe(0);
-    expect(SUBSCRIPTION_TRIAL_DAYS).toBe(7);
-  });
-
-  it('returns 0 when product trial has expired', () => {
+  it('returns 0 when the in-app trial has expired', () => {
     expect(
       resolveStripeCheckoutTrialDays({
         user: {
@@ -61,24 +60,70 @@ describe('resolveStripeCheckoutTrialDays', () => {
     ).toBe(0);
   });
 
-  it('returns 0 when user was never on product trial', () => {
+  it('returns remaining days for a grandfather in-app trial even after an abandoned Checkout', () => {
     expect(
       resolveStripeCheckoutTrialDays({
         user: {
-          subscriptionStatus: null,
-          subscriptionPlan: 'catechist_free',
-          createdAt: new Date('2026-03-09T12:00:00.000Z'),
+          subscriptionStatus: 'trialing',
+          subscriptionPlan: 'single',
+          paymentProcessorUserId: 'cus_abandoned',
+          createdAt: new Date('2026-03-05T12:00:00.000Z'),
+        },
+        now,
+      }),
+    ).toBe(5);
+  });
+
+  it('returns 0 when the user already used a Stripe trial', () => {
+    expect(
+      resolveStripeCheckoutTrialDays({
+        user: {
+          subscriptionStatus: 'trialing',
+          subscriptionPlan: 'single',
+          paymentProcessorUserId: 'cus_1',
+          trialEndsAt: new Date('2026-03-15T12:00:00.000Z'),
+          createdAt: now,
         },
         now,
       }),
     ).toBe(0);
   });
 
-  it('returns 0 even when an institutional trial remainder exists', () => {
+  it('returns 0 for a paid active subscription', () => {
+    expect(
+      resolveStripeCheckoutTrialDays({
+        user: {
+          subscriptionStatus: 'active',
+          subscriptionPlan: 'single',
+          paymentProcessorUserId: 'cus_1',
+          createdAt: now,
+        },
+        now,
+      }),
+    ).toBe(0);
+  });
+
+  it('credits remaining institutional trial days only for grandfather accounts', () => {
     expect(
       resolveStripeCheckoutTrialDays({
         user: {
           subscriptionStatus: null,
+          createdAt: new Date('2026-01-01T12:00:00.000Z'),
+        },
+        institutionalBilling: {
+          plan: 'UNLIMITED',
+          status: 'TRIAL',
+          trialEndsAt: new Date('2026-03-13T12:00:00.000Z'),
+        },
+        now,
+      }),
+    ).toBe(3);
+
+    expect(
+      resolveStripeCheckoutTrialDays({
+        user: {
+          subscriptionStatus: null,
+          paymentProcessorUserId: 'cus_1',
           createdAt: new Date('2026-01-01T12:00:00.000Z'),
         },
         institutionalBilling: {
@@ -93,22 +138,21 @@ describe('resolveStripeCheckoutTrialDays', () => {
 });
 
 describe('getCheckoutTrialConfig', () => {
-  it('never sets trial_period_days even if leftover days are passed', () => {
+  it('sets trial_period_days when days are granted', () => {
     const config = getCheckoutTrialConfig('subscription', { plan_id: 'single' }, 7);
     expect(config.payment_method_collection).toBe('always');
-    expect(config.subscription_data?.trial_period_days).toBeUndefined();
-    expect(config.subscription_data?.trial_settings).toBeUndefined();
+    expect(config.subscription_data?.trial_period_days).toBe(7);
     expect(config.subscription_data?.metadata).toEqual({ plan_id: 'single' });
+  });
+
+  it('omits trial_period_days when days are 0', () => {
+    const config = getCheckoutTrialConfig('subscription', { plan_id: 'single' }, 0);
+    expect(config.payment_method_collection).toBe('always');
+    expect(config.subscription_data?.trial_period_days).toBeUndefined();
     expect(JSON.stringify(config)).not.toMatch(/trial_period_days/);
   });
 
-  it('ignores a remaining-days argument', () => {
-    const config = getCheckoutTrialConfig('subscription', { plan_id: 'single' }, 2);
-    expect(config.payment_method_collection).toBe('always');
-    expect(config.subscription_data?.trial_period_days).toBeUndefined();
-  });
-
-  it('collects a card and omits Stripe trial when days are 0', () => {
+  it('collects a card when days are 0', () => {
     expect(
       getCheckoutTrialConfig('subscription', { plan_id: 'single' }, 0),
     ).toEqual({

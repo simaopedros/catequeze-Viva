@@ -6,7 +6,7 @@
  * subscription, resolved with the same rules the rest of the app already uses:
  *
  *   - personal workspace: User.subscriptionStatus / subscriptionPlan, including
- *     the no-card product trial (see shared/pricing.ts)
+ *     the product trial (Stripe or grandfather in-app; see shared/pricing.ts)
  *   - institutional workspace: TenantBilling on any parish the user belongs to,
  *     with the diocese umbrella and owner cascade handled by
  *     resolveEffectiveBilling

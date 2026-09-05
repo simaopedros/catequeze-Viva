@@ -248,7 +248,7 @@ export const TESTIMONIALS: Testimonial[] = [
 export const FAQ: FaqItem[] = [
   {
     q: 'Os 7 dias grátis são realmente grátis?',
-    a: 'Sim. Você cria a conta sem cartão de crédito e tem 7 dias para usar a plataforma. Se não fizer sentido, não precisa fazer nada — a conta simplesmente expira.',
+    a: 'Sim. O Stripe pede o cartão para começar o trial de 7 dias; a cobrança só acontece depois. Cancele a tempo se não quiser continuar.',
   },
   {
     q: 'Meus dados estão seguros? A plataforma segue a LGPD?',

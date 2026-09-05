@@ -98,8 +98,10 @@ describe("isLifecycleAudience", () => {
 });
 
 describe("isPaidLifecycleUser", () => {
-  it("treats Stripe customer or active-like status as paid", () => {
-    expect(isPaidLifecycleUser({ paymentProcessorUserId: "cus_1" })).toBe(true);
+  it('treats active-like Stripe status as paid, not customer id or trialing', () => {
+    expect(isPaidLifecycleUser({ paymentProcessorUserId: "cus_1" })).toBe(false);
+    expect(isPaidLifecycleUser({ paymentProcessorUserId: "cus_1", subscriptionStatus: "trialing" })).toBe(false);
+    expect(isPaidLifecycleUser({ paymentProcessorUserId: "cus_1", subscriptionStatus: "active" })).toBe(true);
     expect(isPaidLifecycleUser({ subscriptionStatus: "active" })).toBe(true);
     expect(isPaidLifecycleUser({ subscriptionStatus: "trialing" })).toBe(false);
     expect(isPaidLifecycleUser({ subscriptionStatus: "deleted" })).toBe(false);

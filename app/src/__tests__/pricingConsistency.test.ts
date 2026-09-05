@@ -265,6 +265,18 @@ describe('getPersonalPlanId', () => {
     ).toBe('single');
   });
 
+  it('returns single during Stripe trial even when createdAt is old', () => {
+    expect(
+      getPersonalPlanId({
+        subscriptionStatus: 'trialing',
+        subscriptionPlan: 'single',
+        createdAt: oldSignup,
+        paymentProcessorUserId: 'cus_1',
+        trialEndsAt: new Date(recentSignup.getTime() + 5 * 24 * 60 * 60 * 1000),
+      }),
+    ).toBe('single');
+  });
+
   it('defaults product trial plan to single when plan is free sentinel', () => {
     expect(
       getPersonalPlanId({

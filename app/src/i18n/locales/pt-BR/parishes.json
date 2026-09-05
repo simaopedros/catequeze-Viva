@@ -50,7 +50,7 @@
   "new_parish_btn": "Nova Paróquia",
   "create_error": "Erro ao criar paróquia.",
   "trial_offer_title": "Limite do plano atual",
-  "trial_offer_body": "Seu plano atual não inclui criar paróquia. Comece 7 dias grátis do plano Paróquia para continuar — sem cartão.",
+  "trial_offer_body": "Seu plano atual não inclui criar paróquia. Comece 7 dias grátis do plano Paróquia no Stripe — o cartão é pedido agora e a cobrança só começa depois do trial.",
   "trial_offer_cta": "Começar 7 dias grátis",
   "diocese_license": "Diocese (licença)",
   "independent_option": "Independente / sob minha licença",

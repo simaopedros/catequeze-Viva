@@ -112,7 +112,7 @@ export function ProductTrialBanner({
   const wrapperClass = hideOnMobileEncounter ? "hidden lg:block" : undefined;
 
   const endsAt = personalTrial
-    ? getProductTrialEndsAt(user?.createdAt)
+    ? getProductTrialEndsAt(user)
     : instBilling?.trialEndsAt
       ? typeof instBilling.trialEndsAt === "string"
         ? new Date(instBilling.trialEndsAt)

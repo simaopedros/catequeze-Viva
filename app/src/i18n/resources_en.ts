@@ -985,7 +985,7 @@ export const auth_en = {
     "signup_plan_unlimited": "Parish Plan",
     "signup_interval_monthly": "monthly billing",
     "signup_interval_annual": "annual billing",
-    "signup_context_no_card": "7 days free, no card",
+    "signup_context_no_card": "7 days free; card now, charge after trial",
     "signup_context_change": "Change",
     "signup_success_next_steps": "Next steps",
     "signup_success_step_1": "Check your inbox and spam folder.",
@@ -3248,7 +3248,7 @@ export const landing_en = {
       "badge": "For those who say yes to the mission of catechizing",
       "cta_primary": "Start 7 days free",
       "cta_secondary": "See how it works",
-      "trust_signals": "7 days free · No card · Works on mobile",
+      "trust_signals": "7 days free · Card now · Charge after trial",
       "cta_secondary_href": "/#como",
       "highlights": [
         "Attendance and follow-up on mobile",
@@ -3494,7 +3494,7 @@ export const landing_en = {
       },
       {
         "q": "Do I need a card to try it?",
-        "a": "No. You can start the 7 free days without entering a card."
+        "a": "Yes. Stripe asks for a card to start the trial; the charge only happens after 7 days. Cancel in time if you do not want to continue."
       },
       {
         "q": "Can I cancel anytime?",
@@ -3612,7 +3612,7 @@ export const landing_en = {
         "desc": "Information protected in transit and at rest, with restricted access by role."
       },
       {
-        "title": "7 days without a card",
+        "title": "7-day trial with card",
         "desc": "Try with no commitment. Cancel anytime if it is not a fit."
       },
       {
@@ -3623,10 +3623,10 @@ export const landing_en = {
     "testimonials_title": "Testimonials",
     "testimonials_subtitle": "When we have authorized quotes from catechists and parishes, they will appear here.",
     "testimonials": [],
-    "cta_helper": "No card · No commitment · Cancel anytime",
+    "cta_helper": "Card now · Charge after trial · Cancel anytime",
     "mobile_cta": {
       "title": "7 days free",
-      "subtitle": "No card",
+      "subtitle": "Card now, charge after trial",
       "button": "Start 7 days free"
     },
     "proof": {
@@ -3649,21 +3649,21 @@ export const landing_en = {
       ],
       "chips": [
         "7 free days",
-        "No card to start",
-        "No automatic charge",
+        "Card now",
+        "Charge only after the trial",
         "LGPD-oriented",
         "Easy cancel"
       ],
       "launch_title": "Try it with your class",
-      "launch_text": "Create an account, set up your class, and prepare the next meeting in peace. You have 7 days to feel whether it serves your mission — no credit card.",
+      "launch_text": "Create an account, add a card, and try it for 7 days. We only charge after the trial — cancel anytime.",
       "promises": [
-        "7 free days, no credit card",
+        "7 free days; card now, charge after trial",
         "Bible and Catechism library in the same place",
         "Children’s data handled with care and LGPD",
         "Cancel anytime"
       ],
       "launch_cta": "Start free for 7 days",
-      "launch_helper": "No credit card · Works on mobile · Cancel anytime"
+      "launch_helper": "Card now · Charge after trial · Cancel anytime"
     },
     "simple_features": {
       "title": "Everything a catechist needs, without the clutter",
@@ -3692,7 +3692,7 @@ export const landing_en = {
     },
     "steps_endowed_title": "You're already here",
     "steps_endowed_desc": "Getting to know the platform",
-    "price_trial_badge": "7 days free, no card",
+    "price_trial_badge": "7 days free; card now, charge after trial",
     "price_trial_note": "",
     "comparison": {
       "title": "Stop scattering your catechesis across paper, spreadsheets, and WhatsApp",
@@ -3701,7 +3701,7 @@ export const landing_en = {
       "col_old": "Paper + spreadsheet + WhatsApp",
       "col_next": "Catequese Viva",
       "cta": "Start free for 7 days",
-      "helper": "No credit card. Cancel anytime.",
+      "helper": "We ask for a card now; the charge starts after the trial. Cancel anytime.",
       "rows": [
         {
           "criterion": "Prepare the meeting",
@@ -3736,7 +3736,7 @@ export const landing_en = {
       ]
     },
     "faq_cta": "Start 7 days free",
-    "faq_cta_helper": "7 days free · No card",
+    "faq_cta_helper": "7 days free · Card now, charge after trial",
     "price_cta_single": "Start 7 days free",
     "price_annual_note": "or R$ 99/year",
     "price_cta_unlimited": "Start 7 days free",
@@ -3962,7 +3962,7 @@ export const landing_en = {
       "title": "A plan for each stage of the mission.",
       "subtitle": "Start as a catechist. When your catechesis grows, bring the organization to your parish or diocese.",
       "featured": "Most chosen",
-      "note": "7 days free · No credit card · Cancel anytime",
+      "note": "7 days free · Card now · Charge after trial",
       "billed_annual": "Billed annually · 7 days free",
       "billed_monthly": "Billed monthly · 7 days free",
       "diocese_note": "Talk with our team",
@@ -4112,7 +4112,7 @@ export const landingPresenca_en = {
       "badge": "Digital attendance control",
       "cta_primary": "Start now",
       "cta_secondary": "See demo",
-      "trust_signals": "R$ 9.90/month • Works on mobile • Payment via Stripe",
+      "trust_signals": "7 days free • Card now • Charge after trial",
       "visual_title": "Mobile attendance",
       "visual_item_1": "Mark the class quickly",
       "visual_item_2": "Record justifications",
@@ -4214,7 +4214,7 @@ export const landingSistema_en = {
       "badge": "Complete catechesis management",
       "cta_primary": "Get started",
       "cta_secondary": "See features",
-      "trust_signals": "R$ 9.90/month • Start in 2 minutes • Cancel anytime",
+      "trust_signals": "7 days free • Card now • Charge after trial",
       "visual_title": "Coordination overview",
       "visual_item_1": "Classes and teams in one dashboard",
       "visual_item_2": "Attendance indicators",
@@ -4835,7 +4835,7 @@ export const onboarding_en = {
       "create_error": "Error creating parish.",
       "city_state_required": "Enter the city and state before creating the parish.",
       "trial_offer_title": "Current plan limit",
-      "trial_offer_body": "Your current plan does not include creating a parish. Start a free 7-day Parish plan trial to continue — no card required.",
+      "trial_offer_body": "Your current plan does not include creating a parish. Start a 7-day Parish plan trial on Stripe — card now, charge after trial.",
       "trial_offer_cta": "Start 7-day free trial",
       "creating": "Creating...",
       "create_btn": "Create parish",
@@ -5128,7 +5128,7 @@ export const parishes_en = {
     "new_parish_btn": "New Parish",
     "create_error": "Error creating parish.",
     "trial_offer_title": "Current plan limit",
-    "trial_offer_body": "Your current plan does not include creating a parish. Start a free 7-day Parish plan trial to continue — no card required.",
+    "trial_offer_body": "Your current plan does not include creating a parish. Start a 7-day Parish plan trial on Stripe — card now, charge after trial.",
     "trial_offer_cta": "Start 7-day free trial",
     "diocese_license": "Diocese (license)",
     "independent_option": "Independent / under my license",
@@ -5367,7 +5367,7 @@ export const public_en = {
     },
     "pricing": {
       "title": "Three paths: catechist, parish, and diocese",
-      "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7-day free trial, no card.",
+      "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7-day free trial; card now, charge after trial.",
       "payment_card": "Card",
       "annual_savings": "Save 17% on annual",
       "monthly_tab": "Monthly",
@@ -5395,7 +5395,7 @@ export const public_en = {
       "faq": [
         {
           "q": "How can I try the platform before subscribing?",
-          "a": "You try it for 7 days with no credit card, use it with your real class, and only decide if it makes sense to continue. When the 7 days end, nothing is charged."
+          "a": "You try it for 7 days. We ask for a card now and only charge after the trial. Use it with your real class and cancel if it does not make sense to continue."
         },
         {
           "q": "What is the price?",
@@ -5403,7 +5403,7 @@ export const public_en = {
         },
         {
           "q": "How does payment work?",
-          "a": "You start with a 7-day free trial and no credit card. If you continue, you pay by card, monthly or annually. No lock-in — cancel anytime."
+          "a": "You start with a 7-day trial. Stripe asks for a card now and only charges after the trial. No lock-in — cancel anytime."
         },
         {
           "q": "What about annual plan refunds?",

@@ -23,7 +23,6 @@ import { grantSubscriptionAiCredits } from "../../server/ai/credits";
 import { stripeClient } from "./stripeClient";
 import { trackPricingEvent } from "../pricingEvents";
 import { sendMetaEvent } from "../meta/metaCapi";
-import { SUBSCRIPTION_TRIAL_DAYS } from "../../shared/pricing";
 import { sendPurchaseToMeta } from "../meta/sendPurchaseToMeta";
 
 const STRIPE_PROVIDER = "stripe";
@@ -85,7 +84,12 @@ export const stripeWebhook: PaymentsWebhook = async (
 
     switch (event.type) {
       case "checkout.session.completed":
-        await handleCheckoutSessionCompleted(event, prismaUserDelegate, trackedEventDelegate);
+        await handleCheckoutSessionCompleted(
+          event,
+          prismaUserDelegate,
+          trackedEventDelegate,
+          context,
+        );
         break;
       case "invoice.paid":
       case "invoice.payment_succeeded":
@@ -142,10 +146,54 @@ function constructStripeEvent(request: express.Request): Stripe.Event {
   );
 }
 
+async function persistStripeSubscriptionToUser(
+  subscription: Stripe.Subscription,
+  prismaUserDelegate: PrismaClient["user"],
+  context: WebhookContext,
+  extras?: { datePaid?: Date },
+) {
+  const subscriptionStatus = getOpenSaasSubscriptionStatus(subscription);
+  if (!subscriptionStatus) {
+    return null;
+  }
+
+  const customerId = getCustomerId(subscription.customer);
+  const catalogPlan = await resolvePlanByStripePriceId(
+    context,
+    getSubscriptionPriceId(subscription),
+  );
+  const trialEndsAt = getStripeTrialEndsAt(subscription);
+
+  const user = await updateUserSubscription(
+    {
+      paymentProcessorUserId: customerId,
+      paymentPlanId: catalogPlan.slug,
+      subscriptionStatus,
+      datePaid: extras?.datePaid,
+      ...(trialEndsAt ? { trialEndsAt } : {}),
+    },
+    prismaUserDelegate,
+  );
+
+  if (catalogPlan.level === "institutional") {
+    if (subscriptionStatus === SubscriptionStatus.Trialing) {
+      await cascadeActivatePlanToTenantBilling(context, user.id, catalogPlan, {
+        status: "TRIAL",
+        trialEndsAt,
+      });
+    } else if (subscriptionStatus === SubscriptionStatus.Active) {
+      await cascadeActivatePlanToTenantBilling(context, user.id, catalogPlan);
+    }
+  }
+
+  return { user, catalogPlan, subscriptionStatus };
+}
+
 async function handleCheckoutSessionCompleted(
   event: Stripe.CheckoutSessionCompletedEvent,
   prismaUserDelegate: PrismaClient["user"],
   trackedEventDelegate: TrackedEventDelegate,
+  context: WebhookContext,
 ): Promise<void> {
   const session = event.data.object;
   if (session.mode !== "subscription") {
@@ -155,6 +203,26 @@ async function handleCheckoutSessionCompleted(
   const subscription = await retrieveSubscription(session.subscription);
   if (!subscription) {
     return;
+  }
+
+  const persisted = await persistStripeSubscriptionToUser(
+    subscription,
+    prismaUserDelegate,
+    context,
+  );
+
+  if (
+    persisted?.subscriptionStatus === SubscriptionStatus.Trialing &&
+    persisted.user.email
+  ) {
+    emitProductEventSafe({
+      name: PRODUCT_EVENT.TRIAL_STARTED,
+      email: persisted.user.email,
+      userId: persisted.user.id,
+      firstName: persisted.user.firstName,
+      locale: resolveUserLocale(persisted.user),
+      context,
+    });
   }
 
   const customer = await retrieveCustomer(session.customer);
@@ -198,8 +266,8 @@ async function handleCheckoutSessionCompleted(
     return;
   }
 
-  // Meta requires StartTrial value > 0 (use plan monthly price from metadata or subscription).
-  const catalogPlan = await getPaymentPlanFromSubscription(subscription);
+  const catalogPlan =
+    persisted?.catalogPlan ?? (await getPaymentPlanFromSubscription(subscription, context));
   const paymentPlanId = catalogPlan.slug;
   const planValue = metadata.value 
     ? Number(metadata.value) 
@@ -337,6 +405,26 @@ async function processPaidInvoice(
         if (catalogPlan.slug === "catechist_free") {
           throw new Error(`Unexpected invoice for non-purchasable plan "${paymentPlanId}"`);
         }
+
+        const liveSubscription = subscriptionId
+          ? await retrieveSubscription(subscriptionId)
+          : null;
+        if (liveSubscription && isTrialingSubscription(liveSubscription)) {
+          await persistStripeSubscriptionToUser(
+            liveSubscription,
+            prismaUserDelegate,
+            context,
+          );
+          await finishTrackedEvent(trackedEventDelegate, invoiceProcessing.id, {
+            responseJson: {
+              invoiceId: invoice.id,
+              paymentPlanId,
+              skipped: "subscription_still_trialing",
+            },
+          });
+          return;
+        }
+
         const user = await updateUserSubscription(
           {
             paymentProcessorUserId: customerId,
@@ -508,22 +596,19 @@ async function handleCustomerSubscriptionUpdated(
   }
 
   const customerId = getCustomerId(subscription.customer);
-  const catalogPlan = await resolvePlanByStripePriceId(
-    context,
-    getSubscriptionPriceId(subscription),
-  );
-  const paymentPlanId = catalogPlan.slug;
+  console.info(`[Stripe] subscription.updated customer=${customerId} subscription=${subscription.id} status=${subscriptionStatus}`);
 
-  console.info(`[Stripe] subscription.updated customer=${customerId} subscription=${subscription.id} status=${subscriptionStatus} plan=${paymentPlanId}`);
-
-  const user = await updateUserSubscription(
-    {
-      paymentProcessorUserId: customerId,
-      paymentPlanId,
-      subscriptionStatus,
-    },
+  const persisted = await persistStripeSubscriptionToUser(
+    subscription,
     prismaUserDelegate,
+    context,
   );
+  if (!persisted) {
+    return;
+  }
+
+  const { user, catalogPlan } = persisted;
+  const paymentPlanId = catalogPlan.slug;
 
   if (subscriptionStatus === SubscriptionStatus.Active) {
     await grantSubscriptionAiCredits(
@@ -542,10 +627,6 @@ async function handleCustomerSubscriptionUpdated(
         context,
       });
     }
-  }
-
-  if (catalogPlan.level === "institutional" && subscriptionStatus === SubscriptionStatus.Active) {
-    await cascadeActivatePlanToTenantBilling(context, user.id, catalogPlan);
   }
 
   if (subscription.cancel_at_period_end && user.email) {
@@ -871,8 +952,16 @@ function parseTrialDays(rawTrialDays?: string): number {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
 }
 
+function getStripeTrialEndsAt(subscription: Stripe.Subscription): Date | null {
+  if (!subscription.trial_end) return null;
+  return new Date(subscription.trial_end * 1000);
+}
+
 function isTrialingSubscription(subscription: Stripe.Subscription): boolean {
-  return subscription.status === "trialing" || Boolean(subscription.trial_end && subscription.trial_end * 1000 > Date.now());
+  return (
+    subscription.status === "trialing" ||
+    Boolean(subscription.trial_end && subscription.trial_end * 1000 > Date.now())
+  );
 }
 
 function getInvoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
@@ -1016,7 +1105,7 @@ function getOpenSaasSubscriptionStatus(
     Stripe.Subscription.Status,
     SubscriptionStatus | undefined
   > = {
-    trialing: SubscriptionStatus.Active,
+    trialing: SubscriptionStatus.Trialing,
     active: SubscriptionStatus.Active,
     past_due: SubscriptionStatus.PastDue,
     canceled: SubscriptionStatus.Deleted,

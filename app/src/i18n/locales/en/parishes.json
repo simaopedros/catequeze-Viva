@@ -50,7 +50,7 @@
   "new_parish_btn": "New Parish",
   "create_error": "Error creating parish.",
   "trial_offer_title": "Current plan limit",
-  "trial_offer_body": "Your current plan does not include creating a parish. Start a free 7-day Parish plan trial to continue — no card required.",
+  "trial_offer_body": "Your current plan does not include creating a parish. Start a 7-day Parish plan trial on Stripe — card now, charge after trial.",
   "trial_offer_cta": "Start 7-day free trial",
   "diocese_license": "Diocese (license)",
   "independent_option": "Independent / under my license",

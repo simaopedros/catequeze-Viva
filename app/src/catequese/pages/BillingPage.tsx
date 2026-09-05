@@ -252,7 +252,7 @@ export default function BillingPage() {
     if (isOnProductTrial(user)) {
       isTrialAccess = true;
       trialDaysLeft = getProductTrialDaysLeft(user);
-      trialEndsAt = getProductTrialEndsAt(user.createdAt);
+      trialEndsAt = getProductTrialEndsAt(user);
       // Ensure UI shows Single during product trial even if plan field is messy
       if (effectivePlanId === PaymentPlanId.CatechistFree) {
         effectivePlanId = PaymentPlanId.Single;

@@ -231,7 +231,7 @@ export const createParish = async (
     state?: string;
     dioceseId?: string;
     role?: string;
-    /** User accepted the 7-day parish trial to unlock creation. */
+    /** User accepted creating an unpaid parish so Stripe trial checkout can attach. */
     startTrial?: boolean;
   },
   context: any
