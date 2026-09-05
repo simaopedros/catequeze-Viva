@@ -42,6 +42,7 @@ const GuidedTour = lazy(() =>
 );
 
 import { useGuidedTour } from "./components/GuidedTour";
+import { isMinimalAppPath } from "../client/appRouteGates";
 
 interface AppShellProps {
   children: ReactNode;
@@ -62,6 +63,7 @@ export function AppShell({ children }: AppShellProps) {
     userRole,
     memberships,
     allMemberships,
+    personalWorkspaceId,
   } = useUserContext();
   const { showTour, completeTour } = useGuidedTour();
   const acceptInvitationAction = useAction(acceptInvitation);
@@ -79,10 +81,26 @@ export function AppShell({ children }: AppShellProps) {
   // it disappears instead of depending on the protected page wrapper mounting.
   const { data: authUser } = useAuth();
 
-  const isMinimalPath = useMemo(() => {
-    const path = location.pathname;
-    return path === "/app/onboarding" || path === "/app/select-workspace";
-  }, [location.pathname]);
+  const isMinimalPath = useMemo(
+    () =>
+      isMinimalAppPath(location.pathname, {
+        needsOnboarding,
+        contextReady: !isLoading && !isFetching,
+        hasWorkspace:
+          Boolean(personalWorkspaceId) ||
+          (memberships || []).some(
+            (m: { status: string }) => m.status === "ACTIVE",
+          ),
+      }),
+    [
+      location.pathname,
+      needsOnboarding,
+      isLoading,
+      isFetching,
+      personalWorkspaceId,
+      memberships,
+    ],
+  );
 
   const [isMobileViewport, setIsMobileViewport] = useState(() =>
     typeof window !== "undefined"
@@ -99,8 +117,7 @@ export function AppShell({ children }: AppShellProps) {
   }, []);
 
   const hideOperationalChrome = useMemo(
-    () =>
-      isMobileViewport && isMobileOperationalRoute(location.pathname),
+    () => isMobileViewport && isMobileOperationalRoute(location.pathname),
     [isMobileViewport, location.pathname],
   );
 
@@ -213,7 +230,9 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <TwoFactorGate>
       {isMinimalPath ? (
-        <div className="mobile-screen-height bg-background">{children}</div>
+        <div className="mobile-screen-height overflow-y-auto bg-background px-3 py-4 min-[360px]:px-4 md:p-6">
+          {children}
+        </div>
       ) : (
         <ShellBase variant="app">
           <SkipToContent />

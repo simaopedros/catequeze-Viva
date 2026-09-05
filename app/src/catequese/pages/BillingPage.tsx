@@ -159,14 +159,15 @@ export default function BillingPage() {
   // (getDashboardStats without parishId aggregates every parish the user can access).
   const usageParishId = parishId || workspaceId || undefined;
 
+  const statsQueryEnabled = Boolean(usageParishId);
   const {
     data: stats,
-    isLoading: loading,
+    isLoading: statsLoading,
     refetch: refetchStats,
   } = useQuery(
     getDashboardStats,
     { parishId: usageParishId },
-    { enabled: Boolean(usageParishId) },
+    { enabled: statsQueryEnabled },
   );
 
   const { data: subscriptionDetails, refetch: refetchSubscription } = useQuery(
@@ -177,6 +178,7 @@ export default function BillingPage() {
     { id: parishId },
     { enabled: !!parishId },
   );
+  const waitingForUsage = statsQueryEnabled && statsLoading;
 
   const [billingInterval, setBillingInterval] =
     useState<BillingInterval>(getIntendedInterval);
@@ -539,7 +541,7 @@ export default function BillingPage() {
     requestedPlanCard.planId !== effectivePlanId &&
     requestedPlanLevelMatches &&
     !planInherited &&
-    !loading &&
+    !waitingForUsage &&
     !(parishId && loadingParish);
   const allowAutoCheckout =
     requestedPlanCanCheckout && !journeyReason && !gateRequired;
@@ -547,7 +549,7 @@ export default function BillingPage() {
   useEffect(() => {
     if (pricingViewedRef.current) return;
     if (!canManageBilling) return;
-    if (loading || (parishId && loadingParish)) return;
+    if (waitingForUsage || (parishId && loadingParish)) return;
     if (planInherited || showDioceseWorkspace) return;
 
     pricingViewedRef.current = true;
@@ -567,7 +569,7 @@ export default function BillingPage() {
     isPersonal,
     journeyReason,
     journeySource,
-    loading,
+    waitingForUsage,
     loadingParish,
     parishId,
     canManageBilling,
@@ -702,7 +704,7 @@ export default function BillingPage() {
     />
   );
 
-  if (loading || (parishId && loadingParish)) {
+  if (waitingForUsage || (parishId && loadingParish)) {
     return (
       <div className="space-y-6 animate-pulse">
         <div className="h-8 w-32 rounded bg-muted" />
@@ -758,7 +760,7 @@ export default function BillingPage() {
         classesUsed={classesUsed}
         catechumensUsed={catechumensUsed}
         planName={conversionOffer.name}
-        features={conversionOffer.features}
+        features={conversionOffer.features ?? []}
         monthlyCents={conversionOffer.priceCents}
         annualCents={conversionOffer.priceCentsAnnual}
         defaultInterval={peekIntendedInterval() ?? "annual"}
@@ -815,7 +817,7 @@ export default function BillingPage() {
         classesUsed={classesUsed}
         catechumensUsed={catechumensUsed}
         planName={conversionOffer.name}
-        features={conversionOffer.features}
+        features={conversionOffer.features ?? []}
         monthlyCents={conversionOffer.priceCents}
         annualCents={conversionOffer.priceCentsAnnual}
         planClassLimit={conversionOffer.maxClasses}

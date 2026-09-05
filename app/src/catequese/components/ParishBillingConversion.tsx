@@ -85,7 +85,7 @@ export function ParishBillingConversion({
   classesUsed,
   catechumensUsed,
   planName,
-  features,
+  features = [],
   monthlyCents,
   annualCents,
   defaultInterval,
@@ -318,7 +318,7 @@ export function ParishBillingConversion({
         </div>
 
         <ul className="mt-6 grid gap-2.5 sm:grid-cols-2">
-          {features.map((feature) => (
+          {(features ?? []).map((feature) => (
             <li
               key={feature}
               className="flex items-start gap-2 text-sm text-brand-ink"
