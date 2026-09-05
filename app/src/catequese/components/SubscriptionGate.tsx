@@ -12,6 +12,7 @@ import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { buildBillingJourneyHref } from "../lib/upgradeJourney";
 import { PaymentPlanId } from "../../payment/plans";
+import { shouldRenderGatedRoute } from "../../client/appRouteGates";
 
 const ALWAYS_ACCESSIBLE = [
   "/app/billing",
@@ -141,9 +142,17 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
     isBillingManager,
   ]);
 
-  if (user === undefined) return null;
-  if (!alwaysAccessible && !hasAccess && isBillingManager) return null;
-  if (!checked) return null;
+  if (
+    !shouldRenderGatedRoute({
+      userLoaded: user !== undefined,
+      alwaysAccessible,
+      hasAccess,
+      isBillingManager,
+      checked,
+    })
+  ) {
+    return null;
+  }
 
   return <>{children}</>;
 }

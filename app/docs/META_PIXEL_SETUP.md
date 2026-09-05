@@ -255,7 +255,8 @@ app/src/payment/stripe/
 5. **Não pausar** as campanhas — algoritmo do Meta precisa de volume
 
 **Por que trocar?**:
-- `CompleteRegistration` = cadastro grátis (trial 7 dias sem cartão)
+- `CompleteRegistration` = cadastro (ainda sem pagamento)
+- `StartTrial` = Checkout Stripe com trial de 7 dias (cartão coletado)
 - `Purchase` = pagamento real (R$ 9.90+ BRL)
 - Meta otimiza para o evento configurado → otimizar para Purchase traz **mais compradores**, não apenas trialists
 

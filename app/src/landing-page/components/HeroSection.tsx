@@ -8,12 +8,12 @@ import {
   Wifi,
 } from "lucide-react";
 import type { LandingHeroVisual } from "../landingCampaigns";
-import { useLandingText } from "../hooks/useLandingText";
+import { landingCopy, useLandingText } from "../hooks/useLandingText";
 import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import { BrowserFrame } from "./BrowserFrame";
-import { AppProductMock } from "./mockups/AppProductMock";
+import { ProductHeroShot } from "./ProductHeroShot";
 
 /**
  * Centered editorial hero: promise, one primary CTA, product below.
@@ -211,6 +211,13 @@ export function HeroSection({
     </div>
   );
 
+  const imageAlt = landingCopy(
+    tr,
+    "hero.image_alt",
+    "Painel da Catequese Viva com turmas, presença e próximas ações",
+  );
+  const showProductShot = visual === "product" || visual === "management";
+
   const productBlock = showProductImage ? (
     <div
       className={cn(
@@ -218,12 +225,12 @@ export function HeroSection({
       )}
     >
       <BrowserFrame
-        url="catechis.app"
+        url="catechis.app/app"
         aspect="natural"
         className="rounded-[14px] shadow-[0_25px_70px_rgba(9,32,53,0.12)]"
       >
-        {visual === "product" ? (
-          <AppProductMock ns={ns} />
+        {showProductShot ? (
+          <ProductHeroShot alt={imageAlt} />
         ) : (
           <CampaignHeroVisual
             visual={visual}
@@ -268,7 +275,7 @@ function CampaignHeroVisual({
   title,
   items,
 }: {
-  visual: Exclude<LandingHeroVisual, "product">;
+  visual: Exclude<LandingHeroVisual, "product" | "management">;
   title: string;
   items: string[];
 }) {

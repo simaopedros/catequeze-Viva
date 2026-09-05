@@ -17,6 +17,7 @@ import {
   AccordionTrigger,
 } from "../../client/components/ui/accordion";
 import { SalesWhatsAppCta } from "../../client/components/SalesWhatsAppCta";
+import { cn } from "../../client/utils";
 import {
   formatMonthlyFromAnnualCents,
   formatPrice,
@@ -45,6 +46,9 @@ export type PersonalBillingActiveProps = {
   error?: string | null;
   variant?: "personal" | "institutional";
   nextStep?: ReactNode;
+  isTrial?: boolean;
+  trialDaysLeft?: number | null;
+  trialEndsLabel?: string | null;
 };
 
 export function usageBarPercent(used: number, limit: number): number {
@@ -110,6 +114,9 @@ export function PersonalBillingActive({
   error,
   variant = "personal",
   nextStep,
+  isTrial = false,
+  trialDaysLeft = null,
+  trialEndsLabel = null,
 }: PersonalBillingActiveProps) {
   const { t } = useTranslation("billing");
   const ns =
@@ -128,6 +135,14 @@ export function PersonalBillingActive({
       : hasMonthly
         ? formatPrice(monthlyCents)
         : "—";
+  const headline = isTrial
+    ? trialDaysLeft == null
+      ? t(`${ns}.headline_trial_active`)
+      : trialDaysLeft <= 0
+        ? t(`${ns}.headline_trial_ended`)
+        : t(`${ns}.headline_trial`, { count: trialDaysLeft })
+    : t(`${ns}.headline`);
+  const resultCopy = isTrial ? t(`${ns}.result_trial`) : t(`${ns}.result`);
 
   return (
     <div className="mx-auto max-w-3xl space-y-8" data-testid={rootTestId}>
@@ -152,32 +167,48 @@ export function PersonalBillingActive({
               </p>
             </div>
             <span
-              className="inline-flex items-center gap-1.5 rounded-full border border-success/20 bg-success/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-success"
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em]",
+                isTrial && !cancelScheduled
+                  ? "border-brand-gold/30 bg-brand-gold/12 text-brand-gold-muted"
+                  : "border-success/20 bg-success/10 text-success",
+              )}
               data-testid={`${prefix}-badge`}
             >
               <span
-                className="h-1.5 w-1.5 rounded-full bg-success"
+                className={cn(
+                  "h-1.5 w-1.5 rounded-full",
+                  isTrial && !cancelScheduled ? "bg-brand-gold" : "bg-success",
+                )}
                 aria-hidden
               />
               {cancelScheduled
                 ? t("cancel_scheduled")
-                : t(`${ns}.active_badge`)}
+                : isTrial
+                  ? t(`${ns}.trial_badge`)
+                  : t(`${ns}.active_badge`)}
             </span>
           </div>
 
           <div className="flex items-start gap-3">
             <CheckCircle
-              className="mt-0.5 h-6 w-6 shrink-0 text-success"
+              className={cn(
+                "mt-0.5 h-6 w-6 shrink-0",
+                isTrial ? "text-brand-gold" : "text-success",
+              )}
               aria-hidden
             />
             <div className="max-w-xl space-y-1">
               <h1 className="font-sans text-title-sm font-semibold tracking-tight text-brand-ink sm:text-title-md">
-                {t(`${ns}.headline`)}
+                {headline}
               </h1>
+              {isTrial && trialEndsLabel ? (
+                <p className="text-sm font-medium text-brand-gold-muted">
+                  {trialEndsLabel}
+                </p>
+              ) : null}
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-body">
-                {cancelScheduled
-                  ? t("cancel_scheduled_desc")
-                  : t(`${ns}.result`)}
+                {cancelScheduled ? t("cancel_scheduled_desc") : resultCopy}
               </p>
             </div>
           </div>
@@ -252,7 +283,7 @@ export function PersonalBillingActive({
             {planName}
           </h2>
           <span className="rounded-sm border border-border/70 bg-muted/40 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-ink">
-            {t(`${ns}.current_badge`)}
+            {isTrial ? t(`${ns}.trial_badge`) : t(`${ns}.current_badge`)}
           </span>
         </div>
 

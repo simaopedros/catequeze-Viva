@@ -60,6 +60,10 @@ function generateMockUserData(): MockUserData {
     subscriptionPlan: subscriptionStatus
       ? faker.helpers.arrayElement(getSubscriptionPaymentPlanIds())
       : null,
+    trialEndsAt:
+      subscriptionStatus === SubscriptionStatus.Trialing
+        ? faker.date.soon({ days: 7, refDate: now })
+        : null,
     pricingVersion: 3,
     socialBannedAt: null,
     socialBanReason: null,

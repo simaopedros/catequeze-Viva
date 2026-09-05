@@ -14,6 +14,8 @@ import {
   shouldShowParishBillingConversion,
   shouldShowPersonalActiveBilling,
   shouldShowPersonalConversion,
+  shouldShowBillingUsageContrast,
+  workspaceHasStripeManagedSubscription,
 } from "../shared/billingOffer";
 
 const catalog = [
@@ -114,12 +116,18 @@ describe("shouldShowParishBillingConversion", () => {
     ).toBe(true);
   });
 
-  it("keeps personal, paid, diocese and inherited billing on the management page", () => {
+  it("keeps personal, paid, Stripe trial, diocese and inherited billing on the management page", () => {
     expect(
       shouldShowParishBillingConversion({ ...base, isPersonal: true }),
     ).toBe(false);
     expect(
       shouldShowParishBillingConversion({ ...base, isPaidActive: true }),
+    ).toBe(false);
+    expect(
+      shouldShowParishBillingConversion({
+        ...base,
+        hasStripeSubscription: true,
+      }),
     ).toBe(false);
     expect(
       shouldShowParishBillingConversion({ ...base, isParishManaged: true }),
@@ -147,7 +155,7 @@ describe("shouldShowPersonalActiveBilling", () => {
     ).toBe(true);
   });
 
-  it("does not replace trial, unpaid or institutional billing", () => {
+  it("does not replace unpaid, institutional, or collaborator billing", () => {
     expect(
       shouldShowPersonalActiveBilling({
         isPersonal: true,
@@ -169,6 +177,17 @@ describe("shouldShowPersonalActiveBilling", () => {
         canManageBilling: false,
       }),
     ).toBe(false);
+  });
+
+  it("shows the management panel for a Stripe Catequista trial", () => {
+    expect(
+      shouldShowPersonalActiveBilling({
+        isPersonal: true,
+        isPaidActive: false,
+        canManageBilling: true,
+        hasStripeSubscription: true,
+      }),
+    ).toBe(true);
   });
 });
 
@@ -183,12 +202,20 @@ describe("shouldShowPersonalConversion", () => {
     ).toBe(true);
   });
 
-  it("does not replace paid or institutional billing", () => {
+  it("does not replace paid, Stripe trial, or institutional billing", () => {
     expect(
       shouldShowPersonalConversion({
         isPersonal: true,
         isPaidActive: true,
         canManageBilling: true,
+      }),
+    ).toBe(false);
+    expect(
+      shouldShowPersonalConversion({
+        isPersonal: true,
+        isPaidActive: false,
+        canManageBilling: true,
+        hasStripeSubscription: true,
       }),
     ).toBe(false);
     expect(
@@ -205,6 +232,42 @@ describe("shouldShowPersonalConversion", () => {
         canManageBilling: false,
       }),
     ).toBe(false);
+  });
+});
+
+describe("shouldShowBillingUsageContrast", () => {
+  it("hides empty 0/0 current usage on the unpaid paywall", () => {
+    expect(
+      shouldShowBillingUsageContrast({
+        isTrial: false,
+        classesUsed: 0,
+        catechumensUsed: 0,
+      }),
+    ).toBe(false);
+    expect(
+      shouldShowBillingUsageContrast({
+        isTrial: true,
+        classesUsed: 0,
+        catechumensUsed: 0,
+      }),
+    ).toBe(false);
+  });
+
+  it("keeps the contrast when a live trial already has usage", () => {
+    expect(
+      shouldShowBillingUsageContrast({
+        isTrial: true,
+        classesUsed: 1,
+        catechumensUsed: 0,
+      }),
+    ).toBe(true);
+    expect(
+      shouldShowBillingUsageContrast({
+        isTrial: true,
+        classesUsed: 0,
+        catechumensUsed: 22,
+      }),
+    ).toBe(true);
   });
 });
 
@@ -248,6 +311,19 @@ describe("shouldShowInstitutionalActiveBilling", () => {
       }),
     ).toBe(false);
   });
+
+  it("shows the active panel for a Stripe parish trial", () => {
+    expect(
+      shouldShowInstitutionalActiveBilling({
+        isPersonal: false,
+        isPaidActive: false,
+        canManageBilling: true,
+        planInherited: false,
+        workspaceType: "PARISH",
+        hasStripeSubscription: true,
+      }),
+    ).toBe(true);
+  });
 });
 
 describe("managed billing surfaces", () => {
@@ -288,5 +364,40 @@ describe("managed billing surfaces", () => {
         workspaceType: "PARISH",
       }),
     ).toBe(false);
+  });
+});
+
+describe("workspaceHasStripeManagedSubscription", () => {
+  it("treats a personal Stripe trial as a managed subscription", () => {
+    expect(
+      workspaceHasStripeManagedSubscription({
+        isPersonal: true,
+        hasUserStripeSubscription: true,
+        userPlan: "single",
+        isInstitutionalTrial: true,
+      }),
+    ).toBe(true);
+  });
+
+  it("does not hide parish conversion when the user is on Catequista trial", () => {
+    expect(
+      workspaceHasStripeManagedSubscription({
+        isPersonal: false,
+        hasUserStripeSubscription: true,
+        userPlan: "single",
+        isInstitutionalTrial: true,
+      }),
+    ).toBe(false);
+  });
+
+  it("treats a parish Stripe trial as a managed subscription", () => {
+    expect(
+      workspaceHasStripeManagedSubscription({
+        isPersonal: false,
+        hasUserStripeSubscription: true,
+        userPlan: "unlimited",
+        isInstitutionalTrial: true,
+      }),
+    ).toBe(true);
   });
 });

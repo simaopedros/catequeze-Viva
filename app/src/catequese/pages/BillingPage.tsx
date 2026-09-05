@@ -37,6 +37,7 @@ import {
   getProductTrialEndsAt,
   isOnInstitutionalTrial,
   getInstitutionalTrialDaysLeft,
+  hasStripeManagedSubscription,
   SUBSCRIPTION_TRIAL_DAYS,
   formatPriceLabel,
 } from "../../shared/pricing";
@@ -49,6 +50,7 @@ import {
   trackPurchaseBrowser,
 } from "../../client/analytics/metaTracking";
 import { parseUpgradeJourneyReason } from "../lib/upgradeJourney";
+import { getPostCheckoutDestination } from "../../client/appRouteGates";
 import {
   checkoutPlanIdForTrial,
   ensureWorkspaceOfferPlan,
@@ -61,6 +63,7 @@ import {
   shouldShowParishBillingConversion,
   shouldShowPersonalActiveBilling,
   shouldShowPersonalConversion,
+  workspaceHasStripeManagedSubscription,
 } from "../../shared/billingOffer";
 import type { CatalogPlan } from "../../shared/planCatalog";
 import { RequestDioceseCoverageCard } from "../components/RequestDioceseCoverageCard";
@@ -147,7 +150,13 @@ export default function BillingPage() {
 
   const navigate = useNavigate();
   const { data: user } = useAuth();
-  const { parishId, userRole, isAdmin } = useUserContext();
+  const {
+    parishId,
+    userRole,
+    isAdmin,
+    needsOnboarding,
+    isLoading: userContextLoading,
+  } = useUserContext();
   const roleLabels = useRoleLabels();
   const { isPersonal, workspaceId, workspace } = useActiveWorkspace();
   const canManageBilling = canManageWorkspaceBilling(
@@ -159,14 +168,15 @@ export default function BillingPage() {
   // (getDashboardStats without parishId aggregates every parish the user can access).
   const usageParishId = parishId || workspaceId || undefined;
 
+  const statsQueryEnabled = Boolean(usageParishId);
   const {
     data: stats,
-    isLoading: loading,
+    isLoading: statsLoading,
     refetch: refetchStats,
   } = useQuery(
     getDashboardStats,
     { parishId: usageParishId },
-    { enabled: Boolean(usageParishId) },
+    { enabled: statsQueryEnabled },
   );
 
   const { data: subscriptionDetails, refetch: refetchSubscription } = useQuery(
@@ -177,6 +187,7 @@ export default function BillingPage() {
     { id: parishId },
     { enabled: !!parishId },
   );
+  const waitingForUsage = statsQueryEnabled && statsLoading;
 
   const [billingInterval, setBillingInterval] =
     useState<BillingInterval>(getIntendedInterval);
@@ -252,7 +263,7 @@ export default function BillingPage() {
     if (isOnProductTrial(user)) {
       isTrialAccess = true;
       trialDaysLeft = getProductTrialDaysLeft(user);
-      trialEndsAt = getProductTrialEndsAt(user.createdAt);
+      trialEndsAt = getProductTrialEndsAt(user);
       // Ensure UI shows Single during product trial even if plan field is messy
       if (effectivePlanId === PaymentPlanId.CatechistFree) {
         effectivePlanId = PaymentPlanId.Single;
@@ -261,6 +272,12 @@ export default function BillingPage() {
   }
 
   const isPaidActive = isActive && !isTrialAccess;
+  const hasStripeSubscription = workspaceHasStripeManagedSubscription({
+    isPersonal,
+    hasUserStripeSubscription: hasStripeManagedSubscription(user),
+    userPlan: user?.subscriptionPlan,
+    isInstitutionalTrial: isTrialAccess,
+  });
   const planInherited = Boolean(workspace?.planInherited);
   const showCollaborator = shouldShowCollaboratorBilling({ canManageBilling });
   const showCoveredWorkspace = shouldShowCoveredWorkspaceBilling({
@@ -277,16 +294,19 @@ export default function BillingPage() {
     isPaidActive,
     canManageBilling,
     workspaceType: workspace?.type,
+    hasStripeSubscription,
   });
   const showPersonalActive = shouldShowPersonalActiveBilling({
     isPersonal,
     isPaidActive,
     canManageBilling,
+    hasStripeSubscription,
   });
   const showPersonalConversion = shouldShowPersonalConversion({
     isPersonal,
     isPaidActive,
     canManageBilling,
+    hasStripeSubscription,
   });
   const showInstitutionalActive = shouldShowInstitutionalActiveBilling({
     isPersonal,
@@ -294,6 +314,7 @@ export default function BillingPage() {
     canManageBilling,
     planInherited,
     workspaceType: workspace?.type,
+    hasStripeSubscription,
   });
   const trialEndsLabel = trialEndsAt
     ? trialEndsAt.toLocaleDateString(i18n.language || "pt-BR", {
@@ -356,8 +377,14 @@ export default function BillingPage() {
 
   const startCheckout = useCallback(
     async (planId: string, interval: BillingInterval = billingInterval) => {
-      // Product trial uses the same plan id as Single — still allow checkout to convert.
-      if (planId === effectivePlanId && !isTrialAccess) return;
+      // In-app trial without Stripe can still convert via Checkout.
+      // A live Stripe subscription (including trial) must not restart the same SKU.
+      if (
+        planId === effectivePlanId &&
+        (hasStripeSubscription || !isTrialAccess)
+      ) {
+        return;
+      }
       const targetLevel = getBySlug(planId).level;
       const levelMatches = isPersonal
         ? targetLevel === "personal"
@@ -440,6 +467,7 @@ export default function BillingPage() {
       t,
       getPlanDef,
       getBySlug,
+      hasStripeSubscription,
     ],
   );
 
@@ -539,15 +567,16 @@ export default function BillingPage() {
     requestedPlanCard.planId !== effectivePlanId &&
     requestedPlanLevelMatches &&
     !planInherited &&
-    !loading &&
-    !(parishId && loadingParish);
+    !waitingForUsage &&
+    !(parishId && loadingParish) &&
+    !hasStripeSubscription;
   const allowAutoCheckout =
     requestedPlanCanCheckout && !journeyReason && !gateRequired;
 
   useEffect(() => {
     if (pricingViewedRef.current) return;
     if (!canManageBilling) return;
-    if (loading || (parishId && loadingParish)) return;
+    if (waitingForUsage || (parishId && loadingParish)) return;
     if (planInherited || showDioceseWorkspace) return;
 
     pricingViewedRef.current = true;
@@ -567,7 +596,7 @@ export default function BillingPage() {
     isPersonal,
     journeyReason,
     journeySource,
-    loading,
+    waitingForUsage,
     loadingParish,
     parishId,
     canManageBilling,
@@ -619,6 +648,9 @@ export default function BillingPage() {
   const successToastShownRef = useRef(false);
   useEffect(() => {
     if (checkoutStatus !== "success" && checkoutStatus !== "canceled") return;
+    // Wait for bootstrap so a new account is sent to onboarding, not trapped
+    // on the paywall after Checkout.
+    if (checkoutStatus === "success" && userContextLoading) return;
     if (successToastShownRef.current) return;
     successToastShownRef.current = true;
     if (checkoutStatus === "success") {
@@ -644,6 +676,17 @@ export default function BillingPage() {
           currency: "BRL",
         });
       }
+
+      if (needsOnboarding) {
+        navigate(
+          getPostCheckoutDestination({
+            needsOnboarding: true,
+            sessionId: returnedSessionId,
+          }),
+          { replace: true },
+        );
+        return;
+      }
     } else if (checkoutStatus === "canceled") {
       toast({ title: t("checkout_canceled"), variant: "destructive" });
     }
@@ -661,6 +704,8 @@ export default function BillingPage() {
     effectivePlanId,
     billingInterval,
     navigate,
+    needsOnboarding,
+    userContextLoading,
     refetchStats,
     refetchSubscription,
     searchParams,
@@ -702,7 +747,7 @@ export default function BillingPage() {
     />
   );
 
-  if (loading || (parishId && loadingParish)) {
+  if (waitingForUsage || (parishId && loadingParish)) {
     return (
       <div className="space-y-6 animate-pulse">
         <div className="h-8 w-32 rounded bg-muted" />
@@ -758,7 +803,7 @@ export default function BillingPage() {
         classesUsed={classesUsed}
         catechumensUsed={catechumensUsed}
         planName={conversionOffer.name}
-        features={conversionOffer.features}
+        features={conversionOffer.features ?? []}
         monthlyCents={conversionOffer.priceCents}
         annualCents={conversionOffer.priceCentsAnnual}
         defaultInterval={peekIntendedInterval() ?? "annual"}
@@ -798,6 +843,9 @@ export default function BillingPage() {
           switchingInterval={switchingInterval}
           annualSavingsLabel={annualSavings}
           error={error}
+          isTrial={isTrialAccess}
+          trialDaysLeft={trialDaysLeft}
+          trialEndsLabel={trialEndsLabel}
         />
         {cancelDialog}
       </>
@@ -815,7 +863,7 @@ export default function BillingPage() {
         classesUsed={classesUsed}
         catechumensUsed={catechumensUsed}
         planName={conversionOffer.name}
-        features={conversionOffer.features}
+        features={conversionOffer.features ?? []}
         monthlyCents={conversionOffer.priceCents}
         annualCents={conversionOffer.priceCentsAnnual}
         planClassLimit={conversionOffer.maxClasses}
@@ -867,6 +915,9 @@ export default function BillingPage() {
               />
             ) : null
           }
+          isTrial={isTrialAccess}
+          trialDaysLeft={trialDaysLeft}
+          trialEndsLabel={trialEndsLabel}
         />
         {cancelDialog}
       </>

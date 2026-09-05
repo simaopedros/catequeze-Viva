@@ -73,9 +73,9 @@ export function isInstitutionalTrialDisplay(
 }
 
 /**
- * Short commercial billing page: status → usage contrast → parish offer.
- * Personal spaces, paid licenses, diocese workspaces and inherited coverage
- * keep the existing management layout.
+ * Short commercial billing page: status → plan benefits → parish offer.
+ * Personal spaces, paid licenses, Stripe-managed trials, diocese workspaces
+ * and inherited coverage keep the existing management layout.
  */
 export function shouldShowParishBillingConversion(opts: {
   isPersonal: boolean;
@@ -83,32 +83,58 @@ export function shouldShowParishBillingConversion(opts: {
   isPaidActive: boolean;
   canManageBilling: boolean;
   workspaceType?: string | null;
+  hasStripeSubscription?: boolean;
 }): boolean {
   if (!opts.canManageBilling || opts.isPersonal) return false;
-  if (opts.isParishManaged || opts.isPaidActive) return false;
+  if (opts.isParishManaged || opts.isPaidActive || opts.hasStripeSubscription) {
+    return false;
+  }
   if (opts.workspaceType === "DIOCESE") return false;
   return true;
 }
 
 /**
- * Compact management page for a paid Catequista subscriber.
- * Trial, unpaid conversion and institutional workspaces keep other layouts.
+ * Compact management page for a Catequista subscriber (paid or Stripe trial).
+ * In-app trials without a Stripe subscription still use conversion checkout.
  */
 export function shouldShowPersonalActiveBilling(opts: {
   isPersonal: boolean;
   isPaidActive: boolean;
   canManageBilling: boolean;
+  hasStripeSubscription?: boolean;
 }): boolean {
-  return opts.isPersonal && opts.isPaidActive && opts.canManageBilling;
+  return (
+    opts.isPersonal &&
+    opts.canManageBilling &&
+    (opts.isPaidActive || Boolean(opts.hasStripeSubscription))
+  );
 }
 
-/** Catequista trial / unpaid: same conversion hierarchy as the parish offer. */
+/** Catequista unpaid / in-app trial without a live Stripe subscription. */
 export function shouldShowPersonalConversion(opts: {
   isPersonal: boolean;
   isPaidActive: boolean;
   canManageBilling: boolean;
+  hasStripeSubscription?: boolean;
 }): boolean {
-  return opts.isPersonal && !opts.isPaidActive && opts.canManageBilling;
+  return (
+    opts.isPersonal &&
+    !opts.isPaidActive &&
+    !opts.hasStripeSubscription &&
+    opts.canManageBilling
+  );
+}
+
+/**
+ * The paywall used to compare "your trial: 0 classes" with plan limits.
+ * Empty current usage is noise; show only what the trial/plan includes.
+ */
+export function shouldShowBillingUsageContrast(opts: {
+  isTrial: boolean;
+  classesUsed: number;
+  catechumensUsed: number;
+}): boolean {
+  return opts.isTrial && (opts.classesUsed > 0 || opts.catechumensUsed > 0);
 }
 
 /**
@@ -120,10 +146,10 @@ export function shouldShowInstitutionalActiveBilling(opts: {
   canManageBilling: boolean;
   planInherited?: boolean;
   workspaceType?: string | null;
+  hasStripeSubscription?: boolean;
 }): boolean {
-  if (!opts.canManageBilling || opts.isPersonal || !opts.isPaidActive) {
-    return false;
-  }
+  if (!opts.canManageBilling || opts.isPersonal) return false;
+  if (!(opts.isPaidActive || opts.hasStripeSubscription)) return false;
   if (opts.planInherited || opts.workspaceType === "DIOCESE") return false;
   return true;
 }
@@ -149,4 +175,20 @@ export function shouldShowCollaboratorBilling(opts: {
   canManageBilling: boolean;
 }): boolean {
   return !opts.canManageBilling;
+}
+
+/**
+ * Whether this workspace already has a Stripe-managed subscription to manage.
+ * A personal Catequista trial must not hide the parish conversion page.
+ */
+export function workspaceHasStripeManagedSubscription(opts: {
+  isPersonal: boolean;
+  hasUserStripeSubscription: boolean;
+  userPlan?: string | null;
+  isInstitutionalTrial: boolean;
+}): boolean {
+  if (!opts.hasUserStripeSubscription) return false;
+  if (opts.isPersonal) return true;
+  if (!opts.isInstitutionalTrial) return false;
+  return (opts.userPlan || "").toLowerCase() === "unlimited";
 }

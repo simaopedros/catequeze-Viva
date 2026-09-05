@@ -17,6 +17,11 @@ const mocks = vi.hoisted(() => ({
   resolvePlanByStripePriceIdMock: vi.fn(),
 }));
 
+vi.mock('express', () => {
+  const raw = vi.fn();
+  return { default: { raw }, raw };
+});
+
 vi.mock('wasp/server', () => ({
   env: {
     STRIPE_WEBHOOK_SECRET: 'whsec_test',
@@ -81,6 +86,10 @@ vi.mock('../pricingEvents', () => ({
 vi.mock('../billingCascade', () => ({
   cascadeActivatePlanToTenantBilling: mocks.cascadeActivatePlanToTenantBillingMock,
   cascadeCancelToTenantBilling: mocks.cascadeCancelToTenantBillingMock,
+}));
+
+vi.mock('../../server/email/events', () => ({
+  emitProductEventSafe: vi.fn(),
 }));
 
 vi.mock('../../server/pricing/planCatalogService', () => ({
@@ -274,6 +283,8 @@ describe('stripeWebhook', () => {
     mocks.retrieveSubscriptionMock.mockResolvedValueOnce({
       id: 'sub_1',
       status: 'trialing',
+      customer: 'cus_1',
+      trial_end: 1773500000,
       metadata: {},
       items: { data: [{ price: { id: 'price_single' } }] },
     });
@@ -286,7 +297,112 @@ describe('stripeWebhook', () => {
       event_name: 'StartTrial',
       event_id: 'starttrial_cs_1',
     }));
+    expect(mocks.updateUserSubscriptionMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subscriptionStatus: 'trialing',
+        paymentPlanId: 'single',
+        trialEndsAt: new Date(1773500000 * 1000),
+      }),
+      expect.anything(),
+    );
     expect(context.entities.TrackedEvent.rows.some((row: any) => row.eventName === 'StartTrial' && row.status === 'sent')).toBe(true);
+    expect(response.status).toHaveBeenCalledWith(204);
+  });
+
+  it('cascades TenantBilling TRIAL for an institutional checkout still in trial', async () => {
+    mocks.constructEventMock.mockReturnValue({
+      id: 'evt_checkout_unlimited_trial',
+      type: 'checkout.session.completed',
+      data: {
+        object: {
+          id: 'cs_unlimited_1',
+          mode: 'subscription',
+          subscription: 'sub_unlimited_1',
+          customer: 'cus_1',
+          customer_details: { email: 'parish@example.com' },
+          metadata: { plan_id: 'unlimited', trial_days: '7' },
+        },
+      },
+    });
+    mocks.retrieveSubscriptionMock.mockResolvedValueOnce({
+      id: 'sub_unlimited_1',
+      status: 'trialing',
+      customer: 'cus_1',
+      trial_end: 1773500000,
+      metadata: {},
+      items: { data: [{ price: { id: 'price_unlimited' } }] },
+    });
+
+    const response = createResponse();
+    await stripeWebhook({ headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any, response, createContext());
+
+    expect(mocks.updateUserSubscriptionMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subscriptionStatus: 'trialing',
+        paymentPlanId: 'unlimited',
+        trialEndsAt: new Date(1773500000 * 1000),
+      }),
+      expect.anything(),
+    );
+    expect(mocks.cascadeActivatePlanToTenantBillingMock).toHaveBeenCalledWith(
+      expect.anything(),
+      'user_1',
+      expect.objectContaining({ slug: 'unlimited' }),
+      expect.objectContaining({
+        status: 'TRIAL',
+        trialEndsAt: new Date(1773500000 * 1000),
+      }),
+    );
+    expect(response.status).toHaveBeenCalledWith(204);
+  });
+
+  it('does not promote a still-trialing paid invoice to active', async () => {
+    mocks.constructEventMock.mockReturnValue({
+      id: 'evt_invoice_trial',
+      type: 'invoice.paid',
+      data: { object: paidInvoice({ id: 'in_trial', amount_paid: 0 }) },
+    });
+    mocks.retrieveSubscriptionMock.mockResolvedValue({
+      id: 'sub_1',
+      status: 'trialing',
+      customer: 'cus_1',
+      trial_end: 1773500000,
+      items: { data: [{ price: { id: 'price_single' } }] },
+    });
+
+    const response = createResponse();
+    await stripeWebhook({ headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any, response, createContext());
+
+    expect(mocks.updateUserSubscriptionMock).not.toHaveBeenCalled();
+    expect(response.status).toHaveBeenCalledWith(204);
+  });
+
+  it('keeps a still-trialing invoice with amount_paid > 0 as trialing', async () => {
+    mocks.constructEventMock.mockReturnValue({
+      id: 'evt_invoice_trial_positive',
+      type: 'invoice.paid',
+      data: { object: paidInvoice({ id: 'in_trial_positive', amount_paid: 100 }) },
+    });
+    mocks.retrieveSubscriptionMock.mockResolvedValue({
+      id: 'sub_1',
+      status: 'trialing',
+      customer: 'cus_1',
+      trial_end: 1773500000,
+      items: { data: [{ price: { id: 'price_single' } }] },
+    });
+
+    const response = createResponse();
+    await stripeWebhook({ headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any, response, createContext());
+
+    expect(mocks.updateUserSubscriptionMock).toHaveBeenCalledWith(
+      expect.objectContaining({ subscriptionStatus: 'trialing' }),
+      expect.anything(),
+    );
+    expect(mocks.grantSubscriptionAiCreditsMock).not.toHaveBeenCalled();
+    expect(mocks.trackPricingEventMock).not.toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ event: 'purchase_completed' }),
+    );
     expect(response.status).toHaveBeenCalledWith(204);
   });
 
@@ -301,6 +417,7 @@ describe('stripeWebhook', () => {
     await stripeWebhook({ headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any, response, createContext());
 
     expect(mocks.sendMetaEventMock).not.toHaveBeenCalled();
+    expect(mocks.updateUserSubscriptionMock).not.toHaveBeenCalled();
     expect(mocks.trackPricingEventMock).not.toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ event: 'purchase_completed' }));
   });
 

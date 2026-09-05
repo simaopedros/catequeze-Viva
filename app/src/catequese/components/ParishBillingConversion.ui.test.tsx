@@ -85,6 +85,22 @@ describe("ParishBillingConversion", () => {
     expect(screen.getByTestId("parish-conversion-support")).toBeInTheDocument();
   });
 
+  it("shows parish plan benefits without empty current usage", () => {
+    renderConversion({
+      isTrial: false,
+      trialDaysLeft: null,
+      trialEndsLabel: null,
+      classesUsed: 0,
+      catechumensUsed: 0,
+    });
+
+    const usage = screen.getByTestId("parish-conversion-usage");
+    expect(usage).toHaveTextContent("parish_offer.usage_benefits_label");
+    expect(usage).toHaveTextContent("parish_offer.usage_unlimited_classes");
+    expect(usage).toHaveTextContent("parish_offer.usage_unlimited_catechumens");
+    expect(usage).not.toHaveTextContent("parish_offer.usage_trial_label");
+  });
+
   it("subscribes annually by default and monthly after toggling", async () => {
     const user = userEvent.setup();
     const { onSubscribe, onIntervalChange } = renderConversion();
@@ -121,5 +137,34 @@ describe("ParishBillingConversion", () => {
       screen.queryByTestId("parish-conversion-diocese"),
     ).not.toBeInTheDocument();
     expect(screen.getAllByTestId("billing-offer-cta")).toHaveLength(1);
+  });
+
+  it("does not show empty 0/0 current usage on the Catequista paywall", () => {
+    renderConversion({
+      variant: "catechist",
+      isTrial: false,
+      trialDaysLeft: null,
+      trialEndsLabel: null,
+      classesUsed: 0,
+      catechumensUsed: 0,
+      parishName: "Meu espaço pessoal",
+      planName: "Plano Catequista",
+      planClassLimit: 3,
+      planCatechumenLimit: 150,
+    });
+
+    const usage = screen.getByTestId("personal-conversion-usage");
+    expect(usage).toHaveTextContent("catechist_offer.usage_benefits_label");
+    expect(usage).toHaveTextContent(
+      "catechist_offer.usage_plan_classes|count=3",
+    );
+    expect(usage).toHaveTextContent(
+      "catechist_offer.usage_plan_catechumens|count=150",
+    );
+    expect(usage).not.toHaveTextContent("catechist_offer.usage_trial_label");
+    expect(usage).not.toHaveTextContent("catechist_offer.usage_class|count=0");
+    expect(usage).not.toHaveTextContent(
+      "catechist_offer.usage_catechumen|count=0",
+    );
   });
 });

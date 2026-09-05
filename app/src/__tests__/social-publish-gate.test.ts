@@ -44,7 +44,7 @@ function makeCtx(options: FakeOptions = {}) {
     id: 'user-1',
     subscriptionStatus: null,
     subscriptionPlan: 'catechist_free',
-    // Outside the signup trial window so ensureProductTrial does not grant access.
+    // Outside the grandfather in-app trial window so ensureProductTrial does not heal access.
     createdAt: new Date('2020-01-01T00:00:00Z'),
     paymentProcessorUserId: 'cus_test',
     socialBannedAt: null,
@@ -118,7 +118,7 @@ describe('resolveSocialEntitlement', () => {
     expect(entitlement.limits.maxVideoSeconds).toBe(180);
   });
 
-  it('treats the no-card product trial as Single', async () => {
+  it('treats the grandfather in-app product trial as Single', async () => {
     const { resolveSocialEntitlement } = await import('../server/social/publishGate');
     const entitlement = await resolveSocialEntitlement(
       makeCtx({

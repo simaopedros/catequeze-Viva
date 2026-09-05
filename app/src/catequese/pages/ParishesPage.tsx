@@ -135,6 +135,10 @@ export default function ParishesPage() {
       setNewDioceseId("");
       setShowCreate(false);
       setTrialOffer(null);
+      if (startTrial) {
+        navigate("/app/billing?plan=unlimited");
+        return;
+      }
     } catch (e: any) {
       const message = e.message || tp("create_error");
       if (

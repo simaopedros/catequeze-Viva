@@ -52,32 +52,7 @@ import i18n, {
   isLocaleBundleLoaded,
   normalizeLocale,
 } from "../i18n/config";
-
-const PUBLIC_PATH_PREFIXES = [
-  "/ia",
-  "/presenca",
-  "/sistema",
-  "/pricing",
-  "/obrigado",
-  "/about",
-  "/privacy",
-  "/terms",
-  "/contact",
-  "/login",
-  "/signup",
-  "/request-password-reset",
-  "/password-reset",
-  "/email-verification",
-  "/oauth",
-];
-
-/** Landing/auth/legal routes only need the core i18n namespaces. */
-function isPublicOnlyPath(pathname: string): boolean {
-  if (pathname === "/") return true;
-  return PUBLIC_PATH_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  );
-}
+import { needsFullAppNamespaces } from "./appRouteGates";
 
 /**
  * Runs `cb` once on the first user interaction (or after a long idle) so
@@ -197,7 +172,7 @@ export default function App() {
   const [offlineDismissed, setOfflineDismissed] = useState(false);
   // Gate: wait for en/es pack when preferred locale is not pt-BR (pt-BR core is
   // eager) and for the pt-BR `app` namespaces when entering an authenticated route.
-  const needsAppNamespaces = !isPublicOnlyPath(location.pathname);
+  const needsAppNamespaces = needsFullAppNamespaces(location.pathname);
   const [localeReady, setLocaleReady] = useState(() => {
     const lng = normalizeLocale(i18n.language) ?? "pt-BR";
     return isLocaleBundleLoaded(lng);
@@ -226,7 +201,9 @@ export default function App() {
     };
     let cancelPrefetch: (() => void) | undefined;
     if (needsAppNamespaces) {
-      void ensureAppNamespacesLoaded().then(markReady);
+      void ensureAppNamespacesLoaded()
+        .then(markReady)
+        .catch(() => markReady());
     } else {
       // Public page: prefetch the app namespaces after the visitor interacts so
       // the transition into /app does not wait on the network.

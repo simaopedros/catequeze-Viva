@@ -4,6 +4,9 @@ import { useTranslation } from "react-i18next";
 import { CheckCircle } from "lucide-react";
 import { Button } from "../client/components/ui/button";
 import { trackStartTrialBrowser } from "../client/analytics/metaTracking";
+import { getPostCheckoutDestination } from "../client/appRouteGates";
+import { useUserContext } from "../client/hooks/useUserContext";
+import { useAuth } from "wasp/client/auth";
 import { SUBSCRIPTION_TRIAL_DAYS, DEFAULT_PLANS } from "../shared/pricing";
 
 const BILLING_PAGE_REDIRECT_DELAY_MS = 4000;
@@ -13,44 +16,62 @@ export default function CheckoutResultPage() {
   const [urlSearchParams] = useSearchParams();
   const sessionId = urlSearchParams.get("session_id");
   const { t } = useTranslation("billing");
+  const { data: authUser } = useAuth();
+  const { needsOnboarding, isLoading: contextLoading } = useUserContext();
+  const destinationReady =
+    authUser === undefined ? false : authUser ? !contextLoading : true;
+  const continueToOnboarding =
+    !destinationReady || (Boolean(authUser) && needsOnboarding);
 
-  const billingDestination = useMemo(() => {
-    if (!sessionId) {
-      return "/app/billing?status=success";
-    }
+  const destination = useMemo(
+    () =>
+      getPostCheckoutDestination({
+        needsOnboarding: Boolean(authUser) && needsOnboarding,
+        sessionId,
+      }),
+    [authUser, needsOnboarding, sessionId],
+  );
 
-    return `/app/billing?status=success&session_id=${encodeURIComponent(
-      sessionId,
-    )}`;
+  useEffect(() => {
+    if (!sessionId) return;
+    // Same event_id as server CAPI StartTrial for Meta deduplication.
+    // Meta requires value > 0 for StartTrial (use plan monthly price).
+    const planMonthlyValue =
+      (DEFAULT_PLANS.single.prices.find((p) => p.interval === "monthly")
+        ?.unitAmountCents ?? 990) / 100;
+    trackStartTrialBrowser({
+      event_id: `starttrial_${sessionId}`,
+      content_name: "Trial Catechis",
+      trial_days: SUBSCRIPTION_TRIAL_DAYS,
+      value: planMonthlyValue,
+      currency: "BRL",
+    });
   }, [sessionId]);
 
   useEffect(() => {
-    if (sessionId) {
-      // Same event_id as server CAPI StartTrial for Meta deduplication.
-      // Meta requires value > 0 for StartTrial (use plan monthly price).
-      const planMonthlyValue =
-        (DEFAULT_PLANS.single.prices.find((p) => p.interval === "monthly")
-          ?.unitAmountCents ?? 990) / 100;
-      trackStartTrialBrowser({
-        event_id: `starttrial_${sessionId}`,
-        content_name: "Trial Catechis",
-        trial_days: SUBSCRIPTION_TRIAL_DAYS,
-        value: planMonthlyValue,
-        currency: "BRL",
-      });
-    }
+    if (!sessionId || !destinationReady) return;
 
     const redirectTimeoutId = setTimeout(() => {
-      navigate(billingDestination);
+      navigate(destination);
     }, BILLING_PAGE_REDIRECT_DELAY_MS);
 
     return () => {
       clearTimeout(redirectTimeoutId);
     };
-  }, [billingDestination, navigate, sessionId]);
+  }, [destination, destinationReady, navigate, sessionId]);
 
   if (!sessionId) {
-    return <Navigate to="/app/billing?status=success" replace />;
+    if (!destinationReady) {
+      return (
+        <div
+          className="flex min-h-[50vh] items-center justify-center"
+          aria-busy="true"
+        >
+          <div className="h-8 w-8 animate-pulse rounded-sm bg-muted" />
+        </div>
+      );
+    }
+    return <Navigate to={destination} replace />;
   }
 
   return (
@@ -72,18 +93,28 @@ export default function CheckoutResultPage() {
             <p className="text-sm leading-relaxed text-muted-foreground sm:text-body">
               {t("trial_started_description")}
             </p>
-            <p className="text-sm text-muted-foreground">
-              {t("trial_started_redirect", {
-                seconds: BILLING_PAGE_REDIRECT_DELAY_MS / 1000,
-              })}
-            </p>
+            {destinationReady ? (
+              <p className="text-sm text-muted-foreground">
+                {t(
+                  continueToOnboarding
+                    ? "trial_started_redirect_onboarding"
+                    : "trial_started_redirect",
+                  {
+                    seconds: BILLING_PAGE_REDIRECT_DELAY_MS / 1000,
+                  },
+                )}
+              </p>
+            ) : null}
           </div>
           <Button
             size="lg"
             className="h-11 rounded-sm px-5"
-            onClick={() => navigate(billingDestination)}
+            disabled={!destinationReady}
+            onClick={() => navigate(destination)}
           >
-            {t("go_to_billing")}
+            {t(
+              continueToOnboarding ? "go_to_onboarding" : "go_to_billing",
+            )}
           </Button>
         </div>
       </section>

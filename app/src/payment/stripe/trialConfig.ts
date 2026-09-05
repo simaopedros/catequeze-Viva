@@ -1,29 +1,82 @@
 import Stripe from 'stripe';
-import type { BillingInfo, UserSubscriptionFields } from '../../shared/pricing';
+import {
+  SUBSCRIPTION_TRIAL_DAYS,
+  getInstitutionalTrialDaysLeft,
+  isProductTrialStatus,
+  isProductTrialWindowOpen,
+  isSubscriptionActiveLike,
+  getProductTrialEndsAt,
+  type BillingInfo,
+  UserSubscriptionFields,
+} from '../../shared/pricing';
 
 /**
  * Days of Stripe trial to grant at checkout.
  *
- * Assinar must never start a second Stripe trial. The 7-day no-card product
- * trial is granted in-app on signup; Checkout collects a payment method and
- * starts the paid Plano Único immediately.
+ * New commercial subscriptions get SUBSCRIPTION_TRIAL_DAYS. Users who already
+ * consumed a Stripe trial (or a paid subscription) get 0. Grandfathered
+ * in-app trials receive only remaining days so Assinar does not add a second
+ * full week.
  *
- * Credits / one-time: also 0.
+ * Credits / one-time: always 0.
  */
-export function resolveStripeCheckoutTrialDays(_args: {
+export function resolveStripeCheckoutTrialDays(args: {
   isCredits?: boolean;
   user?: UserSubscriptionFields | null;
   institutionalBilling?: BillingInfo | null;
   now?: Date;
 }): number {
-  return 0;
+  if (args.isCredits) return 0;
+
+  const now = args.now ?? new Date();
+  const user = args.user;
+
+  if (isSubscriptionActiveLike(user?.subscriptionStatus)) return 0;
+
+  if (hasConsumedStripeTrial(user)) return 0;
+
+  // In-app grandfather: remaining window from createdAt only — never a second
+  // full week. Ignore a Stripe customer from abandoned Checkout (no trialEndsAt).
+  if (isProductTrialStatus(user?.subscriptionStatus) && !user?.trialEndsAt) {
+    if (!isProductTrialWindowOpen(user?.createdAt, now)) return 0;
+    const endsAt = getProductTrialEndsAt({
+      createdAt: user?.createdAt,
+      subscriptionStatus: user?.subscriptionStatus,
+    });
+    if (!endsAt) return 0;
+    return clampTrialDays(
+      Math.ceil((endsAt.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)),
+    );
+  }
+
+  const instDays = getInstitutionalTrialDaysLeft(
+    args.institutionalBilling,
+    now,
+  );
+  if (instDays != null && instDays > 0) {
+    if (user?.paymentProcessorUserId) return 0;
+    return clampTrialDays(instDays);
+  }
+
+  return SUBSCRIPTION_TRIAL_DAYS;
+}
+
+function hasConsumedStripeTrial(
+  user: UserSubscriptionFields | null | undefined,
+): boolean {
+  if (!user?.paymentProcessorUserId) return false;
+  return Boolean(user.trialEndsAt);
+}
+
+function clampTrialDays(days: number): number {
+  if (!Number.isFinite(days) || days <= 0) return 0;
+  return Math.min(SUBSCRIPTION_TRIAL_DAYS, Math.ceil(days));
 }
 
 export function getCheckoutTrialConfig(
   mode: Stripe.Checkout.Session.Mode,
   metadata?: Stripe.MetadataParam,
-  /** Ignored — Assinar never sets Stripe trial_period_days. */
-  _trialPeriodDays: number = 0,
+  trialPeriodDays: number = 0,
 ): Pick<
   Stripe.Checkout.SessionCreateParams,
   'payment_method_collection' | 'subscription_data'
@@ -39,7 +92,10 @@ export function getCheckoutTrialConfig(
     subscriptionData.metadata = metadata;
   }
 
-  // Never set trial_period_days / trial_settings. Always collect a card.
+  if (trialPeriodDays > 0) {
+    subscriptionData.trial_period_days = trialPeriodDays;
+  }
+
   if (Object.keys(subscriptionData).length > 0) {
     return {
       payment_method_collection: 'always',

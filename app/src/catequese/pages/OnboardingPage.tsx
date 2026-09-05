@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { WelcomeStep } from "../components/onboarding/WelcomeStep";
 import {
   ClassSetupStep,
@@ -21,11 +21,8 @@ import {
   type ParishSelection,
 } from "../components/onboarding/ParishStep";
 import { CoordinatorDetails } from "../components/onboarding/CoordinatorDetails";
-import {
-  getIntendedPlan,
-  clearIntendedPlan,
-  isInstitutionalPlanId,
-} from "../lib/intendedPlan";
+import { getIntendedPlan, clearIntendedPlan } from "../lib/intendedPlan";
+import { resolveOnboardingSecondaryAction } from "../lib/onboardingCompletion";
 import {
   createParish,
   joinParish,
@@ -34,14 +31,26 @@ import {
   createClass,
   ensurePersonalWorkspace,
 } from "wasp/client/operations";
+import { useAuth } from "wasp/client/auth";
 import {
   trackMarketingEvent,
   trackOnboardingCompleted,
 } from "../../client/analytics/marketingAnalytics";
 import { invalidateShellContext } from "../../client/hooks/shellQueryCache";
+import { toast } from "../../client/hooks/use-toast";
 import { Button } from "../../client/components/ui/button";
+import {
+  isPlanLimitError,
+  isTransientRequestError,
+  withTransientRetry,
+} from "../../client/lib/operationError";
 import { ChevronLeft } from "lucide-react";
-import { LAUNCH_CATEQUISTA_ONLY, catalogIsCatequistaOnly } from "../../shared/pricing";
+import {
+  LAUNCH_CATEQUISTA_ONLY,
+  catalogIsCatequistaOnly,
+  hasPersonalAccess,
+  isOnProductTrial,
+} from "../../shared/pricing";
 import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import { createClassSchema } from "../../client/validation/schemas";
 import { getSalesWhatsAppUrl } from "../../shared/salesContact";
@@ -104,7 +113,11 @@ function clearPersisted() {
 
 export default function OnboardingPage() {
   const { t } = useTranslation("onboarding");
+  const { t: tBilling } = useTranslation("billing");
   const navigate = useNavigate();
+  const { data: authUser } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const checkoutToastShownRef = useRef(false);
   const { publicPlans } = usePlanCatalog();
   const launchCatequistaOnly = catalogIsCatequistaOnly(publicPlans);
 
@@ -145,6 +158,17 @@ export default function OnboardingPage() {
     useState<CompletionSummary | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (searchParams.get("checkout") !== "success") return;
+    if (checkoutToastShownRef.current) return;
+    checkoutToastShownRef.current = true;
+    toast({ title: tBilling("checkout_success") });
+    const next = new URLSearchParams(searchParams);
+    next.delete("checkout");
+    next.delete("session_id");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams, tBilling]);
 
   useEffect(() => {
     if (resumed) {
@@ -254,16 +278,16 @@ export default function OnboardingPage() {
     };
   })();
 
-  const getDeferredTarget = (): string | null => {
-    const intended = getIntendedPlan();
-    if (!intended) return null;
-    const institutional = isInstitutionalPlanId(intended);
-    const levelMatchesAccount = institutional
-      ? accountType === "manager"
-      : accountType === "personal";
-    if (!levelMatchesAccount) return null;
-    return `/app/billing?plan=${intended}`;
-  };
+  const alreadyHasAccess =
+    authUser == null ||
+    hasPersonalAccess(authUser) ||
+    isOnProductTrial(authUser);
+
+  const completionSecondary = resolveOnboardingSecondaryAction({
+    intendedPlan: getIntendedPlan(),
+    accountType,
+    alreadyHasAccess,
+  });
 
   const emitOnboardingCompleted = (path: string) => {
     let duration_ms: number | undefined;
@@ -277,7 +301,10 @@ export default function OnboardingPage() {
     }
     trackOnboardingCompleted({
       account_type: accountType || "personal",
-      profile: accountType === "manager" || accountType === "diocese" ? "institutional" : "personal",
+      profile:
+        accountType === "manager" || accountType === "diocese"
+          ? "institutional"
+          : "personal",
       path,
       duration_ms:
         duration_ms != null && Number.isFinite(duration_ms)
@@ -289,15 +316,10 @@ export default function OnboardingPage() {
   };
 
   const handleSecondaryCompletionAction = () => {
-    const deferredTarget = getDeferredTarget();
     clearPersisted();
-    emitOnboardingCompleted(deferredTarget || "/app");
-    if (deferredTarget) {
-      clearIntendedPlan();
-      navigate(deferredTarget);
-      return;
-    }
-    navigate("/app");
+    clearIntendedPlan();
+    emitOnboardingCompleted(completionSecondary.href);
+    navigate(completionSecondary.href);
   };
 
   const goBack = () => {
@@ -335,70 +357,82 @@ export default function OnboardingPage() {
     setSaving(true);
     setError("");
     try {
-      const personalParish = await ensurePersonalWorkspace();
-      if (!personalParish?.id) throw new Error(t("personal_workspace_error"));
+      await withTransientRetry(async () => {
+        const personalParish = await ensurePersonalWorkspace();
+        if (!personalParish?.id) throw new Error(t("personal_workspace_error"));
 
-      setWorkspaceId(personalParish.id);
-      localStorage.setItem(
-        "catequese-viva-active-workspace",
-        personalParish.id,
-      );
-      window.dispatchEvent(
-        new CustomEvent("workspace-changed", { detail: personalParish.id }),
-      );
+        setWorkspaceId(personalParish.id);
+        localStorage.setItem(
+          "catequese-viva-active-workspace",
+          personalParish.id,
+        );
+        window.dispatchEvent(
+          new CustomEvent("workspace-changed", { detail: personalParish.id }),
+        );
 
-      trackMarketingEvent("onboarding_step_completed", {
-        account_type: "personal",
-        step: "workspace_ready",
-      });
+        trackMarketingEvent("onboarding_step_completed", {
+          account_type: "personal",
+          step: "workspace_ready",
+        });
 
-      const classPayload = {
-        name: details.className.trim(),
-        dayOfWeek: details.dayOfWeek,
-        startTime: details.startTime,
-        endTime: details.endTime,
-        location: details.location,
-      };
-      const validated = createClassSchema.safeParse(classPayload);
-      if (!validated.success) {
-        const field = validated.error.issues[0]?.path[0];
-        if (field === "startTime") {
-          setError(t("class_setup.start_time_invalid"));
-        } else if (field === "endTime") {
-          setError(t("class_setup.end_time_invalid"));
-        } else if (field === "name") {
-          setError(t("class_setup.name_required"));
-        } else {
-          setError(t("finish_error"));
+        const classPayload = {
+          name: details.className.trim(),
+          dayOfWeek: details.dayOfWeek,
+          startTime: details.startTime,
+          endTime: details.endTime,
+          location: details.location,
+        };
+        const validated = createClassSchema.safeParse(classPayload);
+        if (!validated.success) {
+          const field = validated.error.issues[0]?.path[0];
+          if (field === "startTime") {
+            throw new Error(t("class_setup.start_time_invalid"));
+          }
+          if (field === "endTime") {
+            throw new Error(t("class_setup.end_time_invalid"));
+          }
+          if (field === "name") {
+            throw new Error(t("class_setup.name_required"));
+          }
+          throw new Error(t("finish_error"));
         }
-        return;
-      }
 
-      const created = await createClass({
-        name: validated.data.name,
-        parishId: personalParish.id,
-        dayOfWeek: validated.data.dayOfWeek || undefined,
-        startTime: validated.data.startTime || undefined,
-        endTime: validated.data.endTime || undefined,
-        location: validated.data.location || personalParish.name,
-      });
+        const created = await createClass({
+          name: validated.data.name,
+          parishId: personalParish.id,
+          dayOfWeek: validated.data.dayOfWeek || undefined,
+          startTime: validated.data.startTime || undefined,
+          endTime: validated.data.endTime || undefined,
+          location: validated.data.location || personalParish.name,
+        });
 
-      trackMarketingEvent("first_class_created", {
-        account_type: "personal",
-        workspace: "personal",
-        source: "onboarding",
-      });
-      trackMarketingEvent("onboarding_step_completed", {
-        account_type: "personal",
-        step: "class_created",
-      });
+        trackMarketingEvent("first_class_created", {
+          account_type: "personal",
+          workspace: "personal",
+          source: "onboarding",
+        });
+        trackMarketingEvent("onboarding_step_completed", {
+          account_type: "personal",
+          step: "class_created",
+        });
 
-      setClassId(created.id);
-      setClassName(details.className.trim());
-      setStep("catechumens");
+        setClassId(created.id);
+        setClassName(details.className.trim());
+        setStep("catechumens");
+      });
     } catch (e) {
-      const message = e instanceof Error ? e.message : t("finish_error");
-      setError(message || t("finish_error"));
+      if (isTransientRequestError(e)) {
+        setError(t("class_setup.transient_error"));
+      } else if (isPlanLimitError(e)) {
+        setError(t("class_setup.plan_limit"));
+      } else {
+        const message = e instanceof Error ? e.message : t("finish_error");
+        setError(
+          /status code/i.test(message)
+            ? t("finish_error")
+            : message || t("finish_error"),
+        );
+      }
     } finally {
       setSaving(false);
     }
@@ -455,6 +489,7 @@ export default function OnboardingPage() {
     });
     setStep("completion");
     clearPersisted();
+    clearIntendedPlan();
   };
 
   const finishDiocesePath = () => {
@@ -480,6 +515,7 @@ export default function OnboardingPage() {
     });
     setStep("completion");
     clearPersisted();
+    clearIntendedPlan();
   };
 
   /** Manager path completion (existing logic, simplified) */
@@ -603,6 +639,7 @@ export default function OnboardingPage() {
       });
       setStep("completion");
       clearPersisted();
+      clearIntendedPlan();
     } catch (e) {
       const message = e instanceof Error ? e.message : t("finish_error");
       setError(message || t("finish_error"));
@@ -795,12 +832,14 @@ export default function OnboardingPage() {
         <CompletionStep
           summary={{
             ...completionData,
-            secondaryActionLabel: getDeferredTarget()
-              ? t("completion.go_billing")
-              : t("completion.go_dashboard"),
+            secondaryActionLabel:
+              completionSecondary.kind === "billing"
+                ? t("completion.go_billing")
+                : t("completion.go_dashboard"),
           }}
           onPrimaryAction={() => {
             clearPersisted();
+            clearIntendedPlan();
             emitOnboardingCompleted(completionData.primaryActionTo);
             if (/^https?:\/\//i.test(completionData.primaryActionTo)) {
               window.location.assign(completionData.primaryActionTo);

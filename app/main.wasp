@@ -26,8 +26,8 @@ app OpenSaaS {
     "<link rel='preconnect' href='https://fonts.gstatic.com' crossOrigin='anonymous' />",
     "<link rel='preload' as='style' data-font-stylesheet='true' href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap' />",
 
-    // LCP hero (mobile-first): discover image before JS hydrates
-    "<link rel='preload' as='image' type='image/avif' imageSrcSet='/landing/hero-mobile-light-640.avif 640w, /landing/hero-mobile-light-960.avif 960w, /landing/hero-mobile-light-1280.avif 1280w, /landing/hero-mobile-light-1896.avif 1896w' imageSizes='(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 560px' fetchPriority='high' />",
+    // LCP hero: real Painel screenshot, discovered before JS hydrates
+    "<link rel='preload' as='image' type='image/webp' imageSrcSet='/landing/dashboard-hero-960.webp 960w, /landing/dashboard-hero.webp 1600w' imageSizes='(max-width: 1024px) 100vw, 900px' fetchPriority='high' />",
 
     "<meta name='description' content='Mais presença no encontro, menos tempo organizando. Prepare encontros, acompanhe catequizandos e registre presenças. 7 dias grátis, sem cartão.' />",
     "<meta name='author' content='Catequese Viva' />",

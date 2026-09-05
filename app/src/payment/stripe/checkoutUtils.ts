@@ -30,7 +30,6 @@ interface CreateStripeCheckoutSessionParams {
   userId: string;
   mode: Stripe.Checkout.Session.Mode;
   tracking?: CreateCheckoutSessionTrackingArgs;
-  /** Ignored for Stripe trial — Assinar never sets trial_period_days. */
   trialPeriodDays?: number;
 }
 
@@ -94,13 +93,12 @@ export function buildStripeCheckoutSessionCreateParams({
   userId,
   mode,
   tracking,
-  trialPeriodDays: _ignoredTrialPeriodDays = 0,
+  trialPeriodDays = 0,
   frontendUrl,
 }: CreateStripeCheckoutSessionParams & {
   frontendUrl?: string | null;
 }): Stripe.Checkout.SessionCreateParams {
-  // Assinar never starts a Stripe trial — ignore leftover caller days.
-  const resolvedTrialDays = 0;
+  const resolvedTrialDays = Math.max(0, trialPeriodDays);
   const trackingMetadata = toStripeMetadata({
     ...tracking,
     priceId: tracking?.priceId ?? priceId,

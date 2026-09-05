@@ -330,6 +330,7 @@ model User {
   subscriptionStatus            String?
   subscriptionPlan              String?  @default("catechist_free")
   datePaid                      DateTime?
+  trialEndsAt                   DateTime?
   credits                       Int       @default(3)
 
   // Pricing version (grandfathering)

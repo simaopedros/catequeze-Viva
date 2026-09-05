@@ -115,7 +115,6 @@ export const lifecycleNudgeJob = async (
     where: {
       email: { not: null },
       isAdmin: false,
-      paymentProcessorUserId: null,
       lifecycleEmailsOptOutAt: null,
       subscriptionStatus: {
         in: ["trialing", "trial", "deleted", "canceled"],
@@ -127,6 +126,7 @@ export const lifecycleNudgeJob = async (
       firstName: true,
       locale: true,
       createdAt: true,
+      trialEndsAt: true,
       isAdmin: true,
       paymentProcessorUserId: true,
       subscriptionStatus: true,
@@ -180,7 +180,12 @@ export const lifecycleNudgeJob = async (
     ];
 
     const activation = await loadActivationForParishes(context, parishIds);
-    const clock = computeTrialClock(user.createdAt, now);
+    const clock = computeTrialClock(
+      user.createdAt,
+      now,
+      undefined,
+      user.trialEndsAt,
+    );
     const alreadySent = (user.lifecycleEmailLogs || []).map(
       (log: { campaign: string }) => log.campaign,
     );

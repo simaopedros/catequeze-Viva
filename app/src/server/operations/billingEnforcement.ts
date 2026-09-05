@@ -18,7 +18,6 @@ import {
   isProductTrialStatus,
   isProductTrialWindowOpen,
   PRODUCT_TRIAL_PLAN_ID,
-  SUBSCRIPTION_TRIAL_DAYS,
   type PlanLimits,
 } from "../../shared/planLimits";
 import { loadPlanCatalog } from "../pricing/planCatalogService";
@@ -323,19 +322,19 @@ export async function resolveNewParishBilling(
     return { skip: false, plan: creatorPlan.toUpperCase(), status: 'ACTIVE', trialEndsAt: null };
   }
 
-  // No-card product trial for new institutional parishes: Single entitlements
-  // for SUBSCRIPTION_TRIAL_DAYS so first class / year setup works without Stripe.
+  // Unpaid institutional workspace until Stripe Checkout starts the parish trial.
   return {
     skip: false,
-    plan: PRODUCT_TRIAL_PLAN_ID.toUpperCase(),
-    status: 'TRIAL',
-    trialEndsAt: new Date(Date.now() + SUBSCRIPTION_TRIAL_DAYS * 24 * 60 * 60 * 1000),
+    plan: 'CATECHIST_FREE',
+    status: 'CANCELED',
+    trialEndsAt: null,
   };
 }
 
 /**
- * Ensure the user has an active product trial when still within the signup window.
- * Heals accounts created before onAfterSignup started writing trialing/single.
+ * Load the user billing row. Does not grant in-app trial to new accounts.
+ * Grandfather: keep existing in-app `trialing` (no Stripe customer) inside the
+ * original signup window, and heal a missing personal plan id.
  * Never touches users already managed by Stripe (paymentProcessorUserId set).
  */
 export async function ensureProductTrial(
@@ -364,7 +363,7 @@ export async function ensureProductTrial(
   if (user.paymentProcessorUserId) return user;
   if (isSubscriptionActiveLike(user.subscriptionStatus)) return user;
   if (isProductTrialStatus(user.subscriptionStatus) && isProductTrialWindowOpen(user.createdAt)) {
-    // Ensure plan id is a real personal plan during trial.
+    // Ensure plan id is a real personal plan during grandfather trial.
     if ((user.subscriptionPlan || '').toLowerCase() === 'catechist_free' || !user.subscriptionPlan) {
       return context.entities.User.update({
         where: { id: userId },
@@ -378,23 +377,6 @@ export async function ensureProductTrial(
       });
     }
     return user;
-  }
-
-  // Still inside the signup trial window → start / restore product trial.
-  if (isProductTrialWindowOpen(user.createdAt)) {
-    return context.entities.User.update({
-      where: { id: userId },
-      data: {
-        subscriptionStatus: 'trialing',
-        subscriptionPlan: PRODUCT_TRIAL_PLAN_ID,
-      },
-      select: {
-        subscriptionStatus: true,
-        subscriptionPlan: true,
-        createdAt: true,
-        paymentProcessorUserId: true,
-      },
-    });
   }
 
   return user;
@@ -496,10 +478,11 @@ async function countOwnedNonInstitutionalParishes(
  * Enforce parish-creation limits.
  *
  * - Institutional umbrella / diocese coverage → allow
- * - `startTrial: true` → use the no-card parish trial entitlements (Single for 7 days)
- * - Otherwise heal personal product trial, then apply personal plan limits
- * - If still blocked but a parish trial is available, throw PARISH_TRIAL_AVAILABLE
- *   so the client can offer "Começar 7 dias grátis" instead of a dead end
+ * - `startTrial: true` → create an unpaid parish workspace so Stripe Checkout
+ *   for Plano Paróquia can attach (no local entitlements)
+ * - Otherwise use personal plan limits (grandfather in-app trial or paid)
+ * - If still blocked, throw PARISH_TRIAL_AVAILABLE so the client can offer
+ *   the Stripe parish trial checkout instead of a dead end
  */
 export async function assertCanCreateParish(
   context: any,
@@ -517,22 +500,16 @@ export async function assertCanCreateParish(
     context.user.id,
   );
 
-  const trialCoverageAvailable =
-    !coverage.skip && coverage.status === 'TRIAL' && !!coverage.plan;
-
-  // Explicit consent to start the 7-day parish trial (onboarding / create UI).
-  if (opts?.startTrial && trialCoverageAvailable) {
-    await ensureProductTrial(context, context.user.id).catch(() => null);
-    const trialLimits = await catalogLimits(context, coverage.plan);
-    if (trialLimits.maxParishes === null) return;
-    if (ownedParishes >= trialLimits.maxParishes) {
+  // Explicit consent to create an unpaid parish so Stripe trial checkout can run.
+  if (opts?.startTrial) {
+    if (ownedParishes >= 1) {
       throw new HttpError(
         403,
         buildLimitMessage(
           'parish_limit',
           coverage.plan,
           ownedParishes,
-          trialLimits.maxParishes,
+          1,
         ),
       );
     }
@@ -547,15 +524,11 @@ export async function assertCanCreateParish(
   if (limits.maxParishes === null) return;
 
   if (ownedParishes >= limits.maxParishes) {
-    if (trialCoverageAvailable) {
-      const trialLimits = await catalogLimits(context, coverage.plan);
-      const trialMax = trialLimits.maxParishes;
-      if (trialMax === null || ownedParishes < trialMax) {
-        throw new HttpError(
-          403,
-          `${PARISH_TRIAL_AVAILABLE_PREFIX} Limite de paróquias do plano ${planName(plan)} atingido (${ownedParishes}/${limits.maxParishes}). Você pode iniciar 7 dias grátis do plano Paróquia para continuar.`,
-        );
-      }
+    if (ownedParishes < 1) {
+      throw new HttpError(
+        403,
+        `${PARISH_TRIAL_AVAILABLE_PREFIX} Limite de paróquias do plano ${planName(plan)} atingido (${ownedParishes}/${limits.maxParishes}). Você pode iniciar 7 dias grátis do plano Paróquia para continuar.`,
+      );
     }
     throw new HttpError(
       403,
@@ -588,6 +561,18 @@ export async function assertCanCreateClass(
     });
 
     if (activeCount >= limits.maxClasses!) {
+      try {
+        const { refreshUserBillingFromStripe } = await import(
+          '../../payment/stripe/syncUserSubscription'
+        );
+        const synced = await refreshUserBillingFromStripe(context, context.user.id);
+        const syncedPlan = getPersonalPlanId(synced);
+        const syncedLimits = await catalogLimits(context, syncedPlan);
+        if (syncedLimits.maxClasses === null) return;
+        if (activeCount < syncedLimits.maxClasses) return;
+      } catch {
+        // Fall through to the original limit error.
+      }
       throw new HttpError(
         403,
         `LIMIT: Limite de turmas do plano ${planName(plan)} atingido (${activeCount}/${limits.maxClasses}). Faça upgrade.`,

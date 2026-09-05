@@ -209,6 +209,7 @@ import {
   getInstitutionalPlanId,
   isBillingActive,
   getWorkspaceEffectivePlan,
+  hasStripeManagedSubscription,
 } from '../shared/pricing';
 
 describe('isSubscriptionActiveLike', () => {
@@ -239,6 +240,47 @@ describe('isSubscriptionActiveLike', () => {
   });
 });
 
+describe('hasStripeManagedSubscription', () => {
+  it('is true for a Stripe Checkout trial', () => {
+    expect(
+      hasStripeManagedSubscription({
+        paymentProcessorUserId: 'cus_1',
+        subscriptionStatus: 'trialing',
+        subscriptionPlan: 'single',
+      }),
+    ).toBe(true);
+  });
+
+  it('is true for an active Stripe subscription', () => {
+    expect(
+      hasStripeManagedSubscription({
+        paymentProcessorUserId: 'cus_1',
+        subscriptionStatus: 'active',
+        subscriptionPlan: 'single',
+      }),
+    ).toBe(true);
+  });
+
+  it('is false for an abandoned Checkout customer without a subscription', () => {
+    expect(
+      hasStripeManagedSubscription({
+        paymentProcessorUserId: 'cus_abandoned',
+        subscriptionStatus: null,
+      }),
+    ).toBe(false);
+  });
+
+  it('is false for an in-app trial without Stripe', () => {
+    expect(
+      hasStripeManagedSubscription({
+        paymentProcessorUserId: null,
+        subscriptionStatus: 'trialing',
+        subscriptionPlan: 'single',
+      }),
+    ).toBe(false);
+  });
+});
+
 describe('getPersonalPlanId', () => {
   const recentSignup = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000); // 2 days ago
   const oldSignup = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
@@ -261,6 +303,18 @@ describe('getPersonalPlanId', () => {
         subscriptionStatus: 'trialing',
         subscriptionPlan: 'single',
         createdAt: recentSignup,
+      }),
+    ).toBe('single');
+  });
+
+  it('returns single during Stripe trial even when createdAt is old', () => {
+    expect(
+      getPersonalPlanId({
+        subscriptionStatus: 'trialing',
+        subscriptionPlan: 'single',
+        createdAt: oldSignup,
+        paymentProcessorUserId: 'cus_1',
+        trialEndsAt: new Date(recentSignup.getTime() + 5 * 24 * 60 * 60 * 1000),
       }),
     ).toBe('single');
   });

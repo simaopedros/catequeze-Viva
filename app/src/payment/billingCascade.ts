@@ -68,6 +68,7 @@ export async function cascadeActivatePlanToTenantBilling(
   context: any,
   userId: string,
   plan: CatalogPlan | string,
+  opts?: { status?: 'ACTIVE' | 'TRIAL'; trialEndsAt?: Date | null },
 ): Promise<void> {
   const catalog = (await loadPlanCatalog(context)).bySlug;
   const slug = typeof plan === 'string' ? resolvePlanId(plan, catalog) : plan.slug;
@@ -76,6 +77,9 @@ export async function cascadeActivatePlanToTenantBilling(
   if (!isInstitutional || !slug) {
     return;
   }
+
+  const status = opts?.status ?? 'ACTIVE';
+  const trialEndsAt = status === 'TRIAL' ? (opts?.trialEndsAt ?? null) : undefined;
 
   const planLimits = typeof plan === 'string'
     ? getPlanLimits(plan, catalog)
@@ -86,19 +90,22 @@ export async function cascadeActivatePlanToTenantBilling(
     const existing = await context.entities.TenantBilling.findUnique({
       where: { dioceseId },
     });
+    const dioceseData = {
+      plan: slug,
+      status,
+      currentPeriodEnd: getNextPeriodEnd(),
+      pricingVersion: PRICING_VERSION,
+      ...(trialEndsAt !== undefined ? { trialEndsAt } : {}),
+    };
     if (existing) {
       await context.entities.TenantBilling.update({
         where: { id: existing.id },
-        data: {
-          plan: slug, status: 'ACTIVE', currentPeriodEnd: getNextPeriodEnd(),
-          pricingVersion: PRICING_VERSION,
-        },
+        data: dioceseData,
       });
     } else {
       await context.entities.TenantBilling.create({
         data: {
-          dioceseId, plan: slug, status: 'ACTIVE', currentPeriodEnd: getNextPeriodEnd(),
-          pricingVersion: PRICING_VERSION,
+          dioceseId, ...dioceseData,
         },
       });
     }
@@ -108,13 +115,14 @@ export async function cascadeActivatePlanToTenantBilling(
     where: { parish: { ownerId: userId, type: { not: 'PERSONAL' } } },
     data: {
       plan: slug,
-      status: 'ACTIVE',
+      status,
       maxClasses: planLimits.maxClasses,
       maxCatechumens: planLimits.maxCatechumens,
       maxCatechists: planLimits.maxCatechists,
       maxParishes: planLimits.maxParishes,
       currentPeriodEnd: getNextPeriodEnd(),
       pricingVersion: PRICING_VERSION,
+      ...(trialEndsAt !== undefined ? { trialEndsAt } : {}),
     },
   });
 }

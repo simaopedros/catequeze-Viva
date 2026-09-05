@@ -2,7 +2,8 @@ import { Check } from "lucide-react";
 import { BrandMark } from "../../../client/components/brand/Brand";
 
 /**
- * Compact product preview for the hero — next meeting, not a dashboard clone.
+ * Compact product preview kept for campaign overlays / local fallbacks.
+ * The landing hero uses ProductHeroShot (real Painel screenshot).
  */
 export function AppProductMock({ ns = "landing" }: { ns?: string }) {
   void ns;

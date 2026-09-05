@@ -1,4 +1,5 @@
 export enum SubscriptionStatus {
+  Trialing = "trialing",
   PastDue = "past_due",
   CancelAtPeriodEnd = "cancel_at_period_end",
   Active = "active",

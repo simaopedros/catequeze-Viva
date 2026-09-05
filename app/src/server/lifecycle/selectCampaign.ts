@@ -55,6 +55,7 @@ export function computeTrialClock(
   createdAt: Date,
   now: Date,
   trialDays = SUBSCRIPTION_TRIAL_DAYS,
+  explicitEndsAt?: Date | null,
 ): {
   daysSinceSignup: number;
   daysLeft: number | null;
@@ -62,7 +63,8 @@ export function computeTrialClock(
   phase: LifecyclePhase;
   endsAt: Date;
 } {
-  const endsAt = trialEndsAt(createdAt, trialDays);
+  const endsAt =
+    explicitEndsAt ?? trialEndsAt(createdAt, trialDays);
   const daysSinceSignup = calendarDaysBetween(createdAt, now);
   if (now >= endsAt) {
     return {
@@ -86,8 +88,8 @@ export function isPaidLifecycleUser(user: {
   paymentProcessorUserId?: string | null;
   subscriptionStatus?: string | null;
 }): boolean {
-  if (user.paymentProcessorUserId) return true;
   const status = (user.subscriptionStatus || "").toLowerCase();
+  if (status === "trialing" || status === "trial") return false;
   return (
     status === "active" ||
     status === "past_due" ||

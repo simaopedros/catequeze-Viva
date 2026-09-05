@@ -3,6 +3,10 @@ name: Deploy Homolog
 on:
   push:
     branches: [main]
+    # Cloud Agent cannot workflow_dispatch (HTTP 403). Push a homolog-* tag
+    # from a feature branch to deploy that commit without merging to main.
+    tags:
+      - 'homolog-*'
   workflow_dispatch:
     inputs:
       branch:
@@ -23,7 +27,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch || 'main' }}
+          # workflow_dispatch uses the input (default: main). Push to main or a
+          # homolog-* tag checks out the triggering commit, not always main.
+          ref: ${{ github.event.inputs.branch || github.sha }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

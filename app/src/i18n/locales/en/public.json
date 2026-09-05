@@ -37,7 +37,7 @@
   },
   "pricing": {
     "title": "Three paths: catechist, parish, and diocese",
-    "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7-day free trial, no card.",
+    "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7-day free trial; card now, charge after trial.",
     "payment_card": "Card",
     "annual_savings": "Save 17% on annual",
     "monthly_tab": "Monthly",
@@ -65,7 +65,7 @@
     "faq": [
       {
         "q": "How can I try the platform before subscribing?",
-        "a": "You try it for 7 days with no credit card, use it with your real class, and only decide if it makes sense to continue. When the 7 days end, nothing is charged."
+        "a": "You try it for 7 days. We ask for a card now and only charge after the trial. Use it with your real class and cancel if it does not make sense to continue."
       },
       {
         "q": "What is the price?",
@@ -73,7 +73,7 @@
       },
       {
         "q": "How does payment work?",
-        "a": "You start with a 7-day free trial and no credit card. If you continue, you pay by card, monthly or annually. No lock-in — cancel anytime."
+        "a": "You start with a 7-day trial. Stripe asks for a card now and only charges after the trial. No lock-in — cancel anytime."
       },
       {
         "q": "What about annual plan refunds?",

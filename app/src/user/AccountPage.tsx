@@ -147,6 +147,10 @@ export default function AccountPage() {
               subscriptionStatus={user.subscriptionStatus}
               datePaid={user.datePaid}
               createdAt={user.createdAt}
+              trialEndsAt={
+                (user as { trialEndsAt?: Date | null }).trialEndsAt
+              }
+              paymentProcessorUserId={user.paymentProcessorUserId}
             />
           </CardContent>
         </Card>
@@ -240,19 +244,30 @@ function UserCurrentSubscriptionPlan({
   subscriptionStatus,
   datePaid,
   createdAt,
+  trialEndsAt,
+  paymentProcessorUserId,
 }: Pick<
   User,
   "subscriptionPlan" | "subscriptionStatus" | "datePaid" | "createdAt"
->) {
+> & {
+  trialEndsAt?: Date | string | null;
+  paymentProcessorUserId?: string | null;
+}) {
   const { t, i18n } = useTranslation("account");
   const { t: tb } = useTranslation("billing");
 
-  const trialUser = { subscriptionStatus, subscriptionPlan, createdAt };
+  const trialUser = {
+    subscriptionStatus,
+    subscriptionPlan,
+    createdAt,
+    trialEndsAt,
+    paymentProcessorUserId,
+  };
   const onTrial = isOnProductTrial(trialUser);
 
   let message = t("free_plan");
   if (onTrial) {
-    const ends = getProductTrialEndsAt(createdAt);
+    const ends = getProductTrialEndsAt(trialUser);
     const daysLeft = getProductTrialDaysLeft(trialUser) ?? 0;
     const endsLabel = ends
       ? ends.toLocaleDateString(i18n.language || "pt-BR", {
@@ -312,6 +327,10 @@ function formatSubscriptionStatusMessage(
       date: prettyPrintEndOfBillingPeriod(datePaid),
     }),
     [SubscriptionStatus.Deleted]: t("plan_deleted"),
+    [SubscriptionStatus.Trialing]: t("plan_trial_other", {
+      count: 7,
+      date: prettyPrintEndOfBillingPeriod(datePaid),
+    }),
   };
 
   return statusToMessage[subscriptionStatus];

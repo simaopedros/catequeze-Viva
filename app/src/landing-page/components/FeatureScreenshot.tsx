@@ -99,7 +99,7 @@ export function FeatureScreenshot({ id, alt, className, loading = 'lazy', fetchP
         loading={loading}
         fetchPriority={fetchPriority}
         decoding="async"
-        className={`h-full w-full object-cover object-top ${className ?? ''}`}
+        className={`h-full w-full ${id === 'dashboard' ? 'object-contain object-top bg-white' : 'object-cover object-top'} ${className ?? ''}`}
       />
     );
   }

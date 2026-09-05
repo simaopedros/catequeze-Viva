@@ -17,6 +17,7 @@ import { validateOrThrow } from "../server/validation";
 import { paymentProcessor } from "./paymentProcessor";
 import { stripeClient } from "./stripe/stripeClient";
 import {
+  isProductTrialStatus,
   isSubscriptionActiveLike,
   resolvePlanIdOrFree,
   type PlanId,
@@ -155,15 +156,40 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     where: { id: userId },
     select: {
       subscriptionStatus: true,
+      subscriptionPlan: true,
+      createdAt: true,
+      paymentProcessorUserId: true,
+      trialEndsAt: true,
       phone: true,
     },
   });
-  const hasActiveSub = isSubscriptionActiveLike(freshUser?.subscriptionStatus);
-  if (hasActiveSub && !isInstitutionalPlan) {
+  const alreadyOnStripePersonal =
+    Boolean(freshUser?.paymentProcessorUserId) &&
+    (isSubscriptionActiveLike(freshUser?.subscriptionStatus) ||
+      (isProductTrialStatus(freshUser?.subscriptionStatus) &&
+        Boolean(freshUser?.trialEndsAt)));
+  if (alreadyOnStripePersonal && !isInstitutionalPlan) {
     throw new HttpError(
       409,
       "Você já possui uma assinatura ativa. Para trocar de plano, use a opção de alterar plano no portal de pagamento.",
     );
+  }
+
+  let institutionalBilling: {
+    plan: string;
+    status: string;
+    trialEndsAt?: Date | string | null;
+  } | null = null;
+  if (isInstitutionalPlan) {
+    const ownedParish = await context.entities.Parish.findFirst({
+      where: { ownerId: userId, type: { not: "PERSONAL" } },
+      select: {
+        billing: { select: { plan: true, status: true, trialEndsAt: true } },
+      },
+    });
+    if (ownedParish?.billing) {
+      institutionalBilling = ownedParish.billing;
+    }
   }
 
   const planName = input.planName ?? prettyPaymentPlanName(catalogPlan.slug);
@@ -171,9 +197,10 @@ export const generateCheckoutSession: GenerateCheckoutSession<
   const currency = input.currency ?? detectCurrency();
   const isCreditsPlan = paymentPlan.effect.kind === "credits";
 
-  // Assinar never starts a Stripe trial — the 7-day no-card window is in-app only.
   const trialPeriodDays = resolveStripeCheckoutTrialDays({
     isCredits: isCreditsPlan,
+    user: freshUser,
+    institutionalBilling,
   });
 
   const resolvedPriceId = await requireActiveStripePriceId(

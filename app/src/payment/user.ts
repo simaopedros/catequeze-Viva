@@ -42,6 +42,7 @@ interface UpdateUserSubscriptionArgs {
   subscriptionStatus: SubscriptionStatus;
   paymentPlanId?: string;
   datePaid?: Date;
+  trialEndsAt?: Date | null;
 }
 
 export function updateUserSubscription(
@@ -50,6 +51,7 @@ export function updateUserSubscription(
     paymentPlanId,
     subscriptionStatus,
     datePaid,
+    trialEndsAt,
   }: UpdateUserSubscriptionArgs,
   userDelegate: PrismaClient["user"],
 ): Promise<User> {
@@ -61,6 +63,7 @@ export function updateUserSubscription(
       subscriptionPlan: paymentPlanId,
       subscriptionStatus,
       datePaid,
+      ...(trialEndsAt !== undefined ? { trialEndsAt } : {}),
     },
   });
 }

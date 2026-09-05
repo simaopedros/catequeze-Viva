@@ -985,7 +985,7 @@ export const auth_es = {
     "signup_plan_unlimited": "Plan Parroquia",
     "signup_interval_monthly": "facturación mensual",
     "signup_interval_annual": "facturación anual",
-    "signup_context_no_card": "7 días gratis, sin tarjeta",
+    "signup_context_no_card": "7 días gratis; tarjeta ahora, cobro después del trial",
     "signup_context_change": "Cambiar",
     "signup_success_next_steps": "Próximos pasos",
     "signup_success_step_1": "Revisa tu bandeja de entrada y la carpeta de spam.",
@@ -1160,6 +1160,12 @@ export const billing_es = {
     "checkout_canceled": "😢 Pago cancelado.",
     "checkout_redirect": "Será redirigido a su cuenta en {{seconds}} segundos...",
     "go_to_account": "Ir a Mi Cuenta",
+    "trial_started_title": "Tu prueba de 7 días ha comenzado",
+    "trial_started_description": "La tarjeta ya está registrada. El cobro empieza después de los 7 días de prueba. Vamos a preparar tu espacio.",
+    "trial_started_redirect": "Te llevaremos a la suscripción en {{seconds}} segundos...",
+    "trial_started_redirect_onboarding": "Continuaremos la configuración en {{seconds}} segundos...",
+    "go_to_billing": "Ir a la suscripción",
+    "go_to_onboarding": "Continuar configuración",
     "admin_title": "Licencias",
     "admin_subtitle": "Gestión cross-tenant de planes y facturación.",
     "table_entity": "Entidad",
@@ -1284,6 +1290,8 @@ export const billing_es = {
       "usage_aria": "Comparación del uso actual con el Plan Parroquia",
       "usage_trial_label": "Tu prueba",
       "usage_plan_label": "Plan Parroquia",
+      "usage_benefits_label": "Qué incluye la prueba",
+      "usage_benefits_aria": "Beneficios del Plan Parroquia en la prueba",
       "usage_class_one": "{{count}} grupo",
       "usage_class_other": "{{count}} grupos",
       "usage_catechumen_one": "{{count}} catecúmeno",
@@ -1312,8 +1320,14 @@ export const billing_es = {
     "personal_active": {
       "workspace_eyebrow": "Mi espacio personal",
       "active_badge": "Activo",
+      "trial_badge": "En prueba",
       "headline": "Tu suscripción está activa",
+      "headline_trial_one": "Tu prueba termina en 1 día",
+      "headline_trial_other": "Tu prueba termina en {{count}} días",
+      "headline_trial_ended": "Tu período de prueba terminó",
+      "headline_trial_active": "Tu suscripción está en período de prueba",
       "result": "Todo listo para que continúes tu catequesis.",
+      "result_trial": "Ya iniciaste el Plan Catequista. Gestiona la tarjeta y la suscripción, o organiza como parroquia si necesitas más espacio.",
       "manage": "Gestionar suscripción",
       "cancel_link": "Cancelar suscripción",
       "scope_hint": "La suscripción Catequista es personal. Un espacio de parroquia tiene su propia licencia.",
@@ -1353,6 +1367,8 @@ export const billing_es = {
       "usage_aria": "Comparación del uso actual con el Plan Catequista",
       "usage_trial_label": "Tu prueba",
       "usage_plan_label": "Plan Catequista",
+      "usage_benefits_label": "Qué incluye la prueba",
+      "usage_benefits_aria": "Beneficios del Plan Catequista en la prueba",
       "usage_class_one": "{{count}} grupo",
       "usage_class_other": "{{count}} grupos",
       "usage_catechumen_one": "{{count}} catecúmeno",
@@ -1381,8 +1397,14 @@ export const billing_es = {
     "institutional_active": {
       "workspace_eyebrow": "Espacio institucional",
       "active_badge": "Activo",
+      "trial_badge": "En prueba",
       "headline": "La licencia parroquial está activa",
+      "headline_trial_one": "La prueba parroquial termina en 1 día",
+      "headline_trial_other": "La prueba parroquial termina en {{count}} días",
+      "headline_trial_ended": "El período de prueba de la parroquia terminó",
+      "headline_trial_active": "La licencia parroquial está en período de prueba",
       "result": "Todo el equipo usa este espacio con la licencia de la parroquia.",
+      "result_trial": "Ya iniciaste el Plan Parroquia. Gestiona la tarjeta y la suscripción aquí.",
       "manage": "Gestionar suscripción",
       "cancel_link": "Cancelar suscripción",
       "scope_hint": "Esta licencia cubre el espacio pastoral. La suscripción Catequista de cada persona es independiente.",
@@ -3248,7 +3270,7 @@ export const landing_es = {
       "badge": "Para quien dice sí a la misión de catequizar",
       "cta_primary": "Empezar 7 días gratis",
       "cta_secondary": "Ver cómo funciona",
-      "trust_signals": "7 días gratis · Sin tarjeta · Funciona en el celular",
+      "trust_signals": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
       "cta_secondary_href": "/#como",
       "highlights": [
         "Asistencia y seguimiento desde el celular",
@@ -3288,7 +3310,7 @@ export const landing_es = {
         }
       ],
       "click_trigger": "Funciona en el celular · Hecho para la rutina de catequesis",
-      "image_alt": "Catequese Viva en el celular — asistencia y grupo organizados"
+      "image_alt": "Panel de Catequese Viva con próximas acciones, asistencia, grupos y pendientes sacramentales"
     },
     "pain_title": "La misión ya te pide mucho. El papeleo no tiene que pedir más.",
     "pain_subtitle": "Catequese Viva reúne preparación, grupo, asistencia y familias — para que la burocracia no robe tiempo a la evangelización.",
@@ -3494,7 +3516,7 @@ export const landing_es = {
       },
       {
         "q": "¿Necesito informar tarjeta para probar?",
-        "a": "No. Puedes empezar los 7 días gratis sin informar tarjeta."
+        "a": "Sí. Stripe pide la tarjeta para empezar el trial; el cobro solo ocurre después de 7 días. Cancela a tiempo si no quieres continuar."
       },
       {
         "q": "¿Puedo cancelar cuando quiera?",
@@ -3612,8 +3634,8 @@ export const landing_es = {
         "desc": "Información protegida en tránsito y en reposo, con acceso restringido por rol."
       },
       {
-        "title": "7 días sin tarjeta",
-        "desc": "Prueba sin compromiso. Si no encaja, cancela cuando quieras."
+        "title": "7 días gratis",
+        "desc": "Acceso a todos los recursos. Si no encaja, cancela cuando quieras."
       },
       {
         "title": "Control de tus datos",
@@ -3623,10 +3645,10 @@ export const landing_es = {
     "testimonials_title": "Testimonios",
     "testimonials_subtitle": "Cuando tengamos citas autorizadas de catequistas y parroquias, aparecerán aquí.",
     "testimonials": [],
-    "cta_helper": "Sin tarjeta · Sin compromiso · Cancela cuando quieras",
+    "cta_helper": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
     "mobile_cta": {
       "title": "7 días gratis",
-      "subtitle": "Sin tarjeta",
+      "subtitle": "Acceso a todos los recursos · Cancela cuando quieras",
       "button": "Empezar 7 días gratis"
     },
     "proof": {
@@ -3649,21 +3671,21 @@ export const landing_es = {
       ],
       "chips": [
         "7 días gratis",
-        "Sin tarjeta para empezar",
-        "Sin cobro automático",
+        "Acceso a todos los recursos",
+        "Cancela cuando quieras",
         "LGPD",
         "Cancelación simple"
       ],
       "launch_title": "Pruébalo con tu grupo",
-      "launch_text": "Crea la cuenta, arma el grupo y prepara el próximo encuentro con calma. Tienes 7 días para sentir si sirve a tu misión — sin tarjeta de crédito.",
+      "launch_text": "Crea la cuenta y prueba 7 días con acceso a todos los recursos. Cancela cuando quieras.",
       "promises": [
-        "7 días gratis, sin tarjeta de crédito",
+        "7 días gratis, con acceso a todos los recursos",
         "Biblioteca con Biblia y Catecismo en el mismo lugar",
         "Datos de niños con cuidado y LGPD",
         "Cancela cuando quieras"
       ],
       "launch_cta": "Empezar gratis por 7 días",
-      "launch_helper": "Sin tarjeta · Funciona en el celular · Cancela cuando quieras"
+      "launch_helper": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras"
     },
     "simple_features": {
       "title": "Todo lo que el catequista necesita, sin complicaciones",
@@ -3692,7 +3714,7 @@ export const landing_es = {
     },
     "steps_endowed_title": "Ya estás aquí",
     "steps_endowed_desc": "Conociendo la plataforma",
-    "price_trial_badge": "7 días gratis, sin tarjeta",
+    "price_trial_badge": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
     "price_trial_note": "",
     "comparison": {
       "title": "Deja de dispersar tu catequesis en papel, planilla y WhatsApp",
@@ -3701,7 +3723,7 @@ export const landing_es = {
       "col_old": "Papel + planilla + WhatsApp",
       "col_next": "Catequese Viva",
       "cta": "Empezar gratis por 7 días",
-      "helper": "Sin tarjeta. Cancela cuando quieras.",
+      "helper": "7 días gratis, con acceso a todos los recursos. Cancela cuando quieras.",
       "rows": [
         {
           "criterion": "Preparar el encuentro",
@@ -3736,7 +3758,7 @@ export const landing_es = {
       ]
     },
     "faq_cta": "Empezar 7 días gratis",
-    "faq_cta_helper": "7 días gratis · Sin tarjeta",
+    "faq_cta_helper": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
     "price_cta_single": "Empezar 7 días gratis",
     "price_annual_note": "o R$ 99/año",
     "price_cta_unlimited": "Empezar 7 días gratis",
@@ -3962,7 +3984,7 @@ export const landing_es = {
       "title": "Un plan para cada etapa de la misión.",
       "subtitle": "Empieza como catequista. Cuando tu catequesis crezca, lleva la organización a tu parroquia o diócesis.",
       "featured": "Más elegido",
-      "note": "7 días gratis · Sin tarjeta de crédito · Cancela cuando quieras",
+      "note": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
       "billed_annual": "Cobrado anualmente · 7 días gratis",
       "billed_monthly": "Cobrado mensualmente · 7 días gratis",
       "diocese_note": "Habla con nuestro equipo",
@@ -4112,7 +4134,7 @@ export const landingPresenca_es = {
       "badge": "Control de asistencia digital",
       "cta_primary": "Comenzar ahora",
       "cta_secondary": "Ver demo",
-      "trust_signals": "R$ 9,90/mes • Funciona en el celular • Pago con Stripe",
+      "trust_signals": "7 días gratis • Acceso a todos los recursos • Cancela cuando quieras",
       "visual_title": "Asistencia en el móvil",
       "visual_item_1": "Marca el grupo rápidamente",
       "visual_item_2": "Registra justificaciones",
@@ -4214,11 +4236,12 @@ export const landingSistema_es = {
       "badge": "Gestión completa para catequesis",
       "cta_primary": "Empezar ahora",
       "cta_secondary": "Ver recursos",
-      "trust_signals": "R$ 9,90/mes • Empieza en 2 minutos • Cancela cuando quieras",
+      "trust_signals": "7 días gratis • Acceso a todos los recursos • Cancela cuando quieras",
       "visual_title": "Visión de coordinación",
       "visual_item_1": "Grupos y equipos en un panel",
       "visual_item_2": "Indicadores de asistencia",
-      "visual_item_3": "Próximas acciones pastorales"
+      "visual_item_3": "Próximas acciones pastorales",
+      "image_alt": "Panel de gestión de Catequese Viva con grupos, asistencia y próximas acciones pastorales"
     },
     "features_title": "Todo para gestionar su catequesis",
     "features_order": [
@@ -4835,7 +4858,7 @@ export const onboarding_es = {
       "create_error": "Error al crear parroquia.",
       "city_state_required": "Indica la ciudad y el estado (UF) antes de crear la parroquia.",
       "trial_offer_title": "Límite del plan actual",
-      "trial_offer_body": "Tu plan actual no incluye crear parroquia. Empieza 7 días gratis del plan Parroquia para continuar — sin tarjeta.",
+      "trial_offer_body": "Tu plan actual no incluye crear parroquia. Empieza 7 días gratis del plan Parroquia en Stripe — tarjeta ahora, cobro después del trial.",
       "trial_offer_cta": "Empezar 7 días gratis",
       "creating": "Creando...",
       "create_btn": "Crear parroquia",
@@ -4898,7 +4921,7 @@ export const onboarding_es = {
       "go_dashboard": "Ir al inicio",
       "progress_badge": "Configuración terminada",
       "next_step_hint": "Ya puedes usar la plataforma al ritmo de tu catequesis.",
-      "go_billing": "Continuar",
+      "go_billing": "Ver planes",
       "primary_create_class": "Crear mi primer grupo",
       "primary_create_meeting": "Preparar un encuentro",
       "primary_invite_catechist": "Invitar catequista",
@@ -5025,6 +5048,8 @@ export const onboarding_es = {
       "location_placeholder": "Ej.: Salón parroquial",
       "saving": "Creando grupo…",
       "continue": "Continuar",
+      "transient_error": "El servidor estaba ocupado. Espera unos segundos y pulsa Continuar otra vez.",
+      "plan_limit": "Tu prueba aún no ha liberado el grupo. Espera unos segundos e inténtalo de nuevo.",
       "start_time_invalid": "Horario de inicio inválido. Usa el formato HH:mm (ej.: 19:00).",
       "end_time_invalid": "Horario de fin inválido. Usa el formato HH:mm (ej.: 20:30).",
       "days": {
@@ -5128,7 +5153,7 @@ export const parishes_es = {
     "new_parish_btn": "Nueva Parroquia",
     "create_error": "Error al crear parroquia.",
     "trial_offer_title": "Límite del plan actual",
-    "trial_offer_body": "Tu plan actual no incluye crear parroquia. Empieza 7 días gratis del plan Parroquia para continuar — sin tarjeta.",
+    "trial_offer_body": "Tu plan actual no incluye crear parroquia. Empieza 7 días gratis del plan Parroquia en Stripe — tarjeta ahora, cobro después del trial.",
     "trial_offer_cta": "Empezar 7 días gratis",
     "diocese_license": "Diócesis (licencia)",
     "independent_option": "Independiente / bajo mi licencia",
@@ -5367,7 +5392,7 @@ export const public_es = {
     },
     "pricing": {
       "title": "Tres caminos: catequista, parroquia y diócesis",
-      "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis, sin tarjeta.",
+      "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis; tarjeta ahora, cobro después del trial.",
       "payment_card": "Tarjeta",
       "annual_savings": "Ahorre 17% en anual",
       "monthly_tab": "Mensual",
@@ -5395,7 +5420,7 @@ export const public_es = {
       "faq": [
         {
           "q": "¿Cómo conozco la plataforma antes de suscribirme?",
-          "a": "La pruebas 7 días sin tarjeta, la usas con tu grupo de verdad y solo decides si tiene sentido continuar. Cuando terminan los 7 días, no se cobra nada."
+          "a": "Pruebas 7 días. Pedimos la tarjeta ahora y solo cobramos después del trial. Úsala con tu grupo de verdad y cancela si no tiene sentido continuar."
         },
         {
           "q": "¿Cuál es el precio?",
@@ -5403,7 +5428,7 @@ export const public_es = {
         },
         {
           "q": "¿Cómo funciona el pago?",
-          "a": "Empiezas con 7 días de prueba gratis sin tarjeta. Si decides continuar, pagas con tarjeta, en mensual o anual. Sin permanencia — cancela cuando quieras."
+          "a": "Empiezas con 7 días de prueba. Stripe pide la tarjeta ahora y solo cobra después del trial. Sin permanencia — cancela cuando quieras."
         },
         {
           "q": "¿Y el reembolso del plan anual?",

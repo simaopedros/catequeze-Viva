@@ -87,11 +87,6 @@ async function orchestrateInApp(input: ProductEventInput, email: string) {
       idempotencyKey: `lifecycle.welcome:${input.userId}`,
       context: input.context,
     });
-    await emitProductEvent({
-      ...input,
-      name: PRODUCT_EVENT.TRIAL_STARTED,
-      email,
-    });
     return;
   }
 

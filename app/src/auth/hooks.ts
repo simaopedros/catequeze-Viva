@@ -3,7 +3,6 @@
  */
 
 import { config } from 'wasp/server';
-import { PRODUCT_TRIAL_PLAN_ID } from '../shared/pricing';
 import { isMetaCapiConfigured, sendMetaEvent } from '../payment/meta/metaCapi';
 import { logger } from '../server/logger';
 import { emitProductEventSafe } from '../server/email/events';
@@ -19,7 +18,7 @@ interface OnAfterSignupArgs {
 /**
  * Runs right after a new user account is created (any auth method).
  *
- * 1. Starts the no-card product trial (Single entitlements for 7 days).
+ * 1. Starts the commercial trial only after Stripe Checkout (no in-app grant).
  * 2. Sends Meta CAPI CompleteRegistration (email + Google OAuth signups).
  * 3. Converts any PendingInvitations addressed to the new user's email into
  *    INVITED memberships. Keeps the PendingInvitation records alive so the
@@ -72,20 +71,8 @@ export const onAfterSignup = async ({
     /* ignore */
   }
 
-  // Product trial: NEVER for family portal invitees (sponsored access).
-  if (!isFamilyPortalSignup) {
-    try {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          subscriptionStatus: 'trialing',
-          subscriptionPlan: PRODUCT_TRIAL_PLAN_ID,
-        },
-      });
-    } catch {
-      // Non-fatal — ensureProductTrial will heal on first workspace/class action.
-    }
-  }
+  // Product trial is granted by Stripe Checkout, never here.
+  // Family portal invitees remain excluded from commercial conversion below.
 
   // Never fire commercial Meta conversion for family portal signups.
   if (!isFamilyPortalSignup) {

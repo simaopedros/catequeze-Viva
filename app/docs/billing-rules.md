@@ -28,13 +28,15 @@ A user's **personal** access is determined solely by `User.subscriptionStatus` a
 | `active` | **Yes** | Full paid access if plan is `single` (legacy aliases `catechist_pro`, `catechist_ai` resolve to `single`) |
 | `cancel_at_period_end` | **Yes** — until `currentPeriodEnd` | Stripe: `cancel_at_period_end = true` on the subscription |
 | `past_due` | **Yes** (grace period) | Stripe: payment failed, retrying. Access preserved during dunning. |
+| `trialing` | **Yes** — until `User.trialEndsAt` | Stripe Checkout trial (`subscription.status = trialing`). Card is collected at checkout; first charge is at trial end. |
 | `deleted` | **No** | Subscription fully canceled/expired |
-| `null` / `undefined` | **No** (free plan) | Never subscribed or product trial expired |
+| `null` / `undefined` | **No** (free plan) | Never subscribed or trial expired |
 
-Product trial is **7 days**, no card required (`SUBSCRIPTION_TRIAL_DAYS`).
+Product trial is **7 days** via Stripe Checkout (`SUBSCRIPTION_TRIAL_DAYS`), with card required. Signup no longer grants access. Grandfather: in-app `trialing` without `paymentProcessorUserId` still uses `createdAt + 7 days`.
 
 ### 2.2. Personal plan resolution
 
+- If `subscriptionStatus` is `trialing` and the trial window is open (`trialEndsAt` or grandfather `createdAt + 7`), the user has **Plano Catequista**.
 - If `subscriptionStatus` is active-like (`active`, `cancel_at_period_end`, `past_due`) AND `subscriptionPlan` is a personal plan (`single` or legacy `catechist_pro` / `catechist_ai`), the user has **Plano Catequista**.
 - In all other cases, the user has `catechist_free`.
 - Institutional plan values (`unlimited`, legacy `parish_*`, `diocese`) on `User.subscription*` fields are **never** treated as personal plans. Institutional access is resolved through `TenantBilling`.
@@ -42,11 +44,13 @@ Product trial is **7 days**, no card required (`SUBSCRIPTION_TRIAL_DAYS`).
 ### 2.3. Personal transitions
 
 ```
-null → trial (no Stripe subscription, 7-day product trial)
-null → active (checkout completed, webhook sets active)
+null → trialing (Stripe Checkout with trial_period_days; webhook sets trialing + trialEndsAt)
+trialing → active (trial ends and Stripe charges; invoice.paid / subscription.updated)
+null → active (checkout without remaining trial days)
 active → cancel_at_period_end (user cancels; Stripe sets cancel_at_period_end)
 cancel_at_period_end → active (user reactivates before period end)
 cancel_at_period_end → deleted (period ends; webhook fires subscription.deleted)
+trialing → deleted (trial canceled / payment method missing at trial end)
 active → past_due (payment fails; Stripe sets past_due)
 past_due → active (payment recovered)
 past_due → deleted (dunning exhausted; Stripe cancels)
@@ -70,7 +74,7 @@ A **parish's** institutional access is determined by `TenantBilling`, resolved i
 | `TenantBilling.status` | Has access? | Notes |
 |------------------------|-------------|-------|
 | `ACTIVE` | **Yes** | Paid license or complimentary (admin) |
-| `TRIAL` | **Yes** — if `trialEndsAt >= now` | **7-day** trial aligned with the product trial |
+| `TRIAL` | **Yes** — if `trialEndsAt >= now` | **7-day** Stripe trial of Plano Paróquia |
 | `TRIAL` | **No** — if `trialEndsAt < now` | Trial expired |
 | `PAST_DUE` | **Yes** (grace period) | Payment failed, retrying |
 | `CANCELED` | **No** | License canceled |
@@ -79,8 +83,9 @@ A **parish's** institutional access is determined by `TenantBilling`, resolved i
 ### 3.3. Institutional transitions
 
 ```
-(no TenantBilling) → TRIAL (new parish created without coverage)
-TRIAL → ACTIVE (checkout completed, webhook fires)
+(no TenantBilling / CANCELED) → unpaid parish workspace (created so Checkout can attach)
+CANCELED → TRIAL (Stripe Checkout of unlimited with trial_period_days; webhook cascade)
+TRIAL → ACTIVE (trial ends and Stripe charges)
 (no TenantBilling) → ACTIVE (new parish under diocese umbrella or owner umbrella)
 ACTIVE → PAST_DUE (payment fails)
 ACTIVE → CANCELED (owner cancels subscription; cascadeCancel fires)
@@ -97,11 +102,11 @@ When a new institutional parish (type ≠ `PERSONAL`) is created:
 
 1. If the parish has a `dioceseId` and the diocese has an **ACTIVE** `TenantBilling` with plan `UNLIMITED` or `DIOCESE` → **no `TenantBilling` created** (covered by diocese umbrella).
 2. If the creator (`ownerId`) has an **active** personal subscription with an institutional plan → the parish gets `ACTIVE` `TenantBilling` with the creator's plan.
-3. Otherwise → `TRIAL` for **7 days** with `CATECHIST_FREE`.
+3. Otherwise → `CANCELED` / `CATECHIST_FREE` until Stripe Checkout of Plano Paróquia. The UI may create that unpaid workspace (`startTrial`) and send the user to `/app/billing?plan=unlimited`. Webhook sets `TRIAL` + `trialEndsAt` from `subscription.trial_end`.
 
 Checkout of Plano Paróquia (`unlimited`) requires a non-personal workspace. Personal → parish is a migration that **creates** a `PARISH` workspace; it does not convert the personal space.
 
-The billing page catalog is **scoped to the active workspace**: personal shows only Catequista (`single`); parish/community/diocese shows only Plano Paróquia (`unlimited`). A `?plan=` query for the other scope must not hide the local offer. Parish trial uses Catequista *limits* (3 turmas / 150) but is never presented or checked out as Plano Catequista.
+The billing page catalog is **scoped to the active workspace**: personal shows only Catequista (`single`); parish/community/diocese shows only Plano Paróquia (`unlimited`). A `?plan=` query for the other scope must not hide the local offer. Parish trial is the **Plano Paróquia** Stripe trial, not Catequista limits.
 
 ---
 

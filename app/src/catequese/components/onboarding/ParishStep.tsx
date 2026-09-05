@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import { Button } from "../../../client/components/ui/button";
 import { Input } from "../../../client/components/ui/input";
 import { Label } from "../../../client/components/ui/label";
@@ -48,6 +49,7 @@ export function ParishStep({
 }: ParishStepProps) {
   const { t } = useTranslation("onboarding");
   const { t: tc } = useTranslation("common");
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchCity, setSearchCity] = useState("");
   const [searchState, setSearchState] = useState(initialState || "");
@@ -161,6 +163,9 @@ export function ParishStep({
       setShowCreate(false);
       setNewName("");
       setTrialOffer(null);
+      if (startTrial) {
+        navigate("/app/billing?plan=unlimited");
+      }
     }
   };
 

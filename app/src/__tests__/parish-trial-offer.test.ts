@@ -111,15 +111,29 @@ describe('assertCanCreateParish — parish trial offer', () => {
     ).resolves.toBeUndefined();
   });
 
-  it('allows creation for users still inside product trial window', async () => {
+  it('does not grant in-app trial to new users still inside the signup window', async () => {
     const ctx = makeContext({
       id: 'user-1',
       subscriptionStatus: null,
       subscriptionPlan: 'catechist_free',
-      createdAt: new Date(), // within 7-day window → ensureProductTrial heals
+      createdAt: new Date(),
+    });
+
+    await expect(assertCanCreateParish(ctx, {})).rejects.toMatchObject({
+      statusCode: 403,
+      message: expect.stringContaining(PARISH_TRIAL_AVAILABLE_PREFIX),
+    });
+    expect(ctx.entities.User.update).not.toHaveBeenCalled();
+  });
+
+  it('allows creation for grandfather in-app trial users', async () => {
+    const ctx = makeContext({
+      id: 'user-1',
+      subscriptionStatus: 'trialing',
+      subscriptionPlan: 'single',
+      createdAt: new Date(),
     });
 
     await expect(assertCanCreateParish(ctx, {})).resolves.toBeUndefined();
-    expect(ctx.entities.User.update).toHaveBeenCalled();
   });
 });

@@ -88,14 +88,22 @@ import type { PlanId } from './planCatalog';
 
 const ACTIVE_LIKE_STATUSES = new Set(['active', 'cancel_at_period_end', 'past_due']);
 
-/** Default plan granted during the no-card product trial. */
+/** Default plan during personal Stripe trial (and grandfather in-app trial). */
 export const PRODUCT_TRIAL_PLAN_ID: PlanId = 'single';
 
 export type UserSubscriptionFields = {
   subscriptionStatus?: string | null;
   subscriptionPlan?: string | null;
   createdAt?: Date | string | null;
+  trialEndsAt?: Date | string | null;
+  paymentProcessorUserId?: string | null;
 };
+
+function coerceDate(value: Date | string | null | undefined): Date | null {
+  if (!value) return null;
+  const parsed = typeof value === 'string' ? new Date(value) : value;
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
 
 export function isSubscriptionActiveLike(status: string | null | undefined): boolean {
   if (!status) return false;
@@ -120,9 +128,7 @@ export function isProductTrialWindowOpen(
 export function getPersonalPlanId(
   user: UserSubscriptionFields | null | undefined,
 ): string {
-  const status = (user?.subscriptionStatus || '').toLowerCase();
-
-  if (isProductTrialStatus(status) && isProductTrialWindowOpen(user?.createdAt)) {
+  if (isOnProductTrial(user)) {
     const trialPlan = (user?.subscriptionPlan || PRODUCT_TRIAL_PLAN_ID).toLowerCase();
     const resolvedTrial = resolvePlanId(trialPlan);
     if (
@@ -157,18 +163,50 @@ export function isOnProductTrial(
   user: UserSubscriptionFields | null | undefined,
   now: Date = new Date(),
 ): boolean {
+  if (!isProductTrialStatus(user?.subscriptionStatus)) return false;
+
+  const endsAt = getProductTrialEndsAt(user);
+  if (endsAt) return endsAt >= now;
+
+  // Stripe webhook may set trialing before trial_end is stored.
+  if (user?.paymentProcessorUserId) return true;
+
+  return isProductTrialWindowOpen(user?.createdAt, now);
+}
+
+/**
+ * Live Stripe subscription the customer can manage in the portal.
+ * Includes Checkout trials. An abandoned Checkout customer (no subscription
+ * status) must not look like a started plan.
+ */
+export function hasStripeManagedSubscription(
+  user: UserSubscriptionFields | null | undefined,
+): boolean {
+  if (!user?.paymentProcessorUserId) return false;
   return (
-    isProductTrialStatus(user?.subscriptionStatus) &&
-    isProductTrialWindowOpen(user?.createdAt, now)
+    isSubscriptionActiveLike(user.subscriptionStatus) ||
+    isProductTrialStatus(user.subscriptionStatus)
   );
 }
 
 export function getProductTrialEndsAt(
-  createdAt: Date | string | null | undefined,
+  user: UserSubscriptionFields | Date | string | null | undefined,
 ): Date | null {
-  if (!createdAt) return null;
-  const start = typeof createdAt === 'string' ? new Date(createdAt) : createdAt;
-  if (Number.isNaN(start.getTime())) return null;
+  if (!user) return null;
+
+  if (user instanceof Date || typeof user === 'string') {
+    const start = coerceDate(user);
+    if (!start) return null;
+    return new Date(start.getTime() + SUBSCRIPTION_TRIAL_DAYS * 24 * 60 * 60 * 1000);
+  }
+
+  const stripeEnd = coerceDate(user.trialEndsAt);
+  if (stripeEnd) return stripeEnd;
+
+  if (user.paymentProcessorUserId) return null;
+
+  const start = coerceDate(user.createdAt);
+  if (!start) return null;
   return new Date(start.getTime() + SUBSCRIPTION_TRIAL_DAYS * 24 * 60 * 60 * 1000);
 }
 
@@ -177,8 +215,10 @@ export function getProductTrialDaysLeft(
   now: Date = new Date(),
 ): number | null {
   if (!isOnProductTrial(user, now)) return null;
-  const endsAt = getProductTrialEndsAt(user?.createdAt);
-  if (!endsAt) return null;
+  const endsAt = getProductTrialEndsAt(user);
+  if (!endsAt) {
+    return user?.paymentProcessorUserId ? SUBSCRIPTION_TRIAL_DAYS : null;
+  }
   return Math.max(0, Math.ceil((endsAt.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)));
 }
 

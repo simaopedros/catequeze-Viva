@@ -12,7 +12,7 @@ export type LandingCampaignConfig = {
   heroVisual: LandingHeroVisual;
   demonstration: "integrated" | "dashboard" | "ai-planner" | "attendance-sheet";
   objections: readonly string[];
-  cta: { destination: "/signup"; commitment: "7-days-no-card" };
+  cta: { destination: "/signup"; commitment: "7-days-card-now" };
 };
 
 export const landingCampaigns = {
@@ -24,7 +24,7 @@ export const landingCampaigns = {
     heroVisual: "product",
     demonstration: "integrated",
     objections: ["setup-time", "ease-of-use", "data-safety"],
-    cta: { destination: "/signup", commitment: "7-days-no-card" },
+    cta: { destination: "/signup", commitment: "7-days-card-now" },
   },
   management: {
     namespace: "landingSistema",
@@ -34,7 +34,7 @@ export const landingCampaigns = {
     heroVisual: "management",
     demonstration: "dashboard",
     objections: ["team-adoption", "visibility", "migration"],
-    cta: { destination: "/signup", commitment: "7-days-no-card" },
+    cta: { destination: "/signup", commitment: "7-days-card-now" },
   },
   ai: {
     namespace: "landingIa",
@@ -44,7 +44,7 @@ export const landingCampaigns = {
     heroVisual: "ai",
     demonstration: "ai-planner",
     objections: ["human-review", "catholic-references", "time-to-result"],
-    cta: { destination: "/signup", commitment: "7-days-no-card" },
+    cta: { destination: "/signup", commitment: "7-days-card-now" },
   },
   attendance: {
     namespace: "landingPresenca",
@@ -54,6 +54,6 @@ export const landingCampaigns = {
     heroVisual: "attendance",
     demonstration: "attendance-sheet",
     objections: ["offline-use", "history", "justifications"],
-    cta: { destination: "/signup", commitment: "7-days-no-card" },
+    cta: { destination: "/signup", commitment: "7-days-card-now" },
   },
 } as const satisfies Record<string, LandingCampaignConfig>;

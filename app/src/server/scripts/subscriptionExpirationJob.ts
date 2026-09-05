@@ -8,10 +8,11 @@ import { resolveUserLocale } from "../i18n/serverLocale";
 
 /**
  * Daily job:
- * 1. Expire TenantBilling TRIAL past trialEndsAt
- * 2. Expire User product trials past SUBSCRIPTION_TRIAL_DAYS from createdAt
+ * 1. Expire grandfather TenantBilling TRIAL past trialEndsAt (not Stripe-managed)
+ * 2. Expire grandfather User product trials past SUBSCRIPTION_TRIAL_DAYS from createdAt
  * 3. Queue D-3 / D-1 reminders for institutional TenantBilling TRIAL
  *
+ * Stripe-managed trials expire via customer.subscription.updated / deleted.
  * Personal product-trial D-3/D-1 emails live in lifecycleNudgeJob.
  */
 
@@ -45,6 +46,10 @@ export const expireSubscriptionsJob = async (
       where: {
         status: "TRIAL",
         trialEndsAt: { lt: now },
+        OR: [
+          { parishId: null },
+          { parish: { owner: { paymentProcessorUserId: null } } },
+        ],
       },
       select: { id: true, plan: true },
     });
