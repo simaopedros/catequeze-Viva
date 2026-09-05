@@ -44,7 +44,7 @@ describe('resolveStripeCheckoutTrialDays', () => {
         },
         now,
       }),
-    ).toBe(5);
+    ).toBe(2);
   });
 
   it('returns 0 when the in-app trial has expired', () => {
@@ -71,7 +71,7 @@ describe('resolveStripeCheckoutTrialDays', () => {
         },
         now,
       }),
-    ).toBe(5);
+    ).toBe(2);
   });
 
   it('returns 0 when the user already used a Stripe trial', () => {

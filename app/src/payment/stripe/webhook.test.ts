@@ -17,6 +17,11 @@ const mocks = vi.hoisted(() => ({
   resolvePlanByStripePriceIdMock: vi.fn(),
 }));
 
+vi.mock('express', () => {
+  const raw = vi.fn();
+  return { default: { raw }, raw };
+});
+
 vi.mock('wasp/server', () => ({
   env: {
     STRIPE_WEBHOOK_SECRET: 'whsec_test',
