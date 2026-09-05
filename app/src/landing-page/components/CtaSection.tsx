@@ -36,12 +36,10 @@ export function CtaSection({
             aria-hidden
           />
           <div className="relative max-w-xl space-y-5">
-            <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+            <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-white sm:text-4xl text-balance">
               {tr("cta_title")}
             </h2>
-            <p className="text-base leading-relaxed text-white/80 sm:text-lg">
-              {tr("cta_subtitle")}
-            </p>
+            <CtaBody tr={tr} />
             <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center">
               <Button
                 size="xl"
@@ -74,5 +72,28 @@ export function CtaSection({
         </div>
       </div>
     </section>
+  );
+}
+
+function CtaBody({
+  tr,
+}: {
+  tr: (key: string, options?: Record<string, unknown>) => any;
+}) {
+  const linesRaw = tr("cta_lines", { returnObjects: true });
+  const lines = Array.isArray(linesRaw)
+    ? (linesRaw as string[]).filter((line) => String(line).trim())
+    : [];
+  const subtitle = String(tr("cta_subtitle") || "").trim();
+
+  if (lines.length === 0 && !subtitle) return null;
+
+  return (
+    <div className="space-y-3 text-base leading-relaxed text-white/80 sm:text-lg">
+      {subtitle ? <p>{subtitle}</p> : null}
+      {lines.map((line) => (
+        <p key={line}>{line}</p>
+      ))}
+    </div>
   );
 }

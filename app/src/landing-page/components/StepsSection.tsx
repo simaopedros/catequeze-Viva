@@ -68,16 +68,28 @@ export function StepsSection({
             <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
               {tr("steps_title")}
             </h2>
-            <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
+            <div
+              className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent"
+              aria-hidden
+            />
             {subtitle ? (
-              <p className="text-muted-foreground leading-relaxed">{subtitle}</p>
+              <p className="text-muted-foreground leading-relaxed">
+                {subtitle}
+              </p>
             ) : null}
           </div>
 
           {!ctaAfterSteps ? ctaButton : null}
         </div>
 
-        <ol className="mt-12 grid gap-8 sm:mt-14 sm:grid-cols-3 sm:gap-10">
+        <ol
+          className={cn(
+            "mt-12 grid gap-8 sm:mt-14 sm:gap-10",
+            list.length >= 4
+              ? "sm:grid-cols-2 lg:grid-cols-4"
+              : "sm:grid-cols-3",
+          )}
+        >
           {list.map((step: any, index: number) => (
             <li key={step.title} className="relative space-y-3">
               {/* Mesmo tratamento da OutcomesSection: as duas seções mostram

@@ -6,7 +6,7 @@ import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import { BrowserFrame } from "./BrowserFrame";
-import { AppProductMock } from "./mockups/AppProductMock";
+import { AppProductMock, PhoneAttendanceMock } from "./mockups/AppProductMock";
 
 /**
  * Editorial hero: brand type, split layout, product in browser frame.
@@ -139,6 +139,8 @@ export function HeroSection({
     </div>
   );
 
+  const badge = String(tr("hero.badge") || "").trim();
+
   const copyBlock = (
     <div
       className={cn(
@@ -148,9 +150,11 @@ export function HeroSection({
           : "text-center space-y-6",
       )}
     >
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-        {tr("hero.badge")}
-      </p>
+      {badge ? (
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+          {badge}
+        </p>
+      ) : null}
 
       <h1
         className={cn(
@@ -163,8 +167,8 @@ export function HeroSection({
         {tr("hero.headline_line1")}
         {hasLine2 ? (
           <>
-            <br className="hidden sm:block" />
-            <span className="text-brand-ink"> {line2}</span>
+            <br />
+            <span className="text-brand-ink">{line2}</span>
           </>
         ) : null}
       </h1>
@@ -177,7 +181,7 @@ export function HeroSection({
       <p
         className={cn(
           "text-[15px] sm:text-lg text-muted-foreground leading-relaxed",
-          isEditorial ? "max-w-[36ch]" : "max-w-xl mx-auto",
+          isEditorial ? "max-w-[42ch]" : "max-w-xl mx-auto",
         )}
       >
         {tr("hero.subheadline")}
@@ -187,10 +191,13 @@ export function HeroSection({
     </div>
   );
 
+  const showPhoneOverlay = isEditorial && visual === "product";
+
   const productBlock = showProductImage ? (
     <div
       className={cn(
         isEditorial ? "relative lg:pl-2" : "mt-10 mx-auto max-w-2xl",
+        showPhoneOverlay && "lg:pb-8 lg:pr-10",
       )}
     >
       {isEditorial && (
@@ -204,11 +211,6 @@ export function HeroSection({
         aspect="natural"
         className={cn(isEditorial && "lg:translate-y-1")}
       >
-        {/*
-          Hero LCP image: modern formats + srcset. Intrinsic size 1896×867.
-          The <img> fallback is the smallest WebP (every supported browser decodes
-          WebP); the 425KB PNG is no longer shipped.
-        */}
         {visual === "product" ? (
           <AppProductMock ns={ns} />
         ) : (
@@ -223,6 +225,11 @@ export function HeroSection({
           />
         )}
       </BrowserFrame>
+      {showPhoneOverlay ? (
+        <div className="pointer-events-none absolute -bottom-4 -right-1 hidden w-[9.75rem] lg:block">
+          <PhoneAttendanceMock />
+        </div>
+      ) : null}
     </div>
   ) : null;
 
@@ -240,7 +247,7 @@ export function HeroSection({
   return (
     <section data-landing-hero className="relative border-b border-border/50">
       <div className="absolute inset-0 bg-[linear-gradient(180deg,hsl(210_45%_97%)_0%,hsl(0_0%_100%)_55%)]" />
-      <div className="relative mx-auto max-w-6xl px-4 py-14 sm:py-16 lg:py-20">
+      <div className="relative mx-auto max-w-6xl overflow-x-clip px-4 py-14 sm:py-16 lg:overflow-visible lg:py-20">
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-14 xl:gap-16">
           {copyBlock}
           {productBlock}

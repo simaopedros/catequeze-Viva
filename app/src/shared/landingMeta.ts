@@ -22,10 +22,9 @@ export const SITE_ORIGIN =
 
 export const LANDING_ROUTE_META: Record<string, LandingRouteMeta> = {
   "/": {
-    title:
-      "Catequese Viva — turma, chamada e encontro no mesmo lugar",
+    title: "Você semeia a fé. A gente organiza a turma. | Catequese Viva",
     description:
-      "Organize a turma, faça a chamada no celular e prepare o encontro. 7 dias grátis, sem cartão. Plano Catequista R$ 9,90/mês.",
+      "Mais presença no encontro, menos tempo organizando. Prepare encontros, acompanhe catequizandos e registre presenças. 7 dias grátis, sem cartão.",
     canonicalPath: "/",
     campaign: "main",
   },
@@ -115,7 +114,10 @@ export function injectLandingMetaIntoHtml(
   if (/<title>[\s\S]*?<\/title>/i.test(out)) {
     out = out.replace(/<title>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
   } else {
-    out = out.replace(/<head([^>]*)>/i, `<head$1>\n    <title>${title}</title>`);
+    out = out.replace(
+      /<head([^>]*)>/i,
+      `<head$1>\n    <title>${title}</title>`,
+    );
   }
 
   out = upsertMetaName(out, "description", description);

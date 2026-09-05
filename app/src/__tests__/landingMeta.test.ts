@@ -10,6 +10,14 @@ import {
 } from "../shared/landingMeta";
 
 describe("landingMeta", () => {
+  it("positions the home as presence, not a management system", () => {
+    const home = LANDING_ROUTE_META["/"];
+    expect(home.title).toMatch(/semeia a fé/i);
+    expect(home.title).toMatch(/organiza a turma/i);
+    expect(home.description.toLowerCase()).not.toMatch(/sistema de gestão/);
+    expect(home.description.toLowerCase()).toMatch(/presença|encontros/);
+  });
+
   it("registers four marketing routes", () => {
     expect(Object.keys(LANDING_ROUTE_META).sort()).toEqual(
       ["/", "/ia", "/presenca", "/sistema"].sort(),
