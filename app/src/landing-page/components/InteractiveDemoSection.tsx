@@ -28,13 +28,12 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
   const topics = Array.isArray(topicsRaw) ? (topicsRaw as DemoTopic[]) : [];
 
   const [selectedId, setSelectedId] = useState<string>("");
-  const [status, setStatus] = useState<"idle" | "generating" | "done">("done");
+  const [status, setStatus] = useState<"idle" | "generating" | "done">("idle");
   const [visibleSteps, setVisibleSteps] = useState(0);
 
   useEffect(() => {
     if (topics.length > 0 && !selectedId) {
       setSelectedId(topics[0].id);
-      setVisibleSteps(topics[0].steps.length);
     }
   }, [topics, selectedId]);
 
@@ -114,8 +113,8 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                     type="button"
                     onClick={() => {
                       setSelectedId(topic.id);
-                      setStatus("done");
-                      setVisibleSteps(topic.steps.length);
+                      setStatus("idle");
+                      setVisibleSteps(0);
                     }}
                     className={cn(
                       "rounded-md border px-3 py-1.5 text-sm font-medium transition-colors",
@@ -199,54 +198,47 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
             </div>
 
             <div className="min-h-[220px] rounded-[10px] border border-border/70 border-l-[3px] border-l-brand-gold bg-white p-4 sm:p-5">
-              {status === "idle" && (
-                <p className="text-sm text-muted-foreground text-center py-10">
-                  {tr("demo.empty")}
-                </p>
-              )}
-              {(status === "generating" || status === "done") && (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
-                      {tr("demo.result_title")}
-                    </p>
-                    {resultBadge ? (
-                      <span className="rounded-sm bg-brand-ink/8 px-2 py-0.5 text-[11px] font-medium text-brand-ink">
-                        {resultBadge}
-                      </span>
-                    ) : null}
-                  </div>
-                  <ol className="space-y-2">
-                    {selected.steps
-                      .slice(
-                        0,
-                        status === "done" && visibleSteps === 0
-                          ? selected.steps.length
-                          : visibleSteps,
-                      )
-                      .map((step, index) => (
-                        <li
-                          key={`${selected.id}-${index}`}
-                          className="flex gap-3 text-sm animate-in fade-in slide-in-from-bottom-1 duration-300"
-                        >
-                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-brand-ink/10 text-[11px] font-semibold text-brand-ink">
-                            {index + 1}
-                          </span>
-                          <span className="leading-snug text-brand-ink">
-                            {step}
-                          </span>
-                        </li>
-                      ))}
-                  </ol>
-                  {status === "generating" &&
-                    visibleSteps < selected.steps.length && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                        {tr("demo.generating")}
-                      </div>
-                    )}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="font-brand-display text-sm font-semibold tracking-tight text-brand-ink">
+                    {tr("demo.result_title")}
+                  </p>
+                  {resultBadge ? (
+                    <span className="rounded-sm bg-brand-ink/8 px-2 py-0.5 text-[11px] font-medium text-brand-ink">
+                      {resultBadge}
+                    </span>
+                  ) : null}
                 </div>
-              )}
+                <ol className="space-y-2">
+                  {selected.steps
+                    .slice(
+                      0,
+                      status === "generating"
+                        ? visibleSteps
+                        : selected.steps.length,
+                    )
+                    .map((step, index) => (
+                      <li
+                        key={`${selected.id}-${index}`}
+                        className="flex gap-3 text-sm animate-in fade-in slide-in-from-bottom-1 duration-300"
+                      >
+                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-brand-ink/10 text-[11px] font-semibold text-brand-ink">
+                          {index + 1}
+                        </span>
+                        <span className="leading-snug text-brand-ink">
+                          {step}
+                        </span>
+                      </li>
+                    ))}
+                </ol>
+                {status === "generating" &&
+                  visibleSteps < selected.steps.length && (
+                    <div className="flex items-center gap-2 pt-1 text-xs text-muted-foreground">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      {tr("demo.generating")}
+                    </div>
+                  )}
+              </div>
             </div>
 
             {status === "done" && doneNote ? (
