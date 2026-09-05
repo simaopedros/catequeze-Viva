@@ -3310,7 +3310,7 @@ export const landing_pt_BR = {
         }
       ],
       "click_trigger": "Funciona no celular · Feito para a rotina da catequese",
-      "image_alt": "Catequese Viva no celular — chamada e turma organizadas"
+      "image_alt": "Painel da Catequese Viva com próximas ações, frequência, turmas e pendências sacramentais"
     },
     "pain_title": "A missão já pede muito de você. A papelada não precisa pedir mais.",
     "pain_subtitle": "A Catequese Viva reúne preparação, turma, presença e famílias — para a burocracia não roubar o tempo da evangelização.",
@@ -4240,7 +4240,8 @@ export const landingSistema_pt_BR = {
       "visual_title": "Visão da coordenação",
       "visual_item_1": "Turmas e equipes em um painel",
       "visual_item_2": "Indicadores de presença",
-      "visual_item_3": "Próximas ações pastorais"
+      "visual_item_3": "Próximas ações pastorais",
+      "image_alt": "Painel de gestão da Catequese Viva com turmas, presença e próximas ações pastorais"
     },
     "features_title": "Tudo para gerir sua catequese",
     "features_order": [

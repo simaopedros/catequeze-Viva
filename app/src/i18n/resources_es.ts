@@ -3310,7 +3310,7 @@ export const landing_es = {
         }
       ],
       "click_trigger": "Funciona en el celular · Hecho para la rutina de catequesis",
-      "image_alt": "Catequese Viva en el celular — asistencia y grupo organizados"
+      "image_alt": "Panel de Catequese Viva con próximas acciones, asistencia, grupos y pendientes sacramentales"
     },
     "pain_title": "La misión ya te pide mucho. El papeleo no tiene que pedir más.",
     "pain_subtitle": "Catequese Viva reúne preparación, grupo, asistencia y familias — para que la burocracia no robe tiempo a la evangelización.",
@@ -4240,7 +4240,8 @@ export const landingSistema_es = {
       "visual_title": "Visión de coordinación",
       "visual_item_1": "Grupos y equipos en un panel",
       "visual_item_2": "Indicadores de asistencia",
-      "visual_item_3": "Próximas acciones pastorales"
+      "visual_item_3": "Próximas acciones pastorales",
+      "image_alt": "Panel de gestión de Catequese Viva con grupos, asistencia y próximas acciones pastorales"
     },
     "features_title": "Todo para gestionar su catequesis",
     "features_order": [

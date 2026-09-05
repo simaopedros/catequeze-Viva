@@ -3310,7 +3310,7 @@ export const landing_en = {
         }
       ],
       "click_trigger": "Works on mobile · Built for catechesis routines",
-      "image_alt": "Catequese Viva on mobile — attendance and class organized"
+      "image_alt": "Catequese Viva dashboard with next actions, attendance, classes, and sacramental follow-ups"
     },
     "pain_title": "The mission already asks a lot of you. Paperwork shouldn't ask for more.",
     "pain_subtitle": "Catequese Viva gathers preparation, your class, attendance, and families — so bureaucracy stops stealing time from evangelization.",
@@ -4240,7 +4240,8 @@ export const landingSistema_en = {
       "visual_title": "Coordination overview",
       "visual_item_1": "Classes and teams in one dashboard",
       "visual_item_2": "Attendance indicators",
-      "visual_item_3": "Next pastoral actions"
+      "visual_item_3": "Next pastoral actions",
+      "image_alt": "Catequese Viva management dashboard with classes, attendance, and next pastoral actions"
     },
     "features_title": "Everything to manage your catechesis",
     "features_order": [
