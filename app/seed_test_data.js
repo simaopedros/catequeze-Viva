@@ -350,6 +350,15 @@ async function seed() {
   for (const u of users) {
     await createUser(u.id, u.email, u.firstName, u.lastName, u.isAdmin);
   }
+  // Staff fixtures need Plano Catequista; signup no longer grants an in-app trial.
+  const familyEmails = ['responsavel@catequese.com', 'catequizando@catequese.com'];
+  await p.user.updateMany({
+    where: { email: { notIn: familyEmails } },
+    data: {
+      subscriptionStatus: 'active',
+      subscriptionPlan: 'single',
+    },
+  });
   console.log(`✅ ${users.length} Utilizadores criados com senha padrão (Teste@123)`);
 
   // ═══ 8. Create Memberships ═══

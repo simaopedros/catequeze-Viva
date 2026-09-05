@@ -159,6 +159,14 @@ describe('Personal Workspace — Real Operations: Classes', () => {
   beforeAll(async () => {
     const userId = USERS.viewer.id;
     personalWorkspaceId = await ensurePersonalWorkspace(userId);
+    // Personal class creation requires Plano Catequista (signup no longer grants trial).
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        subscriptionStatus: 'active',
+        subscriptionPlan: 'single',
+      },
+    });
     // Clean up from previous test runs
     await cleanupTestClasses(personalWorkspaceId);
   });
