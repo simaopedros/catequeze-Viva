@@ -29,7 +29,10 @@ export function PublicFooter({
             <p className="max-w-xs text-sm leading-relaxed text-[#A8B8C9]">
               {t("tagline")}
             </p>
-            <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent/80" aria-hidden />
+            <div
+              className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent/80"
+              aria-hidden
+            />
           </div>
 
           <div className="md:col-span-3">
@@ -38,6 +41,11 @@ export function PublicFooter({
             </p>
             <ul className="mt-4 space-y-2.5 text-sm text-[#C5D0DC]">
               <li>
+                <a href="/#como" className="transition-colors hover:text-white">
+                  {t("how_it_works")}
+                </a>
+              </li>
+              <li>
                 <a
                   href="/#recursos"
                   className="transition-colors hover:text-white"
@@ -45,43 +53,30 @@ export function PublicFooter({
                   {t("resources")}
                 </a>
               </li>
-              <li>
-                <a href="/#como" className="transition-colors hover:text-white">
-                  {t("how_it_works")}
-                </a>
-              </li>
               {!hidePricing && (
                 <li>
-                  <Link
-                    to="/pricing"
+                  <a
+                    href="/#planos"
                     className="transition-colors hover:text-white"
                   >
                     {t("pricing")}
-                  </Link>
+                  </a>
                 </li>
               )}
               <li>
-                <Link
-                  to="/contact"
+                <a
+                  href="/#duvidas"
                   className="transition-colors hover:text-white"
                 >
-                  {t("contact")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/about"
-                  className="transition-colors hover:text-white"
-                >
-                  {t("about")}
-                </Link>
+                  {t("faq")}
+                </a>
               </li>
             </ul>
           </div>
 
           <div className="md:col-span-4 md:text-right">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-gold/90">
-              {t("footer_start")}
+              {t("footer_talk")}
             </p>
             <p className="mt-4 text-sm leading-relaxed text-[#A8B8C9] md:ml-auto md:max-w-[16rem]">
               {t("footer_start_desc")}
@@ -138,6 +133,18 @@ export function PublicFooter({
           </div>
 
           <div className="flex flex-wrap gap-x-5 gap-y-2">
+            <Link
+              to="/contact"
+              className="transition-colors hover:text-[#E8EEF5]"
+            >
+              {t("contact")}
+            </Link>
+            <Link
+              to="/about"
+              className="transition-colors hover:text-[#E8EEF5]"
+            >
+              {t("about")}
+            </Link>
             <Link
               to="/privacy"
               className="transition-colors hover:text-[#E8EEF5]"

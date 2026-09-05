@@ -8,29 +8,13 @@ const loadProblem = () =>
   import("./components/ProblemSection").then((m) => ({
     default: m.ProblemSection,
   }));
-const loadTransform = () =>
-  import("./components/TransformSection").then((m) => ({
-    default: m.TransformSection,
+const loadHow = () =>
+  import("./components/HowItWorksSection").then((m) => ({
+    default: m.HowItWorksSection,
   }));
 const loadDemo = () =>
   import("./components/InteractiveDemoSection").then((m) => ({
     default: m.InteractiveDemoSection,
-  }));
-const loadSteps = () =>
-  import("./components/StepsSection").then((m) => ({
-    default: function Steps() {
-      return <m.StepsSection responsiveCtas ctaAfterSteps />;
-    },
-  }));
-const loadPresence = () =>
-  import("./components/PresenceSection").then((m) => ({
-    default: m.PresenceSection,
-  }));
-const loadStartSmall = () =>
-  import("./components/StartSmallSection").then((m) => ({
-    default: function StartSmall() {
-      return <m.StartSmallSection responsiveCtas />;
-    },
   }));
 const GrowthPricingSection = lazy(() =>
   import("./components/GrowthPricingSection").then((m) => ({
@@ -45,19 +29,16 @@ const loadCta = () =>
   }));
 
 /**
- * Main landing: presence story → trial.
- * Problem, transformation, AI, workflow, growth ladder — not a feature catalog.
+ * Home: editorial SaaS story, not a feature catalog.
+ * Promise → pain → how it works → IA demo → pricing → FAQ → CTA.
  */
 export default function LandingPage() {
   return (
     <LandingShell ns="landing">
-      <HeroSection responsiveCtas variant="editorial" />
+      <HeroSection responsiveCtas variant="centered" />
       <LazySection loader={loadProblem} />
-      <LazySection loader={loadTransform} />
+      <LazySection loader={loadHow} />
       <LazySection loader={loadDemo} />
-      <LazySection loader={loadSteps} />
-      <LazySection loader={loadPresence} />
-      <LazySection loader={loadStartSmall} />
       <LazySection>
         <GrowthPricingSection ns="landing" />
       </LazySection>

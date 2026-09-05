@@ -1,16 +1,22 @@
 import { Link, useSearchParams } from "react-router";
-import { ArrowRight, CheckCircle2, Sparkles, Users, Wifi } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  CheckCircle2,
+  Sparkles,
+  Users,
+  Wifi,
+} from "lucide-react";
 import type { LandingHeroVisual } from "../landingCampaigns";
 import { useLandingText } from "../hooks/useLandingText";
 import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import { BrowserFrame } from "./BrowserFrame";
-import { AppProductMock, PhoneAttendanceMock } from "./mockups/AppProductMock";
+import { AppProductMock } from "./mockups/AppProductMock";
 
 /**
- * Editorial hero: brand type, split layout, product in browser frame.
- * Single CTA → trial. No prices / payment language.
+ * Centered editorial hero: promise, one primary CTA, product below.
  */
 export function HeroSection({
   ns = "landing",
@@ -42,13 +48,17 @@ export function HeroSection({
   const signupHref = `/signup${
     signupParams.size ? `?${signupParams.toString()}` : ""
   }`;
-  const isEditorial = variant === "editorial";
+  const isCentered = variant === "centered";
   const ctaClassName = responsiveCtas
     ? "h-auto min-h-12 w-full px-6 text-center leading-snug whitespace-normal sm:w-auto sm:min-w-[220px] sm:px-8"
     : "sm:min-w-[220px]";
 
   const line2 = tr("hero.headline_line2");
   const hasLine2 = typeof line2 === "string" && line2.trim().length > 0;
+  const secondary = String(tr("hero.cta_secondary") || "").trim();
+  const secondaryHref = String(
+    tr("hero.cta_secondary_href") || "/#como",
+  ).trim();
 
   const trustRaw = tr("hero.trust_signals");
   const trustParts =
@@ -71,38 +81,56 @@ export function HeroSection({
   const ctaBlock = (
     <div
       className={cn(
-        "flex flex-col gap-4",
-        isEditorial ? "items-stretch sm:items-start" : "items-center",
+        "flex flex-col gap-3",
+        isCentered ? "items-center" : "items-stretch sm:items-start",
         responsiveCtas && "w-full sm:w-auto",
       )}
     >
-      <Button
-        size="xl"
-        variant="default"
-        asChild
-        className={cn("rounded-sm shadow-none", ctaClassName)}
+      <div
+        className={cn(
+          "flex flex-col gap-2.5 sm:flex-row sm:items-center",
+          isCentered && "justify-center",
+          responsiveCtas && "w-full sm:w-auto",
+        )}
       >
-        <Link
-          to={signupHref}
-          onClick={() =>
-            trackMarketingEvent("primary_cta_clicked", {
-              landing: ns,
-              placement: "hero",
-              destination: signupHref,
-              campaign: campaign || null,
-            })
-          }
+        <Button
+          size="xl"
+          variant="default"
+          asChild
+          className={cn("rounded-md shadow-none", ctaClassName)}
         >
-          {tr("hero.cta_primary")}
-          <ArrowRight className="h-4 w-4 shrink-0" />
-        </Link>
-      </Button>
+          <Link
+            to={signupHref}
+            onClick={() =>
+              trackMarketingEvent("primary_cta_clicked", {
+                landing: ns,
+                placement: "hero",
+                destination: signupHref,
+                campaign: campaign || null,
+              })
+            }
+          >
+            {tr("hero.cta_primary")}
+            <ArrowRight className="h-4 w-4 shrink-0" />
+          </Link>
+        </Button>
+        {isCentered && secondary ? (
+          <Button
+            size="xl"
+            variant="outline"
+            asChild
+            className={cn("rounded-md shadow-none", ctaClassName)}
+          >
+            <a href={secondaryHref}>{secondary}</a>
+          </Button>
+        ) : null}
+      </div>
 
       {hasCtaHelper ? (
         <p
           className={cn(
             "text-sm text-muted-foreground leading-relaxed",
-            isEditorial ? "max-w-sm" : "max-w-sm text-center",
+            isCentered ? "max-w-sm text-center" : "max-w-sm",
           )}
         >
           {ctaHelper}
@@ -112,16 +140,13 @@ export function HeroSection({
       {trustParts.length > 0 ? (
         <ul
           className={cn(
-            "flex flex-wrap gap-x-4 gap-y-1.5 text-xs font-medium text-brand-ink/85",
-            !isEditorial && "justify-center",
+            "flex flex-wrap gap-x-4 gap-y-1.5 text-[11px] font-medium text-muted-foreground",
+            isCentered && "justify-center",
           )}
         >
           {trustParts.map((part) => (
             <li key={part} className="inline-flex items-center gap-1.5">
-              <span
-                className="h-1 w-1 rounded-full bg-brand-ink/70"
-                aria-hidden
-              />
+              <Check className="h-3 w-3 text-emerald-600" aria-hidden />
               {part}
             </li>
           ))}
@@ -130,7 +155,7 @@ export function HeroSection({
         <p
           className={cn(
             "text-sm text-muted-foreground leading-relaxed",
-            isEditorial ? "max-w-sm" : "max-w-sm text-center",
+            isCentered ? "max-w-sm text-center" : "max-w-sm",
           )}
         >
           {tr("hero.click_trigger")}
@@ -145,71 +170,57 @@ export function HeroSection({
     <div
       className={cn(
         "flex flex-col",
-        isEditorial
-          ? "text-left justify-center space-y-5 lg:space-y-6 lg:pr-4"
-          : "text-center space-y-6",
+        isCentered
+          ? "mx-auto max-w-[790px] space-y-5 text-center"
+          : "justify-center space-y-5 text-left lg:space-y-6 lg:pr-4",
       )}
     >
       {badge ? (
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+        <p className="text-[10px] font-bold uppercase tracking-[0.19em] text-brand-gold-muted">
           {badge}
         </p>
       ) : null}
 
       <h1
         className={cn(
-          "font-brand-display font-semibold tracking-tight text-brand-ink text-balance",
-          isEditorial
-            ? "text-[2.05rem] sm:text-[2.75rem] lg:text-[3.15rem] leading-[1.14]"
-            : "text-3xl sm:text-5xl leading-[1.12]",
+          "font-brand-display font-medium tracking-tight text-brand-ink text-balance",
+          isCentered
+            ? "text-[2.75rem] leading-[0.98] sm:text-6xl lg:text-[4.75rem]"
+            : "text-[2.05rem] leading-[1.14] sm:text-[2.75rem] lg:text-[3.15rem] font-semibold",
         )}
       >
         {tr("hero.headline_line1")}
         {hasLine2 ? (
           <>
             <br />
-            <span className="text-brand-ink">{line2}</span>
+            {line2}
           </>
         ) : null}
       </h1>
 
-      <div
-        className={cn("h-px w-14 bg-brand-gold", !isEditorial && "mx-auto")}
-        aria-hidden
-      />
-
       <p
         className={cn(
-          "text-[15px] sm:text-lg text-muted-foreground leading-relaxed",
-          isEditorial ? "max-w-[42ch]" : "max-w-xl mx-auto",
+          "text-[15px] leading-relaxed text-muted-foreground sm:text-lg",
+          isCentered ? "mx-auto max-w-[42rem]" : "max-w-[42ch]",
         )}
       >
         {tr("hero.subheadline")}
       </p>
 
-      <div className={cn(isEditorial ? "pt-1" : "pt-0")}>{ctaBlock}</div>
+      <div className="pt-1">{ctaBlock}</div>
     </div>
   );
-
-  const showPhoneOverlay = isEditorial && visual === "product";
 
   const productBlock = showProductImage ? (
     <div
       className={cn(
-        isEditorial ? "relative lg:pl-2" : "mt-10 mx-auto max-w-2xl",
-        showPhoneOverlay && "lg:pb-8 lg:pr-10",
+        isCentered ? "mx-auto mt-12 w-full max-w-[900px]" : "relative",
       )}
     >
-      {isEditorial && (
-        <div
-          className="pointer-events-none absolute -inset-3 -z-10 rounded-sm bg-brand-ink/[0.03] sm:-inset-4"
-          aria-hidden
-        />
-      )}
       <BrowserFrame
         url="catechis.app"
         aspect="natural"
-        className={cn(isEditorial && "lg:translate-y-1")}
+        className="rounded-[14px] shadow-[0_25px_70px_rgba(9,32,53,0.12)]"
       >
         {visual === "product" ? (
           <AppProductMock ns={ns} />
@@ -225,18 +236,13 @@ export function HeroSection({
           />
         )}
       </BrowserFrame>
-      {showPhoneOverlay ? (
-        <div className="pointer-events-none absolute -bottom-4 -right-1 hidden w-[9.75rem] lg:block">
-          <PhoneAttendanceMock />
-        </div>
-      ) : null}
     </div>
   ) : null;
 
-  if (!isEditorial) {
+  if (isCentered) {
     return (
-      <section data-landing-hero className="relative">
-        <div className="max-w-3xl mx-auto px-4 py-16 sm:py-20">
+      <section data-landing-hero className="relative bg-white">
+        <div className="mx-auto max-w-[70rem] px-5 py-14 sm:py-16 lg:py-[4.75rem]">
           {copyBlock}
           {productBlock}
         </div>

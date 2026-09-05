@@ -74,16 +74,14 @@ test.describe("landing funnel — meta and conversion surfaces", () => {
     await expect(pricing).toBeAttached({ timeout: 15000 });
     await pricing.scrollIntoViewIfNeeded();
     await expect(pricing).toBeVisible({ timeout: 10000 });
-    await expect(pricing.locator('a[href="/signup?plan=single"]')).toBeVisible({
+    await expect(pricing.locator('a[href*="plan=single"]')).toBeVisible({
       timeout: 10000,
     });
-    await expect(
-      pricing.locator('a[href="/signup?plan=unlimited"]'),
-    ).toBeVisible();
+    await expect(pricing.locator('a[href*="plan=unlimited"]')).toBeVisible();
     await expect(
       pricing.locator("#planos-diocese a[href*='wa.me']"),
     ).toBeVisible();
-    await expect(pricing.locator('a[href="/pricing"]')).toBeVisible();
+    await expect(pricing.locator('a[href="/pricing"]')).toHaveCount(0);
   });
 
   test("viewport meta never pins maximum-scale=1", async ({ page }) => {

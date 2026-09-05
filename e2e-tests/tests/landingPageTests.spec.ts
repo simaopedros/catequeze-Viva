@@ -22,7 +22,7 @@ test.describe('general landing page tests', () => {
       page.getByRole('heading', { name: /Você semeia a fé/ }),
     ).toBeVisible();
     await expect(
-      page.getByRole('heading', { name: 'Antes de começar' }),
+      page.getByRole('heading', { name: 'Alguma dúvida?' }),
     ).toBeVisible();
   });
 
@@ -35,10 +35,10 @@ test.describe('general landing page tests', () => {
       }
     });
     await expect(
-      page.getByRole('heading', { name: /A organização acontece antes dele/ }),
+      page.getByRole('heading', { name: /Mais coração no encontro/ }),
     ).toBeVisible({ timeout: 15_000 });
     await expect(
-      page.getByRole('heading', { name: /Menos organização\. Mais encontro/ }),
+      page.getByRole('heading', { name: /Da preparação ao acompanhamento/ }),
     ).toBeVisible();
     await expect(
       page.getByRole('heading', { name: /página em branco/ }),

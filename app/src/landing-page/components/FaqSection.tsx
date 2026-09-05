@@ -2,7 +2,6 @@ import { Link } from "react-router";
 import { ArrowRight, Plus } from "lucide-react";
 import { useLandingText } from "../hooks/useLandingText";
 import { Button } from "../../client/components/ui/button";
-import { SalesWhatsAppCta } from "../../client/components/SalesWhatsAppCta";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 
 export function FaqSection({
@@ -20,21 +19,20 @@ export function FaqSection({
   const faqCtaHelper = String(tr("faq_cta_helper") || "").trim();
 
   return (
-    <section className="bg-background">
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+    <section id="duvidas" className="scroll-mt-20 bg-white">
+      <div className="mx-auto max-w-[70rem] px-5 py-16 sm:py-20">
+        <div className="grid gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
           <div className="space-y-3 lg:sticky lg:top-24 lg:self-start">
             {eyebrow ? (
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              <p className="text-[10px] font-bold uppercase tracking-[0.19em] text-brand-gold-muted">
                 {eyebrow}
               </p>
             ) : null}
-            <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
+            <h2 className="font-brand-display text-[2.125rem] font-medium leading-[1.05] tracking-tight text-brand-ink sm:text-5xl text-balance">
               {tr("faq_title")}
             </h2>
-            <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
             {subtitle ? (
-              <p className="text-muted-foreground leading-relaxed max-w-sm">
+              <p className="max-w-sm text-[15px] leading-relaxed text-muted-foreground">
                 {subtitle}
               </p>
             ) : null}
@@ -45,7 +43,7 @@ export function FaqSection({
                   size="lg"
                   variant="default"
                   asChild
-                  className="rounded-sm shadow-none"
+                  className="rounded-md shadow-none"
                 >
                   <Link
                     to="/signup"
@@ -66,11 +64,6 @@ export function FaqSection({
                     {faqCtaHelper}
                   </p>
                 ) : null}
-                <SalesWhatsAppCta
-                  variant="inline"
-                  placement={`${ns}_faq`}
-                  className="mt-4"
-                />
               </div>
             )}
           </div>

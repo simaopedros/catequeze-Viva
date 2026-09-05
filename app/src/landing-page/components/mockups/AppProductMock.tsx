@@ -1,147 +1,77 @@
-import {
-  Calendar,
-  Check,
-  ChevronRight,
-  ClipboardList,
-  LayoutDashboard,
-  MessageSquareText,
-  Users,
-} from "lucide-react";
+import { Check } from "lucide-react";
 import { BrandMark } from "../../../client/components/brand/Brand";
 
 /**
- * Hero product visual: chrome that matches the logged-in app
- * (Painel + próximo encontro, presença, mensagens, calendário).
+ * Compact product preview for the hero — next meeting, not a dashboard clone.
  */
 export function AppProductMock({ ns = "landing" }: { ns?: string }) {
   void ns;
   return (
     <div
-      className="flex min-h-[300px] overflow-hidden bg-surface-subtle text-left"
+      className="flex min-h-[260px] overflow-hidden bg-white text-left sm:min-h-[320px]"
       data-testid="app-product-mock"
     >
-      <aside className="hidden w-[9.5rem] shrink-0 border-r border-border/70 bg-white p-3 sm:block">
-        <div className="mb-4 flex items-center gap-2">
-          <BrandMark className="h-7 w-7" />
-          <div className="min-w-0">
-            <p className="truncate font-brand-display text-xs font-semibold tracking-tight text-brand-ink">
-              Catequese
-            </p>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-brand-gold-muted">
-              Viva
-            </p>
-          </div>
-        </div>
-        <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-          Operação
-        </p>
-        <ul className="space-y-1 text-xs text-brand-ink">
-          <li className="flex items-center gap-1.5 rounded-sm bg-brand-ink/8 px-2 py-1.5 font-semibold">
-            <LayoutDashboard className="h-3 w-3 shrink-0" aria-hidden />
-            Painel
-          </li>
-          <li className="flex items-center gap-1.5 px-2 py-1.5 text-muted-foreground">
-            <Calendar className="h-3 w-3 shrink-0" aria-hidden />
-            Calendário
-          </li>
-          <li className="flex items-center gap-1.5 px-2 py-1.5 text-muted-foreground">
-            <Users className="h-3 w-3 shrink-0" aria-hidden />
-            Presenças
-          </li>
-          <li className="flex items-center gap-1.5 px-2 py-1.5 text-muted-foreground">
-            <MessageSquareText className="h-3 w-3 shrink-0" aria-hidden />
-            Mensagens
-          </li>
-        </ul>
-      </aside>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between border-b border-border/70 bg-white px-3 py-2">
-          <div className="min-w-0">
-            <span className="inline-flex items-center gap-1 rounded-sm bg-sky-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-800">
-              <span
-                className="h-1.5 w-1.5 rounded-full bg-sky-500"
-                aria-hidden
-              />
-              Pessoal
-            </span>
-            <p className="truncate text-xs font-semibold tracking-tight text-brand-ink">
-              Painel da catequese
-            </p>
-          </div>
-          <p className="shrink-0 text-[11px] text-muted-foreground">
-            Plano Catequista
+      <aside className="hidden w-[9.25rem] shrink-0 border-r border-border/70 p-4 sm:block">
+        <div className="mb-5 flex items-center gap-2">
+          <BrandMark className="h-6 w-6" />
+          <p className="font-brand-display text-xs font-semibold tracking-tight text-brand-ink">
+            Catequese VIVA
           </p>
         </div>
-        <div className="grid gap-3 p-3 sm:grid-cols-2 sm:p-4">
-          <div className="rounded-sm border border-brand-gold/35 bg-brand-gold/8 p-3 sm:col-span-2">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+        <ul className="space-y-0.5 text-[11px] text-muted-foreground">
+          <li className="rounded-md bg-brand-gold/15 px-2.5 py-1.5 font-semibold text-brand-ink">
+            Início
+          </li>
+          <li className="px-2.5 py-1.5">Encontros</li>
+          <li className="px-2.5 py-1.5">Turmas</li>
+          <li className="px-2.5 py-1.5">Catequizandos</li>
+          <li className="px-2.5 py-1.5">Calendário</li>
+          <li className="px-2.5 py-1.5">Mensagens</li>
+        </ul>
+      </aside>
+      <div className="min-w-0 flex-1 p-4 sm:p-6">
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <p className="font-brand-display text-lg font-semibold tracking-tight text-brand-ink sm:text-xl">
+            Olá, catequista!
+          </p>
+          <span className="rounded-full bg-emerald-50 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">
+            Plano ativo
+          </span>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-[1.25fr_0.75fr]">
+          <div className="rounded-[10px] border border-border/70 bg-white p-4">
+            <p className="text-[11px] font-semibold text-brand-ink">
               Próximo encontro
             </p>
-            <div className="mt-2 flex items-center gap-2">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-white text-brand-ink">
-                <ClipboardList className="h-4 w-4" aria-hidden />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-semibold text-brand-ink">
-                  O perdão — 1º Crisma
-                </p>
-                <p className="truncate text-[10px] text-muted-foreground">
-                  Domingo 19h · 14 catequizandos
-                </p>
-              </div>
-              <ChevronRight
-                className="h-3.5 w-3.5 shrink-0 text-muted-foreground"
-                aria-hidden
-              />
+            <div className="mt-3 rounded-md bg-muted/50 p-3">
+              <p className="text-xs font-semibold text-brand-ink">
+                Perdão e reconciliação
+              </p>
+              <p className="mt-0.5 text-[10px] text-muted-foreground">
+                Domingo · 09:00 · Turma A
+              </p>
+            </div>
+            <div className="mt-3 rounded-md bg-muted/50 p-3">
+              <p className="text-xs font-semibold text-brand-ink">Preparação</p>
+              <p className="mt-0.5 text-[10px] text-muted-foreground">
+                Roteiro, dinâmica e oração prontos para revisar.
+              </p>
             </div>
           </div>
-
-          <div className="rounded-sm border border-border/70 bg-white p-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              Presenças
-            </p>
-            <p className="mt-1.5 font-brand-display text-lg font-semibold text-brand-ink">
-              12 / 14
-            </p>
-            <p className="text-[10px] text-muted-foreground">
-              Último encontro · 2 faltas
-            </p>
-          </div>
-
-          <div className="rounded-sm border border-border/70 bg-white p-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              Mensagens
-            </p>
-            <p className="mt-1.5 text-xs font-semibold text-brand-ink">
-              Aviso às famílias
-            </p>
-            <p className="truncate text-[10px] text-muted-foreground">
-              Encontro especial no domingo
-            </p>
-          </div>
-
-          <div className="rounded-sm border border-border/70 bg-white p-3 sm:col-span-2">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              Calendário
-            </p>
-            <div className="mt-2 flex gap-2 overflow-hidden">
-              {["Dom 12", "Dom 19", "Dom 26"].map((day, index) => (
-                <div
-                  key={day}
-                  className={`min-w-0 flex-1 rounded-sm border px-2 py-1.5 text-center ${
-                    index === 1
-                      ? "border-brand-ink/20 bg-brand-ink/8"
-                      : "border-border/60 bg-muted/20"
-                  }`}
-                >
-                  <p className="text-[10px] font-semibold text-brand-ink">
-                    {day}
-                  </p>
-                  <p className="truncate text-[10px] text-muted-foreground">
-                    {index === 1 ? "Encontro" : "Turma"}
-                  </p>
-                </div>
-              ))}
+          <div className="hidden gap-3 sm:grid">
+            <div className="rounded-[10px] border border-border/70 bg-white p-4">
+              <p className="text-[11px] font-semibold text-brand-ink">Turmas</p>
+              <p className="mt-2 font-brand-display text-2xl font-semibold text-brand-ink">
+                3
+              </p>
+            </div>
+            <div className="rounded-[10px] border border-border/70 bg-white p-4">
+              <p className="text-[11px] font-semibold text-brand-ink">
+                Catequizandos
+              </p>
+              <p className="mt-2 font-brand-display text-2xl font-semibold text-brand-ink">
+                22
+              </p>
             </div>
           </div>
         </div>
@@ -150,7 +80,7 @@ export function AppProductMock({ ns = "landing" }: { ns?: string }) {
   );
 }
 
-/** Compact phone chrome for the hero overlay — attendance at the meeting. */
+/** Compact phone chrome — kept for campaign overlays if needed. */
 export function PhoneAttendanceMock() {
   return (
     <div
