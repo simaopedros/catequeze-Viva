@@ -1,21 +1,23 @@
 import {
   Calendar,
+  Check,
   ChevronRight,
   ClipboardList,
   LayoutDashboard,
   MessageSquareText,
+  Users,
 } from "lucide-react";
 import { BrandMark } from "../../../client/components/brand/Brand";
 
 /**
  * Hero product visual: chrome that matches the logged-in app
- * (Painel + Calendário + próximas ações), not legacy Turmas/Agenda mock.
+ * (Painel + próximo encontro, presença, mensagens, calendário).
  */
 export function AppProductMock({ ns = "landing" }: { ns?: string }) {
   void ns;
   return (
     <div
-      className="flex min-h-[280px] overflow-hidden bg-surface-subtle text-left"
+      className="flex min-h-[300px] overflow-hidden bg-surface-subtle text-left"
       data-testid="app-product-mock"
     >
       <aside className="hidden w-[9.5rem] shrink-0 border-r border-border/70 bg-white p-3 sm:block">
@@ -43,6 +45,10 @@ export function AppProductMock({ ns = "landing" }: { ns?: string }) {
             Calendário
           </li>
           <li className="flex items-center gap-1.5 px-2 py-1.5 text-muted-foreground">
+            <Users className="h-3 w-3 shrink-0" aria-hidden />
+            Presenças
+          </li>
+          <li className="flex items-center gap-1.5 px-2 py-1.5 text-muted-foreground">
             <MessageSquareText className="h-3 w-3 shrink-0" aria-hidden />
             Mensagens
           </li>
@@ -66,53 +72,120 @@ export function AppProductMock({ ns = "landing" }: { ns?: string }) {
             Plano Catequista
           </p>
         </div>
-        <div className="space-y-3 p-3 sm:p-4">
-          <div>
+        <div className="grid gap-3 p-3 sm:grid-cols-2 sm:p-4">
+          <div className="rounded-sm border border-brand-gold/35 bg-brand-gold/8 p-3 sm:col-span-2">
             <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              Próximas ações
+              Próximo encontro
             </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              O que precisa da sua atenção hoje
+            <div className="mt-2 flex items-center gap-2">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-white text-brand-ink">
+                <ClipboardList className="h-4 w-4" aria-hidden />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-xs font-semibold text-brand-ink">
+                  O perdão — 1º Crisma
+                </p>
+                <p className="truncate text-[10px] text-muted-foreground">
+                  Domingo 19h · 14 catequizandos
+                </p>
+              </div>
+              <ChevronRight
+                className="h-3.5 w-3.5 shrink-0 text-muted-foreground"
+                aria-hidden
+              />
+            </div>
+          </div>
+
+          <div className="rounded-sm border border-border/70 bg-white p-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Presenças
+            </p>
+            <p className="mt-1.5 font-brand-display text-lg font-semibold text-brand-ink">
+              12 / 14
+            </p>
+            <p className="text-[10px] text-muted-foreground">
+              Último encontro · 2 faltas
             </p>
           </div>
-          <div className="space-y-2">
-            {[
-              {
-                title: "Preparar encontro de domingo",
-                meta: "1º Crisma · sábado 19h",
-                icon: ClipboardList,
-                tone: "border-brand-gold/35 bg-brand-gold/8",
-              },
-              {
-                title: "Ver calendário da turma",
-                meta: "3 encontros neste mês",
-                icon: Calendar,
-                tone: "border-border/70 bg-white",
-              },
-            ].map((item) => (
-              <div
-                key={item.title}
-                className={`flex items-center gap-2 rounded-sm border px-2.5 py-2 ${item.tone}`}
-              >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm bg-brand-ink/8 text-brand-ink">
-                  <item.icon className="h-3.5 w-3.5" aria-hidden />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-xs font-semibold text-brand-ink">
-                    {item.title}
+
+          <div className="rounded-sm border border-border/70 bg-white p-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Mensagens
+            </p>
+            <p className="mt-1.5 text-xs font-semibold text-brand-ink">
+              Aviso às famílias
+            </p>
+            <p className="truncate text-[10px] text-muted-foreground">
+              Encontro especial no domingo
+            </p>
+          </div>
+
+          <div className="rounded-sm border border-border/70 bg-white p-3 sm:col-span-2">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Calendário
+            </p>
+            <div className="mt-2 flex gap-2 overflow-hidden">
+              {["Dom 12", "Dom 19", "Dom 26"].map((day, index) => (
+                <div
+                  key={day}
+                  className={`min-w-0 flex-1 rounded-sm border px-2 py-1.5 text-center ${
+                    index === 1
+                      ? "border-brand-ink/20 bg-brand-ink/8"
+                      : "border-border/60 bg-muted/20"
+                  }`}
+                >
+                  <p className="text-[10px] font-semibold text-brand-ink">
+                    {day}
                   </p>
                   <p className="truncate text-[10px] text-muted-foreground">
-                    {item.meta}
+                    {index === 1 ? "Encontro" : "Turma"}
                   </p>
                 </div>
-                <ChevronRight
-                  className="h-3.5 w-3.5 shrink-0 text-muted-foreground"
-                  aria-hidden
-                />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** Compact phone chrome for the hero overlay — attendance at the meeting. */
+export function PhoneAttendanceMock() {
+  return (
+    <div
+      className="overflow-hidden rounded-[1.35rem] border-[6px] border-brand-ink bg-white shadow-elevation-md"
+      data-testid="hero-phone-mock"
+    >
+      <div className="flex items-center justify-between bg-brand-ink px-3 py-2 text-white">
+        <p className="text-[10px] font-semibold tracking-tight">Chamada</p>
+        <p className="text-[10px] text-white/70">1º Crisma</p>
+      </div>
+      <div className="space-y-1.5 p-2.5">
+        {[
+          { name: "Ana Souza", present: true },
+          { name: "Pedro Lima", present: true },
+          { name: "Sofia Reis", present: false },
+          { name: "Lucas Melo", present: true },
+        ].map((row) => (
+          <div
+            key={row.name}
+            className="flex items-center justify-between rounded-sm bg-surface-subtle px-2 py-1.5"
+          >
+            <span className="text-[10px] font-medium text-brand-ink">
+              {row.name}
+            </span>
+            <span
+              className={`flex h-4 w-4 items-center justify-center rounded-full ${
+                row.present ? "bg-emerald-100 text-emerald-700" : "bg-muted"
+              }`}
+            >
+              {row.present ? (
+                <Check className="h-2.5 w-2.5" aria-hidden />
+              ) : null}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );

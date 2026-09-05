@@ -10,24 +10,43 @@ test.describe('general landing page tests', () => {
   });
 
   test('get started link', async ({ page }) => {
-    await page.getByRole('link', { name: 'Criar conta grátis' }).first().click();
+    await page
+      .locator('[data-landing-hero] a[href^="/signup"]')
+      .first()
+      .click();
     await page.waitForURL('**/signup');
   });
 
   test('headings', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: /Organize sua turma/ })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Dúvidas antes de começar' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /Você semeia a fé/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Antes de começar' }),
+    ).toBeVisible();
   });
 
-  test('feature showcases are visible', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: /Prepare encontros com ajuda da IA/ })).toBeVisible();
-    await expect(page.getByRole('heading', { name: /Faça a chamada pelo celular/ })).toBeVisible();
-    await expect(page.getByRole('heading', { name: /Consulte Bíblia e Catecismo/ })).toBeVisible();
-    await expect(page.locator('.aspect-\\[16\\/10\\]').first()).toBeVisible();
+  test('story sections are visible', async ({ page }) => {
+    await page.evaluate(async () => {
+      const step = 400;
+      for (let y = 0; y <= document.body.scrollHeight; y += step) {
+        window.scrollTo(0, y);
+        await new Promise((r) => setTimeout(r, 40));
+      }
+    });
+    await expect(
+      page.getByRole('heading', { name: /A organização acontece antes dele/ }),
+    ).toBeVisible({ timeout: 15_000 });
+    await expect(
+      page.getByRole('heading', { name: /Menos organização\. Mais encontro/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /página em branco/ }),
+    ).toBeVisible();
   });
 
   test('plan anchor navigation', async ({ page }) => {
-    await page.getByRole('link', { name: 'Ver plano Catequista IA' }).click();
+    await page.locator('nav a[href="/#planos"]').first().click();
     await expect(page.locator('#planos')).toBeInViewport();
   });
 });

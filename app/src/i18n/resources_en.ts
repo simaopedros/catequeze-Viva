@@ -3242,11 +3242,11 @@ export const family_en = {
 
 export const landing_en = {
     "hero": {
-      "headline_line1": "Organize your class, take attendance on your phone, and prepare the meeting — without spreadsheets and scattered WhatsApp messages.",
-      "headline_line2": "",
-      "subheadline": "You catechize. We handle the organization.",
-      "badge": "For catechists",
-      "cta_primary": "Start 7 days free — no card",
+      "headline_line1": "You sow the faith.",
+      "headline_line2": "We organize the class.",
+      "subheadline": "Prepare your meetings, follow your catechumens, take attendance, and keep families close — all in one place.",
+      "badge": "",
+      "cta_primary": "Start my catechesis",
       "cta_secondary": "How it works",
       "trust_signals": "7 days free · No card · Works on mobile",
       "cta_secondary_href": "/#como",
@@ -3256,7 +3256,7 @@ export const landing_en = {
         "Editorial assistance for meetings and family messages",
         "Families in your class follow along in the portal"
       ],
-      "cta_helper": "After the trial, Catechist Plan R$ 9.90/month.",
+      "cta_helper": "",
       "audience_label": "What is your situation today?",
       "audiences": [
         {
@@ -3403,32 +3403,36 @@ export const landing_en = {
     ],
     "more_features": "More tools for when your catechesis grows",
     "more_features_sub": "Features that remain useful after the first class.",
-    "steps_title": "Three steps. No fuss.",
+    "steps_title": "From preparation to the meeting.",
     "steps_subtitle": "",
     "steps": [
       {
-        "title": "Set up your class",
-        "desc": "Create your account, import or register catechumens."
+        "title": "Prepare",
+        "desc": "Build your meeting in a few minutes."
       },
       {
-        "title": "Take attendance",
-        "desc": "On your phone, during the meeting."
+        "title": "Organize",
+        "desc": "Keep classes, calendar, and catechumen information in one place."
       },
       {
-        "title": "Prepare the next meeting",
-        "desc": "Theme, outline, and family notices in one place."
+        "title": "Meet",
+        "desc": "Arrive knowing exactly what to do."
+      },
+      {
+        "title": "Follow",
+        "desc": "Take attendance and follow each catechumen's journey."
       }
     ],
-    "steps_cta": "Start 7 days free — no card",
-    "pricing_eyebrow": "Plan",
-    "pricing_title": "Catechist Plan",
-    "pricing_subtitle": "",
+    "steps_cta": "Start my catechesis",
+    "pricing_eyebrow": "Start your way",
+    "pricing_title": "Start your way.",
+    "pricing_subtitle": "You can begin on your own and, as your catechesis grows, bring the organization to the whole parish.",
     "pricing_institutional_link": "Parish or diocese? See institutional plans",
     "plans": {
       "single": {
         "name": "Catechist Plan",
-        "audience": "For you and your class · up to 3 classes",
-        "desc": "Your class, attendance, and meetings cared for in one place.",
+        "audience": "For you",
+        "desc": "Organize your class and your meetings.",
         "price": "R$ 9.90",
         "features": [
           "Up to 3 classes and 150 catechumens",
@@ -3438,8 +3442,8 @@ export const landing_en = {
       },
       "unlimited": {
         "name": "Parish Plan",
-        "audience": "For parish coordination",
-        "desc": "Unlimited classes, catechumens, and team in the parish workspace.",
+        "audience": "For your team",
+        "desc": "Bring catechists, classes, and families into one space.",
         "price": "R$ 99",
         "features": [
           "Unlimited classes and team",
@@ -3450,8 +3454,8 @@ export const landing_en = {
       },
       "diocese": {
         "name": "Diocese Plan",
-        "audience": "For the diocese — assisted sales",
-        "desc": "Umbrella license covering parishes. No public checkout.",
+        "audience": "For the whole diocese",
+        "desc": "Standardize and follow catechesis across many parishes.",
         "price": "Talk to sales",
         "features": [
           "Coverage for diocese parishes",
@@ -3461,7 +3465,7 @@ export const landing_en = {
       }
     },
     "price_free": "From",
-    "price_popular": "For the catechist",
+    "price_popular": "For your team",
     "price_monthly": "Monthly",
     "price_annual": "Annual",
     "price_cta_free": "See paths",
@@ -3474,29 +3478,42 @@ export const landing_en = {
     "faq_subtitle": "",
     "faqs": [
       {
-        "q": "Does the 7-day trial require a card?",
-        "a": "No. No card and no charge now. A card is only needed if you subscribe later."
+        "q": "Do I need to be good with technology?",
+        "a": "No. Catequese Viva was designed to work on your phone and stay simple from the first meeting."
       },
       {
-        "q": "What happens when the 7 days end?",
-        "a": "Nothing is charged. If you want to continue, subscribe to the Catechist Plan. If not, your account simply stops there."
+        "q": "Do I have to register my whole class at once?",
+        "a": "No. You can start with a few catechumens and add the rest later."
       },
       {
-        "q": "Do I need my parish to get started?",
-        "a": "No. You start in your personal space with the Catechist Plan. Parish and diocese come later if you need them."
+        "q": "Can I use it just for my class?",
+        "a": "Yes. The Catechist Plan was made for exactly that."
       },
       {
-        "q": "Does it work on mobile?",
-        "a": "Yes, in your phone browser. Attendance was built for the meeting."
+        "q": "What if I later want to organize my parish?",
+        "a": "You can move to the Parish Plan and create a space for your team."
       },
       {
-        "q": "How much does it cost?",
-        "a": "Catechist Plan: R$ 9.90/month or R$ 99/year. Parish and diocese: see institutional plans."
+        "q": "Does Catequese Viva replace WhatsApp?",
+        "a": "Not necessarily. It organizes catechesis information and communication so you don't depend on scattered messages."
+      },
+      {
+        "q": "Can I cancel anytime?",
+        "a": "Yes."
+      },
+      {
+        "q": "Do I need a card to try it?",
+        "a": "No. You can start the 7 free days without entering a card."
       }
     ],
-    "cta_title": "Start at your next meeting",
-    "cta_subtitle": "7 days free. No card. Catechist Plan R$ 9.90/month if you want to continue.",
-    "cta_button": "Start 7 days free — no card",
+    "cta_title": "Get back the time for what called you to catechesis.",
+    "cta_subtitle": "Leave the paperwork, scattered messages, and organization behind.",
+    "cta_lines": [
+      "Start with one class.",
+      "Prepare your next meeting.",
+      "And see how much lighter it feels."
+    ],
+    "cta_button": "Start 7 days free",
     "cta_badge": "Trial",
     "cta_see_plans": "See the plan",
     "mock": {
@@ -3610,7 +3627,7 @@ export const landing_en = {
     "testimonials_title": "Testimonials",
     "testimonials_subtitle": "When we have authorized quotes from catechists and parishes, they will appear here.",
     "testimonials": [],
-    "cta_helper": "",
+    "cta_helper": "No card · No commitment · Cancel anytime",
     "mobile_cta": {
       "title": "7 days free",
       "subtitle": "No card",
@@ -3722,67 +3739,76 @@ export const landing_en = {
         }
       ]
     },
-    "faq_cta": "Start 7 days free — no card",
-    "faq_cta_helper": "",
-    "price_cta_single": "Start 7 days free — no card",
+    "faq_cta": "Start my catechesis",
+    "faq_cta_helper": "7 days free · No card",
+    "price_cta_single": "Start free",
     "price_annual_note": "or R$ 99/year",
-    "price_cta_unlimited": "Start the Parish Plan",
-    "price_cta_diocese": "Talk to sales about the diocese",
+    "price_cta_unlimited": "See Parish Plan",
+    "price_cta_diocese": "Talk to sales",
     "price_annual_equivalent": "Equals {{price}}/month",
     "demo": {
-      "badge": "Try without creating an account",
-      "title": "Watch a meeting draft appear in seconds",
-      "subtitle": "Pick a theme, generate the outline, and see the flow — no signup and no card.",
-      "helper": "Local demo example. In the product, editorial assistance uses a Catholic base and you always review before using.",
-      "panel_title": "Meeting generator",
-      "panel_subtitle": "Interactive demo · no account",
-      "prompt_label": "Meeting theme",
-      "generate": "Generate draft",
-      "regenerate": "Generate again",
-      "generating": "Building the outline…",
-      "empty": "Click “Generate draft” to see a sample meeting.",
-      "result_title": "Sample outline",
-      "result_badge": "Demo",
-      "done_note": "Like the flow? Create an account and prepare your real next meeting.",
-      "cta": "Start free for 7 days",
+      "badge": "With AI help",
+      "title": "You don't need to start with a blank page.",
+      "subtitle": "Tell us the meeting theme. Catequese Viva helps you prepare the meeting.",
+      "helper": "",
+      "panel_title": "Prepare meeting",
+      "panel_subtitle": "",
+      "theme_label": "Theme",
+      "age_label": "Age group",
+      "duration_label": "Duration",
+      "prompt_label": "Theme",
+      "generate": "Prepare my meeting",
+      "regenerate": "Prepare again",
+      "generating": "Preparing the meeting…",
+      "empty": "Tap “Prepare my meeting” to see a sample outline.",
+      "result_title": "Meeting prepared",
+      "result_badge": "",
+      "done_note": "This helps you on Sunday. You review everything before using it.",
+      "cta": "Start my catechesis",
       "topics": [
+        {
+          "id": "perdao",
+          "label": "Forgiveness",
+          "theme": "Forgiveness",
+          "age": "10–12 years",
+          "duration": "60 minutes",
+          "steps": [
+            "Welcome",
+            "Icebreaker",
+            "Gospel",
+            "Reflection",
+            "Activity",
+            "Closing prayer"
+          ]
+        },
         {
           "id": "eucharist",
           "label": "Eucharist",
-          "prompt": "Meeting on the Eucharist for ages 9–10, 60 minutes, simple language.",
+          "theme": "Eucharist",
+          "age": "9–10 years",
+          "duration": "60 minutes",
           "steps": [
-            "Welcome and opening prayer (5 min)",
-            "Activity: “Bread that unites”",
-            "Reading: Lk 22:14-20",
-            "Simple explanation with the Catechism (CCC §1322-1327)",
-            "Group activity + family take-home",
-            "Closing prayer and send-off"
+            "Welcome",
+            "Icebreaker",
+            "Gospel",
+            "Reflection",
+            "Activity",
+            "Closing prayer"
           ]
         },
         {
           "id": "confirmation",
           "label": "Confirmation",
-          "prompt": "Meeting on the Holy Spirit in Confirmation for teens, 75 minutes.",
+          "theme": "Holy Spirit",
+          "age": "13–15 years",
+          "duration": "75 minutes",
           "steps": [
-            "Icebreaker: “Which gift do I need today?”",
-            "Reading: Acts 2:1-4 (Pentecost)",
-            "Dialogue: gifts of the Spirit in real life",
-            "Directory reference and parish life",
-            "Quick quiz in pairs",
-            "Sending prayer and weekly commitment"
-          ]
-        },
-        {
-          "id": "family",
-          "label": "Family",
-          "prompt": "Meeting on the family as domestic Church, First Eucharist, 50 minutes.",
-          "steps": [
-            "Welcome with song and a peace gesture",
-            "Bible story: the Holy Family",
-            "Conversation: how faith shows up at home",
-            "Activity for parents",
-            "Ready message for the family portal",
-            "Joint closing prayer"
+            "Welcome",
+            "Icebreaker",
+            "Gospel",
+            "Reflection",
+            "Activity",
+            "Closing prayer"
           ]
         }
       ]
@@ -3807,8 +3833,112 @@ export const landing_en = {
       ],
       "eyebrow": "In practice"
     },
-    "steps_eyebrow": "How it works",
-    "faq_eyebrow": ""
+    "steps_eyebrow": "",
+    "faq_eyebrow": "",
+    "problem": {
+      "eyebrow": "Catechesis happens in the meeting.",
+      "title": "Organization happens before it.",
+      "subtitle": "Attendance lists, messages, calendar, history, meetings, families... When everything is scattered, less time remains for what actually matters.",
+      "items": [
+        {
+          "title": "Everything scattered",
+          "desc": "WhatsApp, notebooks, spreadsheets, and separate files."
+        },
+        {
+          "title": "Information that gets lost",
+          "desc": "Attendance, history, and catechumen details that are hard to follow."
+        },
+        {
+          "title": "Preparation that weighs",
+          "desc": "Arriving at the meeting already tired from organizing everything."
+        }
+      ]
+    },
+    "transform": {
+      "eyebrow": "",
+      "title": "Less organizing. More encounter.",
+      "col_before": "Before",
+      "col_after": "With Catequese Viva",
+      "rows": [
+        {
+          "before": "Notebook",
+          "after": "Organized meetings"
+        },
+        {
+          "before": "WhatsApp",
+          "after": "Centralized communication"
+        },
+        {
+          "before": "Spreadsheets",
+          "after": "Attendance recorded"
+        },
+        {
+          "before": "Files",
+          "after": "Catechumen history"
+        },
+        {
+          "before": "Improvising",
+          "after": "Meeting prepared"
+        }
+      ]
+    },
+    "presence": {
+      "title_line1": "More heart in the meeting.",
+      "title_line2": "Less weight in the week.",
+      "subtitle": "Catequese Viva takes care of the part nobody sees so you can take care of the part that actually matters."
+    },
+    "start_small": {
+      "eyebrow": "Start small.",
+      "title": "See the difference at the next meeting.",
+      "subtitle": "You don't need to organize everything at once.",
+      "today_title": "Today",
+      "next_title": "At the next meeting",
+      "today": [
+        "Create your class",
+        "Register your catechumens",
+        "Prepare the next meeting"
+      ],
+      "next": [
+        "Have everything organized",
+        "Take attendance",
+        "Pick up where you left off"
+      ],
+      "cta": "Start my catechesis — 7 days free"
+    },
+    "growth": {
+      "eyebrow": "Start your way",
+      "title": "Start your way.",
+      "subtitle": "You can begin on your own and, as your catechesis grows, bring the organization to the whole parish.",
+      "ladder": [
+        {
+          "label": "You",
+          "step": "Catechist"
+        },
+        {
+          "label": "Team",
+          "step": "Parish"
+        },
+        {
+          "label": "Network",
+          "step": "Diocese"
+        }
+      ],
+      "stories": [
+        {
+          "title": "Start on your own.",
+          "desc": "Organize your personal catechesis."
+        },
+        {
+          "title": "Did it grow?",
+          "desc": "Invite your team and organize your parish."
+        },
+        {
+          "title": "Does your diocese want in?",
+          "desc": "Connect several parishes in one structure."
+        }
+      ],
+      "compare": "Compare plan details"
+    }
   } as const;
 
 export const landingIa_en = {
@@ -5335,20 +5465,20 @@ export const publicNav_en = {
     "signup": "Start 7 days free",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
-    "tagline": "Made to serve the catechist's mission: your class, your meetings, and the families in one place.",
+    "tagline": "You sow the faith. We organize the class.",
     "audience": "built for catechists",
     "cta": "Start 7 days free",
     "share": "Share",
     "share_copied": "Link copied to share",
     "share_error": "Could not share right now",
-    "share_hook": "Less paper. More catechesis.",
+    "share_hook": "You sow the faith. We organize the class.",
     "share_subhook": "Share with another catechist.",
     "share_title": "Catequese Viva",
     "share_text": "Organize catechesis without paper and last-minute improvisation — prepare meetings, take attendance, and reach families in one place.",
     "how_it_works": "How it works",
     "footer_explore": "Explore",
     "footer_start": "Try it",
-    "footer_start_desc": "More time for your class, less paperwork. Start your 7 days.",
+    "footer_start_desc": "More presence in the meeting, less weight in the week. Start your 7 days.",
     "language": "Language"
   } as const;
 

@@ -1197,11 +1197,11 @@ export const cookie_pt_BR_core = {
 
 export const landing_pt_BR_core = {
     "hero": {
-      "headline_line1": "Organize a turma, faça a chamada no celular e prepare o encontro — sem planilha e WhatsApp espalhados.",
-      "headline_line2": "",
-      "subheadline": "Você catequiza. A gente cuida da organização.",
-      "badge": "Para catequistas",
-      "cta_primary": "Começar 7 dias grátis — sem cartão",
+      "headline_line1": "Você semeia a fé.",
+      "headline_line2": "A gente organiza a turma.",
+      "subheadline": "Prepare seus encontros, acompanhe seus catequizandos, registre presenças e mantenha as famílias por perto — tudo em um só lugar.",
+      "badge": "",
+      "cta_primary": "Começar minha catequese",
       "cta_secondary": "Como funciona",
       "trust_signals": "7 dias grátis · Sem cartão · Funciona no celular",
       "cta_secondary_href": "/#como",
@@ -1211,7 +1211,7 @@ export const landing_pt_BR_core = {
         "Calendário litúrgico e próximos encontros",
         "As famílias da sua turma acompanham pelo portal"
       ],
-      "cta_helper": "Depois do teste, Plano Catequista R$ 9,90/mês.",
+      "cta_helper": "",
       "audience_label": "Qual é a sua realidade hoje?",
       "audiences": [
         {
@@ -1358,32 +1358,36 @@ export const landing_pt_BR_core = {
     ],
     "more_features": "Mais recursos para quando sua catequese crescer",
     "more_features_sub": "Ferramentas que continuam úteis depois da primeira turma.",
-    "steps_title": "Três passos. Sem enrolação.",
+    "steps_title": "Da preparação ao encontro.",
     "steps_subtitle": "",
     "steps": [
       {
-        "title": "Monte a turma",
-        "desc": "Crie a conta, importe ou cadastre os catequizandos."
+        "title": "Prepare",
+        "desc": "Monte seu encontro em poucos minutos."
       },
       {
-        "title": "Faça a chamada",
-        "desc": "No celular, durante o encontro."
+        "title": "Organize",
+        "desc": "Tenha turmas, calendário e informações dos catequizandos em um só lugar."
       },
       {
-        "title": "Prepare o próximo encontro",
-        "desc": "Tema, roteiro e avisos às famílias no mesmo lugar."
+        "title": "Encontre",
+        "desc": "Chegue ao encontro sabendo exatamente o que fazer."
+      },
+      {
+        "title": "Acompanhe",
+        "desc": "Registre presença e acompanhe a caminhada de cada catequizando."
       }
     ],
-    "steps_cta": "Começar 7 dias grátis — sem cartão",
-    "pricing_eyebrow": "Plano",
-    "pricing_title": "Plano Catequista",
-    "pricing_subtitle": "",
+    "steps_cta": "Começar minha catequese",
+    "pricing_eyebrow": "Comece do seu jeito",
+    "pricing_title": "Comece do seu jeito.",
+    "pricing_subtitle": "Você pode começar sozinho e, quando sua catequese crescer, levar a organização para toda a paróquia.",
     "pricing_institutional_link": "Paróquia ou diocese? Ver planos institucionais",
     "plans": {
       "single": {
         "name": "Plano Catequista",
-        "audience": "Para você e sua turma · até 3 turmas",
-        "desc": "Sua turma, a chamada e os encontros cuidados no mesmo lugar.",
+        "audience": "Para você",
+        "desc": "Organize sua turma e seus encontros.",
         "price": "R$ 9,90",
         "features": [
           "Até 3 turmas e 150 catequizandos",
@@ -1393,8 +1397,8 @@ export const landing_pt_BR_core = {
       },
       "unlimited": {
         "name": "Plano Paróquia",
-        "audience": "Para a coordenação da paróquia",
-        "desc": "Turmas, catequizandos e equipe ilimitados no workspace da paróquia.",
+        "audience": "Para sua equipe",
+        "desc": "Reúna catequistas, turmas e famílias em um único espaço.",
         "price": "R$ 99",
         "features": [
           "Turmas e equipe ilimitadas",
@@ -1405,8 +1409,8 @@ export const landing_pt_BR_core = {
       },
       "diocese": {
         "name": "Plano Diocese",
-        "audience": "Para a diocese — venda assistida",
-        "desc": "Licença guarda-chuva que cobre as paróquias. Sem checkout público.",
+        "audience": "Para toda a diocese",
+        "desc": "Padronize e acompanhe a catequese em várias paróquias.",
         "price": "Sob consulta",
         "features": [
           "Cobertura das paróquias da diocese",
@@ -1416,7 +1420,7 @@ export const landing_pt_BR_core = {
       }
     },
     "price_free": "Desde",
-    "price_popular": "Para o catequista",
+    "price_popular": "Para sua equipe",
     "price_monthly": "Mensal",
     "price_annual": "Anual",
     "price_cta_free": "Ver caminhos",
@@ -1429,29 +1433,42 @@ export const landing_pt_BR_core = {
     "faq_subtitle": "",
     "faqs": [
       {
-        "q": "O teste de 7 dias pede cartão?",
-        "a": "Não. Sem cartão e sem cobrança agora. Cartão só se você assinar depois."
+        "q": "Preciso saber mexer com tecnologia?",
+        "a": "Não. A Catequese Viva foi pensada para funcionar no celular e ser simples desde o primeiro encontro."
       },
       {
-        "q": "O que acontece quando os 7 dias acabam?",
-        "a": "Nada é cobrado. Se quiser continuar, assina o Plano Catequista. Se não, a conta para aí."
+        "q": "Preciso cadastrar toda minha turma de uma vez?",
+        "a": "Não. Você pode começar com poucos catequizandos e completar depois."
       },
       {
-        "q": "Preciso da paróquia para começar?",
-        "a": "Não. Você começa no espaço pessoal com o Plano Catequista. Paróquia e diocese entram depois, se precisar."
+        "q": "Posso usar só para minha turma?",
+        "a": "Sim. O Plano Catequista foi feito justamente para isso."
       },
       {
-        "q": "Funciona no celular?",
-        "a": "Sim, no navegador do celular. A chamada foi feita para o encontro."
+        "q": "E se depois eu quiser organizar minha paróquia?",
+        "a": "Você pode migrar para o Plano Paróquia e criar um espaço para sua equipe."
       },
       {
-        "q": "Quanto custa?",
-        "a": "Plano Catequista: R$ 9,90/mês ou R$ 99/ano. Paróquia e diocese: ver planos institucionais."
+        "q": "A Catequese Viva substitui o WhatsApp?",
+        "a": "Não necessariamente. Ela organiza as informações e a comunicação da catequese para que você não dependa de mensagens espalhadas."
+      },
+      {
+        "q": "Posso cancelar quando quiser?",
+        "a": "Sim."
+      },
+      {
+        "q": "Preciso colocar cartão para testar?",
+        "a": "Não. Você pode começar os 7 dias grátis sem informar cartão."
       }
     ],
-    "cta_title": "Comece no próximo encontro",
-    "cta_subtitle": "7 dias grátis. Sem cartão. Plano Catequista R$ 9,90/mês se quiser continuar.",
-    "cta_button": "Começar 7 dias grátis — sem cartão",
+    "cta_title": "Volte a ter tempo para aquilo que chamou você à catequese.",
+    "cta_subtitle": "Deixe a papelada, as mensagens espalhadas e a organização para trás.",
+    "cta_lines": [
+      "Comece com uma turma.",
+      "Prepare seu próximo encontro.",
+      "E veja como fica mais leve."
+    ],
+    "cta_button": "Começar 7 dias grátis",
     "cta_badge": "Teste gratuito",
     "cta_see_plans": "Ver o plano",
     "mock": {
@@ -1565,7 +1582,7 @@ export const landing_pt_BR_core = {
     "testimonials_title": "Depoimentos",
     "testimonials_subtitle": "Quando tivermos autorizações reais de catequistas e paróquias, elas aparecem aqui.",
     "testimonials": [],
-    "cta_helper": "",
+    "cta_helper": "Sem cartão · Sem compromisso · Cancele quando quiser",
     "mobile_cta": {
       "title": "7 dias grátis",
       "subtitle": "Sem cartão",
@@ -1677,67 +1694,76 @@ export const landing_pt_BR_core = {
         }
       ]
     },
-    "faq_cta": "Começar 7 dias grátis — sem cartão",
-    "faq_cta_helper": "",
-    "price_cta_single": "Começar 7 dias grátis — sem cartão",
+    "faq_cta": "Começar minha catequese",
+    "faq_cta_helper": "7 dias grátis · Sem cartão",
+    "price_cta_single": "Começar grátis",
     "price_annual_note": "ou R$ 99/ano",
-    "price_cta_unlimited": "Começar o Plano Paróquia",
-    "price_cta_diocese": "Falar com vendas sobre a diocese",
+    "price_cta_unlimited": "Conhecer Plano Paróquia",
+    "price_cta_diocese": "Falar com vendas",
     "price_annual_equivalent": "Equivale a {{price}}/mês",
     "demo": {
-      "badge": "Experimente sem criar conta",
-      "title": "Veja um encontro nascer em segundos",
-      "subtitle": "Escolha um tema, gere o rascunho e entenda o fluxo — sem cadastro e sem cartão.",
-      "helper": "Demonstração local de exemplo. No produto, a assistência editorial usa base católica e você revisa antes de usar.",
-      "panel_title": "Gerador de encontros",
-      "panel_subtitle": "Demo interativa · sem conta",
-      "prompt_label": "Tema do encontro",
-      "generate": "Gerar rascunho",
-      "regenerate": "Gerar de novo",
-      "generating": "Montando o roteiro…",
-      "empty": "Clique em “Gerar rascunho” para ver um exemplo de encontro.",
-      "result_title": "Roteiro de exemplo",
-      "result_badge": "Demo",
-      "done_note": "Gostou do fluxo? Crie a conta e prepare o próximo encontro de verdade.",
-      "cta": "Começar grátis por 7 dias",
+      "badge": "Com a ajuda da IA",
+      "title": "Você não precisa começar com uma página em branco.",
+      "subtitle": "Diga o tema do encontro. A Catequese Viva ajuda você a preparar o encontro.",
+      "helper": "",
+      "panel_title": "Preparar encontro",
+      "panel_subtitle": "",
+      "theme_label": "Tema",
+      "age_label": "Faixa",
+      "duration_label": "Duração",
+      "prompt_label": "Tema",
+      "generate": "Preparar meu encontro",
+      "regenerate": "Preparar de novo",
+      "generating": "Preparando o encontro…",
+      "empty": "Toque em “Preparar meu encontro” para ver um roteiro de exemplo.",
+      "result_title": "Encontro preparado",
+      "result_badge": "",
+      "done_note": "Isso vai te ajudar no próximo domingo. Você revisa tudo antes de usar.",
+      "cta": "Começar minha catequese",
       "topics": [
+        {
+          "id": "perdao",
+          "label": "Perdão",
+          "theme": "Perdão",
+          "age": "10–12 anos",
+          "duration": "60 minutos",
+          "steps": [
+            "Acolhida",
+            "Dinâmica",
+            "Evangelho",
+            "Reflexão",
+            "Atividade",
+            "Oração final"
+          ]
+        },
         {
           "id": "eucaristia",
           "label": "Eucaristia",
-          "prompt": "Encontro sobre a Eucaristia para crianças de 9–10 anos, 60 minutos, linguagem acessível.",
+          "theme": "Eucaristia",
+          "age": "9–10 anos",
+          "duration": "60 minutos",
           "steps": [
-            "Acolhida e oração inicial (5 min)",
-            "Dinâmica: “Pão que une” — partilha simbólica",
-            "Leitura: Lc 22,14-20 (instituição da Eucaristia)",
-            "Explicação simples com Catecismo (CIC §1322-1327)",
-            "Atividade em grupo + compromisso com a família",
-            "Oração final e envio"
+            "Acolhida",
+            "Dinâmica",
+            "Evangelho",
+            "Reflexão",
+            "Atividade",
+            "Oração final"
           ]
         },
         {
           "id": "crisma",
           "label": "Crisma",
-          "prompt": "Encontro sobre o Espírito Santo na Crisma para adolescentes, 75 minutos.",
+          "theme": "Espírito Santo",
+          "age": "13–15 anos",
+          "duration": "75 minutos",
           "steps": [
-            "Quebra-gelo: “Qual dom eu preciso hoje?”",
-            "Leitura: At 2,1-4 (Pentecostes)",
-            "Diálogo: dons do Espírito na vida real",
-            "Referência do Diretório e da vida paroquial",
-            "Quiz rápido em duplas",
-            "Oração de envio e compromisso da semana"
-          ]
-        },
-        {
-          "id": "familia",
-          "label": "Família",
-          "prompt": "Encontro sobre a família como Igreja doméstica, para 1ª Eucaristia, 50 minutos.",
-          "steps": [
-            "Acolhida com música e gesto de paz",
-            "História bíblica: a Sagrada Família",
-            "Conversa: como a fé aparece em casa",
-            "Atividade para levar aos pais",
-            "Mensagem pronta para o portal da família",
-            "Oração final conjunta"
+            "Acolhida",
+            "Dinâmica",
+            "Evangelho",
+            "Reflexão",
+            "Atividade",
+            "Oração final"
           ]
         }
       ]
@@ -1762,8 +1788,112 @@ export const landing_pt_BR_core = {
       ],
       "eyebrow": "Na prática"
     },
-    "steps_eyebrow": "Como funciona",
-    "faq_eyebrow": ""
+    "steps_eyebrow": "",
+    "faq_eyebrow": "",
+    "problem": {
+      "eyebrow": "A catequese acontece no encontro.",
+      "title": "A organização acontece antes dele.",
+      "subtitle": "Lista de presença, mensagens, calendário, histórico, encontros, famílias... Quando tudo fica espalhado, sobra menos tempo para aquilo que realmente importa.",
+      "items": [
+        {
+          "title": "Tudo espalhado",
+          "desc": "WhatsApp, caderno, planilhas e arquivos diferentes."
+        },
+        {
+          "title": "Informação que se perde",
+          "desc": "Presenças, histórico e informações dos catequizandos difíceis de acompanhar."
+        },
+        {
+          "title": "Preparação que pesa",
+          "desc": "Chegar ao encontro já cansado de organizar tudo."
+        }
+      ]
+    },
+    "transform": {
+      "eyebrow": "",
+      "title": "Menos organização. Mais encontro.",
+      "col_before": "Antes",
+      "col_after": "Com Catequese Viva",
+      "rows": [
+        {
+          "before": "Caderno",
+          "after": "Encontros organizados"
+        },
+        {
+          "before": "WhatsApp",
+          "after": "Comunicação centralizada"
+        },
+        {
+          "before": "Planilhas",
+          "after": "Presenças registradas"
+        },
+        {
+          "before": "Arquivos",
+          "after": "Histórico dos catequizandos"
+        },
+        {
+          "before": "Improviso",
+          "after": "Encontro preparado"
+        }
+      ]
+    },
+    "presence": {
+      "title_line1": "Mais coração no encontro.",
+      "title_line2": "Menos peso na semana.",
+      "subtitle": "A Catequese Viva cuida da parte que ninguém vê para você poder cuidar da parte que realmente importa."
+    },
+    "start_small": {
+      "eyebrow": "Comece pequeno.",
+      "title": "Veja a diferença no próximo encontro.",
+      "subtitle": "Você não precisa organizar tudo de uma vez.",
+      "today_title": "Hoje",
+      "next_title": "No próximo encontro",
+      "today": [
+        "Crie sua turma",
+        "Cadastre seus catequizandos",
+        "Prepare o próximo encontro"
+      ],
+      "next": [
+        "Tenha tudo organizado",
+        "Registre as presenças",
+        "Continue de onde parou"
+      ],
+      "cta": "Começar minha catequese — 7 dias grátis"
+    },
+    "growth": {
+      "eyebrow": "Comece do seu jeito",
+      "title": "Comece do seu jeito.",
+      "subtitle": "Você pode começar sozinho e, quando sua catequese crescer, levar a organização para toda a paróquia.",
+      "ladder": [
+        {
+          "label": "Você",
+          "step": "Catequista"
+        },
+        {
+          "label": "Equipe",
+          "step": "Paróquia"
+        },
+        {
+          "label": "Rede",
+          "step": "Diocese"
+        }
+      ],
+      "stories": [
+        {
+          "title": "Comece sozinho.",
+          "desc": "Organize sua catequese pessoal."
+        },
+        {
+          "title": "Cresceu?",
+          "desc": "Convide sua equipe e organize sua paróquia."
+        },
+        {
+          "title": "Sua diocese quer participar?",
+          "desc": "Conecte várias paróquias em uma única estrutura."
+        }
+      ],
+      "compare": "Comparar detalhes dos planos"
+    }
   } as const;
 
 export const landingIa_pt_BR_core = {
@@ -2430,20 +2560,20 @@ export const publicNav_pt_BR_core = {
     "signup": "Começar 7 dias grátis",
     "openMenu": "Abrir menu",
     "closeMenu": "Fechar menu",
-    "tagline": "Feita para servir a missão do catequista: sua turma, seus encontros e as famílias no mesmo lugar.",
+    "tagline": "Você semeia a fé. A gente organiza a turma.",
     "audience": "feito para catequistas",
     "cta": "Começar 7 dias grátis",
     "share": "Compartilhar",
     "share_copied": "Link copiado para compartilhar",
     "share_error": "Não foi possível compartilhar agora",
-    "share_hook": "Menos papel. Mais catequese.",
+    "share_hook": "Você semeia a fé. A gente organiza a turma.",
     "share_subhook": "Compartilhe com outro catequista.",
     "share_title": "Catequese Viva",
     "share_text": "Organize a catequese sem papel e improviso — prepare encontros, faça a chamada e fale com as famílias no mesmo lugar.",
     "how_it_works": "Como funciona",
     "footer_explore": "Explorar",
     "footer_start": "Experimentar",
-    "footer_start_desc": "Mais tempo para a sua turma, menos papelada. Comece os 7 dias.",
+    "footer_start_desc": "Mais presença no encontro, menos peso na semana. Comece os 7 dias.",
     "language": "Idioma"
   } as const;
 
