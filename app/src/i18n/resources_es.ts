@@ -5035,6 +5035,8 @@ export const onboarding_es = {
       "location_placeholder": "Ej.: Salón parroquial",
       "saving": "Creando grupo…",
       "continue": "Continuar",
+      "transient_error": "El servidor estaba ocupado. Espera unos segundos y pulsa Continuar otra vez.",
+      "plan_limit": "Tu prueba aún no ha liberado el grupo. Espera unos segundos e inténtalo de nuevo.",
       "start_time_invalid": "Horario de inicio inválido. Usa el formato HH:mm (ej.: 19:00).",
       "end_time_invalid": "Horario de fin inválido. Usa el formato HH:mm (ej.: 20:30).",
       "days": {

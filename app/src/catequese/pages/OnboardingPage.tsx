@@ -41,6 +41,11 @@ import {
 import { invalidateShellContext } from "../../client/hooks/shellQueryCache";
 import { toast } from "../../client/hooks/use-toast";
 import { Button } from "../../client/components/ui/button";
+import {
+  isPlanLimitError,
+  isTransientRequestError,
+  withTransientRetry,
+} from "../../client/lib/operationError";
 import { ChevronLeft } from "lucide-react";
 import {
   LAUNCH_CATEQUISTA_ONLY,
@@ -356,70 +361,82 @@ export default function OnboardingPage() {
     setSaving(true);
     setError("");
     try {
-      const personalParish = await ensurePersonalWorkspace();
-      if (!personalParish?.id) throw new Error(t("personal_workspace_error"));
+      await withTransientRetry(async () => {
+        const personalParish = await ensurePersonalWorkspace();
+        if (!personalParish?.id) throw new Error(t("personal_workspace_error"));
 
-      setWorkspaceId(personalParish.id);
-      localStorage.setItem(
-        "catequese-viva-active-workspace",
-        personalParish.id,
-      );
-      window.dispatchEvent(
-        new CustomEvent("workspace-changed", { detail: personalParish.id }),
-      );
+        setWorkspaceId(personalParish.id);
+        localStorage.setItem(
+          "catequese-viva-active-workspace",
+          personalParish.id,
+        );
+        window.dispatchEvent(
+          new CustomEvent("workspace-changed", { detail: personalParish.id }),
+        );
 
-      trackMarketingEvent("onboarding_step_completed", {
-        account_type: "personal",
-        step: "workspace_ready",
-      });
+        trackMarketingEvent("onboarding_step_completed", {
+          account_type: "personal",
+          step: "workspace_ready",
+        });
 
-      const classPayload = {
-        name: details.className.trim(),
-        dayOfWeek: details.dayOfWeek,
-        startTime: details.startTime,
-        endTime: details.endTime,
-        location: details.location,
-      };
-      const validated = createClassSchema.safeParse(classPayload);
-      if (!validated.success) {
-        const field = validated.error.issues[0]?.path[0];
-        if (field === "startTime") {
-          setError(t("class_setup.start_time_invalid"));
-        } else if (field === "endTime") {
-          setError(t("class_setup.end_time_invalid"));
-        } else if (field === "name") {
-          setError(t("class_setup.name_required"));
-        } else {
-          setError(t("finish_error"));
+        const classPayload = {
+          name: details.className.trim(),
+          dayOfWeek: details.dayOfWeek,
+          startTime: details.startTime,
+          endTime: details.endTime,
+          location: details.location,
+        };
+        const validated = createClassSchema.safeParse(classPayload);
+        if (!validated.success) {
+          const field = validated.error.issues[0]?.path[0];
+          if (field === "startTime") {
+            throw new Error(t("class_setup.start_time_invalid"));
+          }
+          if (field === "endTime") {
+            throw new Error(t("class_setup.end_time_invalid"));
+          }
+          if (field === "name") {
+            throw new Error(t("class_setup.name_required"));
+          }
+          throw new Error(t("finish_error"));
         }
-        return;
-      }
 
-      const created = await createClass({
-        name: validated.data.name,
-        parishId: personalParish.id,
-        dayOfWeek: validated.data.dayOfWeek || undefined,
-        startTime: validated.data.startTime || undefined,
-        endTime: validated.data.endTime || undefined,
-        location: validated.data.location || personalParish.name,
-      });
+        const created = await createClass({
+          name: validated.data.name,
+          parishId: personalParish.id,
+          dayOfWeek: validated.data.dayOfWeek || undefined,
+          startTime: validated.data.startTime || undefined,
+          endTime: validated.data.endTime || undefined,
+          location: validated.data.location || personalParish.name,
+        });
 
-      trackMarketingEvent("first_class_created", {
-        account_type: "personal",
-        workspace: "personal",
-        source: "onboarding",
-      });
-      trackMarketingEvent("onboarding_step_completed", {
-        account_type: "personal",
-        step: "class_created",
-      });
+        trackMarketingEvent("first_class_created", {
+          account_type: "personal",
+          workspace: "personal",
+          source: "onboarding",
+        });
+        trackMarketingEvent("onboarding_step_completed", {
+          account_type: "personal",
+          step: "class_created",
+        });
 
-      setClassId(created.id);
-      setClassName(details.className.trim());
-      setStep("catechumens");
+        setClassId(created.id);
+        setClassName(details.className.trim());
+        setStep("catechumens");
+      });
     } catch (e) {
-      const message = e instanceof Error ? e.message : t("finish_error");
-      setError(message || t("finish_error"));
+      if (isTransientRequestError(e)) {
+        setError(t("class_setup.transient_error"));
+      } else if (isPlanLimitError(e)) {
+        setError(t("class_setup.plan_limit"));
+      } else {
+        const message = e instanceof Error ? e.message : t("finish_error");
+        setError(
+          /status code/i.test(message)
+            ? t("finish_error")
+            : message || t("finish_error"),
+        );
+      }
     } finally {
       setSaving(false);
     }

@@ -5035,6 +5035,8 @@ export const onboarding_pt_BR = {
       "location_placeholder": "Ex.: Salão paroquial",
       "saving": "Criando turma…",
       "continue": "Continuar",
+      "transient_error": "O servidor estava ocupado. Espere uns segundos e clique em Continuar de novo.",
+      "plan_limit": "Seu teste ainda não liberou a turma. Aguarde alguns segundos e tente de novo.",
       "start_time_invalid": "Horário de início inválido. Use o formato HH:mm (ex.: 19:00).",
       "end_time_invalid": "Horário de término inválido. Use o formato HH:mm (ex.: 20:30).",
       "days": {

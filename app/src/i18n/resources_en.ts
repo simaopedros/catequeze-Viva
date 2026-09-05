@@ -5035,6 +5035,8 @@ export const onboarding_en = {
       "location_placeholder": "E.g. Parish hall",
       "saving": "Creating class…",
       "continue": "Continue",
+      "transient_error": "The server was busy. Wait a few seconds and tap Continue again.",
+      "plan_limit": "Your trial has not unlocked the class yet. Wait a few seconds and try again.",
       "start_time_invalid": "Invalid start time. Use HH:mm format (e.g. 7:00 PM as 19:00).",
       "end_time_invalid": "Invalid end time. Use HH:mm format (e.g. 8:30 PM as 20:30).",
       "days": {

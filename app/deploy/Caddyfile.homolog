@@ -15,6 +15,14 @@
     header_up X-Forwarded-Proto https
     # Flush immediately so Server-Sent Events reach the browser as they are written.
     flush_interval -1
+    # During `compose up --force-recreate` the Node process is gone for a few
+    # seconds. Wait for /health instead of returning an immediate 502.
+    health_uri /health
+    health_interval 2s
+    health_timeout 2s
+    fail_duration 5s
+    lb_try_duration 8s
+    lb_try_interval 500ms
   }
 }
 

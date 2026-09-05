@@ -561,6 +561,18 @@ export async function assertCanCreateClass(
     });
 
     if (activeCount >= limits.maxClasses!) {
+      try {
+        const { refreshUserBillingFromStripe } = await import(
+          '../../payment/stripe/syncUserSubscription'
+        );
+        const synced = await refreshUserBillingFromStripe(context, context.user.id);
+        const syncedPlan = getPersonalPlanId(synced);
+        const syncedLimits = await catalogLimits(context, syncedPlan);
+        if (syncedLimits.maxClasses === null) return;
+        if (activeCount < syncedLimits.maxClasses) return;
+      } catch {
+        // Fall through to the original limit error.
+      }
       throw new HttpError(
         403,
         `LIMIT: Limite de turmas do plano ${planName(plan)} atingido (${activeCount}/${limits.maxClasses}). Faça upgrade.`,
