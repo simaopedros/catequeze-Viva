@@ -73,3 +73,45 @@ export function shouldRenderGatedRoute(opts: {
   if (!opts.hasAccess && opts.isBillingManager) return false;
   return opts.checked;
 }
+
+/**
+ * After Stripe Checkout, new accounts still have no PERSONAL workspace.
+ * Sending them to billing traps them: AppShell used to skip onboarding on
+ * `/app/billing` so the unpaid paywall could render.
+ */
+export function getPostCheckoutDestination(input: {
+  needsOnboarding: boolean;
+  sessionId?: string | null;
+}): string {
+  const params = new URLSearchParams();
+  if (input.needsOnboarding) {
+    params.set("checkout", "success");
+  } else {
+    params.set("status", "success");
+  }
+  if (input.sessionId) {
+    params.set("session_id", input.sessionId);
+  }
+  const path = input.needsOnboarding ? "/app/onboarding" : "/app/billing";
+  return `${path}?${params.toString()}`;
+}
+
+/**
+ * Keep the user on billing only while it is still the required paywall.
+ * After a paid/trialing subscription (or a Checkout success return), send
+ * them on to onboarding if the workspace is not set up yet.
+ */
+export function shouldHoldOnboardingRedirectOnBilling(opts: {
+  pathname: string;
+  search?: string;
+  hasPersonalAccess: boolean;
+  isOnProductTrial: boolean;
+}): boolean {
+  if (!opts.pathname.includes("/billing")) return false;
+  const raw = opts.search ?? "";
+  const search = raw.startsWith("?") ? raw.slice(1) : raw;
+  if (new URLSearchParams(search).get("status") === "success") {
+    return false;
+  }
+  return !opts.hasPersonalAccess && !opts.isOnProductTrial;
+}

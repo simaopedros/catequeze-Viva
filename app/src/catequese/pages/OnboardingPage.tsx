@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { WelcomeStep } from "../components/onboarding/WelcomeStep";
 import {
   ClassSetupStep,
@@ -39,9 +39,13 @@ import {
   trackOnboardingCompleted,
 } from "../../client/analytics/marketingAnalytics";
 import { invalidateShellContext } from "../../client/hooks/shellQueryCache";
+import { toast } from "../../client/hooks/use-toast";
 import { Button } from "../../client/components/ui/button";
 import { ChevronLeft } from "lucide-react";
-import { LAUNCH_CATEQUISTA_ONLY, catalogIsCatequistaOnly } from "../../shared/pricing";
+import {
+  LAUNCH_CATEQUISTA_ONLY,
+  catalogIsCatequistaOnly,
+} from "../../shared/pricing";
 import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import { createClassSchema } from "../../client/validation/schemas";
 import { getSalesWhatsAppUrl } from "../../shared/salesContact";
@@ -104,7 +108,10 @@ function clearPersisted() {
 
 export default function OnboardingPage() {
   const { t } = useTranslation("onboarding");
+  const { t: tBilling } = useTranslation("billing");
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const checkoutToastShownRef = useRef(false);
   const { publicPlans } = usePlanCatalog();
   const launchCatequistaOnly = catalogIsCatequistaOnly(publicPlans);
 
@@ -145,6 +152,17 @@ export default function OnboardingPage() {
     useState<CompletionSummary | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (searchParams.get("checkout") !== "success") return;
+    if (checkoutToastShownRef.current) return;
+    checkoutToastShownRef.current = true;
+    toast({ title: tBilling("checkout_success") });
+    const next = new URLSearchParams(searchParams);
+    next.delete("checkout");
+    next.delete("session_id");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams, tBilling]);
 
   useEffect(() => {
     if (resumed) {
@@ -277,7 +295,10 @@ export default function OnboardingPage() {
     }
     trackOnboardingCompleted({
       account_type: accountType || "personal",
-      profile: accountType === "manager" || accountType === "diocese" ? "institutional" : "personal",
+      profile:
+        accountType === "manager" || accountType === "diocese"
+          ? "institutional"
+          : "personal",
       path,
       duration_ms:
         duration_ms != null && Number.isFinite(duration_ms)

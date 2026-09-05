@@ -49,6 +49,7 @@ import {
   trackPurchaseBrowser,
 } from "../../client/analytics/metaTracking";
 import { parseUpgradeJourneyReason } from "../lib/upgradeJourney";
+import { getPostCheckoutDestination } from "../../client/appRouteGates";
 import {
   checkoutPlanIdForTrial,
   ensureWorkspaceOfferPlan,
@@ -147,7 +148,13 @@ export default function BillingPage() {
 
   const navigate = useNavigate();
   const { data: user } = useAuth();
-  const { parishId, userRole, isAdmin } = useUserContext();
+  const {
+    parishId,
+    userRole,
+    isAdmin,
+    needsOnboarding,
+    isLoading: userContextLoading,
+  } = useUserContext();
   const roleLabels = useRoleLabels();
   const { isPersonal, workspaceId, workspace } = useActiveWorkspace();
   const canManageBilling = canManageWorkspaceBilling(
@@ -621,6 +628,9 @@ export default function BillingPage() {
   const successToastShownRef = useRef(false);
   useEffect(() => {
     if (checkoutStatus !== "success" && checkoutStatus !== "canceled") return;
+    // Wait for bootstrap so a new account is sent to onboarding, not trapped
+    // on the paywall after Checkout.
+    if (checkoutStatus === "success" && userContextLoading) return;
     if (successToastShownRef.current) return;
     successToastShownRef.current = true;
     if (checkoutStatus === "success") {
@@ -646,6 +656,17 @@ export default function BillingPage() {
           currency: "BRL",
         });
       }
+
+      if (needsOnboarding) {
+        navigate(
+          getPostCheckoutDestination({
+            needsOnboarding: true,
+            sessionId: returnedSessionId,
+          }),
+          { replace: true },
+        );
+        return;
+      }
     } else if (checkoutStatus === "canceled") {
       toast({ title: t("checkout_canceled"), variant: "destructive" });
     }
@@ -663,6 +684,8 @@ export default function BillingPage() {
     effectivePlanId,
     billingInterval,
     navigate,
+    needsOnboarding,
+    userContextLoading,
     refetchStats,
     refetchSubscription,
     searchParams,

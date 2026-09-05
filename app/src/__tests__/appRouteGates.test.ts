@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  getPostCheckoutDestination,
   isMinimalAppPath,
   isPublicOnlyPath,
   needsFullAppNamespaces,
+  shouldHoldOnboardingRedirectOnBilling,
   shouldRenderGatedRoute,
 } from "../client/appRouteGates";
 
@@ -92,5 +94,85 @@ describe("shouldRenderGatedRoute", () => {
         checked: true,
       }),
     ).toBe(true);
+  });
+});
+
+describe("getPostCheckoutDestination", () => {
+  it("sends new accounts to onboarding after Checkout", () => {
+    expect(
+      getPostCheckoutDestination({
+        needsOnboarding: true,
+        sessionId: "cs_test_1",
+      }),
+    ).toBe("/app/onboarding?checkout=success&session_id=cs_test_1");
+  });
+
+  it("sends existing workspaces to billing after Checkout", () => {
+    expect(
+      getPostCheckoutDestination({
+        needsOnboarding: false,
+        sessionId: "cs_test_1",
+      }),
+    ).toBe("/app/billing?status=success&session_id=cs_test_1");
+  });
+
+  it("works without a session id", () => {
+    expect(getPostCheckoutDestination({ needsOnboarding: true })).toBe(
+      "/app/onboarding?checkout=success",
+    );
+    expect(getPostCheckoutDestination({ needsOnboarding: false })).toBe(
+      "/app/billing?status=success",
+    );
+  });
+});
+
+describe("shouldHoldOnboardingRedirectOnBilling", () => {
+  it("keeps unpaid users on the billing paywall", () => {
+    expect(
+      shouldHoldOnboardingRedirectOnBilling({
+        pathname: "/app/billing",
+        search: "?plan=single&reason=required",
+        hasPersonalAccess: false,
+        isOnProductTrial: false,
+      }),
+    ).toBe(true);
+  });
+
+  it("does not trap Checkout success on billing", () => {
+    expect(
+      shouldHoldOnboardingRedirectOnBilling({
+        pathname: "/app/billing",
+        search: "?status=success&session_id=cs_test_1",
+        hasPersonalAccess: false,
+        isOnProductTrial: false,
+      }),
+    ).toBe(false);
+  });
+
+  it("sends paid or trialing users off billing into onboarding", () => {
+    expect(
+      shouldHoldOnboardingRedirectOnBilling({
+        pathname: "/app/billing",
+        hasPersonalAccess: true,
+        isOnProductTrial: false,
+      }),
+    ).toBe(false);
+    expect(
+      shouldHoldOnboardingRedirectOnBilling({
+        pathname: "/app/billing",
+        hasPersonalAccess: false,
+        isOnProductTrial: true,
+      }),
+    ).toBe(false);
+  });
+
+  it("does not hold non-billing routes", () => {
+    expect(
+      shouldHoldOnboardingRedirectOnBilling({
+        pathname: "/app",
+        hasPersonalAccess: false,
+        isOnProductTrial: false,
+      }),
+    ).toBe(false);
   });
 });

@@ -42,7 +42,11 @@ const GuidedTour = lazy(() =>
 );
 
 import { useGuidedTour } from "./components/GuidedTour";
-import { isMinimalAppPath } from "../client/appRouteGates";
+import {
+  isMinimalAppPath,
+  shouldHoldOnboardingRedirectOnBilling,
+} from "../client/appRouteGates";
+import { hasPersonalAccess, isOnProductTrial } from "../shared/pricing";
 
 interface AppShellProps {
   children: ReactNode;
@@ -188,15 +192,22 @@ export function AppShell({ children }: AppShellProps) {
       navigate("/app/select-workspace");
       return;
     }
+    const holdOnBilling = shouldHoldOnboardingRedirectOnBilling({
+      pathname: path,
+      search: location.search,
+      hasPersonalAccess: hasPersonalAccess(authUser),
+      isOnProductTrial: isOnProductTrial(authUser),
+    });
     if (
       needsOnboarding &&
       !path.includes("/onboarding") &&
       !path.includes("/select-workspace") &&
-      !path.includes("/billing")
+      !holdOnBilling
     ) {
       navigate("/app/onboarding");
     }
   }, [
+    authUser,
     isLoading,
     isFetching,
     needsOnboarding,
@@ -204,6 +215,7 @@ export function AppShell({ children }: AppShellProps) {
     hasActiveMembership,
     isFamilyOnlyRole,
     location.pathname,
+    location.search,
     navigate,
   ]);
 
