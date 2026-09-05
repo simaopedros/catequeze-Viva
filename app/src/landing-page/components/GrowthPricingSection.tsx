@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
-import { ArrowRight, ArrowDown } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
@@ -9,17 +9,24 @@ import {
   trackViewPricing,
 } from "../../client/analytics/metaTracking";
 import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
-import { formatPrice } from "../../shared/currency";
+import {
+  annualDiscountPercent,
+  formatMonthlyFromAnnualCents,
+  formatPrice,
+} from "../../shared/currency";
 import { getSalesWhatsAppUrl } from "../../shared/salesContact";
+import { BillingIntervalToggle } from "../../catequese/components/BillingIntervalToggle";
+import type { BillingInterval } from "../../catequese/lib/intendedPlan";
 import { useTranslation } from "react-i18next";
-import { useLandingText, landingCopy } from "../hooks/useLandingText";
+import {
+  useLandingText,
+  landingCopy,
+  landingFeatureList,
+} from "../hooks/useLandingText";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 
-type LadderItem = { label: string; step: string };
-type StoryItem = { title: string; desc: string };
-
 /**
- * Catequista → Paróquia → Diocese as a growth ladder, not three competing products.
+ * Catequista → Paróquia → Diocese. Toggle mensal/anual. Few cards, clear CTAs.
  */
 export function GrowthPricingSection({ ns = "landing" }: { ns?: string }) {
   const tr = useLandingText(ns);
@@ -31,29 +38,36 @@ export function GrowthPricingSection({ ns = "landing" }: { ns?: string }) {
     isVisible,
   } = useScrollReveal();
   const tracked = useRef(false);
+  const [interval, setInterval] = useState<BillingInterval>("annual");
 
   const catequista = getBySlug("single");
   const paroquia = getBySlug("unlimited");
-  const catequistaCents =
-    catequista.prices.find(
-      (item) => item.interval === "monthly" && item.isActive,
-    )?.unitAmountCents ?? 0;
-  const paroquiaCents =
-    paroquia.prices.find((item) => item.interval === "monthly" && item.isActive)
+  const catequistaMonthly =
+    catequista.prices.find((p) => p.interval === "monthly" && p.isActive)
       ?.unitAmountCents ?? 0;
+  const catequistaAnnual =
+    catequista.prices.find((p) => p.interval === "annual" && p.isActive)
+      ?.unitAmountCents ?? 0;
+  const paroquiaMonthly =
+    paroquia.prices.find((p) => p.interval === "monthly" && p.isActive)
+      ?.unitAmountCents ?? 0;
+  const paroquiaAnnual =
+    paroquia.prices.find((p) => p.interval === "annual" && p.isActive)
+      ?.unitAmountCents ?? 0;
+  const discount = annualDiscountPercent(catequistaMonthly, catequistaAnnual);
 
-  const ladderRaw = tr("growth.ladder", { returnObjects: true });
-  const ladder = Array.isArray(ladderRaw) ? (ladderRaw as LadderItem[]) : [];
-  const storiesRaw = tr("growth.stories", { returnObjects: true });
-  const stories = Array.isArray(storiesRaw) ? (storiesRaw as StoryItem[]) : [];
   const eyebrow = String(
     tr("growth.eyebrow") || tr("pricing_eyebrow") || "",
   ).trim();
   const subtitle = String(
     tr("growth.subtitle") || tr("pricing_subtitle") || "",
   ).trim();
-
+  const featured = String(tr("growth.featured") || "").trim();
+  const note = String(tr("growth.note") || "").trim();
+  const billedAnnual = String(tr("growth.billed_annual") || "").trim();
+  const billedMonthly = String(tr("growth.billed_monthly") || "").trim();
   const dioceseHref = getSalesWhatsAppUrl(t("sales_whatsapp.prefill"));
+  const queryInterval = interval === "annual" ? "annual" : "monthly";
 
   useEffect(() => {
     if (!isVisible || tracked.current) return;
@@ -71,75 +85,65 @@ export function GrowthPricingSection({ ns = "landing" }: { ns?: string }) {
   return (
     <section
       id="planos"
-      className="scroll-mt-20 bg-background"
+      className="scroll-mt-20 border-y border-border/70 bg-muted/40"
       data-landing-growth-pricing
     >
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
+      <div className="mx-auto max-w-[70rem] px-5 py-16 sm:py-20">
         <div
           ref={headerRef}
-          className={cn("mx-auto max-w-2xl space-y-3 text-center", headerClass)}
+          className={cn(
+            "mb-8 flex flex-col gap-6 lg:mb-10 lg:flex-row lg:items-end lg:justify-between",
+            headerClass,
+          )}
         >
-          {eyebrow ? (
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              {eyebrow}
-            </p>
-          ) : null}
-          <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
-            {tr("growth.title")}
-          </h2>
-          <div
-            className="mx-auto h-px w-16 bg-gradient-to-r from-brand-gold to-transparent"
-            aria-hidden
-          />
-          {subtitle ? (
-            <p className="text-muted-foreground leading-relaxed">{subtitle}</p>
+          <div className="max-w-xl space-y-3">
+            {eyebrow ? (
+              <p className="text-[10px] font-bold uppercase tracking-[0.19em] text-brand-gold-muted">
+                {eyebrow}
+              </p>
+            ) : null}
+            <h2 className="font-brand-display text-[2.125rem] font-medium leading-[1.05] tracking-tight text-brand-ink sm:text-5xl text-balance">
+              {tr("growth.title") || tr("pricing_title")}
+            </h2>
+            {subtitle ? (
+              <p className="text-[15px] leading-relaxed text-muted-foreground">
+                {subtitle}
+              </p>
+            ) : null}
+          </div>
+          {discount > 0 ? (
+            <BillingIntervalToggle
+              interval={interval}
+              onChange={setInterval}
+              discountPercent={discount}
+              monthlyLabel={String(tr("price_monthly"))}
+              annualLabel={String(tr("price_annual"))}
+              discountLabel={String(
+                tr("growth.discount", { percent: discount }),
+              )}
+              ariaLabel={String(tr("price_annual"))}
+            />
           ) : null}
         </div>
 
-        {ladder.length > 0 ? (
-          <ol className="mx-auto mt-10 flex max-w-3xl flex-col items-center gap-2 sm:flex-row sm:items-stretch sm:justify-center sm:gap-0">
-            {ladder.map((item, index) => (
-              <li
-                key={`${item.label}-${item.step}`}
-                className="flex flex-col items-center sm:flex-1 sm:flex-row sm:items-center"
-              >
-                <div className="flex min-w-[7.5rem] flex-col items-center text-center">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                    {item.label}
-                  </span>
-                  <span className="font-brand-display mt-1 text-sm font-semibold text-brand-ink">
-                    {item.step}
-                  </span>
-                </div>
-                {index < ladder.length - 1 ? (
-                  <>
-                    <ArrowDown
-                      className="mt-1 h-4 w-4 text-brand-gold/80 sm:hidden"
-                      aria-hidden
-                    />
-                    <ArrowRight
-                      className="mx-1 hidden h-4 w-4 shrink-0 text-brand-gold/80 sm:block"
-                      aria-hidden
-                    />
-                  </>
-                ) : null}
-              </li>
-            ))}
-          </ol>
-        ) : null}
-
-        <div className="mt-10 grid gap-4 lg:grid-cols-3">
+        <div className="grid items-stretch gap-3.5 lg:grid-cols-3">
           <PlanCard
             name={landingCopy(tr, "plans.single.name", localize("single").name)}
             audience={landingCopy(tr, "plans.single.audience", "")}
             desc={landingCopy(tr, "plans.single.desc", "")}
-            price={formatPrice(catequistaCents)}
+            features={landingFeatureList(tr, "plans.single.features", [])}
+            price={
+              interval === "annual" && catequistaAnnual
+                ? formatMonthlyFromAnnualCents(catequistaAnnual)
+                : formatPrice(catequistaMonthly)
+            }
             period={String(tr("per_month"))}
+            billed={interval === "annual" ? billedAnnual : billedMonthly}
             cta={String(tr("price_cta_single"))}
-            href="/signup?plan=single"
+            href={`/signup?plan=single&interval=${queryInterval}`}
             ns={ns}
             planId="single"
-            monthlyCents={catequistaCents}
+            monthlyCents={catequistaMonthly}
           />
           <PlanCard
             name={landingCopy(
@@ -149,21 +153,30 @@ export function GrowthPricingSection({ ns = "landing" }: { ns?: string }) {
             )}
             audience={landingCopy(tr, "plans.unlimited.audience", "")}
             desc={landingCopy(tr, "plans.unlimited.desc", "")}
-            price={formatPrice(paroquiaCents)}
+            features={landingFeatureList(tr, "plans.unlimited.features", [])}
+            price={
+              interval === "annual" && paroquiaAnnual
+                ? formatMonthlyFromAnnualCents(paroquiaAnnual)
+                : formatPrice(paroquiaMonthly)
+            }
             period={String(tr("per_month"))}
+            billed={interval === "annual" ? billedAnnual : billedMonthly}
             cta={String(tr("price_cta_unlimited"))}
-            href="/signup?plan=unlimited"
+            href={`/signup?plan=unlimited&interval=${queryInterval}`}
             ns={ns}
             planId="unlimited"
-            monthlyCents={paroquiaCents}
+            monthlyCents={paroquiaMonthly}
             highlighted
+            badge={featured}
           />
           <PlanCard
             name={landingCopy(tr, "plans.diocese.name", "Plano Diocese")}
             audience={landingCopy(tr, "plans.diocese.audience", "")}
             desc={landingCopy(tr, "plans.diocese.desc", "")}
+            features={landingFeatureList(tr, "plans.diocese.features", [])}
             price={landingCopy(tr, "plans.diocese.price", "Sob consulta")}
             period=""
+            billed={landingCopy(tr, "growth.diocese_note", "")}
             cta={String(tr("price_cta_diocese"))}
             href={dioceseHref}
             ns={ns}
@@ -173,39 +186,11 @@ export function GrowthPricingSection({ ns = "landing" }: { ns?: string }) {
           />
         </div>
 
-        {stories.length > 0 ? (
-          <ol className="mt-12 grid gap-8 border-t border-border/60 pt-10 sm:grid-cols-3">
-            {stories.map((story, index) => (
-              <li key={story.title} className="space-y-2">
-                <span className="font-brand-display block text-[1.5rem] font-semibold tabular-nums leading-none text-brand-gold/80">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <h3 className="font-brand-display text-[1.05rem] font-semibold tracking-tight text-brand-ink">
-                  {story.title}
-                </h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {story.desc}
-                </p>
-              </li>
-            ))}
-          </ol>
+        {note ? (
+          <p className="mt-5 text-center text-[11px] text-muted-foreground">
+            {note}
+          </p>
         ) : null}
-
-        <p className="mt-10 text-center text-sm text-muted-foreground">
-          <Link
-            to="/pricing"
-            className="font-medium text-brand-ink underline underline-offset-2 hover:text-brand-ink-soft"
-            onClick={() =>
-              trackMarketingEvent("primary_cta_clicked", {
-                landing: ns,
-                placement: "growth_pricing_compare",
-                destination: "/pricing",
-              })
-            }
-          >
-            {tr("growth.compare")}
-          </Link>
-        </p>
       </div>
     </section>
   );
@@ -215,8 +200,10 @@ function PlanCard({
   name,
   audience,
   desc,
+  features,
   price,
   period,
+  billed,
   cta,
   href,
   ns,
@@ -224,12 +211,15 @@ function PlanCard({
   monthlyCents,
   highlighted = false,
   external = false,
+  badge = "",
 }: {
   name: string;
   audience: string;
   desc: string;
+  features: string[];
   price: string;
   period: string;
+  billed: string;
   cta: string;
   href: string;
   ns: string;
@@ -237,6 +227,7 @@ function PlanCard({
   monthlyCents: number;
   highlighted?: boolean;
   external?: boolean;
+  badge?: string;
 }) {
   const onClick = () => {
     trackMarketingEvent("primary_cta_clicked", {
@@ -256,10 +247,6 @@ function PlanCard({
     }
   };
 
-  const ctaClass = highlighted
-    ? "rounded-sm bg-brand-gold text-brand-ink shadow-none hover:bg-brand-gold/90 hover:text-brand-ink"
-    : undefined;
-
   const ctaInner = (
     <>
       {cta}
@@ -271,40 +258,72 @@ function PlanCard({
     <div
       id={`planos-${planId}`}
       className={cn(
-        "flex flex-col rounded-sm border p-6",
+        "relative flex flex-col rounded-xl border bg-white p-6",
         highlighted
-          ? "border-brand-gold/50 bg-white shadow-elevation-sm ring-1 ring-brand-gold/20"
-          : "border-border/70 bg-card",
+          ? "border-2 border-brand-gold shadow-[0_12px_35px_rgba(9,32,53,0.08)]"
+          : "border-border/70",
       )}
     >
+      {badge ? (
+        <span className="absolute right-4 top-4 rounded-full bg-brand-ink px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-white">
+          {badge}
+        </span>
+      ) : null}
       {audience ? (
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+        <p className="text-[10px] font-bold uppercase tracking-[0.19em] text-brand-gold-muted">
           {audience}
         </p>
       ) : null}
-      <h3 className="font-brand-display mt-2 text-xl font-semibold tracking-tight text-brand-ink">
+      <h3 className="mt-1.5 text-lg font-semibold tracking-tight text-brand-ink">
         {name}
       </h3>
+      {desc ? (
+        <p className="mt-1 min-h-9 text-xs leading-relaxed text-muted-foreground">
+          {desc}
+        </p>
+      ) : null}
       <div className="mt-3 flex flex-wrap items-baseline gap-1">
-        <span className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink">
+        <span className="font-brand-display text-[1.95rem] font-semibold tracking-tight text-brand-ink">
           {price}
         </span>
         {period ? (
-          <span className="text-sm text-muted-foreground">{period}</span>
+          <span className="text-xs text-muted-foreground">{period}</span>
         ) : null}
       </div>
-      {desc ? (
-        <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
-          {desc}
+      {billed ? (
+        <p className="mt-1 min-h-8 text-[10px] text-muted-foreground">
+          {billed}
         </p>
+      ) : (
+        <div className="min-h-8" />
+      )}
+      {features.length > 0 ? (
+        <ul className="mt-4 flex-1 space-y-2">
+          {features.map((item) => (
+            <li
+              key={item}
+              className="flex items-start gap-2 text-xs text-brand-ink/80"
+            >
+              <Check
+                className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600"
+                aria-hidden
+              />
+              {item}
+            </li>
+          ))}
+        </ul>
       ) : (
         <div className="flex-1" />
       )}
       <Button
         size="lg"
-        variant={highlighted ? undefined : "default"}
+        variant={highlighted ? undefined : external ? "outline" : "default"}
         asChild
-        className={cn("mt-6 w-full", ctaClass)}
+        className={cn(
+          "mt-5 w-full rounded-md",
+          highlighted &&
+            "bg-brand-gold text-white shadow-none hover:bg-brand-gold/90 hover:text-white",
+        )}
       >
         {external ? (
           <a

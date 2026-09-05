@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
-import { ArrowDown, ArrowRight, Loader2, Sparkles } from "lucide-react";
+import { ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";
@@ -28,12 +28,13 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
   const topics = Array.isArray(topicsRaw) ? (topicsRaw as DemoTopic[]) : [];
 
   const [selectedId, setSelectedId] = useState<string>("");
-  const [status, setStatus] = useState<"idle" | "generating" | "done">("idle");
+  const [status, setStatus] = useState<"idle" | "generating" | "done">("done");
   const [visibleSteps, setVisibleSteps] = useState(0);
 
   useEffect(() => {
     if (topics.length > 0 && !selectedId) {
       setSelectedId(topics[0].id);
+      setVisibleSteps(topics[0].steps.length);
     }
   }, [topics, selectedId]);
 
@@ -82,27 +83,23 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
   const doneNote = String(tr("demo.done_note") || "").trim();
 
   return (
-    <section id="demo" className="scroll-mt-20 bg-background">
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
+    <section id="demo" className="scroll-mt-20 bg-sky-50/80">
+      <div className="mx-auto max-w-[70rem] px-5 py-16 sm:py-20">
         <div
           ref={ref}
           className={cn(
-            "grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start",
+            "grid items-center gap-10 rounded-2xl border border-border/70 bg-white p-6 sm:p-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12 lg:p-12",
             className,
           )}
         >
           <div className="space-y-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-[10px] font-bold uppercase tracking-[0.19em] text-brand-gold-muted">
               {tr("demo.badge")}
             </p>
-            <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl text-balance">
+            <h2 className="font-brand-display text-[2.125rem] font-medium leading-[1.05] tracking-tight text-brand-ink sm:text-4xl text-balance">
               {tr("demo.title")}
             </h2>
-            <div
-              className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent"
-              aria-hidden
-            />
-            <p className="text-muted-foreground leading-relaxed max-w-md">
+            <p className="max-w-md text-[15px] leading-relaxed text-muted-foreground">
               {tr("demo.subtitle")}
             </p>
             {helper ? (
@@ -117,11 +114,11 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                     type="button"
                     onClick={() => {
                       setSelectedId(topic.id);
-                      setStatus("idle");
-                      setVisibleSteps(0);
+                      setStatus("done");
+                      setVisibleSteps(topic.steps.length);
                     }}
                     className={cn(
-                      "rounded-sm border px-3 py-1.5 text-sm font-medium transition-colors",
+                      "rounded-md border px-3 py-1.5 text-sm font-medium transition-colors",
                       selectedId === topic.id
                         ? "border-brand-ink bg-brand-ink text-white"
                         : "border-border bg-card text-muted-foreground hover:border-brand-ink/40 hover:text-brand-ink",
@@ -132,10 +129,26 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                 ))}
               </div>
             ) : null}
+
+            <Button size="lg" variant="default" asChild className="rounded-md">
+              <Link
+                to="/signup"
+                onClick={() =>
+                  trackMarketingEvent("primary_cta_clicked", {
+                    landing: ns,
+                    placement: "interactive_demo_cta",
+                    destination: "/signup",
+                  })
+                }
+              >
+                {tr("demo.cta")}
+                <ArrowRight className="h-4 w-4 shrink-0" />
+              </Link>
+            </Button>
           </div>
 
-          <div className="space-y-4">
-            <div className="rounded-sm border border-border/70 bg-white p-5 sm:p-6 shadow-elevation-sm">
+          <div className="grid gap-2.5 sm:grid-cols-2">
+            <div className="rounded-[10px] border border-border/70 bg-white p-4 sm:p-5">
               <p className="font-brand-display text-base font-semibold tracking-tight text-brand-ink">
                 {tr("demo.panel_title")}
               </p>
@@ -145,7 +158,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                 </p>
               ) : null}
 
-              <dl className="mt-5 space-y-3 text-sm">
+              <dl className="mt-5 space-y-2">
                 <Field
                   label={tr("demo.theme_label")}
                   value={selected.theme || selected.label}
@@ -185,18 +198,7 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
               </Button>
             </div>
 
-            <div className="flex justify-center" aria-hidden>
-              <ArrowDown className="h-5 w-5 text-brand-gold/80" />
-            </div>
-
-            <div
-              className={cn(
-                "rounded-sm border p-5 sm:p-6 min-h-[220px]",
-                status === "idle"
-                  ? "border-dashed border-border/70 bg-muted/10"
-                  : "border-brand-ink/15 bg-white",
-              )}
-            >
+            <div className="min-h-[220px] rounded-[10px] border border-border/70 border-l-[3px] border-l-brand-gold bg-white p-4 sm:p-5">
               {status === "idle" && (
                 <p className="text-sm text-muted-foreground text-center py-10">
                   {tr("demo.empty")}
@@ -216,7 +218,12 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                   </div>
                   <ol className="space-y-2">
                     {selected.steps
-                      .slice(0, visibleSteps)
+                      .slice(
+                        0,
+                        status === "done" && visibleSteps === 0
+                          ? selected.steps.length
+                          : visibleSteps,
+                      )
                       .map((step, index) => (
                         <li
                           key={`${selected.id}-${index}`}
@@ -242,29 +249,11 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
               )}
             </div>
 
-            {status === "done" && (
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                {doneNote ? (
-                  <p className="text-xs text-muted-foreground">{doneNote}</p>
-                ) : null}
-                <Button size="sm" variant="brand" asChild className="shrink-0">
-                  <Link
-                    to="/signup"
-                    onClick={() =>
-                      trackMarketingEvent("primary_cta_clicked", {
-                        landing: ns,
-                        placement: "interactive_demo_cta",
-                        destination: "/signup",
-                        topic: selected.id,
-                      })
-                    }
-                  >
-                    {tr("demo.cta")}
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                </Button>
-              </div>
-            )}
+            {status === "done" && doneNote ? (
+              <p className="sm:col-span-2 text-xs text-muted-foreground">
+                {doneNote}
+              </p>
+            ) : null}
           </div>
         </div>
       </div>
@@ -274,11 +263,11 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 border-b border-border/60 pb-2.5">
-      <dt className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
-        {label}
-      </dt>
-      <dd className="font-medium text-brand-ink">{value}</dd>
+    <div className="rounded-md border border-border/70 px-2.5 py-2 text-[11px] leading-snug text-muted-foreground">
+      <dt className="sr-only">{label}</dt>
+      <dd>
+        {label}: {value}
+      </dd>
     </div>
   );
 }

@@ -37,17 +37,20 @@ export function PublicNavbar({
         </Link>
 
         <nav className="hidden flex-1 items-center justify-center gap-8 md:flex">
-          <a href="/#recursos" className={linkClass}>
-            {t("resources")}
-          </a>
           <a href="/#como" className={linkClass}>
             {t("how_it_works")}
+          </a>
+          <a href="/#recursos" className={linkClass}>
+            {t("resources")}
           </a>
           {!hidePricing && (
             <a href="/#planos" className={linkClass}>
               {t("pricing")}
             </a>
           )}
+          <a href="/#duvidas" className={linkClass}>
+            {t("faq")}
+          </a>
         </nav>
 
         <div className="hidden items-center gap-5 md:flex">
@@ -87,18 +90,18 @@ export function PublicNavbar({
           <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
             <nav className="flex flex-col">
               <a
-                href="/#recursos"
-                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-brand-ink"
-                onClick={() => setOpen(false)}
-              >
-                {t("resources")}
-              </a>
-              <a
                 href="/#como"
                 className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-brand-ink"
                 onClick={() => setOpen(false)}
               >
                 {t("how_it_works")}
+              </a>
+              <a
+                href="/#recursos"
+                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-brand-ink"
+                onClick={() => setOpen(false)}
+              >
+                {t("resources")}
               </a>
               {!hidePricing && (
                 <a
@@ -109,6 +112,13 @@ export function PublicNavbar({
                   {t("pricing")}
                 </a>
               )}
+              <a
+                href="/#duvidas"
+                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-brand-ink"
+                onClick={() => setOpen(false)}
+              >
+                {t("faq")}
+              </a>
             </nav>
 
             <div className="mt-6 flex flex-col gap-2.5">
