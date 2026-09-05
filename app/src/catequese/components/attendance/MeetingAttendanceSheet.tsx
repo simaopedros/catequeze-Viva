@@ -5,6 +5,7 @@ import {
   useQuery,
   getMeetingAttendanceSheet,
   saveAttendanceBatch,
+  createMeeting as createMeetingAction,
 } from "wasp/client/operations";
 import { Button } from "../../../client/components/ui/button";
 import { Input } from "../../../client/components/ui/input";
@@ -34,6 +35,7 @@ import {
   type AttendanceQueueItem,
 } from "../../../client/offline/db";
 import { AppPanel } from "../../../client/components/brand/AppChrome";
+import { defaultMeetingDateIso } from "../../../shared/displayDate";
 
 const STATUS_CYCLE = ["PRESENT", "LATE", "ABSENT", "JUSTIFIED"] as const;
 
@@ -75,6 +77,7 @@ export function MeetingAttendanceSheet({
   const [query, setQuery] = useState("");
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const [bulkSaving, setBulkSaving] = useState(false);
+  const [creatingMeeting, setCreatingMeeting] = useState(false);
   const [cachedPayload, setCachedPayload] = useState<any | null>(null);
   const [undoStack, setUndoStack] = useState<UndoEntry[]>([]);
   const navigate = useNavigate();
@@ -468,19 +471,59 @@ export function MeetingAttendanceSheet({
   }
 
   if (!sheet?.meeting) {
+    const handleCreateTodayMeeting = async () => {
+      setCreatingMeeting(true);
+      try {
+        const created = await createMeetingAction({
+          classId,
+          title: t("sheet.default_meeting_title"),
+          date: defaultMeetingDateIso(),
+        });
+        if (created?.id) {
+          setMeetingId(created.id);
+          await refetch();
+          toast({ title: t("sheet.create_meeting_ok") });
+        }
+      } catch (e: any) {
+        toast({
+          title: t("sheet.create_meeting_error"),
+          description: e?.message,
+          variant: "destructive",
+        });
+      } finally {
+        setCreatingMeeting(false);
+      }
+    };
+
     return (
       <EmptyState
         icon={ClipboardList}
         title={t("sheet.empty")}
         description={t("sheet.empty_desc")}
         compact
-      />
+      >
+        <Button
+          type="button"
+          className="mt-4 h-11 min-h-11 w-full rounded-md sm:w-auto"
+          disabled={creatingMeeting}
+          onClick={() => void handleCreateTodayMeeting()}
+        >
+          {creatingMeeting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <ClipboardList className="mr-2 h-4 w-4" />
+          )}
+          {t("sheet.create_today_meeting")}
+        </Button>
+      </EmptyState>
     );
   }
 
   const meeting = sheet.meeting;
   const readOnly = meeting.status === "CANCELLED";
   const pendingMap = offline.pendingByProfile();
+  const siblingMeetings = sheet.siblingMeetings || [];
+  const showMeetingSwitcher = siblingMeetings.length > 1;
   const dataUpdatedAt = sheet.fetchedAt
     ? formatDate(sheet.fetchedAt, currentLocale, {
         day: "2-digit",
@@ -519,7 +562,7 @@ export function MeetingAttendanceSheet({
               })}
             </p>
             {dataUpdatedAt && (
-              <p className="mt-0.5 text-micro text-muted-foreground">
+              <p className="mt-0.5 hidden text-micro text-muted-foreground sm:block">
                 {t("sheet.data_updated_at", { time: dataUpdatedAt })}
               </p>
             )}
@@ -587,30 +630,36 @@ export function MeetingAttendanceSheet({
         </div>
 
         <div className="flex items-center justify-between gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            className="h-11 min-h-11 rounded-sm"
-            disabled={undoStack.length === 0 || readOnly}
-            onClick={undoLast}
-            aria-label={t("sheet.undo_last")}
-          >
-            <Undo2 className="mr-1.5 h-4 w-4" />
-            {t("sheet.undo")}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="h-11 min-h-11 rounded-sm"
-            onClick={() => setSwitcherOpen((v) => !v)}
-            aria-expanded={switcherOpen}
-          >
-            {t("sheet.switch_meeting")}
-            <ChevronDown className="ml-1 h-4 w-4" />
-          </Button>
+          {undoStack.length > 0 ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 min-h-11 rounded-sm"
+              disabled={readOnly}
+              onClick={undoLast}
+              aria-label={t("sheet.undo_last")}
+            >
+              <Undo2 className="mr-1.5 h-4 w-4" />
+              {t("sheet.undo")}
+            </Button>
+          ) : (
+            <span />
+          )}
+          {showMeetingSwitcher && (
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 min-h-11 rounded-sm"
+              onClick={() => setSwitcherOpen((v) => !v)}
+              aria-expanded={switcherOpen}
+            >
+              {t("sheet.switch_meeting")}
+              <ChevronDown className="ml-1 h-4 w-4" />
+            </Button>
+          )}
         </div>
 
-        {switcherOpen && (
+        {showMeetingSwitcher && switcherOpen && (
           <AppPanel className="max-h-48 overflow-y-auto p-1" padded={false}>
             {(sheet.siblingMeetings || []).map((s: any) => (
               <button

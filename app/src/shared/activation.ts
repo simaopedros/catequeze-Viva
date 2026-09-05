@@ -91,7 +91,7 @@ export function getTrialBannerMode(args: {
   return "hidden";
 }
 
-/** Next path after personal onboarding completion */
+/** Next path after personal onboarding — always land on roll call when a class exists. */
 export function getPersonalOnboardingNextPath(args: {
   classId: string | null | undefined;
   catechumensCount: number;
@@ -100,12 +100,9 @@ export function getPersonalOnboardingNextPath(args: {
   if (!classId) {
     return { to: "/app/classes", action: "open_class" };
   }
-  if (catechumensCount <= 0) {
-    return { to: `/app/classes/${classId}`, action: "add_people" };
-  }
-  // First incomplete real action after class + people
+  // Activation goal: first attendance in <2 min — people can be added from the sheet later.
   return {
     to: `/app/classes/${classId}/attendance`,
-    action: "register_attendance",
+    action: catechumensCount > 0 ? "register_attendance" : "add_people",
   };
 }

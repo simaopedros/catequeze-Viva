@@ -29,9 +29,12 @@ import {
   getOrCreateParishByOsmId,
   completeCoordinatorOnboarding,
   createClass,
+  createMeeting as createMeetingAction,
   ensurePersonalWorkspace,
 } from "wasp/client/operations";
 import { useAuth } from "wasp/client/auth";
+import { getPersonalOnboardingNextPath } from "../../shared/activation";
+import { defaultMeetingDateIso } from "../../shared/displayDate";
 import {
   trackMarketingEvent,
   trackOnboardingCompleted,
@@ -418,6 +421,18 @@ export default function OnboardingPage() {
 
         setClassId(created.id);
         setClassName(details.className.trim());
+
+        // Today's meeting so roll call works immediately after onboarding.
+        try {
+          await createMeetingAction({
+            classId: created.id,
+            title: t("class_setup.default_meeting_title"),
+            date: defaultMeetingDateIso(),
+          });
+        } catch {
+          /* non-blocking — user can create from the attendance sheet */
+        }
+
         setStep("catechumens");
       });
     } catch (e) {
@@ -440,7 +455,6 @@ export default function OnboardingPage() {
 
   const finishPersonal = (count: number) => {
     setCatechumensCount(count);
-    // Milestone: class + people (compat funnel). Full first value needs attendance OR meeting.
     if (count > 0) {
       trackMarketingEvent("first_people_added", {
         account_type: "personal",
@@ -454,42 +468,14 @@ export default function OnboardingPage() {
         milestone: "people",
       });
     }
-    const next =
-      count > 0 && classId
-        ? {
-            to: `/app/classes/${classId}/attendance`,
-            label: t("completion.primary_register_attendance"),
-          }
-        : count <= 0 && classId
-          ? {
-              to: `/app/classes/${classId}`,
-              label: t("completion.primary_add_people"),
-            }
-          : {
-              to: classId ? `/app/classes/${classId}` : "/app/classes",
-              label: t("completion.primary_open_class"),
-            };
-    setCompletionData({
-      role: "catechist",
-      title:
-        count > 0
-          ? t("completion.personal_class_ready_title")
-          : t("completion.personal_class_empty_title"),
-      description:
-        count > 0
-          ? t("completion.personal_class_ready_desc")
-          : t("completion.personal_class_empty_desc"),
-      items: [
-        { label: t("summary.type"), value: t("summary.personal_account") },
-        { label: t("summary.class"), value: className || "—" },
-        { label: t("summary.catechumens"), value: String(count) },
-      ],
-      primaryActionLabel: next.label,
-      primaryActionTo: next.to,
+    const next = getPersonalOnboardingNextPath({
+      classId,
+      catechumensCount: count,
     });
-    setStep("completion");
     clearPersisted();
     clearIntendedPlan();
+    emitOnboardingCompleted(next.to);
+    navigate(next.to);
   };
 
   const finishDiocesePath = () => {
@@ -604,27 +590,34 @@ export default function OnboardingPage() {
         });
       }
 
-      // Primary CTA → first pastoral value (class / attendance), not invite-only
+      // Primary CTA → first pastoral value: roll call, not meeting prep
       const primary = details?.className
-        ? {
-            label: t("completion.primary_register_attendance"),
-            to: createdClassId
-              ? `/app/classes/${createdClassId}/attendance`
-              : "/app/classes",
-          }
-        : {
-            label: t("completion.primary_create_class"),
-            to: "/app/classes/new",
-          };
+        ? getPersonalOnboardingNextPath({
+            classId: createdClassId,
+            catechumensCount: 0,
+          })
+        : { to: "/app/classes/new", action: "open_class" as const };
+
+      if (details?.className && createdClassId) {
+        try {
+          await createMeetingAction({
+            classId: createdClassId,
+            title: t("class_setup.default_meeting_title"),
+            date: defaultMeetingDateIso(),
+          });
+        } catch {
+          /* non-blocking */
+        }
+        clearPersisted();
+        emitOnboardingCompleted(primary.to);
+        navigate(primary.to);
+        return;
+      }
 
       setCompletionData({
         role: "coordinator",
-        title: details?.className
-          ? t("completion.manager_class_title")
-          : t("completion.manager_ready_title"),
-        description: details?.className
-          ? t("completion.manager_class_desc")
-          : t("completion.manager_ready_desc"),
+        title: t("completion.manager_ready_title"),
+        description: t("completion.manager_ready_desc"),
         items: [
           { label: t("summary.diocese"), value: diocese?.name || "—" },
           { label: t("summary.parish"), value: parish.name },
@@ -634,8 +627,8 @@ export default function OnboardingPage() {
             value: details?.className || t("summary.create_later"),
           },
         ],
-        primaryActionLabel: primary.label,
-        primaryActionTo: primary.to,
+        primaryActionLabel: t("completion.primary_create_class"),
+        primaryActionTo: "/app/classes/new",
       });
       setStep("completion");
       clearPersisted();

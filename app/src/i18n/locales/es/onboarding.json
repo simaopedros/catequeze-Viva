@@ -298,7 +298,7 @@
     "personal_class_title": "Primer grupo",
     "personal_class_subtitle": "Pon un nombre claro — el resto lo ajustas cuando quieras.",
     "personal_people_title": "Quién forma parte del grupo",
-    "personal_people_subtitle": "Sin personas, la asistencia y el seguimiento quedan vacíos.",
+    "personal_people_subtitle": "Añade nombres ahora o salta — la llamada ya está lista.",
     "diocese_title": "Licencia de la diócesis",
     "diocese_subtitle": "No hay checkout público. Hable con ventas y, si quiere, elija la diócesis."
   },
@@ -336,6 +336,7 @@
     "plan_limit": "Tu prueba aún no ha liberado el grupo. Espera unos segundos e inténtalo de nuevo.",
     "start_time_invalid": "Horario de inicio inválido. Usa el formato HH:mm (ej.: 19:00).",
     "end_time_invalid": "Horario de fin inválido. Usa el formato HH:mm (ej.: 20:30).",
+    "default_meeting_title": "Encuentro de hoy",
     "days": {
       "0": "Domingo",
       "1": "Lunes",
@@ -371,7 +372,10 @@
     "added_count": "{{count}} en el grupo",
     "continue": "Terminar con {{count}} en el grupo",
     "skip": "Terminar sin añadir ahora",
-    "skip_hint": "La asistencia quedará vacía hasta que incluyas a alguien.",
+    "continue_attendance": "Hacer llamada con {{count}} en el grupo",
+    "continue_attendance_empty": "Ir a la llamada",
+    "skip_to_attendance": "Saltar e ir directo a la llamada",
+    "skip_hint": "Puedes incluir catequizandos después, en el grupo o en la llamada.",
     "preview_valid": "{{count}} válidas",
     "preview_duplicate": "{{count}} duplicadas",
     "preview_invalid": "{{count}} inválidas",
