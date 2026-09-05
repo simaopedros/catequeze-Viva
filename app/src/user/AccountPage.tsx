@@ -327,6 +327,10 @@ function formatSubscriptionStatusMessage(
       date: prettyPrintEndOfBillingPeriod(datePaid),
     }),
     [SubscriptionStatus.Deleted]: t("plan_deleted"),
+    [SubscriptionStatus.Trialing]: t("plan_trial_other", {
+      count: 7,
+      date: prettyPrintEndOfBillingPeriod(datePaid),
+    }),
   };
 
   return statusToMessage[subscriptionStatus];
