@@ -14,6 +14,7 @@ import {
   shouldShowParishBillingConversion,
   shouldShowPersonalActiveBilling,
   shouldShowPersonalConversion,
+  shouldShowBillingUsageContrast,
 } from "../shared/billingOffer";
 
 const catalog = [
@@ -205,6 +206,42 @@ describe("shouldShowPersonalConversion", () => {
         canManageBilling: false,
       }),
     ).toBe(false);
+  });
+});
+
+describe("shouldShowBillingUsageContrast", () => {
+  it("hides empty 0/0 current usage on the unpaid paywall", () => {
+    expect(
+      shouldShowBillingUsageContrast({
+        isTrial: false,
+        classesUsed: 0,
+        catechumensUsed: 0,
+      }),
+    ).toBe(false);
+    expect(
+      shouldShowBillingUsageContrast({
+        isTrial: true,
+        classesUsed: 0,
+        catechumensUsed: 0,
+      }),
+    ).toBe(false);
+  });
+
+  it("keeps the contrast when a live trial already has usage", () => {
+    expect(
+      shouldShowBillingUsageContrast({
+        isTrial: true,
+        classesUsed: 1,
+        catechumensUsed: 0,
+      }),
+    ).toBe(true);
+    expect(
+      shouldShowBillingUsageContrast({
+        isTrial: true,
+        classesUsed: 0,
+        catechumensUsed: 22,
+      }),
+    ).toBe(true);
   });
 });
 

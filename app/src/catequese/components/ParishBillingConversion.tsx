@@ -21,6 +21,7 @@ import {
   formatMonthlyFromAnnualCents,
   formatPrice,
 } from "../../shared/currency";
+import { shouldShowBillingUsageContrast } from "../../shared/billingOffer";
 import type { BillingInterval } from "../lib/intendedPlan";
 import { BillingIntervalToggle } from "./BillingIntervalToggle";
 
@@ -150,6 +151,19 @@ export function ParishBillingConversion({
     variant === "parish" ||
     planCatechumenLimit == null ||
     !Number.isFinite(planCatechumenLimit);
+  const showUsageContrast = shouldShowBillingUsageContrast({
+    isTrial,
+    classesUsed,
+    catechumensUsed,
+  });
+  const planClassLabel = planClassesUnlimited
+    ? t(`${ns}.usage_unlimited_classes`)
+    : t(`${ns}.usage_plan_classes`, { count: planClassLimit });
+  const planCatechumenLabel = planCatechumensUnlimited
+    ? t(`${ns}.usage_unlimited_catechumens`)
+    : t(`${ns}.usage_plan_catechumens`, {
+        count: planCatechumenLimit,
+      });
 
   return (
     <div className="mx-auto max-w-3xl space-y-8" data-testid={testId}>
@@ -205,56 +219,69 @@ export function ParishBillingConversion({
         data-testid={`${
           variant === "catechist" ? "personal" : "parish"
         }-conversion-usage`}
-        aria-label={t(`${ns}.usage_aria`)}
-        className="grid items-center gap-4 rounded-sm border border-border/60 bg-muted/25 px-4 py-5 sm:grid-cols-[1fr_auto_1fr] sm:px-6"
+        aria-label={t(
+          showUsageContrast ? `${ns}.usage_aria` : `${ns}.usage_benefits_aria`,
+        )}
+        className={
+          showUsageContrast
+            ? "grid items-center gap-4 rounded-sm border border-border/60 bg-muted/25 px-4 py-5 sm:grid-cols-[1fr_auto_1fr] sm:px-6"
+            : "space-y-3 rounded-sm border border-border/60 bg-muted/25 px-4 py-5 sm:px-6"
+        }
       >
-        <div className="space-y-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            {t(`${ns}.usage_trial_label`)}
-          </p>
-          <div className="space-y-2">
-            <UsageStat
-              icon={Users}
-              label={t(`${ns}.usage_class`, { count: classesUsed })}
-            />
-            <UsageStat
-              icon={Users}
-              label={t(`${ns}.usage_catechumen`, {
-                count: catechumensUsed,
-              })}
-            />
-          </div>
-        </div>
+        {showUsageContrast ? (
+          <>
+            <div className="space-y-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                {t(`${ns}.usage_trial_label`)}
+              </p>
+              <div className="space-y-2">
+                <UsageStat
+                  icon={Users}
+                  label={t(`${ns}.usage_class`, { count: classesUsed })}
+                />
+                <UsageStat
+                  icon={Users}
+                  label={t(`${ns}.usage_catechumen`, {
+                    count: catechumensUsed,
+                  })}
+                />
+              </div>
+            </div>
 
-        <div className="flex justify-center text-muted-foreground" aria-hidden>
-          <ArrowDown className="h-5 w-5 sm:hidden" />
-          <ArrowRight className="hidden h-5 w-5 sm:block" />
-        </div>
+            <div
+              className="flex justify-center text-muted-foreground"
+              aria-hidden
+            >
+              <ArrowDown className="h-5 w-5 sm:hidden" />
+              <ArrowRight className="hidden h-5 w-5 sm:block" />
+            </div>
+          </>
+        ) : (
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            {t(`${ns}.usage_benefits_label`)}
+          </p>
+        )}
 
         <div className="space-y-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            {t(`${ns}.usage_plan_label`)}
-          </p>
-          <div className="space-y-2">
+          {showUsageContrast ? (
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              {t(`${ns}.usage_plan_label`)}
+            </p>
+          ) : null}
+          <div
+            className={
+              showUsageContrast ? "space-y-2" : "grid gap-2 sm:grid-cols-2"
+            }
+          >
             <UsageStat
               icon={planClassesUnlimited ? InfinityIcon : Users}
               unlimited={planClassesUnlimited}
-              label={
-                planClassesUnlimited
-                  ? t(`${ns}.usage_unlimited_classes`)
-                  : t(`${ns}.usage_plan_classes`, { count: planClassLimit })
-              }
+              label={planClassLabel}
             />
             <UsageStat
               icon={planCatechumensUnlimited ? InfinityIcon : Users}
               unlimited={planCatechumensUnlimited}
-              label={
-                planCatechumensUnlimited
-                  ? t(`${ns}.usage_unlimited_catechumens`)
-                  : t(`${ns}.usage_plan_catechumens`, {
-                      count: planCatechumenLimit,
-                    })
-              }
+              label={planCatechumenLabel}
             />
           </div>
         </div>

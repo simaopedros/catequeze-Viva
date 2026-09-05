@@ -73,7 +73,7 @@ export function isInstitutionalTrialDisplay(
 }
 
 /**
- * Short commercial billing page: status → usage contrast → parish offer.
+ * Short commercial billing page: status → plan benefits → parish offer.
  * Personal spaces, paid licenses, diocese workspaces and inherited coverage
  * keep the existing management layout.
  */
@@ -109,6 +109,18 @@ export function shouldShowPersonalConversion(opts: {
   canManageBilling: boolean;
 }): boolean {
   return opts.isPersonal && !opts.isPaidActive && opts.canManageBilling;
+}
+
+/**
+ * The paywall used to compare "your trial: 0 classes" with plan limits.
+ * Empty current usage is noise; show only what the trial/plan includes.
+ */
+export function shouldShowBillingUsageContrast(opts: {
+  isTrial: boolean;
+  classesUsed: number;
+  catechumensUsed: number;
+}): boolean {
+  return opts.isTrial && (opts.classesUsed > 0 || opts.catechumensUsed > 0);
 }
 
 /**
