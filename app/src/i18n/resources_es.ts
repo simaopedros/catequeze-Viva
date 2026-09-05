@@ -3242,13 +3242,13 @@ export const family_es = {
 
 export const landing_es = {
     "hero": {
-      "headline_line1": "Tú siembras la fe.",
-      "headline_line2": "Nosotros organizamos el grupo.",
-      "subheadline": "Catequese Viva cuida de la asistencia, la preparación del encuentro y el acompañamiento de cada catequizando, para que llegues cada semana con el corazón libre para lo esencial: presentar a Jesús a tu grupo.",
-      "badge": "Para quien dice sí a la misión de catequizar",
-      "cta_primary": "Empezar 7 días gratis",
+      "headline_line1": "Organiza el grupo, pasa lista en el celular y prepara el encuentro — sin planilla ni WhatsApp dispersos.",
+      "headline_line2": "",
+      "subheadline": "Tú catequizas. Nosotros cuidamos la organización.",
+      "badge": "Para catequistas",
+      "cta_primary": "Comenzar 7 días gratis — sin tarjeta",
       "cta_secondary": "Cómo funciona",
-      "trust_signals": "Sin cobro ahora • Sin tarjeta para empezar • Funciona en el celular",
+      "trust_signals": "7 días gratis · Sin tarjeta · Funciona en el celular",
       "cta_secondary_href": "/#como",
       "highlights": [
         "Asistencia y seguimiento desde el celular",
@@ -3256,7 +3256,7 @@ export const landing_es = {
         "Asistencia editorial para encuentros y mensajes a familias",
         "Las familias de tu grupo siguen todo por el portal"
       ],
-      "cta_helper": "Sin cobro ahora · sin tarjeta para empezar · más tiempo para tu grupo",
+      "cta_helper": "Después del trial, Plan Catequista R$ 9,90/mes.",
       "audience_label": "¿Cuál es tu realidad hoy?",
       "audiences": [
         {
@@ -3403,25 +3403,27 @@ export const landing_es = {
     ],
     "more_features": "Más recursos para cuando tu catequesis crezca",
     "more_features_sub": "Herramientas que siguen siendo útiles después del primer grupo.",
-    "steps_title": "Empieza hoy, en el tiempo que tienes",
-    "steps_subtitle": "Tres pasos y el próximo encuentro ya nace más ligero.",
+    "steps_title": "Tres pasos. Sin rodeos.",
+    "steps_subtitle": "",
     "steps": [
       {
-        "title": "Crea tu cuenta",
-        "desc": "Solo correo y contraseña. Rápido."
+        "title": "Arma el grupo",
+        "desc": "Crea la cuenta, importa o registra a los catecúmenos."
       },
       {
-        "title": "Activa tus 7 días gratis",
-        "desc": "Entra y empieza a usarlo enseguida, sin tarjeta."
+        "title": "Pasa lista",
+        "desc": "En el celular, durante el encuentro."
       },
       {
-        "title": "Vívelo con tu grupo",
-        "desc": "Arma el grupo, pasa lista y prepara un encuentro que toque el corazón."
+        "title": "Prepara el próximo encuentro",
+        "desc": "Tema, guion y avisos a las familias en el mismo lugar."
       }
     ],
-    "steps_cta": "Comenzar mi camino — 7 días gratis",
-    "pricing_title": "Tres caminos: catequista, parroquia y diócesis",
-    "pricing_subtitle": "Catequista R$ 9,90/mes. Parroquia desde R$ 99/mes. Diócesis con el equipo de ventas. 7 días de prueba en el Plan Catequista — sin tarjeta.",
+    "steps_cta": "Comenzar 7 días gratis — sin tarjeta",
+    "pricing_eyebrow": "Plan",
+    "pricing_title": "Plan Catequista",
+    "pricing_subtitle": "",
+    "pricing_institutional_link": "¿Parroquia o diócesis? Ver planes institucionales",
     "plans": {
       "single": {
         "name": "Plan Catequista",
@@ -3429,10 +3431,9 @@ export const landing_es = {
         "desc": "Tu grupo, la asistencia y los encuentros cuidados en el mismo lugar.",
         "price": "R$ 9,90",
         "features": [
-          "Hasta 3 grupos con 150 catequizandos en total",
-          "Asistencia e historial en el celular",
-          "Calendario de tu grupo",
-          "Portal para las familias de tu grupo"
+          "Hasta 3 grupos y 150 catequizandos",
+          "Asistencia en el celular e historial",
+          "Preparación del encuentro + portal de las familias del grupo"
         ]
       },
       "unlimited": {
@@ -3470,44 +3471,32 @@ export const landing_es = {
     "annual_discount": "2 meses gratis",
     "compare_plans": "Ver detalles del plan",
     "faq_title": "Antes de empezar",
-    "faq_subtitle": "Respuestas claras para que decidas con calma.",
+    "faq_subtitle": "",
     "faqs": [
       {
-        "q": "¿Qué puedo hacer en el trial de 7 días?",
-        "a": "Organizar tu grupo, pasar lista en el celular y preparar el próximo encuentro — el flujo real de tu semana. Sin tarjeta y sin cobro ahora."
-      },
-      {
-        "q": "¿Necesito tarjeta para el trial?",
-        "a": "No. El trial de 7 días no pide tarjeta. La tarjeta solo entra si decides suscribirte después."
+        "q": "¿El trial de 7 días pide tarjeta?",
+        "a": "No. Sin tarjeta y sin cobro ahora. La tarjeta solo si te suscribes después."
       },
       {
         "q": "¿Qué pasa cuando terminan los 7 días?",
-        "a": "No se cobra nada — nunca registraste una tarjeta. Si quieres continuar, te suscribes al Plan Catequista en la página Planes. Si no, tu cuenta simplemente se detiene ahí."
+        "a": "No se cobra nada. Si quieres continuar, te suscribes al Plan Catequista. Si no, la cuenta se detiene ahí."
       },
       {
         "q": "¿Necesito a la parroquia para empezar?",
-        "a": "No. Puedes empezar en el espacio personal con el Plan Catequista. Cuando necesites equipo y más grupos, organízalo como parroquia. La diócesis entra por venta asistida y cubre las parroquias con licencia activa."
+        "a": "No. Empiezas en el espacio personal con el Plan Catequista. Parroquia y diócesis entran después, si lo necesitas."
       },
       {
         "q": "¿Funciona en el celular?",
-        "a": "Sí, en el navegador del celular — sin instalar app. La asistencia está pensada para el encuentro."
+        "a": "Sí, en el navegador del celular. La asistencia fue hecha para el encuentro."
       },
       {
-        "q": "¿Puedo importar la planilla del grupo?",
-        "a": "Sí. Puedes importar catequizandos en lote y evitar el alta manual desde cero."
-      },
-      {
-        "q": "¿Los datos de los niños están protegidos?",
-        "a": "Sí. Hay control de acceso, consentimientos y recursos alineados a la LGPD."
-      },
-      {
-        "q": "Todavía tengo dudas sobre el plan. ¿Cómo hablo con ustedes?",
-        "a": "Habla con el equipo de ventas por WhatsApp al (11) 93624-4752. Resolvemos dudas sobre la suscripción y te ayudamos a elegir el plan."
+        "q": "¿Cuánto cuesta?",
+        "a": "Plan Catequista: R$ 9,90/mes o R$ 99/año. Parroquia y diócesis: ver planes institucionales."
       }
     ],
-    "cta_title": "Recupera el tiempo para lo que te llamó a la catequesis",
-    "cta_subtitle": "Deja atrás el papeleo y los mensajes dispersos. Empieza los 7 días gratis con tu grupo — y llega al próximo encuentro con el corazón más ligero.",
-    "cta_button": "Comenzar mi camino — 7 días gratis",
+    "cta_title": "Empieza en el próximo encuentro",
+    "cta_subtitle": "7 días gratis. Sin tarjeta. Plan Catequista R$ 9,90/mes si quieres continuar.",
+    "cta_button": "Comenzar 7 días gratis — sin tarjeta",
     "cta_badge": "Trial",
     "cta_see_plans": "Ver el plan",
     "mock": {
@@ -3621,11 +3610,11 @@ export const landing_es = {
     "testimonials_title": "Testimonios",
     "testimonials_subtitle": "Cuando tengamos citas autorizadas de catequistas y parroquias, aparecerán aquí.",
     "testimonials": [],
-    "cta_helper": "Sin cobro ahora · sin tarjeta para empezar",
+    "cta_helper": "",
     "mobile_cta": {
-      "title": "7 días para sentir la diferencia con tu grupo",
-      "subtitle": "Sin cobro ahora · sin tarjeta",
-      "button": "Empezar 7 días gratis"
+      "title": "7 días gratis",
+      "subtitle": "Sin tarjeta",
+      "button": "Comenzar 7 días gratis — sin tarjeta"
     },
     "proof": {
       "badge": "Empieza con tranquilidad",
@@ -3690,8 +3679,8 @@ export const landing_es = {
     },
     "steps_endowed_title": "Ya estás aquí",
     "steps_endowed_desc": "Conociendo la plataforma",
-    "price_trial_badge": "7 días gratis · Sin tarjeta",
-    "price_trial_note": "El trial de 7 días no pide tarjeta y no genera cobros. Cuando termina, no se cobra nada — solo pagas si decides suscribirte.",
+    "price_trial_badge": "7 días gratis, sin tarjeta",
+    "price_trial_note": "",
     "comparison": {
       "title": "Deja de dispersar tu catequesis en papel, planilla y WhatsApp",
       "subtitle": "Compara tu flujo actual con Catequese Viva en lo que importa en tu semana con el grupo.",
@@ -3733,9 +3722,10 @@ export const landing_es = {
         }
       ]
     },
-    "faq_cta": "Comenzar mi camino — 7 días gratis",
-    "faq_cta_helper": "Sin cobro ahora · úsalo en tu próximo encuentro",
-    "price_cta_single": "Empezar mis 7 días con mi grupo",
+    "faq_cta": "Comenzar 7 días gratis — sin tarjeta",
+    "faq_cta_helper": "",
+    "price_cta_single": "Comenzar 7 días gratis — sin tarjeta",
+    "price_annual_note": "o R$ 99/año",
     "price_cta_unlimited": "Empezar el Plan Parroquia",
     "price_cta_diocese": "Hablar con ventas sobre la diócesis",
     "price_annual_equivalent": "Equivale a {{price}}/mes",
@@ -3799,26 +3789,26 @@ export const landing_es = {
     },
     "testimonials_note": "Fase de lanzamiento: no publicamos testimonios sin autorización.",
     "outcomes": {
-      "title": "Más corazón en el encuentro, menos peso en la semana",
-      "subtitle": "Tres cambios que sientes en tu primera semana de camino.",
+      "title": "Qué cambia en tu semana",
+      "subtitle": "",
       "items": [
         {
-          "title": "Grupo acogido",
-          "desc": "Cada catequizando con nombre, historia y asistencia acompañada — nadie se queda atrás."
+          "title": "Grupo organizado",
+          "desc": "Registro único de catequizandos. Importa por planilla si ya tienes lista."
         },
         {
           "title": "Asistencia en el celular",
-          "desc": "Registra la presencia en segundos y nota quién está faltando — para ir a buscar a quien se alejó."
+          "desc": "Presencia, falta, atraso y justificación en el encuentro. El historial queda guardado."
         },
         {
-          "title": "Encuentro preparado con calma",
-          "desc": "Prepara el guion con la Biblia y el Catecismo al lado y llega tranquilo para anunciar la Palabra."
+          "title": "Encuentro preparado",
+          "desc": "Guión con Biblia y Catecismo en el mismo lugar. Tú lo revisas antes de usar."
         }
       ],
       "eyebrow": "En la práctica"
     },
-    "steps_eyebrow": "Empezar",
-    "faq_eyebrow": "Dudas"
+    "steps_eyebrow": "Cómo funciona",
+    "faq_eyebrow": ""
   } as const;
 
 export const landingIa_es = {

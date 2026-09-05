@@ -72,11 +72,10 @@ test.describe("landing funnel — meta and conversion surfaces", () => {
     await openLanding(page, "/");
     const pricing = page.locator("#planos");
     await expect(pricing).toBeAttached({ timeout: 15000 });
-    // Scroll into view — lazy section
     await pricing.scrollIntoViewIfNeeded();
     await expect(pricing).toBeVisible({ timeout: 10000 });
-    const wa = pricing.locator('a[href*="wa.me/5511936244752"]');
-    await expect(wa).toBeVisible({ timeout: 10000 });
+    const institutional = pricing.locator('a[href="/pricing"]');
+    await expect(institutional).toBeVisible({ timeout: 10000 });
   });
 
   test("viewport meta never pins maximum-scale=1", async ({ page }) => {

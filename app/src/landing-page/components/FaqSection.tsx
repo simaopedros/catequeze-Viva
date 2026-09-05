@@ -15,22 +15,29 @@ export function FaqSection({
   const tr = useLandingText(ns);
   const faqs = tr("faqs", { returnObjects: true }) as any[];
   const list = Array.isArray(faqs) ? faqs : [];
+  const eyebrow = String(tr("faq_eyebrow") || "").trim();
+  const subtitle = String(tr("faq_subtitle") || "").trim();
+  const faqCtaHelper = String(tr("faq_cta_helper") || "").trim();
 
   return (
     <section className="bg-background">
       <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
           <div className="space-y-3 lg:sticky lg:top-24 lg:self-start">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              {tr("faq_eyebrow")}
-            </p>
+            {eyebrow ? (
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                {eyebrow}
+              </p>
+            ) : null}
             <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
               {tr("faq_title")}
             </h2>
             <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
-            <p className="text-muted-foreground leading-relaxed max-w-sm">
-              {tr("faq_subtitle")}
-            </p>
+            {subtitle ? (
+              <p className="text-muted-foreground leading-relaxed max-w-sm">
+                {subtitle}
+              </p>
+            ) : null}
 
             {showCta && (
               <div className="pt-4">
@@ -54,9 +61,11 @@ export function FaqSection({
                     <ArrowRight className="h-4 w-4 shrink-0" />
                   </Link>
                 </Button>
-                <p className="mt-3 text-xs text-muted-foreground">
-                  {tr("faq_cta_helper")}
-                </p>
+                {faqCtaHelper ? (
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    {faqCtaHelper}
+                  </p>
+                ) : null}
                 <SalesWhatsAppCta
                   variant="inline"
                   placement={`${ns}_faq`}

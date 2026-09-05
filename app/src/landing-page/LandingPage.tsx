@@ -11,16 +11,12 @@ const loadOutcomes = () =>
 const loadSteps = () =>
   import("./components/StepsSection").then((m) => ({
     default: function Steps() {
-      return <m.StepsSection responsiveCtas />;
+      return <m.StepsSection responsiveCtas ctaAfterSteps />;
     },
   }));
-const loadProof = () =>
-  import("./components/ProofSection").then((m) => ({
-    default: m.ProofSection,
-  }));
-const PricingPreviewSection = lazy(() =>
-  import("./components/PricingPreviewSection").then((m) => ({
-    default: m.PricingPreviewSection,
+const LeanPricingSection = lazy(() =>
+  import("./components/LeanPricingSection").then((m) => ({
+    default: m.LeanPricingSection,
   })),
 );
 const loadCta = () =>
@@ -31,10 +27,8 @@ const loadCta = () =>
   }));
 
 /**
- * Main landing: promise → value → proof → pricing → CTA.
- * Plan cards come from the live public catalog (Admin isPublic + isActive),
- * same source as /pricing and ads landings.
- * Below-fold sections mount near viewport with independent Suspense boundaries.
+ * Main landing: concrete job → outcomes → steps → single-plan pricing → FAQ → CTA.
+ * Lean funnel focused on individual catequista trial activation.
  */
 export default function LandingPage() {
   return (
@@ -42,11 +36,10 @@ export default function LandingPage() {
       <HeroSection responsiveCtas variant="editorial" />
       <LazySection loader={loadOutcomes} />
       <LazySection loader={loadSteps} />
-      <LazySection loader={loadProof} />
       <LazySection>
-        <PricingPreviewSection ns="landing" />
+        <LeanPricingSection ns="landing" singlePlanOnly />
       </LazySection>
-      <FaqSection />
+      <FaqSection showCta={false} />
       <LazySection loader={loadCta} />
     </LandingShell>
   );

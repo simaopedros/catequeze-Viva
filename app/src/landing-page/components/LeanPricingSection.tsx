@@ -17,10 +17,15 @@ import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import { formatPrice } from "../../shared/currency";
 
 /**
- * Minimal pricing for the main landing: trial-first, no annual toggle noise.
- * Launch phase shows only the Single plan.
+ * Minimal pricing for the main landing: one Catequista card, trial-first.
  */
-export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
+export function LeanPricingSection({
+  ns = "landing",
+  singlePlanOnly = false,
+}: {
+  ns?: string;
+  singlePlanOnly?: boolean;
+}) {
   const tr = useLandingText(ns);
   const { localize, publicPlans, getBySlug } = usePlanCatalog();
   const {
@@ -30,37 +35,141 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
   } = useScrollReveal();
   const tracked = useRef(false);
 
+  const planSlug = "single";
+  const catalogPlan = getBySlug(planSlug);
+  const loc = localize(catalogPlan);
+  const monthlyCents =
+    catalogPlan.prices.find(
+      (item) => item.interval === "monthly" && item.isActive,
+    )?.unitAmountCents ?? 0;
+  const price = formatPrice(monthlyCents);
+  const features = landingFeatureList(tr, `plans.${planSlug}.features`, loc.features);
+  const href = `/signup?plan=${planSlug}`;
+  const eyebrow = String(tr("pricing_eyebrow") || "").trim();
+  const subtitle = String(tr("pricing_subtitle") || "").trim();
+  const trialNote = String(tr("price_trial_note") || "").trim();
+  const annualNote = String(tr("price_annual_note") || "").trim();
+  const institutionalLink = String(tr("pricing_institutional_link") || "").trim();
+
+  const visiblePlans = publicPlans.filter(
+    (plan) =>
+      plan.kind === "subscription" &&
+      plan.slug !== "catechist_free" &&
+      (!singlePlanOnly || plan.slug === planSlug),
+  );
+
   useEffect(() => {
     if (!isVisible || tracked.current) return;
     tracked.current = true;
     trackMarketingEvent("pricing_viewed", {
       landing: ns,
-      placement: "landing_lean_pricing",
+      placement: singlePlanOnly
+        ? "landing_lean_pricing_single"
+        : "landing_lean_pricing",
     });
-    // Meta ViewContent when pricing enters viewport (main Meta Ads landing surface).
     trackViewPricing({
-      plan_ids: publicPlans
-        .filter(
-          (plan) =>
-            plan.kind === "subscription" && plan.slug !== "catechist_free",
-        )
-        .map((plan) => plan.slug),
+      plan_ids: visiblePlans.map((plan) => plan.slug),
       content_name: "Planos Catechis Landing",
     });
-  }, [isVisible, ns, publicPlans]);
+  }, [isVisible, ns, visiblePlans, singlePlanOnly]);
 
-  const plans = publicPlans
-    .filter(
-      (plan) => plan.kind === "subscription" && plan.slug !== "catechist_free",
-    )
-    .map((plan) => ({
-      id: plan.slug,
-      price: formatPrice(
-        plan.prices.find((item) => item.interval === "monthly" && item.isActive)
-          ?.unitAmountCents ?? 0,
-      ),
-      highlight: plan.highlight,
-    }));
+  if (singlePlanOnly) {
+    return (
+      <section
+        id="planos"
+        className="scroll-mt-20 max-w-4xl mx-auto px-4 py-14 md:py-16"
+      >
+        <div
+          ref={headerRef}
+          className={`mb-8 space-y-3 text-center ${headerClass}`}
+        >
+          {eyebrow ? (
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              {eyebrow}
+            </p>
+          ) : null}
+          <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
+            {tr("pricing_title")}
+          </h2>
+          <div
+            className="mx-auto h-px w-16 bg-gradient-to-r from-brand-gold to-transparent"
+            aria-hidden
+          />
+          {subtitle ? (
+            <p className="text-muted-foreground max-w-xl mx-auto">{subtitle}</p>
+          ) : null}
+        </div>
+
+        <div className="max-w-lg mx-auto">
+          <div className="rounded-lg border border-brand-ink/20 bg-card p-6 shadow-elevation-sm">
+            <div className="flex flex-wrap items-baseline gap-2">
+              <span className="font-brand-display text-4xl font-semibold tracking-tight text-brand-ink">
+                {price}
+              </span>
+              <span className="text-sm text-muted-foreground">
+                {tr("per_month")}
+              </span>
+            </div>
+            {annualNote ? (
+              <p className="mt-1 text-sm text-muted-foreground">{annualNote}</p>
+            ) : null}
+            <p className="mt-3 inline-flex rounded-full bg-brand-ink/8 px-3 py-1 text-xs font-medium text-brand-ink">
+              {tr("price_trial_badge")}
+            </p>
+            <ul className="mt-5 space-y-2.5 text-sm">
+              {features.map((feature) => (
+                <li key={feature} className="flex items-start gap-2">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-ink" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+            <Button size="lg" variant="brand" asChild className="mt-6 w-full">
+              <Link
+                to={href}
+                onClick={() => {
+                  trackMarketingEvent("primary_cta_clicked", {
+                    landing: ns,
+                    placement: "lean_pricing_single",
+                    destination: href,
+                    plan: planSlug,
+                  });
+                  trackLead({
+                    content_name: String(loc.name),
+                    plan_id: planSlug,
+                    content_ids: [planSlug],
+                    value: Number((monthlyCents / 100).toFixed(2)),
+                    currency: "BRL",
+                  });
+                }}
+              >
+                {tr("price_cta_single")}
+                <ArrowRight className="h-4 w-4 shrink-0" />
+              </Link>
+            </Button>
+          </div>
+
+          {institutionalLink ? (
+            <p className="mt-6 text-center text-sm text-muted-foreground">
+              <Link
+                to="/pricing"
+                className="font-medium text-brand-ink underline underline-offset-2 hover:text-brand-ink-soft"
+                onClick={() =>
+                  trackMarketingEvent("primary_cta_clicked", {
+                    landing: ns,
+                    placement: "lean_pricing_institutional",
+                    destination: "/pricing",
+                  })
+                }
+              >
+                {institutionalLink}
+              </Link>
+            </p>
+          ) : null}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -74,61 +183,63 @@ export function LeanPricingSection({ ns = "landing" }: { ns?: string }) {
         <h2 className="font-brand-display text-2xl font-semibold tracking-tight text-brand-ink sm:text-3xl">
           {tr("pricing_title")}
         </h2>
-        <p className="text-muted-foreground max-w-xl mx-auto">
-          {tr("pricing_subtitle")}
-        </p>
-        <p className="text-sm font-medium text-brand-ink">
-          {tr("price_trial_note")}
-        </p>
+        {subtitle ? (
+          <p className="text-muted-foreground max-w-xl mx-auto">{subtitle}</p>
+        ) : null}
+        {trialNote ? (
+          <p className="text-sm font-medium text-brand-ink">{trialNote}</p>
+        ) : null}
       </div>
 
       <div
         className={
-          plans.length < 2 ? "max-w-lg mx-auto" : "grid gap-4 sm:grid-cols-2"
+          visiblePlans.length < 2
+            ? "max-w-lg mx-auto"
+            : "grid gap-4 sm:grid-cols-2"
         }
       >
-        {plans.map((plan, index) => {
-          const name = localize(plan.id).name;
-          const catalogPlan = getBySlug(plan.id);
-          const loc = localize(catalogPlan);
+        {visiblePlans.map((plan, index) => {
+          const name = localize(plan.slug).name;
+          const planCatalog = getBySlug(plan.slug);
+          const planLoc = localize(planCatalog);
           const audience = landingCopy(
             tr,
-            `plans.${plan.id}.audience`,
-            catalogPlan.description || loc.name,
+            `plans.${plan.slug}.audience`,
+            planCatalog.description || planLoc.name,
           );
           const featureList = landingFeatureList(
             tr,
-            `plans.${plan.id}.features`,
-            loc.features,
+            `plans.${plan.slug}.features`,
+            planLoc.features,
           );
-          const href = `/signup?plan=${plan.id}`;
-          const monthlyCents =
-            catalogPlan.prices.find(
+          const planHref = `/signup?plan=${plan.slug}`;
+          const planMonthlyCents =
+            planCatalog.prices.find(
               (item) => item.interval === "monthly" && item.isActive,
             )?.unitAmountCents ?? 0;
 
           return (
             <PlanCard
-              key={plan.id}
+              key={plan.slug}
               delay={index * 40}
               name={String(name)}
               audience={String(audience)}
-              price={plan.price}
+              price={formatPrice(planMonthlyCents)}
               period={String(tr("per_month"))}
               features={featureList}
               highlight={plan.highlight}
               popularLabel={String(tr("price_popular"))}
               cta={String(
                 tr(
-                  plan.id === "unlimited"
+                  plan.slug === "unlimited"
                     ? "price_cta_unlimited"
                     : "price_cta_single",
                 ),
               )}
-              href={href}
+              href={planHref}
               ns={ns}
-              planId={plan.id}
-              monthlyCents={monthlyCents}
+              planId={plan.slug}
+              monthlyCents={planMonthlyCents}
             />
           );
         })}

@@ -64,6 +64,10 @@ export function HeroSection({
             .filter(Boolean)
         : [];
 
+  const ctaHelper = tr("hero.cta_helper");
+  const hasCtaHelper =
+    typeof ctaHelper === "string" && ctaHelper.trim().length > 0;
+
   const ctaBlock = (
     <div
       className={cn(
@@ -93,6 +97,17 @@ export function HeroSection({
           <ArrowRight className="h-4 w-4 shrink-0" />
         </Link>
       </Button>
+
+      {hasCtaHelper ? (
+        <p
+          className={cn(
+            "text-sm text-muted-foreground leading-relaxed",
+            isEditorial ? "max-w-sm" : "max-w-sm text-center",
+          )}
+        >
+          {ctaHelper}
+        </p>
+      ) : null}
 
       {trustParts.length > 0 ? (
         <ul
