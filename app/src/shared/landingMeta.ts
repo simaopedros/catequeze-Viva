@@ -23,9 +23,9 @@ export const SITE_ORIGIN =
 export const LANDING_ROUTE_META: Record<string, LandingRouteMeta> = {
   "/": {
     title:
-      "Catequese Viva — Você semeia a fé, a gente organiza a turma | Chamada, encontros e famílias",
+      "Catequese Viva — turma, chamada e encontro no mesmo lugar",
     description:
-      "Feita para a missão do catequista: sua turma, a chamada e o próximo encontro no mesmo lugar. 7 dias grátis, sem cartão e sem cobrança agora.",
+      "Organize a turma, faça a chamada no celular e prepare o encontro. 7 dias grátis, sem cartão. Plano Catequista R$ 9,90/mês.",
     canonicalPath: "/",
     campaign: "main",
   },

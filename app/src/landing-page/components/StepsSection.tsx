@@ -8,14 +8,44 @@ import { Button } from "../../client/components/ui/button";
 export function StepsSection({
   ns = "landing",
   responsiveCtas = false,
+  ctaAfterSteps = false,
 }: {
   ns?: string;
   responsiveCtas?: boolean;
   showEndowed?: boolean;
+  ctaAfterSteps?: boolean;
 }) {
   const tr = useLandingText(ns);
   const steps = tr("steps", { returnObjects: true }) as any[];
   const list = Array.isArray(steps) ? steps : [];
+  const eyebrow = String(tr("steps_eyebrow") || "").trim();
+  const subtitle = String(tr("steps_subtitle") || "").trim();
+
+  const ctaButton = (
+    <Button
+      size="lg"
+      variant="default"
+      asChild
+      className={cn(
+        "rounded-sm shadow-none shrink-0",
+        responsiveCtas && "h-auto min-h-11 w-full max-w-sm lg:w-auto",
+      )}
+    >
+      <Link
+        to="/signup"
+        onClick={() =>
+          trackMarketingEvent("primary_cta_clicked", {
+            landing: ns,
+            placement: "steps",
+            destination: "/signup",
+          })
+        }
+      >
+        {tr("steps_cta")}
+        <ArrowRight className="h-4 w-4 shrink-0" />
+      </Link>
+    </Button>
+  );
 
   return (
     <section
@@ -23,43 +53,28 @@ export function StepsSection({
       className="scroll-mt-20 border-y border-border/50 bg-background"
     >
       <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
-        <div className="flex flex-col gap-8 sm:gap-10 lg:flex-row lg:items-end lg:justify-between">
+        <div
+          className={cn(
+            "flex flex-col gap-8 sm:gap-10",
+            !ctaAfterSteps && "lg:flex-row lg:items-end lg:justify-between",
+          )}
+        >
           <div className="max-w-md space-y-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              {tr("steps_eyebrow")}
-            </p>
+            {eyebrow ? (
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                {eyebrow}
+              </p>
+            ) : null}
             <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
               {tr("steps_title")}
             </h2>
             <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
-            <p className="text-muted-foreground leading-relaxed">
-              {tr("steps_subtitle")}
-            </p>
+            {subtitle ? (
+              <p className="text-muted-foreground leading-relaxed">{subtitle}</p>
+            ) : null}
           </div>
 
-          <Button
-            size="lg"
-            variant="default"
-            asChild
-            className={cn(
-              "rounded-sm shadow-none shrink-0",
-              responsiveCtas && "h-auto min-h-11 w-full max-w-sm lg:w-auto",
-            )}
-          >
-            <Link
-              to="/signup"
-              onClick={() =>
-                trackMarketingEvent("primary_cta_clicked", {
-                  landing: ns,
-                  placement: "steps",
-                  destination: "/signup",
-                })
-              }
-            >
-              {tr("steps_cta")}
-              <ArrowRight className="h-4 w-4 shrink-0" />
-            </Link>
-          </Button>
+          {!ctaAfterSteps ? ctaButton : null}
         </div>
 
         <ol className="mt-12 grid gap-8 sm:mt-14 sm:grid-cols-3 sm:gap-10">
@@ -84,6 +99,8 @@ export function StepsSection({
             </li>
           ))}
         </ol>
+
+        {ctaAfterSteps ? <div className="mt-10">{ctaButton}</div> : null}
       </div>
     </section>
   );

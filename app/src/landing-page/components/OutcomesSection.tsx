@@ -9,6 +9,8 @@ export function OutcomesSection({ ns = "landing" }: { ns?: string }) {
   const tr = useLandingText(ns);
   const items = tr("outcomes.items", { returnObjects: true });
   const list = Array.isArray(items) ? (items as Outcome[]) : [];
+  const eyebrow = String(tr("outcomes.eyebrow") || "").trim();
+  const subtitle = String(tr("outcomes.subtitle") || "").trim();
 
   if (list.length === 0) return null;
 
@@ -16,16 +18,18 @@ export function OutcomesSection({ ns = "landing" }: { ns?: string }) {
     <section id="recursos" className="scroll-mt-20 bg-background">
       <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
         <div className="max-w-xl space-y-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            {tr("outcomes.eyebrow")}
-          </p>
+          {eyebrow ? (
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              {eyebrow}
+            </p>
+          ) : null}
           <h2 className="font-brand-display text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
             {tr("outcomes.title")}
           </h2>
           <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
-          <p className="text-muted-foreground leading-relaxed">
-            {tr("outcomes.subtitle")}
-          </p>
+          {subtitle ? (
+            <p className="text-muted-foreground leading-relaxed">{subtitle}</p>
+          ) : null}
         </div>
 
         <ol className="mt-12 grid gap-0 border-t border-border/60 md:grid-cols-3 md:border-t-0 md:border-l md:border-border/60">

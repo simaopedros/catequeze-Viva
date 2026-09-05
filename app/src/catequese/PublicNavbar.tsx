@@ -44,13 +44,10 @@ export function PublicNavbar({
             {t("how_it_works")}
           </a>
           {!hidePricing && (
-            <Link to="/pricing" className={linkClass}>
+            <a href="/#planos" className={linkClass}>
               {t("pricing")}
-            </Link>
+            </a>
           )}
-          <Link to="/contact" className={linkClass}>
-            {t("contact")}
-          </Link>
         </nav>
 
         <div className="hidden items-center gap-5 md:flex">
@@ -104,21 +101,14 @@ export function PublicNavbar({
                 {t("how_it_works")}
               </a>
               {!hidePricing && (
-                <Link
-                  to="/pricing"
+                <a
+                  href="/#planos"
                   className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-brand-ink"
                   onClick={() => setOpen(false)}
                 >
                   {t("pricing")}
-                </Link>
+                </a>
               )}
-              <Link
-                to="/contact"
-                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-brand-ink"
-                onClick={() => setOpen(false)}
-              >
-                {t("contact")}
-              </Link>
             </nav>
 
             <div className="mt-6 flex flex-col gap-2.5">

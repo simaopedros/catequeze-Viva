@@ -21,6 +21,7 @@ export function CtaSection({
   const ctaClassName = responsiveCtas
     ? "h-auto min-h-12 w-full px-6 text-center leading-snug whitespace-normal sm:w-auto sm:px-8"
     : undefined;
+  const ctaHelper = String(tr("cta_helper") || "").trim();
 
   return (
     <section className="px-4 pb-8 pt-4 md:pb-20" data-landing-closing-cta>
@@ -65,7 +66,9 @@ export function CtaSection({
                   <ArrowRight className="h-4 w-4 shrink-0" />
                 </Link>
               </Button>
-              <p className="text-sm text-white/65">{tr("cta_helper")}</p>
+              {ctaHelper ? (
+                <p className="text-sm text-white/65">{ctaHelper}</p>
+              ) : null}
             </div>
           </div>
         </div>
