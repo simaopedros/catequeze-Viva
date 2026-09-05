@@ -2478,7 +2478,7 @@ export const onboarding_pt_BR_app = {
       "go_dashboard": "Ir ao início",
       "progress_badge": "Configuração concluída",
       "next_step_hint": "Agora você pode usar a plataforma no ritmo da sua catequese.",
-      "go_billing": "Continuar",
+      "go_billing": "Ver planos",
       "primary_create_class": "Criar minha primeira turma",
       "primary_create_meeting": "Preparar um encontro",
       "primary_invite_catechist": "Convidar catequista",

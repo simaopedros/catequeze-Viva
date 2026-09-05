@@ -21,11 +21,8 @@ import {
   type ParishSelection,
 } from "../components/onboarding/ParishStep";
 import { CoordinatorDetails } from "../components/onboarding/CoordinatorDetails";
-import {
-  getIntendedPlan,
-  clearIntendedPlan,
-  isInstitutionalPlanId,
-} from "../lib/intendedPlan";
+import { getIntendedPlan, clearIntendedPlan } from "../lib/intendedPlan";
+import { resolveOnboardingSecondaryAction } from "../lib/onboardingCompletion";
 import {
   createParish,
   joinParish,
@@ -34,6 +31,7 @@ import {
   createClass,
   ensurePersonalWorkspace,
 } from "wasp/client/operations";
+import { useAuth } from "wasp/client/auth";
 import {
   trackMarketingEvent,
   trackOnboardingCompleted,
@@ -50,6 +48,8 @@ import { ChevronLeft } from "lucide-react";
 import {
   LAUNCH_CATEQUISTA_ONLY,
   catalogIsCatequistaOnly,
+  hasPersonalAccess,
+  isOnProductTrial,
 } from "../../shared/pricing";
 import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import { createClassSchema } from "../../client/validation/schemas";
@@ -115,6 +115,7 @@ export default function OnboardingPage() {
   const { t } = useTranslation("onboarding");
   const { t: tBilling } = useTranslation("billing");
   const navigate = useNavigate();
+  const { data: authUser } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const checkoutToastShownRef = useRef(false);
   const { publicPlans } = usePlanCatalog();
@@ -277,16 +278,16 @@ export default function OnboardingPage() {
     };
   })();
 
-  const getDeferredTarget = (): string | null => {
-    const intended = getIntendedPlan();
-    if (!intended) return null;
-    const institutional = isInstitutionalPlanId(intended);
-    const levelMatchesAccount = institutional
-      ? accountType === "manager"
-      : accountType === "personal";
-    if (!levelMatchesAccount) return null;
-    return `/app/billing?plan=${intended}`;
-  };
+  const alreadyHasAccess =
+    authUser == null ||
+    hasPersonalAccess(authUser) ||
+    isOnProductTrial(authUser);
+
+  const completionSecondary = resolveOnboardingSecondaryAction({
+    intendedPlan: getIntendedPlan(),
+    accountType,
+    alreadyHasAccess,
+  });
 
   const emitOnboardingCompleted = (path: string) => {
     let duration_ms: number | undefined;
@@ -315,15 +316,10 @@ export default function OnboardingPage() {
   };
 
   const handleSecondaryCompletionAction = () => {
-    const deferredTarget = getDeferredTarget();
     clearPersisted();
-    emitOnboardingCompleted(deferredTarget || "/app");
-    if (deferredTarget) {
-      clearIntendedPlan();
-      navigate(deferredTarget);
-      return;
-    }
-    navigate("/app");
+    clearIntendedPlan();
+    emitOnboardingCompleted(completionSecondary.href);
+    navigate(completionSecondary.href);
   };
 
   const goBack = () => {
@@ -493,6 +489,7 @@ export default function OnboardingPage() {
     });
     setStep("completion");
     clearPersisted();
+    clearIntendedPlan();
   };
 
   const finishDiocesePath = () => {
@@ -518,6 +515,7 @@ export default function OnboardingPage() {
     });
     setStep("completion");
     clearPersisted();
+    clearIntendedPlan();
   };
 
   /** Manager path completion (existing logic, simplified) */
@@ -641,6 +639,7 @@ export default function OnboardingPage() {
       });
       setStep("completion");
       clearPersisted();
+      clearIntendedPlan();
     } catch (e) {
       const message = e instanceof Error ? e.message : t("finish_error");
       setError(message || t("finish_error"));
@@ -833,12 +832,14 @@ export default function OnboardingPage() {
         <CompletionStep
           summary={{
             ...completionData,
-            secondaryActionLabel: getDeferredTarget()
-              ? t("completion.go_billing")
-              : t("completion.go_dashboard"),
+            secondaryActionLabel:
+              completionSecondary.kind === "billing"
+                ? t("completion.go_billing")
+                : t("completion.go_dashboard"),
           }}
           onPrimaryAction={() => {
             clearPersisted();
+            clearIntendedPlan();
             emitOnboardingCompleted(completionData.primaryActionTo);
             if (/^https?:\/\//i.test(completionData.primaryActionTo)) {
               window.location.assign(completionData.primaryActionTo);

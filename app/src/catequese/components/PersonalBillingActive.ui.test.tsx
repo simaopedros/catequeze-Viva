@@ -101,6 +101,37 @@ describe("PersonalBillingActive", () => {
     const cancel = screen.getByTestId("personal-active-cancel");
     expect(manage.tagName).toBe("BUTTON");
     expect(cancel.className).toMatch(/text-xs/);
+    expect(
+      screen.queryByText("personal_active.trial_badge"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows trial status, manage/upgrade, and no subscribe CTA", () => {
+    renderActive({
+      isTrial: true,
+      trialDaysLeft: 6,
+      trialEndsLabel: "12 de setembro de 2026",
+    });
+
+    expect(screen.getByTestId("personal-active-badge")).toHaveTextContent(
+      "personal_active.trial_badge",
+    );
+    expect(screen.getByTestId("personal-active-hero")).toHaveTextContent(
+      "personal_active.headline_trial|count=6",
+    );
+    expect(screen.getByTestId("personal-active-hero")).toHaveTextContent(
+      "12 de setembro de 2026",
+    );
+    expect(screen.getByTestId("personal-active-hero")).toHaveTextContent(
+      "personal_active.result_trial",
+    );
+    expect(screen.getByTestId("personal-active-manage")).toBeInTheDocument();
+    expect(screen.getByTestId("organize-parish-card")).toHaveAttribute(
+      "data-variant",
+      "upsell",
+    );
+    expect(screen.queryByText("catechist_offer.cta")).not.toBeInTheDocument();
+    expect(screen.queryByText("available_plans")).not.toBeInTheDocument();
   });
 
   it("keeps manage as the primary action and cancel as a quiet link", async () => {

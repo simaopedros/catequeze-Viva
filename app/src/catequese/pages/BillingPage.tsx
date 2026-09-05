@@ -37,6 +37,7 @@ import {
   getProductTrialEndsAt,
   isOnInstitutionalTrial,
   getInstitutionalTrialDaysLeft,
+  hasStripeManagedSubscription,
   SUBSCRIPTION_TRIAL_DAYS,
   formatPriceLabel,
 } from "../../shared/pricing";
@@ -62,6 +63,7 @@ import {
   shouldShowParishBillingConversion,
   shouldShowPersonalActiveBilling,
   shouldShowPersonalConversion,
+  workspaceHasStripeManagedSubscription,
 } from "../../shared/billingOffer";
 import type { CatalogPlan } from "../../shared/planCatalog";
 import { RequestDioceseCoverageCard } from "../components/RequestDioceseCoverageCard";
@@ -270,6 +272,12 @@ export default function BillingPage() {
   }
 
   const isPaidActive = isActive && !isTrialAccess;
+  const hasStripeSubscription = workspaceHasStripeManagedSubscription({
+    isPersonal,
+    hasUserStripeSubscription: hasStripeManagedSubscription(user),
+    userPlan: user?.subscriptionPlan,
+    isInstitutionalTrial: isTrialAccess,
+  });
   const planInherited = Boolean(workspace?.planInherited);
   const showCollaborator = shouldShowCollaboratorBilling({ canManageBilling });
   const showCoveredWorkspace = shouldShowCoveredWorkspaceBilling({
@@ -286,16 +294,19 @@ export default function BillingPage() {
     isPaidActive,
     canManageBilling,
     workspaceType: workspace?.type,
+    hasStripeSubscription,
   });
   const showPersonalActive = shouldShowPersonalActiveBilling({
     isPersonal,
     isPaidActive,
     canManageBilling,
+    hasStripeSubscription,
   });
   const showPersonalConversion = shouldShowPersonalConversion({
     isPersonal,
     isPaidActive,
     canManageBilling,
+    hasStripeSubscription,
   });
   const showInstitutionalActive = shouldShowInstitutionalActiveBilling({
     isPersonal,
@@ -303,6 +314,7 @@ export default function BillingPage() {
     canManageBilling,
     planInherited,
     workspaceType: workspace?.type,
+    hasStripeSubscription,
   });
   const trialEndsLabel = trialEndsAt
     ? trialEndsAt.toLocaleDateString(i18n.language || "pt-BR", {
@@ -365,8 +377,14 @@ export default function BillingPage() {
 
   const startCheckout = useCallback(
     async (planId: string, interval: BillingInterval = billingInterval) => {
-      // Product trial uses the same plan id as Single — still allow checkout to convert.
-      if (planId === effectivePlanId && !isTrialAccess) return;
+      // In-app trial without Stripe can still convert via Checkout.
+      // A live Stripe subscription (including trial) must not restart the same SKU.
+      if (
+        planId === effectivePlanId &&
+        (hasStripeSubscription || !isTrialAccess)
+      ) {
+        return;
+      }
       const targetLevel = getBySlug(planId).level;
       const levelMatches = isPersonal
         ? targetLevel === "personal"
@@ -449,6 +467,7 @@ export default function BillingPage() {
       t,
       getPlanDef,
       getBySlug,
+      hasStripeSubscription,
     ],
   );
 
@@ -549,7 +568,8 @@ export default function BillingPage() {
     requestedPlanLevelMatches &&
     !planInherited &&
     !waitingForUsage &&
-    !(parishId && loadingParish);
+    !(parishId && loadingParish) &&
+    !hasStripeSubscription;
   const allowAutoCheckout =
     requestedPlanCanCheckout && !journeyReason && !gateRequired;
 
@@ -823,6 +843,9 @@ export default function BillingPage() {
           switchingInterval={switchingInterval}
           annualSavingsLabel={annualSavings}
           error={error}
+          isTrial={isTrialAccess}
+          trialDaysLeft={trialDaysLeft}
+          trialEndsLabel={trialEndsLabel}
         />
         {cancelDialog}
       </>
@@ -892,6 +915,9 @@ export default function BillingPage() {
               />
             ) : null
           }
+          isTrial={isTrialAccess}
+          trialDaysLeft={trialDaysLeft}
+          trialEndsLabel={trialEndsLabel}
         />
         {cancelDialog}
       </>

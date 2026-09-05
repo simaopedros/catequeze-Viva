@@ -209,6 +209,7 @@ import {
   getInstitutionalPlanId,
   isBillingActive,
   getWorkspaceEffectivePlan,
+  hasStripeManagedSubscription,
 } from '../shared/pricing';
 
 describe('isSubscriptionActiveLike', () => {
@@ -236,6 +237,47 @@ describe('isSubscriptionActiveLike', () => {
   it('case-insensitive', () => {
     expect(isSubscriptionActiveLike('ACTIVE')).toBe(true);
     expect(isSubscriptionActiveLike('PAST_DUE')).toBe(true);
+  });
+});
+
+describe('hasStripeManagedSubscription', () => {
+  it('is true for a Stripe Checkout trial', () => {
+    expect(
+      hasStripeManagedSubscription({
+        paymentProcessorUserId: 'cus_1',
+        subscriptionStatus: 'trialing',
+        subscriptionPlan: 'single',
+      }),
+    ).toBe(true);
+  });
+
+  it('is true for an active Stripe subscription', () => {
+    expect(
+      hasStripeManagedSubscription({
+        paymentProcessorUserId: 'cus_1',
+        subscriptionStatus: 'active',
+        subscriptionPlan: 'single',
+      }),
+    ).toBe(true);
+  });
+
+  it('is false for an abandoned Checkout customer without a subscription', () => {
+    expect(
+      hasStripeManagedSubscription({
+        paymentProcessorUserId: 'cus_abandoned',
+        subscriptionStatus: null,
+      }),
+    ).toBe(false);
+  });
+
+  it('is false for an in-app trial without Stripe', () => {
+    expect(
+      hasStripeManagedSubscription({
+        paymentProcessorUserId: null,
+        subscriptionStatus: 'trialing',
+        subscriptionPlan: 'single',
+      }),
+    ).toBe(false);
   });
 });
 

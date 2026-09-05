@@ -174,6 +174,21 @@ export function isOnProductTrial(
   return isProductTrialWindowOpen(user?.createdAt, now);
 }
 
+/**
+ * Live Stripe subscription the customer can manage in the portal.
+ * Includes Checkout trials. An abandoned Checkout customer (no subscription
+ * status) must not look like a started plan.
+ */
+export function hasStripeManagedSubscription(
+  user: UserSubscriptionFields | null | undefined,
+): boolean {
+  if (!user?.paymentProcessorUserId) return false;
+  return (
+    isSubscriptionActiveLike(user.subscriptionStatus) ||
+    isProductTrialStatus(user.subscriptionStatus)
+  );
+}
+
 export function getProductTrialEndsAt(
   user: UserSubscriptionFields | Date | string | null | undefined,
 ): Date | null {
