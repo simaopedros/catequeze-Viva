@@ -24,7 +24,7 @@ export const LANDING_ROUTE_META: Record<string, LandingRouteMeta> = {
   "/": {
     title: "Você semeia a fé. A gente organiza a turma. | Catequese Viva",
     description:
-      "Mais presença no encontro, menos tempo organizando. Prepare encontros, acompanhe catequizandos e registre presenças. 7 dias grátis; o cartão é pedido agora e a cobrança só começa depois do trial.",
+      "Mais presença no encontro, menos tempo organizando. Prepare encontros, acompanhe catequizandos e registre presenças. 7 dias gratuitos, com acesso a todos os recursos. Cancele quando quiser.",
     canonicalPath: "/",
     campaign: "main",
   },
@@ -38,14 +38,14 @@ export const LANDING_ROUTE_META: Record<string, LandingRouteMeta> = {
   "/presenca": {
     title: "Chamada e presença de catequese no celular | Catequese Viva",
     description:
-      "Faça a chamada pelo celular, acompanhe faltas e histórico da turma. Sem papel e sem planilha. Trial de 7 dias; cartão agora, cobrança depois.",
+      "Faça a chamada pelo celular, acompanhe faltas e histórico da turma. Sem papel e sem planilha. 7 dias gratuitos, com acesso a todos os recursos. Cancele quando quiser.",
     canonicalPath: "/presenca",
     campaign: "attendance",
   },
   "/sistema": {
     title: "Sistema de gestão de catequese para paróquia | Catequese Viva",
     description:
-      "Turmas, presença, famílias e relatórios no mesmo sistema. Para catequistas e coordenação. Trial de 7 dias; cartão agora, cobrança depois.",
+      "Turmas, presença, famílias e relatórios no mesmo sistema. Para catequistas e coordenação. 7 dias gratuitos, com acesso a todos os recursos. Cancele quando quiser.",
     canonicalPath: "/sistema",
     campaign: "system",
   },

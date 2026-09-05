@@ -3270,7 +3270,7 @@ export const landing_en = {
       "badge": "For those who say yes to the mission of catechizing",
       "cta_primary": "Start 7 days free",
       "cta_secondary": "See how it works",
-      "trust_signals": "7 days free · Card now · Charge after trial",
+      "trust_signals": "7 days free · Full access to every feature · Cancel anytime",
       "cta_secondary_href": "/#como",
       "highlights": [
         "Attendance and follow-up on mobile",
@@ -3634,8 +3634,8 @@ export const landing_en = {
         "desc": "Information protected in transit and at rest, with restricted access by role."
       },
       {
-        "title": "7-day trial with card",
-        "desc": "Try with no commitment. Cancel anytime if it is not a fit."
+        "title": "7 days free",
+        "desc": "Full access to every feature. Cancel anytime if it is not a fit."
       },
       {
         "title": "Control of your data",
@@ -3645,10 +3645,10 @@ export const landing_en = {
     "testimonials_title": "Testimonials",
     "testimonials_subtitle": "When we have authorized quotes from catechists and parishes, they will appear here.",
     "testimonials": [],
-    "cta_helper": "Card now · Charge after trial · Cancel anytime",
+    "cta_helper": "7 days free · Full access to every feature · Cancel anytime",
     "mobile_cta": {
       "title": "7 days free",
-      "subtitle": "Card now, charge after trial",
+      "subtitle": "Full access to every feature · Cancel anytime",
       "button": "Start 7 days free"
     },
     "proof": {
@@ -3670,22 +3670,22 @@ export const landing_en = {
         }
       ],
       "chips": [
-        "7 free days",
-        "Card now",
-        "Charge only after the trial",
+        "7 days free",
+        "Full access to every feature",
+        "Cancel anytime",
         "LGPD-oriented",
         "Easy cancel"
       ],
       "launch_title": "Try it with your class",
-      "launch_text": "Create an account, add a card, and try it for 7 days. We only charge after the trial — cancel anytime.",
+      "launch_text": "Create an account and try 7 days with access to every feature. Cancel anytime.",
       "promises": [
-        "7 free days; card now, charge after trial",
+        "7 days free, with access to every feature",
         "Bible and Catechism library in the same place",
         "Children’s data handled with care and LGPD",
         "Cancel anytime"
       ],
       "launch_cta": "Start free for 7 days",
-      "launch_helper": "Card now · Charge after trial · Cancel anytime"
+      "launch_helper": "7 days free · Full access to every feature · Cancel anytime"
     },
     "simple_features": {
       "title": "Everything a catechist needs, without the clutter",
@@ -3714,7 +3714,7 @@ export const landing_en = {
     },
     "steps_endowed_title": "You're already here",
     "steps_endowed_desc": "Getting to know the platform",
-    "price_trial_badge": "7 days free; card now, charge after trial",
+    "price_trial_badge": "7 days free · Full access to every feature · Cancel anytime",
     "price_trial_note": "",
     "comparison": {
       "title": "Stop scattering your catechesis across paper, spreadsheets, and WhatsApp",
@@ -3723,7 +3723,7 @@ export const landing_en = {
       "col_old": "Paper + spreadsheet + WhatsApp",
       "col_next": "Catequese Viva",
       "cta": "Start free for 7 days",
-      "helper": "We ask for a card now; the charge starts after the trial. Cancel anytime.",
+      "helper": "7 days free, with access to every feature. Cancel anytime.",
       "rows": [
         {
           "criterion": "Prepare the meeting",
@@ -3758,7 +3758,7 @@ export const landing_en = {
       ]
     },
     "faq_cta": "Start 7 days free",
-    "faq_cta_helper": "7 days free · Card now, charge after trial",
+    "faq_cta_helper": "7 days free · Full access to every feature · Cancel anytime",
     "price_cta_single": "Start 7 days free",
     "price_annual_note": "or R$ 99/year",
     "price_cta_unlimited": "Start 7 days free",
@@ -3984,7 +3984,7 @@ export const landing_en = {
       "title": "A plan for each stage of the mission.",
       "subtitle": "Start as a catechist. When your catechesis grows, bring the organization to your parish or diocese.",
       "featured": "Most chosen",
-      "note": "7 days free · Card now · Charge after trial",
+      "note": "7 days free · Full access to every feature · Cancel anytime",
       "billed_annual": "Billed annually · 7 days free",
       "billed_monthly": "Billed monthly · 7 days free",
       "diocese_note": "Talk with our team",
@@ -4134,7 +4134,7 @@ export const landingPresenca_en = {
       "badge": "Digital attendance control",
       "cta_primary": "Start now",
       "cta_secondary": "See demo",
-      "trust_signals": "7 days free • Card now • Charge after trial",
+      "trust_signals": "7 days free • Full access to every feature • Cancel anytime",
       "visual_title": "Mobile attendance",
       "visual_item_1": "Mark the class quickly",
       "visual_item_2": "Record justifications",
@@ -4236,7 +4236,7 @@ export const landingSistema_en = {
       "badge": "Complete catechesis management",
       "cta_primary": "Get started",
       "cta_secondary": "See features",
-      "trust_signals": "7 days free • Card now • Charge after trial",
+      "trust_signals": "7 days free • Full access to every feature • Cancel anytime",
       "visual_title": "Coordination overview",
       "visual_item_1": "Classes and teams in one dashboard",
       "visual_item_2": "Attendance indicators",

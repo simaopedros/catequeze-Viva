@@ -1225,7 +1225,7 @@ export const landing_pt_BR_core = {
       "badge": "Para quem diz sim à missão de catequizar",
       "cta_primary": "Começar 7 dias grátis",
       "cta_secondary": "Ver como funciona",
-      "trust_signals": "7 dias grátis · Cartão agora · Cobrança depois do trial",
+      "trust_signals": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser",
       "cta_secondary_href": "/#como",
       "highlights": [
         "Chamada e acompanhamento pelo celular",
@@ -1589,8 +1589,8 @@ export const landing_pt_BR_core = {
         "desc": "Informações protegidas em trânsito e em repouso, com acesso restrito por papel."
       },
       {
-        "title": "7 dias grátis com cartão",
-        "desc": "Teste sem compromisso. Se não fizer sentido, cancele quando quiser."
+        "title": "7 dias gratuitos",
+        "desc": "Acesso a todos os recursos. Se não fizer sentido, cancele quando quiser."
       },
       {
         "title": "Controle dos seus dados",
@@ -1600,10 +1600,10 @@ export const landing_pt_BR_core = {
     "testimonials_title": "Depoimentos",
     "testimonials_subtitle": "Quando tivermos autorizações reais de catequistas e paróquias, elas aparecem aqui.",
     "testimonials": [],
-    "cta_helper": "Cartão agora · Cobrança só depois do trial · Cancele quando quiser",
+    "cta_helper": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser",
     "mobile_cta": {
-      "title": "7 dias grátis",
-      "subtitle": "Cartão agora, cobrança depois",
+      "title": "7 dias gratuitos",
+      "subtitle": "Acesso a todos os recursos · Cancele quando quiser",
       "button": "Começar 7 dias grátis"
     },
     "proof": {
@@ -1625,22 +1625,22 @@ export const landing_pt_BR_core = {
         }
       ],
       "chips": [
-        "7 dias grátis",
-        "Cartão agora",
-        "Cobrança só depois do trial",
+        "7 dias gratuitos",
+        "Acesso a todos os recursos",
+        "Cancele quando quiser",
         "LGPD",
         "Cancelamento simples"
       ],
       "launch_title": "Experimente na sua turma",
-      "launch_text": "Crie a conta, informe o cartão e teste 7 dias. A cobrança só começa depois do trial — cancele quando quiser.",
+      "launch_text": "Crie a conta e teste 7 dias com acesso a todos os recursos. Cancele quando quiser.",
       "promises": [
-        "7 dias grátis; cartão agora, cobrança depois",
+        "7 dias gratuitos, com acesso a todos os recursos",
         "Biblioteca com Bíblia e Catecismo no mesmo lugar",
         "Dados de crianças com cuidado e LGPD",
         "Cancele quando quiser"
       ],
       "launch_cta": "Começar grátis por 7 dias",
-      "launch_helper": "Cartão agora · Cobrança depois do trial · Cancele quando quiser"
+      "launch_helper": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser"
     },
     "simple_features": {
       "title": "Tudo que o catequista precisa, sem complicação",
@@ -1669,7 +1669,7 @@ export const landing_pt_BR_core = {
     },
     "steps_endowed_title": "Você já está aqui",
     "steps_endowed_desc": "Conhecendo a plataforma",
-    "price_trial_badge": "7 dias grátis; cartão agora, cobrança depois",
+    "price_trial_badge": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser",
     "price_trial_note": "",
     "comparison": {
       "title": "Pare de espalhar a sua catequese em papel, planilha e WhatsApp",
@@ -1678,7 +1678,7 @@ export const landing_pt_BR_core = {
       "col_old": "Papel + planilha + WhatsApp",
       "col_next": "Catequese Viva",
       "cta": "Começar grátis por 7 dias",
-      "helper": "O cartão é pedido agora; a cobrança só começa depois do trial. Cancele quando quiser.",
+      "helper": "7 dias gratuitos, com acesso a todos os recursos. Cancele quando quiser.",
       "rows": [
         {
           "criterion": "Preparar o encontro",
@@ -1713,7 +1713,7 @@ export const landing_pt_BR_core = {
       ]
     },
     "faq_cta": "Começar 7 dias grátis",
-    "faq_cta_helper": "7 dias grátis · Cartão agora, cobrança depois",
+    "faq_cta_helper": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser",
     "price_cta_single": "Começar 7 dias grátis",
     "price_annual_note": "ou R$ 99/ano",
     "price_cta_unlimited": "Começar 7 dias grátis",
@@ -1939,7 +1939,7 @@ export const landing_pt_BR_core = {
       "title": "Um plano para cada etapa da missão.",
       "subtitle": "Comece como catequista. Quando sua catequese crescer, leve a organização para sua paróquia ou diocese.",
       "featured": "Mais escolhido",
-      "note": "7 dias grátis · Cartão agora · Cobrança depois do trial",
+      "note": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser",
       "billed_annual": "Cobrado anualmente · 7 dias grátis",
       "billed_monthly": "Cobrado mensalmente · 7 dias grátis",
       "diocese_note": "Fale com nossa equipe",
@@ -2089,7 +2089,7 @@ export const landingPresenca_pt_BR_core = {
       "badge": "Controle de presença digital",
       "cta_primary": "Começar agora",
       "cta_secondary": "Ver demonstração",
-      "trust_signals": "7 dias grátis • Cartão agora • Cobrança depois do trial",
+      "trust_signals": "7 dias gratuitos • Acesso a todos os recursos • Cancele quando quiser",
       "visual_title": "Chamada no celular",
       "visual_item_1": "Marque a turma rapidamente",
       "visual_item_2": "Registre justificativas",
@@ -2191,7 +2191,7 @@ export const landingSistema_pt_BR_core = {
       "badge": "Gestão completa para catequese",
       "cta_primary": "Começar agora",
       "cta_secondary": "Ver recursos",
-      "trust_signals": "7 dias grátis • Cartão agora • Cobrança depois do trial",
+      "trust_signals": "7 dias gratuitos • Acesso a todos os recursos • Cancele quando quiser",
       "visual_title": "Visão da coordenação",
       "visual_item_1": "Turmas e equipes em um painel",
       "visual_item_2": "Indicadores de presença",

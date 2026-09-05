@@ -6,7 +6,7 @@
     "badge": "Para quien dice sí a la misión de catequizar",
     "cta_primary": "Empezar 7 días gratis",
     "cta_secondary": "Ver cómo funciona",
-    "trust_signals": "7 días gratis · Tarjeta ahora · Cobro después del trial",
+    "trust_signals": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
     "cta_secondary_href": "/#como",
     "highlights": [
       "Asistencia y seguimiento desde el celular",
@@ -370,8 +370,8 @@
       "desc": "Información protegida en tránsito y en reposo, con acceso restringido por rol."
     },
     {
-      "title": "7 días gratis con tarjeta",
-      "desc": "Prueba sin compromiso. Si no encaja, cancela cuando quieras."
+      "title": "7 días gratis",
+      "desc": "Acceso a todos los recursos. Si no encaja, cancela cuando quieras."
     },
     {
       "title": "Control de tus datos",
@@ -381,10 +381,10 @@
   "testimonials_title": "Testimonios",
   "testimonials_subtitle": "Cuando tengamos citas autorizadas de catequistas y parroquias, aparecerán aquí.",
   "testimonials": [],
-  "cta_helper": "Tarjeta ahora · Cobro solo después del trial · Cancela cuando quieras",
+  "cta_helper": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
   "mobile_cta": {
     "title": "7 días gratis",
-    "subtitle": "Tarjeta ahora, cobro después",
+    "subtitle": "Acceso a todos los recursos · Cancela cuando quieras",
     "button": "Empezar 7 días gratis"
   },
   "proof": {
@@ -407,21 +407,21 @@
     ],
     "chips": [
       "7 días gratis",
-      "Tarjeta ahora",
-      "Cobro solo después del trial",
+      "Acceso a todos los recursos",
+      "Cancela cuando quieras",
       "LGPD",
       "Cancelación simple"
     ],
     "launch_title": "Pruébalo con tu grupo",
-    "launch_text": "Crea la cuenta, informa la tarjeta y prueba 7 días. El cobro solo empieza después del trial — cancela cuando quieras.",
+    "launch_text": "Crea la cuenta y prueba 7 días con acceso a todos los recursos. Cancela cuando quieras.",
     "promises": [
-      "7 días gratis; tarjeta ahora, cobro después del trial",
+      "7 días gratis, con acceso a todos los recursos",
       "Biblioteca con Biblia y Catecismo en el mismo lugar",
       "Datos de niños con cuidado y LGPD",
       "Cancela cuando quieras"
     ],
     "launch_cta": "Empezar gratis por 7 días",
-    "launch_helper": "Tarjeta ahora · Cobro después del trial · Cancela cuando quieras"
+    "launch_helper": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras"
   },
   "simple_features": {
     "title": "Todo lo que el catequista necesita, sin complicaciones",
@@ -450,7 +450,7 @@
   },
   "steps_endowed_title": "Ya estás aquí",
   "steps_endowed_desc": "Conociendo la plataforma",
-  "price_trial_badge": "7 días gratis; tarjeta ahora, cobro después del trial",
+  "price_trial_badge": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
   "price_trial_note": "",
   "comparison": {
     "title": "Deja de dispersar tu catequesis en papel, planilla y WhatsApp",
@@ -459,7 +459,7 @@
     "col_old": "Papel + planilla + WhatsApp",
     "col_next": "Catequese Viva",
     "cta": "Empezar gratis por 7 días",
-    "helper": "Pedimos la tarjeta ahora; el cobro empieza después del trial. Cancela cuando quieras.",
+    "helper": "7 días gratis, con acceso a todos los recursos. Cancela cuando quieras.",
     "rows": [
       {
         "criterion": "Preparar el encuentro",
@@ -494,7 +494,7 @@
     ]
   },
   "faq_cta": "Empezar 7 días gratis",
-  "faq_cta_helper": "7 días gratis · Tarjeta ahora, cobro después del trial",
+  "faq_cta_helper": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
   "price_cta_single": "Empezar 7 días gratis",
   "price_annual_note": "o R$ 99/año",
   "price_cta_unlimited": "Empezar 7 días gratis",
@@ -705,7 +705,7 @@
     "title": "Un plan para cada etapa de la misión.",
     "subtitle": "Empieza como catequista. Cuando tu catequesis crezca, lleva la organización a tu parroquia o diócesis.",
     "featured": "Más elegido",
-    "note": "7 días gratis · Tarjeta ahora · Cobro después del trial",
+    "note": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
     "billed_annual": "Cobrado anualmente · 7 días gratis",
     "billed_monthly": "Cobrado mensualmente · 7 días gratis",
     "diocese_note": "Habla con nuestro equipo",
