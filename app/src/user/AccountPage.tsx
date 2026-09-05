@@ -148,10 +148,9 @@ export default function AccountPage() {
               datePaid={user.datePaid}
               createdAt={user.createdAt}
               trialEndsAt={
-                (user as User & { trialEndsAt?: Date | null }).trialEndsAt
+                (user as { trialEndsAt?: Date | null }).trialEndsAt
               }
               paymentProcessorUserId={user.paymentProcessorUserId}
-            />
             />
           </CardContent>
         </Card>
