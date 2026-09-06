@@ -121,7 +121,7 @@ describe("getTrialBannerMode", () => {
 });
 
 describe("getPersonalOnboardingNextPath", () => {
-  it("sends to attendance when class has people", () => {
+  it("always sends to attendance when class exists", () => {
     expect(
       getPersonalOnboardingNextPath({ classId: "c1", catechumensCount: 2 }),
     ).toEqual({
@@ -130,9 +130,12 @@ describe("getPersonalOnboardingNextPath", () => {
     });
   });
 
-  it("sends to class when no people yet", () => {
+  it("sends to attendance even without people yet", () => {
     expect(
       getPersonalOnboardingNextPath({ classId: "c1", catechumensCount: 0 }),
-    ).toEqual({ to: "/app/classes/c1", action: "add_people" });
+    ).toEqual({
+      to: "/app/classes/c1/attendance",
+      action: "add_people",
+    });
   });
 });

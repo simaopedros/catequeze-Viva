@@ -433,19 +433,21 @@ export function CatechumensSetupStep({
         <Button
           type="button"
           onClick={handleContinue}
-          disabled={loading || totalCount === 0}
+          disabled={loading}
           className="h-11 w-full rounded-md"
         >
-          {t("catechumens_setup.continue", { count: totalCount })}
+          {totalCount > 0
+            ? t("catechumens_setup.continue_attendance", { count: totalCount })
+            : t("catechumens_setup.continue_attendance_empty")}
           <ArrowRight className="ml-1 h-4 w-4" />
         </Button>
         <button
           type="button"
           onClick={onSkip}
           disabled={loading}
-          className="py-2 text-center text-sm text-muted-foreground transition-colors hover:text-brand-ink"
+          className="py-2 text-center text-sm font-medium text-brand-ink transition-colors hover:text-brand-ink/80"
         >
-          {t("catechumens_setup.skip")}
+          {t("catechumens_setup.skip_to_attendance")}
         </button>
         {totalCount === 0 && (
           <p className="text-center text-xs text-muted-foreground">

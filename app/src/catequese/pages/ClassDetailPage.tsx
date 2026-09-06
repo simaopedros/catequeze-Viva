@@ -786,6 +786,12 @@ export default function ClassDetailPage() {
                 {canEnroll ? (
                   <div className="mt-4 flex flex-wrap justify-center gap-2">
                     <Button size="sm" asChild>
+                      <Link to={`/app/classes/${id}/attendance`}>
+                        <ClipboardList className="mr-1 h-3.5 w-3.5" />
+                        {t("detail.empty_cta_attendance")}
+                      </Link>
+                    </Button>
+                    <Button size="sm" variant="outline" asChild>
                       <Link to="/app/catechumens/new">
                         <UserPlus className="mr-1 h-3.5 w-3.5" />
                         {t("detail.empty_cta_create_person")}
@@ -794,12 +800,6 @@ export default function ClassDetailPage() {
                     <Button size="sm" variant="outline" asChild>
                       <Link to={`/app/catechumens/import?classId=${id}`}>
                         {t("detail.import_into_class")}
-                      </Link>
-                    </Button>
-                    <Button size="sm" variant="outline" asChild>
-                      <Link to={`/app/classes/${id}/attendance`}>
-                        <ClipboardList className="mr-1 h-3.5 w-3.5" />
-                        {t("detail.empty_cta_attendance")}
                       </Link>
                     </Button>
                   </div>
@@ -1000,6 +1000,12 @@ export default function ClassDetailPage() {
               >
                 <div className="mt-4 flex flex-wrap justify-center gap-2">
                   <Button size="sm" asChild>
+                    <Link to={`/app/classes/${id}/attendance`}>
+                      <ClipboardList className="mr-1 h-3.5 w-3.5" />
+                      {t("detail.empty_cta_attendance")}
+                    </Link>
+                  </Button>
+                  <Button size="sm" variant="outline" asChild>
                     <Link
                       to={
                         AI_FEATURES_ENABLED
@@ -1009,12 +1015,6 @@ export default function ClassDetailPage() {
                     >
                       <BookOpen className="mr-1 h-3.5 w-3.5" />
                       {t("detail.empty_cta_prepare_meeting")}
-                    </Link>
-                  </Button>
-                  <Button size="sm" variant="outline" asChild>
-                    <Link to={`/app/classes/${id}/attendance`}>
-                      <ClipboardList className="mr-1 h-3.5 w-3.5" />
-                      {t("detail.empty_cta_attendance")}
                     </Link>
                   </Button>
                 </div>
