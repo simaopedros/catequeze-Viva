@@ -3,6 +3,7 @@
  *
  * Regression tests for multi-tenant data leaks / IDOR fixes:
  * - listParishes never dumps all tenants (even for platform admin)
+ * - listWorkspaces never dumps all tenants (even for platform admin)
  * - listParishesAdmin is admin-only
  * - Cross-workspace reads/writes return 403
  *
@@ -24,6 +25,7 @@ import {
   listParishesAdmin,
   searchParishesForOnboarding,
 } from '../server/operations/parishOperations';
+import { listWorkspaces } from '../server/operations/workspaceOperations';
 import { listParishCatechists } from '../server/operations/classOperations';
 import { listContentItems } from '../server/operations/contentOperations';
 import {
@@ -75,6 +77,16 @@ describe('Tenant data isolation (leak / IDOR regressions)', () => {
       const parishes = await listParishes(undefined as void, ctx);
       // Admin fixture may have zero memberships — must not equal full table dump
       expect(parishes.length).toBeLessThan(allCount);
+    });
+
+    itDb('platform admin listWorkspaces is membership-scoped (no global dump)', async () => {
+      const ctx = makeOpContext('admin');
+      const allCount = await prisma.parish.count();
+      const workspaces = await listWorkspaces(undefined as void, ctx);
+      const ids = workspaces.map((w: any) => w.id);
+      expect(workspaces.length).toBeLessThan(allCount);
+      expect(ids).not.toContain(PARISH_SAO_JOSE);
+      expect(ids).not.toContain(PARISH_SANTA_MARIA);
     });
 
     itDb('listParishesAdmin returns all parishes for platform admin', async () => {

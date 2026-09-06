@@ -678,7 +678,7 @@ describe("getMySupportMessages", () => {
 });
 
 describe("listWorkspaces admin extras", () => {
-  it("includes an unrelated active parish for platform admins", async () => {
+  it("does not dump unrelated parishes for platform admins", async () => {
     const foreign = {
       id: "bbbbbbbb-2222-4bbb-b222-bbbbbbbbbbbb",
       name: "Paróquia Alheia",
@@ -706,10 +706,52 @@ describe("listWorkspaces admin extras", () => {
       undefined,
       context({ id: ADMIN.id, isAdmin: true }, entities),
     );
-    expect(workspaces.some((w: any) => w.id === foreign.id)).toBe(true);
-    expect(workspaces.find((w: any) => w.id === foreign.id).role).toBe(
-      "SUPER_ADMIN",
+    expect(entities.Parish.findMany).not.toHaveBeenCalled();
+    expect(workspaces.some((w: any) => w.id === foreign.id)).toBe(false);
+    expect(workspaces).toEqual([]);
+  });
+
+  it("still lists the platform admin's own memberships", async () => {
+    const own = {
+      id: "own-parish-1",
+      name: "Minha Paróquia",
+      type: "PARISH",
+      ownerId: ADMIN.id,
+      dioceseId: null,
+      diocese: null,
+    };
+    const entities = {
+      User: {
+        findUnique: vi.fn().mockResolvedValue({
+          subscriptionStatus: null,
+          subscriptionPlan: null,
+          createdAt: new Date(),
+        }),
+      },
+      Parish: {
+        findFirst: vi.fn().mockResolvedValue(null),
+        findMany: vi.fn().mockResolvedValue([]),
+      },
+      Membership: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: "mem-own-1",
+            parish: own,
+            role: "PARISH_COORDINATOR",
+            status: "ACTIVE",
+          },
+        ]),
+      },
+      TenantBilling: { findMany: vi.fn().mockResolvedValue([]) },
+    };
+    const workspaces = await listWorkspaces(
+      undefined,
+      context({ id: ADMIN.id, isAdmin: true }, entities),
     );
+    expect(entities.Parish.findMany).not.toHaveBeenCalled();
+    expect(workspaces).toHaveLength(1);
+    expect(workspaces[0].id).toBe(own.id);
+    expect(workspaces[0].role).toBe("PARISH_COORDINATOR");
   });
 
   it("does not list unrelated parishes for a non-admin", async () => {
