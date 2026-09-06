@@ -1,0 +1,11 @@
+{
+  "name": "Catequese Viva",
+  "install": "bash .cursor/install.sh",
+  "start": "bash .cursor/start.sh",
+  "terminals": [
+    {
+      "name": "wasp-dev-server",
+      "command": "source .cursor/setup-path.sh && cd app && wasp start"
+    }
+  ]
+}
