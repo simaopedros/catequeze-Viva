@@ -55,6 +55,7 @@ vi.mock("../server/operations/billingEnforcement", () => ({
   getEffectiveBillingPlan: () => "catechist_free",
   isBillingActive: () => false,
   ensureProductTrial: vi.fn(),
+  loadDioceseDealSummaries: async () => new Map(),
 }));
 
 vi.mock("../shared/planLimits", () => ({
@@ -412,7 +413,7 @@ describe("billing admin trial / complimentary", () => {
     };
     await expect(
       setComplimentaryPlan(
-        { dioceseId: "d1", planSlug: "unlimited" },
+        { dioceseId: "d1", planSlug: "single" },
         context(ADMIN, { TenantBilling, Parish: {}, Diocese }),
       ),
     ).rejects.toMatchObject({ statusCode: 409 });

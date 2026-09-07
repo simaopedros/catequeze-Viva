@@ -1,7 +1,20 @@
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("../server/pricing/planCatalogService", () => ({
-  loadPlanCatalog: vi.fn(),
+  loadPlanCatalog: vi.fn(async () => ({
+    bySlug: {
+      unlimited: {
+        slug: "unlimited",
+        level: "institutional",
+        limits: {
+          maxClasses: null,
+          maxCatechumens: null,
+          maxCatechists: null,
+          maxParishes: null,
+        },
+      },
+    },
+  })),
 }));
 
 import {
