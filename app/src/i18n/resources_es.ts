@@ -1478,12 +1478,14 @@ export const calendar_es = {
       "liturgical": "Litúrgico",
       "parish": "Parroquial",
       "class": "Grupos",
-      "sacramental": "Sacramental"
+      "sacramental": "Sacramental",
+      "diocese": "Diócesis"
     },
     "event_types": {
       "liturgical": "Litúrgico",
       "parish": "Parroquial",
-      "class": "Grupo"
+      "class": "Grupo",
+      "diocese": "Diócesis"
     },
     "meeting_default": "Encuentro",
     "day_title": "Día {{day}} de {{month}}",
@@ -1527,7 +1529,9 @@ export const calendar_es = {
     "create_primary": "Nuevo evento",
     "confirm_delete_event": "¿Eliminar este evento?",
     "confirm_delete_event_desc": "Esta acción no se puede deshacer.",
-    "delete_error": "Error al eliminar el evento"
+    "delete_error": "Error al eliminar el evento",
+    "conflicts_title": "Posible conflicto en el calendario",
+    "conflicts_desc": "{{count}} encuentro(s) coinciden con un evento obligatorio de la diócesis o de la parroquia."
   } as const;
 
 export const catecheticalYears_es = {
@@ -3266,6 +3270,173 @@ export const family_es = {
     }
   } as const;
 
+export const hierarchy_es = {
+    "origin": {
+      "platform": "Plataforma",
+      "diocese": "Diócesis",
+      "parish": "Parroquia",
+      "community": "Comunidad",
+      "class": "Grupo",
+      "official": "oficial",
+      "complementary": "complementario",
+      "local": "local",
+      "inherited": "heredado"
+    },
+    "policy": {
+      "LOCKED": "Obligatorio bloqueado",
+      "REQUIRED_EXTENDABLE": "Obligatorio + extensible",
+      "SUGGESTED": "Sugerido",
+      "LOCAL": "Solo local"
+    },
+    "library": {
+      "eyebrow": "Comunión",
+      "title": "Carpeta oficial",
+      "subtitle": "{{published}} publicados · {{inherited}} heredados",
+      "new": "Nuevo recurso",
+      "form_title": "Publicar recurso",
+      "title_field": "Título",
+      "title_placeholder": "Directorio diocesano de la catequesis",
+      "summary": "Resumen",
+      "summary_placeholder": "Qué es este documento y para quién",
+      "body_placeholder": "Texto, circular u orientación…",
+      "saving": "Guardando…",
+      "created": "Recurso creado como borrador.",
+      "create_error": "No se pudo crear el recurso.",
+      "publish": "Publicar",
+      "published": "Recurso publicado a la red.",
+      "publish_error": "No se pudo publicar.",
+      "adopt": "Adoptar",
+      "adapt": "Adaptar",
+      "dismiss": "Ignorar",
+      "adopt_inherited": "Recurso adoptado.",
+      "adopt_adapted": "Copia local creada.",
+      "adopt_dismissed": "Recurso ignorado.",
+      "adopt_error": "No se pudo actualizar la adopción.",
+      "empty_title": "Ningún recurso oficial",
+      "empty_desc": "La diócesis y la parroquia publican aquí directorio, subsidios, circulares y modelos.",
+      "new_version": "Hay una versión nueva del original. La copia adaptada permanece congelada.",
+      "kinds": {
+        "all": "Todos",
+        "DIRECTORY": "Directorio",
+        "SUBSIDY": "Subsidio",
+        "CIRCULAR": "Circular",
+        "FORM_TEMPLATE": "Modelo de ficha",
+        "POLICY": "Política",
+        "RITE": "Rito",
+        "HYMN": "Himno / oración",
+        "OTHER": "Otro"
+      },
+      "status": {
+        "DRAFT": "Borrador",
+        "IN_REVIEW": "En revisión",
+        "APPROVED": "Aprobado",
+        "PUBLISHED": "Publicado",
+        "ARCHIVED": "Archivado"
+      },
+      "adoption": {
+        "INHERITED": "Adoptado",
+        "ADAPTED": "Adaptado",
+        "DISMISSED": "Ignorado"
+      }
+    },
+    "announcements": {
+      "eyebrow": "Comunión",
+      "title": "Comunicados",
+      "subtitle": "Oficios que bajan de la diócesis a la parroquia y a los grupos, con acuse.",
+      "new": "Nuevo comunicado",
+      "title_field": "Título",
+      "title_placeholder": "Inicio de la catequesis 2026",
+      "body_placeholder": "Texto del oficio…",
+      "saving": "Guardando…",
+      "created": "Comunicado creado como borrador.",
+      "create_error": "No se pudo crear el comunicado.",
+      "publish": "Publicar",
+      "published": "Comunicado publicado.",
+      "publish_error": "No se pudo publicar el comunicado.",
+      "ack": "Dar acuse",
+      "acked": "Acuse registrado",
+      "ack_count": "{{count}} acuses",
+      "republish": "Republicar",
+      "empty_title": "Ningún comunicado",
+      "empty_desc": "La coordinación publica oficios aquí; la parroquia puede republicarlos a los grupos.",
+      "audience": {
+        "coordinators": "Coordinaciones",
+        "catechists": "Catequistas",
+        "families": "Familias",
+        "all": "Toda la red"
+      },
+      "status": {
+        "DRAFT": "Borrador",
+        "PUBLISHED": "Publicado",
+        "ARCHIVED": "Archivado"
+      }
+    },
+    "itinerary": {
+      "section": "Itinerarios oficiales",
+      "new": "Nuevo itinerario",
+      "name_placeholder": "Nombre del itinerario (ej.: Eucaristía 2 años)",
+      "desc_placeholder": "Descripción (opcional)",
+      "create": "Crear itinerario",
+      "created": "Itinerario creado como borrador.",
+      "create_error": "No se pudo crear el itinerario.",
+      "publish": "Publicar",
+      "instantiate": "Instanciar año",
+      "instantiated": "Año catequético creado a partir del itinerario.",
+      "default_stage": "Etapa inicial",
+      "stages_count": "{{count}} etapas",
+      "years_count": "{{count}} años instanciados",
+      "from": "A partir de {{name}}"
+    },
+    "formation": {
+      "eyebrow": "Formación",
+      "title": "Escuela de catequistas",
+      "subtitle": "Itinerarios diocesanos y parroquiales, inscripción, encuentros y asistencia.",
+      "new": "Nueva ruta",
+      "name": "Nombre",
+      "name_placeholder": "Formación inicial de catequistas",
+      "hours": "Carga horaria",
+      "hours_placeholder": "Horas (opcional)",
+      "desc_placeholder": "Objetivo y público…",
+      "saving": "Guardando…",
+      "created": "Ruta creada.",
+      "create_error": "No se pudo crear la ruta.",
+      "enroll": "Inscribirme",
+      "add_session": "Encuentro",
+      "session_title": "Título del encuentro",
+      "save_session": "Agendar",
+      "session_created": "Encuentro agendado.",
+      "session_error": "No se pudo agendar el encuentro.",
+      "mark_present": "Marcar presencia",
+      "empty_title": "Ninguna ruta de formación",
+      "empty_desc": "La diócesis publica aquí la escuela de catequistas; la parroquia ve el estado del equipo.",
+      "meta": "{{sessions}} encuentros · {{enrolled}} inscritos · {{hours}}h",
+      "kinds": {
+        "INITIAL": "Inicial",
+        "PERMANENT": "Permanente",
+        "INSTITUTED_MINISTRY": "Ministerio instituido",
+        "COORDINATION": "Coordinación",
+        "INCLUSIVE": "Catequesis inclusiva"
+      },
+      "enrollment": {
+        "ENROLLED": "Inscrito",
+        "IN_PROGRESS": "En curso",
+        "COMPLETED": "Concluido",
+        "DROPPED": "Baja"
+      }
+    },
+    "report": {
+      "tab": "Adhesión",
+      "title": "Adhesión entre parroquias",
+      "resources": "Recursos publicados",
+      "itineraries": "Itinerarios publicados",
+      "enrollments": "Inscripciones en formación",
+      "parish": "Parroquia",
+      "classes": "Grupos",
+      "official": "Adopciones oficiales",
+      "itinerary_adoptions": "Itinerarios adoptados"
+    }
+  } as const;
+
 export const landing_es = {
     "hero": {
       "headline_line1": "Tú siembras la fe.",
@@ -4670,6 +4841,9 @@ export const navigation_es = {
     "documents": "Documentos",
     "consents": "Consentimientos",
     "catechetical_years": "Años Catequéticos",
+    "official_library": "Carpeta oficial",
+    "announcements": "Comunicados",
+    "formation": "Formación",
     "bible": "Biblia",
     "catechism": "Catecismo",
     "directory": "Directorio",
@@ -6072,6 +6246,7 @@ export const resources_es = {
   dashboard: dashboard_es,
   emails: emails_es,
   family: family_es,
+  hierarchy: hierarchy_es,
   landing: landing_es,
   landingIa: landingIa_es,
   landingPresenca: landingPresenca_es,

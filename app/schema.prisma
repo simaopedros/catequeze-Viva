@@ -177,6 +177,67 @@ enum VisibilityScope {
   GLOBAL
 }
 
+enum ResourceOwnerType {
+  PLATFORM
+  DIOCESE
+  PARISH
+  COMMUNITY
+  CLASS
+}
+
+enum InheritancePolicy {
+  LOCKED
+  REQUIRED_EXTENDABLE
+  SUGGESTED
+  LOCAL
+}
+
+enum AdoptionStatus {
+  INHERITED
+  ADAPTED
+  DISMISSED
+}
+
+enum OfficialResourceKind {
+  DIRECTORY
+  SUBSIDY
+  CIRCULAR
+  FORM_TEMPLATE
+  POLICY
+  RITE
+  HYMN
+  OTHER
+}
+
+enum OfficialResourceStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum FormationTrackKind {
+  INITIAL
+  PERMANENT
+  INSTITUTED_MINISTRY
+  COORDINATION
+  INCLUSIVE
+}
+
+enum FormationEnrollmentStatus {
+  ENROLLED
+  COMPLETED
+  DROPPED
+  WAITLISTED
+}
+
+enum PastoralAnnouncementStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
 enum PricingPlanKind {
   SUBSCRIPTION
   CREDITS
@@ -394,6 +455,17 @@ model User {
   socialFollowers        SocialFollow[]   @relation("SocialFollowed")
 
   emailPreferences       EmailPreference[]
+
+  createdOfficialResources  OfficialResource[]           @relation("OfficialResourceCreator")
+  reviewedOfficialResources OfficialResource[]           @relation("OfficialResourceReviewer")
+  createdAnnouncements      PastoralAnnouncement[]       @relation("AnnouncementCreator")
+  announcementAcks          PastoralAnnouncementAck[]
+  createdItineraries        CatecheticalItinerary[]      @relation("ItineraryCreator")
+  createdFormationTracks    FormationTrack[]             @relation("FormationTrackCreator")
+  formationEnrollments      FormationEnrollment[]
+  formationAttendances      FormationAttendance[]
+  recordedFormationAttendances FormationAttendance[]    @relation("FormationAttendanceRecorder")
+  resourceAdoptions         ResourceAdoption[]
 }
 
 // ─── Multi-tenant ─────────────────────────────────────────────────────────────
@@ -412,6 +484,15 @@ model Diocese {
 
   parishes Parish[]
   billing  TenantBilling?
+
+  officialResources OfficialResource[]
+  liturgicalEvents  LiturgicalEvent[]
+  announcements     PastoralAnnouncement[]
+  itineraries       CatecheticalItinerary[]
+  formationTracks   FormationTrack[]
+  contentItems      ContentItem[]
+  messageTemplates  MessageTemplate[]
+  journeyTemplates  SacramentalJourneyTemplate[]
 }
 
 model Parish {
@@ -454,6 +535,10 @@ model Parish {
   catechumens          CatechumenProfile[]
   pendingInvitations   PendingInvitation[]
   socialPosts          SocialPost[]
+  officialResources    OfficialResource[]
+  announcements        PastoralAnnouncement[]
+  itineraries          CatecheticalItinerary[]
+  formationTracks      FormationTrack[]
 }
 enum CommunityType {
   CHAPEL
@@ -492,6 +577,9 @@ model Community {
   classes        CatechesisClass[]
   households     Household[]
   pendingInvitations PendingInvitation[]
+  officialResources OfficialResource[]
+  liturgicalEvents  LiturgicalEvent[]
+  announcements     PastoralAnnouncement[]
 
   @@index([parishId])
 }
@@ -573,10 +661,17 @@ model CatecheticalYear {
   parishId String
   parish   Parish @relation(fields: [parishId], references: [id])
 
+  sourceItineraryId String?
+  sourceItinerary   CatecheticalItinerary? @relation(fields: [sourceItineraryId], references: [id])
+
+  ownerType          ResourceOwnerType    @default(PARISH)
+  inheritancePolicy  InheritancePolicy    @default(LOCAL)
+
   classes CatechesisClass[]
   stages  Stage[]
 
   @@index([parishId])
+  @@index([sourceItineraryId])
 }
 
 model Stage {
@@ -646,6 +741,8 @@ model CatechesisClass {
   liturgicalEvents     LiturgicalEvent[]
   conversations        Conversation[]
   pendingInvitations   PendingInvitation[]
+  officialResources    OfficialResource[]
+  announcements        PastoralAnnouncement[]
 
   @@index([parishId])
   @@index([communityId])
@@ -883,6 +980,16 @@ model ContentItem {
   parishId String?
   parish   Parish? @relation(fields: [parishId], references: [id])
 
+  dioceseId String?
+  diocese   Diocese? @relation(fields: [dioceseId], references: [id])
+
+  ownerType         ResourceOwnerType   @default(PARISH)
+  inheritancePolicy InheritancePolicy   @default(LOCAL)
+  adoptionStatus    AdoptionStatus?
+  sourceContentId   String?
+  sourceContent     ContentItem?        @relation("ContentInheritance", fields: [sourceContentId], references: [id])
+  adaptedCopies     ContentItem[]       @relation("ContentInheritance")
+
   createdById String?
   createdBy   User?   @relation("ContentCreator", fields: [createdById], references: [id])
 
@@ -899,6 +1006,8 @@ model ContentItem {
 
   @@index([parishId])
   @@index([parishId, status])
+  @@index([dioceseId, visibilityScope])
+  @@index([sourceContentId])
 }
 
 model ContentBibleReference {
@@ -1030,11 +1139,22 @@ model SacramentalJourneyTemplate {
   parishId String?
   parish   Parish? @relation(fields: [parishId], references: [id])
 
+  dioceseId String?
+  diocese   Diocese? @relation(fields: [dioceseId], references: [id])
+
+  ownerType         ResourceOwnerType @default(PARISH)
+  inheritancePolicy InheritancePolicy @default(SUGGESTED)
+  sourceTemplateId  String?
+  sourceTemplate    SacramentalJourneyTemplate?  @relation("JourneyTemplateInheritance", fields: [sourceTemplateId], references: [id])
+  publishedCopies   SacramentalJourneyTemplate[] @relation("JourneyTemplateInheritance")
+
   sacramentId String?
   sacrament   Sacrament? @relation(fields: [sacramentId], references: [id])
 
   milestones SacramentalMilestoneTemplate[]
   journeys   SacramentalJourney[]
+
+  @@index([dioceseId])
 }
 
 model SacramentalMilestoneTemplate {
@@ -1115,6 +1235,11 @@ model MessageCampaign {
 
   classId String?
   class   CatechesisClass? @relation(fields: [classId], references: [id])
+
+  dioceseId String?
+  ownerType          ResourceOwnerType @default(PARISH)
+  inheritancePolicy  InheritancePolicy @default(LOCAL)
+  requireAck         Boolean           @default(false)
 
   createdById String?
   createdBy   User?   @relation(fields: [createdById], references: [id])
@@ -1313,6 +1438,13 @@ model MessageTemplate {
   parishId    String?
   parish      Parish? @relation(fields: [parishId], references: [id])
 
+  dioceseId String?
+  diocese   Diocese? @relation(fields: [dioceseId], references: [id])
+
+  ownerType         ResourceOwnerType @default(PARISH)
+  inheritancePolicy InheritancePolicy @default(SUGGESTED)
+  sourceTemplateId  String?
+
   createdById String?
   createdBy   User?   @relation("TemplateCreator", fields: [createdById], references: [id])
 
@@ -1320,6 +1452,7 @@ model MessageTemplate {
 
   @@index([parishId])
   @@index([createdById])
+  @@index([dioceseId])
 }
 
 // ─── Documents & Consents ─────────────────────────────────────────────────────
@@ -1383,7 +1516,7 @@ model LiturgicalEvent {
   recurring      Boolean   @default(false)
   recurrenceRule String?
   color          String?
-  type           String    @default("liturgical") // liturgical, parish, class, sacramental
+  type           String    @default("liturgical") // liturgical, parish, class, sacramental, diocese
   locale         String    @default("pt-BR")
 
   parishId String?
@@ -1392,8 +1525,19 @@ model LiturgicalEvent {
   classId String?
   class   CatechesisClass? @relation(fields: [classId], references: [id])
 
+  dioceseId String?
+  diocese   Diocese? @relation(fields: [dioceseId], references: [id])
+
+  communityId String?
+  community   Community? @relation(fields: [communityId], references: [id])
+
+  ownerType         ResourceOwnerType @default(PARISH)
+  inheritancePolicy InheritancePolicy @default(REQUIRED_EXTENDABLE)
+
   @@index([parishId, date])
   @@index([classId])
+  @@index([dioceseId, date])
+  @@index([communityId, date])
 }
 
 // ─── Billing ──────────────────────────────────────────────────────────────────
@@ -2022,6 +2166,290 @@ model EmailPreference {
 
   @@unique([email, topic])
   @@index([userId])
+}
+
+// ─── Hierarchical pastoral resources ──────────────────────────────────────────
+
+model OfficialResource {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  summary     String?
+  body        String?
+  fileUrl     String?
+  fileName    String?
+  kind        OfficialResourceKind   @default(OTHER)
+  status      OfficialResourceStatus @default(DRAFT)
+  stageKey    String?
+  locale      String                 @default("pt-BR")
+  version     Int                    @default(1)
+  validFrom   DateTime?
+  validUntil  DateTime?
+
+  ownerType         ResourceOwnerType @default(DIOCESE)
+  inheritancePolicy InheritancePolicy @default(LOCKED)
+
+  dioceseId String?
+  diocese   Diocese? @relation(fields: [dioceseId], references: [id])
+
+  parishId String?
+  parish   Parish? @relation(fields: [parishId], references: [id])
+
+  communityId String?
+  community   Community? @relation(fields: [communityId], references: [id])
+
+  classId String?
+  class   CatechesisClass? @relation(fields: [classId], references: [id])
+
+  createdById String?
+  createdBy   User?   @relation("OfficialResourceCreator", fields: [createdById], references: [id])
+
+  reviewedById String?
+  reviewedBy   User?   @relation("OfficialResourceReviewer", fields: [reviewedById], references: [id])
+
+  sourceResourceId String?
+  sourceResource   OfficialResource?  @relation("OfficialResourceInheritance", fields: [sourceResourceId], references: [id])
+  adaptedCopies    OfficialResource[] @relation("OfficialResourceInheritance")
+
+  adoptions OfficialResourceAdoption[]
+
+  @@index([dioceseId, status])
+  @@index([parishId, status])
+  @@index([kind, status])
+  @@index([sourceResourceId])
+}
+
+model OfficialResourceAdoption {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  resourceId String
+  resource   OfficialResource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  adopterType ResourceOwnerType
+  adopterId   String
+  status      AdoptionStatus @default(INHERITED)
+  adaptedCopyId String?
+  sourceVersion Int?
+  copiedVersion Int?
+
+  @@unique([resourceId, adopterType, adopterId])
+  @@index([adopterType, adopterId])
+}
+
+model PastoralAnnouncement {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  body        String
+  status      PastoralAnnouncementStatus @default(DRAFT)
+  audience    String                     @default("coordinators")
+  requireAck  Boolean                    @default(true)
+  publishedAt DateTime?
+
+  ownerType         ResourceOwnerType @default(DIOCESE)
+  inheritancePolicy InheritancePolicy @default(REQUIRED_EXTENDABLE)
+
+  dioceseId String?
+  diocese   Diocese? @relation(fields: [dioceseId], references: [id])
+
+  parishId String?
+  parish   Parish? @relation(fields: [parishId], references: [id])
+
+  communityId String?
+  community   Community? @relation(fields: [communityId], references: [id])
+
+  classId String?
+  class   CatechesisClass? @relation(fields: [classId], references: [id])
+
+  sourceAnnouncementId String?
+  sourceAnnouncement   PastoralAnnouncement?  @relation("AnnouncementCascade", fields: [sourceAnnouncementId], references: [id])
+  republishedCopies    PastoralAnnouncement[] @relation("AnnouncementCascade")
+
+  createdById String?
+  createdBy   User?   @relation("AnnouncementCreator", fields: [createdById], references: [id])
+
+  acknowledgements PastoralAnnouncementAck[]
+
+  @@index([dioceseId, status])
+  @@index([parishId, status])
+  @@index([publishedAt])
+}
+
+model PastoralAnnouncementAck {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  announcementId String
+  announcement   PastoralAnnouncement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  readAt DateTime @default(now())
+
+  @@unique([announcementId, userId])
+  @@index([userId])
+}
+
+model CatecheticalItinerary {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name              String
+  description       String?
+  locale            String              @default("pt-BR")
+  status            OfficialResourceStatus @default(DRAFT)
+  minDurationWeeks  Int?
+  ownerType         ResourceOwnerType   @default(DIOCESE)
+  inheritancePolicy InheritancePolicy   @default(REQUIRED_EXTENDABLE)
+
+  dioceseId String?
+  diocese   Diocese? @relation(fields: [dioceseId], references: [id])
+
+  parishId String?
+  parish   Parish? @relation(fields: [parishId], references: [id])
+
+  createdById String?
+  createdBy   User?   @relation("ItineraryCreator", fields: [createdById], references: [id])
+
+  stages CatecheticalItineraryStage[]
+  years  CatecheticalYear[]
+
+  @@index([dioceseId, status])
+  @@index([parishId])
+}
+
+model CatecheticalItineraryStage {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?
+  order       Int     @default(0)
+  minAge      Int?
+  durationWeeks Int?
+
+  itineraryId String
+  itinerary   CatecheticalItinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+
+  @@index([itineraryId, order])
+}
+
+model FormationTrack {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?
+  kind        FormationTrackKind @default(INITIAL)
+  hours       Int?
+  locale      String             @default("pt-BR")
+  active      Boolean            @default(true)
+
+  ownerType         ResourceOwnerType @default(DIOCESE)
+  inheritancePolicy InheritancePolicy @default(SUGGESTED)
+
+  dioceseId String?
+  diocese   Diocese? @relation(fields: [dioceseId], references: [id])
+
+  parishId String?
+  parish   Parish? @relation(fields: [parishId], references: [id])
+
+  createdById String?
+  createdBy   User?   @relation("FormationTrackCreator", fields: [createdById], references: [id])
+
+  sessions    FormationSession[]
+  enrollments FormationEnrollment[]
+
+  @@index([dioceseId, active])
+  @@index([parishId])
+}
+
+model FormationSession {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  startsAt    DateTime
+  endsAt      DateTime?
+  location    String?
+  hours       Int?
+
+  trackId String
+  track   FormationTrack @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  attendances FormationAttendance[]
+
+  @@index([trackId, startsAt])
+}
+
+model FormationEnrollment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status      FormationEnrollmentStatus @default(ENROLLED)
+  completedAt DateTime?
+  hoursDone   Int                       @default(0)
+
+  trackId String
+  track   FormationTrack @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([trackId, userId])
+  @@index([userId])
+}
+
+model FormationAttendance {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  present Boolean @default(true)
+
+  sessionId String
+  session   FormationSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  recordedById String?
+  recordedBy   User?   @relation("FormationAttendanceRecorder", fields: [recordedById], references: [id])
+
+  @@unique([sessionId, userId])
+}
+
+model ResourceAdoption {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  resourceKind String
+  sourceId     String
+  adopterType  ResourceOwnerType
+  adopterId    String
+  status       AdoptionStatus @default(INHERITED)
+  adaptedCopyId String?
+  sourceVersion Int?
+  copiedVersion Int?
+
+  adoptedById String?
+  adoptedBy   User?   @relation(fields: [adoptedById], references: [id])
+
+  @@unique([resourceKind, sourceId, adopterType, adopterId])
+  @@index([adopterType, adopterId])
+  @@index([resourceKind, sourceId])
 }
 
 

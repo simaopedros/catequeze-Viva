@@ -871,17 +871,25 @@ export const publishTemplate = async (
     }
   }
 
-  // If template is already global/parishId=null, just ensure it's marked as published (no-op for now)
+  // If template is already global/parishId=null, stamp diocesan inheritance fields.
   if (!source.parishId) {
-    return context.entities.SacramentalJourneyTemplate.findUnique({
+    const dioceseId = source.dioceseId || source.parish?.dioceseId || null;
+    return context.entities.SacramentalJourneyTemplate.update({
       where: { id: source.id },
+      data: {
+        ownerType: "DIOCESE",
+        inheritancePolicy: "SUGGESTED",
+        dioceseId,
+      },
       include: {
-        milestones: { orderBy: { order: 'asc' } },
+        milestones: { orderBy: { order: "asc" } },
         parish: { select: { id: true, name: true, type: true } },
         sacrament: { select: { id: true, name: true } },
       },
     });
   }
+
+  const dioceseId = source.parish?.dioceseId || source.dioceseId || null;
 
   // Create a diocesan copy (parishId = null) — represents "published to diocese"
   const published = await context.entities.SacramentalJourneyTemplate.create({
@@ -889,7 +897,11 @@ export const publishTemplate = async (
       name: source.name,
       description: source.description,
       sacramentId: source.sacramentId,
-      parishId: null, // diocesan scope
+      parishId: null,
+      dioceseId,
+      ownerType: "DIOCESE",
+      inheritancePolicy: "SUGGESTED",
+      sourceTemplateId: source.id,
     },
   });
 

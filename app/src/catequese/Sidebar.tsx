@@ -31,6 +31,8 @@ import {
   ClipboardList,
   Mail,
   Sparkles,
+  Landmark,
+  Megaphone,
 } from "lucide-react";
 import { useUserContext } from "../client/hooks/useUserContext";
 import {
@@ -77,6 +79,9 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   consents: FileCheck,
   catechetical_years: CalendarRange,
   admin: Shield,
+  official_library: Landmark,
+  announcements: Megaphone,
+  formation: GraduationCap,
 };
 
 interface NavItemProps {

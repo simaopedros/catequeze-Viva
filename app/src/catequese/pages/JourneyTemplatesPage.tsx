@@ -31,6 +31,7 @@ import { useUserContext } from "../../client/hooks/useUserContext";
 import { useLocale } from "../../i18n/useLocale";
 import { toast } from "../../client/hooks/use-toast";
 import { useConfirm } from "../../client/hooks/useConfirm";
+import { OriginBadge } from "../components/OriginBadge";
 
 export default function JourneyTemplatesPage() {
   const { t } = useTranslation("sacraments");
@@ -362,6 +363,13 @@ export default function JourneyTemplatesPage() {
                           <Badge variant="outline" className="text-overline">
                             {scopeLabel}
                           </Badge>
+                          {(tmpl.ownerType === "DIOCESE" || !tmpl.parishId) && (
+                            <OriginBadge
+                              ownerType={tmpl.ownerType || "DIOCESE"}
+                              inherited={Boolean(tmpl.parishId === null)}
+                              policy={tmpl.inheritancePolicy}
+                            />
+                          )}
                           {tmpl.sacrament?.name && (
                             <Badge className="text-overline">
                               {tmpl.sacrament.name}

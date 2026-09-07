@@ -46,6 +46,13 @@ import {
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { useConfirm } from "../../client/hooks/useConfirm";
 import { toast } from "../../client/hooks/use-toast";
+import { OriginBadge } from "../components/OriginBadge";
+import { findCalendarConflicts } from "../../shared/resourceInheritance";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "../../client/components/ui/alert";
 
 const DEFAULT_COLOR = "#071A2D"; // brand ink — charts/ICS only
 
@@ -86,7 +93,10 @@ export default function CalendarPage() {
 
   const { activeParishId } = useActiveParish();
   const { data: liturgicalEvents = [], isLoading: loadingLiturgical } =
-    useQuery(listLiturgicalEvents);
+    useQuery(
+      listLiturgicalEvents,
+      { workspaceId: activeParishId || undefined } as any,
+    );
   const { data: classes = [], isLoading: loadingClasses } = useQuery(
     listClasses,
     { workspaceId: activeParishId || undefined } as any,
@@ -125,7 +135,14 @@ export default function CalendarPage() {
   };
 
   const parishFilteredEvents = activeParishId
-    ? liturgicalEvents.filter((e: any) => e.parishId === activeParishId)
+    ? liturgicalEvents.filter(
+        (e: any) =>
+          e.parishId === activeParishId ||
+          e.inherited ||
+          e.ownerType === "DIOCESE" ||
+          e.ownerType === "COMMUNITY" ||
+          Boolean(e.origin?.inherited),
+      )
     : liturgicalEvents;
   const filteredClasses = useMemo(
     () =>
@@ -171,6 +188,24 @@ export default function CalendarPage() {
 
   const loading = loadingLiturgical || loadingClasses || loadingMeetings;
   const events = [...parishFilteredEvents, ...meetings];
+  const conflicts = useMemo(
+    () =>
+      findCalendarConflicts(
+        parishFilteredEvents.filter(
+          (e: any) =>
+            e.ownerType === "DIOCESE" ||
+            e.origin?.inherited ||
+            e.inherited,
+        ),
+        meetings.map((m: any) => ({
+          id: m.id,
+          name: m.name,
+          date: m.date,
+          kind: "meeting" as const,
+        })),
+      ),
+    [parishFilteredEvents, meetings],
+  );
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -178,7 +213,13 @@ export default function CalendarPage() {
   const firstDay = (new Date(year, month, 1).getDay() + 6) % 7;
 
   const filteredEvents =
-    typeFilter === "all" ? events : events.filter((e) => e.type === typeFilter);
+    typeFilter === "all"
+      ? events
+      : typeFilter === "diocese"
+        ? events.filter(
+            (e: any) => e.type === "diocese" || e.ownerType === "DIOCESE",
+          )
+        : events.filter((e) => e.type === typeFilter);
   const upcomingEvents = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -227,6 +268,8 @@ export default function CalendarPage() {
       description: desc,
       color,
       type: eventType,
+      workspaceId: activeParishId || undefined,
+      parishId: activeParishId || undefined,
     });
     setName("");
     setDesc("");
@@ -276,12 +319,14 @@ export default function CalendarPage() {
     { v: "parish", l: t("filters.parish") },
     { v: "class", l: t("filters.class") },
     { v: "sacramental", l: t("filters.sacramental") },
+    { v: "diocese", l: t("filters.diocese") },
   ];
 
   const eventTypeLabels: Record<string, string> = {
     liturgical: t("event_types.liturgical"),
     parish: t("event_types.parish"),
     class: t("event_types.class"),
+    diocese: t("event_types.diocese", { defaultValue: t("filters.diocese") }),
   };
 
   const isToday = (day: number) =>
@@ -329,6 +374,22 @@ export default function CalendarPage() {
           },
         ]}
       />
+
+      {conflicts.length > 0 && (
+        <Alert variant="warning">
+          <AlertTitle>{t("conflicts_title")}</AlertTitle>
+          <AlertDescription>
+            {t("conflicts_desc", { count: conflicts.length })}
+            <ul className="mt-2 list-disc pl-4">
+              {conflicts.slice(0, 4).map((c) => (
+                <li key={`${c.dateKey}-${c.local.id}`}>
+                  {c.dateKey}: {c.inherited.name} × {c.local.name}
+                </li>
+              ))}
+            </ul>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Period + view — one-hand friendly, sticky on mobile */}
       <div className="sticky top-0 z-10 -mx-1 flex flex-wrap items-center gap-2 border-b border-border/60 bg-background/95 px-1 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:static sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
@@ -752,6 +813,16 @@ function AgendaView({
               <p className="mt-0.5 text-overline text-muted-foreground">
                 {eventTypeLabels[e.type] || e.type}
               </p>
+              {(e.origin || e.ownerType) && (
+                <div className="mt-1">
+                  <OriginBadge
+                    origin={e.origin}
+                    ownerType={e.ownerType}
+                    inherited={e.inherited}
+                    policy={e.inheritancePolicy}
+                  />
+                </div>
+              )}
             </div>
             <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted-foreground/50" />
           </button>
@@ -979,6 +1050,15 @@ function SidePanelContent({
                   <Badge variant="outline" className="mt-1.5 text-overline">
                     {eventTypeLabels[e.type] || e.type}
                   </Badge>
+                  {(e.origin || e.ownerType) && (
+                    <OriginBadge
+                      origin={e.origin}
+                      ownerType={e.ownerType}
+                      inherited={e.inherited}
+                      policy={e.inheritancePolicy}
+                      className="mt-1.5 ml-1"
+                    />
+                  )}
                 </div>
               </div>
               <div
@@ -992,7 +1072,10 @@ function SidePanelContent({
                 >
                   <Download className="h-3.5 w-3.5" />
                 </button>
-                {e.type !== "class" && allowCreate && (
+                {e.type !== "class" &&
+                  allowCreate &&
+                  !e.inherited &&
+                  !e.origin?.inherited && (
                   <button
                     onClick={() => handleDelete(e.id)}
                     className="text-muted-foreground hover:text-destructive p-1.5 rounded-sm hover:bg-destructive/10 transition-colors"

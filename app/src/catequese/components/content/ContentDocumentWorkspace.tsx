@@ -37,6 +37,7 @@ import { useTranslation } from "react-i18next";
 import { AI_FEATURES_ENABLED } from "../../../shared/aiFeatures";
 import { ReferencePicker } from "../../../client/components/ReferencePicker";
 import { toast } from "../../../client/hooks/use-toast";
+import { useActiveParish } from "../../../client/hooks/useActiveParish";
 import { cn } from "../../../client/utils";
 import {
   CONTENT_DOCUMENT_VERSION,
@@ -395,6 +396,7 @@ export function ContentDocumentWorkspace({
   const navigate = useNavigate();
   const { t: tc } = useTranslation("common");
   const { t } = useTranslation("content");
+  const { activeParishId } = useActiveParish();
   const DEFAULT_TITLE = t(DEFAULT_TITLE_KEY);
   const [loading, setLoading] = useState(!!existingContentId);
   const [contentId, setContentId] = useState<string | null>(
@@ -573,6 +575,7 @@ export function ContentDocumentWorkspace({
         estimatedTime: Number(estimatedTime) || 60,
         tags: tags.trim() || "",
         documentJson,
+        workspaceId: activeParishId || undefined,
       });
       contentIdRef.current = item.id;
       setContentId(item.id);
@@ -601,6 +604,7 @@ export function ContentDocumentWorkspace({
     snapshot,
     navigate,
     isMeaningfullyEdited,
+    activeParishId,
   ]);
 
   const saveNow = useCallback(async () => {

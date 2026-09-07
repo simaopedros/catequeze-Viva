@@ -43,6 +43,7 @@ import {
   AppMetric,
 } from "../../client/components/brand/AppChrome";
 import { ImportContentModal } from "../components/content/ImportContentModal";
+import { OriginBadge } from "../components/OriginBadge";
 
 const STATUS_KEYS = [
   "all",
@@ -183,7 +184,12 @@ export default function ContentLibraryPage() {
     }
     if (activeParishId)
       result = result.filter(
-        (i: any) => i.parishId === activeParishId || i.isDioceseShared,
+        (i: any) =>
+          i.parishId === activeParishId ||
+          i.isDioceseShared ||
+          i.inherited ||
+          i.ownerType === "DIOCESE" ||
+          Boolean(i.origin?.inherited),
       );
     if (filter !== "all")
       result = result.filter((i: any) => i.status === filter);
@@ -600,11 +606,15 @@ export default function ContentLibraryPage() {
               </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
-                {item.isDioceseShared && (
-                  <Badge variant="outline" className="gap-1 text-overline">
-                    <BookMarked className="h-2.5 w-2.5" />
-                    {t("library.diocese")}
-                  </Badge>
+                {(item.isDioceseShared ||
+                  item.inherited ||
+                  item.ownerType === "DIOCESE") && (
+                  <OriginBadge
+                    origin={item.origin}
+                    ownerType={item.ownerType || "DIOCESE"}
+                    inherited={item.inherited || item.isDioceseShared}
+                    policy={item.inheritancePolicy}
+                  />
                 )}
                 {item.isAiGenerated && (
                   <Badge

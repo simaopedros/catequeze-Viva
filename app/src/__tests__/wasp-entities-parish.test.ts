@@ -75,4 +75,39 @@ describe('Wasp entities for parish onboarding actions', () => {
     expect(entities).toContain('Membership');
     expect(entities).toContain('CatechesisClass');
   });
+
+  it('hierarchical resource operations declare workspace access entities', () => {
+    const official = entitiesForOperation(
+      waspSource,
+      'query',
+      'listOfficialResources',
+    );
+    expect(official).toContain('OfficialResource');
+    expect(official).toContain('ClassCatechist');
+    expect(official).toContain('Parish');
+
+    const calendar = entitiesForOperation(
+      waspSource,
+      'query',
+      'listLiturgicalEvents',
+    );
+    expect(calendar).toContain('ClassCatechist');
+    expect(calendar).toContain('Diocese');
+
+    const itineraries = entitiesForOperation(
+      waspSource,
+      'query',
+      'listCatecheticalItineraries',
+    );
+    expect(itineraries).toContain('CatecheticalItinerary');
+    expect(itineraries).toContain('ClassCatechist');
+
+    const formation = entitiesForOperation(
+      waspSource,
+      'query',
+      'listFormationTracks',
+    );
+    expect(formation).toContain('FormationTrack');
+    expect(formation).toContain('ClassCatechist');
+  });
 });

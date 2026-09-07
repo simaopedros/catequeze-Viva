@@ -2,6 +2,8 @@ import { HttpError } from 'wasp/server';
 import { requireAuth, getDioceseParishIds } from '../auth/helpers';
 import { requireWorkspaceAccess } from './sharedScope';
 import { LEGACY_MAX_TAKE } from './listCursor';
+import { defaultPolicyFor } from '../../shared/resourceInheritance';
+import { resolveResourceActor } from './resourceScope';
 
 const STAFF_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'];
 
@@ -33,12 +35,36 @@ export const listMessageTemplates = async (_args: void, context: any) => {
     }
   }
 
+  const parishes =
+    parishIds.length === 0
+      ? []
+      : await context.entities.Parish.findMany({
+          where: { id: { in: parishIds } },
+          select: { dioceseId: true },
+        });
+  const dioceseIds = [
+    ...new Set(
+      parishes
+        .map((p: any) => p.dioceseId)
+        .filter((id: any) => typeof id === "string" && id.length > 0),
+    ),
+  ];
+
   return context.entities.MessageTemplate.findMany({
     where: {
       OR: [
         { isGlobal: true },
         { parishId: { in: parishIds } },
         { createdById: context.user.id },
+        ...(dioceseIds.length
+          ? [
+              {
+                dioceseId: { in: dioceseIds },
+                ownerType: "DIOCESE",
+                inheritancePolicy: { not: "LOCAL" },
+              },
+            ]
+          : []),
       ],
     },
     orderBy: { name: 'asc' },
@@ -88,13 +114,28 @@ export const createMessageTemplate = async (
     throw new HttpError(400, 'É necessário indicar um workspace para o template.');
   }
 
+  let ownerType: "PARISH" | "DIOCESE" | "COMMUNITY" = "PARISH";
+  let dioceseId: string | null = null;
+  if (parishId) {
+    try {
+      const actor = await resolveResourceActor(context, parishId);
+      ownerType = actor.ownerType === "DIOCESE" ? "DIOCESE" : actor.ownerType === "COMMUNITY" ? "COMMUNITY" : "PARISH";
+      dioceseId = actor.dioceseId;
+    } catch {
+      ownerType = "PARISH";
+    }
+  }
+
   return context.entities.MessageTemplate.create({
     data: {
       name: args.name.trim(),
       subject: args.subject.trim(),
       body: args.body.trim(),
       category: args.category?.trim() || null,
-      parishId: parishId || undefined,
+      parishId: ownerType === "DIOCESE" ? null : parishId || undefined,
+      dioceseId,
+      ownerType,
+      inheritancePolicy: defaultPolicyFor("MESSAGE_TEMPLATE", ownerType),
       createdById: context.user.id,
       isGlobal: args.isGlobal || false,
     },

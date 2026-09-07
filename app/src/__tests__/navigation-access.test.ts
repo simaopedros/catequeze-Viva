@@ -41,6 +41,9 @@ describe('Navigation Role Filtering', () => {
       expect(paths).toContain('/app/communities');
       expect(paths).toContain('/app/families');
       expect(paths).toContain('/app/classes');
+      expect(paths).toContain('/app/official-library');
+      expect(paths).toContain('/app/announcements');
+      expect(paths).toContain('/app/formation');
     });
 
     it('does NOT see admin (only isAdmin users see /admin)', () => {
@@ -306,6 +309,9 @@ describe('getVisibleNavigation SSOT', () => {
     expect(keys).not.toContain('communities');
     expect(keys).not.toContain('reports');
     expect(keys).not.toContain('catechetical_years');
+    expect(keys).not.toContain('official_library');
+    expect(keys).not.toContain('announcements');
+    expect(keys).not.toContain('formation');
   });
 
   it('coordinator in PERSONAL workspace also hides parish management chrome', () => {

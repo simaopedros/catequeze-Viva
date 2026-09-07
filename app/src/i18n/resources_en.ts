@@ -1478,12 +1478,14 @@ export const calendar_en = {
       "liturgical": "Liturgical",
       "parish": "Parish",
       "class": "Classes",
-      "sacramental": "Sacramental"
+      "sacramental": "Sacramental",
+      "diocese": "Diocese"
     },
     "event_types": {
       "liturgical": "Liturgical",
       "parish": "Parish",
-      "class": "Class"
+      "class": "Class",
+      "diocese": "Diocese"
     },
     "meeting_default": "Meeting",
     "day_title": "Day {{day}} of {{month}}",
@@ -1527,7 +1529,9 @@ export const calendar_en = {
     "create_primary": "New event",
     "confirm_delete_event": "Delete this event?",
     "confirm_delete_event_desc": "This action cannot be undone.",
-    "delete_error": "Could not delete the event"
+    "delete_error": "Could not delete the event",
+    "conflicts_title": "Possible calendar conflict",
+    "conflicts_desc": "{{count}} meeting(s) fall on the same day as a required diocesan or parish event."
   } as const;
 
 export const catecheticalYears_en = {
@@ -3266,6 +3270,173 @@ export const family_en = {
     }
   } as const;
 
+export const hierarchy_en = {
+    "origin": {
+      "platform": "Platform",
+      "diocese": "Diocese",
+      "parish": "Parish",
+      "community": "Community",
+      "class": "Class",
+      "official": "official",
+      "complementary": "complementary",
+      "local": "local",
+      "inherited": "inherited"
+    },
+    "policy": {
+      "LOCKED": "Locked required",
+      "REQUIRED_EXTENDABLE": "Required + extensible",
+      "SUGGESTED": "Suggested",
+      "LOCAL": "Local only"
+    },
+    "library": {
+      "eyebrow": "Communion",
+      "title": "Official folder",
+      "subtitle": "{{published}} published · {{inherited}} inherited",
+      "new": "New resource",
+      "form_title": "Publish resource",
+      "title_field": "Title",
+      "title_placeholder": "Diocesan catechesis directory",
+      "summary": "Summary",
+      "summary_placeholder": "What this document is and who it is for",
+      "body_placeholder": "Text, circular or guidance…",
+      "saving": "Saving…",
+      "created": "Resource created as a draft.",
+      "create_error": "Could not create the resource.",
+      "publish": "Publish",
+      "published": "Resource published to the network.",
+      "publish_error": "Could not publish.",
+      "adopt": "Adopt",
+      "adapt": "Adapt",
+      "dismiss": "Dismiss",
+      "adopt_inherited": "Resource adopted.",
+      "adopt_adapted": "Local copy created.",
+      "adopt_dismissed": "Resource dismissed.",
+      "adopt_error": "Could not update adoption.",
+      "empty_title": "No official resources",
+      "empty_desc": "The diocese and parish publish directories, subsidies, circulars and templates here.",
+      "new_version": "There is a new version of the original. The adapted copy stays frozen.",
+      "kinds": {
+        "all": "All",
+        "DIRECTORY": "Directory",
+        "SUBSIDY": "Subsidy",
+        "CIRCULAR": "Circular",
+        "FORM_TEMPLATE": "Form template",
+        "POLICY": "Policy",
+        "RITE": "Rite",
+        "HYMN": "Hymn / prayer",
+        "OTHER": "Other"
+      },
+      "status": {
+        "DRAFT": "Draft",
+        "IN_REVIEW": "In review",
+        "APPROVED": "Approved",
+        "PUBLISHED": "Published",
+        "ARCHIVED": "Archived"
+      },
+      "adoption": {
+        "INHERITED": "Adopted",
+        "ADAPTED": "Adapted",
+        "DISMISSED": "Dismissed"
+      }
+    },
+    "announcements": {
+      "eyebrow": "Communion",
+      "title": "Announcements",
+      "subtitle": "Memos that cascade from the diocese to the parish and classes, with acknowledgement.",
+      "new": "New announcement",
+      "title_field": "Title",
+      "title_placeholder": "Catechesis 2026 opening",
+      "body_placeholder": "Memo text…",
+      "saving": "Saving…",
+      "created": "Announcement created as a draft.",
+      "create_error": "Could not create the announcement.",
+      "publish": "Publish",
+      "published": "Announcement published.",
+      "publish_error": "Could not publish the announcement.",
+      "ack": "Acknowledge",
+      "acked": "Acknowledged",
+      "ack_count": "{{count}} acknowledgements",
+      "republish": "Republish",
+      "empty_title": "No announcements",
+      "empty_desc": "Coordination publishes memos here; the parish can republish them to classes.",
+      "audience": {
+        "coordinators": "Coordinators",
+        "catechists": "Catechists",
+        "families": "Families",
+        "all": "Everyone"
+      },
+      "status": {
+        "DRAFT": "Draft",
+        "PUBLISHED": "Published",
+        "ARCHIVED": "Archived"
+      }
+    },
+    "itinerary": {
+      "section": "Official itineraries",
+      "new": "New itinerary",
+      "name_placeholder": "Itinerary name (e.g. Eucharist, 2 years)",
+      "desc_placeholder": "Description (optional)",
+      "create": "Create itinerary",
+      "created": "Itinerary created as a draft.",
+      "create_error": "Could not create the itinerary.",
+      "publish": "Publish",
+      "instantiate": "Instantiate year",
+      "instantiated": "Catechetical year created from the itinerary.",
+      "default_stage": "Initial stage",
+      "stages_count": "{{count}} stages",
+      "years_count": "{{count}} years instantiated",
+      "from": "From {{name}}"
+    },
+    "formation": {
+      "eyebrow": "Formation",
+      "title": "Catechist school",
+      "subtitle": "Diocesan and parish tracks, enrollment, sessions and attendance.",
+      "new": "New track",
+      "name": "Name",
+      "name_placeholder": "Initial catechist formation",
+      "hours": "Hours",
+      "hours_placeholder": "Hours (optional)",
+      "desc_placeholder": "Goal and audience…",
+      "saving": "Saving…",
+      "created": "Track created.",
+      "create_error": "Could not create the track.",
+      "enroll": "Enroll",
+      "add_session": "Session",
+      "session_title": "Session title",
+      "save_session": "Schedule",
+      "session_created": "Session scheduled.",
+      "session_error": "Could not schedule the session.",
+      "mark_present": "Mark present",
+      "empty_title": "No formation tracks",
+      "empty_desc": "The diocese publishes the catechist school here; the parish sees team status.",
+      "meta": "{{sessions}} sessions · {{enrolled}} enrolled · {{hours}}h",
+      "kinds": {
+        "INITIAL": "Initial",
+        "PERMANENT": "Ongoing",
+        "INSTITUTED_MINISTRY": "Instituted ministry",
+        "COORDINATION": "Coordination",
+        "INCLUSIVE": "Inclusive catechesis"
+      },
+      "enrollment": {
+        "ENROLLED": "Enrolled",
+        "IN_PROGRESS": "In progress",
+        "COMPLETED": "Completed",
+        "DROPPED": "Dropped"
+      }
+    },
+    "report": {
+      "tab": "Adoption",
+      "title": "Adoption across parishes",
+      "resources": "Published resources",
+      "itineraries": "Published itineraries",
+      "enrollments": "Formation enrollments",
+      "parish": "Parish",
+      "classes": "Classes",
+      "official": "Official adoptions",
+      "itinerary_adoptions": "Itineraries adopted"
+    }
+  } as const;
+
 export const landing_en = {
     "hero": {
       "headline_line1": "You sow the faith.",
@@ -4670,6 +4841,9 @@ export const navigation_en = {
     "documents": "Documents",
     "consents": "Consents",
     "catechetical_years": "Catechetical Years",
+    "official_library": "Official folder",
+    "announcements": "Announcements",
+    "formation": "Formation",
     "bible": "Bible",
     "catechism": "Catechism",
     "directory": "Directory",
@@ -6072,6 +6246,7 @@ export const resources_en = {
   dashboard: dashboard_en,
   emails: emails_en,
   family: family_en,
+  hierarchy: hierarchy_en,
   landing: landing_en,
   landingIa: landingIa_en,
   landingPresenca: landingPresenca_en,

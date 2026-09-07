@@ -9,12 +9,14 @@
     "liturgical": "Liturgical",
     "parish": "Parish",
     "class": "Classes",
-    "sacramental": "Sacramental"
+    "sacramental": "Sacramental",
+    "diocese": "Diocese"
   },
   "event_types": {
     "liturgical": "Liturgical",
     "parish": "Parish",
-    "class": "Class"
+    "class": "Class",
+    "diocese": "Diocese"
   },
   "meeting_default": "Meeting",
   "day_title": "Day {{day}} of {{month}}",
@@ -58,5 +60,7 @@
   "create_primary": "New event",
   "confirm_delete_event": "Delete this event?",
   "confirm_delete_event_desc": "This action cannot be undone.",
-  "delete_error": "Could not delete the event"
+  "delete_error": "Could not delete the event",
+  "conflicts_title": "Possible calendar conflict",
+  "conflicts_desc": "{{count}} meeting(s) fall on the same day as a required diocesan or parish event."
 }
