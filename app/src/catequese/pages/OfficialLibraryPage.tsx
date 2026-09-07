@@ -1,13 +1,6 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  BookOpen,
-  Plus,
-  Send,
-  Copy,
-  EyeOff,
-  Check,
-} from "lucide-react";
+import { BookOpen, Plus, Send, Copy, EyeOff, Check } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
 import { Input } from "../../client/components/ui/input";
@@ -60,9 +53,8 @@ export default function OfficialLibraryPage() {
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [body, setBody] = useState("");
-  const [newKind, setNewKind] = useState<(typeof OFFICIAL_RESOURCE_KINDS)[number]>(
-    "DIRECTORY",
-  );
+  const [newKind, setNewKind] =
+    useState<(typeof OFFICIAL_RESOURCE_KINDS)[number]>("DIRECTORY");
 
   const { data: resources = [], isLoading } = useQuery(
     listOfficialResources,
@@ -210,10 +202,18 @@ export default function OfficialLibraryPage() {
             rows={6}
           />
           <div className="flex gap-2">
-            <Button size="sm" onClick={handleCreate} disabled={!title.trim() || saving}>
+            <Button
+              size="sm"
+              onClick={handleCreate}
+              disabled={!title.trim() || saving}
+            >
               {saving ? t("library.saving") : tc("create")}
             </Button>
-            <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setShowForm(false)}
+            >
               {tc("cancel")}
             </Button>
           </div>
@@ -223,13 +223,15 @@ export default function OfficialLibraryPage() {
       {isLoading ? (
         <div className="h-40 animate-pulse rounded-sm bg-muted" />
       ) : resources.length === 0 ? (
-        <EmptyState
-          icon={BookOpen}
-          title={t("library.empty_title")}
-          description={t("library.empty_desc")}
-        />
+        <div data-testid="empty-official-library">
+          <EmptyState
+            icon={BookOpen}
+            title={t("library.empty_title")}
+            description={t("library.empty_desc")}
+          />
+        </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3" data-testid="official-resource-list">
           {resources.map((row: any) => {
             const adoption = row.adoption?.status;
             const canAdapt =
@@ -239,19 +241,30 @@ export default function OfficialLibraryPage() {
             const canDismiss =
               row.inherited && row.inheritancePolicy === "SUGGESTED";
             return (
-              <AppPanel key={row.id} className="space-y-3">
+              <AppPanel
+                key={row.id}
+                className="space-y-3"
+                data-testid="official-resource"
+              >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0 space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="text-sm font-semibold text-brand-ink">
                         {row.title}
                       </h3>
-                      <OriginBadge origin={row.origin} ownerType={row.ownerType} inherited={row.inherited} policy={row.inheritancePolicy} />
+                      <OriginBadge
+                        origin={row.origin}
+                        ownerType={row.ownerType}
+                        inherited={row.inherited}
+                        policy={row.inheritancePolicy}
+                      />
                       <Badge variant="outline" size="sm">
                         {t(`library.kinds.${row.kind}`)}
                       </Badge>
                       <Badge
-                        variant={row.status === "PUBLISHED" ? "success" : "secondary"}
+                        variant={
+                          row.status === "PUBLISHED" ? "success" : "secondary"
+                        }
                         size="sm"
                       >
                         {t(`library.status.${row.status}`)}
@@ -263,7 +276,9 @@ export default function OfficialLibraryPage() {
                       )}
                     </div>
                     {row.summary && (
-                      <p className="text-sm text-muted-foreground">{row.summary}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {row.summary}
+                      </p>
                     )}
                   </div>
                   <div className="flex flex-wrap gap-1">

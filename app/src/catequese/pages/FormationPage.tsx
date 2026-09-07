@@ -170,10 +170,18 @@ export default function FormationPage() {
             rows={4}
           />
           <div className="flex gap-2">
-            <Button size="sm" onClick={handleCreate} disabled={!name.trim() || saving}>
+            <Button
+              size="sm"
+              onClick={handleCreate}
+              disabled={!name.trim() || saving}
+            >
               {saving ? t("formation.saving") : tc("create")}
             </Button>
-            <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setShowForm(false)}
+            >
               {tc("cancel")}
             </Button>
           </div>
@@ -183,17 +191,23 @@ export default function FormationPage() {
       {isLoading ? (
         <div className="h-40 animate-pulse rounded-sm bg-muted" />
       ) : tracks.length === 0 ? (
-        <EmptyState
-          icon={GraduationCap}
-          title={t("formation.empty_title")}
-          description={t("formation.empty_desc")}
-        />
+        <div data-testid="empty-formation">
+          <EmptyState
+            icon={GraduationCap}
+            title={t("formation.empty_title")}
+            description={t("formation.empty_desc")}
+          />
+        </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3" data-testid="formation-track-list">
           {tracks.map((track: any) => {
             const enrolled = Boolean(track.myEnrollment);
             return (
-              <AppPanel key={track.id} className="space-y-3">
+              <AppPanel
+                key={track.id}
+                className="space-y-3"
+                data-testid="formation-track"
+              >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -210,7 +224,9 @@ export default function FormationPage() {
                       </Badge>
                       {enrolled && (
                         <Badge variant="success" size="sm">
-                          {t(`formation.enrollment.${track.myEnrollment.status}`)}
+                          {t(
+                            `formation.enrollment.${track.myEnrollment.status}`,
+                          )}
                         </Badge>
                       )}
                     </div>

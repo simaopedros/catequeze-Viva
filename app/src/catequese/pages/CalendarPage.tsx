@@ -93,10 +93,9 @@ export default function CalendarPage() {
 
   const { activeParishId } = useActiveParish();
   const { data: liturgicalEvents = [], isLoading: loadingLiturgical } =
-    useQuery(
-      listLiturgicalEvents,
-      { workspaceId: activeParishId || undefined } as any,
-    );
+    useQuery(listLiturgicalEvents, {
+      workspaceId: activeParishId || undefined,
+    } as any);
   const { data: classes = [], isLoading: loadingClasses } = useQuery(
     listClasses,
     { workspaceId: activeParishId || undefined } as any,
@@ -193,9 +192,7 @@ export default function CalendarPage() {
       findCalendarConflicts(
         parishFilteredEvents.filter(
           (e: any) =>
-            e.ownerType === "DIOCESE" ||
-            e.origin?.inherited ||
-            e.inherited,
+            e.ownerType === "DIOCESE" || e.origin?.inherited || e.inherited,
         ),
         meetings.map((m: any) => ({
           id: m.id,
@@ -376,7 +373,7 @@ export default function CalendarPage() {
       />
 
       {conflicts.length > 0 && (
-        <Alert variant="warning">
+        <Alert variant="warning" data-testid="calendar-conflicts">
           <AlertTitle>{t("conflicts_title")}</AlertTitle>
           <AlertDescription>
             {t("conflicts_desc", { count: conflicts.length })}
@@ -1076,14 +1073,14 @@ function SidePanelContent({
                   allowCreate &&
                   !e.inherited &&
                   !e.origin?.inherited && (
-                  <button
-                    onClick={() => handleDelete(e.id)}
-                    className="text-muted-foreground hover:text-destructive p-1.5 rounded-sm hover:bg-destructive/10 transition-colors"
-                    aria-label="Excluir evento"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                )}
+                    <button
+                      onClick={() => handleDelete(e.id)}
+                      className="text-muted-foreground hover:text-destructive p-1.5 rounded-sm hover:bg-destructive/10 transition-colors"
+                      aria-label="Excluir evento"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  )}
               </div>
             </div>
           ))}

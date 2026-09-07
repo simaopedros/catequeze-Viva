@@ -20,7 +20,11 @@ import {
 } from "../../client/components/brand/AppChrome";
 import { EmptyState } from "../../client/components/EmptyState";
 import { ChartSuspenseFallback } from "../../client/components/ChartSuspenseFallback";
-import { useQuery, getReportsOverview, getHierarchyAdoptionReport } from "wasp/client/operations";
+import {
+  useQuery,
+  getReportsOverview,
+  getHierarchyAdoptionReport,
+} from "wasp/client/operations";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { useUserContext } from "../../client/hooks/useUserContext";
@@ -474,7 +478,7 @@ export default function ReportsPage() {
       )}
 
       {tab === "adesao" && isDioceseView && (
-        <AppPanel className="space-y-4">
+        <AppPanel className="space-y-4" data-testid="adoption-report">
           <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {th("report.title")}
           </h3>

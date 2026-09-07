@@ -120,7 +120,9 @@ export default function PastoralAnnouncementsPage() {
               <SelectItem value="families">
                 {t("announcements.audience.families")}
               </SelectItem>
-              <SelectItem value="all">{t("announcements.audience.all")}</SelectItem>
+              <SelectItem value="all">
+                {t("announcements.audience.all")}
+              </SelectItem>
             </SelectContent>
           </Select>
           <Textarea
@@ -137,7 +139,11 @@ export default function PastoralAnnouncementsPage() {
             >
               {saving ? t("announcements.saving") : tc("create")}
             </Button>
-            <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setShowForm(false)}
+            >
               {tc("cancel")}
             </Button>
           </div>
@@ -147,15 +153,21 @@ export default function PastoralAnnouncementsPage() {
       {isLoading ? (
         <div className="h-40 animate-pulse rounded-sm bg-muted" />
       ) : rows.length === 0 ? (
-        <EmptyState
-          icon={Megaphone}
-          title={t("announcements.empty_title")}
-          description={t("announcements.empty_desc")}
-        />
+        <div data-testid="empty-announcements">
+          <EmptyState
+            icon={Megaphone}
+            title={t("announcements.empty_title")}
+            description={t("announcements.empty_desc")}
+          />
+        </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3" data-testid="announcement-list">
           {rows.map((row: any) => (
-            <AppPanel key={row.id} className="space-y-3">
+            <AppPanel
+              key={row.id}
+              className="space-y-3"
+              data-testid="pastoral-announcement"
+            >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -174,7 +186,9 @@ export default function PastoralAnnouncementsPage() {
                       })}
                     </Badge>
                     <Badge
-                      variant={row.status === "PUBLISHED" ? "success" : "secondary"}
+                      variant={
+                        row.status === "PUBLISHED" ? "success" : "secondary"
+                      }
                       size="sm"
                     >
                       {t(`announcements.status.${row.status}`)}
@@ -231,21 +245,23 @@ export default function PastoralAnnouncementsPage() {
                         {t("announcements.ack")}
                       </Button>
                     )}
-                  {canPublish && row.inherited && row.status === "PUBLISHED" && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        republishPastoralAnnouncement({
-                          id: row.id,
-                          workspaceId: activeParishId,
-                        })
-                      }
-                    >
-                      <Repeat className="mr-1 h-3.5 w-3.5" />
-                      {t("announcements.republish")}
-                    </Button>
-                  )}
+                  {canPublish &&
+                    row.inherited &&
+                    row.status === "PUBLISHED" && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          republishPastoralAnnouncement({
+                            id: row.id,
+                            workspaceId: activeParishId,
+                          })
+                        }
+                      >
+                        <Repeat className="mr-1 h-3.5 w-3.5" />
+                        {t("announcements.republish")}
+                      </Button>
+                    )}
                 </div>
               </div>
             </AppPanel>

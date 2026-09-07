@@ -180,6 +180,8 @@ export async function expectPageTitle(page: Page, title: string) {
 // ═══ Seed data IDs ═══════════════════════════════════════════════════════════
 export const PARISH_SAO_JOSE = "aaaaaaaa-1111-4aaa-a111-aaaaaaaaaaaa";
 export const PARISH_SANTA_MARIA = "bbbbbbbb-2222-4bbb-b222-bbbbbbbbbbbb";
+export const WORKSPACE_CURIA = "99999999-9999-4999-a999-999999999999";
+export const CURIA_WORKSPACE_NAME = "Cúria Diocesana (TESTE)";
 export const CLASS_CRISMA = "test-class-crisma-001";
 export const CLASS_INFANTIL = "test-class-infantil-001";
 export const CLASS_EUCARISTIA = "test-class-eucaristia-001";

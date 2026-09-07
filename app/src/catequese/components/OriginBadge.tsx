@@ -37,7 +37,9 @@ export function OriginBadge({
   className,
 }: OriginBadgeProps) {
   const { t } = useTranslation("hierarchy");
-  const type = (origin?.ownerType || ownerType) as ResourceOwnerType | undefined;
+  const type = (origin?.ownerType || ownerType) as
+    | ResourceOwnerType
+    | undefined;
   if (!type || type === "PLATFORM") return null;
   const isInherited = origin?.inherited ?? Boolean(inherited);
   const resolvedPolicy = origin?.policy || policy;
@@ -45,7 +47,12 @@ export function OriginBadge({
     type === "DIOCESE" ? "info" : type === "PARISH" ? "brand" : "secondary";
 
   return (
-    <Badge variant={variant} size="sm" className={className}>
+    <Badge
+      variant={variant}
+      size="sm"
+      className={className}
+      data-testid="origin-badge"
+    >
       {t(originLabelKey(type))}
       {" · "}
       {t(

@@ -33,9 +33,26 @@ test.describe("nav parity desktop", () => {
 
     // Core items present as links
     for (const href of ["/app", "/app/classes", "/app/catechumens"]) {
-      await expect(
-        page.locator(`aside a[href="${href}"]`).first(),
-      ).toBeVisible({ timeout: 10000 });
+      await expect(page.locator(`aside a[href="${href}"]`).first()).toBeVisible(
+        { timeout: 10000 },
+      );
+    }
+  });
+
+  test("coordinator sees official library, announcements and formation", async ({
+    page,
+  }) => {
+    await login(page, USERS.coordSaoJose.email);
+    await enterFirstWorkspace(page);
+
+    for (const href of [
+      "/app/official-library",
+      "/app/announcements",
+      "/app/formation",
+    ]) {
+      await page.goto(href);
+      await page.waitForLoadState("domcontentloaded");
+      await expect(page.locator("h1").first()).toBeVisible({ timeout: 15000 });
     }
   });
 });
@@ -47,7 +64,9 @@ test.describe("nav parity mobile", () => {
     await login(page, USERS.leadCatechist.email);
     await enterFirstWorkspace(page);
 
-    const nav = page.locator("nav").filter({ has: page.getByRole("button", { name: /mais|more/i }) });
+    const nav = page
+      .locator("nav")
+      .filter({ has: page.getByRole("button", { name: /mais|more/i }) });
     await expect(nav).toBeVisible({ timeout: 15000 });
 
     const primaryLinks = nav.locator("a");

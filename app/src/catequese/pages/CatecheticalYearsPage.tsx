@@ -106,9 +106,7 @@ export default function CatecheticalYearsPage() {
         workspaceId: activeParishId,
         name: itineraryName.trim(),
         description: itineraryDesc.trim() || undefined,
-        stages: [
-          { name: th("itinerary.default_stage") },
-        ],
+        stages: [{ name: th("itinerary.default_stage") }],
       });
       toast({ title: th("itinerary.created") });
       setItineraryName("");
@@ -184,6 +182,7 @@ export default function CatecheticalYearsPage() {
               <div
                 key={it.id}
                 className="flex flex-wrap items-start justify-between gap-2 rounded-sm border border-border/60 p-3"
+                data-testid="catechetical-itinerary"
               >
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
@@ -198,25 +197,32 @@ export default function CatecheticalYearsPage() {
                     </Badge>
                   </div>
                   {it.description && (
-                    <p className="text-xs text-muted-foreground">{it.description}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {it.description}
+                    </p>
                   )}
                   <p className="text-xs text-muted-foreground">
                     {th("itinerary.stages_count", {
                       count: it.stages?.length || 0,
                     })}
                     {typeof it._count?.years === "number"
-                      ? ` · ${th("itinerary.years_count", { count: it._count.years })}`
+                      ? ` · ${th("itinerary.years_count", {
+                          count: it._count.years,
+                        })}`
                       : ""}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {canPublishItinerary &&
                     it.status === "DRAFT" &&
-                    it.ownerType === (isDioceseWorkspace ? "DIOCESE" : "PARISH") && (
+                    it.ownerType ===
+                      (isDioceseWorkspace ? "DIOCESE" : "PARISH") && (
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => publishCatecheticalItinerary({ id: it.id })}
+                        onClick={() =>
+                          publishCatecheticalItinerary({ id: it.id })
+                        }
                       >
                         {th("itinerary.publish")}
                       </Button>
@@ -312,7 +318,9 @@ export default function CatecheticalYearsPage() {
             <Button
               size="sm"
               onClick={() =>
-                instantiateId ? handleInstantiate(instantiateId) : handleCreate()
+                instantiateId
+                  ? handleInstantiate(instantiateId)
+                  : handleCreate()
               }
               disabled={saving || !name || !startDate || !endDate}
             >
@@ -396,7 +404,9 @@ export default function CatecheticalYearsPage() {
                       inherited
                     />
                     <p className="mt-1 text-xs">
-                      {th("itinerary.from", { name: year.sourceItinerary.name })}
+                      {th("itinerary.from", {
+                        name: year.sourceItinerary.name,
+                      })}
                     </p>
                   </div>
                 )}

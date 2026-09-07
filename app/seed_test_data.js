@@ -22,6 +22,7 @@ const DIOCESE_ID = 'f6e4e87c-f287-4e15-b281-012e40c49ab9'; // Arquidiocese de So
 const PARISH_SAO_JOSE_ID = 'aaaaaaaa-1111-4aaa-a111-aaaaaaaaaaaa';
 const PARISH_SANTA_MARIA_ID = 'bbbbbbbb-2222-4bbb-b222-bbbbbbbbbbbb';
 const PARISH_SAN_JOAO_ID = 'eeeeeeee-5555-4eee-e555-eeeeeeeeeeee'; // Paróquia Rural Sem Diocese
+const WORKSPACE_CURIA_ID = '99999999-9999-4999-a999-999999999999'; // Espaço tipo DIOCESE (cúria)
 
 const COMMUNITY_SAO_JOSE_ID = 'cccccccc-3333-4ccc-c333-cccccccccccc';
 // Segunda comunidade de São José: fora do escopo do coordenador de comunidade
@@ -112,6 +113,24 @@ async function seed() {
   await p.contentItem.deleteMany({});
   await p.stage.deleteMany({});
   await p.catecheticalYear.deleteMany({});
+  const skipMissing = async (label, fn) => {
+    try {
+      await fn();
+    } catch (err) {
+      console.warn(`  (skip ${label}: ${err.message})`);
+    }
+  };
+  await skipMissing('formationAttendance', () => p.formationAttendance.deleteMany({}));
+  await skipMissing('formationEnrollment', () => p.formationEnrollment.deleteMany({}));
+  await skipMissing('formationSession', () => p.formationSession.deleteMany({}));
+  await skipMissing('formationTrack', () => p.formationTrack.deleteMany({}));
+  await skipMissing('pastoralAnnouncementAck', () => p.pastoralAnnouncementAck.deleteMany({}));
+  await skipMissing('pastoralAnnouncement', () => p.pastoralAnnouncement.deleteMany({}));
+  await skipMissing('officialResourceAdoption', () => p.officialResourceAdoption.deleteMany({}));
+  await skipMissing('officialResource', () => p.officialResource.deleteMany({}));
+  await skipMissing('catecheticalItineraryStage', () => p.catecheticalItineraryStage.deleteMany({}));
+  await skipMissing('catecheticalItinerary', () => p.catecheticalItinerary.deleteMany({}));
+  await skipMissing('resourceAdoption', () => p.resourceAdoption.deleteMany({}));
   await p.parish.deleteMany({});
   await p.diocese.deleteMany({});
   await p.userAiCredits.deleteMany({});
@@ -170,7 +189,21 @@ async function seed() {
   await p.tenantBilling.create({
     data: { parishId: PARISH_SAN_JOAO_ID, plan: 'catechist_free', status: 'ACTIVE' }
   });
-  console.log('✅ 3 Paróquias criadas (São José = Plano Pago, Santa Maria = Grátis com herança ativa, São João = Grátis limitada)');
+
+  await p.parish.create({
+    data: {
+      id: WORKSPACE_CURIA_ID,
+      name: 'Cúria Diocesana (TESTE)',
+      dioceseId: DIOCESE_ID,
+      city: 'Sorocaba',
+      state: 'SP',
+      type: 'DIOCESE',
+    },
+  });
+  await p.tenantBilling.create({
+    data: { parishId: WORKSPACE_CURIA_ID, plan: 'unlimited', status: 'ACTIVE' },
+  });
+  console.log('✅ 3 Paróquias + espaço da Cúria (tipo DIOCESE) criados');
 
   // ═══ 3. Create Communities ═══
   await p.community.create({
@@ -365,6 +398,7 @@ async function seed() {
   const memberships = [
     // São José
     { id: 'mem-diocese-00001', userId: 'user-diocese-00001', parishId: PARISH_SAO_JOSE_ID, role: 'DIOCESE_ADMIN' },
+    { id: 'mem-diocese-curia-01', userId: 'user-diocese-00001', parishId: WORKSPACE_CURIA_ID, role: 'DIOCESE_ADMIN' },
     { id: 'mem-coord-sj-0001', userId: 'user-coord-sj-0001', parishId: PARISH_SAO_JOSE_ID, role: 'PARISH_COORDINATOR' },
     { id: 'mem-comm-sj-00001', userId: 'user-comm-sj-00001', parishId: PARISH_SAO_JOSE_ID, role: 'COMMUNITY_COORDINATOR', communityId: COMMUNITY_SAO_JOSE_ID },
     { id: 'mem-lead-sj-00001', userId: 'user-lead-sj-00001', parishId: PARISH_SAO_JOSE_ID, role: 'LEAD_CATECHIST' },
@@ -534,6 +568,108 @@ async function seed() {
   });
   console.log('✅ 5 Encontros + 11 Registros de Chamada/Presença criados');
 
+  // ═══ 14b. Hierarchical pastoral resources (diocese → parish) ═══
+  const seedHierarchy = async () => {
+    const now = new Date();
+    const todayLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0);
+    await p.officialResource.createMany({
+      data: [
+        {
+          id: 'test-official-dir-001',
+          title: 'Diretório diocesano 2026 (TESTE)',
+          summary: 'Normas oficiais da catequese',
+          body: 'Os encontros sigam o itinerário oficial.',
+          kind: 'DIRECTORY',
+          status: 'PUBLISHED',
+          ownerType: 'DIOCESE',
+          inheritancePolicy: 'LOCKED',
+          dioceseId: DIOCESE_ID,
+          createdById: 'user-diocese-00001',
+        },
+        {
+          id: 'test-official-sub-001',
+          title: 'Subsídio Eucaristia — Encontro 7 (TESTE)',
+          summary: 'Sugestão da cúria para o encontro',
+          body: 'Adapte à realidade da comunidade.',
+          kind: 'SUBSIDY',
+          status: 'PUBLISHED',
+          ownerType: 'DIOCESE',
+          inheritancePolicy: 'SUGGESTED',
+          dioceseId: DIOCESE_ID,
+          createdById: 'user-diocese-00001',
+        },
+      ],
+    });
+    await p.pastoralAnnouncement.create({
+      data: {
+        id: 'test-announce-001',
+        title: 'Início da catequese 2026 (TESTE)',
+        body: 'Matrículas até 20 de setembro. Coordenadores, confiram ciência.',
+        status: 'PUBLISHED',
+        audience: 'coordinators',
+        requireAck: true,
+        publishedAt: now,
+        ownerType: 'DIOCESE',
+        inheritancePolicy: 'REQUIRED_EXTENDABLE',
+        dioceseId: DIOCESE_ID,
+        createdById: 'user-diocese-00001',
+      },
+    });
+    await p.catecheticalItinerary.create({
+      data: {
+        id: 'test-itinerary-euc-01',
+        name: 'Eucaristia 2 anos (TESTE)',
+        description: 'Itinerário oficial da diocese',
+        status: 'PUBLISHED',
+        ownerType: 'DIOCESE',
+        inheritancePolicy: 'REQUIRED_EXTENDABLE',
+        dioceseId: DIOCESE_ID,
+        createdById: 'user-diocese-00001',
+        stages: {
+          create: [
+            { id: 'test-itin-stage-1', name: 'Primeiro ano', order: 0 },
+            { id: 'test-itin-stage-2', name: 'Segundo ano', order: 1 },
+          ],
+        },
+      },
+    });
+    await p.formationTrack.create({
+      data: {
+        id: 'test-formation-track-01',
+        name: 'Formação inicial de catequistas (TESTE)',
+        description: 'Trilha diocesana do primeiro ano.',
+        kind: 'INITIAL',
+        hours: 40,
+        ownerType: 'DIOCESE',
+        inheritancePolicy: 'SUGGESTED',
+        dioceseId: DIOCESE_ID,
+        createdById: 'user-diocese-00001',
+        sessions: {
+          create: [
+            {
+              id: 'test-formation-sess-01',
+              title: 'Encontro 1 — Identidade do catequista',
+              startsAt: new Date(now.getFullYear(), now.getMonth(), Math.min(now.getDate() + 5, 28), 19, 0, 0),
+            },
+          ],
+        },
+      },
+    });
+    await p.liturgicalEvent.create({
+      data: {
+        id: 'test-event-diocese-open',
+        name: 'Abertura diocesana da catequese (TESTE)',
+        date: todayLocal,
+        type: 'diocese',
+        ownerType: 'DIOCESE',
+        inheritancePolicy: 'LOCKED',
+        dioceseId: DIOCESE_ID,
+      },
+    });
+    console.log('✅ Recursos hierárquicos: pasta oficial, comunicado, itinerário, formação e calendário diocesano');
+  };
+  await skipMissing('hierarchical resources', seedHierarchy);
+
   // ═══ 15. Create Sacramental Journeys ═══
   const journeyCrisma1Id = 'test-journey-crisma-01';
   const journeyEucaristia1Id = 'test-journey-eucaristia-01';
@@ -646,6 +782,7 @@ async function seed() {
       if (m.parishId === PARISH_SAO_JOSE_ID) parish = 'São José';
       else if (m.parishId === PARISH_SANTA_MARIA_ID) parish = 'Santa Maria';
       else if (m.parishId === PARISH_SAN_JOAO_ID) parish = 'São João';
+      else if (m.parishId === WORKSPACE_CURIA_ID) parish = 'Cúria';
       return `${label} (${parish})`;
     });
     console.log(`  ${u.email} → ${u.isAdmin ? 'ADMIN + ' : ''}${roles.join(' | ') || 'Nenhum vínculo'}`);
@@ -654,7 +791,7 @@ async function seed() {
   console.log('\n═'.repeat(75));
   console.log('📊 RESUMO DA VOLUMETRIA:');
   console.log(`  Dioceses: 1 (Sorocaba - Plano DIOCESE Corporativo Ativo)`);
-  console.log(`  Paróquias: 3`);
+  console.log(`  Paróquias: 3 + Cúria Diocesana (workspace tipo DIOCESE)`);
   console.log(`    - São José (Plano PARISH Pago Direto)`);
   console.log(`    - Santa Maria (Plano CATECHIST_FREE - Herança DIOCESE Ativa = Ilimitado)`);
   console.log(`    - São João (Plano CATECHIST_FREE - Sem Diocese = Limitada a 1 turma)`);
