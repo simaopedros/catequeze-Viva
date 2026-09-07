@@ -29,6 +29,9 @@ export const listOfficialResources = vi.fn();
 export const createOfficialResource = vi.fn();
 export const publishOfficialResource = vi.fn();
 export const adoptOfficialResource = vi.fn();
+export const updateOfficialResource = vi.fn();
+export const deleteOfficialResource = vi.fn();
+export const removeOfficialResourceAttachment = vi.fn();
 
 export const listPastoralAnnouncements = vi.fn();
 export const createPastoralAnnouncement = vi.fn();
@@ -37,15 +40,23 @@ export const acknowledgePastoralAnnouncement = vi.fn();
 export const republishPastoralAnnouncement = vi.fn();
 
 export const listFormationTracks = vi.fn();
+export const getFormationTrack = vi.fn();
 export const createFormationTrack = vi.fn();
+export const updateFormationTrack = vi.fn();
+export const deleteFormationTrack = vi.fn();
 export const createFormationSession = vi.fn();
+export const updateFormationSession = vi.fn();
+export const deleteFormationSession = vi.fn();
 export const enrollInFormationTrack = vi.fn();
+export const unenrollFromFormationTrack = vi.fn();
 export const markFormationAttendance = vi.fn();
 
 export const listCatecheticalItineraries = vi.fn();
 export const createCatecheticalItinerary = vi.fn();
 export const publishCatecheticalItinerary = vi.fn();
 export const instantiateCatecheticalItinerary = vi.fn();
+export const updateCatecheticalItinerary = vi.fn();
+export const deleteCatecheticalItinerary = vi.fn();
 export const listCatecheticalYears = vi.fn();
 export const createCatecheticalYear = vi.fn();
 

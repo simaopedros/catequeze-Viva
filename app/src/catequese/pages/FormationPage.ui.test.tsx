@@ -5,16 +5,15 @@ import FormationPage from "./FormationPage";
 import {
   listFormationTracks,
   createFormationTrack,
-  createFormationSession,
   enrollInFormationTrack,
-  markFormationAttendance,
 } from "wasp/client/operations";
 import {
-  ENROLLED_TRACK,
   FORMATION_TRACK,
+  LOCAL_FORMATION_TRACK,
 } from "../../__tests__/ui/hierarchyFixtures";
 import {
   parishCoordinator,
+  leadCatechist,
   renderPage,
   stubUseQuery,
 } from "../../__tests__/ui/hierarchyTestUtils";
@@ -40,10 +39,6 @@ vi.mock("../../client/hooks/useUserContext", () => ({
   useUserContext: () => userCtx.current,
 }));
 
-vi.mock("../../i18n/useLocale", () => ({
-  useLocale: () => ({ currentLocale: "pt-BR" }),
-}));
-
 vi.mock("../../client/hooks/use-toast", () => ({
   toast: vi.fn(),
 }));
@@ -52,9 +47,7 @@ describe("FormationPage", () => {
   beforeEach(() => {
     userCtx.current = parishCoordinator();
     vi.mocked(createFormationTrack).mockResolvedValue({ id: "new" } as never);
-    vi.mocked(createFormationSession).mockResolvedValue({} as never);
     vi.mocked(enrollInFormationTrack).mockResolvedValue({} as never);
-    vi.mocked(markFormationAttendance).mockResolvedValue({} as never);
   });
 
   it("mostra estado vazio", () => {
@@ -83,7 +76,7 @@ describe("FormationPage", () => {
     );
   });
 
-  it("inscreve na trilha diocesana e agenda um encontro", async () => {
+  it("inscreve na trilha diocesana e oferece abrir o detalhe", async () => {
     const user = userEvent.setup();
     stubUseQuery([[listFormationTracks, [FORMATION_TRACK]]]);
     renderPage(<FormationPage />);
@@ -92,42 +85,32 @@ describe("FormationPage", () => {
       screen.getByText("Formação inicial de catequistas"),
     ).toBeInTheDocument();
     expect(screen.getByTestId("origin-badge")).toHaveTextContent("Diocese");
+    expect(
+      screen.queryByRole("button", { name: "Encontro" }),
+    ).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Inscrever-me" }));
     expect(enrollInFormationTrack).toHaveBeenCalledWith({
       trackId: FORMATION_TRACK.id,
       workspaceId: "parish-1",
     });
-
-    await user.click(screen.getByRole("button", { name: "Encontro" }));
-    await user.type(
-      screen.getByPlaceholderText("Título do encontro"),
-      "Encontro 2 — Liturgia",
+    expect(screen.getByRole("link", { name: /Abrir trilha/i })).toHaveAttribute(
+      "href",
+      "/app/formation/track-1",
     );
-    const when = document.querySelector(
-      'input[type="datetime-local"]',
-    ) as HTMLInputElement;
-    await user.type(when, "2026-10-03T19:00");
-    await user.click(screen.getByRole("button", { name: "Agendar" }));
-
-    expect(createFormationSession).toHaveBeenCalledWith({
-      trackId: FORMATION_TRACK.id,
-      title: "Encontro 2 — Liturgia",
-      startsAt: "2026-10-03T19:00",
-    });
   });
 
-  it("marca presença quando já inscrito", async () => {
-    const user = userEvent.setup();
-    stubUseQuery([[listFormationTracks, [ENROLLED_TRACK]]]);
+  it("esconde criação do catequista e ainda oferece inscrição", () => {
+    userCtx.current = leadCatechist();
+    stubUseQuery([
+      [listFormationTracks, [FORMATION_TRACK, LOCAL_FORMATION_TRACK]],
+    ]);
     renderPage(<FormationPage />);
-
-    expect(screen.getByText("Inscrito")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Marcar presença" }));
-    expect(markFormationAttendance).toHaveBeenCalledWith({
-      sessionId: "sess-1",
-      userId: "user-coord",
-      present: true,
-    });
+    expect(
+      screen.queryByRole("button", { name: "Nova trilha" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Inscrever-me" }),
+    ).toBeInTheDocument();
   });
 });

@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { GraduationCap, Plus, UserPlus } from "lucide-react";
+import { GraduationCap, Plus, UserPlus, ArrowRight } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
 import { Input } from "../../client/components/ui/input";
@@ -21,16 +22,13 @@ import {
   useQuery,
   listFormationTracks,
   createFormationTrack,
-  createFormationSession,
   enrollInFormationTrack,
-  markFormationAttendance,
 } from "wasp/client/operations";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { toast } from "../../client/hooks/use-toast";
 import { OriginBadge } from "../components/OriginBadge";
-import { useLocale } from "../../i18n/useLocale";
-import { formatDate } from "../../i18n/format";
+import { INHERITANCE_POLICIES } from "../../shared/resourceInheritance";
 
 const COORDINATOR_ROLES = [
   "SUPER_ADMIN",
@@ -51,8 +49,7 @@ const TRACK_KINDS = [
 export default function FormationPage() {
   const { t } = useTranslation("hierarchy");
   const { t: tc } = useTranslation("common");
-  const { currentLocale } = useLocale();
-  const { userRole, userId } = useUserContext();
+  const { userRole } = useUserContext();
   const { activeParishId } = useActiveParish();
   const canPublish = COORDINATOR_ROLES.includes(userRole);
 
@@ -62,9 +59,8 @@ export default function FormationPage() {
   const [description, setDescription] = useState("");
   const [kind, setKind] = useState<(typeof TRACK_KINDS)[number]>("INITIAL");
   const [hours, setHours] = useState("");
-  const [sessionTrackId, setSessionTrackId] = useState<string | null>(null);
-  const [sessionTitle, setSessionTitle] = useState("");
-  const [sessionStarts, setSessionStarts] = useState("");
+  const [policy, setPolicy] =
+    useState<(typeof INHERITANCE_POLICIES)[number]>("SUGGESTED");
 
   const { data: tracks = [], isLoading } = useQuery(
     listFormationTracks,
@@ -82,6 +78,7 @@ export default function FormationPage() {
         description: description.trim() || undefined,
         kind,
         hours: hours ? Number(hours) : undefined,
+        inheritancePolicy: policy,
       });
       toast({ title: t("formation.created") });
       setName("");
@@ -96,27 +93,6 @@ export default function FormationPage() {
       });
     }
     setSaving(false);
-  };
-
-  const handleSession = async (trackId: string) => {
-    if (!sessionTitle.trim() || !sessionStarts) return;
-    try {
-      await createFormationSession({
-        trackId,
-        title: sessionTitle.trim(),
-        startsAt: sessionStarts,
-      });
-      toast({ title: t("formation.session_created") });
-      setSessionTrackId(null);
-      setSessionTitle("");
-      setSessionStarts("");
-    } catch (e: any) {
-      toast({
-        title: t("formation.session_error"),
-        description: e?.message,
-        variant: "destructive",
-      });
-    }
   };
 
   return (
@@ -151,6 +127,18 @@ export default function FormationPage() {
               {TRACK_KINDS.map((k) => (
                 <SelectItem key={k} value={k}>
                   {t(`formation.kinds.${k}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={policy} onValueChange={(v) => setPolicy(v as any)}>
+            <SelectTrigger aria-label={t("formation.policy")}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {INHERITANCE_POLICIES.map((p) => (
+                <SelectItem key={p} value={p}>
+                  {t(`policy.${p}`)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -201,7 +189,9 @@ export default function FormationPage() {
       ) : (
         <div className="space-y-3" data-testid="formation-track-list">
           {tracks.map((track: any) => {
-            const enrolled = Boolean(track.myEnrollment);
+            const enrolled = Boolean(
+              track.myEnrollment && track.myEnrollment.status !== "DROPPED",
+            );
             return (
               <AppPanel
                 key={track.id}
@@ -229,6 +219,11 @@ export default function FormationPage() {
                           )}
                         </Badge>
                       )}
+                      {!track.active && (
+                        <Badge variant="secondary" size="sm">
+                          {tc("archived")}
+                        </Badge>
+                      )}
                     </div>
                     {track.description && (
                       <p className="text-sm text-muted-foreground">
@@ -244,7 +239,7 @@ export default function FormationPage() {
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {!enrolled && (
+                    {!enrolled && track.active !== false && (
                       <Button
                         size="sm"
                         onClick={() =>
@@ -258,82 +253,14 @@ export default function FormationPage() {
                         {t("formation.enroll")}
                       </Button>
                     )}
-                    {canPublish && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() =>
-                          setSessionTrackId(
-                            sessionTrackId === track.id ? null : track.id,
-                          )
-                        }
-                      >
-                        <Plus className="mr-1 h-3.5 w-3.5" />
-                        {t("formation.add_session")}
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                {sessionTrackId === track.id && (
-                  <div className="grid gap-2 sm:grid-cols-3">
-                    <Input
-                      value={sessionTitle}
-                      onChange={(e) => setSessionTitle(e.target.value)}
-                      placeholder={t("formation.session_title")}
-                    />
-                    <Input
-                      type="datetime-local"
-                      value={sessionStarts}
-                      onChange={(e) => setSessionStarts(e.target.value)}
-                    />
-                    <Button
-                      size="sm"
-                      onClick={() => handleSession(track.id)}
-                      disabled={!sessionTitle.trim() || !sessionStarts}
-                    >
-                      {t("formation.save_session")}
+                    <Button size="sm" variant="outline" asChild>
+                      <Link to={`/app/formation/${track.id}`}>
+                        {t("formation.open")}
+                        <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                      </Link>
                     </Button>
                   </div>
-                )}
-
-                {(track.sessions || []).length > 0 && (
-                  <ul className="space-y-1.5">
-                    {track.sessions.map((session: any) => (
-                      <li
-                        key={session.id}
-                        className="flex flex-wrap items-center justify-between gap-2 rounded-sm border border-border/60 px-3 py-2 text-sm"
-                      >
-                        <span>
-                          {session.title}
-                          <span className="ml-2 text-xs text-muted-foreground">
-                            {formatDate(session.startsAt, currentLocale, {
-                              day: "numeric",
-                              month: "short",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
-                        </span>
-                        {enrolled && userId && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() =>
-                              markFormationAttendance({
-                                sessionId: session.id,
-                                userId,
-                                present: true,
-                              })
-                            }
-                          >
-                            {t("formation.mark_present")}
-                          </Button>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                </div>
               </AppPanel>
             );
           })}

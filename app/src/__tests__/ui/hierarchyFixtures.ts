@@ -4,10 +4,15 @@ import { fileURLToPath } from "node:url";
 
 type Bundle = Record<string, unknown>;
 
-const localesDir = join(dirname(fileURLToPath(import.meta.url)), "../../i18n/locales/pt-BR");
+const localesDir = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "../../i18n/locales/pt-BR",
+);
 
 function loadBundle(name: string): Bundle {
-  return JSON.parse(readFileSync(join(localesDir, `${name}.json`), "utf8")) as Bundle;
+  return JSON.parse(
+    readFileSync(join(localesDir, `${name}.json`), "utf8"),
+  ) as Bundle;
 }
 
 const hierarchyPt = loadBundle("hierarchy");
@@ -90,6 +95,10 @@ export const DIOCESE_RESOURCE = {
   },
   adoption: null,
   version: 2,
+  canManage: false,
+  attachments: [
+    { id: "att-1", name: "diretorio-2026.pdf", mimeType: "application/pdf" },
+  ],
 };
 
 export const SUGGESTED_RESOURCE = {
@@ -134,6 +143,8 @@ export const DRAFT_PARISH_RESOURCE = {
   },
   adoption: null,
   version: 1,
+  canManage: true,
+  attachments: [],
 };
 
 export const PUBLISHED_ANNOUNCEMENT = {
@@ -178,6 +189,7 @@ export const FORMATION_TRACK = {
   inheritancePolicy: "SUGGESTED",
   inherited: true,
   myEnrollment: null,
+  canManage: false,
   _count: { sessions: 1, enrollments: 12 },
   sessions: [
     {
@@ -193,6 +205,67 @@ export const ENROLLED_TRACK = {
   myEnrollment: { status: "ENROLLED" },
 };
 
+export const LOCAL_FORMATION_TRACK = {
+  id: "track-local-1",
+  name: "Formação permanente da paróquia",
+  description: "Encontros mensais da equipe.",
+  kind: "PERMANENT",
+  hours: 12,
+  ownerType: "PARISH",
+  inheritancePolicy: "LOCAL",
+  inherited: false,
+  active: true,
+  canManage: true,
+  canSeeRoster: true,
+  myEnrollment: { status: "ENROLLED" },
+  _count: { sessions: 1, enrollments: 3 },
+  sessions: [
+    {
+      id: "sess-local-1",
+      title: "Encontro 1 — Acolhida",
+      startsAt: "2026-09-20T19:00:00.000Z",
+      location: "Salão paroquial",
+      hours: 2,
+      notes: "Levar o diretório.",
+      attendances: [
+        { userId: "user-coord", present: false, userName: "Coord" },
+      ],
+    },
+  ],
+  enrollments: [
+    {
+      id: "enr-1",
+      userId: "user-coord",
+      userName: "Coordenador",
+      status: "ENROLLED",
+    },
+  ],
+};
+
+export const FORMATION_TRACK_DETAIL = {
+  ...FORMATION_TRACK,
+  canSeeRoster: true,
+  sessions: [
+    {
+      id: "sess-1",
+      title: "Encontro 1 — Identidade do catequista",
+      startsAt: "2026-09-12T19:00:00.000Z",
+      location: "Cúria",
+      hours: 3,
+      notes: "Identidade e vocação.",
+      attendances: [],
+    },
+  ],
+  enrollments: [
+    {
+      id: "enr-dio-1",
+      userId: "user-coord",
+      userName: "Coordenador",
+      status: "ENROLLED",
+    },
+  ],
+};
+
 export const PUBLISHED_ITINERARY = {
   id: "itin-1",
   name: "Eucaristia 2 anos",
@@ -204,6 +277,7 @@ export const PUBLISHED_ITINERARY = {
   origin: { ownerType: "DIOCESE", inherited: true },
   stages: [{ id: "st-1", name: "Primeiro ano", order: 0 }],
   _count: { years: 1 },
+  canManage: false,
 };
 
 export const DRAFT_ITINERARY = {
@@ -217,6 +291,7 @@ export const DRAFT_ITINERARY = {
   origin: { ownerType: "PARISH", inherited: false },
   stages: [{ id: "st-d1", name: "Ano 1", order: 0 }],
   _count: { years: 0 },
+  canManage: true,
 };
 
 export const ADOPTION_REPORT = {

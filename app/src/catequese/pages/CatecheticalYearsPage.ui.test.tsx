@@ -8,6 +8,8 @@ import {
   createCatecheticalItinerary,
   publishCatecheticalItinerary,
   instantiateCatecheticalItinerary,
+  updateCatecheticalItinerary,
+  deleteCatecheticalItinerary,
 } from "wasp/client/operations";
 import {
   DRAFT_ITINERARY,
@@ -63,6 +65,10 @@ describe("CatecheticalYearsPage — itinerários", () => {
     } as never);
     vi.mocked(publishCatecheticalItinerary).mockResolvedValue({} as never);
     vi.mocked(instantiateCatecheticalItinerary).mockResolvedValue({} as never);
+    vi.mocked(updateCatecheticalItinerary).mockResolvedValue({} as never);
+    vi.mocked(deleteCatecheticalItinerary).mockResolvedValue({
+      deleted: true,
+    } as never);
   });
 
   it("cria um itinerário e publica o rascunho paroquial", async () => {
@@ -93,6 +99,35 @@ describe("CatecheticalYearsPage — itinerários", () => {
     await user.click(screen.getByRole("button", { name: "Publicar" }));
     expect(publishCatecheticalItinerary).toHaveBeenCalledWith({
       id: DRAFT_ITINERARY.id,
+    });
+  });
+
+  it("edita e exclui um itinerário da paróquia", async () => {
+    const user = userEvent.setup();
+    stubUseQuery([
+      [listCatecheticalYears, []],
+      [listCatecheticalItineraries, [DRAFT_ITINERARY]],
+    ]);
+    renderPage(<CatecheticalYearsPage />);
+
+    await user.click(screen.getByRole("button", { name: "Editar" }));
+    const name = screen.getByLabelText("Nome do itinerário");
+    await user.clear(name);
+    await user.type(name, "Crisma 2 anos");
+    await user.click(screen.getByRole("button", { name: "Salvar" }));
+    expect(updateCatecheticalItinerary).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: DRAFT_ITINERARY.id,
+        name: "Crisma 2 anos",
+      }),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Excluir" }));
+    const confirms = screen.getAllByRole("button", { name: "Excluir" });
+    await user.click(confirms[confirms.length - 1]);
+    expect(deleteCatecheticalItinerary).toHaveBeenCalledWith({
+      id: DRAFT_ITINERARY.id,
+      workspaceId: "parish-1",
     });
   });
 

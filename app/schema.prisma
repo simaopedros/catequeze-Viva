@@ -458,6 +458,7 @@ model User {
 
   createdOfficialResources  OfficialResource[]           @relation("OfficialResourceCreator")
   reviewedOfficialResources OfficialResource[]           @relation("OfficialResourceReviewer")
+  officialResourceAttachments OfficialResourceAttachment[] @relation("OfficialResourceAttachmentUploader")
   createdAnnouncements      PastoralAnnouncement[]       @relation("AnnouncementCreator")
   announcementAcks          PastoralAnnouncementAck[]
   createdItineraries        CatecheticalItinerary[]      @relation("ItineraryCreator")
@@ -2213,12 +2214,32 @@ model OfficialResource {
   sourceResource   OfficialResource?  @relation("OfficialResourceInheritance", fields: [sourceResourceId], references: [id])
   adaptedCopies    OfficialResource[] @relation("OfficialResourceInheritance")
 
-  adoptions OfficialResourceAdoption[]
+  adoptions    OfficialResourceAdoption[]
+  attachments  OfficialResourceAttachment[]
 
   @@index([dioceseId, status])
   @@index([parishId, status])
   @@index([kind, status])
   @@index([sourceResourceId])
+}
+
+model OfficialResourceAttachment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  name      String
+  mimeType  String?
+  s3Key     String
+  sizeBytes Int?
+
+  resourceId String
+  resource   OfficialResource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  uploadedById String?
+  uploadedBy   User?   @relation("OfficialResourceAttachmentUploader", fields: [uploadedById], references: [id])
+
+  @@index([resourceId])
+  @@index([s3Key])
 }
 
 model OfficialResourceAdoption {
@@ -2384,6 +2405,7 @@ model FormationSession {
   endsAt      DateTime?
   location    String?
   hours       Int?
+  notes       String?
 
   trackId String
   track   FormationTrack @relation(fields: [trackId], references: [id], onDelete: Cascade)

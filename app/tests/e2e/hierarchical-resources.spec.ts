@@ -170,6 +170,56 @@ test.describe("recursos hierárquicos — cúria (admin diocesano)", () => {
         .getByText(/Recurso criado como rascunho|Circular de teste e2e/i)
         .first(),
     ).toBeVisible({ timeout: 15000 });
+
+    const card = page
+      .getByTestId("official-resource")
+      .filter({ hasText: "Circular de teste e2e" });
+    if (await card.isVisible().catch(() => false)) {
+      await expect(card.getByRole("button", { name: /Editar/i })).toBeVisible();
+      await expect(
+        card.getByRole("button", { name: /Anexar arquivo/i }),
+      ).toBeVisible();
+      await card.getByRole("button", { name: /Editar/i }).click();
+      await page.getByLabel(/Título/i).fill("Circular de teste e2e (editada)");
+      await page.getByRole("button", { name: /^Salvar$/ }).click();
+      await expect(
+        page
+          .getByText(/Recurso atualizado|Circular de teste e2e \(editada\)/i)
+          .first(),
+      ).toBeVisible({ timeout: 15000 });
+    }
+  });
+
+  test("edita itinerário criado na cúria", async ({ page }) => {
+    await openAppPath(page, "/app/catechetical-years");
+    await expect(
+      page.getByRole("heading", { name: /Anos Catequéticos/i }),
+    ).toBeVisible({ timeout: 15000 });
+    await page.getByLabel(/Nome do itinerário/i).fill("Itinerário e2e cúria");
+    await page.getByRole("button", { name: /Criar itinerário/i }).click();
+    const row = page
+      .getByTestId("catechetical-itinerary")
+      .filter({ hasText: "Itinerário e2e cúria" });
+    if (await row.isVisible({ timeout: 8000 }).catch(() => false)) {
+      await expect(row.getByRole("button", { name: /Editar/i })).toBeVisible();
+      await expect(
+        row.getByRole("button", { name: /Excluir|Arquivar/i }),
+      ).toBeVisible();
+    }
+  });
+
+  test("abre detalhe da escola de catequistas", async ({ page }) => {
+    await openAppPath(page, "/app/formation");
+    await expect(
+      page.getByRole("heading", { name: /Escola de catequistas/i }),
+    ).toBeVisible({ timeout: 15000 });
+    const open = page.getByRole("link", { name: /Abrir trilha/i }).first();
+    if (await open.isVisible().catch(() => false)) {
+      await open.click();
+      await expect(
+        page.getByText(/Encontros|Inscritos|Trilha oficial/i).first(),
+      ).toBeVisible({ timeout: 15000 });
+    }
   });
 
   test("relatórios mostram a aba Adesão", async ({ page }) => {

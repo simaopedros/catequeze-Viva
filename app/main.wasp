@@ -501,6 +501,12 @@ page AppFormationPage {
   component: import FormationPage from "@src/catequese/pages/FormationPage"
 }
 
+route AppFormationTrackRoute { path: "/app/formation/:id", to: AppFormationTrackPage }
+page AppFormationTrackPage {
+  authRequired: true,
+  component: import FormationTrackPage from "@src/catequese/pages/FormationTrackPage"
+}
+
 route AppSacramentalJourneysRoute { path: "/app/sacramental-journeys", to: AppSacramentalJourneysPage }
 page AppSacramentalJourneysPage {
   authRequired: true,
@@ -1225,7 +1231,7 @@ action deleteLiturgicalEvent {
 //#region Hierarchical pastoral resources
 query listOfficialResources {
   fn: import { listOfficialResources } from "@src/server/operations/officialResourceOperations",
-  entities: [OfficialResource, OfficialResourceAdoption, Membership, Parish, User, Diocese, Community, ClassCatechist]
+  entities: [OfficialResource, OfficialResourceAdoption, OfficialResourceAttachment, Membership, Parish, User, Diocese, Community, ClassCatechist]
 }
 
 action createOfficialResource {
@@ -1240,7 +1246,22 @@ action publishOfficialResource {
 
 action adoptOfficialResource {
   fn: import { adoptOfficialResource } from "@src/server/operations/officialResourceOperations",
-  entities: [OfficialResource, OfficialResourceAdoption, Membership, Parish, ClassCatechist]
+  entities: [OfficialResource, OfficialResourceAdoption, OfficialResourceAttachment, Membership, Parish, ClassCatechist]
+}
+
+action updateOfficialResource {
+  fn: import { updateOfficialResource } from "@src/server/operations/officialResourceOperations",
+  entities: [OfficialResource, OfficialResourceAttachment, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action deleteOfficialResource {
+  fn: import { deleteOfficialResource } from "@src/server/operations/officialResourceOperations",
+  entities: [OfficialResource, OfficialResourceAttachment, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action removeOfficialResourceAttachment {
+  fn: import { removeOfficialResourceAttachment } from "@src/server/operations/officialResourceOperations",
+  entities: [OfficialResource, OfficialResourceAttachment, Membership, Parish, Diocese, ClassCatechist]
 }
 
 query listPastoralAnnouncements {
@@ -1288,9 +1309,24 @@ action instantiateCatecheticalItinerary {
   entities: [CatecheticalItinerary, CatecheticalItineraryStage, CatecheticalYear, Stage, ResourceAdoption, Membership, Parish, ClassCatechist]
 }
 
+action updateCatecheticalItinerary {
+  fn: import { updateCatecheticalItinerary } from "@src/server/operations/itineraryOperations",
+  entities: [CatecheticalItinerary, CatecheticalItineraryStage, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action deleteCatecheticalItinerary {
+  fn: import { deleteCatecheticalItinerary } from "@src/server/operations/itineraryOperations",
+  entities: [CatecheticalItinerary, CatecheticalItineraryStage, Membership, Parish, Diocese, ClassCatechist]
+}
+
 query listFormationTracks {
   fn: import { listFormationTracks } from "@src/server/operations/formationOperations",
   entities: [FormationTrack, FormationSession, FormationEnrollment, Membership, Parish, User, Diocese, ClassCatechist]
+}
+
+query getFormationTrack {
+  fn: import { getFormationTrack } from "@src/server/operations/formationOperations",
+  entities: [FormationTrack, FormationSession, FormationEnrollment, FormationAttendance, Membership, Parish, User, Diocese, ClassCatechist]
 }
 
 action createFormationTrack {
@@ -1298,9 +1334,29 @@ action createFormationTrack {
   entities: [FormationTrack, Membership, Parish, Diocese, ClassCatechist]
 }
 
+action updateFormationTrack {
+  fn: import { updateFormationTrack } from "@src/server/operations/formationOperations",
+  entities: [FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action deleteFormationTrack {
+  fn: import { deleteFormationTrack } from "@src/server/operations/formationOperations",
+  entities: [FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
 action createFormationSession {
   fn: import { createFormationSession } from "@src/server/operations/formationOperations",
-  entities: [FormationSession, FormationTrack, Membership, Parish, ClassCatechist]
+  entities: [FormationSession, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action updateFormationSession {
+  fn: import { updateFormationSession } from "@src/server/operations/formationOperations",
+  entities: [FormationSession, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action deleteFormationSession {
+  fn: import { deleteFormationSession } from "@src/server/operations/formationOperations",
+  entities: [FormationSession, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
 }
 
 action enrollInFormationTrack {
@@ -1308,9 +1364,14 @@ action enrollInFormationTrack {
   entities: [FormationEnrollment, FormationTrack, Membership, Parish, ClassCatechist]
 }
 
+action unenrollFromFormationTrack {
+  fn: import { unenrollFromFormationTrack } from "@src/server/operations/formationOperations",
+  entities: [FormationEnrollment, FormationTrack, Membership, Parish, ClassCatechist]
+}
+
 action markFormationAttendance {
   fn: import { markFormationAttendance } from "@src/server/operations/formationOperations",
-  entities: [FormationAttendance, FormationSession, FormationTrack, Membership, Parish, ClassCatechist]
+  entities: [FormationAttendance, FormationEnrollment, FormationSession, FormationTrack, Membership, Parish, ClassCatechist]
 }
 
 query getHierarchyAdoptionReport {
@@ -1373,6 +1434,22 @@ api authenticatedDocumentUpload {
   auth: true,
   httpRoute: (POST, "/api/documents/upload"),
   entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish]
+}
+
+api uploadOfficialResourceAttachment {
+  fn: import { uploadOfficialResourceAttachment } from "@src/server/api/officialResourceAttachments",
+  middlewareConfigFn: import { officialResourceAttachmentMiddleware } from "@src/server/api/officialResourceAttachments",
+  auth: true,
+  httpRoute: (POST, "/api/official-resources/:id/attachments"),
+  entities: [OfficialResource, OfficialResourceAttachment, Membership, Parish, Diocese, ClassCatechist]
+}
+
+api serveOfficialResourceAttachment {
+  fn: import { serveOfficialResourceAttachment } from "@src/server/api/officialResourceAttachments",
+  middlewareConfigFn: import { officialResourceAttachmentMiddleware } from "@src/server/api/officialResourceAttachments",
+  auth: true,
+  httpRoute: (GET, "/api/official-resources/attachments/:id"),
+  entities: [OfficialResource, OfficialResourceAttachment, Membership, Parish, Diocese, ClassCatechist]
 }
 
 api uploadContentImage {

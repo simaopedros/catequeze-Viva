@@ -7,6 +7,8 @@ import {
   createOfficialResource,
   publishOfficialResource,
   adoptOfficialResource,
+  updateOfficialResource,
+  deleteOfficialResource,
 } from "wasp/client/operations";
 import {
   ADAPTED_STALE_RESOURCE,
@@ -52,6 +54,11 @@ describe("OfficialLibraryPage", () => {
     vi.mocked(createOfficialResource).mockResolvedValue({ id: "new" } as never);
     vi.mocked(publishOfficialResource).mockResolvedValue({} as never);
     vi.mocked(adoptOfficialResource).mockResolvedValue({} as never);
+    vi.mocked(updateOfficialResource).mockResolvedValue({} as never);
+    vi.mocked(deleteOfficialResource).mockResolvedValue({
+      deleted: true,
+      archived: false,
+    } as never);
   });
 
   it("mostra estado vazio quando não há recursos", () => {
@@ -98,8 +105,49 @@ describe("OfficialLibraryPage", () => {
         workspaceId: "parish-1",
         title: "Circular de matrículas",
         kind: "DIRECTORY",
+        inheritancePolicy: "SUGGESTED",
       }),
     );
+  });
+
+  it("edita e exclui um recurso local da paróquia", async () => {
+    const user = userEvent.setup();
+    stubUseQuery([[listOfficialResources, [DRAFT_PARISH_RESOURCE]]]);
+    renderPage(<OfficialLibraryPage />);
+
+    await user.click(screen.getByRole("button", { name: "Editar" }));
+    const title = screen.getByLabelText("Título");
+    await user.clear(title);
+    await user.type(title, "Regulamento interno 2026");
+    await user.click(screen.getByRole("button", { name: "Salvar" }));
+    expect(updateOfficialResource).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: DRAFT_PARISH_RESOURCE.id,
+        title: "Regulamento interno 2026",
+      }),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Excluir" }));
+    const confirms = screen.getAllByRole("button", { name: "Excluir" });
+    await user.click(confirms[confirms.length - 1]);
+    expect(deleteOfficialResource).toHaveBeenCalledWith({
+      id: DRAFT_PARISH_RESOURCE.id,
+      workspaceId: "parish-1",
+    });
+  });
+
+  it("mostra anexo herdado para download e esconde edição em LOCKED", () => {
+    stubUseQuery([[listOfficialResources, [DIOCESE_RESOURCE]]]);
+    renderPage(<OfficialLibraryPage />);
+
+    expect(screen.getByText("diretorio-2026.pdf")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Baixar" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Editar" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Anexar arquivo" }),
+    ).not.toBeInTheDocument();
   });
 
   it("adota, adapta e ignora um subsídio sugerido", async () => {

@@ -1,6 +1,15 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BookOpen, Plus, Send, Copy, EyeOff, Check } from "lucide-react";
+import {
+  BookOpen,
+  Plus,
+  Send,
+  Copy,
+  EyeOff,
+  Check,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
 import { Input } from "../../client/components/ui/input";
@@ -19,18 +28,25 @@ import {
 import { EmptyState } from "../../client/components/EmptyState";
 import { FilterPills } from "../../client/components/FilterPills";
 import { Alert } from "../../client/components/ui/alert";
+import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import {
   useQuery,
   listOfficialResources,
   createOfficialResource,
   publishOfficialResource,
   adoptOfficialResource,
+  updateOfficialResource,
+  deleteOfficialResource,
 } from "wasp/client/operations";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { toast } from "../../client/hooks/use-toast";
 import { OriginBadge } from "../components/OriginBadge";
-import { OFFICIAL_RESOURCE_KINDS } from "../../shared/resourceInheritance";
+import { OfficialResourceAttachments } from "../components/OfficialResourceAttachments";
+import {
+  INHERITANCE_POLICIES,
+  OFFICIAL_RESOURCE_KINDS,
+} from "../../shared/resourceInheritance";
 
 const COORDINATOR_ROLES = [
   "SUPER_ADMIN",
@@ -39,6 +55,26 @@ const COORDINATOR_ROLES = [
   "COMMUNITY_COORDINATOR",
   "PERSONAL_OWNER",
 ];
+
+const EDITABLE_STATUSES = ["DRAFT", "PUBLISHED", "ARCHIVED"] as const;
+
+type ResourceForm = {
+  title: string;
+  summary: string;
+  body: string;
+  kind: (typeof OFFICIAL_RESOURCE_KINDS)[number];
+  inheritancePolicy: (typeof INHERITANCE_POLICIES)[number];
+  status: (typeof EDITABLE_STATUSES)[number];
+};
+
+const emptyForm = (): ResourceForm => ({
+  title: "",
+  summary: "",
+  body: "",
+  kind: "DIRECTORY",
+  inheritancePolicy: "SUGGESTED",
+  status: "DRAFT",
+});
 
 export default function OfficialLibraryPage() {
   const { t } = useTranslation("hierarchy");
@@ -50,13 +86,15 @@ export default function OfficialLibraryPage() {
   const [kind, setKind] = useState("all");
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [title, setTitle] = useState("");
-  const [summary, setSummary] = useState("");
-  const [body, setBody] = useState("");
-  const [newKind, setNewKind] =
-    useState<(typeof OFFICIAL_RESOURCE_KINDS)[number]>("DIRECTORY");
+  const [form, setForm] = useState<ResourceForm>(emptyForm);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<any>(null);
 
-  const { data: resources = [], isLoading } = useQuery(
+  const {
+    data: resources = [],
+    isLoading,
+    refetch,
+  } = useQuery(
     listOfficialResources,
     {
       workspaceId: activeParishId || undefined,
@@ -74,25 +112,55 @@ export default function OfficialLibraryPage() {
     return { published, inherited, total: resources.length };
   }, [resources]);
 
+  const resetForm = () => {
+    setForm(emptyForm());
+    setShowForm(false);
+    setEditingId(null);
+  };
+
   const handleCreate = async () => {
-    if (!title.trim()) return;
+    if (!form.title.trim()) return;
     setSaving(true);
     try {
       await createOfficialResource({
         workspaceId: activeParishId,
-        title: title.trim(),
-        summary: summary.trim() || undefined,
-        body: body.trim() || undefined,
-        kind: newKind,
+        title: form.title.trim(),
+        summary: form.summary.trim() || undefined,
+        body: form.body.trim() || undefined,
+        kind: form.kind,
+        inheritancePolicy: form.inheritancePolicy,
       });
       toast({ title: t("library.created") });
-      setTitle("");
-      setSummary("");
-      setBody("");
-      setShowForm(false);
+      resetForm();
     } catch (e: any) {
       toast({
         title: t("library.create_error"),
+        description: e?.message,
+        variant: "destructive",
+      });
+    }
+    setSaving(false);
+  };
+
+  const handleUpdate = async () => {
+    if (!editingId || !form.title.trim()) return;
+    setSaving(true);
+    try {
+      await updateOfficialResource({
+        id: editingId,
+        workspaceId: activeParishId,
+        title: form.title.trim(),
+        summary: form.summary.trim() || null,
+        body: form.body.trim() || null,
+        kind: form.kind,
+        inheritancePolicy: form.inheritancePolicy,
+        status: form.status,
+      });
+      toast({ title: t("library.updated") });
+      resetForm();
+    } catch (e: any) {
+      toast({
+        title: t("library.update_error"),
         description: e?.message,
         variant: "destructive",
       });
@@ -111,6 +179,27 @@ export default function OfficialLibraryPage() {
         variant: "destructive",
       });
     }
+  };
+
+  const handleDelete = async () => {
+    if (!pendingDelete) return;
+    try {
+      const result = await deleteOfficialResource({
+        id: pendingDelete.id,
+        workspaceId: activeParishId,
+      });
+      toast({
+        title: result?.archived ? t("library.archived") : t("library.deleted"),
+      });
+      if (editingId === pendingDelete.id) resetForm();
+    } catch (e: any) {
+      toast({
+        title: t("library.delete_error"),
+        description: e?.message,
+        variant: "destructive",
+      });
+    }
+    setPendingDelete(null);
   };
 
   const handleAdopt = async (
@@ -133,6 +222,22 @@ export default function OfficialLibraryPage() {
     }
   };
 
+  const startEdit = (row: any) => {
+    setEditingId(row.id);
+    setShowForm(true);
+    setForm({
+      title: row.title || "",
+      summary: row.summary || "",
+      body: row.body || "",
+      kind: row.kind || "DIRECTORY",
+      inheritancePolicy: row.inheritancePolicy || "LOCKED",
+      status:
+        row.status === "ARCHIVED" || row.status === "PUBLISHED"
+          ? row.status
+          : "DRAFT",
+    });
+  };
+
   return (
     <div className="space-y-6">
       <AppPageHeader
@@ -144,7 +249,18 @@ export default function OfficialLibraryPage() {
         })}
         actions={
           canPublish ? (
-            <Button size="sm" onClick={() => setShowForm(!showForm)}>
+            <Button
+              size="sm"
+              onClick={() => {
+                if (showForm && !editingId) {
+                  resetForm();
+                } else {
+                  setEditingId(null);
+                  setForm(emptyForm());
+                  setShowForm(true);
+                }
+              }}
+            >
               <Plus className="mr-1 h-4 w-4" />
               {t("library.new")}
             </Button>
@@ -169,21 +285,28 @@ export default function OfficialLibraryPage() {
       {showForm && canPublish && (
         <AppPanel className="space-y-3">
           <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            {t("library.form_title")}
+            {editingId ? t("library.edit_title") : t("library.form_title")}
           </h3>
           <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            value={form.title}
+            onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
             placeholder={t("library.title_placeholder")}
             aria-label={t("library.title_field")}
           />
           <Input
-            value={summary}
-            onChange={(e) => setSummary(e.target.value)}
+            value={form.summary}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, summary: e.target.value }))
+            }
             placeholder={t("library.summary_placeholder")}
             aria-label={t("library.summary")}
           />
-          <Select value={newKind} onValueChange={(v) => setNewKind(v as any)}>
+          <Select
+            value={form.kind}
+            onValueChange={(v) =>
+              setForm((f) => ({ ...f, kind: v as ResourceForm["kind"] }))
+            }
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -195,25 +318,68 @@ export default function OfficialLibraryPage() {
               ))}
             </SelectContent>
           </Select>
+          <Select
+            value={form.inheritancePolicy}
+            onValueChange={(v) =>
+              setForm((f) => ({
+                ...f,
+                inheritancePolicy: v as ResourceForm["inheritancePolicy"],
+              }))
+            }
+          >
+            <SelectTrigger aria-label={t("library.policy")}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {INHERITANCE_POLICIES.map((p) => (
+                <SelectItem key={p} value={p}>
+                  {t(`policy.${p}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {editingId && (
+            <Select
+              value={form.status}
+              onValueChange={(v) =>
+                setForm((f) => ({
+                  ...f,
+                  status: v as ResourceForm["status"],
+                }))
+              }
+            >
+              <SelectTrigger aria-label={t("library.status_field")}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {EDITABLE_STATUSES.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {t(`library.status.${s}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           <Textarea
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
+            value={form.body}
+            onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
             placeholder={t("library.body_placeholder")}
             rows={6}
+            aria-label={t("library.body")}
           />
           <div className="flex gap-2">
             <Button
               size="sm"
-              onClick={handleCreate}
-              disabled={!title.trim() || saving}
+              onClick={editingId ? handleUpdate : handleCreate}
+              disabled={!form.title.trim() || saving}
             >
-              {saving ? t("library.saving") : tc("create")}
+              {saving
+                ? t("library.saving")
+                : editingId
+                  ? tc("save")
+                  : tc("create")}
             </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setShowForm(false)}
-            >
+            <Button size="sm" variant="outline" onClick={resetForm}>
               {tc("cancel")}
             </Button>
           </div>
@@ -234,6 +400,7 @@ export default function OfficialLibraryPage() {
         <div className="space-y-3" data-testid="official-resource-list">
           {resources.map((row: any) => {
             const adoption = row.adoption?.status;
+            const canManage = Boolean(row.canManage);
             const canAdapt =
               row.inherited &&
               (row.inheritancePolicy === "SUGGESTED" ||
@@ -269,6 +436,9 @@ export default function OfficialLibraryPage() {
                       >
                         {t(`library.status.${row.status}`)}
                       </Badge>
+                      <Badge variant="outline" size="sm">
+                        {t(`policy.${row.inheritancePolicy}`)}
+                      </Badge>
                       {adoption && (
                         <Badge variant="info" size="sm">
                           {t(`library.adoption.${adoption}`)}
@@ -282,7 +452,7 @@ export default function OfficialLibraryPage() {
                     )}
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {canPublish && !row.inherited && row.status === "DRAFT" && (
+                    {canManage && row.status === "DRAFT" && (
                       <Button
                         size="sm"
                         variant="outline"
@@ -290,6 +460,28 @@ export default function OfficialLibraryPage() {
                       >
                         <Send className="mr-1 h-3.5 w-3.5" />
                         {t("library.publish")}
+                      </Button>
+                    )}
+                    {canManage && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => startEdit(row)}
+                      >
+                        <Pencil className="mr-1 h-3.5 w-3.5" />
+                        {tc("edit")}
+                      </Button>
+                    )}
+                    {canManage && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setPendingDelete(row)}
+                      >
+                        <Trash2 className="mr-1 h-3.5 w-3.5" />
+                        {row.status === "DRAFT"
+                          ? tc("delete")
+                          : t("library.archive")}
                       </Button>
                     )}
                     {row.inherited && adoption !== "INHERITED" && (
@@ -329,6 +521,13 @@ export default function OfficialLibraryPage() {
                     {row.body}
                   </p>
                 )}
+                <OfficialResourceAttachments
+                  resourceId={row.id}
+                  workspaceId={activeParishId || undefined}
+                  attachments={row.attachments || []}
+                  canEdit={canManage}
+                  onChanged={() => refetch?.()}
+                />
                 {adoption === "ADAPTED" &&
                   row.version &&
                   row.adoption?.copiedVersion &&
@@ -340,6 +539,30 @@ export default function OfficialLibraryPage() {
           })}
         </div>
       )}
+
+      <ConfirmDialog
+        open={Boolean(pendingDelete)}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null);
+        }}
+        title={
+          pendingDelete?.status === "DRAFT"
+            ? t("library.delete_title")
+            : t("library.archive_title")
+        }
+        description={
+          pendingDelete?.status === "DRAFT"
+            ? t("library.delete_confirm")
+            : t("library.archive_confirm")
+        }
+        confirmLabel={
+          pendingDelete?.status === "DRAFT"
+            ? tc("delete")
+            : t("library.archive")
+        }
+        variant="destructive"
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }
