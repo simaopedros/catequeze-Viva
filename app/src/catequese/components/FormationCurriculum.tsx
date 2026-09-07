@@ -52,6 +52,7 @@ type Props = {
   modules: Module[];
   canManage: boolean;
   enrolled: boolean;
+  onChanged?: () => void | Promise<unknown>;
 };
 
 const emptyLesson = {
@@ -68,6 +69,7 @@ export function FormationCurriculum({
   modules,
   canManage,
   enrolled,
+  onChanged,
 }: Props) {
   const { t } = useTranslation("hierarchy");
   const { t: tc } = useTranslation("common");
@@ -160,6 +162,7 @@ export function FormationCurriculum({
         toast({ title: t("formation.module_created") });
       }
       resetModuleForm();
+      await onChanged?.();
     } catch (e: any) {
       toast({
         title: t("formation.module_error"),
@@ -201,6 +204,7 @@ export function FormationCurriculum({
         toast({ title: t("formation.lesson_created") });
       }
       resetLessonForm();
+      await onChanged?.();
     } catch (e: any) {
       toast({
         title: t("formation.lesson_error"),
@@ -226,6 +230,7 @@ export function FormationCurriculum({
         });
         toast({ title: t("formation.lesson_deleted") });
       }
+      await onChanged?.();
     } catch (e: any) {
       toast({
         title: t("formation.delete_error"),
@@ -243,6 +248,7 @@ export function FormationCurriculum({
         workspaceId,
         completed: !lesson.completed,
       });
+      await onChanged?.();
     } catch (e: any) {
       toast({
         title: t("formation.lesson_error"),

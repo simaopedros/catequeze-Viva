@@ -75,7 +75,7 @@ export default function FormationTrackPage() {
   const { userRole, userId } = useUserContext();
   const { activeParishId } = useActiveParish();
 
-  const { data: track, isLoading } = useQuery(
+  const { data: track, isLoading, refetch } = useQuery(
     getFormationTrack,
     { id: id!, workspaceId: activeParishId || undefined } as any,
     { enabled: Boolean(id && activeParishId) },
@@ -434,6 +434,7 @@ export default function FormationTrackPage() {
           modules={track.modules || []}
           canManage={canManage}
           enrolled={enrolled}
+          onChanged={refetch}
         />
       )}
 
