@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { GraduationCap, Plus, UserPlus, ArrowRight } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
@@ -49,6 +49,7 @@ const TRACK_KINDS = [
 export default function FormationPage() {
   const { t } = useTranslation("hierarchy");
   const { t: tc } = useTranslation("common");
+  const navigate = useNavigate();
   const { userRole } = useUserContext();
   const { activeParishId } = useActiveParish();
   const canPublish = COORDINATOR_ROLES.includes(userRole);
@@ -72,7 +73,7 @@ export default function FormationPage() {
     if (!name.trim()) return;
     setSaving(true);
     try {
-      await createFormationTrack({
+      const created = await createFormationTrack({
         workspaceId: activeParishId,
         name: name.trim(),
         description: description.trim() || undefined,
@@ -85,6 +86,9 @@ export default function FormationPage() {
       setDescription("");
       setHours("");
       setShowForm(false);
+      if (created?.id) {
+        navigate(`/app/formation/${created.id}`);
+      }
     } catch (e: any) {
       toast({
         title: t("formation.create_error"),
@@ -232,7 +236,9 @@ export default function FormationPage() {
                     )}
                     <p className="text-xs text-muted-foreground">
                       {t("formation.meta", {
-                        sessions: track._count?.sessions || 0,
+                        modules:
+                          track.moduleCount || track._count?.modules || 0,
+                        lessons: track.lessonCount || 0,
                         enrolled: track._count?.enrollments || 0,
                         hours: track.hours || 0,
                       })}

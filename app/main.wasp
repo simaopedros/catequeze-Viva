@@ -1321,12 +1321,12 @@ action deleteCatecheticalItinerary {
 
 query listFormationTracks {
   fn: import { listFormationTracks } from "@src/server/operations/formationOperations",
-  entities: [FormationTrack, FormationSession, FormationEnrollment, Membership, Parish, User, Diocese, ClassCatechist]
+  entities: [FormationTrack, FormationSession, FormationEnrollment, FormationModule, FormationLesson, Membership, Parish, User, Diocese, ClassCatechist]
 }
 
 query getFormationTrack {
   fn: import { getFormationTrack } from "@src/server/operations/formationOperations",
-  entities: [FormationTrack, FormationSession, FormationEnrollment, FormationAttendance, Membership, Parish, User, Diocese, ClassCatechist]
+  entities: [FormationTrack, FormationSession, FormationEnrollment, FormationAttendance, FormationModule, FormationLesson, FormationLessonProgress, Membership, Parish, User, Diocese, ClassCatechist]
 }
 
 action createFormationTrack {
@@ -1341,7 +1341,7 @@ action updateFormationTrack {
 
 action deleteFormationTrack {
   fn: import { deleteFormationTrack } from "@src/server/operations/formationOperations",
-  entities: [FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+  entities: [FormationTrack, FormationModule, Membership, Parish, Diocese, ClassCatechist]
 }
 
 action createFormationSession {
@@ -1372,6 +1372,41 @@ action unenrollFromFormationTrack {
 action markFormationAttendance {
   fn: import { markFormationAttendance } from "@src/server/operations/formationOperations",
   entities: [FormationAttendance, FormationEnrollment, FormationSession, FormationTrack, Membership, Parish, ClassCatechist]
+}
+
+action createFormationModule {
+  fn: import { createFormationModule } from "@src/server/operations/formationOperations",
+  entities: [FormationModule, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action updateFormationModule {
+  fn: import { updateFormationModule } from "@src/server/operations/formationOperations",
+  entities: [FormationModule, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action deleteFormationModule {
+  fn: import { deleteFormationModule } from "@src/server/operations/formationOperations",
+  entities: [FormationModule, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action createFormationLesson {
+  fn: import { createFormationLesson } from "@src/server/operations/formationOperations",
+  entities: [FormationLesson, FormationModule, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action updateFormationLesson {
+  fn: import { updateFormationLesson } from "@src/server/operations/formationOperations",
+  entities: [FormationLesson, FormationModule, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action deleteFormationLesson {
+  fn: import { deleteFormationLesson } from "@src/server/operations/formationOperations",
+  entities: [FormationLesson, FormationModule, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action markFormationLessonComplete {
+  fn: import { markFormationLessonComplete } from "@src/server/operations/formationOperations",
+  entities: [FormationLessonProgress, FormationLesson, FormationModule, FormationTrack, FormationEnrollment, Membership, Parish, Diocese, ClassCatechist]
 }
 
 query getHierarchyAdoptionReport {

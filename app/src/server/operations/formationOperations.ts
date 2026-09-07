@@ -12,6 +12,8 @@ import {
 } from "./resourceScope";
 
 const uuid = z.string().uuid();
+/** Seed fixtures such as test-formation-track-01 are not UUIDs. */
+const entityId = z.string().min(1).max(64);
 
 const trackKindEnum = z.enum([
   "INITIAL",
@@ -92,7 +94,10 @@ export const listFormationTracks = async (
         where: { userId: context.user.id },
         take: 1,
       },
-      _count: { select: { enrollments: true, sessions: true } },
+      modules: {
+        select: { id: true, _count: { select: { lessons: true } } },
+      },
+      _count: { select: { enrollments: true, sessions: true, modules: true } },
     },
     take: 100,
   });
@@ -106,9 +111,15 @@ export const listFormationTracks = async (
     })
     .map((track: any) => {
       const annotated = withOrigin(track, actor);
+      const lessonCount = (track.modules || []).reduce(
+        (sum: number, mod: any) => sum + (mod._count?.lessons || 0),
+        0,
+      );
       return {
         ...annotated,
         myEnrollment: track.enrollments?.[0] ?? null,
+        lessonCount,
+        moduleCount: track._count?.modules || 0,
       };
     });
 };
@@ -119,13 +130,27 @@ export const getFormationTrack = async (
 ) => {
   if (!context.user) throw new HttpError(401);
   const validated = validateOrThrow(
-    z.object({ id: uuid, workspaceId: uuid.optional() }),
+    z.object({ id: entityId, workspaceId: uuid.optional() }),
     args,
   );
   const actor = await resolveResourceActor(context, validated.workspaceId);
   const track = await context.entities.FormationTrack.findUnique({
     where: { id: validated.id },
     include: {
+      modules: {
+        orderBy: { order: "asc" },
+        include: {
+          lessons: {
+            orderBy: { order: "asc" },
+            include: {
+              progress: {
+                where: { userId: context.user.id },
+                select: { id: true, completedAt: true },
+              },
+            },
+          },
+        },
+      },
       sessions: {
         orderBy: { startsAt: "asc" },
         include: {
@@ -151,7 +176,7 @@ export const getFormationTrack = async (
         },
         orderBy: { createdAt: "asc" },
       },
-      _count: { select: { enrollments: true, sessions: true } },
+      _count: { select: { enrollments: true, sessions: true, modules: true } },
     },
   });
   if (!track || !actorCanViewTrack(actor, track)) {
@@ -187,6 +212,31 @@ export const getFormationTrack = async (
   }
 
   const allowedUserIds = new Set(enrollments.map((e: any) => e.userId));
+  const modules = (track.modules || []).map((mod: any) => ({
+    id: mod.id,
+    title: mod.title,
+    description: mod.description,
+    order: mod.order,
+    lessons: (mod.lessons || []).map((lesson: any) => ({
+      id: lesson.id,
+      title: lesson.title,
+      body: lesson.body,
+      durationMinutes: lesson.durationMinutes,
+      videoUrl: lesson.videoUrl,
+      resourceUrl: lesson.resourceUrl,
+      order: lesson.order,
+      completed: (lesson.progress || []).length > 0,
+    })),
+  }));
+  const lessonTotal = modules.reduce(
+    (sum: number, mod: any) => sum + (mod.lessons?.length || 0),
+    0,
+  );
+  const lessonDone = modules.reduce(
+    (sum: number, mod: any) =>
+      sum + (mod.lessons || []).filter((l: any) => l.completed).length,
+    0,
+  );
   const sessions = track.sessions.map((session: any) => ({
     id: session.id,
     title: session.title,
@@ -208,8 +258,11 @@ export const getFormationTrack = async (
   const annotated = withOrigin(track, actor);
   return {
     ...annotated,
+    modules,
     sessions,
     enrollments,
+    lessonTotal,
+    lessonDone,
     myEnrollment:
       track.enrollments.find((e: any) => e.userId === context.user.id) || null,
     canSeeRoster,
@@ -251,7 +304,7 @@ export const updateFormationTrack = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
   const validated = validateOrThrow(
     z.object({
-      id: uuid,
+      id: entityId,
       workspaceId: uuid.optional(),
       name: z.string().min(2).max(200).optional(),
       description: z.string().max(5000).nullable().optional(),
@@ -294,19 +347,23 @@ export const updateFormationTrack = async (args: any, context: any) => {
 export const deleteFormationTrack = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
   const { id, workspaceId } = validateOrThrow(
-    z.object({ id: uuid, workspaceId: uuid.optional() }),
+    z.object({ id: entityId, workspaceId: uuid.optional() }),
     args,
   );
   const track = await context.entities.FormationTrack.findUnique({
     where: { id },
-    include: { _count: { select: { enrollments: true, sessions: true } } },
+    include: {
+      _count: { select: { enrollments: true, sessions: true, modules: true } },
+    },
   });
   if (!track) throw new HttpError(404, "Trilha não encontrada.");
   const actor = await resolveActorForResource(context, track, workspaceId);
   assertCanManageOwned(actor, track);
 
   const hasHistory =
-    (track._count?.enrollments || 0) > 0 || (track._count?.sessions || 0) > 0;
+    (track._count?.enrollments || 0) > 0 ||
+    (track._count?.sessions || 0) > 0 ||
+    (track._count?.modules || 0) > 0;
   if (!hasHistory) {
     await context.entities.FormationTrack.delete({ where: { id } });
     return { id, deleted: true, archived: false };
@@ -322,7 +379,7 @@ export const createFormationSession = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
   const validated = validateOrThrow(
     z.object({
-      trackId: uuid,
+      trackId: entityId,
       workspaceId: uuid.optional(),
       title: z.string().min(2).max(200),
       startsAt: z.string(),
@@ -361,7 +418,7 @@ export const updateFormationSession = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
   const validated = validateOrThrow(
     z.object({
-      id: uuid,
+      id: entityId,
       workspaceId: uuid.optional(),
       title: z.string().min(2).max(200).optional(),
       startsAt: z.string().optional(),
@@ -406,7 +463,7 @@ export const updateFormationSession = async (args: any, context: any) => {
 export const deleteFormationSession = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
   const { id, workspaceId } = validateOrThrow(
-    z.object({ id: uuid, workspaceId: uuid.optional() }),
+    z.object({ id: entityId, workspaceId: uuid.optional() }),
     args,
   );
   const session = await context.entities.FormationSession.findUnique({
@@ -431,7 +488,7 @@ export const enrollInFormationTrack = async (
 ) => {
   if (!context.user) throw new HttpError(401);
   const validated = validateOrThrow(
-    z.object({ trackId: uuid, workspaceId: uuid.optional() }),
+    z.object({ trackId: entityId, workspaceId: uuid.optional() }),
     args,
   );
   const actor = await resolveResourceActor(context, validated.workspaceId);
@@ -456,7 +513,7 @@ export const unenrollFromFormationTrack = async (
 ) => {
   if (!context.user) throw new HttpError(401);
   const validated = validateOrThrow(
-    z.object({ trackId: uuid, workspaceId: uuid.optional() }),
+    z.object({ trackId: entityId, workspaceId: uuid.optional() }),
     args,
   );
   await resolveResourceActor(context, validated.workspaceId);
@@ -484,8 +541,8 @@ export const markFormationAttendance = async (
   if (!context.user) throw new HttpError(401);
   const validated = validateOrThrow(
     z.object({
-      sessionId: uuid,
-      userId: uuid,
+      sessionId: entityId,
+      userId: entityId,
       present: z.boolean().optional(),
       workspaceId: uuid.optional(),
     }),
@@ -562,6 +619,296 @@ export const markFormationAttendance = async (
       recordedById: context.user.id,
     },
   });
+};
+
+async function requireManageableTrack(
+  context: any,
+  trackId: string,
+  workspaceId?: string,
+) {
+  const track = await context.entities.FormationTrack.findUnique({
+    where: { id: trackId },
+  });
+  if (!track) throw new HttpError(404, "Formação não encontrada.");
+  const actor = await resolveActorForResource(context, track, workspaceId);
+  assertCanManageOwned(actor, track);
+  return { track, actor };
+}
+
+async function nextOrder(
+  delegate: { findFirst: (args: any) => Promise<{ order: number } | null> },
+  where: Record<string, string>,
+) {
+  const last = await delegate.findFirst({
+    where,
+    orderBy: { order: "desc" },
+    select: { order: true },
+  });
+  return (last?.order ?? -1) + 1;
+}
+
+async function syncLessonProgress(
+  context: any,
+  trackId: string,
+  userId: string,
+) {
+  const modules = await context.entities.FormationModule.findMany({
+    where: { trackId },
+    select: { lessons: { select: { id: true } } },
+  });
+  const lessonIds = modules.flatMap((mod: any) =>
+    (mod.lessons || []).map((lesson: any) => lesson.id),
+  );
+  if (lessonIds.length === 0) return;
+  const done = await context.entities.FormationLessonProgress.count({
+    where: { userId, lessonId: { in: lessonIds } },
+  });
+  let status: "ENROLLED" | "IN_PROGRESS" | "COMPLETED" = "ENROLLED";
+  let completedAt: Date | null = null;
+  if (done >= lessonIds.length) {
+    status = "COMPLETED";
+    completedAt = new Date();
+  } else if (done > 0) {
+    status = "IN_PROGRESS";
+  }
+  await context.entities.FormationEnrollment.updateMany({
+    where: { trackId, userId, status: { not: "DROPPED" } },
+    data: { status, completedAt },
+  });
+}
+
+export const createFormationModule = async (args: any, context: any) => {
+  if (!context.user) throw new HttpError(401);
+  const validated = validateOrThrow(
+    z.object({
+      trackId: entityId,
+      workspaceId: uuid.optional(),
+      title: z.string().min(2).max(200),
+      description: z.string().max(5000).optional(),
+    }),
+    args,
+  );
+  const { track } = await requireManageableTrack(
+    context,
+    validated.trackId,
+    validated.workspaceId,
+  );
+  const order = await nextOrder(context.entities.FormationModule, {
+    trackId: track.id,
+  });
+  return context.entities.FormationModule.create({
+    data: {
+      trackId: track.id,
+      title: validated.title.trim(),
+      description: validated.description?.trim() || null,
+      order,
+    },
+  });
+};
+
+export const updateFormationModule = async (args: any, context: any) => {
+  if (!context.user) throw new HttpError(401);
+  const validated = validateOrThrow(
+    z.object({
+      id: entityId,
+      workspaceId: uuid.optional(),
+      title: z.string().min(2).max(200).optional(),
+      description: z.string().max(5000).nullable().optional(),
+      order: z.number().int().min(0).max(10_000).optional(),
+    }),
+    args,
+  );
+  const module = await context.entities.FormationModule.findUnique({
+    where: { id: validated.id },
+    include: { track: true },
+  });
+  if (!module) throw new HttpError(404, "Módulo não encontrado.");
+  await requireManageableTrack(context, module.trackId, validated.workspaceId);
+  const data: any = {};
+  if (validated.title !== undefined) data.title = validated.title.trim();
+  if (validated.description !== undefined) {
+    data.description = validated.description?.trim() || null;
+  }
+  if (validated.order !== undefined) data.order = validated.order;
+  return context.entities.FormationModule.update({
+    where: { id: module.id },
+    data,
+  });
+};
+
+export const deleteFormationModule = async (args: any, context: any) => {
+  if (!context.user) throw new HttpError(401);
+  const { id, workspaceId } = validateOrThrow(
+    z.object({ id: entityId, workspaceId: uuid.optional() }),
+    args,
+  );
+  const module = await context.entities.FormationModule.findUnique({
+    where: { id },
+    include: { track: true },
+  });
+  if (!module) throw new HttpError(404, "Módulo não encontrado.");
+  await requireManageableTrack(context, module.trackId, workspaceId);
+  await context.entities.FormationModule.delete({ where: { id } });
+  return { success: true };
+};
+
+export const createFormationLesson = async (args: any, context: any) => {
+  if (!context.user) throw new HttpError(401);
+  const validated = validateOrThrow(
+    z.object({
+      moduleId: entityId,
+      workspaceId: uuid.optional(),
+      title: z.string().min(2).max(200),
+      body: z.string().max(20_000).optional(),
+      durationMinutes: z.number().int().min(1).max(600).optional(),
+      videoUrl: z.preprocess(
+        (value) => (value === "" || value == null ? undefined : value),
+        z.string().url().max(500).optional(),
+      ),
+      resourceUrl: z.preprocess(
+        (value) => (value === "" || value == null ? undefined : value),
+        z.string().url().max(500).optional(),
+      ),
+    }),
+    args,
+  );
+  const module = await context.entities.FormationModule.findUnique({
+    where: { id: validated.moduleId },
+    include: { track: true },
+  });
+  if (!module) throw new HttpError(404, "Módulo não encontrado.");
+  await requireManageableTrack(context, module.trackId, validated.workspaceId);
+  const order = await nextOrder(context.entities.FormationLesson, {
+    moduleId: module.id,
+  });
+  return context.entities.FormationLesson.create({
+    data: {
+      moduleId: module.id,
+      title: validated.title.trim(),
+      body: validated.body?.trim() || null,
+      durationMinutes: validated.durationMinutes ?? null,
+      videoUrl: validated.videoUrl || null,
+      resourceUrl: validated.resourceUrl || null,
+      order,
+    },
+  });
+};
+
+export const updateFormationLesson = async (args: any, context: any) => {
+  if (!context.user) throw new HttpError(401);
+  const validated = validateOrThrow(
+    z.object({
+      id: entityId,
+      workspaceId: uuid.optional(),
+      title: z.string().min(2).max(200).optional(),
+      body: z.string().max(20_000).nullable().optional(),
+      durationMinutes: z.number().int().min(1).max(600).nullable().optional(),
+      videoUrl: z.preprocess(
+        (value) => (value === "" || value == null ? undefined : value),
+        z.string().url().max(500).optional().nullable(),
+      ),
+      resourceUrl: z.preprocess(
+        (value) => (value === "" || value == null ? undefined : value),
+        z.string().url().max(500).optional().nullable(),
+      ),
+      order: z.number().int().min(0).max(10_000).optional(),
+    }),
+    args,
+  );
+  const lesson = await context.entities.FormationLesson.findUnique({
+    where: { id: validated.id },
+    include: { module: { include: { track: true } } },
+  });
+  if (!lesson) throw new HttpError(404, "Aula não encontrada.");
+  await requireManageableTrack(
+    context,
+    lesson.module.trackId,
+    validated.workspaceId,
+  );
+  const data: any = {};
+  if (validated.title !== undefined) data.title = validated.title.trim();
+  if (validated.body !== undefined) data.body = validated.body?.trim() || null;
+  if (validated.durationMinutes !== undefined) {
+    data.durationMinutes = validated.durationMinutes;
+  }
+  if (validated.videoUrl !== undefined) {
+    data.videoUrl = validated.videoUrl || null;
+  }
+  if (validated.resourceUrl !== undefined) {
+    data.resourceUrl = validated.resourceUrl || null;
+  }
+  if (validated.order !== undefined) data.order = validated.order;
+  return context.entities.FormationLesson.update({
+    where: { id: lesson.id },
+    data,
+  });
+};
+
+export const deleteFormationLesson = async (args: any, context: any) => {
+  if (!context.user) throw new HttpError(401);
+  const { id, workspaceId } = validateOrThrow(
+    z.object({ id: entityId, workspaceId: uuid.optional() }),
+    args,
+  );
+  const lesson = await context.entities.FormationLesson.findUnique({
+    where: { id },
+    include: { module: true },
+  });
+  if (!lesson) throw new HttpError(404, "Aula não encontrada.");
+  await requireManageableTrack(context, lesson.module.trackId, workspaceId);
+  await context.entities.FormationLesson.delete({ where: { id } });
+  return { success: true };
+};
+
+export const markFormationLessonComplete = async (args: any, context: any) => {
+  if (!context.user) throw new HttpError(401);
+  const validated = validateOrThrow(
+    z.object({
+      lessonId: entityId,
+      workspaceId: uuid.optional(),
+      completed: z.boolean().default(true),
+    }),
+    args,
+  );
+  const lesson = await context.entities.FormationLesson.findUnique({
+    where: { id: validated.lessonId },
+    include: { module: { include: { track: true } } },
+  });
+  if (!lesson) throw new HttpError(404, "Aula não encontrada.");
+  const actor = await resolveResourceActor(context, validated.workspaceId);
+  if (!actorCanViewTrack(actor, lesson.module.track)) {
+    throw new HttpError(404, "Formação não encontrada.");
+  }
+  const enrollment = await context.entities.FormationEnrollment.findUnique({
+    where: {
+      trackId_userId: {
+        trackId: lesson.module.trackId,
+        userId: context.user.id,
+      },
+    },
+  });
+  if (!enrollment || enrollment.status === "DROPPED") {
+    throw new HttpError(
+      400,
+      "Inscreva-se na formação para marcar o progresso.",
+    );
+  }
+
+  if (!validated.completed) {
+    await context.entities.FormationLessonProgress.deleteMany({
+      where: { lessonId: lesson.id, userId: context.user.id },
+    });
+  } else {
+    await context.entities.FormationLessonProgress.upsert({
+      where: {
+        lessonId_userId: { lessonId: lesson.id, userId: context.user.id },
+      },
+      create: { lessonId: lesson.id, userId: context.user.id },
+      update: { completedAt: new Date() },
+    });
+  }
+  await syncLessonProgress(context, lesson.module.trackId, context.user.id);
+  return { lessonId: lesson.id, completed: validated.completed };
 };
 
 export const getHierarchyAdoptionReport = async (

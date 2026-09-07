@@ -44,6 +44,7 @@ import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { toast } from "../../client/hooks/use-toast";
 import { OriginBadge } from "../components/OriginBadge";
+import { FormationCurriculum } from "../components/FormationCurriculum";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
 import { INHERITANCE_POLICIES } from "../../shared/resourceInheritance";
@@ -99,6 +100,7 @@ export default function FormationTrackPage() {
   const [pendingDelete, setPendingDelete] = useState<"track" | string | null>(
     null,
   );
+  const [tab, setTab] = useState<"program" | "sessions" | "roster">("program");
 
   const canManage = Boolean(track?.canManage);
   const enrolled = Boolean(
@@ -258,10 +260,11 @@ export default function FormationTrackPage() {
           eyebrow={t("formation.eyebrow")}
           title={track.name}
           subtitle={t("formation.detail_subtitle", {
+            modules: track.modules?.length || track._count?.modules || 0,
+            lessons: track.lessonTotal || 0,
             sessions: track._count?.sessions || track.sessions?.length || 0,
             enrolled:
               track._count?.enrollments || track.enrollments?.length || 0,
-            hours: track.hours || 0,
           })}
           actions={
             <div className="flex flex-wrap gap-1">
@@ -405,236 +408,280 @@ export default function FormationTrackPage() {
         )
       )}
 
-      <AppPanel className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            {t("formation.sessions_title")}
-          </h3>
-          {canManage && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                resetSessionForm();
-                setShowSessionForm(true);
-              }}
-            >
-              <Plus className="mr-1 h-3.5 w-3.5" />
-              {t("formation.add_session")}
-            </Button>
-          )}
-        </div>
+      <div className="flex flex-wrap gap-1 border-b border-border/60 pb-2">
+        {(
+          [
+            ["program", t("formation.tab_program")],
+            ["sessions", t("formation.tab_sessions")],
+            ["roster", t("formation.tab_roster")],
+          ] as const
+        ).map(([id, label]) => (
+          <Button
+            key={id}
+            size="sm"
+            variant={tab === id ? "secondary" : "ghost"}
+            onClick={() => setTab(id)}
+          >
+            {label}
+          </Button>
+        ))}
+      </div>
 
-        {showSessionForm && canManage && (
-          <div className="grid gap-2 sm:grid-cols-2">
-            <Input
-              value={sessionTitle}
-              onChange={(e) => setSessionTitle(e.target.value)}
-              placeholder={t("formation.session_title")}
-              aria-label={t("formation.session_title")}
-            />
-            <Input
-              type="datetime-local"
-              value={sessionStarts}
-              onChange={(e) => setSessionStarts(e.target.value)}
-              aria-label={t("formation.session_starts")}
-            />
-            <Input
-              type="datetime-local"
-              value={sessionEnds}
-              onChange={(e) => setSessionEnds(e.target.value)}
-              aria-label={t("formation.session_ends")}
-            />
-            <Input
-              value={sessionLocation}
-              onChange={(e) => setSessionLocation(e.target.value)}
-              placeholder={t("formation.location_placeholder")}
-              aria-label={t("formation.session_location")}
-            />
-            <Input
-              type="number"
-              min={1}
-              value={sessionHours}
-              onChange={(e) => setSessionHours(e.target.value)}
-              placeholder={t("formation.session_hours")}
-            />
-            <Textarea
-              value={sessionNotes}
-              onChange={(e) => setSessionNotes(e.target.value)}
-              placeholder={t("formation.notes_placeholder")}
-              rows={2}
-              className="sm:col-span-2"
-            />
-            <div className="flex gap-2 sm:col-span-2">
+      {tab === "program" && (
+        <FormationCurriculum
+          trackId={track.id}
+          workspaceId={activeParishId}
+          modules={track.modules || []}
+          canManage={canManage}
+          enrolled={enrolled}
+        />
+      )}
+
+      {tab === "sessions" && (
+        <AppPanel className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {t("formation.sessions_title")}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {t("formation.sessions_hint")}
+              </p>
+            </div>
+            {canManage && (
               <Button
                 size="sm"
-                onClick={handleSaveSession}
-                disabled={!sessionTitle.trim() || !sessionStarts}
+                variant="outline"
+                onClick={() => {
+                  resetSessionForm();
+                  setShowSessionForm(true);
+                }}
               >
-                {t("formation.save_session")}
+                <Plus className="mr-1 h-3.5 w-3.5" />
+                {t("formation.add_session")}
               </Button>
-              <Button size="sm" variant="outline" onClick={resetSessionForm}>
-                {tc("cancel")}
-              </Button>
-            </div>
+            )}
           </div>
-        )}
 
-        {(track.sessions || []).length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            {t("formation.empty_sessions")}
-          </p>
-        ) : (
-          <ul className="space-y-3">
-            {track.sessions.map((session: any) => {
-              const mine = (session.attendances || []).find(
-                (a: any) => a.userId === userId,
-              );
-              return (
-                <li
-                  key={session.id}
-                  className="space-y-2 rounded-sm border border-border/60 p-3"
-                  data-testid="formation-session"
+          {showSessionForm && canManage && (
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Input
+                value={sessionTitle}
+                onChange={(e) => setSessionTitle(e.target.value)}
+                placeholder={t("formation.session_title")}
+                aria-label={t("formation.session_title")}
+              />
+              <Input
+                type="datetime-local"
+                value={sessionStarts}
+                onChange={(e) => setSessionStarts(e.target.value)}
+                aria-label={t("formation.session_starts")}
+              />
+              <Input
+                type="datetime-local"
+                value={sessionEnds}
+                onChange={(e) => setSessionEnds(e.target.value)}
+                aria-label={t("formation.session_ends")}
+              />
+              <Input
+                value={sessionLocation}
+                onChange={(e) => setSessionLocation(e.target.value)}
+                placeholder={t("formation.location_placeholder")}
+                aria-label={t("formation.session_location")}
+              />
+              <Input
+                type="number"
+                min={1}
+                value={sessionHours}
+                onChange={(e) => setSessionHours(e.target.value)}
+                placeholder={t("formation.session_hours")}
+              />
+              <Textarea
+                value={sessionNotes}
+                onChange={(e) => setSessionNotes(e.target.value)}
+                placeholder={t("formation.notes_placeholder")}
+                rows={2}
+                className="sm:col-span-2"
+              />
+              <div className="flex gap-2 sm:col-span-2">
+                <Button
+                  size="sm"
+                  onClick={handleSaveSession}
+                  disabled={!sessionTitle.trim() || !sessionStarts}
                 >
-                  <div className="flex flex-wrap items-start justify-between gap-2">
-                    <div>
-                      <p className="text-sm font-semibold">{session.title}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatDate(session.startsAt, currentLocale, {
-                          day: "numeric",
-                          month: "short",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                        {session.location ? ` · ${session.location}` : ""}
-                        {session.hours ? ` · ${session.hours}h` : ""}
-                      </p>
-                      {session.notes && (
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          {session.notes}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {enrolled && userId && (
-                        <Button
-                          size="sm"
-                          variant={mine?.present ? "outline" : "ghost"}
-                          onClick={() =>
-                            markFormationAttendance({
-                              sessionId: session.id,
-                              userId,
-                              present: !mine?.present,
-                              workspaceId: activeParishId,
-                            })
-                          }
-                        >
-                          {mine?.present
-                            ? t("formation.present")
-                            : t("formation.mark_present")}
-                        </Button>
-                      )}
-                      {canManage && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => startEditSession(session)}
-                        >
-                          {tc("edit")}
-                        </Button>
-                      )}
-                      {canManage && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => setPendingDelete(session.id)}
-                        >
-                          {tc("delete")}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                  {track.canSeeRoster &&
-                    (track.enrollments || []).length > 0 && (
-                      <div
-                        className="space-y-1"
-                        data-testid="formation-attendance"
-                      >
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                          {t("formation.attendance")}
-                        </p>
-                        <ul className="space-y-1">
-                          {track.enrollments
-                            .filter((e: any) => e.status !== "DROPPED")
-                            .map((enrollment: any) => {
-                              const att = (session.attendances || []).find(
-                                (a: any) => a.userId === enrollment.userId,
-                              );
-                              const present = Boolean(att?.present);
-                              return (
-                                <li
-                                  key={`${session.id}-${enrollment.userId}`}
-                                  className="flex items-center justify-between gap-2 text-sm"
-                                >
-                                  <span>
-                                    {enrollment.userName || enrollment.userId}
-                                  </span>
-                                  {(canManage ||
-                                    [
-                                      "SUPER_ADMIN",
-                                      "DIOCESE_ADMIN",
-                                      "PARISH_COORDINATOR",
-                                      "PERSONAL_OWNER",
-                                    ].includes(userRole)) && (
-                                    <label className="flex items-center gap-2 text-xs">
-                                      <Checkbox
-                                        checked={present}
-                                        onCheckedChange={(checked) =>
-                                          markFormationAttendance({
-                                            sessionId: session.id,
-                                            userId: enrollment.userId,
-                                            present: Boolean(checked),
-                                            workspaceId: activeParishId,
-                                          })
-                                        }
-                                        aria-label={t("formation.mark_present")}
-                                      />
-                                      {present
-                                        ? t("formation.present")
-                                        : t("formation.absent")}
-                                    </label>
-                                  )}
-                                </li>
-                              );
-                            })}
-                        </ul>
-                      </div>
-                    )}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </AppPanel>
+                  {t("formation.save_session")}
+                </Button>
+                <Button size="sm" variant="outline" onClick={resetSessionForm}>
+                  {tc("cancel")}
+                </Button>
+              </div>
+            </div>
+          )}
 
-      {(track.enrollments || []).length > 0 && (
+          {(track.sessions || []).length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              {t("formation.empty_sessions")}
+            </p>
+          ) : (
+            <ul className="space-y-3">
+              {track.sessions.map((session: any) => {
+                const mine = (session.attendances || []).find(
+                  (a: any) => a.userId === userId,
+                );
+                return (
+                  <li
+                    key={session.id}
+                    className="space-y-2 rounded-sm border border-border/60 p-3"
+                    data-testid="formation-session"
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div>
+                        <p className="text-sm font-semibold">{session.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatDate(session.startsAt, currentLocale, {
+                            day: "numeric",
+                            month: "short",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                          {session.location ? ` · ${session.location}` : ""}
+                          {session.hours ? ` · ${session.hours}h` : ""}
+                        </p>
+                        {session.notes && (
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {session.notes}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {enrolled && userId && (
+                          <Button
+                            size="sm"
+                            variant={mine?.present ? "outline" : "ghost"}
+                            onClick={() =>
+                              markFormationAttendance({
+                                sessionId: session.id,
+                                userId,
+                                present: !mine?.present,
+                                workspaceId: activeParishId,
+                              })
+                            }
+                          >
+                            {mine?.present
+                              ? t("formation.present")
+                              : t("formation.mark_present")}
+                          </Button>
+                        )}
+                        {canManage && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => startEditSession(session)}
+                          >
+                            {tc("edit")}
+                          </Button>
+                        )}
+                        {canManage && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setPendingDelete(session.id)}
+                          >
+                            {tc("delete")}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    {track.canSeeRoster &&
+                      (track.enrollments || []).length > 0 && (
+                        <div
+                          className="space-y-1"
+                          data-testid="formation-attendance"
+                        >
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                            {t("formation.attendance")}
+                          </p>
+                          <ul className="space-y-1">
+                            {track.enrollments
+                              .filter((e: any) => e.status !== "DROPPED")
+                              .map((enrollment: any) => {
+                                const att = (session.attendances || []).find(
+                                  (a: any) => a.userId === enrollment.userId,
+                                );
+                                const present = Boolean(att?.present);
+                                return (
+                                  <li
+                                    key={`${session.id}-${enrollment.userId}`}
+                                    className="flex items-center justify-between gap-2 text-sm"
+                                  >
+                                    <span>
+                                      {enrollment.userName || enrollment.userId}
+                                    </span>
+                                    {(canManage ||
+                                      [
+                                        "SUPER_ADMIN",
+                                        "DIOCESE_ADMIN",
+                                        "PARISH_COORDINATOR",
+                                        "PERSONAL_OWNER",
+                                      ].includes(userRole)) && (
+                                      <label className="flex items-center gap-2 text-xs">
+                                        <Checkbox
+                                          checked={present}
+                                          onCheckedChange={(checked) =>
+                                            markFormationAttendance({
+                                              sessionId: session.id,
+                                              userId: enrollment.userId,
+                                              present: Boolean(checked),
+                                              workspaceId: activeParishId,
+                                            })
+                                          }
+                                          aria-label={t(
+                                            "formation.mark_present",
+                                          )}
+                                        />
+                                        {present
+                                          ? t("formation.present")
+                                          : t("formation.absent")}
+                                      </label>
+                                    )}
+                                  </li>
+                                );
+                              })}
+                          </ul>
+                        </div>
+                      )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </AppPanel>
+      )}
+
+      {tab === "roster" && (
         <AppPanel className="space-y-2">
           <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t("formation.enrollments_title")}
           </h3>
-          <ul className="space-y-1 text-sm">
-            {track.enrollments.map((enrollment: any) => (
-              <li
-                key={enrollment.id}
-                className="flex items-center justify-between gap-2"
-              >
-                <span>{enrollment.userName || enrollment.userId}</span>
-                <Badge variant="outline" size="sm">
-                  {t(`formation.enrollment.${enrollment.status}`)}
-                </Badge>
-              </li>
-            ))}
-          </ul>
+          {(track.enrollments || []).length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              {t("formation.enroll_to_progress")}
+            </p>
+          ) : (
+            <ul className="space-y-1 text-sm">
+              {track.enrollments.map((enrollment: any) => (
+                <li
+                  key={enrollment.id}
+                  className="flex items-center justify-between gap-2"
+                >
+                  <span>{enrollment.userName || enrollment.userId}</span>
+                  <Badge variant="outline" size="sm">
+                    {t(`formation.enrollment.${enrollment.status}`)}
+                  </Badge>
+                </li>
+              ))}
+            </ul>
+          )}
         </AppPanel>
       )}
 

@@ -89,7 +89,7 @@ test.describe("recursos hierárquicos — paróquia (coordenador)", () => {
     }
   });
 
-  test("escola de catequistas mostra trilha diocesana", async ({ page }) => {
+  test("escola de catequistas mostra formação diocesana", async ({ page }) => {
     await openAppPath(page, "/app/formation");
     await expect(
       page.getByRole("heading", { name: /Escola de catequistas/i }),
@@ -213,11 +213,11 @@ test.describe("recursos hierárquicos — cúria (admin diocesano)", () => {
     await expect(
       page.getByRole("heading", { name: /Escola de catequistas/i }),
     ).toBeVisible({ timeout: 15000 });
-    const open = page.getByRole("link", { name: /Abrir trilha/i }).first();
+    const open = page.getByRole("link", { name: /Abrir formação/i }).first();
     if (await open.isVisible().catch(() => false)) {
       await open.click();
       await expect(
-        page.getByText(/Encontros|Inscritos|Trilha oficial/i).first(),
+        page.getByText(/Programa|Módulo|Encontros ao vivo/i).first(),
       ).toBeVisible({ timeout: 15000 });
     }
   });

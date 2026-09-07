@@ -35,7 +35,7 @@ import {
   updateCatecheticalItinerary,
   deleteCatecheticalItinerary,
 } from "../server/operations/itineraryOperations";
-import { createFormationSession } from "../server/operations/formationOperations";
+import { createFormationSession, createFormationModule } from "../server/operations/formationOperations";
 import { listLiturgicalEvents } from "../server/operations/calendarOperations";
 
 const PARISH_ACTOR = {
@@ -334,6 +334,30 @@ describe("formation session ownership", () => {
           trackId: "55555555-5555-4555-8555-555555555555",
           title: "Encontro extra",
           startsAt: "2026-10-03T19:00",
+        },
+        {
+          user: { id: "u1" },
+          entities: { FormationTrack, Parish: { findFirst: vi.fn() } },
+        },
+      ),
+    ).rejects.toMatchObject({ statusCode: 403 });
+  });
+
+  it("does not let a parish coordinator add modules to a diocesan track", async () => {
+    const FormationTrack = {
+      findUnique: vi.fn().mockResolvedValue({
+        id: "55555555-5555-4555-8555-555555555555",
+        ownerType: "DIOCESE",
+        dioceseId: "dio-1",
+        parishId: null,
+        inheritancePolicy: "SUGGESTED",
+      }),
+    };
+    await expect(
+      createFormationModule(
+        {
+          trackId: "55555555-5555-4555-8555-555555555555",
+          title: "Módulo extra",
         },
         {
           user: { id: "u1" },

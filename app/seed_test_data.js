@@ -120,6 +120,9 @@ async function seed() {
       console.warn(`  (skip ${label}: ${err.message})`);
     }
   };
+  await skipMissing('formationLessonProgress', () => p.formationLessonProgress.deleteMany({}));
+  await skipMissing('formationLesson', () => p.formationLesson.deleteMany({}));
+  await skipMissing('formationModule', () => p.formationModule.deleteMany({}));
   await skipMissing('formationAttendance', () => p.formationAttendance.deleteMany({}));
   await skipMissing('formationEnrollment', () => p.formationEnrollment.deleteMany({}));
   await skipMissing('formationSession', () => p.formationSession.deleteMany({}));
@@ -637,13 +640,58 @@ async function seed() {
       data: {
         id: 'test-formation-track-01',
         name: 'Formação inicial de catequistas (TESTE)',
-        description: 'Trilha diocesana do primeiro ano.',
+        description: 'Curso diocesano do primeiro ano: identidade, liturgia e acompanhamento.',
         kind: 'INITIAL',
         hours: 40,
         ownerType: 'DIOCESE',
         inheritancePolicy: 'SUGGESTED',
         dioceseId: DIOCESE_ID,
         createdById: 'user-diocese-00001',
+        modules: {
+          create: [
+            {
+              id: 'test-formation-mod-01',
+              title: 'Módulo 1 — Identidade do catequista',
+              description: 'Vocação, espiritualidade e o lugar do catequista na comunidade.',
+              order: 0,
+              lessons: {
+                create: [
+                  {
+                    id: 'test-formation-lesson-01',
+                    title: 'Aula 1 — Chamado e vocação',
+                    body: 'O catequista é chamado a ser testemunha. Nesta aula, leia DGC 156-157 e converse: o que me atraiu à catequese?\n\nPauta:\n1. Oração inicial\n2. Partilha da vocação\n3. Leitura do Diretório\n4. Compromisso da semana',
+                    durationMinutes: 45,
+                    order: 0,
+                  },
+                  {
+                    id: 'test-formation-lesson-02',
+                    title: 'Aula 2 — A comunidade educadora',
+                    body: 'A fé nasce na comunidade. Mapeie os ministérios da sua paróquia e como a catequese se articula com eles.',
+                    durationMinutes: 40,
+                    order: 1,
+                  },
+                ],
+              },
+            },
+            {
+              id: 'test-formation-mod-02',
+              title: 'Módulo 2 — Liturgia e transmissão da fé',
+              description: 'Como a liturgia alimenta o itinerário catequético.',
+              order: 1,
+              lessons: {
+                create: [
+                  {
+                    id: 'test-formation-lesson-03',
+                    title: 'Aula 3 — Ano litúrgico na catequese',
+                    body: 'Percorra o ano litúrgico e escolha um tempo (Advento, Quaresma ou Tempo Comum) para preparar um encontro com a turma.',
+                    durationMinutes: 50,
+                    order: 0,
+                  },
+                ],
+              },
+            },
+          ],
+        },
         sessions: {
           create: [
             {

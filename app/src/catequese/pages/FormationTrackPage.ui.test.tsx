@@ -6,11 +6,14 @@ import FormationTrackPage from "./FormationTrackPage";
 import {
   getFormationTrack,
   createFormationSession,
+  createFormationModule,
+  createFormationLesson,
   updateFormationTrack,
   deleteFormationTrack,
   enrollInFormationTrack,
   unenrollFromFormationTrack,
   markFormationAttendance,
+  markFormationLessonComplete,
 } from "wasp/client/operations";
 import {
   FORMATION_TRACK_DETAIL,
@@ -65,6 +68,8 @@ describe("FormationTrackPage", () => {
   beforeEach(() => {
     userCtx.current = parishCoordinator();
     vi.mocked(createFormationSession).mockResolvedValue({} as never);
+    vi.mocked(createFormationModule).mockResolvedValue({} as never);
+    vi.mocked(createFormationLesson).mockResolvedValue({} as never);
     vi.mocked(updateFormationTrack).mockResolvedValue({} as never);
     vi.mocked(deleteFormationTrack).mockResolvedValue({
       deleted: true,
@@ -72,9 +77,10 @@ describe("FormationTrackPage", () => {
     vi.mocked(enrollInFormationTrack).mockResolvedValue({} as never);
     vi.mocked(unenrollFromFormationTrack).mockResolvedValue({} as never);
     vi.mocked(markFormationAttendance).mockResolvedValue({} as never);
+    vi.mocked(markFormationLessonComplete).mockResolvedValue({} as never);
   });
 
-  it("mostra detalhe herdado sem editar a trilha oficial", () => {
+  it("mostra o programa herdado sem deixar a paróquia editar módulos", () => {
     stubUseQuery([
       [getFormationTrack, { ...FORMATION_TRACK_DETAIL, myEnrollment: null }],
     ]);
@@ -84,6 +90,13 @@ describe("FormationTrackPage", () => {
       screen.getByText("Formação inicial de catequistas"),
     ).toBeInTheDocument();
     expect(screen.getByText(/só a cúria edita/i)).toBeInTheDocument();
+    expect(screen.getByTestId("formation-curriculum")).toBeInTheDocument();
+    expect(screen.getByTestId("formation-module")).toHaveTextContent(
+      "Identidade do catequista",
+    );
+    expect(
+      screen.queryByRole("button", { name: "Adicionar módulo" }),
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Encontro" }),
     ).not.toBeInTheDocument();
@@ -92,11 +105,44 @@ describe("FormationTrackPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("agenda encontro, edita e exclui trilha local", async () => {
+  it("cria módulo e aula na formação local", async () => {
     const user = userEvent.setup();
     stubUseQuery([[getFormationTrack, LOCAL_FORMATION_TRACK]]);
     renderDetail("track-local-1");
 
+    await user.click(screen.getByRole("button", { name: "Adicionar módulo" }));
+    await user.type(
+      screen.getByLabelText("Título do módulo"),
+      "Módulo 2 — Liturgia",
+    );
+    await user.click(screen.getByRole("button", { name: "Guardar módulo" }));
+    expect(createFormationModule).toHaveBeenCalledWith(
+      expect.objectContaining({
+        trackId: LOCAL_FORMATION_TRACK.id,
+        title: "Módulo 2 — Liturgia",
+      }),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Adicionar aula" }));
+    await user.type(
+      screen.getByLabelText("Título da aula"),
+      "Aula 2 — Ano litúrgico",
+    );
+    await user.click(screen.getByRole("button", { name: "Guardar aula" }));
+    expect(createFormationLesson).toHaveBeenCalledWith(
+      expect.objectContaining({
+        moduleId: "mod-local-1",
+        title: "Aula 2 — Ano litúrgico",
+      }),
+    );
+  });
+
+  it("agenda encontro, edita e exclui formação local", async () => {
+    const user = userEvent.setup();
+    stubUseQuery([[getFormationTrack, LOCAL_FORMATION_TRACK]]);
+    renderDetail("track-local-1");
+
+    await user.click(screen.getByRole("button", { name: "Encontros ao vivo" }));
     await user.click(screen.getByRole("button", { name: "Encontro" }));
     await user.type(
       screen.getByLabelText("Título do encontro"),
@@ -140,6 +186,7 @@ describe("FormationTrackPage", () => {
     renderDetail("track-1");
 
     expect(screen.getAllByText("Inscrito").length).toBeGreaterThan(0);
+    await user.click(screen.getByRole("button", { name: "Encontros ao vivo" }));
     await user.click(screen.getByRole("button", { name: "Marcar presença" }));
     expect(markFormationAttendance).toHaveBeenCalledWith({
       sessionId: "sess-1",

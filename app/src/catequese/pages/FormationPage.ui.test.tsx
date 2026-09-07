@@ -54,7 +54,7 @@ describe("FormationPage", () => {
     stubUseQuery([[listFormationTracks, []]]);
     renderPage(<FormationPage />);
     expect(screen.getByTestId("empty-formation")).toHaveTextContent(
-      "Nenhuma trilha de formação",
+      "Nenhuma formação",
     );
   });
 
@@ -63,7 +63,7 @@ describe("FormationPage", () => {
     stubUseQuery([[listFormationTracks, []]]);
     renderPage(<FormationPage />);
 
-    await user.click(screen.getByRole("button", { name: "Nova trilha" }));
+    await user.click(screen.getByRole("button", { name: "Nova formação" }));
     await user.type(screen.getByLabelText("Nome"), "Formação permanente 2026");
     await user.click(screen.getByRole("button", { name: "Criar" }));
 
@@ -94,10 +94,9 @@ describe("FormationPage", () => {
       trackId: FORMATION_TRACK.id,
       workspaceId: "parish-1",
     });
-    expect(screen.getByRole("link", { name: /Abrir trilha/i })).toHaveAttribute(
-      "href",
-      "/app/formation/track-1",
-    );
+    expect(
+      screen.getByRole("link", { name: /Abrir formação/i }),
+    ).toHaveAttribute("href", "/app/formation/track-1");
   });
 
   it("esconde criação do catequista e ainda oferece inscrição", () => {
@@ -107,7 +106,7 @@ describe("FormationPage", () => {
     ]);
     renderPage(<FormationPage />);
     expect(
-      screen.queryByRole("button", { name: "Nova trilha" }),
+      screen.queryByRole("button", { name: "Nova formação" }),
     ).not.toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Inscrever-me" }),

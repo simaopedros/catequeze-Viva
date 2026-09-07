@@ -108,6 +108,15 @@ describe('Wasp entities for parish onboarding actions', () => {
       'listFormationTracks',
     );
     expect(formation).toContain('FormationTrack');
+    expect(formation).toContain('FormationModule');
     expect(formation).toContain('ClassCatechist');
+
+    const createModule = entitiesForOperation(
+      waspSource,
+      'action',
+      'createFormationModule',
+    );
+    expect(createModule).toContain('FormationModule');
+    expect(createModule).toContain('FormationTrack');
   });
 });

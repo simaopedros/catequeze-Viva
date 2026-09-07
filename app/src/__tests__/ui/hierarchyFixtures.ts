@@ -190,7 +190,29 @@ export const FORMATION_TRACK = {
   inherited: true,
   myEnrollment: null,
   canManage: false,
-  _count: { sessions: 1, enrollments: 12 },
+  moduleCount: 2,
+  lessonCount: 3,
+  lessonTotal: 3,
+  lessonDone: 0,
+  _count: { sessions: 1, enrollments: 12, modules: 2 },
+  modules: [
+    {
+      id: "mod-1",
+      title: "Módulo 1 — Identidade do catequista",
+      description: "Vocação e espiritualidade.",
+      order: 0,
+      lessons: [
+        {
+          id: "lesson-1",
+          title: "Aula 1 — Chamado e vocação",
+          body: "O catequista é testemunha.",
+          durationMinutes: 45,
+          order: 0,
+          completed: false,
+        },
+      ],
+    },
+  ],
   sessions: [
     {
       id: "sess-1",
@@ -218,7 +240,29 @@ export const LOCAL_FORMATION_TRACK = {
   canManage: true,
   canSeeRoster: true,
   myEnrollment: { status: "ENROLLED" },
-  _count: { sessions: 1, enrollments: 3 },
+  moduleCount: 1,
+  lessonCount: 1,
+  lessonTotal: 1,
+  lessonDone: 0,
+  _count: { sessions: 1, enrollments: 3, modules: 1 },
+  modules: [
+    {
+      id: "mod-local-1",
+      title: "Módulo 1 — Acolhida",
+      description: "Primeiro bloco da formação permanente.",
+      order: 0,
+      lessons: [
+        {
+          id: "lesson-local-1",
+          title: "Aula 1 — Como acolher a equipe",
+          body: "Pauta da acolhida.",
+          durationMinutes: 30,
+          order: 0,
+          completed: false,
+        },
+      ],
+    },
+  ],
   sessions: [
     {
       id: "sess-local-1",

@@ -466,6 +466,7 @@ model User {
   formationEnrollments      FormationEnrollment[]
   formationAttendances      FormationAttendance[]
   recordedFormationAttendances FormationAttendance[]    @relation("FormationAttendanceRecorder")
+  formationLessonProgress   FormationLessonProgress[]
   resourceAdoptions         ResourceAdoption[]
 }
 
@@ -2390,9 +2391,62 @@ model FormationTrack {
 
   sessions    FormationSession[]
   enrollments FormationEnrollment[]
+  modules     FormationModule[]
 
   @@index([dioceseId, active])
   @@index([parishId])
+}
+
+model FormationModule {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String?
+  order       Int     @default(0)
+
+  trackId String
+  track   FormationTrack @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  lessons FormationLesson[]
+
+  @@index([trackId, order])
+}
+
+model FormationLesson {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title           String
+  body            String?
+  durationMinutes Int?
+  videoUrl        String?
+  resourceUrl     String?
+  order           Int     @default(0)
+
+  moduleId String
+  module   FormationModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  progress FormationLessonProgress[]
+
+  @@index([moduleId, order])
+}
+
+model FormationLessonProgress {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  completedAt DateTime @default(now())
+
+  lessonId String
+  lesson   FormationLesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([lessonId, userId])
+  @@index([userId])
 }
 
 model FormationSession {
