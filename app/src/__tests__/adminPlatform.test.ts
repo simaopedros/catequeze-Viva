@@ -395,6 +395,29 @@ describe("billing admin trial / complimentary", () => {
     );
     expect(result.status).toBe("ACTIVE");
   });
+
+  it("refuses complimentary override of a negotiated diocese deal", async () => {
+    const TenantBilling = {
+      findUnique: vi.fn().mockResolvedValue({
+        id: "bill-deal",
+        plan: "unlimited",
+        manualDeal: true,
+        processor: "MANUAL",
+      }),
+      update: vi.fn(),
+      create: vi.fn(),
+    };
+    const Diocese = {
+      findUnique: vi.fn().mockResolvedValue({ id: "d1", name: "Diocese de Teste" }),
+    };
+    await expect(
+      setComplimentaryPlan(
+        { dioceseId: "d1", planSlug: "unlimited" },
+        context(ADMIN, { TenantBilling, Parish: {}, Diocese }),
+      ),
+    ).rejects.toMatchObject({ statusCode: 409 });
+    expect(TenantBilling.update).not.toHaveBeenCalled();
+  });
 });
 
 describe("listAdminLicenses owner contact", () => {

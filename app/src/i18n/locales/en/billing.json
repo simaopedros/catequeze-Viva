@@ -400,6 +400,29 @@
     "diocese_sales_title": "Talk about the diocese license",
     "diocese_sales_desc": "Parish coverage is assisted sales.",
     "diocese_cta": "Talk to sales about the diocese",
-    "diocese_prefill": "Hi! I would like to talk about the Diocese Plan for {{name}} on Catequese Viva."
+    "diocese_prefill": "Hi! I would like to talk about the Diocese Plan for {{name}} on Catequese Viva.",
+    "paused_headline": "This diocese's pastoral deal is not active",
+    "paused_headline_named": "The pastoral deal for diocese {{name}} is not active",
+    "paused_result": "Parish data stays in place. There is no checkout here — the Cúria settles the deal with Catequese Viva."
+  },
+  "deal": {
+    "eyebrow": "Pastoral deal",
+    "covering_desc": "Parishes in this diocese use the coverage agreed with Catequese Viva.",
+    "paused_desc": "While the deal is not active, new parishes cannot join this diocese. Existing data stays.",
+    "parishes": "Parishes in the deal",
+    "parishes_used": "{{used}} of {{max}}",
+    "parishes_unlimited": "unlimited",
+    "classes": "Classes (cap)",
+    "catechists": "Catechists (cap)",
+    "catechumens": "Catechumens (cap)",
+    "starts": "Starts: {{date}}",
+    "ends": "Ends: {{date}}",
+    "status_ACTIVE": "Active",
+    "status_SUSPENDED": "Suspended",
+    "status_INACTIVE": "Inactive",
+    "status_NONE": "No deal",
+    "status_CANCELED": "Inactive",
+    "status_TRIAL": "Trial",
+    "status_PAST_DUE": "Past due"
   }
 }

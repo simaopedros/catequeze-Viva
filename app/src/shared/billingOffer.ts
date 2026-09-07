@@ -84,12 +84,14 @@ export function shouldShowParishBillingConversion(opts: {
   canManageBilling: boolean;
   workspaceType?: string | null;
   hasStripeSubscription?: boolean;
+  dioceseDeal?: { manualDeal?: boolean; covering?: boolean } | null;
 }): boolean {
   if (!opts.canManageBilling || opts.isPersonal) return false;
   if (opts.isParishManaged || opts.isPaidActive || opts.hasStripeSubscription) {
     return false;
   }
   if (opts.workspaceType === "DIOCESE") return false;
+  if (opts.dioceseDeal?.manualDeal) return false;
   return true;
 }
 
@@ -160,6 +162,19 @@ export function shouldShowCoveredWorkspaceBilling(opts: {
   planInherited?: boolean;
 }): boolean {
   return opts.canManageBilling && Boolean(opts.planInherited);
+}
+
+/**
+ * Negotiated diocese deal that is not covering this parish — pastoral notice,
+ * never Stripe Checkout.
+ */
+export function shouldShowPausedDioceseDealBilling(opts: {
+  canManageBilling: boolean;
+  planInherited?: boolean;
+  dioceseDeal?: { manualDeal?: boolean; covering?: boolean } | null;
+}): boolean {
+  if (!opts.canManageBilling || opts.planInherited) return false;
+  return Boolean(opts.dioceseDeal?.manualDeal && !opts.dioceseDeal.covering);
 }
 
 /** Diocese workspace: assisted sales, never a self-serve catalog. */

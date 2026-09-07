@@ -37,7 +37,10 @@ export async function getUserDioceseIds(context: any, userId: string): Promise<s
 
 export async function cascadeCancelToTenantBilling(context: any, userId: string): Promise<void> {
   await context.entities.TenantBilling.updateMany({
-    where: { parish: { ownerId: userId, type: { not: 'PERSONAL' } } },
+    where: {
+      parish: { ownerId: userId, type: { not: 'PERSONAL' } },
+      NOT: { manualDeal: true },
+    },
     data: {
       plan: 'catechist_free',
       status: 'CANCELED',
@@ -51,7 +54,10 @@ export async function cascadeCancelToTenantBilling(context: any, userId: string)
   const dioceseIds = await getUserDioceseIds(context, userId);
   if (dioceseIds.length > 0) {
     await context.entities.TenantBilling.updateMany({
-      where: { dioceseId: { in: dioceseIds } },
+      where: {
+        dioceseId: { in: dioceseIds },
+        NOT: { manualDeal: true },
+      },
       data: {
         plan: 'catechist_free',
         status: 'CANCELED',
@@ -90,6 +96,9 @@ export async function cascadeActivatePlanToTenantBilling(
     const existing = await context.entities.TenantBilling.findUnique({
       where: { dioceseId },
     });
+    if (existing?.manualDeal) {
+      continue;
+    }
     const dioceseData = {
       plan: slug,
       status,
@@ -112,7 +121,10 @@ export async function cascadeActivatePlanToTenantBilling(
   }
 
   await context.entities.TenantBilling.updateMany({
-    where: { parish: { ownerId: userId, type: { not: 'PERSONAL' } } },
+    where: {
+      parish: { ownerId: userId, type: { not: 'PERSONAL' } },
+      NOT: { manualDeal: true },
+    },
     data: {
       plan: slug,
       status,

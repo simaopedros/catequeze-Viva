@@ -113,6 +113,8 @@
     "managed_section": "Que administro",
     "diocese_license_active": "Licença Diocese ativa",
     "diocese_license_inactive": "Sem licença Diocese",
+    "diocese_deal_paused": "O acordo pastoral está suspenso ou inativo. Os dados permanecem; não abrimos novas paróquias agora.",
+    "diocese_parish_quota": "Paróquias do acordo: {{used}}/{{max}}. Para incluir outra, fale com a Catequese Viva.",
     "create_parish_in_diocese": "Criar paróquia nesta diocese",
     "create_under_license": "Criar paróquia sob sua licença {{plan}}",
     "participating_section": "Onde participo",

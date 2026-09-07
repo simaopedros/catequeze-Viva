@@ -561,7 +561,30 @@ export const billing_pt_BR_core = {
       "diocese_sales_title": "Falar sobre a licença da diocese",
       "diocese_sales_desc": "A cobertura das paróquias é venda assistida.",
       "diocese_cta": "Falar com vendas sobre a diocese",
-      "diocese_prefill": "Olá! Gostaria de falar sobre o Plano Diocese para {{name}} na Catequese Viva."
+      "diocese_prefill": "Olá! Gostaria de falar sobre o Plano Diocese para {{name}} na Catequese Viva.",
+      "paused_headline": "O acordo pastoral desta diocese não está ativo",
+      "paused_headline_named": "O acordo pastoral da diocese {{name}} não está ativo",
+      "paused_result": "Os dados das paróquias continuam guardados. Não há checkout por aqui — a cúria regulariza o acordo com a Catequese Viva."
+    },
+    "deal": {
+      "eyebrow": "Acordo pastoral",
+      "covering_desc": "As paróquias desta diocese usam a cobertura combinada com a Catequese Viva.",
+      "paused_desc": "Enquanto o acordo não estiver ativo, não abrimos novas paróquias nesta diocese. Os dados atuais permanecem.",
+      "parishes": "Paróquias no acordo",
+      "parishes_used": "{{used}} de {{max}}",
+      "parishes_unlimited": "ilimitadas",
+      "classes": "Turmas (teto)",
+      "catechists": "Catequistas (teto)",
+      "catechumens": "Catequizandos (teto)",
+      "starts": "Início: {{date}}",
+      "ends": "Término: {{date}}",
+      "status_ACTIVE": "Ativo",
+      "status_SUSPENDED": "Suspenso",
+      "status_INACTIVE": "Inativo",
+      "status_NONE": "Sem acordo",
+      "status_CANCELED": "Inativo",
+      "status_TRIAL": "Em teste",
+      "status_PAST_DUE": "Em atraso"
     }
   } as const;
 
@@ -2561,6 +2584,8 @@ export const public_pt_BR_core = {
       "managed_section": "Que administro",
       "diocese_license_active": "Licença Diocese ativa",
       "diocese_license_inactive": "Sem licença Diocese",
+      "diocese_deal_paused": "O acordo pastoral está suspenso ou inativo. Os dados permanecem; não abrimos novas paróquias agora.",
+      "diocese_parish_quota": "Paróquias do acordo: {{used}}/{{max}}. Para incluir outra, fale com a Catequese Viva.",
       "create_parish_in_diocese": "Criar paróquia nesta diocese",
       "create_under_license": "Criar paróquia sob sua licença {{plan}}",
       "participating_section": "Onde participo",

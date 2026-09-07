@@ -1,6 +1,6 @@
 import { HttpError } from 'wasp/server';
 import { writeAuditLog, getDioceseParishIds, requireDioceseAccess, requirePlatformAdmin } from '../auth/helpers';
-import { assertCanCreateParish, resolveEffectiveBilling, resolveAllEffectiveBilling, resolveNewParishBilling } from './billingEnforcement';
+import { assertCanCreateParish, assertDioceseParishQuota, resolveEffectiveBilling, resolveAllEffectiveBilling, resolveNewParishBilling } from './billingEnforcement';
 import { requireWorkspaceAccess } from './sharedScope';
 
 /**
@@ -251,6 +251,10 @@ export const createParish = async (
     throw new HttpError(400, 'Informe o estado (UF) da paróquia.');
   }
 
+  if (args.dioceseId) {
+    await assertDioceseParishQuota(context, { dioceseId: args.dioceseId });
+  }
+
   if (!context.user.isAdmin) {
     await assertCanCreateParish(context, {
       dioceseId: args.dioceseId || null,
@@ -389,6 +393,13 @@ export const updateParish = async (
     if (args.dioceseId !== undefined) {
       throw new HttpError(403, 'Apenas administradores da plataforma podem vincular a diocese.');
     }
+  }
+
+  if (args.dioceseId) {
+    await assertDioceseParishQuota(context, {
+      dioceseId: args.dioceseId,
+      excludeParishId: args.id,
+    });
   }
 
   if (args.active === false) {

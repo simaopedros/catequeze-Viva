@@ -57,6 +57,8 @@
   "licensed_suffix": "(licenciada)",
   "coverage_licensed": "Se creará bajo la licencia de {{name}} (sin cargo adicional).",
   "coverage_unlicensed": "Se vinculará a {{name}}. La diócesis aún no tiene licencia activa — la parroquia quedará bloqueada hasta que se active la licencia.",
+  "coverage_quota": "{{name}} ya usa {{used}} de {{max}} parroquias del acuerdo. Amplíe el combinado con Catequese Viva.",
+  "coverage_paused": "El acuerdo pastoral de {{name}} no está activo. Los datos actuales permanecen; no es posible abrir otra parroquia ahora.",
   "coverage_owner": "Se creará bajo su licencia {{plan}} (sin cargo adicional).",
   "coverage_independent": "Parroquia independiente: sin suscripción activa. Suscríbete a un plan institucional para desbloquearla.",
   "members_count": "{{count}} miembros",

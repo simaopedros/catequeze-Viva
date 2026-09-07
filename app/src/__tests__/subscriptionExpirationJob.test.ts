@@ -44,6 +44,7 @@ describe("expireSubscriptionsJob", () => {
 
     const expireQuery = tenantFindMany.mock.calls[0][0].where;
     expect(expireQuery.status).toBe("TRIAL");
+    expect(expireQuery.NOT).toEqual({ manualDeal: true });
     expect(expireQuery.OR).toEqual([
       { parishId: null },
       { parish: { owner: { paymentProcessorUserId: null } } },

@@ -10,6 +10,7 @@ import {
   Settings,
   Activity,
   Flag,
+  Handshake,
   Tags,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
@@ -144,6 +145,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 <NavLink to="/admin/dioceses" end className={navLinkClass}>
                   <Building2 />
                   {t("sidebar.dioceses")}
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/acordos-diocese" className={navLinkClass}>
+                  <Handshake />
+                  {t("sidebar.dioceseDeals")}
                 </NavLink>
               </li>
               <li>

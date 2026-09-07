@@ -6,7 +6,8 @@ import { cn } from "../../client/utils";
 export type ManagedBillingNoticeVariant =
   | "collaborator"
   | "covered"
-  | "diocese";
+  | "diocese"
+  | "paused";
 
 export type ManagedBillingNoticeProps = {
   workspaceName: string;
@@ -14,6 +15,7 @@ export type ManagedBillingNoticeProps = {
   dioceseName?: string | null;
   managerName?: string | null;
   variant?: ManagedBillingNoticeVariant;
+  hideSales?: boolean;
 };
 
 export function ManagedBillingNotice({
@@ -22,12 +24,13 @@ export function ManagedBillingNotice({
   dioceseName,
   managerName,
   variant = "collaborator",
+  hideSales = false,
 }: ManagedBillingNoticeProps) {
   const { t } = useTranslation("billing");
   const namedDiocese = dioceseName?.trim() || null;
   const namedManager = managerName?.trim() || null;
   const Icon =
-    variant === "diocese"
+    variant === "diocese" || variant === "paused"
       ? Building2
       : variant === "covered"
         ? ShieldCheck
@@ -36,6 +39,10 @@ export function ManagedBillingNotice({
   const headline =
     variant === "diocese"
       ? t("managed_notice.diocese_headline")
+      : variant === "paused"
+        ? namedDiocese
+          ? t("managed_notice.paused_headline_named", { name: namedDiocese })
+          : t("managed_notice.paused_headline")
       : variant === "covered"
         ? namedDiocese
           ? t("managed_notice.covered_headline_named", { name: namedDiocese })
@@ -45,6 +52,8 @@ export function ManagedBillingNotice({
   const result =
     variant === "diocese"
       ? t("managed_notice.diocese_result")
+      : variant === "paused"
+        ? t("managed_notice.paused_result")
       : variant === "covered"
         ? namedDiocese
           ? t("managed_notice.covered_result_named", { name: namedDiocese })
@@ -136,7 +145,7 @@ export function ManagedBillingNotice({
         )}
       </section>
 
-      {variant === "diocese" && (
+      {variant === "diocese" && !hideSales && (
         <section
           data-testid="managed-billing-diocese-sales"
           className="rounded-sm border border-border/60 bg-muted/20 px-5 py-4"

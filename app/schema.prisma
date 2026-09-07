@@ -198,6 +198,8 @@ enum BillingStatus {
   PAST_DUE
   CANCELED
   TRIAL
+  SUSPENDED
+  INACTIVE
 }
 
 enum AuditAction {
@@ -1419,7 +1421,19 @@ model TenantBilling {
   maxParishes         Int?
   pricingVersion      Int?          @default(2)
 
+  // Negotiated diocese deals (offline PIX / invoice). Never Stripe Checkout.
+  manualDeal          Boolean       @default(false)
+  processor           String?
+  externalReference   String?
+  internalNotes       String?
+  startsAt            DateTime?
+  endsAt              DateTime?
+  agreedPriceCents    Int?
+  agreedCurrency      String        @default("BRL")
+
   @@index([plan])
+  @@index([manualDeal])
+  @@index([processor])
 }
 
 // ─── Pricing catalog (admin-managed, Stripe-linked) ───────────────────────────

@@ -22,16 +22,22 @@ import {
 } from "../../shared/planLimits";
 import { loadPlanCatalog } from "../pricing/planCatalogService";
 import { PRISMA_INSTITUTIONAL_PLANS } from "../../shared/pricing";
+import {
+  DIOCESE_QUOTA_PARISH_TYPES,
+  dioceseDealBlockedNewParishMessage,
+  dioceseParishQuotaMessage,
+  isDioceseDealCovering,
+  isDioceseUmbrellaPlan,
+  isManualDioceseDeal,
+  parishQuotaReached,
+  toDioceseDealPublicSummary,
+  type DioceseDealPublicSummary,
+} from "../../shared/dioceseDeal";
 
 export type { PlanLimits } from "../../shared/planLimits";
 
 export { isBillingActive, getEffectiveBillingPlan, isInstitutionalPlan };
-
-/** Diocese umbrella covers parishes when TenantBilling is ACTIVE with unlimited/diocese. */
-export function isDioceseUmbrellaPlan(plan: string | null | undefined): boolean {
-  const key = String(plan || "").trim().toUpperCase();
-  return key === "UNLIMITED" || key === "DIOCESE";
-}
+export { isDioceseUmbrellaPlan, isDioceseDealCovering };
 
 // ─── Effective billing plan ────────────────────────────────────────────────
 
@@ -43,7 +49,25 @@ interface TenantBillingStub {
   maxCatechumens: number | null;
   maxCatechists: number | null;
   maxParishes: number | null;
+  manualDeal?: boolean | null;
+  processor?: string | null;
+  startsAt?: Date | null;
+  endsAt?: Date | null;
 }
+
+const DIOCESE_BILLING_SELECT = {
+  plan: true,
+  status: true,
+  trialEndsAt: true,
+  maxClasses: true,
+  maxCatechumens: true,
+  maxCatechists: true,
+  maxParishes: true,
+  manualDeal: true,
+  processor: true,
+  startsAt: true,
+  endsAt: true,
+} as const;
 
 // Institutional plans that can act as an "umbrella" license.
 // Includes lowercase slugs after the TenantBilling.plan string migration
@@ -144,14 +168,10 @@ async function resolveEffectiveBillingUncached(
   if (parish?.dioceseId) {
     const dioceseBilling = await context.entities.TenantBilling.findUnique({
       where: { dioceseId: parish.dioceseId },
-      select: {
-        plan: true, status: true, trialEndsAt: true,
-        maxClasses: true, maxCatechumens: true,
-        maxCatechists: true, maxParishes: true,
-      },
+      select: DIOCESE_BILLING_SELECT,
     });
 
-    if (dioceseBilling && isBillingActive(dioceseBilling) && isDioceseUmbrellaPlan(dioceseBilling.plan)) {
+    if (dioceseBilling && isDioceseDealCovering(dioceseBilling)) {
       return {
         plan: dioceseBilling.plan,
         status: dioceseBilling.status,
@@ -160,6 +180,10 @@ async function resolveEffectiveBillingUncached(
         maxCatechumens: dioceseBilling.maxCatechumens,
         maxCatechists: dioceseBilling.maxCatechists,
         maxParishes: dioceseBilling.maxParishes,
+        manualDeal: dioceseBilling.manualDeal,
+        processor: dioceseBilling.processor,
+        startsAt: dioceseBilling.startsAt,
+        endsAt: dioceseBilling.endsAt,
       };
     }
   }
@@ -210,7 +234,7 @@ export async function resolveAllEffectiveBilling(
     dioceseIds.length > 0
       ? context.entities.TenantBilling.findMany({
           where: { dioceseId: { in: dioceseIds } },
-          select: { dioceseId: true, plan: true, status: true, trialEndsAt: true, maxClasses: true, maxCatechumens: true, maxCatechists: true, maxParishes: true },
+          select: { dioceseId: true, ...DIOCESE_BILLING_SELECT },
         })
       : [],
     context.entities.TenantBilling.findMany({
@@ -240,8 +264,20 @@ export async function resolveAllEffectiveBilling(
     // 1. Diocese umbrella
     if (parish.dioceseId && dioceseBillingMap.has(parish.dioceseId)) {
       const db: any = dioceseBillingMap.get(parish.dioceseId);
-      if (isBillingActive(db) && isDioceseUmbrellaPlan(db.plan)) {
-        result.set(parish.id, { plan: db.plan as any, status: db.status, trialEndsAt: db.trialEndsAt, maxClasses: db.maxClasses, maxCatechumens: db.maxCatechumens, maxCatechists: db.maxCatechists, maxParishes: db.maxParishes });
+      if (isDioceseDealCovering(db)) {
+        result.set(parish.id, {
+          plan: db.plan as any,
+          status: db.status,
+          trialEndsAt: db.trialEndsAt,
+          maxClasses: db.maxClasses,
+          maxCatechumens: db.maxCatechumens,
+          maxCatechists: db.maxCatechists,
+          maxParishes: db.maxParishes,
+          manualDeal: db.manualDeal,
+          processor: db.processor,
+          startsAt: db.startsAt,
+          endsAt: db.endsAt,
+        });
         continue;
       }
     }
@@ -301,9 +337,9 @@ export async function resolveNewParishBilling(
   if (opts.dioceseId) {
     const dioceseBilling = await context.entities.TenantBilling.findUnique({
       where: { dioceseId: opts.dioceseId },
-      select: { plan: true, status: true, trialEndsAt: true },
+      select: DIOCESE_BILLING_SELECT,
     });
-    if (dioceseBilling && isBillingActive(dioceseBilling) && isDioceseUmbrellaPlan(dioceseBilling.plan)) {
+    if (dioceseBilling && isDioceseDealCovering(dioceseBilling)) {
       return { skip: true };
     }
   }
@@ -474,9 +510,105 @@ async function countOwnedNonInstitutionalParishes(
   });
 }
 
+export async function countDioceseBillableParishes(
+  context: any,
+  dioceseId: string,
+  opts?: { excludeParishId?: string | null },
+): Promise<number> {
+  return context.entities.Parish.count({
+    where: {
+      dioceseId,
+      active: true,
+      type: { in: [...DIOCESE_QUOTA_PARISH_TYPES] },
+      ...(opts?.excludeParishId ? { id: { not: opts.excludeParishId } } : {}),
+    },
+  });
+}
+
+export async function loadDioceseBilling(context: any, dioceseId: string) {
+  return context.entities.TenantBilling.findUnique({
+    where: { dioceseId },
+    select: { dioceseId: true, ...DIOCESE_BILLING_SELECT },
+  });
+}
+
+export async function loadDioceseDealSummaries(
+  context: any,
+  dioceses: Array<{ id: string; name: string }>,
+): Promise<Map<string, DioceseDealPublicSummary>> {
+  const result = new Map<string, DioceseDealPublicSummary>();
+  if (dioceses.length === 0) return result;
+  const ids = dioceses.map((d) => d.id);
+  const [billingRows, parishRows] = await Promise.all([
+    context.entities.TenantBilling.findMany({
+      where: { dioceseId: { in: ids } },
+      select: { dioceseId: true, ...DIOCESE_BILLING_SELECT },
+    }),
+    context.entities.Parish.findMany({
+      where: {
+        dioceseId: { in: ids },
+        active: true,
+        type: { in: [...DIOCESE_QUOTA_PARISH_TYPES] },
+      },
+      select: { dioceseId: true },
+    }),
+  ]);
+  const billingByDiocese = new Map(
+    billingRows.map((row: any) => [row.dioceseId, row]),
+  );
+  const usedByDiocese = new Map<string, number>();
+  for (const row of parishRows as any[]) {
+    if (!row.dioceseId) continue;
+    usedByDiocese.set(row.dioceseId, (usedByDiocese.get(row.dioceseId) ?? 0) + 1);
+  }
+  for (const diocese of dioceses) {
+    result.set(
+      diocese.id,
+      toDioceseDealPublicSummary({
+        dioceseId: diocese.id,
+        dioceseName: diocese.name,
+        billing: billingByDiocese.get(diocese.id) ?? null,
+        parishesUsed: usedByDiocese.get(diocese.id) ?? 0,
+      }),
+    );
+  }
+  return result;
+}
+
+/**
+ * Quota + lifecycle for attaching a parish workspace to a diocese.
+ * Negotiated deals never fall through to Stripe Checkout.
+ */
+export async function assertDioceseParishQuota(
+  context: any,
+  opts: { dioceseId: string; excludeParishId?: string | null },
+): Promise<void> {
+  const billing = await loadDioceseBilling(context, opts.dioceseId);
+  if (!billing) return;
+
+  const used = await countDioceseBillableParishes(context, opts.dioceseId, {
+    excludeParishId: opts.excludeParishId,
+  });
+
+  if (isDioceseDealCovering(billing)) {
+    if (parishQuotaReached(used, billing.maxParishes)) {
+      throw new HttpError(
+        403,
+        dioceseParishQuotaMessage(used, billing.maxParishes as number),
+      );
+    }
+    return;
+  }
+
+  if (isManualDioceseDeal(billing)) {
+    throw new HttpError(403, dioceseDealBlockedNewParishMessage(billing));
+  }
+}
+
 /**
  * Enforce parish-creation limits.
  *
+ * - Negotiated / umbrella diocese coverage → allow only within parish quota
  * - Institutional umbrella / diocese coverage → allow
  * - `startTrial: true` → create an unpaid parish workspace so Stripe Checkout
  *   for Plano Paróquia can attach (no local entitlements)
@@ -489,6 +621,10 @@ export async function assertCanCreateParish(
   opts?: { dioceseId?: string | null; startTrial?: boolean },
 ): Promise<void> {
   if (!context.user) throw new HttpError(401);
+
+  if (opts?.dioceseId) {
+    await assertDioceseParishQuota(context, { dioceseId: opts.dioceseId });
+  }
 
   const coverage = await resolveNewParishBilling(context, {
     dioceseId: opts?.dioceseId ?? null,

@@ -113,6 +113,8 @@
     "managed_section": "I manage",
     "diocese_license_active": "Diocese license active",
     "diocese_license_inactive": "No Diocese license",
+    "diocese_deal_paused": "The pastoral deal is suspended or inactive. Data stays; new parishes cannot be opened now.",
+    "diocese_parish_quota": "Parishes in the deal: {{used}}/{{max}}. To add another, talk to Catequese Viva.",
     "create_parish_in_diocese": "Create parish in this diocese",
     "create_under_license": "Create parish under your {{plan}} license",
     "participating_section": "Where I participate",

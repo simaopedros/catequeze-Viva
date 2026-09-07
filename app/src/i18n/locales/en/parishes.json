@@ -57,6 +57,8 @@
   "licensed_suffix": "(licensed)",
   "coverage_licensed": "Will be created under the {{name}} license (no additional charge).",
   "coverage_unlicensed": "Will be linked to {{name}}. The diocese has no active license yet — the parish will be blocked until the license is activated.",
+  "coverage_quota": "{{name}} already uses {{used}} of {{max}} parishes in the deal. Ask Catequese Viva to expand the agreement.",
+  "coverage_paused": "The pastoral deal for {{name}} is not active. Existing data stays; another parish cannot be opened now.",
   "coverage_owner": "Will be created under your {{plan}} license (no additional charge).",
   "coverage_independent": "Independent parish: no active subscription. Subscribe to an institutional plan to unlock it.",
   "members_count": "{{count}} members",
