@@ -1,3 +1,4 @@
+// @ts-nocheck — ficheiro só para Vitest; o tsc do SDK Wasp não precisa tipá-lo.
 import type { ReactElement } from "react";
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
@@ -19,7 +20,7 @@ export function leadCatechist() {
 }
 
 export function stubUseQuery(rows: Array<[unknown, unknown]>) {
-  vi.mocked(useQuery).mockImplementation((query: unknown) => {
+  vi.mocked(useQuery).mockImplementation(((query: unknown) => {
     const hit = rows.find(([q]) => q === query);
     return {
       data: hit ? hit[1] : undefined,
@@ -27,7 +28,7 @@ export function stubUseQuery(rows: Array<[unknown, unknown]>) {
       error: null,
       refetch: vi.fn(),
     };
-  });
+  }) as typeof useQuery);
 }
 
 export function renderPage(ui: ReactElement) {

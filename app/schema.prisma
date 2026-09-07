@@ -227,9 +227,9 @@ enum FormationTrackKind {
 
 enum FormationEnrollmentStatus {
   ENROLLED
+  IN_PROGRESS
   COMPLETED
   DROPPED
-  WAITLISTED
 }
 
 enum PastoralAnnouncementStatus {

@@ -1,10 +1,20 @@
-import hierarchyPt from "../../i18n/locales/pt-BR/hierarchy.json";
-import calendarPt from "../../i18n/locales/pt-BR/calendar.json";
-import commonPt from "../../i18n/locales/pt-BR/common.json";
-import reportsPt from "../../i18n/locales/pt-BR/reports.json";
-import yearsPt from "../../i18n/locales/pt-BR/catecheticalYears.json";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 type Bundle = Record<string, unknown>;
+
+const localesDir = join(dirname(fileURLToPath(import.meta.url)), "../../i18n/locales/pt-BR");
+
+function loadBundle(name: string): Bundle {
+  return JSON.parse(readFileSync(join(localesDir, `${name}.json`), "utf8")) as Bundle;
+}
+
+const hierarchyPt = loadBundle("hierarchy");
+const calendarPt = loadBundle("calendar");
+const commonPt = loadBundle("common");
+const reportsPt = loadBundle("reports");
+const yearsPt = loadBundle("catecheticalYears");
 
 function lookup(bundle: Bundle, key: string): unknown {
   return key.split(".").reduce<unknown>((acc, part) => {
