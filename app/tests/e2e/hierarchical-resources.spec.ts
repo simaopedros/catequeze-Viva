@@ -50,7 +50,10 @@ test.describe("recursos hierárquicos — paróquia (coordenador)", () => {
     await expect(empty.or(directory).first()).toBeVisible({ timeout: 15000 });
 
     if (await directory.isVisible().catch(() => false)) {
-      await expect(page.getByTestId("origin-badge").first()).toContainText(
+      const card = page
+        .getByTestId("official-resource")
+        .filter({ hasText: "Diretório diocesano 2026 (TESTE)" });
+      await expect(card.getByTestId("origin-badge").first()).toContainText(
         /Diocese/i,
       );
       const adopt = page.getByRole("button", { name: /^Adotar$/ });
