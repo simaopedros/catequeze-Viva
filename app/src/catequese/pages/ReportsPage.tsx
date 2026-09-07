@@ -27,7 +27,6 @@ import {
 } from "wasp/client/operations";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
-import { useUserContext } from "../../client/hooks/useUserContext";
 
 const ReportsChartsPanel = lazy(() =>
   import("./ReportsChartsPanel").then((m) => ({
@@ -41,9 +40,7 @@ export default function ReportsPage() {
   const { t: tc } = useTranslation("common");
   const { activeParishId } = useActiveParish();
   const { workspaceType } = useActiveWorkspace();
-  const { userRole } = useUserContext();
-  const isDioceseView =
-    workspaceType === "DIOCESE" || userRole === "DIOCESE_ADMIN";
+  const isDioceseView = workspaceType === "DIOCESE";
   const {
     data,
     isLoading: loading,

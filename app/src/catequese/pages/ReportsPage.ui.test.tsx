@@ -58,6 +58,16 @@ describe("ReportsPage — adesão", () => {
     expect(screen.queryByTestId("adoption-report")).not.toBeInTheDocument();
   });
 
+  it("esconde a aba Adesão se o admin diocesano estiver na paróquia", () => {
+    userCtx.current = dioceseAdmin();
+    workspace.type = "PARISH";
+    stubUseQuery([[getReportsOverview, REPORTS_OVERVIEW]]);
+    renderPage(<ReportsPage />);
+    expect(
+      screen.queryByRole("button", { name: /Adesão/ }),
+    ).not.toBeInTheDocument();
+  });
+
   it("mostra adesão entre paróquias para o admin da diocese", async () => {
     const user = userEvent.setup();
     userCtx.current = dioceseAdmin();

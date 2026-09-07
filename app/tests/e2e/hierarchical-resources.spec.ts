@@ -10,6 +10,7 @@ import {
   USERS,
   enterFirstWorkspace,
   selectWorkspace,
+  ensureWorkspace,
   dismissCookieBanner,
   waitForAppShell,
   assertNoHorizontalOverflow,
@@ -148,6 +149,7 @@ test.describe("recursos hierárquicos — cúria (admin diocesano)", () => {
     } else {
       await enterFirstWorkspace(page);
     }
+    await ensureWorkspace(page, CURIA_WORKSPACE_NAME);
   });
 
   test("publica recurso na pasta oficial da cúria", async ({ page }) => {
