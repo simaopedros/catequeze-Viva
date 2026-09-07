@@ -1,5 +1,3 @@
-import { isDioceseDealCovering } from "./dioceseDeal";
-
 /**
  * Entitlement helpers (subscription status, product trial, workspace plan)
  * plus re-exports of the product catalog from planCatalog.ts.
@@ -87,7 +85,7 @@ import {
   resolvePlanIdOrFree,
 } from './planCatalog';
 import type { PlanId } from './planCatalog';
-import { isDioceseDealCovering } from "./dioceseDeal";
+import { isDioceseDealCovering } from './dioceseDeal';
 
 const ACTIVE_LIKE_STATUSES = new Set(['active', 'cancel_at_period_end', 'past_due']);
 

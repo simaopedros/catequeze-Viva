@@ -802,7 +802,6 @@ export default function BillingPage() {
             maxClasses={dioceseDeal.maxClasses}
             maxCatechists={dioceseDeal.maxCatechists}
             maxCatechumens={dioceseDeal.maxCatechumens}
-            maxCatechumens={dioceseDeal.maxCatechumens}
             startsAt={dioceseDeal.startsAt}
             endsAt={dioceseDeal.endsAt}
             readOnly
@@ -857,7 +856,6 @@ export default function BillingPage() {
             maxParishes={dioceseDeal.maxParishes}
             maxClasses={dioceseDeal.maxClasses}
             maxCatechists={dioceseDeal.maxCatechists}
-            maxCatechumens={dioceseDeal.maxCatechumens}
             maxCatechumens={dioceseDeal.maxCatechumens}
             startsAt={dioceseDeal.startsAt}
             endsAt={dioceseDeal.endsAt}

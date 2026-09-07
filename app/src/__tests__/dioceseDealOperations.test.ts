@@ -194,7 +194,8 @@ describe("getMyDioceseDeal", () => {
       { dioceseId: "d1" },
       context(USER, entities),
     );
-    expect(result.dioceseName).toBe("Diocese de Teste");
+    expect(result).not.toBeNull();
+    expect(result?.dioceseName).toBe("Diocese de Teste");
     expect(result).not.toHaveProperty("internalNotes");
     expect(result).not.toHaveProperty("agreedPriceCents");
   });
