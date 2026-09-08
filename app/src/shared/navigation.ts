@@ -115,6 +115,9 @@ export const PERSONAL_HIDDEN_ICON_KEYS = new Set([
   "reports",
   "parishes",
   "communities",
+  "official_library",
+  "announcements",
+  "formation",
 ]);
 
 function item(
@@ -157,6 +160,13 @@ export const NAV_GROUPS: NavGroupConfig[] = [
         labelKey: "messages",
         iconKey: "messages",
         roles: [...CATECHIST_ROLES, "GUARDIAN", "CATECHUMEN"],
+        groupId: "operation",
+      }),
+      item({
+        to: "/app/announcements",
+        labelKey: "announcements",
+        iconKey: "announcements",
+        roles: [...CATECHIST_ROLES, "PASTORAL_VIEWER"],
         groupId: "operation",
       }),
     ],
@@ -205,6 +215,13 @@ export const NAV_GROUPS: NavGroupConfig[] = [
         to: "/app/content-library",
         labelKey: "content_library",
         iconKey: "content_library",
+        roles: [...CATECHIST_ROLES, "CONTENT_REVIEWER"],
+        groupId: "content",
+      }),
+      item({
+        to: "/app/official-library",
+        labelKey: "official_library",
+        iconKey: "official_library",
         roles: [...CATECHIST_ROLES, "CONTENT_REVIEWER"],
         groupId: "content",
       }),
@@ -309,6 +326,13 @@ export const NAV_GROUPS: NavGroupConfig[] = [
         labelKey: "catechetical_years",
         iconKey: "catechetical_years",
         roles: [...STAFF_ROLES],
+        groupId: "management",
+      }),
+      item({
+        to: "/app/formation",
+        labelKey: "formation",
+        iconKey: "formation",
+        roles: CATECHIST_ROLES,
         groupId: "management",
       }),
     ],

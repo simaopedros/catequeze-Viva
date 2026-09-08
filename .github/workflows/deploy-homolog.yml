@@ -58,8 +58,23 @@ jobs:
             --build-arg REACT_APP_STAFF_PORTAL_HOST=homolog.catechis.app \
             --build-arg REACT_APP_META_PIXEL_ID=2069332313989772 \
             -t "${IMAGE}:${TAG}" -t "${IMAGE}:homolog-latest" .
-          docker push "${IMAGE}:${TAG}"
-          docker push "${IMAGE}:homolog-latest"
+          # GHCR sometimes returns "unknown blob" on the first push (layer race).
+          push_with_retry() {
+            local ref="$1"
+            local attempt
+            for attempt in 1 2 3 4 5; do
+              if docker push "$ref"; then
+                return 0
+              fi
+              echo "⚠️ docker push ${ref} falhou (tentativa ${attempt}/5)"
+              sleep $((attempt * 8))
+            done
+            echo "ERROR: docker push ${ref} falhou depois de 5 tentativas"
+            return 1
+          }
+          push_with_retry "${IMAGE}:${TAG}"
+          sleep 5
+          push_with_retry "${IMAGE}:homolog-latest"
 
       - name: Copy deploy configs to homolog VPS
         uses: appleboy/scp-action@v0.1.7

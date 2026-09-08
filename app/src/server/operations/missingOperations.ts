@@ -114,7 +114,10 @@ export const listCatecheticalYears = async (_args: void, context: any) => {
   requireAuth(context.user);
 
   if (context.user.isAdmin) {
-    return context.entities.CatecheticalYear.findMany({ orderBy: { startDate: 'desc' } });
+    return context.entities.CatecheticalYear.findMany({
+      orderBy: { startDate: 'desc' },
+      include: { sourceItinerary: { select: { id: true, name: true, ownerType: true } } },
+    });
   }
 
   const parishIds = await getEffectiveParishIds(context);
@@ -123,6 +126,7 @@ export const listCatecheticalYears = async (_args: void, context: any) => {
   return context.entities.CatecheticalYear.findMany({
     where: { parishId: { in: parishIds } },
     orderBy: { startDate: 'desc' },
+    include: { sourceItinerary: { select: { id: true, name: true, ownerType: true } } },
   });
 };
 

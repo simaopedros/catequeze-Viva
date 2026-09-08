@@ -26,6 +26,8 @@ import {
   GraduationCap,
   Mail,
   User,
+  Landmark,
+  Megaphone,
 } from "lucide-react";
 import { getVisibleNavigation } from "../../shared/navigation";
 import { useUserContext } from "../../client/hooks/useUserContext";
@@ -61,6 +63,9 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   consents: FileCheck,
   catechetical_years: CalendarRange,
   admin: Shield,
+  official_library: Landmark,
+  announcements: Megaphone,
+  formation: GraduationCap,
 };
 
 interface BottomSheetNavProps {

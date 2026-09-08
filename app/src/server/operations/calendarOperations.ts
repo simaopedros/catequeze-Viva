@@ -1,31 +1,81 @@
-import { HttpError } from 'wasp/server';
-import { getDioceseParishIds } from '../auth/helpers';
-import { resolveUserLocale } from '../i18n/serverLocale';
+import { HttpError } from "wasp/server";
+import { getDioceseParishIds } from "../auth/helpers";
+import { resolveUserLocale } from "../i18n/serverLocale";
+import {
+  canEditResource,
+  defaultPolicyFor,
+  type InheritancePolicy,
+  type ResourceOwnerType,
+} from "../../shared/resourceInheritance";
+import {
+  resolveActorForResource,
+  resolveResourceActor,
+  withOrigin,
+} from "./resourceScope";
 
-export const listLiturgicalEvents = async (_args: void, context: any) => {
+function layeredEventWhere(args: {
+  parishId?: string | null;
+  dioceseId?: string | null;
+  communityId?: string | null;
+  ownerType?: ResourceOwnerType;
+}) {
+  const or: any[] = [];
+  if (args.parishId) or.push({ parishId: args.parishId });
+  if (args.dioceseId) {
+    or.push({
+      dioceseId: args.dioceseId,
+      ownerType: "DIOCESE",
+      inheritancePolicy: { not: "LOCAL" },
+    });
+  }
+  if (args.communityId) or.push({ communityId: args.communityId });
+  return or.length ? { OR: or } : undefined;
+}
+
+export const listLiturgicalEvents = async (
+  args: { workspaceId?: string } | void,
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
 
+  const workspaceId =
+    args && typeof args === "object" ? args.workspaceId : undefined;
+
+  if (workspaceId) {
+    const actor = await resolveResourceActor(context, workspaceId);
+    const rows = await context.entities.LiturgicalEvent.findMany({
+      where: layeredEventWhere({
+        parishId: actor.parishId,
+        dioceseId: actor.dioceseId,
+        communityId: actor.communityId,
+        ownerType: actor.ownerType,
+      }),
+      orderBy: { date: "asc" },
+    });
+    return rows.map((row: any) => withOrigin(row, actor));
+  }
+
   if (context.user.isAdmin) {
-    return context.entities.LiturgicalEvent.findMany({ orderBy: { date: 'asc' } });
+    return context.entities.LiturgicalEvent.findMany({
+      orderBy: { date: "asc" },
+    });
   }
 
   const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { parishId: true, role: true },
+    where: { userId: context.user.id, status: "ACTIVE" },
+    select: { parishId: true, role: true, communityId: true },
   });
   const parishIds = memberships.map((m: any) => m.parishId);
 
-  // Include personal workspace
   const personalWorkspace = await context.entities.Parish.findFirst({
-    where: { ownerId: context.user.id, type: 'PERSONAL' },
-    select: { id: true },
+    where: { ownerId: context.user.id, type: "PERSONAL" },
+    select: { id: true, dioceseId: true },
   });
   if (personalWorkspace && !parishIds.includes(personalWorkspace.id)) {
     parishIds.push(personalWorkspace.id);
   }
 
-  // DIOCESE_ADMIN: include all parishes in the diocese
-  if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {
+  if (memberships.some((m: any) => m.role === "DIOCESE_ADMIN")) {
     const dioceseParishIds = await getDioceseParishIds(context);
     for (const id of dioceseParishIds) {
       if (!parishIds.includes(id)) parishIds.push(id);
@@ -34,9 +84,36 @@ export const listLiturgicalEvents = async (_args: void, context: any) => {
 
   if (parishIds.length === 0) return [];
 
+  const parishes = await context.entities.Parish.findMany({
+    where: { id: { in: parishIds } },
+    select: { id: true, dioceseId: true },
+  });
+  const dioceseIds = [
+    ...new Set(
+      parishes
+        .map((p: any) => p.dioceseId)
+        .filter((id: any) => typeof id === "string" && id.length > 0),
+    ),
+  ];
+  const communityIds = memberships
+    .map((m: any) => m.communityId)
+    .filter(Boolean);
+
+  const or: any[] = [{ parishId: { in: parishIds } }];
+  if (dioceseIds.length > 0) {
+    or.push({
+      dioceseId: { in: dioceseIds },
+      ownerType: "DIOCESE",
+      inheritancePolicy: { not: "LOCAL" },
+    });
+  }
+  if (communityIds.length > 0) {
+    or.push({ communityId: { in: communityIds } });
+  }
+
   return context.entities.LiturgicalEvent.findMany({
-    where: { parishId: { in: parishIds } },
-    orderBy: { date: 'asc' },
+    where: { OR: or },
+    orderBy: { date: "asc" },
   });
 };
 
@@ -51,49 +128,28 @@ export const createLiturgicalEvent = async (
     recurring?: boolean;
     recurrenceRule?: string;
     parishId?: string;
+    workspaceId?: string;
   },
-  context: any
+  context: any,
 ) => {
   if (!context.user) throw new HttpError(401);
 
-  const { assertStaffOperation } = await import('../auth/familySurface');
+  const workspaceId = args.workspaceId || args.parishId;
+
+  const { assertStaffOperation } = await import("../auth/familySurface");
   await assertStaffOperation(context, {
-    parishId: args.parishId,
-    message: 'Apenas a equipe pastoral pode criar eventos no calendário.',
+    parishId: workspaceId,
+    message: "Apenas a equipe pastoral pode criar eventos no calendário.",
   });
 
-  const membership = await context.entities.Membership.findFirst({
-    where: {
-      userId: context.user.id,
-      status: 'ACTIVE',
-      ...(args.parishId ? { parishId: args.parishId } : {}),
-      role: {
-        in: [
-          'SUPER_ADMIN',
-          'DIOCESE_ADMIN',
-          'PARISH_COORDINATOR',
-          'COMMUNITY_COORDINATOR',
-          'PERSONAL_OWNER',
-        ],
-      },
-    },
-    select: { parishId: true, role: true },
-  });
-
-  let parishId = membership?.parishId;
-
-  // Fallback to personal workspace
-  if (!parishId && !context.user.isAdmin) {
-    const personal = await context.entities.Parish.findFirst({
-      where: { ownerId: context.user.id, type: 'PERSONAL' },
-      select: { id: true },
-    });
-    if (personal) parishId = personal.id;
-  }
-
-  if (!parishId && !context.user.isAdmin) {
-    throw new HttpError(400, 'Voce nao esta vinculado a nenhuma paroquia.');
-  }
+  const actor = await resolveResourceActor(context, workspaceId);
+  const policy = defaultPolicyFor("CALENDAR", actor.ownerType);
+  const defaultType =
+    actor.ownerType === "DIOCESE"
+      ? "diocese"
+      : actor.ownerType === "PARISH"
+        ? "parish"
+        : "liturgical";
 
   return context.entities.LiturgicalEvent.create({
     data: {
@@ -101,56 +157,94 @@ export const createLiturgicalEvent = async (
       date: new Date(args.date),
       description: args.description,
       endDate: args.endDate ? new Date(args.endDate) : null,
-      color: args.color || '#6366f1',
-      type: args.type || 'liturgical',
+      color: args.color || "#6366f1",
+      type: args.type || defaultType,
       recurring: args.recurring || false,
       recurrenceRule: args.recurrenceRule,
       locale: resolveUserLocale(context.user),
-      parishId: parishId || null,
+      parishId: actor.ownerType === "DIOCESE" ? null : actor.parishId,
+      dioceseId: actor.dioceseId,
+      communityId:
+        actor.ownerType === "COMMUNITY" ? actor.communityId : null,
+      ownerType: actor.ownerType,
+      inheritancePolicy: policy,
     },
   });
 };
 
-export const deleteLiturgicalEvent = async (args: { id: string }, context: any) => {
+export const deleteLiturgicalEvent = async (
+  args: { id: string },
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
 
   const event = await context.entities.LiturgicalEvent.findUnique({
     where: { id: args.id },
-    select: { parishId: true },
   });
-  if (!event) throw new HttpError(404, 'Evento nao encontrado.');
+  if (!event) throw new HttpError(404, "Evento nao encontrado.");
 
-  const { assertStaffOperation } = await import('../auth/familySurface');
+  const { assertStaffOperation } = await import("../auth/familySurface");
   await assertStaffOperation(context, {
     parishId: event.parishId,
-    message: 'Apenas a equipe pastoral pode remover eventos do calendário.',
+    message: "Apenas a equipe pastoral pode remover eventos do calendário.",
   });
 
+  const actor = await resolveActorForResource(context, event);
+  const policy = (event.inheritancePolicy ||
+    "REQUIRED_EXTENDABLE") as InheritancePolicy;
+  const ownerType = (event.ownerType || "PARISH") as ResourceOwnerType;
+  if (
+    !canEditResource({
+      role: actor.role,
+      actorOwnerType: actor.ownerType,
+      resourceOwnerType: ownerType,
+      policy,
+      isPlatformAdmin: actor.isPlatformAdmin,
+    })
+  ) {
+    throw new HttpError(
+      403,
+      "Eventos herdados não podem ser removidos neste nível.",
+    );
+  }
+
   if (!context.user.isAdmin) {
-    if (!event.parishId) throw new HttpError(403, 'Apenas admin pode remover eventos globais.');
-    const membership = await context.entities.Membership.findFirst({
-      where: {
-        userId: context.user.id,
-        parishId: event.parishId,
-        status: 'ACTIVE',
-        role: {
-          in: [
-            'SUPER_ADMIN',
-            'DIOCESE_ADMIN',
-            'PARISH_COORDINATOR',
-            'COMMUNITY_COORDINATOR',
-            'PERSONAL_OWNER',
-          ],
+    if (!event.parishId && ownerType !== "DIOCESE") {
+      throw new HttpError(403, "Apenas admin pode remover eventos globais.");
+    }
+    if (ownerType !== "DIOCESE" && event.parishId) {
+      const membership = await context.entities.Membership.findFirst({
+        where: {
+          userId: context.user.id,
+          parishId: event.parishId,
+          status: "ACTIVE",
+          role: {
+            in: [
+              "SUPER_ADMIN",
+              "DIOCESE_ADMIN",
+              "PARISH_COORDINATOR",
+              "COMMUNITY_COORDINATOR",
+              "PERSONAL_OWNER",
+            ],
+          },
         },
-      },
-    });
-    // Also check personal workspace ownership
-    const isPersonalOwner = !membership && await context.entities.Parish.findFirst({
-      where: { id: event.parishId, ownerId: context.user.id, type: 'PERSONAL' },
-      select: { id: true },
-    });
-    if (!membership && !isPersonalOwner) {
-      throw new HttpError(403, 'Voce nao tem permissao para remover este evento.');
+      });
+      const isPersonalOwner =
+        !membership &&
+        (await context.entities.Parish.findFirst({
+          where: {
+            id: event.parishId,
+            ownerId: context.user.id,
+            type: "PERSONAL",
+          },
+          select: { id: true },
+        }));
+      if (!membership && !isPersonalOwner) {
+        throw new HttpError(
+          403,
+          "Voce nao tem permissao para remover este evento.",
+        );
+      }
     }
   }
 

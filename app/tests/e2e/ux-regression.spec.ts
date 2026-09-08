@@ -32,6 +32,9 @@ const PRIORITY_APP_PATHS = [
   "/app/team",
   "/app/reports",
   "/app/birthdays",
+  "/app/official-library",
+  "/app/announcements",
+  "/app/formation",
 ] as const;
 
 const LANDING_PATHS = ["/", "/sistema", "/ia", "/presenca"] as const;

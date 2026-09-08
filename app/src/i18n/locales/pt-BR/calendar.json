@@ -11,12 +11,14 @@
     "liturgical": "Litúrgico",
     "parish": "Paroquial",
     "class": "Turmas",
-    "sacramental": "Sacramental"
+    "sacramental": "Sacramental",
+    "diocese": "Diocese"
   },
   "event_types": {
     "liturgical": "Litúrgico",
     "parish": "Paroquial",
-    "class": "Turma"
+    "class": "Turma",
+    "diocese": "Diocese"
   },
   "meeting_default": "Encontro",
   "day_title": "Dia {{day}} de {{month}}",
@@ -58,5 +60,7 @@
   "create_primary": "Novo evento",
   "confirm_delete_event": "Excluir este evento?",
   "confirm_delete_event_desc": "Esta ação não pode ser desfeita.",
-  "delete_error": "Erro ao excluir o evento"
+  "delete_error": "Erro ao excluir o evento",
+  "conflicts_title": "Possível conflito no calendário",
+  "conflicts_desc": "{{count}} encontro(s) coincidem com um evento obrigatório da diocese ou da paróquia."
 }
