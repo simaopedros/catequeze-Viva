@@ -5,6 +5,7 @@ import { useQuery, getSocialFeed, getSocialFollowState } from "wasp/client/opera
 import { Button } from "../../../client/components/ui/button";
 import { EmptyState } from "../../../client/components/EmptyState";
 import { SocialPostCard, type SocialPostItem } from "./SocialPostCard";
+import { FeedContinueFade } from "../../../client/components/ui/scroll-fade";
 
 /**
  * Infinite feed shared by the authenticated page and the public pages.
@@ -110,6 +111,8 @@ export function SocialFeed({
           isFollowing={followedAuthors.includes(post.author.id)}
         />
       ))}
+
+      <FeedContinueFade visible={Boolean(nextCursor)} />
 
       {nextCursor && (
         <div className="flex justify-center pt-2">

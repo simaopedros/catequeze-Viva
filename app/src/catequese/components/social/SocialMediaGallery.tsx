@@ -24,7 +24,7 @@ function MediaFrame({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl border border-border bg-muted",
+        "relative min-w-0 overflow-hidden rounded-xl border border-border bg-muted",
         className,
       )}
     >

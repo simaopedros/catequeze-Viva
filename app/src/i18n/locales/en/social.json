@@ -1,7 +1,7 @@
 {
   "title": "Community",
   "eyebrow": "Pastoral network",
-  "subtitle": "Share the life of your catechesis with images and videos.",
+  "subtitle": "Share verses, lesson plans, prayers and the life of your catechesis.",
   "publicSubtitle": "Testimonies, catechesis and parish life shared by catechists across Brazil.",
   "feed": {
     "empty": "No posts yet",
@@ -19,6 +19,7 @@
   "composer": {
     "title": "New post",
     "placeholder": "Share a moment, a reflection or a testimony...",
+    "sharePlaceholder": "Add a word about this content...",
     "addImage": "Image",
     "addVideo": "Video",
     "topics": "Topics",
@@ -40,7 +41,7 @@
   },
   "upsell": {
     "title": "Subscribe to publish",
-    "description": "Reading and sharing the Community is free. Publishing images and videos requires an active subscription.",
+    "description": "Reading, following and copying links is free. Publishing verses, documents and media in the Community requires an active subscription.",
     "cta": "See plans",
     "quotaTitle": "Daily limit reached",
     "quotaDescription": "You have published everything your plan allows today. Try again tomorrow.",
@@ -86,7 +87,31 @@
     "notFound": "Post not found",
     "notFoundDescription": "It may have been removed by the author or by moderation.",
     "backToFeed": "Back to the Community",
-    "pendingReview": "Under moderation review"
+    "pendingReview": "Under moderation review",
+    "showMore": "Show more",
+    "showLess": "Show less"
+  },
+  "nativeShare": {
+    "action": "Share to Community",
+    "dialogTitle": "Share to Community",
+    "previewFailed": "Could not prepare this share.",
+    "kind": {
+      "verse": "Verse",
+      "catechism": "Catechism",
+      "document": "Library",
+      "ai": "Editorial assistance",
+      "directory": "Directory"
+    }
+  },
+  "profile": {
+    "notFound": "Profile not found",
+    "notFoundDescription": "This @ does not exist or the profile is unavailable.",
+    "copyLink": "Copy profile link",
+    "linkCopied": "Profile link copied",
+    "edit": "Edit profile",
+    "emptyPosts": "No posts yet",
+    "emptyPostsDescription": "When this person publishes, their shares appear here.",
+    "stats": "{{posts}} posts · {{followers}} followers · {{following}} following"
   },
   "report": {
     "title": "Report content",
@@ -136,6 +161,10 @@
     "followSuccess": "You now follow {{name}}",
     "unfollowSuccess": "You unfollowed {{name}}",
     "emptyFollowing": "You are not following anyone yet",
-    "emptyFollowingDescription": "Follow catechists to build your feed."
+    "emptyFollowingDescription": "Follow catechists to build your feed.",
+    "block": "Block",
+    "unblock": "Unblock",
+    "blockSuccess": "You blocked {{name}}",
+    "unblockSuccess": "You unblocked {{name}}"
   }
 }

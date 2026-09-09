@@ -7,7 +7,7 @@
 import { HttpError } from 'wasp/server';
 import { notifySocialActivity } from '../social/notifications';
 import { assertSocialEnabled, isSocialEnabled } from '../social/featureGate';
-import { buildAuthorDisplayName } from './socialOperations';
+import { buildAuthorDisplayName } from './socialAuthor';
 
 export const toggleSocialFollow = async (args: { authorId: string }, context: any) => {
   assertSocialEnabled();
@@ -26,10 +26,23 @@ export const toggleSocialFollow = async (args: { authorId: string }, context: an
 
   const author = await context.entities.User.findUnique({
     where: { id: authorId },
-    select: { id: true, firstName: true, lastName: true },
+    select: { id: true, firstName: true, lastName: true, handle: true },
   });
   if (!author) {
     throw new HttpError(404, 'Autor não encontrado.');
+  }
+
+  const blocked = await context.entities.SocialBlock.findFirst({
+    where: {
+      OR: [
+        { blockerId: context.user.id, blockedId: authorId },
+        { blockerId: authorId, blockedId: context.user.id },
+      ],
+    },
+    select: { id: true },
+  });
+  if (blocked) {
+    throw new HttpError(403, 'Não é possível seguir este perfil.');
   }
 
   const existing = await context.entities.SocialFollow.findUnique({

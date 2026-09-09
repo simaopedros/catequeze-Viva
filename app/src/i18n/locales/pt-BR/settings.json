@@ -55,5 +55,18 @@
   "email_pref_lifecycle": "Dicas de ativação, teste e retorno à conta",
   "email_pref_product": "Novidades do produto e newsletter",
   "email_pref_pastoral": "Comunicados das turmas e da paróquia",
-  "email_pref_saved": "Preferências de email salvas."
+  "email_pref_saved": "Preferências de email salvas.",
+  "social_profile": "Perfil na Comunidade",
+  "social_profile_desc": "Seu @ público, bio e foto aparecem nas partilhas e no feed.",
+  "social_handle": "Nome de usuário (@)",
+  "social_bio": "Bio",
+  "social_website": "Link pessoal",
+  "social_change_avatar": "Trocar foto",
+  "social_avatar_updated": "Foto atualizada",
+  "social_avatar_error": "Não foi possível atualizar a foto.",
+  "social_save": "Salvar perfil público",
+  "social_copy_link": "Copiar link do perfil",
+  "social_handle_required": "Defina um @ para copiar o link.",
+  "social_blocked": "Contas bloqueadas",
+  "social_unblock": "Desbloquear"
 }

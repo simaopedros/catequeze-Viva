@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { ShareToCommunityButton } from "../social/ShareToCommunityButton";
 import { Link } from "react-router";
 import { Button } from "../../../client/components/ui/button";
 import { Card } from "../../../client/components/ui/card";
@@ -137,6 +138,10 @@ export function ActivityResultPanel({
               {t("activity.view_content")}
             </Link>
           </Button>
+          <ShareToCommunityButton
+            draft={{ kind: "AI_ARTIFACT", sourceId: contentId }}
+            label={t("share_community")}
+          />
         </div>
       </div>
     </div>

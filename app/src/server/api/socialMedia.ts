@@ -144,7 +144,13 @@ export async function serveSocialMedia(req: Request, res: Response, context: any
 
     const isPublic = media.post?.status === 'PUBLISHED';
     const isOwner = context.user?.id === media.uploaderId;
-    if (!isPublic && !isOwner && !context.user?.isAdmin) {
+    const usedAsAvatar = !media.post
+      ? await context.entities.User.findFirst({
+          where: { avatarUrl: { endsWith: `/api/social/media/${media.id}` } },
+          select: { id: true },
+        })
+      : null;
+    if (!isPublic && !isOwner && !usedAsAvatar && !context.user?.isAdmin) {
       return res.status(404).json({ error: 'Mídia não encontrada.' });
     }
 

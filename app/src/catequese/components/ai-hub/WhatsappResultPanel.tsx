@@ -18,6 +18,7 @@ import {
   Smartphone,
 } from "lucide-react";
 import { toast } from "../../../client/hooks/use-toast";
+import { ShareToCommunityButton } from "../social/ShareToCommunityButton";
 
 interface WhatsappResultPanelProps {
   message: string;
@@ -117,6 +118,10 @@ export function WhatsappResultPanel({
               {t("whatsapp.view_content")}
             </Link>
           </Button>
+          <ShareToCommunityButton
+            draft={{ kind: "AI_ARTIFACT", sourceId: contentId }}
+            label={t("share_community")}
+          />
         </div>
       </div>
     </div>

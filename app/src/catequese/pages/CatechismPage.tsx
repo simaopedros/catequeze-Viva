@@ -20,6 +20,8 @@ import {
   getCatechismEntry,
 } from "wasp/client/operations";
 import { useLocale } from "../../i18n/useLocale";
+import { ShareToCommunityButton } from "../components/social/ShareToCommunityButton";
+import { ScrollFade } from "../../client/components/ui/scroll-fade";
 
 const CATEGORY_KEYS = [
   "creed",
@@ -201,6 +203,7 @@ export default function CatechismPage() {
           <p className="text-sm text-muted-foreground">
             {t("resultsCount", { count: searchResults.length })}
           </p>
+          <ScrollFade maxHeight="min(70vh, 40rem)" className="space-y-2 pr-1">
           {displayEntries.map((entry: any) => (
             <div
               key={entry.id}
@@ -210,6 +213,7 @@ export default function CatechismPage() {
               }}
               className="rounded-sm border border-border/70 bg-white"
             >
+              <div className="flex items-start gap-1">
               <button
                 onClick={() => toggle(entry.id)}
                 className="w-full text-left p-4 flex items-start justify-between gap-3"
@@ -235,8 +239,17 @@ export default function CatechismPage() {
                   <ChevronDown className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
                 )}
               </button>
+              <ShareToCommunityButton
+                draft={{ kind: "CATECHISM", sourceId: entry.id }}
+                size="icon"
+                variant="ghost"
+                className="mt-3 mr-2 h-8 w-8 shrink-0"
+                label={t("share_entry")}
+              />
+              </div>
             </div>
           ))}
+          </ScrollFade>
         </div>
       ) : entries.length > 0 ? (
         <div className="space-y-2">
@@ -246,11 +259,13 @@ export default function CatechismPage() {
               category: t(`categories.${category}`),
             })}
           </p>
+          <ScrollFade maxHeight="min(70vh, 40rem)" className="space-y-2 pr-1">
           {entries.map((entry: any) => (
             <div
               key={entry.id}
               className="rounded-sm border border-border/70 bg-white"
             >
+              <div className="flex items-start gap-1">
               <button
                 onClick={() => toggle(entry.id)}
                 className="w-full text-left p-4 flex items-start justify-between gap-3"
@@ -276,8 +291,17 @@ export default function CatechismPage() {
                   <ChevronDown className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
                 )}
               </button>
+              <ShareToCommunityButton
+                draft={{ kind: "CATECHISM", sourceId: entry.id }}
+                size="icon"
+                variant="ghost"
+                className="mt-3 mr-2 h-8 w-8 shrink-0"
+                label={t("share_entry")}
+              />
+              </div>
             </div>
           ))}
+          </ScrollFade>
         </div>
       ) : category ? (
         <div className="text-center text-muted-foreground py-12">

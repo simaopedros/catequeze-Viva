@@ -1,7 +1,7 @@
 {
   "title": "Comunidad",
   "eyebrow": "Red pastoral",
-  "subtitle": "Comparte la vida de tu catequesis con imágenes y videos.",
+  "subtitle": "Comparte versículos, guiones, oraciones y la vida de tu catequesis.",
   "publicSubtitle": "Testimonios, catequesis y vida parroquial compartidos por catequistas de todo Brasil.",
   "feed": {
     "empty": "Todavía no hay publicaciones",
@@ -19,6 +19,7 @@
   "composer": {
     "title": "Nueva publicación",
     "placeholder": "Comparte un momento, una reflexión o un testimonio...",
+    "sharePlaceholder": "Añade una palabra sobre este contenido...",
     "addImage": "Imagen",
     "addVideo": "Video",
     "topics": "Temas",
@@ -40,7 +41,7 @@
   },
   "upsell": {
     "title": "Suscríbete para publicar",
-    "description": "Leer y compartir la Comunidad es libre. Para publicar imágenes y videos se necesita una suscripción activa.",
+    "description": "Leer, seguir y copiar enlaces es libre. Publicar versículos, documentos y medios en la Comunidad exige una suscripción activa.",
     "cta": "Ver planes",
     "quotaTitle": "Límite diario alcanzado",
     "quotaDescription": "Ya publicaste todo lo que tu plan permite hoy. Inténtalo mañana.",
@@ -86,7 +87,31 @@
     "notFound": "Publicación no encontrada",
     "notFoundDescription": "Puede haber sido eliminada por el autor o por la moderación.",
     "backToFeed": "Volver a la Comunidad",
-    "pendingReview": "En revisión por la moderación"
+    "pendingReview": "En revisión por la moderación",
+    "showMore": "Ver más",
+    "showLess": "Ver menos"
+  },
+  "nativeShare": {
+    "action": "Compartir en la Comunidad",
+    "dialogTitle": "Compartir en la Comunidad",
+    "previewFailed": "No se pudo preparar esta publicación.",
+    "kind": {
+      "verse": "Versículo",
+      "catechism": "Catecismo",
+      "document": "Biblioteca",
+      "ai": "Asistencia editorial",
+      "directory": "Directorio"
+    }
+  },
+  "profile": {
+    "notFound": "Perfil no encontrado",
+    "notFoundDescription": "Este @ no existe o el perfil no está disponible.",
+    "copyLink": "Copiar enlace del perfil",
+    "linkCopied": "Enlace del perfil copiado",
+    "edit": "Editar perfil",
+    "emptyPosts": "Aún no hay publicaciones",
+    "emptyPostsDescription": "Cuando esta persona publique, las partidas aparecen aquí.",
+    "stats": "{{posts}} publicaciones · {{followers}} seguidores · {{following}} siguiendo"
   },
   "report": {
     "title": "Denunciar contenido",
@@ -136,6 +161,10 @@
     "followSuccess": "Ahora sigues a {{name}}",
     "unfollowSuccess": "Dejaste de seguir a {{name}}",
     "emptyFollowing": "Todavía no sigues a nadie",
-    "emptyFollowingDescription": "Sigue catequistas para armar tu feed."
+    "emptyFollowingDescription": "Sigue catequistas para armar tu feed.",
+    "block": "Bloquear",
+    "unblock": "Desbloquear",
+    "blockSuccess": "Bloqueaste a {{name}}",
+    "unblockSuccess": "Desbloqueaste a {{name}}"
   }
 }

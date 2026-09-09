@@ -1,6 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import { useQuery, getSocialTopics, getSocialPublishAccess } from "wasp/client/operations";
+import {
+  useQuery,
+  getSocialTopics,
+  getSocialPublishAccess,
+  previewSocialShare,
+} from "wasp/client/operations";
 import { AppPageHeader } from "../../client/components/brand/AppChrome";
 import { SocialComposer } from "../components/social/SocialComposer";
 import { SocialFeed } from "../components/social/SocialFeed";
@@ -13,10 +19,13 @@ import {
   SocialFeedTabs,
   type SocialFeedMode,
 } from "../components/social/SocialFeedTabs";
+import { SocialShareEmbed } from "../components/social/SocialShareEmbed";
+import { isSocialShareKind, type SocialShareDraft } from "../../shared/socialShare";
 
 /** Authenticated Comunidade feed: read for everyone, publish for subscribers. */
 export default function CommunityPage() {
   const { t } = useTranslation("social");
+  const [searchParams, setSearchParams] = useSearchParams();
   const [topicSlug, setTopicSlug] = useState<string | null>(null);
   const [mode, setMode] = useState<SocialFeedMode>("recent");
   const [reloadToken, setReloadToken] = useState(0);
@@ -24,8 +33,30 @@ export default function CommunityPage() {
   const { data: topics } = useQuery(getSocialTopics);
   const { data: access, refetch: refetchAccess } = useQuery(getSocialPublishAccess);
 
+  const incomingShare = useMemo<SocialShareDraft | null>(() => {
+    const kind = searchParams.get("share");
+    const sourceId = searchParams.get("sourceId");
+    if (!kind || !sourceId || !isSocialShareKind(kind)) return null;
+    return { kind, sourceId };
+  }, [searchParams]);
+
+  const { data: sharePreview } = useQuery(
+    previewSocialShare,
+    incomingShare ?? { kind: "VERSE", sourceId: "" },
+    { enabled: Boolean(incomingShare) },
+  );
+
   const canPublish = Boolean(access?.canPublish);
-  const canInteract = Boolean(access?.authenticated && !access?.banned && access?.plan !== "catechist_free");
+  const canInteract = Boolean(
+    access?.authenticated && !access?.banned && access?.plan !== "catechist_free",
+  );
+
+  const clearIncomingShare = () => {
+    const next = new URLSearchParams(searchParams);
+    next.delete("share");
+    next.delete("sourceId");
+    setSearchParams(next, { replace: true });
+  };
 
   return (
     <div className="space-y-5">
@@ -37,15 +68,22 @@ export default function CommunityPage() {
       />
 
       {canPublish && access?.limits ? (
-        <SocialComposer
-          topics={topics ?? []}
-          limits={access.limits}
-          quotaLeft={access.quotaLeft ?? null}
-          onPublished={() => {
-            setReloadToken((value) => value + 1);
-            void refetchAccess();
-          }}
-        />
+        <div className="space-y-3">
+          {sharePreview && incomingShare && (
+            <SocialShareEmbed share={sharePreview as any} compact />
+          )}
+          <SocialComposer
+            topics={topics ?? []}
+            limits={access.limits}
+            quotaLeft={access.quotaLeft ?? null}
+            initialShare={incomingShare}
+            onPublished={() => {
+              setReloadToken((value) => value + 1);
+              void refetchAccess();
+              clearIncomingShare();
+            }}
+          />
+        </div>
       ) : (
         <SocialAccessNotice reason={(access?.reason ?? null) as SocialAccessReason} />
       )}

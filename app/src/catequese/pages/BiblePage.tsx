@@ -36,6 +36,8 @@ import {
 } from "wasp/client/operations";
 import { useLocale } from "../../i18n/useLocale";
 import { toast } from "../../client/hooks/use-toast";
+import { ShareToCommunityButton } from "../components/social/ShareToCommunityButton";
+import { ScrollFade } from "../../client/components/ui/scroll-fade";
 
 // ── localStorage helpers ──
 
@@ -837,19 +839,32 @@ export default function BiblePage() {
               <p className="text-sm text-muted-foreground">
                 {t("results_count", { count: searchResults.length })}
               </p>
-              {searchResults.map((v: any) => (
-                <button
-                  key={v.id}
-                  type="button"
-                  onClick={() => openSearchResult(v)}
-                  className="group w-full rounded-sm border border-border/70 p-3 text-left text-sm transition-colors hover:border-brand-ink/30 hover:bg-muted/20"
-                >
-                  <p className="mb-1 text-xs font-semibold tracking-tight text-brand-ink group-hover:underline">
-                    {v.chapter?.book?.name} {v.chapter?.number}:{v.number}
-                  </p>
-                  <p className="line-clamp-3">{v.text}</p>
-                </button>
-              ))}
+              <ScrollFade maxHeight="min(70vh, 36rem)" className="space-y-2 pr-1">
+                {searchResults.map((v: any) => (
+                  <div
+                    key={v.id}
+                    className="flex items-start gap-2 rounded-sm border border-border/70 p-3 text-sm transition-colors hover:border-brand-ink/30 hover:bg-muted/20"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => openSearchResult(v)}
+                      className="group min-w-0 flex-1 text-left"
+                    >
+                      <p className="mb-1 text-xs font-semibold tracking-tight text-brand-ink group-hover:underline">
+                        {v.chapter?.book?.name} {v.chapter?.number}:{v.number}
+                      </p>
+                      <p className="line-clamp-3">{v.text}</p>
+                    </button>
+                    <ShareToCommunityButton
+                      draft={{ kind: "VERSE", sourceId: v.id }}
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 shrink-0"
+                      label={t("share_verse")}
+                    />
+                  </div>
+                ))}
+              </ScrollFade>
             </div>
           )}
 
@@ -1001,24 +1016,31 @@ export default function BiblePage() {
                         <p className={`flex-1 ${FONT_SIZE_CLASS[fontSize]}`}>
                           {v.text}
                         </p>
-                        <button
-                          type="button"
-                          onClick={() => toggleVerseFavorite(v.number)}
-                          className={`flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity ${
-                            isFav ? "opacity-100" : ""
-                          }`}
-                          title={
-                            isFav ? "Remover favorito" : "Adicionar favorito"
-                          }
-                        >
-                          <Bookmark
-                            className={`h-4 w-4 ${
-                              isFav
-                                ? "text-brand-gold fill-brand-gold"
-                                : "text-muted-foreground hover:text-brand-gold"
-                            }`}
+                        <div className="flex shrink-0 flex-col items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+                          <ShareToCommunityButton
+                            draft={{ kind: "VERSE", sourceId: v.id }}
+                            size="icon"
+                            variant="ghost"
+                            className="h-7 w-7"
+                            label={t("share_verse")}
                           />
-                        </button>
+                          <button
+                            type="button"
+                            onClick={() => toggleVerseFavorite(v.number)}
+                            className={isFav ? "opacity-100" : ""}
+                            title={
+                              isFav ? "Remover favorito" : "Adicionar favorito"
+                            }
+                          >
+                            <Bookmark
+                              className={`h-4 w-4 ${
+                                isFav
+                                  ? "text-brand-gold fill-brand-gold"
+                                  : "text-muted-foreground hover:text-brand-gold"
+                              }`}
+                            />
+                          </button>
+                        </div>
                       </div>
                     );
                   })}

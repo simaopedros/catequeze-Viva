@@ -38,6 +38,7 @@ describe('social path helpers', () => {
     expect(isSocialPublicPath('/comunidade/t/liturgia')).toBe(true);
     expect(isSocialPublicPath('/comunidade/p/slug-abc')).toBe(true);
     expect(isSocialPublicPath('/c/slug-abc')).toBe(true);
+    expect(isSocialPublicPath('/u/maria_catequista')).toBe(true);
     expect(isSocialPublicPath('/pricing')).toBe(false);
   });
 

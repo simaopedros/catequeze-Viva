@@ -44,6 +44,8 @@ import {
 } from "../../client/components/brand/AppChrome";
 import { ImportContentModal } from "../components/content/ImportContentModal";
 import { OriginBadge } from "../components/OriginBadge";
+import { ShareToCommunityButton } from "../components/social/ShareToCommunityButton";
+import { ScrollFade } from "../../client/components/ui/scroll-fade";
 
 const STATUS_KEYS = [
   "all",
@@ -658,10 +660,26 @@ export default function ContentLibraryPage() {
                 </div>
               </div>
 
-              <div className="mt-4 border-t border-border/60 pt-4 text-sm text-muted-foreground">
-                <span className="inline-flex items-center gap-2">
-                  <User className="h-4 w-4 text-muted-foreground" />
+              <div className="mt-4 flex items-center justify-between gap-2 border-t border-border/60 pt-4 text-sm text-muted-foreground">
+                <span className="inline-flex items-center gap-2 min-w-0 truncate">
+                  <User className="h-4 w-4 shrink-0 text-muted-foreground" />
                   {item.createdBy?.firstName || "—"}
+                </span>
+                <span
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                  }}
+                >
+                  <ShareToCommunityButton
+                    draft={{
+                      kind: item.isAiGenerated ? "AI_ARTIFACT" : "DOCUMENT",
+                      sourceId: item.id,
+                    }}
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8"
+                  />
                 </span>
               </div>
             </Link>

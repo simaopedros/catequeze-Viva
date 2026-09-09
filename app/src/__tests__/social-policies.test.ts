@@ -68,7 +68,7 @@ describe('validateSocialPostDraft', () => {
   it('requires text or media', () => {
     expect(
       validateSocialPostDraft({ body: '   ', mediaCount: 0, mediaConsentAck: false }),
-    ).toMatch(/Escreva algo/);
+    ).toMatch(/Escreva algo|partilhe um conteúdo/);
   });
 
   it('requires the image-use acknowledgement when media is attached', () => {

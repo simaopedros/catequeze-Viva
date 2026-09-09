@@ -85,7 +85,7 @@ export function SocialCommentThread({
           {comments.map((comment: any) => (
             <li key={comment.id} className="flex gap-2">
               <div className="min-w-0 flex-1 rounded-xl bg-muted/60 px-3 py-2">
-                <p className="text-xs font-semibold">
+                <p className="truncate text-xs font-semibold">
                   {comment.author.displayName}
                   <span className="ml-2 font-normal text-muted-foreground">
                     {formatRelativeTime(
@@ -94,7 +94,7 @@ export function SocialCommentThread({
                     )}
                   </span>
                 </p>
-                <p className="mt-0.5 whitespace-pre-wrap break-words text-sm">{comment.body}</p>
+                <p className="mt-0.5 whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm">{comment.body}</p>
               </div>
               {comment.isOwn && (
                 <Button

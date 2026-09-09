@@ -19,6 +19,9 @@ import {
 import { notifySocialActivity } from '../social/notifications';
 import { assertSocialEnabled, isSocialEnabled } from '../social/featureGate';
 import { detachSocialMediaAsset } from './socialMediaOperations';
+import { buildAuthorDisplayName } from './socialAuthor';
+import { collectHiddenAuthorIds } from '../../shared/socialBlock';
+import { parseShareDraft, resolveSocialShare } from './socialShareResolve';
 import {
   buildSocialSlug,
   resolveInitialStatus,
@@ -27,6 +30,8 @@ import {
   validateSocialCommentDraft,
   validateSocialPostDraft,
 } from './socialPolicies';
+
+export { buildAuthorDisplayName } from './socialAuthor';
 
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 50;
@@ -40,6 +45,7 @@ const PUBLIC_AUTHOR_SELECT = {
   firstName: true,
   lastName: true,
   avatarUrl: true,
+  handle: true,
 } as const;
 
 const PUBLIC_MEDIA_SELECT = {
@@ -57,19 +63,11 @@ const PUBLIC_MEDIA_SELECT = {
   altText: true,
 } as const;
 
-export function buildAuthorDisplayName(author: {
-  firstName?: string | null;
-  lastName?: string | null;
-}): string {
-  const name = [author.firstName, author.lastName].filter(Boolean).join(' ').trim();
-  return name || 'Membro da Comunidade';
-}
-
 /** Display name of the acting user, for notification bodies. */
 async function resolveActorName(context: any): Promise<string> {
   const actor = await context.entities.User.findUnique({
     where: { id: context.user.id },
-    select: { firstName: true, lastName: true },
+    select: { firstName: true, lastName: true, handle: true },
   });
   return buildAuthorDisplayName(actor ?? {});
 }
@@ -107,10 +105,22 @@ function serializePost(post: any, viewerId?: string | null) {
     shareCount: post.shareCount,
     author: {
       id: post.author.id,
+      handle: post.author.handle ?? null,
       displayName: buildAuthorDisplayName(post.author),
       avatarUrl: post.author.avatarUrl,
     },
     parish: post.parish ? { id: post.parish.id, name: post.parish.name } : null,
+    share: post.share
+      ? {
+          kind: post.share.kind,
+          title: post.share.title,
+          subtitle: post.share.subtitle,
+          excerpt: post.share.excerpt,
+          href: post.share.href,
+          sourceId: post.share.sourceId,
+          sourceLabel: post.share.sourceLabel,
+        }
+      : null,
     media: (post.media ?? []).map(serializeMedia),
     topics: (post.topics ?? []).map((link: any) => ({
       slug: link.topic.slug,
@@ -125,6 +135,7 @@ function postInclude(viewerId?: string | null) {
   return {
     author: { select: PUBLIC_AUTHOR_SELECT },
     parish: { select: { id: true, name: true } },
+    share: true,
     media: { select: PUBLIC_MEDIA_SELECT, orderBy: { position: 'asc' as const } },
     topics: { select: { topic: { select: { slug: true, name: true } } } },
     ...(viewerId
@@ -173,11 +184,28 @@ export const getSocialFeed = async (
     followedAuthorIds = follows.map((follow: any) => follow.authorId);
   }
 
+  let hiddenAuthorIds: string[] = [];
+  if (viewerId) {
+    const blocks = await context.entities.SocialBlock.findMany({
+      where: { OR: [{ blockerId: viewerId }, { blockedId: viewerId }] },
+      select: { blockerId: true, blockedId: true },
+    });
+    hiddenAuthorIds = collectHiddenAuthorIds({ viewerId, blocks });
+  }
+
+  if (args?.authorId && hiddenAuthorIds.includes(args.authorId)) {
+    return { items: [], nextCursor: null };
+  }
+
+  const authorFilter: any = {};
+  if (args?.authorId) authorFilter.equals = args.authorId;
+  if (followedAuthorIds) authorFilter.in = followedAuthorIds;
+  if (hiddenAuthorIds.length > 0) authorFilter.notIn = hiddenAuthorIds;
+
   const where: any = {
     status: 'PUBLISHED',
     ...(args?.topicSlug ? { topics: { some: { topic: { slug: args.topicSlug } } } } : {}),
-    ...(args?.authorId ? { authorId: args.authorId } : {}),
-    ...(followedAuthorIds ? { authorId: { in: followedAuthorIds } } : {}),
+    ...(Object.keys(authorFilter).length > 0 ? { authorId: authorFilter } : {}),
     ...(trending
       ? { publishedAt: { gte: new Date(Date.now() - TRENDING_WINDOW_MS) } }
       : {}),
@@ -286,6 +314,7 @@ export const getSocialComments = async (
       parentId: comment.parentId,
       author: {
         id: comment.author.id,
+        handle: comment.author.handle ?? null,
         displayName: buildAuthorDisplayName(comment.author),
         avatarUrl: comment.author.avatarUrl,
       },
@@ -352,6 +381,7 @@ export const createSocialPost = async (
     topicSlugs?: string[];
     mediaConsentAck?: boolean;
     parishId?: string | null;
+    share?: { kind: string; sourceId: string } | null;
   },
   context: any,
 ) => {
@@ -359,11 +389,14 @@ export const createSocialPost = async (
 
   const mediaIds = Array.isArray(args.mediaIds) ? [...new Set(args.mediaIds)] : [];
   const body = sanitizeSocialBody(args.body || '');
+  const shareDraft = args.share ? parseShareDraft(args.share) : null;
+  const share = shareDraft ? await resolveSocialShare(shareDraft, context) : null;
 
   const validationError = validateSocialPostDraft({
     body,
     mediaCount: mediaIds.length,
     mediaConsentAck: Boolean(args.mediaConsentAck),
+    hasShare: Boolean(share),
   });
   if (validationError) {
     throw new HttpError(400, validationError);
@@ -405,8 +438,8 @@ export const createSocialPost = async (
     if (membership) parishId = args.parishId;
   }
 
-  const { status } = resolveInitialStatus(body);
-  const slug = buildSocialSlug(body, randomUUID().slice(0, 8));
+  const { status } = resolveInitialStatus(body || share?.title || '');
+  const slug = buildSocialSlug(body || share?.title || '', randomUUID().slice(0, 8));
 
   const post = await context.entities.SocialPost.create({
     data: {
@@ -420,6 +453,19 @@ export const createSocialPost = async (
       mediaConsentAckAt: mediaIds.length ? new Date() : null,
       topics: topics.length
         ? { create: topics.map((topic: any) => ({ topicId: topic.id })) }
+        : undefined,
+      share: share
+        ? {
+            create: {
+              kind: share.kind,
+              title: share.title,
+              subtitle: share.subtitle,
+              excerpt: share.excerpt,
+              href: share.href,
+              sourceId: share.sourceId,
+              sourceLabel: share.sourceLabel,
+            },
+          }
         : undefined,
     },
     select: { id: true, slug: true, status: true },

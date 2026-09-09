@@ -14,6 +14,7 @@ import {
   uploadSocialVideo,
 } from "../../../client/utils/socialMediaUpload";
 import { MAX_POST_BODY_LENGTH } from "../../../shared/socialConstants";
+import type { SocialShareDraft } from "../../../shared/socialShare";
 
 interface DraftMedia {
   mediaId: string;
@@ -28,11 +29,13 @@ export function SocialComposer({
   limits,
   quotaLeft,
   onPublished,
+  initialShare = null,
 }: {
   topics: { slug: string; name: string }[];
   limits: { maxMediaPerPost: number; maxVideoSeconds: number };
   quotaLeft: number | null;
   onPublished: () => void;
+  initialShare?: SocialShareDraft | null;
 }) {
   const { t } = useTranslation("social");
   const imageInput = useRef<HTMLInputElement>(null);
@@ -48,7 +51,7 @@ export function SocialComposer({
   const canSubmit =
     !publishing &&
     !uploading &&
-    (body.trim().length > 0 || media.length > 0) &&
+    (body.trim().length > 0 || media.length > 0 || Boolean(initialShare)) &&
     (media.length === 0 || consent);
 
   const atMediaLimit = media.length >= limits.maxMediaPerPost;
@@ -175,6 +178,7 @@ export function SocialComposer({
         mediaIds: media.map((item) => item.mediaId),
         topicSlugs: selectedTopics,
         mediaConsentAck: consent,
+        share: initialShare ?? undefined,
       });
 
       toast({
@@ -210,7 +214,9 @@ export function SocialComposer({
       <Textarea
         value={body}
         onChange={(event) => setBody(event.target.value)}
-        placeholder={t("composer.placeholder")}
+        placeholder={
+          initialShare ? t("composer.sharePlaceholder") : t("composer.placeholder")
+        }
         rows={3}
         maxLength={MAX_POST_BODY_LENGTH}
         className="mt-3 resize-none"

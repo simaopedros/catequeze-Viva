@@ -69,14 +69,16 @@ export interface SocialPostValidationInput {
   body: string;
   mediaCount: number;
   mediaConsentAck: boolean;
+  /** Native share card (verse, document, AI artifact, …). */
+  hasShare?: boolean;
 }
 
 /** Returns an error message, or null when the draft is publishable. */
 export function validateSocialPostDraft(input: SocialPostValidationInput): string | null {
   const body = sanitizeSocialBody(input.body);
 
-  if (!body && input.mediaCount === 0) {
-    return 'Escreva algo ou adicione uma imagem/vídeo.';
+  if (!body && input.mediaCount === 0 && !input.hasShare) {
+    return 'Escreva algo, adicione uma imagem/vídeo ou partilhe um conteúdo.';
   }
   if (body.length > MAX_POST_BODY_LENGTH) {
     return `O texto excede ${MAX_POST_BODY_LENGTH} caracteres.`;

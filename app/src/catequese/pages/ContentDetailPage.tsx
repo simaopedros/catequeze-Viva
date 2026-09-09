@@ -44,6 +44,7 @@ import {
 import { ContentDocumentRenderer } from "../components/content/ContentDocumentRenderer";
 import { AppPageHeader } from "../../client/components/brand/AppChrome";
 import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
+import { ShareToCommunityButton } from "../components/social/ShareToCommunityButton";
 import { toast } from "../../client/hooks/use-toast";
 import {
   downloadContentSourceFile,
@@ -253,6 +254,13 @@ export default function ContentDetailPage() {
           subtitle={subtitleParts.join(" · ")}
           actions={
             <>
+              <ShareToCommunityButton
+                draft={{
+                  kind: item.isAiGenerated ? "AI_ARTIFACT" : "DOCUMENT",
+                  sourceId: item.id,
+                }}
+                className="h-10 rounded-sm"
+              />
               <Button
                 size="sm"
                 variant="outline"

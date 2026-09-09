@@ -2,16 +2,10 @@
  * Comunidade (social feed) surfaces: sidebar item, app page, public feed and
  * every write operation.
  *
- * The whole module is finished but parked until we resume the social work, so
- * this single flag is the only thing to flip. While it is false:
- *   - the sidebar item is hidden
- *   - /app/comunidade and the public /comunidade routes redirect away
- *   - feed queries answer empty and write operations answer 404
- *
- * Re-enable by setting this to true and pointing the routes in main.wasp back
- * to CommunityPage / PublicCommunityPage / PublicSocialPostPage.
+ * Flip to false to park the module again: nav hides, routes should redirect,
+ * queries answer empty and writes 404.
  */
-export const SOCIAL_FEATURES_ENABLED = false;
+export const SOCIAL_FEATURES_ENABLED = true;
 
 /** Where visitors land when they hit a social URL while the module is off. */
 export const SOCIAL_DISABLED_REDIRECT = "/";
@@ -19,7 +13,7 @@ export const SOCIAL_DISABLED_APP_REDIRECT = "/app";
 
 export const SOCIAL_APP_PATHS = ["/app/comunidade"] as const;
 
-export const SOCIAL_PUBLIC_PATHS = ["/comunidade", "/c"] as const;
+export const SOCIAL_PUBLIC_PATHS = ["/comunidade", "/c", "/u"] as const;
 
 export function isSocialAppPath(pathname: string): boolean {
   const path = pathname.split("?")[0];

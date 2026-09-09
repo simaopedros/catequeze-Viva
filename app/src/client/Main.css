@@ -356,6 +356,21 @@
   transition: opacity var(--motion-duration-fast, 150ms) var(--motion-easing-default, ease-out);
 }
 
+@utility scroll-fade-top {
+  mask-image: linear-gradient(to bottom, transparent 0, #000 1.25rem, #000 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 1.25rem, #000 100%);
+}
+
+@utility scroll-fade-bottom {
+  mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 1.25rem), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 1.25rem), transparent 100%);
+}
+
+@utility scroll-fade-top.scroll-fade-bottom {
+  mask-image: linear-gradient(to bottom, transparent 0, #000 1.25rem, #000 calc(100% - 1.25rem), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 1.25rem, #000 calc(100% - 1.25rem), transparent 100%);
+}
+
 /* ── Surface micro-interactions ───────────────────────────────────── */
 
 /* Subtle lift on hover for cards and clickable surfaces */

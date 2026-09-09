@@ -55,5 +55,18 @@
   "email_pref_lifecycle": "Activation tips, trial, and win-back emails",
   "email_pref_product": "Product news and newsletter",
   "email_pref_pastoral": "Class and parish announcements",
-  "email_pref_saved": "Email preferences saved."
+  "email_pref_saved": "Email preferences saved.",
+  "social_profile": "Community profile",
+  "social_profile_desc": "Your public @, bio and photo appear on shares and in the feed.",
+  "social_handle": "Username (@)",
+  "social_bio": "Bio",
+  "social_website": "Personal link",
+  "social_change_avatar": "Change photo",
+  "social_avatar_updated": "Photo updated",
+  "social_avatar_error": "Could not update the photo.",
+  "social_save": "Save public profile",
+  "social_copy_link": "Copy profile link",
+  "social_handle_required": "Set an @ to copy the link.",
+  "social_blocked": "Blocked accounts",
+  "social_unblock": "Unblock"
 }

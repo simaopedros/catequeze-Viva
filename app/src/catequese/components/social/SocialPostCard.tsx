@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { HandHeart, MessageCircle, MoreHorizontal, Trash2, Flag } from "lucide-react";
-import { deleteSocialPost, toggleSocialReaction } from "wasp/client/operations";
+import { HandHeart, MessageCircle, MoreHorizontal, Trash2, Flag, Ban } from "lucide-react";
+import { deleteSocialPost, toggleSocialReaction, toggleSocialBlock } from "wasp/client/operations";
 import { Button } from "../../../client/components/ui/button";
 import { Badge } from "../../../client/components/ui/badge";
 import {
@@ -21,6 +21,10 @@ import { SocialShareButton } from "./SocialShareButton";
 import { SocialCommentThread } from "./SocialCommentThread";
 import { SocialReportDialog } from "./SocialReportDialog";
 import { SocialFollowButton } from "./SocialFollowButton";
+import { SocialShareEmbed, type SocialShareCard } from "./SocialShareEmbed";
+import { profilePath } from "../../../shared/socialProfile";
+
+const BODY_COLLAPSE_AT = 420;
 
 export interface SocialPostItem {
   id: string;
@@ -33,8 +37,14 @@ export interface SocialPostItem {
   reactionCount: number;
   commentCount: number;
   shareCount: number;
-  author: { id: string; displayName: string; avatarUrl: string | null };
+  author: {
+    id: string;
+    handle?: string | null;
+    displayName: string;
+    avatarUrl: string | null;
+  };
   parish: { id: string; name: string } | null;
+  share?: SocialShareCard | null;
   media: SocialMediaItem[];
   topics: { slug: string; name: string }[];
   viewerReaction: "AMEM" | "REZO" | "ALELUIA" | null;
@@ -48,6 +58,8 @@ function AuthorAvatar({ name, url }: { name: string; url: string | null }) {
         src={url}
         alt=""
         className="h-10 w-10 rounded-full object-cover"
+        width={40}
+        height={40}
         loading="lazy"
       />
     );
@@ -92,6 +104,13 @@ export function SocialPostCard({
   const [reporting, setReporting] = useState(false);
   const { confirm, confirmDialog } = useConfirm();
   const [busy, setBusy] = useState(false);
+  const [expanded, setExpanded] = useState(expandComments);
+  const longBody = (post.body || "").length > BODY_COLLAPSE_AT;
+  const visibleBody =
+    !longBody || expanded || expandComments
+      ? post.body
+      : `${post.body.slice(0, BODY_COLLAPSE_AT).trimEnd()}…`;
+  const profileHref = post.author.handle ? profilePath(post.author.handle) : null;
 
   const react = async () => {
     if (!canInteract) {
@@ -133,12 +152,27 @@ export function SocialPostCard({
   const timestamp = post.publishedAt || post.createdAt;
 
   return (
-    <article className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
+    <article className="min-w-0 overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
       <header className="flex items-start gap-3">
-        <AuthorAvatar name={post.author.displayName} url={post.author.avatarUrl} />
+        {profileHref ? (
+          <Link to={profileHref} className="shrink-0">
+            <AuthorAvatar name={post.author.displayName} url={post.author.avatarUrl} />
+          </Link>
+        ) : (
+          <AuthorAvatar name={post.author.displayName} url={post.author.avatarUrl} />
+        )}
         <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold leading-tight">{post.author.displayName}</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="truncate font-semibold leading-tight">
+            {profileHref ? (
+              <Link to={profileHref} className="hover:underline">
+                {post.author.displayName}
+              </Link>
+            ) : (
+              post.author.displayName
+            )}
+          </p>
+          <p className="truncate text-xs text-muted-foreground">
+            {post.author.handle ? `@${post.author.handle} · ` : ""}
             {formatRelativeTime(new Date(timestamp).toISOString(), currentLocale)}
             {post.parish ? ` · ${t("feed.postedIn", { parish: post.parish.name })}` : ""}
           </p>
@@ -172,20 +206,56 @@ export function SocialPostCard({
                 {t("post.delete")}
               </DropdownMenuItem>
             ) : (
-              <DropdownMenuItem onClick={() => setReporting(true)}>
-                <Flag className="mr-2 h-4 w-4" aria-hidden />
-                {t("post.report")}
-              </DropdownMenuItem>
+              <>
+                <DropdownMenuItem onClick={() => setReporting(true)}>
+                  <Flag className="mr-2 h-4 w-4" aria-hidden />
+                  {t("post.report")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={async () => {
+                    try {
+                      const result = await toggleSocialBlock({ userId: post.author.id });
+                      toast({
+                        title: result.blocked
+                          ? t("discovery.blockSuccess", { name: post.author.displayName })
+                          : t("discovery.unblockSuccess", { name: post.author.displayName }),
+                      });
+                      if (result.blocked) onDeleted?.(post.id);
+                    } catch (error: any) {
+                      toast({
+                        title: error?.message || t("discovery.block"),
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                >
+                  <Ban className="mr-2 h-4 w-4" aria-hidden />
+                  {t("discovery.block")}
+                </DropdownMenuItem>
+              </>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
       </header>
 
       {post.body && (
-        <p className="mt-3 whitespace-pre-wrap break-words text-[0.95rem] leading-relaxed">
-          {post.body}
-        </p>
+        <div className="mt-3 min-w-0">
+          <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-[0.95rem] leading-relaxed">
+            {visibleBody}
+          </p>
+          {longBody && !expandComments && (
+            <button
+              type="button"
+              className="mt-1 text-xs font-medium text-primary underline-offset-4 hover:underline"
+              onClick={() => setExpanded((value) => !value)}
+            >
+              {expanded ? t("post.showLess") : t("post.showMore")}
+            </button>
+          )}
+        </div>
       )}
+
+      {post.share && <SocialShareEmbed share={post.share} />}
 
       <SocialMediaGallery media={post.media} />
 
