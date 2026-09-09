@@ -14,6 +14,7 @@ const PUBLIC_PATH_PREFIXES = [
   "/privacy",
   "/terms",
   "/contact",
+  "/blog",
   "/login",
   "/signup",
   "/request-password-reset",

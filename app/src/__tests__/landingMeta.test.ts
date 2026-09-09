@@ -18,9 +18,9 @@ describe("landingMeta", () => {
     expect(home.description.toLowerCase()).toMatch(/presença|encontros/);
   });
 
-  it("registers four marketing routes", () => {
+  it("registers marketing routes including the public blog", () => {
     expect(Object.keys(LANDING_ROUTE_META).sort()).toEqual(
-      ["/", "/ia", "/presenca", "/sistema"].sort(),
+      ["/", "/blog", "/ia", "/presenca", "/sistema"].sort(),
     );
   });
 

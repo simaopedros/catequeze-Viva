@@ -224,6 +224,7 @@ export default function App() {
     return (
       marketingLandingFromPath(location.pathname) !== null ||
       location.pathname.startsWith("/pricing") ||
+      location.pathname.startsWith("/blog") ||
       // Public Comunidade feed: visitors arrive from shared links and need the
       // marketing nav (sign in, pricing), not the app nav.
       (SOCIAL_FEATURES_ENABLED && location.pathname.startsWith("/comunidade"))
@@ -265,6 +266,7 @@ export default function App() {
     ];
     if (publicPaths.includes(location.pathname)) return false;
     if (location.pathname.startsWith("/upload-docs/")) return false;
+    if (location.pathname.startsWith("/blog")) return false;
     return true;
   }, [location.pathname, isFamilyPortal]);
 

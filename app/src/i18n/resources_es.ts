@@ -137,7 +137,8 @@ export const admin_es = {
       "system": "Sistema",
       "other": "Otros",
       "back_to_app": "Volver a la App",
-      "socialModeration": "Comunidad"
+      "socialModeration": "Comunidad",
+      "blog": "Blog"
     },
     "title": "Diócesis",
     "subtitle": "Gestión de diócesis (Super Admin)",
@@ -174,6 +175,81 @@ export const admin_es = {
     "no_filter": "No",
     "pages": {
       "admin": "Admin",
+      "blog": {
+        "title": "Blog",
+        "subtitle": "Artículos públicos para catequistas. Solo los administradores de la plataforma publican.",
+        "new": "Nuevo artículo",
+        "creating": "Creando artículo…",
+        "untitled": "Sin título",
+        "empty_title": "Todavía no hay artículos",
+        "empty_desc": "Cree el primer contenido para el blog público.",
+        "col_title": "Título",
+        "col_category": "Categoría",
+        "col_status": "Estado",
+        "col_updated": "Actualizado",
+        "col_actions": "Acciones",
+        "edit": "Editar",
+        "edit_title": "Editar artículo",
+        "editor_subtitle": "Título, resumen, cuerpo y SEO. Publique cuando esté listo.",
+        "back": "Todos los artículos",
+        "field_title": "Título",
+        "field_slug": "Slug (URL)",
+        "field_excerpt": "Resumen",
+        "field_body": "Cuerpo",
+        "field_category": "Categoría",
+        "field_tags": "Etiquetas (separadas por coma)",
+        "tags_placeholder": "encuentro, asistencia, familias",
+        "field_cover": "Imagen de portada",
+        "remove_cover": "Quitar portada",
+        "field_seo_title": "Título SEO",
+        "field_seo_desc": "Descripción SEO",
+        "save": "Guardar borrador",
+        "saving": "Guardando…",
+        "saved": "Borrador guardado.",
+        "save_error": "No se pudo guardar el artículo.",
+        "publish": "Publicar",
+        "publishing": "Publicando…",
+        "published": "Artículo publicado.",
+        "publish_error": "No se pudo publicar. Confirme título, resumen y cuerpo.",
+        "unpublish": "Despublicar",
+        "unpublished": "El artículo volvió a borrador.",
+        "archive": "Archivar",
+        "archive_title": "Archivar artículo",
+        "archive_desc": "El artículo dejará de aparecer en el blog público.",
+        "view_public": "Ver en el sitio",
+        "body_placeholder": "Escriba el artículo…",
+        "link_title": "Enlace",
+        "apply_link": "Aplicar",
+        "remove_link": "Quitar enlace",
+        "toolbar": {
+          "paragraph": "Párrafo",
+          "h2": "Título 2",
+          "h3": "Título 3",
+          "bold": "Negrita",
+          "italic": "Cursiva",
+          "underline": "Subrayado",
+          "bullet": "Lista",
+          "ordered": "Lista numerada",
+          "quote": "Cita",
+          "link": "Enlace",
+          "image": "Imagen",
+          "undo": "Deshacer",
+          "redo": "Rehacer"
+        },
+        "status": {
+          "DRAFT": "Borrador",
+          "PUBLISHED": "Publicado",
+          "ARCHIVED": "Archivado"
+        },
+        "categories": {
+          "FORMATION": "Formación",
+          "PRACTICAL_TIPS": "Consejos prácticos",
+          "LITURGY": "Liturgia",
+          "FAMILY": "Familia",
+          "MANAGEMENT": "Gestión de la catequesis",
+          "TESTIMONY": "Testimonios"
+        }
+      },
       "plans": {
         "title": "Planes y precios",
         "subtitle": "Catálogo vendible de la plataforma. Quienes ya pagan conservan el precio anterior cuando cambias un valor.",
@@ -1465,6 +1541,28 @@ export const birthdays_es = {
     "exportList": "Exportar lista",
     "noBirthdays": "Sin cumpleaños en este período",
     "in": "el"
+  } as const;
+
+export const blog_es = {
+    "kicker": "Para catequistas",
+    "title": "Blog de Catequese Viva",
+    "intro": "Formación, ideas para el encuentro, liturgia y gestión de la catequesis — contenido para quien acompaña grupos de verdad.",
+    "all_categories": "Todos",
+    "empty_title": "Aún no hay artículos publicados",
+    "empty_desc": "Pronto habrá contenidos prácticos para la rutina del catequista.",
+    "back": "Todos los artículos",
+    "not_found": "Artículo no encontrado",
+    "not_found_desc": "Esta dirección no corresponde a un artículo publicado.",
+    "cta_title": "Organiza la catequesis en un solo lugar",
+    "cta_text": "Prepara encuentros, pasa lista y habla con las familias. Empieza los 7 días gratis.",
+    "categories": {
+      "FORMATION": "Formación",
+      "PRACTICAL_TIPS": "Consejos prácticos",
+      "LITURGY": "Liturgia",
+      "FAMILY": "Familia",
+      "MANAGEMENT": "Gestión de la catequesis",
+      "TESTIMONY": "Testimonios"
+    }
   } as const;
 
 export const calendar_es = {
@@ -5854,6 +5952,7 @@ export const publicNav_es = {
     "share_text": "Organiza la catequesis sin papel ni improvisación — prepara encuentros, pasa lista y habla con las familias en un solo lugar.",
     "how_it_works": "Cómo funciona",
     "faq": "Dudas",
+    "blog": "Blog",
     "footer_explore": "Explorar",
     "footer_talk": "Habla con nosotros",
     "footer_start": "Probar",
@@ -6346,6 +6445,7 @@ export const resources_es = {
   bible: bible_es,
   billing: billing_es,
   birthdays: birthdays_es,
+  blog: blog_es,
   calendar: calendar_es,
   catecheticalYears: catecheticalYears_es,
   catechism: catechism_es,

@@ -312,6 +312,24 @@ page AdminPlansPage {
   component: import AdminPlans from "@src/admin/dashboards/plans/PlansPage"
 }
 
+route AdminBlogRoute { path: "/admin/blog", to: AdminBlogPage }
+page AdminBlogPage {
+  authRequired: true,
+  component: import AdminBlog from "@src/admin/dashboards/blog/BlogListPage"
+}
+
+route AdminBlogNewRoute { path: "/admin/blog/new", to: AdminBlogNewPage }
+page AdminBlogNewPage {
+  authRequired: true,
+  component: import AdminBlogNew from "@src/admin/dashboards/blog/BlogNewPage"
+}
+
+route AdminBlogEditRoute { path: "/admin/blog/:id", to: AdminBlogEditPage }
+page AdminBlogEditPage {
+  authRequired: true,
+  component: import AdminBlogEdit from "@src/admin/dashboards/blog/BlogEditPage"
+}
+
 //#region Catequese Viva App Routes
 route AppDashboardRoute { path: "/app", to: AppDashboardPage }
 page AppDashboardPage {
@@ -1549,6 +1567,75 @@ api socialSitemap {
   entities: [SocialPost]
 }
 
+//#region Blog (public CMS)
+query listPublishedBlogPosts {
+  fn: import { listPublishedBlogPosts } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User]
+}
+
+query getPublishedBlogPost {
+  fn: import { getPublishedBlogPost } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User]
+}
+
+query listBlogPostsAdmin {
+  fn: import { listBlogPostsAdmin } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User]
+}
+
+query getBlogPostAdmin {
+  fn: import { getBlogPostAdmin } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User]
+}
+
+action createBlogPost {
+  fn: import { createBlogPost } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User, AuditLog]
+}
+
+action updateBlogPost {
+  fn: import { updateBlogPost } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User, AuditLog]
+}
+
+action publishBlogPost {
+  fn: import { publishBlogPost } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User, AuditLog]
+}
+
+action unpublishBlogPost {
+  fn: import { unpublishBlogPost } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User, AuditLog]
+}
+
+action archiveBlogPost {
+  fn: import { archiveBlogPost } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User, AuditLog]
+}
+
+api uploadBlogImage {
+  fn: import { uploadBlogImage } from "@src/server/api/blogImages",
+  middlewareConfigFn: import { blogImageUploadMiddleware } from "@src/server/api/blogImages",
+  auth: true,
+  httpRoute: (POST, "/api/blog/images"),
+  entities: [BlogPost, User]
+}
+
+api serveBlogImage {
+  fn: import { serveBlogImage } from "@src/server/api/blogImages",
+  middlewareConfigFn: import { blogImageServeMiddleware } from "@src/server/api/blogImages",
+  httpRoute: (GET, "/api/blog/images"),
+  entities: [BlogPost]
+}
+
+api blogSitemap {
+  fn: import { blogSitemap } from "@src/server/api/blogShare",
+  middlewareConfigFn: import { blogSitemapMiddleware } from "@src/server/api/blogShare",
+  httpRoute: (GET, "/blog/sitemap.xml"),
+  entities: [BlogPost]
+}
+//#endregion
+
 api bunnyStreamWebhook {
   fn: import { bunnyStreamWebhook } from "@src/server/api/socialMedia",
   middlewareConfigFn: import { bunnyStreamWebhookMiddleware } from "@src/server/api/socialMedia",
@@ -1979,6 +2066,12 @@ action submitActivity {
 //#region Landing Pages
 route AboutPublicRoute { path: "/about", to: AboutPublicPage }
 page AboutPublicPage { component: import AboutPage from "@src/catequese/pages/AboutPage" }
+
+route BlogIndexRoute { path: "/blog", to: BlogIndexPage }
+page BlogIndexPage { component: import BlogIndexPage from "@src/catequese/pages/blog/BlogIndexPage" }
+
+route BlogPostPublicRoute { path: "/blog/:slug", to: BlogPostPublicPage }
+page BlogPostPublicPage { component: import BlogPostPage from "@src/catequese/pages/blog/BlogPostPage" }
 
 route PrivacyPublicRoute { path: "/privacy", to: PrivacyPublicPage }
 page PrivacyPublicPage { component: import PrivacyPage from "@src/catequese/pages/PrivacyPage" }

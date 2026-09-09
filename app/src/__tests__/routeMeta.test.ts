@@ -20,9 +20,9 @@ describe("landing route meta", () => {
     document.head.innerHTML = "";
   });
 
-  it("registers the four campaign landings", () => {
+  it("registers campaign landings and the public blog", () => {
     expect(Object.keys(LANDING_ROUTE_META).sort()).toEqual(
-      ["/", "/ia", "/presenca", "/sistema"].sort(),
+      ["/", "/blog", "/ia", "/presenca", "/sistema"].sort(),
     );
   });
 

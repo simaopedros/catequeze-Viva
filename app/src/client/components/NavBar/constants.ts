@@ -9,6 +9,7 @@ export function getMarketingNavigationItems(
     { name: tPublicNav("resources"), to: "/#recursos" },
     { name: tPublicNav("pricing"), to: "/pricing" },
     { name: tPublicNav("about"), to: "/about" },
+    { name: tPublicNav("blog"), to: "/blog" },
     { name: tPublicNav("contact"), to: "/contact" },
   ] as const;
 }

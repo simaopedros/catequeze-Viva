@@ -137,7 +137,8 @@ export const admin_en = {
       "system": "System",
       "other": "Other",
       "back_to_app": "Back to App",
-      "socialModeration": "Community"
+      "socialModeration": "Community",
+      "blog": "Blog"
     },
     "title": "Dioceses",
     "subtitle": "Diocese management (Super Admin)",
@@ -174,6 +175,81 @@ export const admin_en = {
     "no_filter": "No",
     "pages": {
       "admin": "Admin",
+      "blog": {
+        "title": "Blog",
+        "subtitle": "Public articles for catechists. Only platform admins can publish.",
+        "new": "New article",
+        "creating": "Creating article…",
+        "untitled": "Untitled",
+        "empty_title": "No articles yet",
+        "empty_desc": "Create the first piece for the public blog.",
+        "col_title": "Title",
+        "col_category": "Category",
+        "col_status": "Status",
+        "col_updated": "Updated",
+        "col_actions": "Actions",
+        "edit": "Edit",
+        "edit_title": "Edit article",
+        "editor_subtitle": "Title, excerpt, body, and SEO. Publish when it is ready.",
+        "back": "All articles",
+        "field_title": "Title",
+        "field_slug": "Slug (URL)",
+        "field_excerpt": "Excerpt",
+        "field_body": "Body",
+        "field_category": "Category",
+        "field_tags": "Tags (comma separated)",
+        "tags_placeholder": "meeting, attendance, families",
+        "field_cover": "Cover image",
+        "remove_cover": "Remove cover",
+        "field_seo_title": "SEO title",
+        "field_seo_desc": "SEO description",
+        "save": "Save draft",
+        "saving": "Saving…",
+        "saved": "Draft saved.",
+        "save_error": "Could not save the article.",
+        "publish": "Publish",
+        "publishing": "Publishing…",
+        "published": "Article published.",
+        "publish_error": "Could not publish. Check the title, excerpt, and body.",
+        "unpublish": "Unpublish",
+        "unpublished": "Article is a draft again.",
+        "archive": "Archive",
+        "archive_title": "Archive article",
+        "archive_desc": "The article will no longer appear on the public blog.",
+        "view_public": "View on site",
+        "body_placeholder": "Write the article…",
+        "link_title": "Link",
+        "apply_link": "Apply",
+        "remove_link": "Remove link",
+        "toolbar": {
+          "paragraph": "Paragraph",
+          "h2": "Heading 2",
+          "h3": "Heading 3",
+          "bold": "Bold",
+          "italic": "Italic",
+          "underline": "Underline",
+          "bullet": "List",
+          "ordered": "Numbered list",
+          "quote": "Quote",
+          "link": "Link",
+          "image": "Image",
+          "undo": "Undo",
+          "redo": "Redo"
+        },
+        "status": {
+          "DRAFT": "Draft",
+          "PUBLISHED": "Published",
+          "ARCHIVED": "Archived"
+        },
+        "categories": {
+          "FORMATION": "Formation",
+          "PRACTICAL_TIPS": "Practical tips",
+          "LITURGY": "Liturgy",
+          "FAMILY": "Family",
+          "MANAGEMENT": "Catechesis management",
+          "TESTIMONY": "Testimonies"
+        }
+      },
       "plans": {
         "title": "Plans and pricing",
         "subtitle": "Sellable catalog for the platform. Current subscribers keep the old price when you change an amount.",
@@ -1465,6 +1541,28 @@ export const birthdays_en = {
     "exportList": "Export list",
     "noBirthdays": "No birthdays in this period",
     "in": "on"
+  } as const;
+
+export const blog_en = {
+    "kicker": "For catechists",
+    "title": "Catequese Viva blog",
+    "intro": "Formation, meeting tips, liturgy, and catechesis management — written for people who walk with a real class.",
+    "all_categories": "All",
+    "empty_title": "No articles published yet",
+    "empty_desc": "Practical pieces for the catechist’s week will appear here soon.",
+    "back": "All articles",
+    "not_found": "Article not found",
+    "not_found_desc": "This address does not match a published article.",
+    "cta_title": "Organize catechesis in one place",
+    "cta_text": "Prepare meetings, take attendance, and reach families. Start your 7 free days.",
+    "categories": {
+      "FORMATION": "Formation",
+      "PRACTICAL_TIPS": "Practical tips",
+      "LITURGY": "Liturgy",
+      "FAMILY": "Family",
+      "MANAGEMENT": "Catechesis management",
+      "TESTIMONY": "Testimonies"
+    }
   } as const;
 
 export const calendar_en = {
@@ -5854,6 +5952,7 @@ export const publicNav_en = {
     "share_text": "Organize catechesis without paper and last-minute improvisation — prepare meetings, take attendance, and reach families in one place.",
     "how_it_works": "How it works",
     "faq": "FAQ",
+    "blog": "Blog",
     "footer_explore": "Explore",
     "footer_talk": "Talk to us",
     "footer_start": "Try it",
@@ -6346,6 +6445,7 @@ export const resources_en = {
   bible: bible_en,
   billing: billing_en,
   birthdays: birthdays_en,
+  blog: blog_en,
   calendar: calendar_en,
   catecheticalYears: catecheticalYears_en,
   catechism: catechism_en,

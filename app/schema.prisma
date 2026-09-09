@@ -273,6 +273,21 @@ enum AuditAction {
   PUBLISH
 }
 
+enum BlogPostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum BlogCategory {
+  FORMATION
+  PRACTICAL_TIPS
+  LITURGY
+  FAMILY
+  MANAGEMENT
+  TESTIMONY
+}
+
 // ─── Comunidade (social) ──────────────────────────────────────────────────────
 
 enum SocialPostKind {
@@ -468,6 +483,7 @@ model User {
   recordedFormationAttendances FormationAttendance[]    @relation("FormationAttendanceRecorder")
   formationLessonProgress   FormationLessonProgress[]
   resourceAdoptions         ResourceAdoption[]
+  authoredBlogPosts         BlogPost[]                   @relation("BlogPostAuthor")
 }
 
 // ─── Multi-tenant ─────────────────────────────────────────────────────────────
@@ -2526,6 +2542,32 @@ model ResourceAdoption {
   @@unique([resourceKind, sourceId, adopterType, adopterId])
   @@index([adopterType, adopterId])
   @@index([resourceKind, sourceId])
+}
+
+/// Public marketing/educational articles authored by platform admins.
+model BlogPost {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title           String
+  slug            String          @unique
+  excerpt         String          @default("")
+  bodyHtml        String          @default("")
+  coverImageKey   String?
+  category        BlogCategory
+  tags            String[]        @default([])
+  locale          String          @default("pt-BR")
+  status          BlogPostStatus  @default(DRAFT)
+  publishedAt     DateTime?
+  seoTitle        String?
+  seoDescription  String?
+
+  authorId String
+  author   User   @relation("BlogPostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([status, publishedAt])
+  @@index([locale, status])
 }
 
 

@@ -1,0 +1,21 @@
+{
+  "kicker": "For catechists",
+  "title": "Catequese Viva blog",
+  "intro": "Formation, meeting tips, liturgy, and catechesis management — written for people who walk with a real class.",
+  "all_categories": "All",
+  "empty_title": "No articles published yet",
+  "empty_desc": "Practical pieces for the catechist’s week will appear here soon.",
+  "back": "All articles",
+  "not_found": "Article not found",
+  "not_found_desc": "This address does not match a published article.",
+  "cta_title": "Organize catechesis in one place",
+  "cta_text": "Prepare meetings, take attendance, and reach families. Start your 7 free days.",
+  "categories": {
+    "FORMATION": "Formation",
+    "PRACTICAL_TIPS": "Practical tips",
+    "LITURGY": "Liturgy",
+    "FAMILY": "Family",
+    "MANAGEMENT": "Catechesis management",
+    "TESTIMONY": "Testimonies"
+  }
+}

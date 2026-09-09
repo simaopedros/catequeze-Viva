@@ -49,6 +49,13 @@ export const LANDING_ROUTE_META: Record<string, LandingRouteMeta> = {
     canonicalPath: "/sistema",
     campaign: "system",
   },
+  "/blog": {
+    title: "Blog para catequistas | Catequese Viva",
+    description:
+      "Artigos práticos para a rotina do catequista: formação, encontros, liturgia, família e gestão da catequese. Conteúdo da Catequese Viva.",
+    canonicalPath: "/blog",
+    campaign: "main",
+  },
 };
 
 export function getLandingMeta(pathname: string): LandingRouteMeta | null {

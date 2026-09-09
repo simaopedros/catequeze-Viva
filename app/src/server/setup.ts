@@ -6,6 +6,7 @@ import { logger } from './logger';
 import { probeAiHealth } from './api/healthCheck';
 import { preloadReferenceCache } from './cache/referenceCache';
 import { registerLandingHtmlMeta } from './middleware/landingHtmlMeta';
+import { registerBlogCrawlerHtml } from './middleware/blogCrawlerHtml';
 import { portalRequestContextMiddleware } from './requestPortalContext';
 
 const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
@@ -84,6 +85,7 @@ export const serverSetup: ServerSetupFn = async ({ app, server }) => {
 
   // Crawler-facing meta for /, /ia, /presenca, /sistema (when SPA index is on this server)
   registerLandingHtmlMeta(app);
+  registerBlogCrawlerHtml(app);
 
   // ── Sentry (optional) ───────────────────────────────────────────────
   const sentryDsn = process.env.SENTRY_DSN;

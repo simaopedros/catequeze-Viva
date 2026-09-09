@@ -53,6 +53,7 @@ const ALL_NS = [
   "birthdays",
   "social",
   "hierarchy",
+  "blog",
 ] as const;
 
 const loadedLocales = new Set<string>(["pt-BR"]);

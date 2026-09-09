@@ -4,3 +4,4 @@ Disallow: /account
 Disallow: /admin
 
 Sitemap: https://catechis.app/sitemap.xml
+Sitemap: https://catechis.app/blog/sitemap.xml
