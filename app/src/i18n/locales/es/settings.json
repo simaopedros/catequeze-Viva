@@ -27,7 +27,9 @@
     "handle": "Handle",
     "handle_placeholder": "tu_handle",
     "bio": "Bio",
-    "bio_placeholder": "Una frase sobre tu catequesis"
+    "bio_placeholder": "Una frase sobre tu catequesis",
+    "open_profile": "Ver perfil en la Comunidad",
+    "open_community": "Abrir Comunidad"
   },
   "change_password": "Cambiar contraseña",
   "current_password": "Contraseña actual",

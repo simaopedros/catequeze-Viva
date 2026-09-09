@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "wasp/client/auth";
@@ -386,6 +387,19 @@ export default function SettingsPage() {
                 {t("saved")}
               </span>
             )}
+            <Button asChild size="sm" variant="outline" className="rounded-md">
+              <Link
+                to={
+                  rhemaHandle.trim()
+                    ? `/comunidade/u/${rhemaHandle.trim()}`
+                    : "/app/comunidade"
+                }
+              >
+                {rhemaHandle.trim()
+                  ? t("rhema.open_profile")
+                  : t("rhema.open_community")}
+              </Link>
+            </Button>
           </div>
         </AppPanel>
       )}

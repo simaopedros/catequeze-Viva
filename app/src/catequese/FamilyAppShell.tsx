@@ -7,6 +7,7 @@ import { TwoFactorGate } from "./components/TwoFactorGate";
 import { Home, Calendar, MessageSquare, Sparkles } from "lucide-react";
 import { BrandLockup } from "../client/components/brand/Brand";
 import { SOCIAL_FEATURES_ENABLED } from "../shared/socialFeatures";
+import { isFamilyPortalPath } from "../shared/familyPortal";
 
 interface FamilyAppShellProps {
   children: ReactNode;
@@ -23,23 +24,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
   const { t } = useTranslation("navigation");
 
   useEffect(() => {
-    const path = location.pathname;
-    const isFamilyRoute =
-      path === "/app" ||
-      path === "/app/calendar" ||
-      path.startsWith("/app/messages") ||
-      path.startsWith("/app/meetings/") ||
-      path === "/app/documents" ||
-      path.startsWith("/app/documents/") ||
-      path === "/app/consents" ||
-      path.startsWith("/app/consents/") ||
-      (SOCIAL_FEATURES_ENABLED &&
-        (path === "/app/comunidade" ||
-          path.startsWith("/app/comunidade/") ||
-          path === "/comunidade" ||
-          path.startsWith("/comunidade/")));
-
-    if (!isFamilyRoute) {
+    if (!isFamilyPortalPath(location.pathname)) {
       navigate("/app", { replace: true });
     }
   }, [location.pathname, navigate]);

@@ -1360,11 +1360,11 @@ export const landing_pt_BR_core = {
         "b3": "Progresso visível para coordenação e responsáveis"
       },
       "rhema": {
-        "title": "Rhema: a rede pastoral da catequese",
-        "desc": "Partilhe testemunhos e encontros em shorts, siga catequistas e descubra conteúdo edificante dentro da plataforma.",
-        "b1": "Feed vertical de shorts com reações de fé",
-        "b2": "Perfis públicos com @handle e busca",
-        "b3": "Para você, em alta e quem você segue"
+        "title": "Comunidade Rhema, no mesmo ritmo da catequese",
+        "desc": "A rede pastoral vive junto da turma, da agenda e da biblioteca. Depois do encontro, o testemunho continua na Comunidade — sem sair da plataforma.",
+        "b1": "Painel, turmas e Comunidade no mesmo dia a dia",
+        "b2": "Partilhe encontros, a Palavra e a biblioteca num toque",
+        "b3": "Famílias também acompanham a Comunidade no portal"
       }
     },
     "mission_title": "Encontro preparado. Turma acolhida. Fé partilhada com as famílias.",
@@ -1374,7 +1374,7 @@ export const landing_pt_BR_core = {
     "personas": [
       {
         "title": "Catequista",
-        "desc": "Organize sua turma, prepare encontros com a biblioteca pastoral e registre presença pelo celular."
+        "desc": "Organize sua turma, prepare encontros com a biblioteca pastoral e partilhe o que viveu na Comunidade."
       },
       {
         "title": "Coordenador Paroquial",
@@ -1382,7 +1382,7 @@ export const landing_pt_BR_core = {
       },
       {
         "title": "Pais e Responsáveis",
-        "desc": "Acompanhe presença, avisos, documentos e justificativas pelo portal."
+        "desc": "Acompanhe presença, avisos, documentos e a Comunidade pelo portal."
       },
       {
         "title": "Pároco",
@@ -2244,11 +2244,11 @@ export const landingSistema_pt_BR_core = {
     ],
     "features": {
       "rhema": {
-        "title": "Rhema: a rede pastoral da catequese",
-        "desc": "Partilhe testemunhos e encontros em shorts, siga catequistas e descubra conteúdo edificante dentro da plataforma.",
-        "b1": "Feed vertical de shorts com reações de fé",
-        "b2": "Perfis públicos com @handle e busca",
-        "b3": "Para você, em alta e quem você segue"
+        "title": "Comunidade Rhema, no mesmo ritmo da catequese",
+        "desc": "A rede pastoral vive junto da turma, da agenda e da biblioteca. Depois do encontro, o testemunho continua na Comunidade — sem sair da plataforma.",
+        "b1": "Painel, turmas e Comunidade no mesmo dia a dia",
+        "b2": "Partilhe encontros, a Palavra e a biblioteca num toque",
+        "b3": "Famílias também acompanham a Comunidade no portal"
       }
     },
     "ai_showcase_title": "E também: preparação de encontros com assistência editorial",

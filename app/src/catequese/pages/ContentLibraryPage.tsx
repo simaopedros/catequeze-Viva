@@ -44,6 +44,7 @@ import {
 } from "../../client/components/brand/AppChrome";
 import { ImportContentModal } from "../components/content/ImportContentModal";
 import { OriginBadge } from "../components/OriginBadge";
+import { PastoralCompanion } from "../components/social/PastoralCompanion";
 
 const STATUS_KEYS = [
   "all",
@@ -320,6 +321,8 @@ export default function ContentLibraryPage() {
           </>
         }
       />
+
+      <PastoralCompanion surface="library" />
 
       <div
         className={

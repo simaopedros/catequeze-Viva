@@ -37,6 +37,7 @@ import {
 import { useLocale } from "../../i18n/useLocale";
 import { toast } from "../../client/hooks/use-toast";
 import { PastoralCompanion } from "../components/social/PastoralCompanion";
+import { ShareToCommunityButton } from "../components/social/ShareToCommunityButton";
 
 // ── localStorage helpers ──
 
@@ -125,6 +126,7 @@ const SEARCH_SUGGESTIONS: Record<string, string[]> = {
 export default function BiblePage() {
   const { t } = useTranslation("bible");
   const { t: tc } = useTranslation("common");
+  const { t: ts } = useTranslation("social");
   const { currentLocale } = useLocale();
   const {
     data: books = [],
@@ -739,6 +741,32 @@ export default function BiblePage() {
               >
                 <Copy className="h-4 w-4" />
               </Button>
+            )}
+
+            {selectedChapter !== null && chapterData && (
+              <ShareToCommunityButton
+                body={(() => {
+                  const bookName =
+                    chapterData?.book?.name || selectedBook?.name || "";
+                  const verse = chapterData.verses?.find(
+                    (item: { number: number }) =>
+                      item.number === highlightedVerse,
+                  );
+                  if (verse) {
+                    return ts("share.bibleVerseBody", {
+                      reference: `${bookName} ${selectedChapter}:${verse.number}`,
+                      text: verse.text,
+                    });
+                  }
+                  return ts("share.bibleBody", {
+                    reference: `${bookName} ${selectedChapter}`,
+                  });
+                })()}
+                topic="biblia"
+                source="bible"
+                variant="ghost"
+                className="h-10 rounded-sm"
+              />
             )}
 
             {mode === "read" && selectedChapter !== null && (

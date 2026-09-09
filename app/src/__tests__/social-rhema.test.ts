@@ -506,3 +506,72 @@ describe("community share URL", () => {
     expect(parseCommunityShareSearch("body=hello")).toBeNull();
   });
 });
+
+describe("family portal paths", () => {
+  it("keeps community, bible and catechism inside the family shell", async () => {
+    const { isFamilyPortalPath } = await import("../shared/familyPortal");
+
+    expect(isFamilyPortalPath("/app")).toBe(true);
+    expect(isFamilyPortalPath("/app/calendar")).toBe(true);
+    expect(isFamilyPortalPath("/app/comunidade")).toBe(true);
+    expect(isFamilyPortalPath("/app/comunidade/u/ana")).toBe(true);
+    expect(isFamilyPortalPath("/comunidade/p/paz")).toBe(true);
+    expect(isFamilyPortalPath("/app/bible")).toBe(true);
+    expect(isFamilyPortalPath("/app/catechism")).toBe(true);
+    expect(isFamilyPortalPath("/app/classes")).toBe(false);
+    expect(isFamilyPortalPath("/app/content-library")).toBe(false);
+  });
+});
+
+describe("social rail tools", () => {
+  it("hides staff destinations from the family portal", async () => {
+    const { getSocialRailToolIds } = await import("../shared/socialRail");
+
+    expect(getSocialRailToolIds({ signedIn: false })).toEqual([
+      "classes",
+      "library",
+      "bible",
+      "messages",
+    ]);
+
+    expect(
+      getSocialRailToolIds({
+        signedIn: true,
+        role: "LEAD_CATECHIST",
+      }),
+    ).toEqual(["classes", "library", "bible", "catechism", "messages"]);
+
+    expect(
+      getSocialRailToolIds({
+        signedIn: true,
+        role: "GUARDIAN",
+      }),
+    ).toEqual(["bible", "catechism", "messages"]);
+
+    expect(
+      getSocialRailToolIds({
+        signedIn: true,
+        role: "CATECHUMEN",
+      }),
+    ).not.toContain("classes");
+  });
+});
+
+describe("social locale share keys", () => {
+  it("keeps feed share actions together with pastoral share drafts", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { dirname, join } = await import("node:path");
+    const { fileURLToPath } = await import("node:url");
+    const localesDir = join(
+      dirname(fileURLToPath(import.meta.url)),
+      "../i18n/locales/pt-BR",
+    );
+    const social = JSON.parse(
+      readFileSync(join(localesDir, "social.json"), "utf8"),
+    );
+    expect(social.share.action).toBeTruthy();
+    expect(social.share.toCommunity).toBeTruthy();
+    expect(social.share.bibleBody).toBeTruthy();
+    expect(social.companion.classes.title).toBeTruthy();
+  });
+});

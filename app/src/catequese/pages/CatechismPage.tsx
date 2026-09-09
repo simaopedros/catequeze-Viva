@@ -20,6 +20,8 @@ import {
   getCatechismEntry,
 } from "wasp/client/operations";
 import { useLocale } from "../../i18n/useLocale";
+import { PastoralCompanion } from "../components/social/PastoralCompanion";
+import { ShareToCommunityButton } from "../components/social/ShareToCommunityButton";
 
 const CATEGORY_KEYS = [
   "creed",
@@ -29,6 +31,65 @@ const CATEGORY_KEYS = [
   "virtues",
   "sin",
 ] as const;
+
+function CatechismEntryCard({
+  entry,
+  expanded,
+  onToggle,
+  registerRef,
+}: {
+  entry: { id: string; number: number; question: string; answer: string };
+  expanded: boolean;
+  onToggle: () => void;
+  registerRef?: (el: HTMLDivElement | null) => void;
+}) {
+  const { t } = useTranslation("social");
+
+  return (
+    <div
+      ref={registerRef}
+      className="rounded-sm border border-border/70 bg-white"
+    >
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-start justify-between gap-3 p-4 text-left"
+      >
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
+              {entry.number}
+            </span>
+            <p className="text-sm font-semibold tracking-tight text-brand-ink">
+              {entry.question}
+            </p>
+          </div>
+        </div>
+        {expanded ? (
+          <ChevronUp className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+        ) : (
+          <ChevronDown className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+        )}
+      </button>
+      {expanded ? (
+        <div className="space-y-3 px-4 pb-4">
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            {entry.answer}
+          </p>
+          <ShareToCommunityButton
+            body={t("share.catechismBody", {
+              number: entry.number,
+              question: entry.question,
+              answer: entry.answer,
+            })}
+            topic="formacao"
+            source="catechism"
+          />
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 export default function CatechismPage() {
   const { t } = useTranslation("catechism");
@@ -159,6 +220,8 @@ export default function CatechismPage() {
         }
       />
 
+      <PastoralCompanion surface="catechism" />
+
       {searchResults.length === 0 && (
         <div className="flex flex-wrap gap-2">
           {CATEGORY_KEYS.map((key) => (
@@ -202,40 +265,16 @@ export default function CatechismPage() {
             {t("resultsCount", { count: searchResults.length })}
           </p>
           {displayEntries.map((entry: any) => (
-            <div
+            <CatechismEntryCard
               key={entry.id}
-              ref={(el) => {
+              entry={entry}
+              expanded={Boolean(expanded[entry.id])}
+              onToggle={() => toggle(entry.id)}
+              registerRef={(el) => {
                 if (el) entryRefs.current.set(entry.id, el);
                 else entryRefs.current.delete(entry.id);
               }}
-              className="rounded-sm border border-border/70 bg-white"
-            >
-              <button
-                onClick={() => toggle(entry.id)}
-                className="w-full text-left p-4 flex items-start justify-between gap-3"
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
-                      {entry.number}
-                    </span>
-                    <p className="text-sm font-semibold tracking-tight text-brand-ink">
-                      {entry.question}
-                    </p>
-                  </div>
-                  {expanded[entry.id] && (
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                      {entry.answer}
-                    </p>
-                  )}
-                </div>
-                {expanded[entry.id] ? (
-                  <ChevronUp className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                )}
-              </button>
-            </div>
+            />
           ))}
         </div>
       ) : entries.length > 0 ? (
@@ -247,36 +286,12 @@ export default function CatechismPage() {
             })}
           </p>
           {entries.map((entry: any) => (
-            <div
+            <CatechismEntryCard
               key={entry.id}
-              className="rounded-sm border border-border/70 bg-white"
-            >
-              <button
-                onClick={() => toggle(entry.id)}
-                className="w-full text-left p-4 flex items-start justify-between gap-3"
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
-                      {entry.number}
-                    </span>
-                    <p className="text-sm font-semibold tracking-tight text-brand-ink">
-                      {entry.question}
-                    </p>
-                  </div>
-                  {expanded[entry.id] && (
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                      {entry.answer}
-                    </p>
-                  )}
-                </div>
-                {expanded[entry.id] ? (
-                  <ChevronUp className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                )}
-              </button>
-            </div>
+              entry={entry}
+              expanded={Boolean(expanded[entry.id])}
+              onToggle={() => toggle(entry.id)}
+            />
           ))}
         </div>
       ) : category ? (

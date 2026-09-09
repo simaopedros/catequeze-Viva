@@ -119,11 +119,11 @@
       "b3": "Progress visible to coordination and guardians"
     },
     "rhema": {
-      "title": "Rhema: the pastoral network for catechesis",
-      "desc": "Share testimonies and meetings as shorts, follow catechists, and discover uplifting content inside the platform.",
-      "b1": "Vertical shorts feed with faith reactions",
-      "b2": "Public profiles with @handle and search",
-      "b3": "For you, trending, and people you follow"
+      "title": "Rhema Community, in the same rhythm as catechesis",
+      "desc": "The pastoral network lives alongside the class, the calendar, and the library. After the meeting, the testimony continues in the Community — without leaving the platform.",
+      "b1": "Dashboard, classes, and Community in the same daily flow",
+      "b2": "Share meetings, Scripture, and the library in one tap",
+      "b3": "Families also follow the Community in the portal"
     }
   },
   "mission_title": "Meeting prepared. Class embraced. Faith shared with the families.",
@@ -133,7 +133,7 @@
   "personas": [
     {
       "title": "Catechist",
-      "desc": "Organize your class, prepare meetings with the pastoral library, and take attendance on mobile."
+      "desc": "Organize your class, prepare meetings with the pastoral library, and share what you lived in the Community."
     },
     {
       "title": "Parish Coordinator",
@@ -141,7 +141,7 @@
     },
     {
       "title": "Parents & Guardians",
-      "desc": "Follow attendance, notices, documents, and justifications through the portal."
+      "desc": "Follow attendance, notices, documents, and the Community through the portal."
     },
     {
       "title": "Pastor",

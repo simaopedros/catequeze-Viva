@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SocialCommunityBoard } from "../components/social/SocialCommunityBoard";
+import { useUserContext } from "../../client/hooks/useUserContext";
 
 /** Authenticated Comunidade feed: read for everyone, publish for subscribers. */
 export default function CommunityPage() {
   const { t } = useTranslation("social");
+  const { userRole, isAdmin } = useUserContext();
   const [topicSlug, setTopicSlug] = useState<string | null>(null);
 
   return (
@@ -17,6 +19,8 @@ export default function CommunityPage() {
       membersTo="/app/comunidade"
       promoTo="/pricing"
       subtitle={t("subtitle")}
+      viewerRole={userRole}
+      viewerIsAdmin={isAdmin}
     />
   );
 }

@@ -27,7 +27,9 @@
     "handle": "Handle",
     "handle_placeholder": "your_handle",
     "bio": "Bio",
-    "bio_placeholder": "A short line about your catechesis"
+    "bio_placeholder": "A short line about your catechesis",
+    "open_profile": "View Community profile",
+    "open_community": "Open Community"
   },
   "change_password": "Change password",
   "current_password": "Current password",

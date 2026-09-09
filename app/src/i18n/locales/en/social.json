@@ -1,12 +1,12 @@
 {
   "title": "Community",
   "eyebrow": "Community",
-  "subtitle": "A space for catechists to exchange experiences, receive support and grow together in faith.",
-  "publicSubtitle": "A space for catechists to exchange experiences, receive support and grow together in faith.",
+  "subtitle": "A space where catechesis continues after class, the calendar, and the library.",
+  "publicSubtitle": "A space where catechesis continues after class, the calendar, and the library.",
   "hero": {
     "eyebrow": "COMMUNITY",
     "title": "Together on the mission to evangelize",
-    "description": "A space for catechists to exchange experiences, receive support and grow together in faith."
+    "description": "A space where catechesis continues after class, the calendar, and the library."
   },
   "rail": {
     "members": "Community members",
@@ -25,6 +25,7 @@
     "toolClasses": "Classes",
     "toolLibrary": "Library",
     "toolBible": "Bible",
+    "toolCatechism": "Catechism",
     "toolMessages": "Messages",
     "missionTitle": "Together we are stronger",
     "missionSubtitle": "Share, inspire, evangelize!"
@@ -103,7 +104,15 @@
     "copied": "Link copied",
     "whatsapp": "WhatsApp",
     "count": "{{count}} share",
-    "count_plural": "{{count}} shares"
+    "count_plural": "{{count}} shares",
+    "toCommunity": "Share to Community",
+    "draftHint": "Publishing from catechesis",
+    "meetingBody": "We just finished the meeting “{{title}}”{{classSuffix}}. Peace be with you!",
+    "contentBody": "Sharing a library resource: {{title}}",
+    "bibleBody": "Scripture: {{reference}}",
+    "bibleVerseBody": "{{reference}} — “{{text}}”",
+    "catechismBody": "CCC {{number}} — {{question}}\n\n{{answer}}",
+    "directoryBody": "Compendium §{{number}}{{titleSuffix}}\n\n{{content}}"
   },
   "post": {
     "delete": "Delete post",
@@ -182,12 +191,6 @@
     "empty": "No shorts yet",
     "emptyDescription": "Publish a short video to appear in this tab."
   },
-  "share": {
-    "toCommunity": "Share to Community",
-    "draftHint": "Publishing from catechesis",
-    "meetingBody": "We just finished the meeting “{{title}}”{{classSuffix}}. Peace be with you!",
-    "contentBody": "Sharing a library resource: {{title}}"
-  },
   "companion": {
     "cta": "Open Community",
     "announcements": {
@@ -213,6 +216,22 @@
     "bible": {
       "title": "Scripture and Community",
       "body": "Read the Word here. If you wish, share an inspiration in the Community."
+    },
+    "classes": {
+      "title": "Class and Community",
+      "body": "The class is the in-person meeting. The Community is where what you lived there keeps bearing fruit."
+    },
+    "catechism": {
+      "title": "Catechism and Community",
+      "body": "Study the Catechism here. If an answer lights up your class, share it in the Community."
+    },
+    "sacraments": {
+      "title": "Sacraments and Community",
+      "body": "The sacramental journey is pastoral accompaniment. The Community is the public witness of that faith."
+    },
+    "directory": {
+      "title": "Compendium and Community",
+      "body": "The Compendium deepens doctrine. The Community is where it becomes conversation."
     }
   }
 }

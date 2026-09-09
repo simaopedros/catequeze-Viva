@@ -21,11 +21,14 @@ import {
   getDirectoryEntry,
 } from "wasp/client/operations";
 import { useLocale } from "../../i18n/useLocale";
+import { PastoralCompanion } from "../components/social/PastoralCompanion";
+import { ShareToCommunityButton } from "../components/social/ShareToCommunityButton";
 
 const PART_KEYS = ["I", "II", "III"] as const;
 
 export default function DirectoryPage() {
   const { t } = useTranslation("common");
+  const { t: ts } = useTranslation("social");
   const { currentLocale } = useLocale();
   const [searchParams] = useSearchParams();
 
@@ -120,6 +123,7 @@ export default function DirectoryPage() {
         title={t("directory.title")}
         subtitle={t("directory.subtitle")}
       />
+      <PastoralCompanion surface="directory" />
       <div className="flex gap-3">
         <input
           value={searchQuery}
@@ -213,11 +217,12 @@ export default function DirectoryPage() {
               className="rounded-sm border border-border/70 bg-white"
             >
               <button
+                type="button"
                 onClick={() => toggle(entry.id)}
-                className="w-full text-left p-4 flex items-start justify-between gap-3"
+                className="flex w-full items-start justify-between gap-3 p-4 text-left"
               >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
                       §{entry.number}
                     </span>
@@ -232,11 +237,6 @@ export default function DirectoryPage() {
                       </span>
                     )}
                   </div>
-                  {expanded[entry.id] && (
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                      {entry.content}
-                    </p>
-                  )}
                 </div>
                 {expanded[entry.id] ? (
                   <ChevronUp className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
@@ -244,6 +244,22 @@ export default function DirectoryPage() {
                   <ChevronDown className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
                 )}
               </button>
+              {expanded[entry.id] ? (
+                <div className="space-y-3 px-4 pb-4">
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {entry.content}
+                  </p>
+                  <ShareToCommunityButton
+                    body={ts("share.directoryBody", {
+                      number: entry.number,
+                      titleSuffix: entry.title ? ` — ${entry.title}` : "",
+                      content: entry.content,
+                    })}
+                    topic="formacao"
+                    source="directory"
+                  />
+                </div>
+              ) : null}
             </div>
           ))}
         </div>

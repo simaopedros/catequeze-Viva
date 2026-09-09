@@ -173,12 +173,12 @@ export const SHOWCASES: FeatureShowcaseItem[] = [
   },
   {
     id: 'rhema',
-    title: 'Rhema — rede pastoral de vídeos',
-    desc: 'Partilhe testemunhos e encontros em shorts, siga catequistas e descubra conteúdo edificante dentro da plataforma.',
+    title: 'Comunidade Rhema, no mesmo ritmo da catequese',
+    desc: 'A rede pastoral vive junto da turma, da agenda e da biblioteca. Depois do encontro, o testemunho continua na Comunidade — sem sair da plataforma.',
     bullets: [
-      'Feed vertical de shorts com reações de fé',
-      'Perfis públicos com @handle e busca',
-      'Para você, em alta e quem você segue',
+      'Painel, turmas e Comunidade no mesmo dia a dia',
+      'Partilhe encontros, a Palavra e a biblioteca num toque',
+      'Famílias também acompanham a Comunidade no portal',
     ],
     direction: 'row',
   },

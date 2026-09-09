@@ -1,12 +1,12 @@
 {
   "title": "Comunidad",
   "eyebrow": "Comunidad",
-  "subtitle": "Un espacio para que los catequistas intercambien experiencias, reciban apoyo y crezcan juntos en la fe.",
-  "publicSubtitle": "Un espacio para que los catequistas intercambien experiencias, reciban apoyo y crezcan juntos en la fe.",
+  "subtitle": "El espacio donde la catequesis continúa después del grupo, la agenda y la biblioteca.",
+  "publicSubtitle": "El espacio donde la catequesis continúa después del grupo, la agenda y la biblioteca.",
   "hero": {
     "eyebrow": "COMUNIDAD",
     "title": "Juntos en la misión de evangelizar",
-    "description": "Un espacio para que los catequistas intercambien experiencias, reciban apoyo y crezcan juntos en la fe."
+    "description": "El espacio donde la catequesis continúa después del grupo, la agenda y la biblioteca."
   },
   "rail": {
     "members": "Miembros de la comunidad",
@@ -25,6 +25,7 @@
     "toolClasses": "Grupos",
     "toolLibrary": "Biblioteca",
     "toolBible": "Biblia",
+    "toolCatechism": "Catecismo",
     "toolMessages": "Mensajes",
     "missionTitle": "Juntos somos más fuertes",
     "missionSubtitle": "¡Comparte, inspira, evangeliza!"
@@ -103,7 +104,15 @@
     "copied": "Enlace copiado",
     "whatsapp": "WhatsApp",
     "count": "{{count}} compartición",
-    "count_plural": "{{count}} comparticiones"
+    "count_plural": "{{count}} comparticiones",
+    "toCommunity": "Compartir en la Comunidad",
+    "draftHint": "Publicando desde la catequesis",
+    "meetingBody": "Terminamos el encuentro «{{title}}»{{classSuffix}}. ¡Paz y bien!",
+    "contentBody": "Comparto un recurso de la biblioteca: {{title}}",
+    "bibleBody": "Palabra: {{reference}}",
+    "bibleVerseBody": "{{reference}} — «{{text}}»",
+    "catechismBody": "CIC {{number}} — {{question}}\n\n{{answer}}",
+    "directoryBody": "Compendio §{{number}}{{titleSuffix}}\n\n{{content}}"
   },
   "post": {
     "delete": "Borrar publicación",
@@ -182,12 +191,6 @@
     "empty": "Todavía no hay shorts",
     "emptyDescription": "Publica un video corto para aparecer en esta pestaña."
   },
-  "share": {
-    "toCommunity": "Compartir en la Comunidad",
-    "draftHint": "Publicando desde la catequesis",
-    "meetingBody": "Terminamos el encuentro «{{title}}»{{classSuffix}}. ¡Paz y bien!",
-    "contentBody": "Comparto un recurso de la biblioteca: {{title}}"
-  },
   "companion": {
     "cta": "Abrir Comunidad",
     "announcements": {
@@ -213,6 +216,22 @@
     "bible": {
       "title": "Palabra y Comunidad",
       "body": "Lee la Palabra aquí. Si quieres, comparte una inspiración en la Comunidad."
+    },
+    "classes": {
+      "title": "Grupo y Comunidad",
+      "body": "El grupo es el encuentro presencial. La Comunidad es donde lo vivido sigue dando fruto."
+    },
+    "catechism": {
+      "title": "Catecismo y Comunidad",
+      "body": "Estudia el Catecismo aquí. Si una respuesta ilumina tu grupo, compártela en la Comunidad."
+    },
+    "sacraments": {
+      "title": "Sacramentos y Comunidad",
+      "body": "El itinerario sacramental es acompañamiento pastoral. La Comunidad es el testimonio público de esa fe."
+    },
+    "directory": {
+      "title": "Compendio y Comunidad",
+      "body": "El Compendio profundiza la doctrina. La Comunidad es donde se vuelve conversación."
     }
   }
 }

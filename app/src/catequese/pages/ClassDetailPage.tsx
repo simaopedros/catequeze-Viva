@@ -74,6 +74,7 @@ import { useClassStatusMap } from "../../i18n/useLabels";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
 import { formatClassSchedule } from "../../shared/classSchedule";
+import { PastoralCompanion } from "../components/social/PastoralCompanion";
 
 export default function ClassDetailPage() {
   const { t } = useTranslation("classes");
@@ -566,6 +567,8 @@ export default function ClassDetailPage() {
             ]}
           />
         </div>
+
+        <PastoralCompanion surface="classes" />
 
         {canManageClass && (
           <div className="flex flex-wrap gap-2">

@@ -2894,7 +2894,7 @@ export const dashboard_es = {
     "fact_attendance": "Asistencia",
     "rhema": {
       "title": "Rhema",
-      "subtitle": "La red pastoral de la catequesis: testimonios, shorts y a quienes sigues.",
+      "subtitle": "La Comunidad en el mismo día a día del grupo: testimonios, shorts y a quienes sigues.",
       "cta": "Abrir Comunidad",
       "empty": "Todavía no hay publicaciones. Sé el primero en compartir."
     },
@@ -3776,11 +3776,11 @@ export const landing_es = {
         "b3": "Progreso visible para coordinación y responsables"
       },
       "rhema": {
-        "title": "Rhema: la red pastoral de la catequesis",
-        "desc": "Comparte testimonios y encuentros en shorts, sigue catequistas y descubre contenido edificante dentro de la plataforma.",
-        "b1": "Feed vertical de shorts con reacciones de fe",
-        "b2": "Perfiles públicos con @handle y búsqueda",
-        "b3": "Para ti, en tendencia y a quienes sigues"
+        "title": "Comunidad Rhema, al mismo ritmo de la catequesis",
+        "desc": "La red pastoral vive junto al grupo, la agenda y la biblioteca. Después del encuentro, el testimonio sigue en la Comunidad — sin salir de la plataforma.",
+        "b1": "Panel, grupos y Comunidad en el mismo día a día",
+        "b2": "Comparte encuentros, la Palabra y la biblioteca en un toque",
+        "b3": "Las familias también siguen la Comunidad en el portal"
       }
     },
     "mission_title": "Encuentro preparado. Grupo acogido. Fe compartida con las familias.",
@@ -3790,7 +3790,7 @@ export const landing_es = {
     "personas": [
       {
         "title": "Catequista",
-        "desc": "Organiza tu grupo, prepara encuentros con la biblioteca pastoral y pasa lista desde el celular."
+        "desc": "Organiza tu grupo, prepara encuentros con la biblioteca pastoral y comparte lo que viviste en la Comunidad."
       },
       {
         "title": "Coordinador Parroquial",
@@ -3798,7 +3798,7 @@ export const landing_es = {
       },
       {
         "title": "Padres y Responsables",
-        "desc": "Acompaña asistencia, avisos, documentos y justificaciones desde el portal."
+        "desc": "Acompaña asistencia, avisos, documentos y la Comunidad desde el portal."
       },
       {
         "title": "Párroco",
@@ -4660,11 +4660,11 @@ export const landingSistema_es = {
     ],
     "features": {
       "rhema": {
-        "title": "Rhema: la red pastoral de la catequesis",
-        "desc": "Comparte testimonios y encuentros en shorts, sigue catequistas y descubre contenido edificante dentro de la plataforma.",
-        "b1": "Feed vertical de shorts con reacciones de fe",
-        "b2": "Perfiles públicos con @handle y búsqueda",
-        "b3": "Para ti, en tendencia y a quienes sigues"
+        "title": "Comunidad Rhema, al mismo ritmo de la catequesis",
+        "desc": "La red pastoral vive junto al grupo, la agenda y la biblioteca. Después del encuentro, el testimonio sigue en la Comunidad — sin salir de la plataforma.",
+        "b1": "Panel, grupos y Comunidad en el mismo día a día",
+        "b2": "Comparte encuentros, la Palabra y la biblioteca en un toque",
+        "b3": "Las familias también siguen la Comunidad en el portal"
       }
     },
     "ai_showcase_title": "Y también: preparación de encuentros con asistencia editorial",
@@ -6215,7 +6215,9 @@ export const settings_es = {
       "handle": "Handle",
       "handle_placeholder": "tu_handle",
       "bio": "Bio",
-      "bio_placeholder": "Una frase sobre tu catequesis"
+      "bio_placeholder": "Una frase sobre tu catequesis",
+      "open_profile": "Ver perfil en la Comunidad",
+      "open_community": "Abrir Comunidad"
     },
     "change_password": "Cambiar contraseña",
     "current_password": "Contraseña actual",
@@ -6257,12 +6259,12 @@ export const settings_es = {
 export const social_es = {
     "title": "Comunidad",
     "eyebrow": "Comunidad",
-    "subtitle": "Un espacio para que los catequistas intercambien experiencias, reciban apoyo y crezcan juntos en la fe.",
-    "publicSubtitle": "Un espacio para que los catequistas intercambien experiencias, reciban apoyo y crezcan juntos en la fe.",
+    "subtitle": "El espacio donde la catequesis continúa después del grupo, la agenda y la biblioteca.",
+    "publicSubtitle": "El espacio donde la catequesis continúa después del grupo, la agenda y la biblioteca.",
     "hero": {
       "eyebrow": "COMUNIDAD",
       "title": "Juntos en la misión de evangelizar",
-      "description": "Un espacio para que los catequistas intercambien experiencias, reciban apoyo y crezcan juntos en la fe."
+      "description": "El espacio donde la catequesis continúa después del grupo, la agenda y la biblioteca."
     },
     "rail": {
       "members": "Miembros de la comunidad",
@@ -6281,6 +6283,7 @@ export const social_es = {
       "toolClasses": "Grupos",
       "toolLibrary": "Biblioteca",
       "toolBible": "Biblia",
+      "toolCatechism": "Catecismo",
       "toolMessages": "Mensajes",
       "missionTitle": "Juntos somos más fuertes",
       "missionSubtitle": "¡Comparte, inspira, evangeliza!"
@@ -6354,10 +6357,20 @@ export const social_es = {
       "loginToComment": "Entra y suscríbete para comentar"
     },
     "share": {
+      "action": "Compartir",
+      "copyLink": "Copiar enlace",
+      "copied": "Enlace copiado",
+      "whatsapp": "WhatsApp",
+      "count": "{{count}} compartición",
+      "count_plural": "{{count}} comparticiones",
       "toCommunity": "Compartir en la Comunidad",
       "draftHint": "Publicando desde la catequesis",
       "meetingBody": "Terminamos el encuentro «{{title}}»{{classSuffix}}. ¡Paz y bien!",
-      "contentBody": "Comparto un recurso de la biblioteca: {{title}}"
+      "contentBody": "Comparto un recurso de la biblioteca: {{title}}",
+      "bibleBody": "Palabra: {{reference}}",
+      "bibleVerseBody": "{{reference}} — «{{text}}»",
+      "catechismBody": "CIC {{number}} — {{question}}\n\n{{answer}}",
+      "directoryBody": "Compendio §{{number}}{{titleSuffix}}\n\n{{content}}"
     },
     "post": {
       "delete": "Borrar publicación",
@@ -6461,6 +6474,22 @@ export const social_es = {
       "bible": {
         "title": "Palabra y Comunidad",
         "body": "Lee la Palabra aquí. Si quieres, comparte una inspiración en la Comunidad."
+      },
+      "classes": {
+        "title": "Grupo y Comunidad",
+        "body": "El grupo es el encuentro presencial. La Comunidad es donde lo vivido sigue dando fruto."
+      },
+      "catechism": {
+        "title": "Catecismo y Comunidad",
+        "body": "Estudia el Catecismo aquí. Si una respuesta ilumina tu grupo, compártela en la Comunidad."
+      },
+      "sacraments": {
+        "title": "Sacramentos y Comunidad",
+        "body": "El itinerario sacramental es acompañamiento pastoral. La Comunidad es el testimonio público de esa fe."
+      },
+      "directory": {
+        "title": "Compendio y Comunidad",
+        "body": "El Compendio profundiza la doctrina. La Comunidad es donde se vuelve conversación."
       }
     }
   } as const;

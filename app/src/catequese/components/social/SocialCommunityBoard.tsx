@@ -27,6 +27,8 @@ export function SocialCommunityBoard({
   membersTo = "/comunidade",
   promoTo = "/pricing",
   subtitle,
+  viewerRole,
+  viewerIsAdmin = false,
 }: {
   topicSlug: string | null;
   onSelectTopic: (slug: string | null) => void;
@@ -36,6 +38,8 @@ export function SocialCommunityBoard({
   membersTo?: string;
   promoTo?: string;
   subtitle?: string;
+  viewerRole?: string;
+  viewerIsAdmin?: boolean;
 }) {
   const { t } = useTranslation("social");
   const { data: user } = useAuth();
@@ -148,6 +152,8 @@ export function SocialCommunityBoard({
           membersTo={membersTo}
           promoTo={promoTo}
           signedIn={Boolean(user)}
+          viewerRole={viewerRole}
+          viewerIsAdmin={viewerIsAdmin}
         />
       </div>
     </div>

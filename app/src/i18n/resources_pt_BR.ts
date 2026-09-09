@@ -2894,7 +2894,7 @@ export const dashboard_pt_BR = {
     "fact_attendance": "Presença",
     "rhema": {
       "title": "Rhema",
-      "subtitle": "A rede pastoral da catequese: testemunhos, shorts e quem você segue.",
+      "subtitle": "A Comunidade no mesmo dia a dia da turma: testemunhos, shorts e quem você segue.",
       "cta": "Abrir Comunidade",
       "empty": "Ainda não há publicações. Seja o primeiro a partilhar."
     },
@@ -3776,11 +3776,11 @@ export const landing_pt_BR = {
         "b3": "Progresso visível para coordenação e responsáveis"
       },
       "rhema": {
-        "title": "Rhema: a rede pastoral da catequese",
-        "desc": "Partilhe testemunhos e encontros em shorts, siga catequistas e descubra conteúdo edificante dentro da plataforma.",
-        "b1": "Feed vertical de shorts com reações de fé",
-        "b2": "Perfis públicos com @handle e busca",
-        "b3": "Para você, em alta e quem você segue"
+        "title": "Comunidade Rhema, no mesmo ritmo da catequese",
+        "desc": "A rede pastoral vive junto da turma, da agenda e da biblioteca. Depois do encontro, o testemunho continua na Comunidade — sem sair da plataforma.",
+        "b1": "Painel, turmas e Comunidade no mesmo dia a dia",
+        "b2": "Partilhe encontros, a Palavra e a biblioteca num toque",
+        "b3": "Famílias também acompanham a Comunidade no portal"
       }
     },
     "mission_title": "Encontro preparado. Turma acolhida. Fé partilhada com as famílias.",
@@ -3790,7 +3790,7 @@ export const landing_pt_BR = {
     "personas": [
       {
         "title": "Catequista",
-        "desc": "Organize sua turma, prepare encontros com a biblioteca pastoral e registre presença pelo celular."
+        "desc": "Organize sua turma, prepare encontros com a biblioteca pastoral e partilhe o que viveu na Comunidade."
       },
       {
         "title": "Coordenador Paroquial",
@@ -3798,7 +3798,7 @@ export const landing_pt_BR = {
       },
       {
         "title": "Pais e Responsáveis",
-        "desc": "Acompanhe presença, avisos, documentos e justificativas pelo portal."
+        "desc": "Acompanhe presença, avisos, documentos e a Comunidade pelo portal."
       },
       {
         "title": "Pároco",
@@ -4660,11 +4660,11 @@ export const landingSistema_pt_BR = {
     ],
     "features": {
       "rhema": {
-        "title": "Rhema: a rede pastoral da catequese",
-        "desc": "Partilhe testemunhos e encontros em shorts, siga catequistas e descubra conteúdo edificante dentro da plataforma.",
-        "b1": "Feed vertical de shorts com reações de fé",
-        "b2": "Perfis públicos com @handle e busca",
-        "b3": "Para você, em alta e quem você segue"
+        "title": "Comunidade Rhema, no mesmo ritmo da catequese",
+        "desc": "A rede pastoral vive junto da turma, da agenda e da biblioteca. Depois do encontro, o testemunho continua na Comunidade — sem sair da plataforma.",
+        "b1": "Painel, turmas e Comunidade no mesmo dia a dia",
+        "b2": "Partilhe encontros, a Palavra e a biblioteca num toque",
+        "b3": "Famílias também acompanham a Comunidade no portal"
       }
     },
     "ai_showcase_title": "E também: preparação de encontros com assistência editorial",
@@ -6215,7 +6215,9 @@ export const settings_pt_BR = {
       "handle": "Handle",
       "handle_placeholder": "seu_handle",
       "bio": "Bio",
-      "bio_placeholder": "Uma frase sobre a sua catequese"
+      "bio_placeholder": "Uma frase sobre a sua catequese",
+      "open_profile": "Ver perfil na Comunidade",
+      "open_community": "Abrir Comunidade"
     },
     "change_password": "Trocar senha",
     "current_password": "Senha atual",
@@ -6257,12 +6259,12 @@ export const settings_pt_BR = {
 export const social_pt_BR = {
     "title": "Comunidade",
     "eyebrow": "Comunidade",
-    "subtitle": "Um espaço para catequistas trocarem experiências, receberem apoio e crescerem juntos na fé.",
-    "publicSubtitle": "Um espaço para catequistas trocarem experiências, receberem apoio e crescerem juntos na fé.",
+    "subtitle": "O espaço onde a catequese continua depois da turma, da agenda e da biblioteca.",
+    "publicSubtitle": "O espaço onde a catequese continua depois da turma, da agenda e da biblioteca.",
     "hero": {
       "eyebrow": "COMUNIDADE",
       "title": "Juntos na missão de evangelizar",
-      "description": "Um espaço para catequistas trocarem experiências, receberem apoio e crescerem juntos na fé."
+      "description": "O espaço onde a catequese continua depois da turma, da agenda e da biblioteca."
     },
     "rail": {
       "members": "Membros da comunidade",
@@ -6281,6 +6283,7 @@ export const social_pt_BR = {
       "toolClasses": "Turmas",
       "toolLibrary": "Biblioteca",
       "toolBible": "Bíblia",
+      "toolCatechism": "Catecismo",
       "toolMessages": "Mensagens",
       "missionTitle": "Juntos somos mais fortes",
       "missionSubtitle": "Compartilhe, inspire, evangelize!"
@@ -6354,10 +6357,20 @@ export const social_pt_BR = {
       "loginToComment": "Entre e assine para comentar"
     },
     "share": {
+      "action": "Compartilhar",
+      "copyLink": "Copiar link",
+      "copied": "Link copiado",
+      "whatsapp": "WhatsApp",
+      "count": "{{count}} compartilhamento",
+      "count_plural": "{{count}} compartilhamentos",
       "toCommunity": "Partilhar na Comunidade",
       "draftHint": "A publicar a partir da catequese",
       "meetingBody": "Acabámos o encontro «{{title}}»{{classSuffix}}. Paz e bem!",
-      "contentBody": "Partilho um recurso da biblioteca: {{title}}"
+      "contentBody": "Partilho um recurso da biblioteca: {{title}}",
+      "bibleBody": "Palavra: {{reference}}",
+      "bibleVerseBody": "{{reference}} — «{{text}}»",
+      "catechismBody": "CIC {{number}} — {{question}}\n\n{{answer}}",
+      "directoryBody": "Compêndio §{{number}}{{titleSuffix}}\n\n{{content}}"
     },
     "post": {
       "delete": "Apagar publicação",
@@ -6461,6 +6474,22 @@ export const social_pt_BR = {
       "bible": {
         "title": "Palavra e Comunidade",
         "body": "Leia a Palavra aqui. Se quiser, partilhe uma inspiração na Comunidade."
+      },
+      "classes": {
+        "title": "Turma e Comunidade",
+        "body": "A turma é o encontro presencial. A Comunidade é onde o que viveu ali continua a dar fruto."
+      },
+      "catechism": {
+        "title": "Catecismo e Comunidade",
+        "body": "Estude o Catecismo aqui. Se uma resposta iluminar a sua turma, partilhe na Comunidade."
+      },
+      "sacraments": {
+        "title": "Sacramentos e Comunidade",
+        "body": "A jornada sacramental é acompanhamento pastoral. A Comunidade é o testemunho público dessa fé."
+      },
+      "directory": {
+        "title": "Compêndio e Comunidade",
+        "body": "O Compêndio aprofunda a doutrina. A Comunidade é onde ela se torna conversa."
       }
     }
   } as const;

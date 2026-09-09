@@ -10,7 +10,11 @@ export type PastoralCompanionSurface =
   | "calendar"
   | "library"
   | "formation"
-  | "bible";
+  | "bible"
+  | "classes"
+  | "catechism"
+  | "sacraments"
+  | "directory";
 
 export function PastoralCompanion({
   surface,

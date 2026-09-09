@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   BookMarked,
   BookOpen,
+  BookText,
   CalendarDays,
   Flame,
   MessageSquareText,
@@ -13,6 +14,27 @@ import { useQuery, getSocialCommunityPulse } from "wasp/client/operations";
 import { Button } from "../../../client/components/ui/button";
 import { SocialSearch } from "./SocialSearch";
 import { SocialAvatar } from "./SocialAvatar";
+import {
+  getSocialRailToolIds,
+  SOCIAL_RAIL_TOOL_PATHS,
+  type SocialRailToolId,
+} from "../../../shared/socialRail";
+
+const TOOL_ICONS: Record<SocialRailToolId, typeof Users> = {
+  classes: Users,
+  library: BookOpen,
+  bible: BookMarked,
+  catechism: BookText,
+  messages: MessageSquareText,
+};
+
+const TOOL_LABEL_KEYS: Record<SocialRailToolId, string> = {
+  classes: "rail.toolClasses",
+  library: "rail.toolLibrary",
+  bible: "rail.toolBible",
+  catechism: "rail.toolCatechism",
+  messages: "rail.toolMessages",
+};
 
 export function SocialRail({
   onSelectTopic,
@@ -20,12 +42,16 @@ export function SocialRail({
   membersTo = "/comunidade",
   promoTo = "/pricing",
   signedIn = false,
+  viewerRole,
+  viewerIsAdmin = false,
 }: {
   onSelectTopic?: (slug: string) => void;
   calendarTo?: string;
   membersTo?: string;
   promoTo?: string;
   signedIn?: boolean;
+  viewerRole?: string;
+  viewerIsAdmin?: boolean;
 }) {
   const { t } = useTranslation("social");
   const { data } = useQuery(getSocialCommunityPulse);
@@ -38,28 +64,16 @@ export function SocialRail({
         b.postCount - a.postCount,
     )
     .slice(0, 5);
-  const tools = [
-    {
-      to: signedIn ? "/app/classes" : "/login",
-      label: t("rail.toolClasses"),
-      icon: Users,
-    },
-    {
-      to: signedIn ? "/app/content-library" : "/login",
-      label: t("rail.toolLibrary"),
-      icon: BookOpen,
-    },
-    {
-      to: signedIn ? "/app/bible" : "/login",
-      label: t("rail.toolBible"),
-      icon: BookMarked,
-    },
-    {
-      to: signedIn ? "/app/messages" : "/login",
-      label: t("rail.toolMessages"),
-      icon: MessageSquareText,
-    },
-  ];
+  const tools = getSocialRailToolIds({
+    signedIn,
+    role: viewerRole,
+    isAdmin: viewerIsAdmin,
+  }).map((id) => ({
+    id,
+    to: signedIn ? SOCIAL_RAIL_TOOL_PATHS[id] : "/login",
+    label: t(TOOL_LABEL_KEYS[id]),
+    icon: TOOL_ICONS[id],
+  }));
 
   return (
     <aside className="space-y-3" data-testid="community-rail">
@@ -199,9 +213,10 @@ export function SocialRail({
         </div>
         <ul className="grid grid-cols-2 gap-2">
           {tools.map((tool) => (
-            <li key={tool.to + tool.label}>
+            <li key={tool.id}>
               <Link
                 to={tool.to}
+                data-testid={`community-rail-tool-${tool.id}`}
                 className="flex items-center gap-2 rounded-lg border border-border/70 px-2.5 py-2 text-[11px] font-semibold text-brand-ink hover:bg-muted/50"
               >
                 <tool.icon className="h-4 w-4 shrink-0 text-muted-foreground" />
