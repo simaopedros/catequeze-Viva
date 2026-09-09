@@ -81,7 +81,7 @@ function VideoItem({ media }: { media: SocialMediaItem }) {
   return (
     <MediaFrame className="aspect-video">
       <iframe
-        src={media.embedUrl}
+        src={media.embedUrl ?? undefined}
         title={media.altText || t("title")}
         loading="lazy"
         allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"

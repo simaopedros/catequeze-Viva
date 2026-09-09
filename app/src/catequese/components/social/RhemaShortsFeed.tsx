@@ -249,7 +249,7 @@ export function RhemaShortsFeed({
                   className="absolute inset-0 h-full w-full border-0"
                 />
               ) : video?.videoUrl ? (
-                <StoredShortVideo src={video.videoUrl} active={active} />
+                <StoredShortVideo src={video.videoUrl ?? ""} active={active} />
               ) : null}
 
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 text-white">
