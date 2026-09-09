@@ -811,7 +811,8 @@ export const ai_es = {
       "elapsed": "{{seconds}}s",
       "keep_page_open": "Suele tardar entre 10 y 40 segundos. Mantén esta página abierta.",
       "slow_hint": "Está tardando más de lo habitual. Seguimos intentando hasta 2 minutos; si falla podrás reintentar."
-    }
+    },
+    "share_community": "Compartir en la Comunidad"
   } as const;
 
 export const attendance_es = {
@@ -1117,7 +1118,8 @@ export const bible_es = {
     "copy_reference": "Copiar referencia",
     "reference_copied": "¡Referencia copiada!",
     "no_favorites": "Ningún versículo favorito aún.",
-    "no_recent": "Ninguna lectura reciente."
+    "no_recent": "Ninguna lectura reciente.",
+    "share_verse": "Compartir versículo en la Comunidad"
   } as const;
 
 export const billing_es = {
@@ -1670,7 +1672,8 @@ export const catechism_es = {
       "prayer": "La Oración",
       "virtues": "Las Virtudes",
       "sin": "El Pecado"
-    }
+    },
+    "share_entry": "Compartir en la Comunidad"
   } as const;
 
 export const classes_es = {
@@ -6206,13 +6209,26 @@ export const settings_es = {
     "email_pref_lifecycle": "Consejos de activación, prueba y retorno a la cuenta",
     "email_pref_product": "Novedades del producto y boletín",
     "email_pref_pastoral": "Comunicados de los grupos y de la parroquia",
-    "email_pref_saved": "Preferencias de correo guardadas."
+    "email_pref_saved": "Preferencias de correo guardadas.",
+    "social_profile": "Perfil en la Comunidad",
+    "social_profile_desc": "Tu @ público, bio y foto aparecen en las publicaciones y en el feed.",
+    "social_handle": "Nombre de usuario (@)",
+    "social_bio": "Bio",
+    "social_website": "Enlace personal",
+    "social_change_avatar": "Cambiar foto",
+    "social_avatar_updated": "Foto actualizada",
+    "social_avatar_error": "No se pudo actualizar la foto.",
+    "social_save": "Guardar perfil público",
+    "social_copy_link": "Copiar enlace del perfil",
+    "social_handle_required": "Define un @ para copiar el enlace.",
+    "social_blocked": "Cuentas bloqueadas",
+    "social_unblock": "Desbloquear"
   } as const;
 
 export const social_es = {
     "title": "Comunidad",
     "eyebrow": "Red pastoral",
-    "subtitle": "Comparte la vida de tu catequesis con imágenes y videos.",
+    "subtitle": "Comparte versículos, guiones, oraciones y la vida de tu catequesis.",
     "publicSubtitle": "Testimonios, catequesis y vida parroquial compartidos por catequistas de todo Brasil.",
     "feed": {
       "empty": "Todavía no hay publicaciones",
@@ -6230,6 +6246,7 @@ export const social_es = {
     "composer": {
       "title": "Nueva publicación",
       "placeholder": "Comparte un momento, una reflexión o un testimonio...",
+      "sharePlaceholder": "Añade una palabra sobre este contenido...",
       "addImage": "Imagen",
       "addVideo": "Video",
       "topics": "Temas",
@@ -6251,7 +6268,7 @@ export const social_es = {
     },
     "upsell": {
       "title": "Suscríbete para publicar",
-      "description": "Leer y compartir la Comunidad es libre. Para publicar imágenes y videos se necesita una suscripción activa.",
+      "description": "Leer, seguir y copiar enlaces es libre. Publicar versículos, documentos y medios en la Comunidad exige una suscripción activa.",
       "cta": "Ver planes",
       "quotaTitle": "Límite diario alcanzado",
       "quotaDescription": "Ya publicaste todo lo que tu plan permite hoy. Inténtalo mañana.",
@@ -6297,7 +6314,31 @@ export const social_es = {
       "notFound": "Publicación no encontrada",
       "notFoundDescription": "Puede haber sido eliminada por el autor o por la moderación.",
       "backToFeed": "Volver a la Comunidad",
-      "pendingReview": "En revisión por la moderación"
+      "pendingReview": "En revisión por la moderación",
+      "showMore": "Ver más",
+      "showLess": "Ver menos"
+    },
+    "nativeShare": {
+      "action": "Compartir en la Comunidad",
+      "dialogTitle": "Compartir en la Comunidad",
+      "previewFailed": "No se pudo preparar esta publicación.",
+      "kind": {
+        "verse": "Versículo",
+        "catechism": "Catecismo",
+        "document": "Biblioteca",
+        "ai": "Asistencia editorial",
+        "directory": "Directorio"
+      }
+    },
+    "profile": {
+      "notFound": "Perfil no encontrado",
+      "notFoundDescription": "Este @ no existe o el perfil no está disponible.",
+      "copyLink": "Copiar enlace del perfil",
+      "linkCopied": "Enlace del perfil copiado",
+      "edit": "Editar perfil",
+      "emptyPosts": "Aún no hay publicaciones",
+      "emptyPostsDescription": "Cuando esta persona publique, las partidas aparecen aquí.",
+      "stats": "{{posts}} publicaciones · {{followers}} seguidores · {{following}} siguiendo"
     },
     "report": {
       "title": "Denunciar contenido",
@@ -6347,7 +6388,11 @@ export const social_es = {
       "followSuccess": "Ahora sigues a {{name}}",
       "unfollowSuccess": "Dejaste de seguir a {{name}}",
       "emptyFollowing": "Todavía no sigues a nadie",
-      "emptyFollowingDescription": "Sigue catequistas para armar tu feed."
+      "emptyFollowingDescription": "Sigue catequistas para armar tu feed.",
+      "block": "Bloquear",
+      "unblock": "Desbloquear",
+      "blockSuccess": "Bloqueaste a {{name}}",
+      "unblockSuccess": "Desbloqueaste a {{name}}"
     }
   } as const;
 

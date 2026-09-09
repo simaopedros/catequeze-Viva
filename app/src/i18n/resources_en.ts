@@ -811,7 +811,8 @@ export const ai_en = {
       "elapsed": "{{seconds}}s",
       "keep_page_open": "This usually takes 10–40 seconds. Keep this page open.",
       "slow_hint": "Taking longer than usual. We keep trying for up to 2 minutes; if it fails you can retry."
-    }
+    },
+    "share_community": "Share to Community"
   } as const;
 
 export const attendance_en = {
@@ -1117,7 +1118,8 @@ export const bible_en = {
     "copy_reference": "Copy reference",
     "reference_copied": "Reference copied!",
     "no_favorites": "No favorite verses yet.",
-    "no_recent": "No recent readings."
+    "no_recent": "No recent readings.",
+    "share_verse": "Share verse to Community"
   } as const;
 
 export const billing_en = {
@@ -1670,7 +1672,8 @@ export const catechism_en = {
       "prayer": "Prayer",
       "virtues": "The Virtues",
       "sin": "Sin"
-    }
+    },
+    "share_entry": "Share to Community"
   } as const;
 
 export const classes_en = {
@@ -6206,13 +6209,26 @@ export const settings_en = {
     "email_pref_lifecycle": "Activation tips, trial, and win-back emails",
     "email_pref_product": "Product news and newsletter",
     "email_pref_pastoral": "Class and parish announcements",
-    "email_pref_saved": "Email preferences saved."
+    "email_pref_saved": "Email preferences saved.",
+    "social_profile": "Community profile",
+    "social_profile_desc": "Your public @, bio and photo appear on shares and in the feed.",
+    "social_handle": "Username (@)",
+    "social_bio": "Bio",
+    "social_website": "Personal link",
+    "social_change_avatar": "Change photo",
+    "social_avatar_updated": "Photo updated",
+    "social_avatar_error": "Could not update the photo.",
+    "social_save": "Save public profile",
+    "social_copy_link": "Copy profile link",
+    "social_handle_required": "Set an @ to copy the link.",
+    "social_blocked": "Blocked accounts",
+    "social_unblock": "Unblock"
   } as const;
 
 export const social_en = {
     "title": "Community",
     "eyebrow": "Pastoral network",
-    "subtitle": "Share the life of your catechesis with images and videos.",
+    "subtitle": "Share verses, lesson plans, prayers and the life of your catechesis.",
     "publicSubtitle": "Testimonies, catechesis and parish life shared by catechists across Brazil.",
     "feed": {
       "empty": "No posts yet",
@@ -6230,6 +6246,7 @@ export const social_en = {
     "composer": {
       "title": "New post",
       "placeholder": "Share a moment, a reflection or a testimony...",
+      "sharePlaceholder": "Add a word about this content...",
       "addImage": "Image",
       "addVideo": "Video",
       "topics": "Topics",
@@ -6251,7 +6268,7 @@ export const social_en = {
     },
     "upsell": {
       "title": "Subscribe to publish",
-      "description": "Reading and sharing the Community is free. Publishing images and videos requires an active subscription.",
+      "description": "Reading, following and copying links is free. Publishing verses, documents and media in the Community requires an active subscription.",
       "cta": "See plans",
       "quotaTitle": "Daily limit reached",
       "quotaDescription": "You have published everything your plan allows today. Try again tomorrow.",
@@ -6297,7 +6314,31 @@ export const social_en = {
       "notFound": "Post not found",
       "notFoundDescription": "It may have been removed by the author or by moderation.",
       "backToFeed": "Back to the Community",
-      "pendingReview": "Under moderation review"
+      "pendingReview": "Under moderation review",
+      "showMore": "Show more",
+      "showLess": "Show less"
+    },
+    "nativeShare": {
+      "action": "Share to Community",
+      "dialogTitle": "Share to Community",
+      "previewFailed": "Could not prepare this share.",
+      "kind": {
+        "verse": "Verse",
+        "catechism": "Catechism",
+        "document": "Library",
+        "ai": "Editorial assistance",
+        "directory": "Directory"
+      }
+    },
+    "profile": {
+      "notFound": "Profile not found",
+      "notFoundDescription": "This @ does not exist or the profile is unavailable.",
+      "copyLink": "Copy profile link",
+      "linkCopied": "Profile link copied",
+      "edit": "Edit profile",
+      "emptyPosts": "No posts yet",
+      "emptyPostsDescription": "When this person publishes, their shares appear here.",
+      "stats": "{{posts}} posts · {{followers}} followers · {{following}} following"
     },
     "report": {
       "title": "Report content",
@@ -6347,7 +6388,11 @@ export const social_en = {
       "followSuccess": "You now follow {{name}}",
       "unfollowSuccess": "You unfollowed {{name}}",
       "emptyFollowing": "You are not following anyone yet",
-      "emptyFollowingDescription": "Follow catechists to build your feed."
+      "emptyFollowingDescription": "Follow catechists to build your feed.",
+      "block": "Block",
+      "unblock": "Unblock",
+      "blockSuccess": "You blocked {{name}}",
+      "unblockSuccess": "You unblocked {{name}}"
     }
   } as const;
 
