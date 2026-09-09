@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { cn } from "../../../client/utils";
 
-export type SocialFeedMode = "recent" | "trending" | "following";
+export type SocialFeedMode = "foryou" | "shorts" | "recent" | "trending" | "following";
 
 export function SocialFeedTabs({
   mode,
@@ -16,6 +16,8 @@ export function SocialFeedTabs({
   const { t } = useTranslation("social");
 
   const tabs: { id: SocialFeedMode; label: string }[] = [
+    { id: "foryou", label: t("discovery.foryou") },
+    { id: "shorts", label: t("discovery.shorts") },
     { id: "recent", label: t("discovery.recent") },
     { id: "trending", label: t("discovery.trending") },
     ...(showFollowing
@@ -27,7 +29,7 @@ export function SocialFeedTabs({
     <div
       role="tablist"
       aria-label={t("title")}
-      className="inline-flex rounded-full border border-border bg-muted/50 p-1"
+      className="flex flex-wrap gap-1 rounded-full border border-border bg-muted/50 p-1"
     >
       {tabs.map((tab) => (
         <button

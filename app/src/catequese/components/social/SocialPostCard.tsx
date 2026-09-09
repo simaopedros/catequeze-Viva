@@ -33,12 +33,18 @@ export interface SocialPostItem {
   reactionCount: number;
   commentCount: number;
   shareCount: number;
-  author: { id: string; displayName: string; avatarUrl: string | null };
+  author: {
+    id: string;
+    displayName: string;
+    avatarUrl: string | null;
+    socialHandle?: string | null;
+  };
   parish: { id: string; name: string } | null;
   media: SocialMediaItem[];
   topics: { slug: string; name: string }[];
   viewerReaction: "AMEM" | "REZO" | "ALELUIA" | null;
   isOwn: boolean;
+  videoFormat?: "SHORT" | "LONG" | null;
 }
 
 function AuthorAvatar({ name, url }: { name: string; url: string | null }) {
@@ -137,8 +143,18 @@ export function SocialPostCard({
       <header className="flex items-start gap-3">
         <AuthorAvatar name={post.author.displayName} url={post.author.avatarUrl} />
         <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold leading-tight">{post.author.displayName}</p>
+          {post.author.socialHandle ? (
+            <Link
+              to={`/comunidade/u/${post.author.socialHandle}`}
+              className="truncate font-semibold leading-tight hover:underline"
+            >
+              {post.author.displayName}
+            </Link>
+          ) : (
+            <p className="truncate font-semibold leading-tight">{post.author.displayName}</p>
+          )}
           <p className="text-xs text-muted-foreground">
+            {post.author.socialHandle ? `@${post.author.socialHandle} · ` : ""}
             {formatRelativeTime(new Date(timestamp).toISOString(), currentLocale)}
             {post.parish ? ` · ${t("feed.postedIn", { parish: post.parish.name })}` : ""}
           </p>

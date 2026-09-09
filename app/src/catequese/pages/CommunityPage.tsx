@@ -13,12 +13,14 @@ import {
   SocialFeedTabs,
   type SocialFeedMode,
 } from "../components/social/SocialFeedTabs";
+import { SocialSearch } from "../components/social/SocialSearch";
+import { RhemaShortsFeed } from "../components/social/RhemaShortsFeed";
 
 /** Authenticated Comunidade feed: read for everyone, publish for subscribers. */
 export default function CommunityPage() {
   const { t } = useTranslation("social");
   const [topicSlug, setTopicSlug] = useState<string | null>(null);
-  const [mode, setMode] = useState<SocialFeedMode>("recent");
+  const [mode, setMode] = useState<SocialFeedMode>("foryou");
   const [reloadToken, setReloadToken] = useState(0);
 
   const { data: topics } = useQuery(getSocialTopics);
@@ -50,27 +52,50 @@ export default function CommunityPage() {
         <SocialAccessNotice reason={(access?.reason ?? null) as SocialAccessReason} />
       )}
 
+      <SocialSearch />
+
       <div className="space-y-3">
         <SocialFeedTabs mode={mode} onChange={setMode} showFollowing />
-        <SocialTopicPills
-          topics={topics ?? []}
-          activeSlug={topicSlug}
-          onSelect={setTopicSlug}
-        />
+        {mode !== "shorts" ? (
+          <SocialTopicPills
+            topics={topics ?? []}
+            activeSlug={topicSlug}
+            onSelect={setTopicSlug}
+          />
+        ) : null}
       </div>
 
-      <SocialFeed
-        topicSlug={topicSlug}
-        canInteract={canInteract}
-        reloadToken={reloadToken}
-        sort={mode === "trending" ? "trending" : "recent"}
-        following={mode === "following"}
-        showFollow
-        emptyTitle={mode === "following" ? t("discovery.emptyFollowing") : undefined}
-        emptyDescription={
-          mode === "following" ? t("discovery.emptyFollowingDescription") : undefined
-        }
-      />
+      {mode === "shorts" ? (
+        <RhemaShortsFeed
+          topicSlug={topicSlug}
+          canInteract={canInteract}
+          reloadToken={reloadToken}
+          showFollow
+        />
+      ) : (
+        <SocialFeed
+          topicSlug={topicSlug}
+          canInteract={canInteract}
+          reloadToken={reloadToken}
+          sort={mode === "trending" ? "trending" : mode === "foryou" ? "foryou" : "recent"}
+          following={mode === "following"}
+          showFollow
+          emptyTitle={
+            mode === "following"
+              ? t("discovery.emptyFollowing")
+              : mode === "foryou"
+                ? t("discovery.emptyForyou")
+                : undefined
+          }
+          emptyDescription={
+            mode === "following"
+              ? t("discovery.emptyFollowingDescription")
+              : mode === "foryou"
+                ? t("discovery.emptyForyouDescription")
+                : undefined
+          }
+        />
+      )}
     </div>
   );
 }

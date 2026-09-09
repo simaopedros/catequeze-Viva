@@ -20,8 +20,18 @@
     "family-portal",
     "sacraments",
     "library",
+    "rhema",
     "ai-planner"
   ],
+  "features": {
+    "rhema": {
+      "title": "Rhema: the pastoral network for catechesis",
+      "desc": "Share testimonies and meetings as shorts, follow catechists, and discover uplifting content inside the platform.",
+      "b1": "Vertical shorts feed with faith reactions",
+      "b2": "Public profiles with @handle and search",
+      "b3": "For you, trending, and people you follow"
+    }
+  },
   "ai_showcase_title": "And also: AI-powered meeting preparation",
   "ai_showcase_subtitle": "Beyond management, the platform includes editorial assistance to create meeting scripts in seconds.",
   "mockup_dashboard": {
@@ -88,6 +98,11 @@
     "plan_title": "Plan: God's Love",
     "published": "Published",
     "plan_detail": "Confirmation · 45 min"
+  },
+  "mockup_rhema": {
+    "handle": "@catequista_ana",
+    "caption": "Today's meeting: the Our Father. Amen!",
+    "amen": "Amen"
   },
   "footer": {
     "create_account": "Create free account",

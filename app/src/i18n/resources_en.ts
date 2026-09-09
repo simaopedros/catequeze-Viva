@@ -2892,6 +2892,12 @@ export const dashboard_en = {
     "fact_catechumens": "Catechumens",
     "fact_upcoming_meetings": "Upcoming encounters",
     "fact_attendance": "Attendance",
+    "rhema": {
+      "title": "Rhema",
+      "subtitle": "The pastoral network for catechesis: testimonies, shorts and people you follow.",
+      "cta": "Open Community",
+      "empty": "No posts yet. Be the first to share."
+    },
     "priority": {
       "high": "High priority",
       "important": "Important",
@@ -3766,6 +3772,13 @@ export const landing_en = {
         "b1": "Milestones by catechumen",
         "b2": "Reusable templates per parish",
         "b3": "Progress visible to coordination and guardians"
+      },
+      "rhema": {
+        "title": "Rhema: the pastoral network for catechesis",
+        "desc": "Share testimonies and meetings as shorts, follow catechists, and discover uplifting content inside the platform.",
+        "b1": "Vertical shorts feed with faith reactions",
+        "b2": "Public profiles with @handle and search",
+        "b3": "For you, trending, and people you follow"
       }
     },
     "mission_title": "Meeting prepared. Class embraced. Faith shared with the families.",
@@ -3997,6 +4010,11 @@ export const landing_en = {
       "plan_title": "Plan: God's Love",
       "published": "Published",
       "plan_detail": "Confirmation · 45 min"
+    },
+    "mockup_rhema": {
+      "handle": "@catequista_ana",
+      "caption": "Today's meeting: the Our Father. Amen!",
+      "amen": "Amen"
     },
     "footer": {
       "create_account": "Start the 7 days",
@@ -4635,8 +4653,18 @@ export const landingSistema_en = {
       "family-portal",
       "sacraments",
       "library",
+      "rhema",
       "ai-planner"
     ],
+    "features": {
+      "rhema": {
+        "title": "Rhema: the pastoral network for catechesis",
+        "desc": "Share testimonies and meetings as shorts, follow catechists, and discover uplifting content inside the platform.",
+        "b1": "Vertical shorts feed with faith reactions",
+        "b2": "Public profiles with @handle and search",
+        "b3": "For you, trending, and people you follow"
+      }
+    },
     "ai_showcase_title": "And also: AI-powered meeting preparation",
     "ai_showcase_subtitle": "Beyond management, the platform includes editorial assistance to create meeting scripts in seconds.",
     "mockup_dashboard": {
@@ -4703,6 +4731,11 @@ export const landingSistema_en = {
       "plan_title": "Plan: God's Love",
       "published": "Published",
       "plan_detail": "Confirmation · 45 min"
+    },
+    "mockup_rhema": {
+      "handle": "@catequista_ana",
+      "caption": "Today's meeting: the Our Father. Amen!",
+      "amen": "Amen"
     },
     "footer": {
       "create_account": "Create free account",
@@ -5099,7 +5132,7 @@ export const navigation_en = {
       "community": "Communities"
     },
     "sidebarSection": "Sidebar navigation",
-    "community": "Community"
+    "community": "Community · Rhema"
   } as const;
 
 export const onboarding_en = {
@@ -6172,6 +6205,14 @@ export const settings_en = {
     "saving": "Saving...",
     "saved": "Saved!",
     "save_profile_error": "Error saving profile.",
+    "rhema": {
+      "title": "Rhema",
+      "hint": "Your public Community profile. The handle appears as @name.",
+      "handle": "Handle",
+      "handle_placeholder": "your_handle",
+      "bio": "Bio",
+      "bio_placeholder": "A short line about your catechesis"
+    },
     "change_password": "Change password",
     "current_password": "Current password",
     "new_password": "New password",
@@ -6211,8 +6252,8 @@ export const settings_en = {
 
 export const social_en = {
     "title": "Community",
-    "eyebrow": "Pastoral network",
-    "subtitle": "Share the life of your catechesis with images and videos.",
+    "eyebrow": "Rhema",
+    "subtitle": "Share the life of your catechesis with images, videos and shorts.",
     "publicSubtitle": "Testimonies, catechesis and parish life shared by catechists across Brazil.",
     "feed": {
       "empty": "No posts yet",
@@ -6347,7 +6388,24 @@ export const social_en = {
       "followSuccess": "You now follow {{name}}",
       "unfollowSuccess": "You unfollowed {{name}}",
       "emptyFollowing": "You are not following anyone yet",
-      "emptyFollowingDescription": "Follow catechists to build your feed."
+      "emptyFollowingDescription": "Follow catechists to build your feed.",
+      "foryou": "For you",
+      "shorts": "Shorts",
+      "emptyForyou": "We are still learning what you like",
+      "emptyForyouDescription": "React and watch shorts to get recommendations."
+    },
+    "search": {
+      "placeholder": "Search people and posts",
+      "empty": "Nothing found"
+    },
+    "profile": {
+      "title": "Profile",
+      "notFound": "Profile not found",
+      "notFoundDescription": "This handle does not exist in the Community yet."
+    },
+    "shorts": {
+      "empty": "No shorts yet",
+      "emptyDescription": "Publish a short video to appear in this tab."
     }
   } as const;
 

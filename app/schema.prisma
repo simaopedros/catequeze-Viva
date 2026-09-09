@@ -296,6 +296,11 @@ enum SocialPostKind {
   VIDEO
 }
 
+enum SocialVideoFormat {
+  SHORT
+  LONG
+}
+
 enum SocialPostStatus {
   PUBLISHED
   PENDING_REVIEW
@@ -416,6 +421,13 @@ model User {
   socialBannedAt   DateTime?
   socialBanReason  String?
 
+  /// Public @handle for Rhema / Comunidade profiles
+  socialHandle String? @unique
+  socialBio    String?
+
+  socialFollowersCount  Int @default(0)
+  socialFollowingCount  Int @default(0)
+
   // Platform admin lifecycle (login blocked; impersonation still allowed)
   suspendedAt     DateTime?
   suspendedReason String?
@@ -468,6 +480,7 @@ model User {
   reviewedSocialReports  SocialReport[]   @relation("SocialReportReviewer")
   socialFollowing        SocialFollow[]   @relation("SocialFollower")
   socialFollowers        SocialFollow[]   @relation("SocialFollowed")
+  socialWatches          SocialVideoWatch[]
 
   emailPreferences       EmailPreference[]
 
@@ -1926,8 +1939,9 @@ model SocialPost {
   parishId String?
   parish   Parish? @relation(fields: [parishId], references: [id], onDelete: SetNull)
 
-  kind   SocialPostKind   @default(TEXT)
-  status SocialPostStatus @default(PUBLISHED)
+  kind        SocialPostKind    @default(TEXT)
+  status      SocialPostStatus  @default(PUBLISHED)
+  videoFormat SocialVideoFormat?
 
   body   String
   locale String @default("pt-BR")
@@ -1953,10 +1967,12 @@ model SocialPost {
   topics   SocialPostTopic[]
   comments SocialComment[]
   reactions SocialReaction[]
+  watches  SocialVideoWatch[]
 
   @@index([status, publishedAt])
   @@index([authorId, createdAt])
   @@index([parishId])
+  @@index([videoFormat, status, publishedAt])
 }
 
 /// Image (Bunny Storage) or video (Bunny Stream) attached to a post.
@@ -2102,6 +2118,26 @@ model SocialFollow {
 
   @@unique([followerId, authorId])
   @@index([authorId])
+}
+
+/// Watch / completion signal used by the Rhema "Para você" ranking.
+model SocialVideoWatch {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId String
+  post   SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  watchSeconds   Int   @default(0)
+  completionRate Float?
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@index([userId, updatedAt])
 }
 
 // ─── Email platform (provider-agnostic outbox) ───────────────────────────────

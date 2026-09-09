@@ -1,5 +1,5 @@
 /**
- * Comunidade discovery — following authors.
+ * Comunidade discovery — following, profiles, search and Rhema profile edits.
  *
  * Following is consumption, not authoring, so any signed-in user may follow
  * regardless of subscription. Publishing stays gated by publishGate.
@@ -7,7 +7,30 @@
 import { HttpError } from 'wasp/server';
 import { notifySocialActivity } from '../social/notifications';
 import { assertSocialEnabled, isSocialEnabled } from '../social/featureGate';
-import { buildAuthorDisplayName } from './socialOperations';
+import { SOCIAL_BIO_MAX } from '../../shared/socialConstants';
+import {
+  normalizeSocialHandle,
+  sanitizeSocialBody,
+  validateSocialBio,
+  validateSocialHandle,
+} from './socialPolicies';
+import { buildAuthorDisplayName, serializePost } from './socialOperations';
+
+async function adjustFollowCounts(
+  context: any,
+  { followerId, authorId, delta }: { followerId: string; authorId: string; delta: 1 | -1 },
+) {
+  await Promise.all([
+    context.entities.User.update({
+      where: { id: authorId },
+      data: { socialFollowersCount: { increment: delta } },
+    }),
+    context.entities.User.update({
+      where: { id: followerId },
+      data: { socialFollowingCount: { increment: delta } },
+    }),
+  ]);
+}
 
 export const toggleSocialFollow = async (args: { authorId: string }, context: any) => {
   assertSocialEnabled();
@@ -39,11 +62,21 @@ export const toggleSocialFollow = async (args: { authorId: string }, context: an
 
   if (existing) {
     await context.entities.SocialFollow.delete({ where: { id: existing.id } });
+    await adjustFollowCounts(context, {
+      followerId: context.user.id,
+      authorId,
+      delta: -1,
+    });
     return { following: false, authorName: buildAuthorDisplayName(author) };
   }
 
   await context.entities.SocialFollow.create({
     data: { followerId: context.user.id, authorId },
+  });
+  await adjustFollowCounts(context, {
+    followerId: context.user.id,
+    authorId,
+    delta: 1,
   });
 
   const follower = await context.entities.User.findUnique({
@@ -74,4 +107,203 @@ export const getSocialFollowState = async (args: { authorIds: string[] }, contex
   });
 
   return { following: follows.map((follow: any) => follow.authorId) };
+};
+
+export const getSocialProfile = async (args: { handle: string }, context: any) => {
+  assertSocialEnabled();
+
+  const handle = normalizeSocialHandle(String(args?.handle || ''));
+  if (!handle) {
+    throw new HttpError(404, 'Perfil não encontrado.');
+  }
+
+  const profile = await context.entities.User.findUnique({
+    where: { socialHandle: handle },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      avatarUrl: true,
+      socialHandle: true,
+      socialBio: true,
+      socialFollowersCount: true,
+      socialFollowingCount: true,
+    },
+  });
+
+  if (!profile) {
+    throw new HttpError(404, 'Perfil não encontrado.');
+  }
+
+  const viewerId = context.user?.id ?? null;
+  let isFollowing = false;
+  if (viewerId && viewerId !== profile.id) {
+    const follow = await context.entities.SocialFollow.findUnique({
+      where: { followerId_authorId: { followerId: viewerId, authorId: profile.id } },
+      select: { id: true },
+    });
+    isFollowing = Boolean(follow);
+  }
+
+  return {
+    profile: {
+      id: profile.id,
+      displayName: buildAuthorDisplayName(profile),
+      avatarUrl: profile.avatarUrl,
+      socialHandle: profile.socialHandle,
+      socialBio: profile.socialBio,
+      followersCount: Math.max(0, profile.socialFollowersCount),
+      followingCount: Math.max(0, profile.socialFollowingCount),
+      isOwn: Boolean(viewerId && viewerId === profile.id),
+    },
+    isFollowing,
+  };
+};
+
+export const searchSocial = async (args: { q: string }, context: any) => {
+  if (!isSocialEnabled()) return { people: [], posts: [] };
+
+  const q = String(args?.q || '').trim();
+  if (q.length < 2) return { people: [], posts: [] };
+
+  const handle = normalizeSocialHandle(q);
+  const viewerId = context.user?.id ?? null;
+
+  const people = await context.entities.User.findMany({
+    where: {
+      OR: [
+        ...(handle
+          ? [{ socialHandle: { contains: handle, mode: 'insensitive' as const } }]
+          : []),
+        { firstName: { contains: q, mode: 'insensitive' } },
+        { lastName: { contains: q, mode: 'insensitive' } },
+      ],
+      socialHandle: { not: null },
+    },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      avatarUrl: true,
+      socialHandle: true,
+      socialFollowersCount: true,
+    },
+    take: 8,
+    orderBy: { socialFollowersCount: 'desc' },
+  });
+
+  const posts = await context.entities.SocialPost.findMany({
+    where: {
+      status: 'PUBLISHED',
+      body: { contains: q, mode: 'insensitive' },
+    },
+    include: {
+      author: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          avatarUrl: true,
+          socialHandle: true,
+        },
+      },
+      parish: { select: { id: true, name: true } },
+      media: {
+        select: {
+          id: true,
+          kind: true,
+          position: true,
+          status: true,
+          storageKey: true,
+          bunnyVideoId: true,
+          bunnyLibraryId: true,
+          width: true,
+          height: true,
+          durationSeconds: true,
+          thumbnailUrl: true,
+          altText: true,
+        },
+        orderBy: { position: 'asc' },
+      },
+      topics: { select: { topic: { select: { slug: true, name: true } } } },
+      ...(viewerId
+        ? {
+            reactions: {
+              where: { userId: viewerId },
+              select: { type: true },
+              take: 1,
+            },
+          }
+        : {}),
+    },
+    orderBy: [{ publishedAt: 'desc' }, { id: 'desc' }],
+    take: 8,
+  });
+
+  return {
+    people: people.map((person: any) => ({
+      id: person.id,
+      displayName: buildAuthorDisplayName(person),
+      avatarUrl: person.avatarUrl,
+      socialHandle: person.socialHandle,
+      followersCount: Math.max(0, person.socialFollowersCount),
+    })),
+    posts: posts.map((post: any) => serializePost(post, viewerId)),
+  };
+};
+
+export const updateSocialProfile = async (
+  args: { socialHandle?: string | null; socialBio?: string | null },
+  context: any,
+) => {
+  assertSocialEnabled();
+
+  if (!context.user) {
+    throw new HttpError(401, 'Você precisa estar autenticado.');
+  }
+
+  const data: { socialHandle?: string | null; socialBio?: string | null } = {};
+
+  if (args?.socialHandle !== undefined) {
+    const handle = normalizeSocialHandle(String(args.socialHandle ?? ''));
+    const handleError = validateSocialHandle(handle);
+    if (handleError) {
+      throw new HttpError(400, handleError);
+    }
+    if (handle) {
+      const taken = await context.entities.User.findFirst({
+        where: { socialHandle: handle, id: { not: context.user.id } },
+        select: { id: true },
+      });
+      if (taken) {
+        throw new HttpError(409, 'Este handle já está em uso.');
+      }
+    }
+    data.socialHandle = handle || null;
+  }
+
+  if (args?.socialBio !== undefined) {
+    const bio = sanitizeSocialBody(String(args.socialBio ?? '')).slice(0, SOCIAL_BIO_MAX);
+    const bioError = validateSocialBio(bio);
+    if (bioError) {
+      throw new HttpError(400, bioError);
+    }
+    data.socialBio = bio || null;
+  }
+
+  if (Object.keys(data).length === 0) {
+    throw new HttpError(400, 'Nenhum campo para atualizar.');
+  }
+
+  const updated = await context.entities.User.update({
+    where: { id: context.user.id },
+    data,
+    select: {
+      id: true,
+      socialHandle: true,
+      socialBio: true,
+    },
+  });
+
+  return updated;
 };

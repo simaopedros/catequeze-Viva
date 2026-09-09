@@ -16,6 +16,12 @@
   "fact_catechumens": "Catechumens",
   "fact_upcoming_meetings": "Upcoming encounters",
   "fact_attendance": "Attendance",
+  "rhema": {
+    "title": "Rhema",
+    "subtitle": "The pastoral network for catechesis: testimonies, shorts and people you follow.",
+    "cta": "Open Community",
+    "empty": "No posts yet. Be the first to share."
+  },
   "priority": {
     "high": "High priority",
     "important": "Important",

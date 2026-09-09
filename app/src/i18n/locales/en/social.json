@@ -1,7 +1,7 @@
 {
   "title": "Community",
-  "eyebrow": "Pastoral network",
-  "subtitle": "Share the life of your catechesis with images and videos.",
+  "eyebrow": "Rhema",
+  "subtitle": "Share the life of your catechesis with images, videos and shorts.",
   "publicSubtitle": "Testimonies, catechesis and parish life shared by catechists across Brazil.",
   "feed": {
     "empty": "No posts yet",
@@ -136,6 +136,23 @@
     "followSuccess": "You now follow {{name}}",
     "unfollowSuccess": "You unfollowed {{name}}",
     "emptyFollowing": "You are not following anyone yet",
-    "emptyFollowingDescription": "Follow catechists to build your feed."
+    "emptyFollowingDescription": "Follow catechists to build your feed.",
+    "foryou": "For you",
+    "shorts": "Shorts",
+    "emptyForyou": "We are still learning what you like",
+    "emptyForyouDescription": "React and watch shorts to get recommendations."
+  },
+  "search": {
+    "placeholder": "Search people and posts",
+    "empty": "Nothing found"
+  },
+  "profile": {
+    "title": "Profile",
+    "notFound": "Profile not found",
+    "notFoundDescription": "This handle does not exist in the Community yet."
+  },
+  "shorts": {
+    "empty": "No shorts yet",
+    "emptyDescription": "Publish a short video to appear in this tab."
   }
 }

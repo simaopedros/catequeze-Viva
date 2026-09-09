@@ -28,6 +28,7 @@ import {
 import { useUserContext } from "../../client/hooks/useUserContext";
 import {
   updateUserProfile,
+  updateSocialProfile,
   requestDataExport,
   changePassword,
   useQuery,
@@ -56,6 +57,8 @@ import {
   FormLabel,
   FormMessage,
 } from "../../client/components/ui/form";
+import { Textarea } from "../../client/components/ui/textarea";
+import { SOCIAL_FEATURES_ENABLED } from "../../shared/socialFeatures";
 
 export default function SettingsPage() {
   const { t } = useTranslation("settings");
@@ -79,6 +82,11 @@ export default function SettingsPage() {
   const { data: emailPrefs } = useQuery(getMyEmailPreferences);
   const [prefSaving, setPrefSaving] = useState<string | null>(null);
   const [prefSaved, setPrefSaved] = useState(false);
+  const [rhemaHandle, setRhemaHandle] = useState("");
+  const [rhemaBio, setRhemaBio] = useState("");
+  const [rhemaSaving, setRhemaSaving] = useState(false);
+  const [rhemaSaved, setRhemaSaved] = useState(false);
+  const [rhemaError, setRhemaError] = useState("");
 
   // Profile form: RHF + zod (PhoneMaskInput is wired through Controller).
   const profileForm = useForm<UpdateProfileValues>({
@@ -94,6 +102,8 @@ export default function SettingsPage() {
       lastName: user?.lastName || "",
       phone: user?.phone || "",
     });
+    setRhemaHandle((user as any)?.socialHandle || "");
+    setRhemaBio((user as any)?.socialBio || "");
   }, [user, profileForm]);
 
   // Password form with Zod
@@ -116,6 +126,23 @@ export default function SettingsPage() {
     }
     setSaving(false);
   });
+
+  const handleSaveRhema = async () => {
+    setRhemaSaving(true);
+    setRhemaSaved(false);
+    setRhemaError("");
+    try {
+      await updateSocialProfile({
+        socialHandle: rhemaHandle,
+        socialBio: rhemaBio,
+      });
+      setRhemaSaved(true);
+      setTimeout(() => setRhemaSaved(false), 3000);
+    } catch (e: any) {
+      setRhemaError(e.message || t("save_profile_error"));
+    }
+    setRhemaSaving(false);
+  };
 
   const handleChangePassword = async (values: ChangePasswordValues) => {
     try {
@@ -306,6 +333,62 @@ export default function SettingsPage() {
         </form>
         </Form>
       </AppPanel>
+
+      {SOCIAL_FEATURES_ENABLED && (
+        <AppPanel className="space-y-4">
+          <AppEyebrow>{t("rhema.title")}</AppEyebrow>
+          <p className="text-sm text-muted-foreground">{t("rhema.hint")}</p>
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium" htmlFor="social-handle">
+              {t("rhema.handle")}
+            </label>
+            <Input
+              id="social-handle"
+              value={rhemaHandle}
+              onChange={(event) => setRhemaHandle(event.target.value)}
+              placeholder={t("rhema.handle_placeholder")}
+              className="h-10 rounded-sm"
+              autoComplete="username"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium" htmlFor="social-bio">
+              {t("rhema.bio")}
+            </label>
+            <Textarea
+              id="social-bio"
+              value={rhemaBio}
+              onChange={(event) => setRhemaBio(event.target.value)}
+              placeholder={t("rhema.bio_placeholder")}
+              maxLength={280}
+            />
+          </div>
+          {rhemaError && (
+            <p className="flex items-center gap-1 text-xs text-destructive" role="alert">
+              <AlertCircle className="h-3 w-3" />
+              {rhemaError}
+            </p>
+          )}
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              size="sm"
+              className="rounded-md"
+              disabled={rhemaSaving}
+              onClick={() => void handleSaveRhema()}
+            >
+              <Save className="mr-1 h-3 w-3" />
+              {rhemaSaving ? t("saving") : tc("save")}
+            </Button>
+            {rhemaSaved && (
+              <span className="flex items-center gap-1 self-center text-xs text-success">
+                <CheckCircle className="h-3 w-3" />
+                {t("saved")}
+              </span>
+            )}
+          </div>
+        </AppPanel>
+      )}
 
       <ConfirmDialog
         open={leaveGuard.dialogOpen}

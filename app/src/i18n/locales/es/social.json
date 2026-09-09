@@ -1,7 +1,7 @@
 {
   "title": "Comunidad",
-  "eyebrow": "Red pastoral",
-  "subtitle": "Comparte la vida de tu catequesis con imágenes y videos.",
+  "eyebrow": "Rhema",
+  "subtitle": "Comparte la vida de tu catequesis con imágenes, videos y shorts.",
   "publicSubtitle": "Testimonios, catequesis y vida parroquial compartidos por catequistas de todo Brasil.",
   "feed": {
     "empty": "Todavía no hay publicaciones",
@@ -136,6 +136,23 @@
     "followSuccess": "Ahora sigues a {{name}}",
     "unfollowSuccess": "Dejaste de seguir a {{name}}",
     "emptyFollowing": "Todavía no sigues a nadie",
-    "emptyFollowingDescription": "Sigue catequistas para armar tu feed."
+    "emptyFollowingDescription": "Sigue catequistas para armar tu feed.",
+    "foryou": "Para ti",
+    "shorts": "Shorts",
+    "emptyForyou": "Aún estamos aprendiendo tu gusto",
+    "emptyForyouDescription": "Reacciona y mira shorts para recibir recomendaciones."
+  },
+  "search": {
+    "placeholder": "Buscar personas y publicaciones",
+    "empty": "No se encontró nada"
+  },
+  "profile": {
+    "title": "Perfil",
+    "notFound": "Perfil no encontrado",
+    "notFoundDescription": "Este handle todavía no existe en la Comunidad."
+  },
+  "shorts": {
+    "empty": "Todavía no hay shorts",
+    "emptyDescription": "Publica un video corto para aparecer en esta pestaña."
   }
 }

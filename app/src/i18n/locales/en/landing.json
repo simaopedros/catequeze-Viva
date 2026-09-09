@@ -117,6 +117,13 @@
       "b1": "Milestones by catechumen",
       "b2": "Reusable templates per parish",
       "b3": "Progress visible to coordination and guardians"
+    },
+    "rhema": {
+      "title": "Rhema: the pastoral network for catechesis",
+      "desc": "Share testimonies and meetings as shorts, follow catechists, and discover uplifting content inside the platform.",
+      "b1": "Vertical shorts feed with faith reactions",
+      "b2": "Public profiles with @handle and search",
+      "b3": "For you, trending, and people you follow"
     }
   },
   "mission_title": "Meeting prepared. Class embraced. Faith shared with the families.",
@@ -348,6 +355,11 @@
     "plan_title": "Plan: God's Love",
     "published": "Published",
     "plan_detail": "Confirmation · 45 min"
+  },
+  "mockup_rhema": {
+    "handle": "@catequista_ana",
+    "caption": "Today's meeting: the Our Father. Amen!",
+    "amen": "Amen"
   },
   "footer": {
     "create_account": "Start the 7 days",

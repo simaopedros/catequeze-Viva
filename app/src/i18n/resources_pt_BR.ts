@@ -2892,6 +2892,12 @@ export const dashboard_pt_BR = {
     "fact_catechumens": "Catequizandos",
     "fact_upcoming_meetings": "Próximos encontros",
     "fact_attendance": "Presença",
+    "rhema": {
+      "title": "Rhema",
+      "subtitle": "A rede pastoral da catequese: testemunhos, shorts e quem você segue.",
+      "cta": "Abrir Comunidade",
+      "empty": "Ainda não há publicações. Seja o primeiro a partilhar."
+    },
     "priority": {
       "high": "Prioridade alta",
       "important": "Importante",
@@ -3766,6 +3772,13 @@ export const landing_pt_BR = {
         "b1": "Marcos por catequizando",
         "b2": "Modelos reutilizáveis por paróquia",
         "b3": "Progresso visível para coordenação e responsáveis"
+      },
+      "rhema": {
+        "title": "Rhema: a rede pastoral da catequese",
+        "desc": "Partilhe testemunhos e encontros em shorts, siga catequistas e descubra conteúdo edificante dentro da plataforma.",
+        "b1": "Feed vertical de shorts com reações de fé",
+        "b2": "Perfis públicos com @handle e busca",
+        "b3": "Para você, em alta e quem você segue"
       }
     },
     "mission_title": "Encontro preparado. Turma acolhida. Fé partilhada com as famílias.",
@@ -3997,6 +4010,11 @@ export const landing_pt_BR = {
       "plan_title": "Plano: O amor de Deus",
       "published": "Publicado",
       "plan_detail": "Crisma · 45 min"
+    },
+    "mockup_rhema": {
+      "handle": "@catequista_ana",
+      "caption": "Encontro de hoje: o Pai-Nosso. Amém!",
+      "amen": "Amém"
     },
     "footer": {
       "create_account": "Começar os 7 dias",
@@ -4635,8 +4653,18 @@ export const landingSistema_pt_BR = {
       "family-portal",
       "sacraments",
       "library",
+      "rhema",
       "ai-planner"
     ],
+    "features": {
+      "rhema": {
+        "title": "Rhema: a rede pastoral da catequese",
+        "desc": "Partilhe testemunhos e encontros em shorts, siga catequistas e descubra conteúdo edificante dentro da plataforma.",
+        "b1": "Feed vertical de shorts com reações de fé",
+        "b2": "Perfis públicos com @handle e busca",
+        "b3": "Para você, em alta e quem você segue"
+      }
+    },
     "ai_showcase_title": "E também: preparação de encontros com assistência editorial",
     "ai_showcase_subtitle": "Além da gestão, a plataforma inclui assistência editorial para criar roteiros de encontros em segundos.",
     "mockup_dashboard": {
@@ -4703,6 +4731,11 @@ export const landingSistema_pt_BR = {
       "plan_title": "Plano: O amor de Deus",
       "published": "Publicado",
       "plan_detail": "Crisma · 45 min"
+    },
+    "mockup_rhema": {
+      "handle": "@catequista_ana",
+      "caption": "Encontro de hoje: o Pai-Nosso. Amém!",
+      "amen": "Amém"
     },
     "footer": {
       "create_account": "Criar conta gratuita",
@@ -5099,7 +5132,7 @@ export const navigation_pt_BR = {
       "community": "Comunidades"
     },
     "sidebarSection": "Navegação lateral",
-    "community": "Comunidade"
+    "community": "Comunidade · Rhema"
   } as const;
 
 export const onboarding_pt_BR = {
@@ -6172,6 +6205,14 @@ export const settings_pt_BR = {
     "saving": "Salvando...",
     "saved": "Salvo!",
     "save_profile_error": "Erro ao salvar perfil.",
+    "rhema": {
+      "title": "Rhema",
+      "hint": "Seu perfil público na Comunidade. O handle aparece como @nome.",
+      "handle": "Handle",
+      "handle_placeholder": "seu_handle",
+      "bio": "Bio",
+      "bio_placeholder": "Uma frase sobre a sua catequese"
+    },
     "change_password": "Trocar senha",
     "current_password": "Senha atual",
     "new_password": "Nova senha",
@@ -6211,8 +6252,8 @@ export const settings_pt_BR = {
 
 export const social_pt_BR = {
     "title": "Comunidade",
-    "eyebrow": "Rede pastoral",
-    "subtitle": "Partilhe a vida da catequese com imagens e vídeos.",
+    "eyebrow": "Rhema",
+    "subtitle": "Partilhe a vida da catequese com imagens, vídeos e shorts.",
     "publicSubtitle": "Testemunhos, catequese e vida paroquial partilhados por catequistas de todo o Brasil.",
     "feed": {
       "empty": "Ainda não há publicações",
@@ -6347,7 +6388,24 @@ export const social_pt_BR = {
       "followSuccess": "Agora você segue {{name}}",
       "unfollowSuccess": "Você deixou de seguir {{name}}",
       "emptyFollowing": "Você ainda não segue ninguém",
-      "emptyFollowingDescription": "Siga catequistas para montar o seu feed."
+      "emptyFollowingDescription": "Siga catequistas para montar o seu feed.",
+      "foryou": "Para você",
+      "shorts": "Shorts",
+      "emptyForyou": "Ainda estamos a aprender o seu gosto",
+      "emptyForyouDescription": "Reaja e assista shorts para receber recomendações."
+    },
+    "search": {
+      "placeholder": "Buscar pessoas e publicações",
+      "empty": "Nada encontrado"
+    },
+    "profile": {
+      "title": "Perfil",
+      "notFound": "Perfil não encontrado",
+      "notFoundDescription": "Este handle ainda não existe na Comunidade."
+    },
+    "shorts": {
+      "empty": "Ainda não há shorts",
+      "emptyDescription": "Publique um vídeo curto para aparecer nesta aba."
     }
   } as const;
 

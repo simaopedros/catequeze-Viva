@@ -25,6 +25,7 @@ import { MyClassesCard } from "./MyClassesCard";
 import { UpcomingBirthdaysCard } from "./UpcomingBirthdaysCard";
 import { QuickActionsGrid } from "./QuickActionsGrid";
 import { RecentMeetingsList } from "./RecentMeetingsList";
+import { RhemaPreviewCard } from "./RhemaPreviewCard";
 
 interface CoordinatorDashboardProps {
   stats: any;
@@ -233,6 +234,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
           </div>
         </div>
       )}
+      <RhemaPreviewCard />
     </div>
   );
 }

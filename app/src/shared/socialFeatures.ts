@@ -1,17 +1,13 @@
 /**
- * Comunidade (social feed) surfaces: sidebar item, app page, public feed and
- * every write operation.
+ * Comunidade / Rhema (social feed) surfaces: sidebar item, app page, public
+ * feed, shorts, profiles and every write operation.
  *
- * The whole module is finished but parked until we resume the social work, so
- * this single flag is the only thing to flip. While it is false:
+ * While this flag is false:
  *   - the sidebar item is hidden
  *   - /app/comunidade and the public /comunidade routes redirect away
  *   - feed queries answer empty and write operations answer 404
- *
- * Re-enable by setting this to true and pointing the routes in main.wasp back
- * to CommunityPage / PublicCommunityPage / PublicSocialPostPage.
  */
-export const SOCIAL_FEATURES_ENABLED = false;
+export const SOCIAL_FEATURES_ENABLED = true;
 
 /** Where visitors land when they hit a social URL while the module is off. */
 export const SOCIAL_DISABLED_REDIRECT = "/";

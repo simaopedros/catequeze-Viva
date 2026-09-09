@@ -1,7 +1,7 @@
 /**
- * The Comunidade module is complete but parked behind SOCIAL_FEATURES_ENABLED.
- * These assertions follow the real flag, so they keep holding when we turn the
- * module back on.
+ * The Comunidade / Rhema module is gated by SOCIAL_FEATURES_ENABLED.
+ * These assertions follow the real flag, so they keep holding when we turn
+ * the module on or off.
  */
 import { describe, expect, it, vi } from 'vitest';
 
@@ -83,15 +83,15 @@ describe('server guards follow the flag', () => {
   });
 
   it('the public feed answers empty while disabled', async () => {
+    if (SOCIAL_FEATURES_ENABLED) return;
+
     const { getSocialFeed } = await import('../server/operations/socialOperations');
 
     // No entities are provided on purpose: while disabled the query must return
     // before it touches the database.
     const feed = await getSocialFeed({}, { user: null, entities: {} } as any);
 
-    if (!SOCIAL_FEATURES_ENABLED) {
-      expect(feed).toEqual({ items: [], nextCursor: null });
-    }
+    expect(feed).toEqual({ items: [], nextCursor: null });
   });
 
   it('publish access reports no permission while disabled', async () => {

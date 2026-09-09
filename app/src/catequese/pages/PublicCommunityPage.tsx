@@ -13,6 +13,8 @@ import {
   SocialFeedTabs,
   type SocialFeedMode,
 } from "../components/social/SocialFeedTabs";
+import { SocialSearch } from "../components/social/SocialSearch";
+import { RhemaShortsFeed } from "../components/social/RhemaShortsFeed";
 
 /**
  * Public Comunidade feed — no authentication required. Visitors read, open and
@@ -25,11 +27,10 @@ export default function PublicCommunityPage() {
   const { data: user } = useAuth();
 
   const [topicSlug, setTopicSlug] = useState<string | null>(params.topic ?? null);
-  const [mode, setMode] = useState<SocialFeedMode>("recent");
+  const [mode, setMode] = useState<SocialFeedMode>("foryou");
   const [showNotice, setShowNotice] = useState(false);
 
   const { data: topics } = useQuery(getSocialTopics);
-  // Only signed-in visitors have an entitlement to resolve.
   const { data: access } = useQuery(getSocialPublishAccess, undefined, {
     enabled: Boolean(user),
   });
@@ -71,31 +72,56 @@ export default function PublicCommunityPage() {
         </div>
       )}
 
+      <div className="mb-5">
+        <SocialSearch />
+      </div>
+
       <div className="mb-5 space-y-3">
         <SocialFeedTabs
           mode={mode}
           onChange={setMode}
           showFollowing={Boolean(user)}
         />
-        <SocialTopicPills
-          topics={topics ?? []}
-          activeSlug={topicSlug}
-          onSelect={selectTopic}
-        />
+        {mode !== "shorts" ? (
+          <SocialTopicPills
+            topics={topics ?? []}
+            activeSlug={topicSlug}
+            onSelect={selectTopic}
+          />
+        ) : null}
       </div>
 
-      <SocialFeed
-        topicSlug={topicSlug}
-        canInteract={canInteract}
-        onRequireAccess={() => setShowNotice(true)}
-        sort={mode === "trending" ? "trending" : "recent"}
-        following={mode === "following"}
-        showFollow={Boolean(user)}
-        emptyTitle={mode === "following" ? t("discovery.emptyFollowing") : undefined}
-        emptyDescription={
-          mode === "following" ? t("discovery.emptyFollowingDescription") : undefined
-        }
-      />
+      {mode === "shorts" ? (
+        <RhemaShortsFeed
+          topicSlug={topicSlug}
+          canInteract={canInteract}
+          onRequireAccess={() => setShowNotice(true)}
+          showFollow={Boolean(user)}
+        />
+      ) : (
+        <SocialFeed
+          topicSlug={topicSlug}
+          canInteract={canInteract}
+          onRequireAccess={() => setShowNotice(true)}
+          sort={mode === "trending" ? "trending" : mode === "foryou" ? "foryou" : "recent"}
+          following={mode === "following"}
+          showFollow={Boolean(user)}
+          emptyTitle={
+            mode === "following"
+              ? t("discovery.emptyFollowing")
+              : mode === "foryou"
+                ? t("discovery.emptyForyou")
+                : undefined
+          }
+          emptyDescription={
+            mode === "following"
+              ? t("discovery.emptyFollowingDescription")
+              : mode === "foryou"
+                ? t("discovery.emptyForyouDescription")
+                : undefined
+          }
+        />
+      )}
     </main>
   );
 }

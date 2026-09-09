@@ -18,6 +18,7 @@ export function SocialFeed({
   reloadToken = 0,
   sort = "recent",
   following = false,
+  videoFormat = null,
   showFollow = false,
   emptyTitle,
   emptyDescription,
@@ -28,8 +29,9 @@ export function SocialFeed({
   onRequireAccess?: () => void;
   /** Bump to reload the feed from the first page (e.g. after publishing). */
   reloadToken?: number;
-  sort?: "recent" | "trending";
+  sort?: "recent" | "trending" | "foryou";
   following?: boolean;
+  videoFormat?: "SHORT" | "LONG" | null;
   showFollow?: boolean;
   emptyTitle?: string;
   emptyDescription?: string;
@@ -46,6 +48,7 @@ export function SocialFeed({
     authorId: authorId ?? null,
     sort,
     following,
+    videoFormat: videoFormat ?? null,
   });
 
   useEffect(() => {
@@ -53,7 +56,7 @@ export function SocialFeed({
     setCursor(null);
     setNextCursor(null);
     setRemoved([]);
-  }, [topicSlug, authorId, reloadToken, sort, following]);
+  }, [topicSlug, authorId, reloadToken, sort, following, videoFormat]);
 
   useEffect(() => {
     if (!data) return;

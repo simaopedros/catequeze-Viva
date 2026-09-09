@@ -20,8 +20,18 @@
     "family-portal",
     "sacraments",
     "library",
+    "rhema",
     "ai-planner"
   ],
+  "features": {
+    "rhema": {
+      "title": "Rhema: la red pastoral de la catequesis",
+      "desc": "Comparte testimonios y encuentros en shorts, sigue catequistas y descubre contenido edificante dentro de la plataforma.",
+      "b1": "Feed vertical de shorts con reacciones de fe",
+      "b2": "Perfiles públicos con @handle y búsqueda",
+      "b3": "Para ti, en tendencia y a quienes sigues"
+    }
+  },
   "ai_showcase_title": "Y también: preparación de encuentros con asistencia editorial",
   "ai_showcase_subtitle": "Además de la gestión, la plataforma incluye asistencia editorial para crear guiones de encuentros en segundos.",
   "mockup_dashboard": {
@@ -88,6 +98,11 @@
     "plan_title": "Plan: El amor de Dios",
     "published": "Publicado",
     "plan_detail": "Confirmación · 45 min"
+  },
+  "mockup_rhema": {
+    "handle": "@catequista_ana",
+    "caption": "Encuentro de hoy: el Padre Nuestro. ¡Amén!",
+    "amen": "Amén"
   },
   "footer": {
     "create_account": "Crear cuenta gratuita",

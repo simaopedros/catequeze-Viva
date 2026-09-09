@@ -108,7 +108,8 @@ app OpenSaaS {
 
   db: {
     seeds: [
-      import { seedPricingCatalog } from "@src/server/scripts/seedPricingCatalog"
+      import { seedPricingCatalog } from "@src/server/scripts/seedPricingCatalog",
+      import { seedSocialTopics } from "@src/server/scripts/seedSocialTopics"
     ]
   },
 }
@@ -349,39 +350,46 @@ page AppNewClassPage {
 
 
 //#region Comunidade (social) - pages
-// PARKED: the module is complete but disabled via SOCIAL_FEATURES_ENABLED in
-// @src/shared/socialFeatures. Every route redirects away until we resume the
-// social work. To re-enable, flip that flag and point these pages back to
-// CommunityPage, PublicCommunityPage, PublicSocialPostPage and
-// SocialShortLinkPage respectively.
 route AppCommunityRoute { path: "/app/comunidade", to: AppCommunityPage }
 page AppCommunityPage {
   authRequired: true,
-  component: import RedirectDisabledSocial from "@src/catequese/pages/RedirectDisabledSocial"
+  component: import CommunityPage from "@src/catequese/pages/CommunityPage"
+}
+
+route AppSocialProfileRoute { path: "/app/comunidade/u/:handle", to: AppSocialProfilePage }
+page AppSocialProfilePage {
+  authRequired: true,
+  component: import SocialProfilePage from "@src/catequese/pages/SocialProfilePage"
 }
 
 route PublicCommunityRoute { path: "/comunidade", to: PublicCommunityPage }
 page PublicCommunityPage {
   authRequired: false,
-  component: import RedirectDisabledSocial from "@src/catequese/pages/RedirectDisabledSocial"
+  component: import PublicCommunityPage from "@src/catequese/pages/PublicCommunityPage"
 }
 
 route PublicCommunityTopicRoute { path: "/comunidade/t/:topic", to: PublicCommunityTopicPage }
 page PublicCommunityTopicPage {
   authRequired: false,
-  component: import RedirectDisabledSocial from "@src/catequese/pages/RedirectDisabledSocial"
+  component: import PublicCommunityPage from "@src/catequese/pages/PublicCommunityPage"
 }
 
 route PublicSocialPostRoute { path: "/comunidade/p/:slug", to: PublicSocialPostPage }
 page PublicSocialPostPage {
   authRequired: false,
-  component: import RedirectDisabledSocial from "@src/catequese/pages/RedirectDisabledSocial"
+  component: import PublicSocialPostPage from "@src/catequese/pages/PublicSocialPostPage"
+}
+
+route PublicSocialProfileRoute { path: "/comunidade/u/:handle", to: PublicSocialProfilePage }
+page PublicSocialProfilePage {
+  authRequired: false,
+  component: import SocialProfilePage from "@src/catequese/pages/SocialProfilePage"
 }
 
 route SocialShortLinkRoute { path: "/c/:slug", to: SocialShortLinkPage }
 page SocialShortLinkPage {
   authRequired: false,
-  component: import RedirectDisabledSocial from "@src/catequese/pages/RedirectDisabledSocial"
+  component: import SocialShortLinkPage from "@src/catequese/pages/SocialShortLinkPage"
 }
 //#endregion
 
@@ -1664,7 +1672,7 @@ action discardSocialMedia {
 // anonymous visitors get the same published feed as members.
 query getSocialFeed {
   fn: import { getSocialFeed } from "@src/server/operations/socialOperations",
-  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, SocialFollow, User, Parish]
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, SocialFollow, SocialVideoWatch, User, Parish]
 }
 
 query getSocialPost {
@@ -1690,6 +1698,11 @@ query getSocialPublishAccess {
 action createSocialPost {
   fn: import { createSocialPost } from "@src/server/operations/socialOperations",
   entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, User, Membership, Parish, TenantBilling, Diocese, PricingPlan, PricingPlanPrice]
+}
+
+action recordSocialWatch {
+  fn: import { recordSocialWatch } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialVideoWatch, User]
 }
 
 action deleteSocialPost {
@@ -1729,6 +1742,21 @@ action toggleSocialFollow {
 query getSocialFollowState {
   fn: import { getSocialFollowState } from "@src/server/operations/socialDiscoveryOperations",
   entities: [SocialFollow]
+}
+
+query getSocialProfile {
+  fn: import { getSocialProfile } from "@src/server/operations/socialDiscoveryOperations",
+  entities: [User, SocialFollow]
+}
+
+query searchSocial {
+  fn: import { searchSocial } from "@src/server/operations/socialDiscoveryOperations",
+  entities: [User, SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, Parish]
+}
+
+action updateSocialProfile {
+  fn: import { updateSocialProfile } from "@src/server/operations/socialDiscoveryOperations",
+  entities: [User]
 }
 //#endregion
 

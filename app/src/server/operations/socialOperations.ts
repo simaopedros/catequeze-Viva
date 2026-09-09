@@ -23,7 +23,9 @@ import {
   buildSocialSlug,
   resolveInitialStatus,
   resolvePostKind,
+  resolveVideoFormat,
   sanitizeSocialBody,
+  socialRecommendationScore,
   validateSocialCommentDraft,
   validateSocialPostDraft,
 } from './socialPolicies';
@@ -40,6 +42,7 @@ const PUBLIC_AUTHOR_SELECT = {
   firstName: true,
   lastName: true,
   avatarUrl: true,
+  socialHandle: true,
 } as const;
 
 const PUBLIC_MEDIA_SELECT = {
@@ -93,7 +96,7 @@ function serializeMedia(media: any) {
   };
 }
 
-function serializePost(post: any, viewerId?: string | null) {
+export function serializePost(post: any, viewerId?: string | null) {
   return {
     id: post.id,
     slug: post.slug,
@@ -109,6 +112,7 @@ function serializePost(post: any, viewerId?: string | null) {
       id: post.author.id,
       displayName: buildAuthorDisplayName(post.author),
       avatarUrl: post.author.avatarUrl,
+      socialHandle: post.author.socialHandle ?? null,
     },
     parish: post.parish ? { id: post.parish.id, name: post.parish.name } : null,
     media: (post.media ?? []).map(serializeMedia),
@@ -118,6 +122,7 @@ function serializePost(post: any, viewerId?: string | null) {
     })),
     viewerReaction: viewerId ? post.reactions?.[0]?.type ?? null : null,
     isOwn: Boolean(viewerId && post.author.id === viewerId),
+    videoFormat: post.videoFormat ?? null,
   };
 }
 
@@ -152,9 +157,11 @@ export const getSocialFeed = async (
     topicSlug?: string | null;
     authorId?: string | null;
     /** `trending` ranks by engagement inside the trending window. */
-    sort?: 'recent' | 'trending';
+    sort?: 'recent' | 'trending' | 'foryou';
     /** Restrict to authors the viewer follows (ignored when anonymous). */
     following?: boolean;
+    /** Restrict to Rhema shorts or long-form video posts. */
+    videoFormat?: 'SHORT' | 'LONG' | null;
   },
   context: any,
 ) => {
@@ -163,6 +170,7 @@ export const getSocialFeed = async (
   const limit = Math.min(Math.max(args?.limit ?? DEFAULT_PAGE_SIZE, 1), MAX_PAGE_SIZE);
   const viewerId = context.user?.id ?? null;
   const trending = args?.sort === 'trending';
+  const foryou = args?.sort === 'foryou';
 
   let followedAuthorIds: string[] | null = null;
   if (args?.following && viewerId) {
@@ -173,18 +181,55 @@ export const getSocialFeed = async (
     followedAuthorIds = follows.map((follow: any) => follow.authorId);
   }
 
+  let watchedPostIds: string[] = [];
+  if (foryou && viewerId) {
+    const watches = await context.entities.SocialVideoWatch.findMany({
+      where: { userId: viewerId },
+      select: { postId: true },
+      orderBy: { updatedAt: 'desc' },
+      take: 500,
+    });
+    watchedPostIds = watches.map((watch: any) => watch.postId);
+  }
+
   const where: any = {
     status: 'PUBLISHED',
     ...(args?.topicSlug ? { topics: { some: { topic: { slug: args.topicSlug } } } } : {}),
     ...(args?.authorId ? { authorId: args.authorId } : {}),
     ...(followedAuthorIds ? { authorId: { in: followedAuthorIds } } : {}),
-    ...(trending
+    ...(args?.videoFormat ? { videoFormat: args.videoFormat } : {}),
+    ...(trending || (foryou && watchedPostIds.length === 0)
       ? { publishedAt: { gte: new Date(Date.now() - TRENDING_WINDOW_MS) } }
       : {}),
+    ...(foryou && watchedPostIds.length > 0 ? { id: { notIn: watchedPostIds } } : {}),
   };
 
   if (followedAuthorIds && followedAuthorIds.length === 0) {
     return { items: [], nextCursor: null };
+  }
+
+  if (foryou) {
+    const windowSize = Math.min(MAX_PAGE_SIZE * 4, 80);
+    const candidates = await context.entities.SocialPost.findMany({
+      where,
+      include: postInclude(viewerId),
+      take: windowSize,
+      orderBy: [{ publishedAt: 'desc' }, { id: 'desc' }],
+    });
+    const ranked = [...candidates].sort((a: any, b: any) => {
+      const delta = socialRecommendationScore(b) - socialRecommendationScore(a);
+      return delta !== 0 ? delta : String(b.id).localeCompare(String(a.id));
+    });
+    let start = 0;
+    if (args?.cursor) {
+      const index = ranked.findIndex((post: any) => post.id === args.cursor);
+      start = index >= 0 ? index + 1 : 0;
+    }
+    const page = ranked.slice(start, start + limit);
+    return {
+      items: page.map((post: any) => serializePost(post, viewerId)),
+      nextCursor: ranked[start + limit] ? page[page.length - 1]?.id ?? null : null,
+    };
   }
 
   const posts = await context.entities.SocialPost.findMany({
@@ -415,6 +460,7 @@ export const createSocialPost = async (
       parishId,
       body,
       kind: resolvePostKind(media as any),
+      videoFormat: resolveVideoFormat(media as any),
       status,
       publishedAt: status === 'PUBLISHED' ? new Date() : null,
       mediaConsentAckAt: mediaIds.length ? new Date() : null,
@@ -652,4 +698,72 @@ export const deleteSocialComment = async (args: { commentId: string }, context: 
   }
 
   return { success: true };
+};
+
+export const recordSocialWatch = async (
+  args: {
+    postId: string;
+    watchSeconds?: number;
+    completionRate?: number | null;
+  },
+  context: any,
+) => {
+  assertSocialEnabled();
+
+  if (!context.user) {
+    throw new HttpError(401, 'Você precisa estar autenticado.');
+  }
+
+  const postId = String(args?.postId || '');
+  if (!postId) {
+    throw new HttpError(400, 'Publicação inválida.');
+  }
+
+  const post = await context.entities.SocialPost.findUnique({
+    where: { id: postId },
+    select: { id: true, status: true },
+  });
+  if (!post || post.status !== 'PUBLISHED') {
+    throw new HttpError(404, 'Publicação não encontrada.');
+  }
+
+  const watchSeconds = Math.max(0, Math.floor(Number(args?.watchSeconds) || 0));
+  const completionRate =
+    args?.completionRate == null
+      ? null
+      : Math.min(1, Math.max(0, Number(args.completionRate)));
+
+  const existing = await context.entities.SocialVideoWatch.findUnique({
+    where: { userId_postId: { userId: context.user.id, postId } },
+    select: { id: true, watchSeconds: true, completionRate: true },
+  });
+
+  if (!existing) {
+    await context.entities.SocialVideoWatch.create({
+      data: {
+        userId: context.user.id,
+        postId,
+        watchSeconds,
+        completionRate,
+      },
+    });
+    await context.entities.SocialPost.update({
+      where: { id: postId },
+      data: { viewCount: { increment: 1 } },
+    });
+    return { created: true };
+  }
+
+  await context.entities.SocialVideoWatch.update({
+    where: { id: existing.id },
+    data: {
+      watchSeconds: Math.max(existing.watchSeconds, watchSeconds),
+      completionRate:
+        completionRate == null
+          ? existing.completionRate
+          : Math.max(existing.completionRate ?? 0, completionRate),
+    },
+  });
+
+  return { created: false };
 };

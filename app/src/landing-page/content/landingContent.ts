@@ -13,6 +13,7 @@ import {
   Search,
   UserCheck,
   Users,
+  Play,
 } from 'lucide-react';
 import { PLANS } from '../../shared/pricing';
 
@@ -22,7 +23,8 @@ export type ShowcaseId =
   | 'sacraments'
   | 'library'
   | 'ai-planner'
-  | 'family-portal';
+  | 'family-portal'
+  | 'rhema';
 
 export interface Persona {
   icon: LucideIcon;
@@ -169,6 +171,17 @@ export const SHOWCASES: FeatureShowcaseItem[] = [
     ],
     direction: 'row-reverse',
   },
+  {
+    id: 'rhema',
+    title: 'Rhema — rede pastoral de vídeos',
+    desc: 'Partilhe testemunhos e encontros em shorts, siga catequistas e descubra conteúdo edificante dentro da plataforma.',
+    bullets: [
+      'Feed vertical de shorts com reações de fé',
+      'Perfis públicos com @handle e busca',
+      'Para você, em alta e quem você segue',
+    ],
+    direction: 'row',
+  },
 ];
 
 export const SECONDARY_FEATURES: SecondaryFeature[] = [
@@ -286,4 +299,5 @@ export const SHOWCASE_ICONS: Record<ShowcaseId, LucideIcon> = {
   library: BookOpen,
   'ai-planner': Feather,
   'family-portal': Heart,
+  rhema: Play,
 };

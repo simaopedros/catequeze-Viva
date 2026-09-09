@@ -1358,6 +1358,13 @@ export const landing_pt_BR_core = {
         "b1": "Marcos por catequizando",
         "b2": "Modelos reutilizáveis por paróquia",
         "b3": "Progresso visível para coordenação e responsáveis"
+      },
+      "rhema": {
+        "title": "Rhema: a rede pastoral da catequese",
+        "desc": "Partilhe testemunhos e encontros em shorts, siga catequistas e descubra conteúdo edificante dentro da plataforma.",
+        "b1": "Feed vertical de shorts com reações de fé",
+        "b2": "Perfis públicos com @handle e busca",
+        "b3": "Para você, em alta e quem você segue"
       }
     },
     "mission_title": "Encontro preparado. Turma acolhida. Fé partilhada com as famílias.",
@@ -1589,6 +1596,11 @@ export const landing_pt_BR_core = {
       "plan_title": "Plano: O amor de Deus",
       "published": "Publicado",
       "plan_detail": "Crisma · 45 min"
+    },
+    "mockup_rhema": {
+      "handle": "@catequista_ana",
+      "caption": "Encontro de hoje: o Pai-Nosso. Amém!",
+      "amen": "Amém"
     },
     "footer": {
       "create_account": "Começar os 7 dias",
@@ -2227,8 +2239,18 @@ export const landingSistema_pt_BR_core = {
       "family-portal",
       "sacraments",
       "library",
+      "rhema",
       "ai-planner"
     ],
+    "features": {
+      "rhema": {
+        "title": "Rhema: a rede pastoral da catequese",
+        "desc": "Partilhe testemunhos e encontros em shorts, siga catequistas e descubra conteúdo edificante dentro da plataforma.",
+        "b1": "Feed vertical de shorts com reações de fé",
+        "b2": "Perfis públicos com @handle e busca",
+        "b3": "Para você, em alta e quem você segue"
+      }
+    },
     "ai_showcase_title": "E também: preparação de encontros com assistência editorial",
     "ai_showcase_subtitle": "Além da gestão, a plataforma inclui assistência editorial para criar roteiros de encontros em segundos.",
     "mockup_dashboard": {
@@ -2295,6 +2317,11 @@ export const landingSistema_pt_BR_core = {
       "plan_title": "Plano: O amor de Deus",
       "published": "Publicado",
       "plan_detail": "Crisma · 45 min"
+    },
+    "mockup_rhema": {
+      "handle": "@catequista_ana",
+      "caption": "Encontro de hoje: o Pai-Nosso. Amém!",
+      "amen": "Amém"
     },
     "footer": {
       "create_account": "Criar conta gratuita",
@@ -2468,7 +2495,7 @@ export const navigation_pt_BR_core = {
       "community": "Comunidades"
     },
     "sidebarSection": "Navegação lateral",
-    "community": "Comunidade"
+    "community": "Comunidade · Rhema"
   } as const;
 
 export const public_pt_BR_core = {

@@ -16,6 +16,12 @@
   "fact_catechumens": "Catecúmenos",
   "fact_upcoming_meetings": "Próximos encuentros",
   "fact_attendance": "Asistencia",
+  "rhema": {
+    "title": "Rhema",
+    "subtitle": "La red pastoral de la catequesis: testimonios, shorts y a quienes sigues.",
+    "cta": "Abrir Comunidad",
+    "empty": "Todavía no hay publicaciones. Sé el primero en compartir."
+  },
   "priority": {
     "high": "Prioridad alta",
     "important": "Importante",
