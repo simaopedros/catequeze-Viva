@@ -2885,7 +2885,7 @@ export const dashboard_es = {
     "greeting_afternoon_anonymous": "¡Buenas tardes!",
     "greeting_evening": "¡Buenas noches, {{name}}!",
     "greeting_evening_anonymous": "¡Buenas noches!",
-    "hero_subtitle": "Esto es lo que necesita su atención hoy.",
+    "hero_subtitle": "Esto es lo que necesita su atención hoy — en el grupo y en la Comunidad.",
     "search_placeholder": "Buscar...",
     "next_actions": "Próximas acciones",
     "see_all": "Ver todas",
@@ -3018,6 +3018,8 @@ export const dashboard_es = {
     "quick_new_catechumen": "Registrar catequizando",
     "quick_ai": "Asistencia editorial",
     "quick_ai_desc": "Preparar guiones de encuentro",
+    "quick_community": "Comunidad",
+    "quick_community_desc": "Compartir un momento de la catequesis",
     "no_meetings_today": "Ningún encuentro hoy.",
     "institutional_title": "Panel de Gestión Pastoral",
     "institutional_subtitle": "KPIs consolidados, tendencias y alertas.",
@@ -5132,7 +5134,8 @@ export const navigation_es = {
       "community": "Comunidades"
     },
     "sidebarSection": "Navegación lateral",
-    "community": "Comunidad · Rhema"
+    "community": "Comunidad · Rhema",
+    "community_short": "Rhema"
   } as const;
 
 export const onboarding_es = {
@@ -5986,6 +5989,7 @@ export const publicNav_es = {
     "how_it_works": "Cómo funciona",
     "faq": "Dudas",
     "blog": "Blog",
+    "community": "Comunidad",
     "footer_explore": "Explorar",
     "footer_talk": "Habla con nosotros",
     "footer_start": "Probar",
@@ -6273,6 +6277,11 @@ export const social_es = {
       "events": "Próximos eventos",
       "eventsBody": "Formaciones, encuentros y el calendario de tu parroquia están en Catechis.",
       "eventsCta": "Ver calendario →",
+      "toolsTitle": "La catequesis sigue aquí",
+      "toolClasses": "Grupos",
+      "toolLibrary": "Biblioteca",
+      "toolBible": "Biblia",
+      "toolMessages": "Mensajes",
       "missionTitle": "Juntos somos más fuertes",
       "missionSubtitle": "¡Comparte, inspira, evangeliza!"
     },
@@ -6345,12 +6354,10 @@ export const social_es = {
       "loginToComment": "Entra y suscríbete para comentar"
     },
     "share": {
-      "action": "Compartir",
-      "copyLink": "Copiar enlace",
-      "copied": "Enlace copiado",
-      "whatsapp": "WhatsApp",
-      "count": "{{count}} compartición",
-      "count_plural": "{{count}} comparticiones"
+      "toCommunity": "Compartir en la Comunidad",
+      "draftHint": "Publicando desde la catequesis",
+      "meetingBody": "Terminamos el encuentro «{{title}}»{{classSuffix}}. ¡Paz y bien!",
+      "contentBody": "Comparto un recurso de la biblioteca: {{title}}"
     },
     "post": {
       "delete": "Borrar publicación",
@@ -6428,6 +6435,33 @@ export const social_es = {
     "shorts": {
       "empty": "Todavía no hay shorts",
       "emptyDescription": "Publica un video corto para aparecer en esta pestaña."
+    },
+    "companion": {
+      "cta": "Abrir Comunidad",
+      "announcements": {
+        "title": "Comunicados y Comunidad",
+        "body": "Los comunicados son avisos oficiales de la parroquia. Los testimonios y la conversación viven en la Comunidad."
+      },
+      "messages": {
+        "title": "Mensajes privados, Comunidad abierta",
+        "body": "Aquí hablas con tu parroquia. En la Comunidad, la catequesis se comparte con todos."
+      },
+      "calendar": {
+        "title": "Agenda y Comunidad",
+        "body": "La agenda organiza los encuentros. Después, comparte lo que viviste en la Comunidad."
+      },
+      "library": {
+        "title": "Biblioteca y Comunidad",
+        "body": "La biblioteca guarda el material. La Comunidad es donde cobra vida."
+      },
+      "formation": {
+        "title": "Formación y Comunidad",
+        "body": "La formación ocurre aquí. Comparte lo que aprendiste en la Comunidad."
+      },
+      "bible": {
+        "title": "Palabra y Comunidad",
+        "body": "Lee la Palabra aquí. Si quieres, comparte una inspiración en la Comunidad."
+      }
     }
   } as const;
 
@@ -6495,6 +6529,10 @@ export const tour_es = {
       "dashboard": {
         "title": "Panel de Control",
         "description": "Aquí ve un resumen de su catequesis: catecúmenos activos, grupos, asistencia media y pendientes."
+      },
+      "community": {
+        "title": "Comunidad · Rhema",
+        "description": "La red de la catequesis: testimonios, shorts y lo que se vive en los grupos. Comparte desde encuentros, la biblioteca y la Palabra."
       },
       "classes": {
         "title": "Grupos",

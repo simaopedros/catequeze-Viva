@@ -474,3 +474,35 @@ describe("getSocialCommunityPulse", () => {
     expect(result.topics[0]).toMatchObject({ slug: "oracao", postCount: 4 });
   });
 });
+
+describe("community share URL", () => {
+  it("builds and parses a pastoral draft for the composer", async () => {
+    const {
+      buildCommunitySharePath,
+      parseCommunityShareSearch,
+      stripCommunityShareParams,
+    } = await import("../shared/socialShare");
+
+    const path = buildCommunitySharePath({
+      body: "Acabámos o encontro",
+      topic: "testemunho",
+      source: "meeting",
+    });
+    expect(path.startsWith("/app/comunidade?")).toBe(true);
+
+    const params = new URLSearchParams(path.split("?")[1]);
+    expect(parseCommunityShareSearch(params)).toEqual({
+      body: "Acabámos o encontro",
+      topic: "testemunho",
+      source: "meeting",
+    });
+
+    const stripped = stripCommunityShareParams(params);
+    expect(parseCommunityShareSearch(stripped)).toBeNull();
+  });
+
+  it("ignores URLs without the share flag", async () => {
+    const { parseCommunityShareSearch } = await import("../shared/socialShare");
+    expect(parseCommunityShareSearch("body=hello")).toBeNull();
+  });
+});

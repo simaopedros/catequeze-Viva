@@ -32,7 +32,7 @@ export default function PublicCommunityPage() {
         topicSlug={topicSlug}
         onSelectTopic={selectTopic}
         showFollowing={Boolean(user)}
-        calendarTo={user ? "/app/calendario" : "/login"}
+        calendarTo={user ? "/app/calendar" : "/login"}
         membersTo="/comunidade"
         promoTo="/pricing"
         subtitle={t("publicSubtitle")}

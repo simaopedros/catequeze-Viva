@@ -80,5 +80,6 @@
     "community": "Communities"
   },
   "sidebarSection": "Sidebar navigation",
-  "community": "Community · Rhema"
+  "community": "Community · Rhema",
+  "community_short": "Rhema"
 }

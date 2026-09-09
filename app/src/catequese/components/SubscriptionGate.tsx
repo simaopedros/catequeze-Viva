@@ -13,6 +13,7 @@ import { useUserContext } from "../../client/hooks/useUserContext";
 import { buildBillingJourneyHref } from "../lib/upgradeJourney";
 import { PaymentPlanId } from "../../payment/plans";
 import { shouldRenderGatedRoute } from "../../client/appRouteGates";
+import { isSocialAppPath } from "../../shared/socialFeatures";
 
 const ALWAYS_ACCESSIBLE = [
   "/app/billing",
@@ -87,9 +88,9 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
 
-  const alwaysAccessible = ALWAYS_ACCESSIBLE.some((p) =>
-    location.pathname.startsWith(p),
-  );
+  const alwaysAccessible =
+    ALWAYS_ACCESSIBLE.some((p) => location.pathname.startsWith(p)) ||
+    isSocialAppPath(location.pathname);
 
   const isBillingManager = canManageWorkspaceBilling(
     workspace?.role || userRole,

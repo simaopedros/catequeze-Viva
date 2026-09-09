@@ -1,6 +1,14 @@
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { CalendarDays, Flame, Sparkles, Users } from "lucide-react";
+import {
+  BookMarked,
+  BookOpen,
+  CalendarDays,
+  Flame,
+  MessageSquareText,
+  Sparkles,
+  Users,
+} from "lucide-react";
 import { useQuery, getSocialCommunityPulse } from "wasp/client/operations";
 import { Button } from "../../../client/components/ui/button";
 import { SocialSearch } from "./SocialSearch";
@@ -8,14 +16,16 @@ import { SocialAvatar } from "./SocialAvatar";
 
 export function SocialRail({
   onSelectTopic,
-  calendarTo = "/app/calendario",
+  calendarTo = "/app/calendar",
   membersTo = "/comunidade",
   promoTo = "/pricing",
+  signedIn = false,
 }: {
   onSelectTopic?: (slug: string) => void;
   calendarTo?: string;
   membersTo?: string;
   promoTo?: string;
+  signedIn?: boolean;
 }) {
   const { t } = useTranslation("social");
   const { data } = useQuery(getSocialCommunityPulse);
@@ -28,6 +38,28 @@ export function SocialRail({
         b.postCount - a.postCount,
     )
     .slice(0, 5);
+  const tools = [
+    {
+      to: signedIn ? "/app/classes" : "/login",
+      label: t("rail.toolClasses"),
+      icon: Users,
+    },
+    {
+      to: signedIn ? "/app/content-library" : "/login",
+      label: t("rail.toolLibrary"),
+      icon: BookOpen,
+    },
+    {
+      to: signedIn ? "/app/bible" : "/login",
+      label: t("rail.toolBible"),
+      icon: BookMarked,
+    },
+    {
+      to: signedIn ? "/app/messages" : "/login",
+      label: t("rail.toolMessages"),
+      icon: MessageSquareText,
+    },
+  ];
 
   return (
     <aside className="space-y-3" data-testid="community-rail">
@@ -159,6 +191,25 @@ export function SocialRail({
         >
           <Link to={calendarTo}>{t("rail.eventsCta")}</Link>
         </Button>
+      </section>
+
+      <section className="rounded-2xl border border-border bg-white p-4 shadow-[0_3px_16px_rgba(18,46,76,0.07)]">
+        <div className="mb-3 font-extrabold text-brand-ink">
+          {t("rail.toolsTitle")}
+        </div>
+        <ul className="grid grid-cols-2 gap-2">
+          {tools.map((tool) => (
+            <li key={tool.to + tool.label}>
+              <Link
+                to={tool.to}
+                className="flex items-center gap-2 rounded-lg border border-border/70 px-2.5 py-2 text-[11px] font-semibold text-brand-ink hover:bg-muted/50"
+              >
+                <tool.icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                {tool.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="relative flex min-h-[86px] items-center gap-3 overflow-hidden rounded-2xl border border-brand-ink bg-brand-ink p-4 text-white">

@@ -21,6 +21,11 @@
     "events": "Upcoming events",
     "eventsBody": "Formation, gatherings and your parish calendar live in Catechis.",
     "eventsCta": "Open calendar →",
+    "toolsTitle": "Catechesis continues here",
+    "toolClasses": "Classes",
+    "toolLibrary": "Library",
+    "toolBible": "Bible",
+    "toolMessages": "Messages",
     "missionTitle": "Together we are stronger",
     "missionSubtitle": "Share, inspire, evangelize!"
   },
@@ -176,5 +181,38 @@
   "shorts": {
     "empty": "No shorts yet",
     "emptyDescription": "Publish a short video to appear in this tab."
+  },
+  "share": {
+    "toCommunity": "Share to Community",
+    "draftHint": "Publishing from catechesis",
+    "meetingBody": "We just finished the meeting “{{title}}”{{classSuffix}}. Peace be with you!",
+    "contentBody": "Sharing a library resource: {{title}}"
+  },
+  "companion": {
+    "cta": "Open Community",
+    "announcements": {
+      "title": "Announcements and Community",
+      "body": "Announcements are official parish notices. Testimonies and conversation live in the Community."
+    },
+    "messages": {
+      "title": "Private messages, open Community",
+      "body": "Talk with your parish here. In the Community, catechesis is shared with everyone."
+    },
+    "calendar": {
+      "title": "Calendar and Community",
+      "body": "The calendar organizes meetings. Afterward, share what you lived in the Community."
+    },
+    "library": {
+      "title": "Library and Community",
+      "body": "The library holds the material. The Community is where it comes alive."
+    },
+    "formation": {
+      "title": "Formation and Community",
+      "body": "Formation happens here. Share what you learned in the Community."
+    },
+    "bible": {
+      "title": "Scripture and Community",
+      "body": "Read the Word here. If you wish, share an inspiration in the Community."
+    }
   }
 }

@@ -29,6 +29,7 @@ import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { toast } from "../../client/hooks/use-toast";
 import { OriginBadge } from "../components/OriginBadge";
+import { PastoralCompanion } from "../components/social/PastoralCompanion";
 
 const COORDINATOR_ROLES = [
   "SUPER_ADMIN",
@@ -97,6 +98,8 @@ export default function PastoralAnnouncementsPage() {
           ) : undefined
         }
       />
+
+      <PastoralCompanion surface="announcements" />
 
       {showForm && canPublish && (
         <AppPanel className="space-y-3">

@@ -43,6 +43,8 @@ import {
 } from "../../shared/contentDocument";
 import { ContentDocumentRenderer } from "../components/content/ContentDocumentRenderer";
 import { AppPageHeader } from "../../client/components/brand/AppChrome";
+import { ShareToCommunityButton } from "../components/social/ShareToCommunityButton";
+import { PastoralCompanion } from "../components/social/PastoralCompanion";
 import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 import { toast } from "../../client/hooks/use-toast";
 import {
@@ -103,6 +105,7 @@ export default function ContentDetailPage() {
   const { t: ta } = useTranslation("activities");
   const { t: tai } = useTranslation("ai");
   const { t: tc } = useTranslation("common");
+  const { t: ts } = useTranslation("social");
   const { confirm, confirmDialog } = useConfirm();
   const STATUS_MAP = useContentStatusMap();
   const activityTypes = useActivityTypes();
@@ -253,6 +256,14 @@ export default function ContentDetailPage() {
           subtitle={subtitleParts.join(" · ")}
           actions={
             <>
+              <ShareToCommunityButton
+                body={ts("share.contentBody", {
+                  title: item.title,
+                })}
+                topic="formacao"
+                source="library"
+                className="h-10 rounded-sm"
+              />
               <Button
                 size="sm"
                 variant="outline"
@@ -291,6 +302,8 @@ export default function ContentDetailPage() {
           }
         />
       </div>
+
+      <PastoralCompanion surface="library" />
 
       <div className="flex flex-wrap gap-2">
         {item.status === "DRAFT" && (

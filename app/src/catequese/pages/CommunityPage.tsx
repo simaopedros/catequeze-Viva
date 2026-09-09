@@ -13,7 +13,7 @@ export default function CommunityPage() {
       onSelectTopic={setTopicSlug}
       showFollowing
       alwaysShowAccessNotice
-      calendarTo="/app/calendario"
+      calendarTo="/app/calendar"
       membersTo="/app/comunidade"
       promoTo="/pricing"
       subtitle={t("subtitle")}

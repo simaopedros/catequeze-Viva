@@ -99,6 +99,7 @@ function NavItemLink({
 
   const tourMap: Record<string, string> = {
     classes: "sidebar-classes",
+    community: "sidebar-community",
     ai_hub: "sidebar-ai",
     messages: "sidebar-messages",
   };

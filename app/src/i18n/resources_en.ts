@@ -2885,7 +2885,7 @@ export const dashboard_en = {
     "greeting_afternoon_anonymous": "Good afternoon!",
     "greeting_evening": "Good evening, {{name}}!",
     "greeting_evening_anonymous": "Good evening!",
-    "hero_subtitle": "Here is what needs your attention today.",
+    "hero_subtitle": "Here is what needs your attention today — in class and in the Community.",
     "search_placeholder": "Search...",
     "next_actions": "Next actions",
     "see_all": "See all",
@@ -3018,6 +3018,8 @@ export const dashboard_en = {
     "quick_new_catechumen": "Register catechumen",
     "quick_ai": "Editorial assistance",
     "quick_ai_desc": "Prepare meeting outlines",
+    "quick_community": "Community",
+    "quick_community_desc": "Share a moment from catechesis",
     "no_meetings_today": "No meetings today.",
     "institutional_title": "Pastoral Management Dashboard",
     "institutional_subtitle": "Consolidated KPIs, trends and alerts.",
@@ -5132,7 +5134,8 @@ export const navigation_en = {
       "community": "Communities"
     },
     "sidebarSection": "Sidebar navigation",
-    "community": "Community · Rhema"
+    "community": "Community · Rhema",
+    "community_short": "Rhema"
   } as const;
 
 export const onboarding_en = {
@@ -5986,6 +5989,7 @@ export const publicNav_en = {
     "how_it_works": "How it works",
     "faq": "FAQ",
     "blog": "Blog",
+    "community": "Community",
     "footer_explore": "Explore",
     "footer_talk": "Talk to us",
     "footer_start": "Try it",
@@ -6273,6 +6277,11 @@ export const social_en = {
       "events": "Upcoming events",
       "eventsBody": "Formation, gatherings and your parish calendar live in Catechis.",
       "eventsCta": "Open calendar →",
+      "toolsTitle": "Catechesis continues here",
+      "toolClasses": "Classes",
+      "toolLibrary": "Library",
+      "toolBible": "Bible",
+      "toolMessages": "Messages",
       "missionTitle": "Together we are stronger",
       "missionSubtitle": "Share, inspire, evangelize!"
     },
@@ -6345,12 +6354,10 @@ export const social_en = {
       "loginToComment": "Sign in and subscribe to comment"
     },
     "share": {
-      "action": "Share",
-      "copyLink": "Copy link",
-      "copied": "Link copied",
-      "whatsapp": "WhatsApp",
-      "count": "{{count}} share",
-      "count_plural": "{{count}} shares"
+      "toCommunity": "Share to Community",
+      "draftHint": "Publishing from catechesis",
+      "meetingBody": "We just finished the meeting “{{title}}”{{classSuffix}}. Peace be with you!",
+      "contentBody": "Sharing a library resource: {{title}}"
     },
     "post": {
       "delete": "Delete post",
@@ -6428,6 +6435,33 @@ export const social_en = {
     "shorts": {
       "empty": "No shorts yet",
       "emptyDescription": "Publish a short video to appear in this tab."
+    },
+    "companion": {
+      "cta": "Open Community",
+      "announcements": {
+        "title": "Announcements and Community",
+        "body": "Announcements are official parish notices. Testimonies and conversation live in the Community."
+      },
+      "messages": {
+        "title": "Private messages, open Community",
+        "body": "Talk with your parish here. In the Community, catechesis is shared with everyone."
+      },
+      "calendar": {
+        "title": "Calendar and Community",
+        "body": "The calendar organizes meetings. Afterward, share what you lived in the Community."
+      },
+      "library": {
+        "title": "Library and Community",
+        "body": "The library holds the material. The Community is where it comes alive."
+      },
+      "formation": {
+        "title": "Formation and Community",
+        "body": "Formation happens here. Share what you learned in the Community."
+      },
+      "bible": {
+        "title": "Scripture and Community",
+        "body": "Read the Word here. If you wish, share an inspiration in the Community."
+      }
     }
   } as const;
 
@@ -6495,6 +6529,10 @@ export const tour_en = {
       "dashboard": {
         "title": "Dashboard",
         "description": "See a summary of your catechesis: active catechumens, classes, average attendance, and pending items."
+      },
+      "community": {
+        "title": "Community · Rhema",
+        "description": "The catechesis network: testimonies, shorts, and what happens in class. Share from meetings, the library, and Scripture."
       },
       "classes": {
         "title": "Classes",

@@ -32,6 +32,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { isFamilyPortalHost } from "../../shared/portal";
+import { ShareToCommunityButton } from "../components/social/ShareToCommunityButton";
 
 const STATUS_VARIANT: Record<
   string,
@@ -46,6 +47,7 @@ const STATUS_VARIANT: Record<
 export default function MeetingDetailPage() {
   const { t } = useTranslation("meetings");
   const { t: tc } = useTranslation("common");
+  const { t: ts } = useTranslation("social");
   const { currentLocale } = useLocale();
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
@@ -262,6 +264,17 @@ export default function MeetingDetailPage() {
         subtitle={dateLabel}
         actions={
           <div className="flex flex-wrap gap-2">
+            <ShareToCommunityButton
+              body={ts("share.meetingBody", {
+                title: meeting.title || meeting.theme || t("no_title"),
+                classSuffix: meeting.class?.name
+                  ? ` · ${meeting.class.name}`
+                  : "",
+              })}
+              topic="testemunho"
+              source="meeting"
+              className="h-11 min-h-11 rounded-sm"
+            />
             <Button
               asChild
               variant="outline"
@@ -422,78 +435,88 @@ export default function MeetingDetailPage() {
           </div>
           {canChangeStatus && meeting.status !== "CANCELLED" && (
             <div className="flex flex-wrap gap-2">
-              <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
+              <Button
+                asChild
+                variant="outline"
+                className="h-11 min-h-11 rounded-sm"
+              >
                 <Link to="/app/bible">{t("prep_open_bible")}</Link>
               </Button>
-              <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
+              <Button
+                asChild
+                variant="outline"
+                className="h-11 min-h-11 rounded-sm"
+              >
                 <Link to="/app/catechism">{t("prep_open_catechism")}</Link>
               </Button>
             </div>
           )}
           {meeting.content ? (
             <>
-          <h3 className="text-base font-semibold text-brand-ink">
-            {meeting.content.title}
-          </h3>
-          {meeting.content.theme && (
-            <p className="text-sm text-muted-foreground">
-              {meeting.content.theme}
-            </p>
-          )}
-          {meeting.content.openingPrayer && (
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {t("content_opening_prayer")}
-              </p>
-              <p className="mt-1 text-sm whitespace-pre-wrap">
-                {meeting.content.openingPrayer}
-              </p>
-            </div>
-          )}
-          {meeting.content.mainContent && (
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {t("content_main")}
-              </p>
-              <p className="mt-1 text-sm whitespace-pre-wrap">
-                {meeting.content.mainContent}
-              </p>
-            </div>
-          )}
-          {meeting.content.materials && (
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {t("content_materials")}
-              </p>
-              <p className="mt-1 text-sm whitespace-pre-wrap">
-                {meeting.content.materials}
-              </p>
-            </div>
-          )}
-          {meeting.content.activity && (
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {t("content_activity")}
-              </p>
-              <p className="mt-1 text-sm whitespace-pre-wrap">
-                {meeting.content.activity}
-              </p>
-            </div>
-          )}
-          {perms.canEdit && meeting.content.id && (
-            <Button
-              asChild
-              variant="outline"
-              className="h-11 min-h-11 rounded-sm"
-            >
-              <Link to={`/app/content/${meeting.content.id}`}>
-                {t("open_content")}
-              </Link>
-            </Button>
-          )}
+              <h3 className="text-base font-semibold text-brand-ink">
+                {meeting.content.title}
+              </h3>
+              {meeting.content.theme && (
+                <p className="text-sm text-muted-foreground">
+                  {meeting.content.theme}
+                </p>
+              )}
+              {meeting.content.openingPrayer && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    {t("content_opening_prayer")}
+                  </p>
+                  <p className="mt-1 text-sm whitespace-pre-wrap">
+                    {meeting.content.openingPrayer}
+                  </p>
+                </div>
+              )}
+              {meeting.content.mainContent && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    {t("content_main")}
+                  </p>
+                  <p className="mt-1 text-sm whitespace-pre-wrap">
+                    {meeting.content.mainContent}
+                  </p>
+                </div>
+              )}
+              {meeting.content.materials && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    {t("content_materials")}
+                  </p>
+                  <p className="mt-1 text-sm whitespace-pre-wrap">
+                    {meeting.content.materials}
+                  </p>
+                </div>
+              )}
+              {meeting.content.activity && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    {t("content_activity")}
+                  </p>
+                  <p className="mt-1 text-sm whitespace-pre-wrap">
+                    {meeting.content.activity}
+                  </p>
+                </div>
+              )}
+              {perms.canEdit && meeting.content.id && (
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-11 min-h-11 rounded-sm"
+                >
+                  <Link to={`/app/content/${meeting.content.id}`}>
+                    {t("open_content")}
+                  </Link>
+                </Button>
+              )}
             </>
           ) : (
-            <p className="text-sm text-muted-foreground">{t("prep_missing_body")}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("prep_missing_body")}
+            </p>
           )}
         </AppPanel>
       )}

@@ -21,6 +21,11 @@
     "events": "Próximos eventos",
     "eventsBody": "Formações, encontros e o calendário da sua paróquia ficam no Catechis.",
     "eventsCta": "Ver calendário →",
+    "toolsTitle": "A catequese continua aqui",
+    "toolClasses": "Turmas",
+    "toolLibrary": "Biblioteca",
+    "toolBible": "Bíblia",
+    "toolMessages": "Mensagens",
     "missionTitle": "Juntos somos mais fortes",
     "missionSubtitle": "Compartilhe, inspire, evangelize!"
   },
@@ -176,5 +181,38 @@
   "shorts": {
     "empty": "Ainda não há shorts",
     "emptyDescription": "Publique um vídeo curto para aparecer nesta aba."
+  },
+  "share": {
+    "toCommunity": "Partilhar na Comunidade",
+    "draftHint": "A publicar a partir da catequese",
+    "meetingBody": "Acabámos o encontro «{{title}}»{{classSuffix}}. Paz e bem!",
+    "contentBody": "Partilho um recurso da biblioteca: {{title}}"
+  },
+  "companion": {
+    "cta": "Abrir Comunidade",
+    "announcements": {
+      "title": "Comunicados e Comunidade",
+      "body": "Comunicados são avisos oficiais da paróquia. Testemunhos e conversa ficam na Comunidade."
+    },
+    "messages": {
+      "title": "Mensagens privadas, Comunidade aberta",
+      "body": "Aqui fala com a sua paróquia. Na Comunidade, a catequese partilha com todos."
+    },
+    "calendar": {
+      "title": "Agenda e Comunidade",
+      "body": "A agenda organiza os encontros. Depois, partilhe o que viveu na Comunidade."
+    },
+    "library": {
+      "title": "Biblioteca e Comunidade",
+      "body": "A biblioteca guarda o material. A Comunidade é onde ele ganha vida."
+    },
+    "formation": {
+      "title": "Formação e Comunidade",
+      "body": "A formação acontece aqui. Partilhe o que aprendeu na Comunidade."
+    },
+    "bible": {
+      "title": "Palavra e Comunidade",
+      "body": "Leia a Palavra aqui. Se quiser, partilhe uma inspiração na Comunidade."
+    }
   }
 }

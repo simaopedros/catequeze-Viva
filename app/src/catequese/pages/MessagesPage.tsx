@@ -39,6 +39,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "../../client/components/ui/sheet";
+import { PastoralCompanion } from "../components/social/PastoralCompanion";
 
 export default function MessagesPage() {
   const { t } = useTranslation("messages");
@@ -357,6 +358,9 @@ export default function MessagesPage() {
   return (
     <>
       {/* Mobile: list OR chat as distinct full screens; desktop: split pane */}
+      <div className="mx-auto mb-3 max-w-7xl">
+        <PastoralCompanion surface="messages" />
+      </div>
       <AppPanel
         className="chat-height mx-auto flex max-w-7xl overflow-hidden"
         padded={false}

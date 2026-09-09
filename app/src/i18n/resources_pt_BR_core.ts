@@ -2495,7 +2495,8 @@ export const navigation_pt_BR_core = {
       "community": "Comunidades"
     },
     "sidebarSection": "Navegação lateral",
-    "community": "Comunidade · Rhema"
+    "community": "Comunidade · Rhema",
+    "community_short": "Rhema"
   } as const;
 
 export const public_pt_BR_core = {
@@ -2706,6 +2707,7 @@ export const publicNav_pt_BR_core = {
     "how_it_works": "Como funciona",
     "faq": "Dúvidas",
     "blog": "Blog",
+    "community": "Comunidade",
     "footer_explore": "Explorar",
     "footer_talk": "Fale com a gente",
     "footer_start": "Experimentar",

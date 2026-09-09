@@ -28,6 +28,7 @@ import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { toast } from "../../client/hooks/use-toast";
 import { OriginBadge } from "../components/OriginBadge";
+import { PastoralCompanion } from "../components/social/PastoralCompanion";
 import { INHERITANCE_POLICIES } from "../../shared/resourceInheritance";
 
 const COORDINATOR_ROLES = [
@@ -114,6 +115,8 @@ export default function FormationPage() {
           ) : undefined
         }
       />
+
+      <PastoralCompanion surface="formation" />
 
       {showForm && canPublish && (
         <AppPanel className="space-y-3">

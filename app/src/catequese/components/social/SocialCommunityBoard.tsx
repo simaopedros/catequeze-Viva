@@ -23,7 +23,7 @@ export function SocialCommunityBoard({
   onSelectTopic,
   showFollowing,
   alwaysShowAccessNotice = false,
-  calendarTo = "/app/calendario",
+  calendarTo = "/app/calendar",
   membersTo = "/comunidade",
   promoTo = "/pricing",
   subtitle,
@@ -147,6 +147,7 @@ export function SocialCommunityBoard({
           calendarTo={calendarTo}
           membersTo={membersTo}
           promoTo={promoTo}
+          signedIn={Boolean(user)}
         />
       </div>
     </div>

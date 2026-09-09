@@ -3,6 +3,7 @@ import {
   AppPageHeader,
   AppMetric,
 } from "../../../client/components/brand/AppChrome";
+import { RhemaPreviewCard } from "./RhemaPreviewCard";
 
 interface PastoralDashboardProps {
   stats: any;
@@ -32,6 +33,7 @@ export function PastoralDashboard({ stats }: PastoralDashboardProps) {
           value={stats?.pendingSacraments ?? 0}
         />
       </div>
+      <RhemaPreviewCard />
     </div>
   );
 }

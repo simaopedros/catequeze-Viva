@@ -28,6 +28,7 @@ import {
   User,
   Landmark,
   Megaphone,
+  Sparkles,
 } from "lucide-react";
 import { getVisibleNavigation } from "../../shared/navigation";
 import { useUserContext } from "../../client/hooks/useUserContext";
@@ -40,6 +41,7 @@ import {
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   dashboard: LayoutDashboard,
+  community: Sparkles,
   classes: Users,
   catechumens: GraduationCap,
   content_library: BookMarked,

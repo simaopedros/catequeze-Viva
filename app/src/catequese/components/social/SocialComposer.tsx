@@ -1,5 +1,6 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router";
 import { Image as ImageIcon, Loader2, Video, X } from "lucide-react";
 import { useAuth } from "wasp/client/auth";
 import {
@@ -20,6 +21,10 @@ import {
   MAX_SOCIAL_VIDEO_BYTES,
   MAX_POST_BODY_LENGTH,
 } from "../../../shared/socialConstants";
+import {
+  parseCommunityShareSearch,
+  stripCommunityShareParams,
+} from "../../../shared/socialShare";
 import { SocialAvatar } from "./SocialAvatar";
 import { getUserDisplayFirstName } from "../../../shared/displayName";
 
@@ -44,6 +49,7 @@ export function SocialComposer({
 }) {
   const { t } = useTranslation("social");
   const { data: user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const imageInput = useRef<HTMLInputElement>(null);
   const videoInput = useRef<HTMLInputElement>(null);
   const authorName =
@@ -56,6 +62,20 @@ export function SocialComposer({
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [consent, setConsent] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [fromShare, setFromShare] = useState(false);
+
+  const shareApplied = useRef(false);
+
+  useEffect(() => {
+    if (shareApplied.current) return;
+    const draft = parseCommunityShareSearch(searchParams);
+    if (!draft) return;
+    shareApplied.current = true;
+    if (draft.body) setBody(draft.body);
+    if (draft.topic) setSelectedTopics([draft.topic]);
+    setFromShare(true);
+    setSearchParams(stripCommunityShareParams(searchParams), { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const uploading = media.some((item) => item.uploading);
   const canSubmit =
@@ -257,6 +277,11 @@ export function SocialComposer({
             <label htmlFor="social-composer-body" className="sr-only">
               {t("composer.title")}
             </label>
+            {fromShare ? (
+              <p className="text-[11px] font-medium text-brand-gold-muted">
+                {t("share.draftHint")}
+              </p>
+            ) : null}
             {quotaLeft !== null && (
               <span className="ml-auto text-[11px] text-muted-foreground">
                 {t("composer.quotaLeft", { count: quotaLeft })}

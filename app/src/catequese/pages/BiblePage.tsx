@@ -36,6 +36,7 @@ import {
 } from "wasp/client/operations";
 import { useLocale } from "../../i18n/useLocale";
 import { toast } from "../../client/hooks/use-toast";
+import { PastoralCompanion } from "../components/social/PastoralCompanion";
 
 // ── localStorage helpers ──
 
@@ -775,6 +776,8 @@ export default function BiblePage() {
           </div>
         }
       />
+
+      <PastoralCompanion surface="bible" />
 
       {/* ── SEARCH MODE ── */}
       {mode === "search" && (

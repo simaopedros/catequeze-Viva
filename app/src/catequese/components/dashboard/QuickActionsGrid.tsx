@@ -8,6 +8,7 @@ import {
 } from "../../../client/components/brand/AppChrome";
 import { cn } from "../../../client/utils";
 import { AI_FEATURES_ENABLED } from "../../../shared/aiFeatures";
+import { SOCIAL_FEATURES_ENABLED } from "../../../shared/socialFeatures";
 
 type QuickAction = {
   id: string;
@@ -78,6 +79,16 @@ export function QuickActionsGrid({ className }: QuickActionsGridProps) {
       description: t("quick_import_list_desc"),
     },
   ];
+  if (SOCIAL_FEATURES_ENABLED) {
+    actions.push({
+      id: "community",
+      to: "/app/comunidade",
+      icon: Sparkles,
+      iconClass: "bg-brand-gold/12 text-brand-gold-muted",
+      title: t("quick_community"),
+      description: t("quick_community_desc"),
+    });
+  }
   if (AI_FEATURES_ENABLED) {
     actions.push({
       id: "ai",
@@ -99,7 +110,7 @@ export function QuickActionsGrid({ className }: QuickActionsGridProps) {
       <div
         className={cn(
           "grid gap-2",
-          actions.length === 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3",
+          actions.length >= 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3",
         )}
       >
         {actions.map((a) => (
