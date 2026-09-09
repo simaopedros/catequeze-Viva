@@ -1,5 +1,11 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode, type Ref } from "react";
 import { cn } from "../../utils";
+
+function assignRef<T>(ref: Ref<T> | undefined, value: T | null) {
+  if (!ref) return;
+  if (typeof ref === "function") ref(value);
+  else (ref as { current: T | null }).current = value;
+}
 
 /**
  * Fades the top/bottom of a scrollable list only when content overflows.
@@ -9,16 +15,19 @@ export function ScrollFade({
   children,
   className,
   maxHeight,
+  containerRef,
 }: {
   children: ReactNode;
   className?: string;
   maxHeight?: string;
+  containerRef?: Ref<HTMLDivElement>;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [fade, setFade] = useState({ top: false, bottom: false });
 
   useEffect(() => {
     const el = ref.current;
+    assignRef(containerRef, el);
     if (!el) return;
 
     const update = () => {
@@ -40,8 +49,9 @@ export function ScrollFade({
     return () => {
       el.removeEventListener("scroll", update);
       observer.disconnect();
+      assignRef(containerRef, null);
     };
-  }, [children]);
+  }, [children, containerRef]);
 
   const mask =
     fade.top && fade.bottom

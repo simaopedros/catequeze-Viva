@@ -244,6 +244,7 @@
     "emptyTitle": "Directory for Catechesis",
     "emptyDesc": "Official document of the Holy See that guides catechetical action. Select a part or search by keywords.",
     "loadError": "Could not load the directory.",
+    "share_entry": "Share to Community",
     "parts": {
       "I": "Part I — Catechesis in the Evangelizing Mission",
       "II": "Part II — The Process of Catechesis",

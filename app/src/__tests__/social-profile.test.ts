@@ -7,7 +7,10 @@ import {
   sanitizeBio,
   validateHandle,
 } from '../shared/socialProfile';
-import { shouldExcludeAuthorFromFeed } from '../shared/socialBlock';
+import {
+  collectHiddenAuthorIds,
+  shouldExcludeAuthorFromFeed,
+} from '../shared/socialBlock';
 
 describe('social handle', () => {
   it('normalises @ prefix and case', () => {
@@ -44,6 +47,20 @@ describe('profile fields', () => {
     expect(isValidWebsiteUrl('http://localhost:3000')).toBe(true);
     expect(isValidWebsiteUrl('javascript:alert(1)')).toBe(false);
     expect(isValidWebsiteUrl('ftp://files')).toBe(false);
+  });
+});
+
+describe('block lists', () => {
+  it('collects authors hidden in either direction', () => {
+    expect(
+      collectHiddenAuthorIds({
+        viewerId: 'me',
+        blocks: [
+          { blockerId: 'me', blockedId: 'them' },
+          { blockerId: 'other', blockedId: 'me' },
+        ],
+      }).sort(),
+    ).toEqual(['other', 'them']);
   });
 });
 

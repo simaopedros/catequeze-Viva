@@ -7,6 +7,7 @@ import { Input } from "../../../client/components/ui/input";
 import { Feather, Search, FileText, Calendar, Loader2 } from "lucide-react";
 import { Link } from "react-router";
 import { AppPageHeader } from "../../../client/components/brand/AppChrome";
+import { ScrollFade } from "../../../client/components/ui/scroll-fade";
 
 interface ContentSourcePickerProps {
   mode: string;
@@ -79,7 +80,7 @@ export function ContentSourcePicker({
             </Button>
           </div>
         ) : (
-          <div className="space-y-2 max-h-[50vh] overflow-y-auto">
+          <ScrollFade maxHeight="50vh" className="space-y-2 pr-1">
             {filtered.map((item: any) => (
               <button
                 key={item.id}
@@ -120,7 +121,7 @@ export function ContentSourcePicker({
                 </Card>
               </button>
             ))}
-          </div>
+          </ScrollFade>
         )}
       </div>
     </div>

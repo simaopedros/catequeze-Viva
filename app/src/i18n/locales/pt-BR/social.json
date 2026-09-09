@@ -109,6 +109,7 @@
     "copyLink": "Copiar link do perfil",
     "linkCopied": "Link do perfil copiado",
     "edit": "Editar perfil",
+    "blockedNotice": "Você bloqueou esta conta. As publicações ficam ocultas até desbloquear.",
     "emptyPosts": "Ainda sem publicações",
     "emptyPostsDescription": "Quando esta pessoa publicar, as partilhas aparecem aqui.",
     "stats": "{{posts}} publicações · {{followers}} seguidores · {{following}} a seguir"

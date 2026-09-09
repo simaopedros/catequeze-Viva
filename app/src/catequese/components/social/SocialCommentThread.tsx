@@ -12,6 +12,7 @@ import { Textarea } from "../../../client/components/ui/textarea";
 import { toast } from "../../../client/hooks/use-toast";
 import { formatRelativeTime } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
+import { ScrollFade } from "../../../client/components/ui/scroll-fade";
 
 export function SocialCommentThread({
   postId,
@@ -81,7 +82,8 @@ export function SocialCommentThread({
       ) : comments.length === 0 ? (
         <p className="mt-2 text-sm text-muted-foreground">{t("comments.empty")}</p>
       ) : (
-        <ul className="mt-2 space-y-3">
+        <ScrollFade maxHeight="16rem" className="mt-2">
+        <ul className="space-y-3">
           {comments.map((comment: any) => (
             <li key={comment.id} className="flex gap-2">
               <div className="min-w-0 flex-1 rounded-xl bg-muted/60 px-3 py-2">
@@ -109,6 +111,7 @@ export function SocialCommentThread({
             </li>
           ))}
         </ul>
+        </ScrollFade>
       )}
 
       {canComment ? (

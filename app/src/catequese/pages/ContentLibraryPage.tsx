@@ -515,7 +515,7 @@ export default function ContentLibraryPage() {
               <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
           </div>
-          <div className="overflow-x-auto">
+          <ScrollFade maxHeight="min(70vh, 40rem)" className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/20 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
@@ -528,6 +528,9 @@ export default function ContentLibraryPage() {
                   </th>
                   <th className="p-4 hidden lg:table-cell">
                     {t("library.table_time")}
+                  </th>
+                  <th className="p-4 w-12">
+                    <span className="sr-only">{t("library.share_community")}</span>
                   </th>
                 </tr>
               </thead>
@@ -577,13 +580,33 @@ export default function ContentLibraryPage() {
                         ? t("library.minutes", { count: i.estimatedTime })
                         : "—"}
                     </td>
+                    <td className="p-4">
+                      <span
+                        onClick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                        }}
+                      >
+                        <ShareToCommunityButton
+                          draft={{
+                            kind: i.isAiGenerated ? "AI_ARTIFACT" : "DOCUMENT",
+                            sourceId: i.id,
+                          }}
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8"
+                          label={t("library.share_community")}
+                        />
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
+          </ScrollFade>
         </section>
       ) : (
+        <ScrollFade maxHeight="min(80vh, 56rem)" className="pr-1">
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((item: any) => (
             <Link
@@ -685,6 +708,7 @@ export default function ContentLibraryPage() {
             </Link>
           ))}
         </div>
+        </ScrollFade>
       )}
 
       {hasMore && (

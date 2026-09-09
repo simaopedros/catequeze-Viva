@@ -2227,6 +2227,7 @@ export const common_en = {
       "emptyTitle": "Directory for Catechesis",
       "emptyDesc": "Official document of the Holy See that guides catechetical action. Select a part or search by keywords.",
       "loadError": "Could not load the directory.",
+      "share_entry": "Share to Community",
       "parts": {
         "I": "Part I — Catechesis in the Evangelizing Mission",
         "II": "Part II — The Process of Catechesis",
@@ -2695,7 +2696,8 @@ export const content_en = {
       "error_import_invalid_file": "Invalid or corrupted file.",
       "error_import_storage_not_configured": "File storage is unavailable. Try again later.",
       "error_import_parse_failed": "Could not read the file.",
-      "error_download_original": "Could not download the original file."
+      "error_download_original": "Could not download the original file.",
+      "share_community": "Share to Community"
     },
     "detail": {
       "by_author": "by {{name}}",
@@ -6336,6 +6338,7 @@ export const social_en = {
       "copyLink": "Copy profile link",
       "linkCopied": "Profile link copied",
       "edit": "Edit profile",
+      "blockedNotice": "You blocked this account. Posts stay hidden until you unblock.",
       "emptyPosts": "No posts yet",
       "emptyPostsDescription": "When this person publishes, their shares appear here.",
       "stats": "{{posts}} posts · {{followers}} followers · {{following}} following"

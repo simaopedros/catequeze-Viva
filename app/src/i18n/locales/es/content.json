@@ -72,7 +72,8 @@
     "error_import_invalid_file": "Archivo inválido o dañado.",
     "error_import_storage_not_configured": "Almacenamiento de archivos no disponible. Intente más tarde.",
     "error_import_parse_failed": "No se pudo leer el archivo.",
-    "error_download_original": "No se pudo descargar el original."
+    "error_download_original": "No se pudo descargar el original.",
+    "share_community": "Compartir en la Comunidad"
   },
   "detail": {
     "by_author": "por {{name}}",

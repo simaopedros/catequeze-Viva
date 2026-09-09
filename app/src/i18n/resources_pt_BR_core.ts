@@ -754,6 +754,7 @@ export const common_pt_BR_core = {
       "emptyTitle": "Diretório para a Catequese",
       "emptyDesc": "Documento oficial da Santa Sé que orienta a ação catequética. Selecione uma parte ou busque por palavras-chave.",
       "loadError": "Não foi possível carregar o diretório.",
+      "share_entry": "Partilhar na Comunidade",
       "parts": {
         "I": "Parte I — A Catequese na Missão Evangelizadora",
         "II": "Parte II — O Processo da Catequese",

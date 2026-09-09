@@ -2148,6 +2148,7 @@ export const common_es = {
       "emptyTitle": "Directorio para la Catequesis",
       "emptyDesc": "Documento oficial de la Santa Sede que orienta la acción catequética. Seleccione una parte o busque por palabras clave.",
       "loadError": "No se pudo cargar el directorio.",
+      "share_entry": "Compartir en la Comunidad",
       "parts": {
         "I": "Parte I — La Catequesis en la Misión Evangelizadora",
         "II": "Parte II — El Proceso de la Catequesis",
@@ -2695,7 +2696,8 @@ export const content_es = {
       "error_import_invalid_file": "Archivo inválido o dañado.",
       "error_import_storage_not_configured": "Almacenamiento de archivos no disponible. Intente más tarde.",
       "error_import_parse_failed": "No se pudo leer el archivo.",
-      "error_download_original": "No se pudo descargar el original."
+      "error_download_original": "No se pudo descargar el original.",
+      "share_community": "Compartir en la Comunidad"
     },
     "detail": {
       "by_author": "por {{name}}",
@@ -6336,6 +6338,7 @@ export const social_es = {
       "copyLink": "Copiar enlace del perfil",
       "linkCopied": "Enlace del perfil copiado",
       "edit": "Editar perfil",
+      "blockedNotice": "Bloqueaste esta cuenta. Las publicaciones quedan ocultas hasta que desbloquees.",
       "emptyPosts": "Aún no hay publicaciones",
       "emptyPostsDescription": "Cuando esta persona publique, las partidas aparecen aquí.",
       "stats": "{{posts}} publicaciones · {{followers}} seguidores · {{following}} siguiendo"

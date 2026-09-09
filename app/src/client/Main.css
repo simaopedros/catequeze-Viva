@@ -366,7 +366,7 @@
   -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 1.25rem), transparent 100%);
 }
 
-@utility scroll-fade-top.scroll-fade-bottom {
+@utility scroll-fade-both {
   mask-image: linear-gradient(to bottom, transparent 0, #000 1.25rem, #000 calc(100% - 1.25rem), transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 1.25rem, #000 calc(100% - 1.25rem), transparent 100%);
 }

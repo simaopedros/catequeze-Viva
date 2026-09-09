@@ -109,6 +109,7 @@
     "copyLink": "Copiar enlace del perfil",
     "linkCopied": "Enlace del perfil copiado",
     "edit": "Editar perfil",
+    "blockedNotice": "Bloqueaste esta cuenta. Las publicaciones quedan ocultas hasta que desbloquees.",
     "emptyPosts": "Aún no hay publicaciones",
     "emptyPostsDescription": "Cuando esta persona publique, las partidas aparecen aquí.",
     "stats": "{{posts}} publicaciones · {{followers}} seguidores · {{following}} siguiendo"

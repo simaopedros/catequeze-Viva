@@ -72,7 +72,8 @@
     "error_import_invalid_file": "Ficheiro inválido ou corrompido.",
     "error_import_storage_not_configured": "Armazenamento de ficheiros indisponível. Tente mais tarde.",
     "error_import_parse_failed": "Não foi possível ler o ficheiro.",
-    "error_download_original": "Não foi possível descarregar o original."
+    "error_download_original": "Não foi possível descarregar o original.",
+    "share_community": "Partilhar na Comunidade"
   },
   "detail": {
     "by_author": "por {{name}}",

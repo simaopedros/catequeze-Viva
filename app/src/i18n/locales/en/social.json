@@ -109,6 +109,7 @@
     "copyLink": "Copy profile link",
     "linkCopied": "Profile link copied",
     "edit": "Edit profile",
+    "blockedNotice": "You blocked this account. Posts stay hidden until you unblock.",
     "emptyPosts": "No posts yet",
     "emptyPostsDescription": "When this person publishes, their shares appear here.",
     "stats": "{{posts}} posts · {{followers}} followers · {{following}} following"

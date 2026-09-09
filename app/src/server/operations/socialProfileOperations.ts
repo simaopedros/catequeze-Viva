@@ -3,7 +3,6 @@
  */
 import { HttpError } from 'wasp/server';
 import { assertSocialEnabled, isSocialEnabled } from '../social/featureGate';
-import { collectHiddenAuthorIds } from '../../shared/socialBlock';
 import {
   BIO_MAX,
   normalizeHandle,
@@ -48,14 +47,6 @@ function serializeProfile(user: {
   };
 }
 
-async function loadHiddenAuthorIds(context: any, viewerId: string): Promise<string[]> {
-  const blocks = await context.entities.SocialBlock.findMany({
-    where: { OR: [{ blockerId: viewerId }, { blockedId: viewerId }] },
-    select: { blockerId: true, blockedId: true },
-  });
-  return collectHiddenAuthorIds({ viewerId, blocks });
-}
-
 export const getSocialProfile = async (
   args: { handle?: string | null; userId?: string | null },
   context: any,
@@ -78,8 +69,11 @@ export const getSocialProfile = async (
 
   const viewerId = context.user?.id ?? null;
   if (viewerId && viewerId !== user.id) {
-    const hidden = await loadHiddenAuthorIds(context, viewerId);
-    if (hidden.includes(user.id)) {
+    const theyBlockedViewer = await context.entities.SocialBlock.findUnique({
+      where: { blockerId_blockedId: { blockerId: user.id, blockedId: viewerId } },
+      select: { id: true },
+    });
+    if (theyBlockedViewer) {
       throw new HttpError(404, 'Perfil não encontrado.');
     }
   }
@@ -304,5 +298,3 @@ export const listMySocialBlocks = async (_args: unknown, context: any) => {
     })),
   };
 };
-
-export { loadHiddenAuthorIds };

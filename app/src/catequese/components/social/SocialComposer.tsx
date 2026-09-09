@@ -219,7 +219,7 @@ export function SocialComposer({
         }
         rows={3}
         maxLength={MAX_POST_BODY_LENGTH}
-        className="mt-3 resize-none"
+        className="mt-3 min-w-0 resize-none break-words [overflow-wrap:anywhere]"
       />
 
       {media.length > 0 && (

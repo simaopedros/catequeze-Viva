@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Ban, Copy, Globe, Loader2 } from "lucide-react";
@@ -29,6 +29,12 @@ export default function PublicSocialProfilePage() {
   const { data: access } = useQuery(getSocialPublishAccess, undefined, {
     enabled: Boolean(viewer),
   });
+
+  useEffect(() => {
+    if (typeof profile?.isBlocked === "boolean") {
+      setBlocked(profile.isBlocked);
+    }
+  }, [profile?.isBlocked]);
 
   const canInteract = Boolean(
     access?.authenticated && !access?.banned && access?.plan !== "catechist_free",
@@ -67,7 +73,7 @@ export default function PublicSocialProfilePage() {
     );
   }
 
-  if (error || !profile || blocked) {
+  if (error || !profile) {
     return (
       <main className="mx-auto w-full max-w-2xl px-4 py-12">
         <EmptyState
@@ -141,7 +147,7 @@ export default function PublicSocialProfilePage() {
           </Button>
         ) : (
           <>
-            {viewer && (
+            {viewer && !blocked && (
               <SocialFollowButton
                 authorId={profile.id}
                 authorName={profile.displayName}
@@ -151,22 +157,28 @@ export default function PublicSocialProfilePage() {
             {viewer && (
               <Button variant="ghost" size="sm" onClick={toggleBlock} className="gap-1">
                 <Ban className="h-3.5 w-3.5" aria-hidden />
-                {t("discovery.block")}
+                {blocked ? t("discovery.unblock") : t("discovery.block")}
               </Button>
             )}
           </>
         )}
       </div>
 
-      <ScrollFade maxHeight="min(70vh, 40rem)" className="pr-1">
-        <SocialFeed
-          authorId={profile.id}
-          canInteract={canInteract}
-          showFollow={false}
-          emptyTitle={t("profile.emptyPosts")}
-          emptyDescription={t("profile.emptyPostsDescription")}
-        />
-      </ScrollFade>
+      {blocked ? (
+        <p className="rounded-sm border border-border/70 bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+          {t("profile.blockedNotice")}
+        </p>
+      ) : (
+        <ScrollFade maxHeight="min(70vh, 40rem)" className="pr-1">
+          <SocialFeed
+            authorId={profile.id}
+            canInteract={canInteract}
+            showFollow={false}
+            emptyTitle={t("profile.emptyPosts")}
+            emptyDescription={t("profile.emptyPostsDescription")}
+          />
+        </ScrollFade>
+      )}
     </main>
   );
 }

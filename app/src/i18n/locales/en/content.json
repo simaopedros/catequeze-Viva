@@ -72,7 +72,8 @@
     "error_import_invalid_file": "Invalid or corrupted file.",
     "error_import_storage_not_configured": "File storage is unavailable. Try again later.",
     "error_import_parse_failed": "Could not read the file.",
-    "error_download_original": "Could not download the original file."
+    "error_download_original": "Could not download the original file.",
+    "share_community": "Share to Community"
   },
   "detail": {
     "by_author": "by {{name}}",

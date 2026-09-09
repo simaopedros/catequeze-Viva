@@ -13,6 +13,8 @@ import { validateSocialPostDraft } from '../server/operations/socialPolicies';
 describe('social share snapshots', () => {
   it('recognises native share kinds only', () => {
     expect(isSocialShareKind('VERSE')).toBe(true);
+    expect(isSocialShareKind('CATECHISM')).toBe(true);
+    expect(isSocialShareKind('DIRECTORY')).toBe(true);
     expect(isSocialShareKind('DOCUMENT')).toBe(true);
     expect(isSocialShareKind('AI_ARTIFACT')).toBe(true);
     expect(isSocialShareKind('TEXT')).toBe(false);

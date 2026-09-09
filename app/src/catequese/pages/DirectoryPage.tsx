@@ -21,6 +21,8 @@ import {
   getDirectoryEntry,
 } from "wasp/client/operations";
 import { useLocale } from "../../i18n/useLocale";
+import { ShareToCommunityButton } from "../components/social/ShareToCommunityButton";
+import { ScrollFade } from "../../client/components/ui/scroll-fade";
 
 const PART_KEYS = ["I", "II", "III"] as const;
 
@@ -203,6 +205,7 @@ export default function DirectoryPage() {
           <p className="text-sm text-muted-foreground">
             {displayEntries.length} {t("directory.paragraphs")}
           </p>
+          <ScrollFade maxHeight="min(70vh, 40rem)" className="space-y-2 pr-1">
           {displayEntries.map((entry: any) => (
             <div
               key={entry.id}
@@ -212,9 +215,10 @@ export default function DirectoryPage() {
               }}
               className="rounded-sm border border-border/70 bg-white"
             >
+              <div className="flex items-start gap-1">
               <button
                 onClick={() => toggle(entry.id)}
-                className="w-full text-left p-4 flex items-start justify-between gap-3"
+                className="w-full min-w-0 text-left p-4 flex items-start justify-between gap-3"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -233,7 +237,7 @@ export default function DirectoryPage() {
                     )}
                   </div>
                   {expanded[entry.id] && (
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed break-words [overflow-wrap:anywhere]">
                       {entry.content}
                     </p>
                   )}
@@ -244,8 +248,17 @@ export default function DirectoryPage() {
                   <ChevronDown className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
                 )}
               </button>
+              <ShareToCommunityButton
+                draft={{ kind: "DIRECTORY", sourceId: entry.id }}
+                size="icon"
+                variant="ghost"
+                className="mt-3 mr-2 h-8 w-8 shrink-0"
+                label={t("directory.share_entry")}
+              />
+              </div>
             </div>
           ))}
+          </ScrollFade>
         </div>
       ) : part ? (
         <div className="text-center text-muted-foreground py-12">

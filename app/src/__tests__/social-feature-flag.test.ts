@@ -84,15 +84,14 @@ describe('server guards follow the flag', () => {
   });
 
   it('the public feed answers empty while disabled', async () => {
+    if (SOCIAL_FEATURES_ENABLED) return;
+
     const { getSocialFeed } = await import('../server/operations/socialOperations');
 
     // No entities are provided on purpose: while disabled the query must return
     // before it touches the database.
     const feed = await getSocialFeed({}, { user: null, entities: {} } as any);
-
-    if (!SOCIAL_FEATURES_ENABLED) {
-      expect(feed).toEqual({ items: [], nextCursor: null });
-    }
+    expect(feed).toEqual({ items: [], nextCursor: null });
   });
 
   it('publish access reports no permission while disabled', async () => {
