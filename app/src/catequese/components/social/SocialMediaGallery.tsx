@@ -7,11 +7,16 @@ export interface SocialMediaItem {
   kind: "IMAGE" | "VIDEO";
   status: "PENDING" | "PROCESSING" | "READY" | "FAILED";
   imageUrl?: string | null;
+  videoUrl?: string | null;
   embedUrl?: string | null;
   thumbnailUrl?: string | null;
   altText?: string | null;
   width?: number | null;
   height?: number | null;
+}
+
+export function isPlayableSocialVideo(media: SocialMediaItem): boolean {
+  return media.kind === "VIDEO" && Boolean(media.embedUrl || media.videoUrl);
 }
 
 function MediaFrame({
@@ -47,13 +52,28 @@ function VideoItem({ media }: { media: SocialMediaItem }) {
     );
   }
 
-  if (media.status !== "READY" || !media.embedUrl) {
+  if (media.status !== "READY" || (!media.embedUrl && !media.videoUrl)) {
     return (
       <MediaFrame className="flex aspect-video items-center justify-center">
         <p className="flex items-center gap-2 px-4 text-center text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
           {t("feed.processingVideo")}
         </p>
+      </MediaFrame>
+    );
+  }
+
+  if (media.videoUrl && !media.embedUrl) {
+    return (
+      <MediaFrame className="aspect-video">
+        <video
+          src={media.videoUrl}
+          controls
+          playsInline
+          preload="metadata"
+          poster={media.thumbnailUrl || undefined}
+          className="absolute inset-0 h-full w-full bg-black object-contain"
+        />
       </MediaFrame>
     );
   }
@@ -94,7 +114,9 @@ export function SocialMediaGallery({ media }: { media: SocialMediaItem[] }) {
           {images.map((item) => (
             <MediaFrame
               key={item.id}
-              className={cn(images.length === 1 ? "max-h-[32rem]" : "aspect-square")}
+              className={cn(
+                images.length === 1 ? "max-h-[32rem]" : "aspect-square",
+              )}
             >
               <img
                 src={item.imageUrl || ""}

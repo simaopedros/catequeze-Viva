@@ -53,7 +53,10 @@ export function SocialCommentThread({
       }
       await refetch();
     } catch (error: any) {
-      toast({ title: error?.message || t("comments.send"), variant: "destructive" });
+      toast({
+        title: error?.message || t("comments.send"),
+        variant: "destructive",
+      });
     } finally {
       setSending(false);
     }
@@ -65,7 +68,10 @@ export function SocialCommentThread({
       toast({ title: t("comments.deleted") });
       await refetch();
     } catch (error: any) {
-      toast({ title: error?.message || t("comments.delete"), variant: "destructive" });
+      toast({
+        title: error?.message || t("comments.delete"),
+        variant: "destructive",
+      });
     }
   };
 
@@ -79,7 +85,9 @@ export function SocialCommentThread({
           {t("feed.loading")}
         </p>
       ) : comments.length === 0 ? (
-        <p className="mt-2 text-sm text-muted-foreground">{t("comments.empty")}</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {t("comments.empty")}
+        </p>
       ) : (
         <ul className="mt-2 space-y-3">
           {comments.map((comment: any) => (
@@ -94,7 +102,9 @@ export function SocialCommentThread({
                     )}
                   </span>
                 </p>
-                <p className="mt-0.5 whitespace-pre-wrap break-words text-sm">{comment.body}</p>
+                <p className="mt-0.5 whitespace-pre-wrap break-words text-sm">
+                  {comment.body}
+                </p>
               </div>
               {comment.isOwn && (
                 <Button

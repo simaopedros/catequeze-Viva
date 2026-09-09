@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { HandHeart, HeartHandshake, Loader2, MessageCircle, Sparkles } from "lucide-react";
+import {
+  HandHeart,
+  HeartHandshake,
+  Loader2,
+  MessageCircle,
+  Sparkles,
+} from "lucide-react";
 import {
   useQuery,
   getSocialFeed,
@@ -13,11 +19,15 @@ import { Button } from "../../../client/components/ui/button";
 import { EmptyState } from "../../../client/components/EmptyState";
 import { toast } from "../../../client/hooks/use-toast";
 import { cn } from "../../../client/utils";
-import { SOCIAL_REACTION_TYPES, type SocialReactionType } from "../../../shared/socialConstants";
+import {
+  SOCIAL_REACTION_TYPES,
+  type SocialReactionType,
+} from "../../../shared/socialConstants";
 import { SocialFollowButton } from "./SocialFollowButton";
 import { SocialShareButton } from "./SocialShareButton";
 import { SocialCommentThread } from "./SocialCommentThread";
 import type { SocialPostItem } from "./SocialPostCard";
+import { isPlayableSocialVideo } from "./SocialMediaGallery";
 
 const REACTION_ICONS: Record<SocialReactionType, typeof HandHeart> = {
   AMEM: HandHeart,
@@ -25,7 +35,10 @@ const REACTION_ICONS: Record<SocialReactionType, typeof HandHeart> = {
   ALELUIA: Sparkles,
 };
 
-function autoplayEmbed(url: string | null | undefined, active: boolean): string | null {
+function autoplayEmbed(
+  url: string | null | undefined,
+  active: boolean,
+): string | null {
   if (!url) return null;
   try {
     const parsed = new URL(url);
@@ -36,6 +49,31 @@ function autoplayEmbed(url: string | null | undefined, active: boolean): string 
   } catch {
     return url;
   }
+}
+
+function StoredShortVideo({ src, active }: { src: string; active: boolean }) {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (active) {
+      void el.play().catch(() => {});
+    } else {
+      el.pause();
+    }
+  }, [active]);
+
+  return (
+    <video
+      ref={ref}
+      src={src}
+      muted
+      playsInline
+      loop
+      className="absolute inset-0 h-full w-full object-cover"
+    />
+  );
 }
 
 export function RhemaShortsFeed({
@@ -85,8 +123,11 @@ export function RhemaShortsFeed({
 
   const posts = pages
     .flat()
-    .filter((post, index, all) => all.findIndex((item) => item.id === post.id) === index)
-    .filter((post) => post.media.some((media) => media.kind === "VIDEO" && media.embedUrl));
+    .filter(
+      (post, index, all) =>
+        all.findIndex((item) => item.id === post.id) === index,
+    )
+    .filter((post) => post.media.some(isPlayableSocialVideo));
 
   const authorIds = [...new Set(posts.map((post) => post.author.id))];
   const { data: followState } = useQuery(
@@ -104,7 +145,9 @@ export function RhemaShortsFeed({
     activeIdRef.current = activeId;
     if (!activeId) return;
     startedAt.current[activeId] = Date.now();
-    void recordSocialWatch({ postId: activeId, watchSeconds: 1 }).catch(() => {});
+    void recordSocialWatch({ postId: activeId, watchSeconds: 1 }).catch(
+      () => {},
+    );
   }, [activeId]);
 
   const markElapsed = (postId: string) => {
@@ -151,7 +194,10 @@ export function RhemaShortsFeed({
     try {
       await toggleSocialReaction({ postId: post.id, type });
     } catch (error: any) {
-      toast({ title: error?.message || t("upsell.title"), variant: "destructive" });
+      toast({
+        title: error?.message || t("upsell.title"),
+        variant: "destructive",
+      });
     }
   };
 
@@ -182,7 +228,7 @@ export function RhemaShortsFeed({
         data-testid="rhema-shorts-feed"
       >
         {posts.map((post) => {
-          const video = post.media.find((media) => media.kind === "VIDEO" && media.embedUrl);
+          const video = post.media.find(isPlayableSocialVideo);
           const active = post.id === activeId;
           return (
             <article
@@ -202,6 +248,8 @@ export function RhemaShortsFeed({
                   allowFullScreen
                   className="absolute inset-0 h-full w-full border-0"
                 />
+              ) : video?.videoUrl ? (
+                <StoredShortVideo src={video.videoUrl} active={active} />
               ) : null}
 
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 text-white">
@@ -213,10 +261,14 @@ export function RhemaShortsFeed({
                     @{post.author.socialHandle}
                   </Link>
                 ) : (
-                  <p className="text-sm font-semibold">{post.author.displayName}</p>
+                  <p className="text-sm font-semibold">
+                    {post.author.displayName}
+                  </p>
                 )}
                 {post.body ? (
-                  <p className="mt-1 line-clamp-3 text-sm text-white/90">{post.body}</p>
+                  <p className="mt-1 line-clamp-3 text-sm text-white/90">
+                    {post.body}
+                  </p>
                 ) : null}
 
                 <div className="mt-3 flex flex-wrap items-center gap-1">
@@ -243,7 +295,9 @@ export function RhemaShortsFeed({
                     variant="ghost"
                     size="sm"
                     className="gap-2 text-white hover:bg-white/10"
-                    onClick={() => setOpenComments(openComments === post.id ? null : post.id)}
+                    onClick={() =>
+                      setOpenComments(openComments === post.id ? null : post.id)
+                    }
                   >
                     <MessageCircle className="h-4 w-4" aria-hidden />
                     {t("comments.title")}
@@ -258,7 +312,9 @@ export function RhemaShortsFeed({
                     <SocialFollowButton
                       authorId={post.author.id}
                       authorName={post.author.displayName}
-                      initiallyFollowing={followedAuthors.includes(post.author.id)}
+                      initiallyFollowing={followedAuthors.includes(
+                        post.author.id,
+                      )}
                     />
                   )}
                 </div>
@@ -276,7 +332,9 @@ export function RhemaShortsFeed({
             disabled={isFetching}
             className="gap-2"
           >
-            {isFetching && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
+            {isFetching && (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+            )}
             {t("feed.loadMore")}
           </Button>
         </div>

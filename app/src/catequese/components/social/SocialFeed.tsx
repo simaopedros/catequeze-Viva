@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Loader2, Sparkles } from "lucide-react";
-import { useQuery, getSocialFeed, getSocialFollowState } from "wasp/client/operations";
+import {
+  useQuery,
+  getSocialFeed,
+  getSocialFollowState,
+} from "wasp/client/operations";
 import { Button } from "../../../client/components/ui/button";
 import { EmptyState } from "../../../client/components/EmptyState";
 import { SocialPostCard, type SocialPostItem } from "./SocialPostCard";
@@ -70,7 +74,10 @@ export function SocialFeed({
 
   const posts = pages
     .flat()
-    .filter((post, index, all) => all.findIndex((item) => item.id === post.id) === index)
+    .filter(
+      (post, index, all) =>
+        all.findIndex((item) => item.id === post.id) === index,
+    )
     .filter((post) => !removed.includes(post.id));
 
   const authorIds = [...new Set(posts.map((post) => post.author.id))];
@@ -94,14 +101,16 @@ export function SocialFeed({
     return (
       <EmptyState
         icon={Sparkles}
-        title={emptyTitle ?? (topicSlug ? t("feed.emptyTopic") : t("feed.empty"))}
+        title={
+          emptyTitle ?? (topicSlug ? t("feed.emptyTopic") : t("feed.empty"))
+        }
         description={emptyDescription ?? t("feed.emptyDescription")}
       />
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {posts.map((post) => (
         <SocialPostCard
           key={post.id}
@@ -122,7 +131,9 @@ export function SocialFeed({
             disabled={isFetching}
             className="gap-2"
           >
-            {isFetching && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
+            {isFetching && (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+            )}
             {t("feed.loadMore")}
           </Button>
         </div>

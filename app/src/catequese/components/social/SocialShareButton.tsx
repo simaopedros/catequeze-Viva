@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "../../../client/components/ui/dropdown-menu";
 import { toast } from "../../../client/hooks/use-toast";
+import { cn } from "../../../client/utils";
 
 /** Canonical shareable URL — /c/:slug renders Open Graph tags for crawlers. */
 export function buildShareUrl(slug: string): string {
@@ -22,11 +23,13 @@ export function SocialShareButton({
   slug,
   body,
   shareCount,
+  className,
 }: {
   postId: string;
   slug: string;
   body: string;
   shareCount: number;
+  className?: string;
 }) {
   const { t } = useTranslation("social");
   const [copied, setCopied] = useState(false);
@@ -55,7 +58,11 @@ export function SocialShareButton({
       return;
     }
     try {
-      await navigator.share({ title: t("title"), text: body.slice(0, 120), url });
+      await navigator.share({
+        title: t("title"),
+        text: body.slice(0, 120),
+        url,
+      });
       countShare();
     } catch {
       // User dismissed the share sheet.
@@ -65,15 +72,25 @@ export function SocialShareButton({
   const openWhatsapp = () => {
     countShare();
     window.open(
-      `https://wa.me/?text=${encodeURIComponent(`${body.slice(0, 160)}\n${url}`)}`,
+      `https://wa.me/?text=${encodeURIComponent(
+        `${body.slice(0, 160)}\n${url}`,
+      )}`,
       "_blank",
       "noopener,noreferrer",
     );
   };
 
-  if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+  if (
+    typeof navigator !== "undefined" &&
+    typeof navigator.share === "function"
+  ) {
     return (
-      <Button variant="ghost" size="sm" onClick={nativeShare} className="gap-2">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={nativeShare}
+        className={cn("gap-2", className)}
+      >
         <Share2 className="h-4 w-4" aria-hidden />
         <span>{shareCount > 0 ? shareCount : t("share.action")}</span>
       </Button>
@@ -83,7 +100,7 @@ export function SocialShareButton({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-2">
+        <Button variant="ghost" size="sm" className={cn("gap-2", className)}>
           <Share2 className="h-4 w-4" aria-hidden />
           <span>{shareCount > 0 ? shareCount : t("share.action")}</span>
         </Button>
@@ -97,7 +114,9 @@ export function SocialShareButton({
           )}
           {t("share.copyLink")}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={openWhatsapp}>{t("share.whatsapp")}</DropdownMenuItem>
+        <DropdownMenuItem onClick={openWhatsapp}>
+          {t("share.whatsapp")}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

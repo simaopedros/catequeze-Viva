@@ -15,7 +15,11 @@ export function SocialSearch({ className }: { className?: string }) {
     return () => window.clearTimeout(timer);
   }, [term]);
 
-  const { data } = useQuery(searchSocial, { q: debounced }, { enabled: debounced.length >= 2 });
+  const { data } = useQuery(
+    searchSocial,
+    { q: debounced },
+    { enabled: debounced.length >= 2 },
+  );
   const people = data?.people ?? [];
   const posts = data?.posts ?? [];
   const open = debounced.length >= 2;
@@ -28,7 +32,7 @@ export function SocialSearch({ className }: { className?: string }) {
           value={term}
           onChange={(event) => setTerm(event.target.value)}
           placeholder={t("search.placeholder")}
-          className="h-10 rounded-full pl-9"
+          className="h-10 rounded-[11px] border-[#e1e7ee] pl-9"
           aria-label={t("search.placeholder")}
         />
       </label>
@@ -36,7 +40,9 @@ export function SocialSearch({ className }: { className?: string }) {
       {open && (
         <div className="mt-2 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
           {people.length === 0 && posts.length === 0 ? (
-            <p className="px-3 py-3 text-sm text-muted-foreground">{t("search.empty")}</p>
+            <p className="px-3 py-3 text-sm text-muted-foreground">
+              {t("search.empty")}
+            </p>
           ) : (
             <ul className="divide-y divide-border">
               {people.map((person: any) => (
@@ -46,7 +52,9 @@ export function SocialSearch({ className }: { className?: string }) {
                     className="block px-3 py-2 text-sm hover:bg-muted/60"
                   >
                     <span className="font-medium">{person.displayName}</span>
-                    <span className="ml-2 text-muted-foreground">@{person.socialHandle}</span>
+                    <span className="ml-2 text-muted-foreground">
+                      @{person.socialHandle}
+                    </span>
                   </Link>
                 </li>
               ))}

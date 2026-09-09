@@ -1552,6 +1552,14 @@ api uploadSocialImage {
   entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese]
 }
 
+api uploadSocialVideo {
+  fn: import { uploadSocialVideo } from "@src/server/api/socialMedia",
+  middlewareConfigFn: import { socialVideoUploadMiddleware } from "@src/server/api/socialMedia",
+  auth: true,
+  httpRoute: (POST, "/api/social/videos"),
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese]
+}
+
 api serveSocialMedia {
   fn: import { serveSocialMedia } from "@src/server/api/socialMedia",
   middlewareConfigFn: import { serveSocialMediaMiddleware } from "@src/server/api/socialMedia",
@@ -1683,6 +1691,11 @@ query getSocialPost {
 query getSocialTopics {
   fn: import { getSocialTopics } from "@src/server/operations/socialOperations",
   entities: [SocialTopic]
+}
+
+query getSocialCommunityPulse {
+  fn: import { getSocialCommunityPulse } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialTopic, SocialPostTopic, User]
 }
 
 query getSocialComments {

@@ -57,7 +57,10 @@ export function SocialReportDialog({
       setDetails("");
       setReason("OTHER");
     } catch (error: any) {
-      toast({ title: error?.message || t("report.failed"), variant: "destructive" });
+      toast({
+        title: error?.message || t("report.failed"),
+        variant: "destructive",
+      });
     } finally {
       setSending(false);
     }
@@ -74,7 +77,10 @@ export function SocialReportDialog({
         <div className="space-y-3">
           <div className="space-y-1.5">
             <Label htmlFor="social-report-reason">{t("report.title")}</Label>
-            <Select value={reason} onValueChange={(value) => setReason(value as any)}>
+            <Select
+              value={reason}
+              onValueChange={(value) => setReason(value as any)}
+            >
               <SelectTrigger id="social-report-reason">
                 <SelectValue />
               </SelectTrigger>
@@ -101,7 +107,11 @@ export function SocialReportDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={sending}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={sending}
+          >
             {t("post.backToFeed")}
           </Button>
           <Button onClick={submit} disabled={sending}>

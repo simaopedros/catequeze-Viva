@@ -1,8 +1,29 @@
 {
   "title": "Comunidad",
-  "eyebrow": "Rhema",
-  "subtitle": "Comparte la vida de tu catequesis con imágenes, videos y shorts.",
-  "publicSubtitle": "Testimonios, catequesis y vida parroquial compartidos por catequistas de todo Brasil.",
+  "eyebrow": "Comunidad",
+  "subtitle": "Un espacio para que los catequistas intercambien experiencias, reciban apoyo y crezcan juntos en la fe.",
+  "publicSubtitle": "Un espacio para que los catequistas intercambien experiencias, reciban apoyo y crezcan juntos en la fe.",
+  "hero": {
+    "eyebrow": "COMUNIDAD",
+    "title": "Juntos en la misión de evangelizar",
+    "description": "Un espacio para que los catequistas intercambien experiencias, reciban apoyo y crezcan juntos en la fe."
+  },
+  "rail": {
+    "members": "Miembros de la comunidad",
+    "membersCount": "{{count}} miembro",
+    "membersCount_plural": "{{count}} miembros",
+    "membersEmpty": "Todavía no hay autores publicados.",
+    "seeMembers": "Ver la comunidad",
+    "promoTitle": "Conoce Catechis",
+    "promoBody": "Herramientas para el día a día del catequista. Prepara encuentros increíbles en minutos con ayuda de la IA.",
+    "promoCta": "Saber más →",
+    "popularTopics": "Temas populares",
+    "events": "Próximos eventos",
+    "eventsBody": "Formaciones, encuentros y el calendario de tu parroquia están en Catechis.",
+    "eventsCta": "Ver calendario →",
+    "missionTitle": "Juntos somos más fuertes",
+    "missionSubtitle": "¡Comparte, inspira, evangeliza!"
+  },
   "feed": {
     "empty": "Todavía no hay publicaciones",
     "emptyDescription": "Sé el primero en compartir un momento de tu catequesis.",
@@ -18,7 +39,7 @@
   },
   "composer": {
     "title": "Nueva publicación",
-    "placeholder": "Comparte un momento, una reflexión o un testimonio...",
+    "placeholder": "Comparte algo con la comunidad...",
     "addImage": "Imagen",
     "addVideo": "Video",
     "topics": "Temas",
@@ -35,6 +56,7 @@
     "quotaLeft": "{{count}} publicación restante hoy",
     "quotaLeft_plural": "{{count}} publicaciones restantes hoy",
     "videoTooLong": "Tu plan permite videos de hasta {{minutes}} minutos.",
+    "videoTooLarge": "El vídeo puede tener como máximo 60 MB.",
     "tooManyMedia": "Tu plan permite {{count}} archivos por publicación.",
     "uploadFailed": "No se pudo enviar el archivo."
   },

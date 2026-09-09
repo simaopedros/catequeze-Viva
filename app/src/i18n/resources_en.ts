@@ -6252,9 +6252,30 @@ export const settings_en = {
 
 export const social_en = {
     "title": "Community",
-    "eyebrow": "Rhema",
-    "subtitle": "Share the life of your catechesis with images, videos and shorts.",
-    "publicSubtitle": "Testimonies, catechesis and parish life shared by catechists across Brazil.",
+    "eyebrow": "Community",
+    "subtitle": "A space for catechists to exchange experiences, receive support and grow together in faith.",
+    "publicSubtitle": "A space for catechists to exchange experiences, receive support and grow together in faith.",
+    "hero": {
+      "eyebrow": "COMMUNITY",
+      "title": "Together on the mission to evangelize",
+      "description": "A space for catechists to exchange experiences, receive support and grow together in faith."
+    },
+    "rail": {
+      "members": "Community members",
+      "membersCount": "{{count}} member",
+      "membersCount_plural": "{{count}} members",
+      "membersEmpty": "No published authors yet.",
+      "seeMembers": "See the community",
+      "promoTitle": "Meet Catechis",
+      "promoBody": "Tools for the catechist’s day-to-day. Prepare remarkable meetings in minutes with AI.",
+      "promoCta": "Learn more →",
+      "popularTopics": "Popular topics",
+      "events": "Upcoming events",
+      "eventsBody": "Formation, gatherings and your parish calendar live in Catechis.",
+      "eventsCta": "Open calendar →",
+      "missionTitle": "Together we are stronger",
+      "missionSubtitle": "Share, inspire, evangelize!"
+    },
     "feed": {
       "empty": "No posts yet",
       "emptyDescription": "Be the first to share a moment from your catechesis.",
@@ -6270,7 +6291,7 @@ export const social_en = {
     },
     "composer": {
       "title": "New post",
-      "placeholder": "Share a moment, a reflection or a testimony...",
+      "placeholder": "Share something with the community...",
       "addImage": "Image",
       "addVideo": "Video",
       "topics": "Topics",
@@ -6287,6 +6308,7 @@ export const social_en = {
       "quotaLeft": "{{count}} post left today",
       "quotaLeft_plural": "{{count}} posts left today",
       "videoTooLong": "Your plan allows videos up to {{minutes}} minutes.",
+      "videoTooLarge": "Videos can be at most 60 MB.",
       "tooManyMedia": "Your plan allows {{count}} media items per post.",
       "uploadFailed": "Failed to upload the media."
     },

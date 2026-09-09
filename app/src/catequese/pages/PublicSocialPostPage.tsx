@@ -3,7 +3,11 @@ import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useAuth } from "wasp/client/auth";
-import { useQuery, getSocialPost, getSocialPublishAccess } from "wasp/client/operations";
+import {
+  useQuery,
+  getSocialPost,
+  getSocialPublishAccess,
+} from "wasp/client/operations";
 import { Button } from "../../client/components/ui/button";
 import { EmptyState } from "../../client/components/EmptyState";
 import { SocialPostCard } from "../components/social/SocialPostCard";
@@ -22,7 +26,11 @@ export default function PublicSocialPostPage() {
   const { data: user } = useAuth();
   const [showNotice, setShowNotice] = useState(false);
 
-  const { data: post, isLoading, error } = useQuery(getSocialPost, {
+  const {
+    data: post,
+    isLoading,
+    error,
+  } = useQuery(getSocialPost, {
     slug: params.slug || "",
   });
   const { data: access } = useQuery(getSocialPublishAccess, undefined, {
@@ -38,11 +46,13 @@ export default function PublicSocialPostPage() {
   }, [post, t]);
 
   const canInteract = Boolean(
-    access?.authenticated && !access?.banned && access?.plan !== "catechist_free",
+    access?.authenticated &&
+      !access?.banned &&
+      access?.plan !== "catechist_free",
   );
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-12">
+    <main className="mx-auto w-full max-w-[1000px] px-4 py-6 sm:py-10">
       <Button asChild variant="ghost" size="sm" className="mb-4 gap-2">
         <Link to="/comunidade">
           <ArrowLeft className="h-4 w-4" aria-hidden />
@@ -66,7 +76,9 @@ export default function PublicSocialPostPage() {
             <div className="mb-5">
               <SocialAccessNotice
                 reason={
-                  (user ? access?.reason ?? "subscription" : "anonymous") as SocialAccessReason
+                  (user
+                    ? access?.reason ?? "subscription"
+                    : "anonymous") as SocialAccessReason
                 }
               />
             </div>
