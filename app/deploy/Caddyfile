@@ -48,6 +48,18 @@ catechis.app, www.catechis.app {
     import prod_api
   }
 
+  # Blog: sitemap XML and crawler article HTML live on Express, not the SPA.
+  handle /blog/sitemap.xml {
+    import prod_api
+  }
+  @blog_crawler {
+    path /blog/*
+    header_regexp User-Agent (?i)(facebookexternalhit|facebookcatalog|whatsapp|twitterbot|telegrambot|linkedinbot|slackbot|discordbot|pinterest|googlebot|bingbot|applebot|embedly|redditbot|skypeuripreview|vkshare|w3c_validator)
+  }
+  handle @blog_crawler {
+    import prod_api
+  }
+
   handle /health {
     import prod_api
   }
