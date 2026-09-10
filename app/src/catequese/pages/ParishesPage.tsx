@@ -86,8 +86,15 @@ export default function ParishesPage() {
 
   const hasFilters = !!search;
 
-  const manageDioceses: { id: string; name: string; licensed: boolean }[] =
-    manageContext?.dioceses ?? [];
+  const manageDioceses: {
+    id: string;
+    name: string;
+    licensed: boolean;
+    canAddParish?: boolean;
+    manualDeal?: boolean;
+    parishesUsed?: number;
+    maxParishes?: number | null;
+  }[] = manageContext?.dioceses ?? [];
   const canCreateUnderOwnerPlan: boolean =
     manageContext?.canCreateUnderOwnerPlan ?? false;
   const ownerPlan: string | null = manageContext?.ownerPlan ?? null;
@@ -105,6 +112,16 @@ export default function ParishesPage() {
 
   const coverageNote = (() => {
     if (selectedDiocese) {
+      if (selectedDiocese.licensed && selectedDiocese.canAddParish === false) {
+        return tp("coverage_quota", {
+          name: selectedDiocese.name,
+          used: selectedDiocese.parishesUsed ?? 0,
+          max: selectedDiocese.maxParishes ?? "—",
+        });
+      }
+      if (!selectedDiocese.licensed && selectedDiocese.manualDeal) {
+        return tp("coverage_paused", { name: selectedDiocese.name });
+      }
       return selectedDiocese.licensed
         ? tp("coverage_licensed", { name: selectedDiocese.name })
         : tp("coverage_unlicensed", { name: selectedDiocese.name });
@@ -269,7 +286,13 @@ export default function ParishesPage() {
                 creating ||
                 !newName.trim() ||
                 !newCity.trim() ||
-                !newState.trim()
+                !newState.trim() ||
+                Boolean(
+                  selectedDiocese &&
+                    ((selectedDiocese.licensed &&
+                      selectedDiocese.canAddParish === false) ||
+                      (!selectedDiocese.licensed && selectedDiocese.manualDeal)),
+                )
               }
             >
               {creating ? (

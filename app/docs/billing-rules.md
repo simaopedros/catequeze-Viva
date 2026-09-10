@@ -64,7 +64,9 @@ A **parish's** institutional access is determined by `TenantBilling`, resolved i
 
 ### 3.1. Coverage resolution order (highest to lowest)
 
-1. **Diocese umbrella** — If the parish belongs to a diocese that has an **ACTIVE** `TenantBilling` with plan `UNLIMITED` or `DIOCESE`, all parishes under that diocese are covered (“coberta pela diocese”).
+1. **Diocese umbrella** — If the parish belongs to a diocese whose `TenantBilling` **covers** it, all member parishes inherit that entitlement (“coberta pela diocese”).
+   - Complimentary / Stripe diocese licenses: `UNLIMITED` or `DIOCESE` with `ACTIVE`, `PAST_DUE`, or an open `TRIAL`.
+   - **Negotiated MANUAL deals** (`manualDeal` / `processor: MANUAL`): only while **`ACTIVE`** and inside the optional `startsAt`/`endsAt` window. `SUSPENDED` and `INACTIVE` do **not** cover (existing parish data stays; no Stripe checkout).
 2. **Parish own billing** — If the parish has its own **active** `TenantBilling` with an institutional plan (`unlimited` / Plano Paróquia, or legacy parish slugs), that plan applies.
 3. **Owner umbrella** — If the parish owner (`ownerId`) has an **active** personal subscription with an institutional plan, OR owns another parish that has an active institutional `TenantBilling`, that coverage extends.
 4. **Free fallback** — If none of the above apply, the parish has `CATECHIST_FREE`.
@@ -78,6 +80,8 @@ A **parish's** institutional access is determined by `TenantBilling`, resolved i
 | `TRIAL` | **No** — if `trialEndsAt < now` | Trial expired |
 | `PAST_DUE` | **Yes** (grace period) | Payment failed, retrying |
 | `CANCELED` | **No** | License canceled |
+| `SUSPENDED` | **No** (negotiated diocese deals) | Ops pause. Existing data stays. New parishes under the diocese are blocked. Not a Stripe status. |
+| `INACTIVE` | **No** (negotiated diocese deals) | Deal ended or not yet in force. Same pastoral message as suspended — no checkout. |
 | `null` (no TenantBilling record) | Fall through to coverage resolution | |
 
 ### 3.3. Institutional transitions
@@ -94,13 +98,28 @@ PAST_DUE → CANCELED (dunning exhausted)
 CANCELED → ACTIVE (new subscription purchased or admin complimentary)
 ```
 
+### 3.4. Negotiated diocese deals (ops / Cúria)
+
+There is **no public diocese SKU** on `/pricing`. Cúria subscriptions are commercial deals recorded on the existing diocese `TenantBilling` row:
+
+| Field | Role |
+|-------|------|
+| `manualDeal` + `processor: MANUAL` | Marks an offline deal (PIX / invoice / bank). Never Stripe Checkout or Customer Portal. |
+| `maxParishes` | Required seat count. Counted workspaces are `Parish.type` `PARISH` and `COMMUNITY` (the Cúria `DIOCESE` workspace does not consume a seat). |
+| `maxClasses` / `maxCatechists` / `maxCatechumens` | Optional caps inherited by covered parishes. |
+| `internalNotes`, `agreedPriceCents`, `externalReference`, `startsAt`, `endsAt` | Internal commercial terms. Hidden from DIOCESE_ADMIN. |
+
+Platform admin manages deals at `/admin/acordos-diocese` (`listDioceseDeals`, `upsertDioceseDeal`, `setDioceseDealStatus`). Audit log: `DIOCESE_DEAL_CREATE` / `UPDATE` / `STATUS`. Stripe cascade (`cascadeCancel` / `cascadeActivate`) **skips** `manualDeal: true`. Complimentary / trial / cancel-license on the licenses page refuse to overwrite a negotiated deal.
+
+Parish quota is enforced on `createParish` (including platform admin) and on `updateParish` when linking `dioceseId`. Over-quota or paused deal → `HttpError 403` with pastoral pt-BR copy (no Stripe/checkout language).
+
 ---
 
 ## 4. New parish creation billing
 
 When a new institutional parish (type ≠ `PERSONAL`) is created:
 
-1. If the parish has a `dioceseId` and the diocese has an **ACTIVE** `TenantBilling` with plan `UNLIMITED` or `DIOCESE` → **no `TenantBilling` created** (covered by diocese umbrella).
+1. If the parish has a `dioceseId` and the diocese **covers** it (see 3.1) → **no `TenantBilling` created** (covered by diocese umbrella), provided the parish quota is not exhausted.
 2. If the creator (`ownerId`) has an **active** personal subscription with an institutional plan → the parish gets `ACTIVE` `TenantBilling` with the creator's plan.
 3. Otherwise → `CANCELED` / `CATECHIST_FREE` until Stripe Checkout of Plano Paróquia. The UI may create that unpaid workspace (`startTrial`) and send the user to `/app/billing?plan=unlimited`. Webhook sets `TRIAL` + `trialEndsAt` from `subscription.trial_end`.
 
@@ -152,7 +171,7 @@ Rules:
 - Only allowed when **no active subscription** exists for that scope
 - Creates a new Stripe Checkout session
 - Plano Paróquia (`unlimited`) checkout requires a non-personal workspace
-- Diocese is **not** sold via checkout; admin assigns `UNLIMITED`/`DIOCESE` on the diocese `TenantBilling`
+- Diocese is **not** sold via checkout; platform admin records a negotiated `manualDeal` on the diocese `TenantBilling` (`/admin/acordos-diocese`). Complimentary `UNLIMITED` on the licenses page remains for non-deal licenses only.
 
 ### 6.4. Cancel
 - Default: schedule cancel at period end (`cancel_at_period_end: true`)

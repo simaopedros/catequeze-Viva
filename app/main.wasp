@@ -282,6 +282,12 @@ page AdminBillingPage {
   component: import AdminBilling from "@src/admin/dashboards/billing/BillingPage"
 }
 
+route AdminDioceseDealsRoute { path: "/admin/acordos-diocese", to: AdminDioceseDealsPage }
+page AdminDioceseDealsPage {
+  authRequired: true,
+  component: import AdminDioceseDeals from "@src/admin/dashboards/billing/DioceseDealsPage"
+}
+
 route AdminSupportRoute { path: "/admin/support", to: AdminSupportPage }
 page AdminSupportPage {
   authRequired: true,
@@ -629,7 +635,7 @@ action completeCoordinatorOnboarding {
 
 action updateParish {
   fn: import { updateParish } from "@src/server/operations/parishOperations",
-  entities: [Parish, Membership, Diocese, AuditLog]
+  entities: [Parish, Membership, Diocese, AuditLog, TenantBilling]
 }
 
 action deleteParish {
@@ -2694,6 +2700,31 @@ action cancelTenantLicense {
 action cancelUserSubscriptionImmediate {
   fn: import { cancelUserSubscriptionImmediate } from "@src/server/operations/billingAdminOperations",
   entities: [User, AuditLog]
+}
+
+query listDioceseDeals {
+  fn: import { listDioceseDeals } from "@src/server/operations/dioceseDealOperations",
+  entities: [TenantBilling, Diocese, Parish, User]
+}
+
+query getDioceseDeal {
+  fn: import { getDioceseDeal } from "@src/server/operations/dioceseDealOperations",
+  entities: [TenantBilling, Diocese, Parish, User]
+}
+
+query getMyDioceseDeal {
+  fn: import { getMyDioceseDeal } from "@src/server/operations/dioceseDealOperations",
+  entities: [TenantBilling, Diocese, Parish, Membership, User]
+}
+
+action upsertDioceseDeal {
+  fn: import { upsertDioceseDeal } from "@src/server/operations/dioceseDealOperations",
+  entities: [TenantBilling, Diocese, Parish, AuditLog, User]
+}
+
+action setDioceseDealStatus {
+  fn: import { setDioceseDealStatus } from "@src/server/operations/dioceseDealOperations",
+  entities: [TenantBilling, Diocese, Parish, AuditLog, User]
 }
 //#endregion
 

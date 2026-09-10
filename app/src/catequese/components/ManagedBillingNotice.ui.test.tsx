@@ -73,4 +73,26 @@ describe("ManagedBillingNotice", () => {
     );
     expect(screen.queryByText("Coordenador")).not.toBeInTheDocument();
   });
+
+  it("shows a pastoral paused notice without sales checkout", () => {
+    render(
+      <ManagedBillingNotice
+        variant="paused"
+        workspaceName="Paróquia Jesus Cristo"
+        dioceseName="Diocese de Teste"
+      />,
+    );
+
+    expect(screen.getByTestId("managed-billing-notice")).toHaveAttribute(
+      "data-variant",
+      "paused",
+    );
+    expect(screen.getByTestId("managed-billing-hero")).toHaveTextContent(
+      "name=Diocese de Teste",
+    );
+    expect(
+      screen.queryByTestId("managed-billing-diocese-sales"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/R\$/)).not.toBeInTheDocument();
+  });
 });

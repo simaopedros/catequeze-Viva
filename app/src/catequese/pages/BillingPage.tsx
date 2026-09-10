@@ -61,6 +61,7 @@ import {
   shouldShowDioceseWorkspaceBilling,
   shouldShowInstitutionalActiveBilling,
   shouldShowParishBillingConversion,
+  shouldShowPausedDioceseDealBilling,
   shouldShowPersonalActiveBilling,
   shouldShowPersonalConversion,
   workspaceHasStripeManagedSubscription,
@@ -70,6 +71,7 @@ import { RequestDioceseCoverageCard } from "../components/RequestDioceseCoverage
 import { ParishBillingConversion } from "../components/ParishBillingConversion";
 import { PersonalBillingActive } from "../components/PersonalBillingActive";
 import { ManagedBillingNotice } from "../components/ManagedBillingNotice";
+import { DioceseDealSummary } from "../components/DioceseDealSummary";
 
 function toPlanCard(
   plan: CatalogPlan,
@@ -279,10 +281,16 @@ export default function BillingPage() {
     isInstitutionalTrial: isTrialAccess,
   });
   const planInherited = Boolean(workspace?.planInherited);
+  const dioceseDeal = (workspace as any)?.dioceseDeal ?? null;
   const showCollaborator = shouldShowCollaboratorBilling({ canManageBilling });
   const showCoveredWorkspace = shouldShowCoveredWorkspaceBilling({
     canManageBilling,
     planInherited,
+  });
+  const showPausedDioceseDeal = shouldShowPausedDioceseDealBilling({
+    canManageBilling,
+    planInherited,
+    dioceseDeal,
   });
   const showDioceseWorkspace = shouldShowDioceseWorkspaceBilling({
     canManageBilling,
@@ -295,6 +303,7 @@ export default function BillingPage() {
     canManageBilling,
     workspaceType: workspace?.type,
     hasStripeSubscription,
+    dioceseDeal,
   });
   const showPersonalActive = shouldShowPersonalActiveBilling({
     isPersonal,
@@ -774,22 +783,86 @@ export default function BillingPage() {
 
   if (showCoveredWorkspace) {
     return (
-      <ManagedBillingNotice
-        variant="covered"
-        workspaceName={workspaceLabel}
-        dioceseName={workspace?.dioceseName || parish?.diocese?.name}
-        managerName={managerName || null}
-      />
+      <div className="space-y-6">
+        <ManagedBillingNotice
+          variant="covered"
+          workspaceName={workspaceLabel}
+          dioceseName={workspace?.dioceseName || parish?.diocese?.name}
+          managerName={managerName || null}
+        />
+        {dioceseDeal && (
+          <DioceseDealSummary
+            dioceseName={
+              workspace?.dioceseName || parish?.diocese?.name || workspaceLabel
+            }
+            status={dioceseDeal.status}
+            covering={dioceseDeal.covering}
+            parishesUsed={dioceseDeal.parishesUsed}
+            maxParishes={dioceseDeal.maxParishes}
+            maxClasses={dioceseDeal.maxClasses}
+            maxCatechists={dioceseDeal.maxCatechists}
+            maxCatechumens={dioceseDeal.maxCatechumens}
+            startsAt={dioceseDeal.startsAt}
+            endsAt={dioceseDeal.endsAt}
+            readOnly
+          />
+        )}
+      </div>
+    );
+  }
+
+  if (showPausedDioceseDeal) {
+    return (
+      <div className="space-y-6">
+        <ManagedBillingNotice
+          variant="paused"
+          workspaceName={workspaceLabel}
+          dioceseName={workspace?.dioceseName || parish?.diocese?.name}
+        />
+        <DioceseDealSummary
+          dioceseName={
+            workspace?.dioceseName || parish?.diocese?.name || workspaceLabel
+          }
+          status={dioceseDeal.status}
+          covering={false}
+          parishesUsed={dioceseDeal.parishesUsed}
+          maxParishes={dioceseDeal.maxParishes}
+          maxClasses={dioceseDeal.maxClasses}
+          maxCatechists={dioceseDeal.maxCatechists}
+          maxCatechumens={dioceseDeal.maxCatechumens}
+          startsAt={dioceseDeal.startsAt}
+          endsAt={dioceseDeal.endsAt}
+          readOnly
+        />
+      </div>
     );
   }
 
   if (showDioceseWorkspace) {
     return (
-      <ManagedBillingNotice
-        variant="diocese"
-        workspaceName={workspaceLabel}
-        dioceseName={workspace?.name}
-      />
+      <div className="space-y-6">
+        <ManagedBillingNotice
+          variant="diocese"
+          workspaceName={workspaceLabel}
+          dioceseName={workspace?.name}
+          hideSales={Boolean(dioceseDeal?.hasDeal || dioceseDeal?.status)}
+        />
+        {dioceseDeal && (
+          <DioceseDealSummary
+            dioceseName={workspace?.name || workspaceLabel}
+            status={dioceseDeal.status}
+            covering={dioceseDeal.covering}
+            parishesUsed={dioceseDeal.parishesUsed}
+            maxParishes={dioceseDeal.maxParishes}
+            maxClasses={dioceseDeal.maxClasses}
+            maxCatechists={dioceseDeal.maxCatechists}
+            maxCatechumens={dioceseDeal.maxCatechumens}
+            startsAt={dioceseDeal.startsAt}
+            endsAt={dioceseDeal.endsAt}
+            readOnly
+          />
+        )}
+      </div>
     );
   }
 

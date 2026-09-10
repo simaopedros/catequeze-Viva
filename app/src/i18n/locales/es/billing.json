@@ -400,6 +400,29 @@
     "diocese_sales_title": "Hablar sobre la licencia de la diócesis",
     "diocese_sales_desc": "La cobertura de las parroquias es venta asistida.",
     "diocese_cta": "Hablar con ventas sobre la diócesis",
-    "diocese_prefill": "Hola! Quisiera hablar sobre el Plan Diócesis para {{name}} en Catequese Viva."
+    "diocese_prefill": "Hola! Quisiera hablar sobre el Plan Diócesis para {{name}} en Catequese Viva.",
+    "paused_headline": "El acuerdo pastoral de esta diócesis no está activo",
+    "paused_headline_named": "El acuerdo pastoral de la diócesis {{name}} no está activo",
+    "paused_result": "Los datos de las parroquias siguen guardados. No hay checkout aquí: la curia regulariza el acuerdo con Catequese Viva."
+  },
+  "deal": {
+    "eyebrow": "Acuerdo pastoral",
+    "covering_desc": "Las parroquias de esta diócesis usan la cobertura combinada con Catequese Viva.",
+    "paused_desc": "Mientras el acuerdo no esté activo, no abrimos parroquias nuevas en esta diócesis. Los datos actuales permanecen.",
+    "parishes": "Parroquias en el acuerdo",
+    "parishes_used": "{{used}} de {{max}}",
+    "parishes_unlimited": "ilimitadas",
+    "classes": "Grupos (tope)",
+    "catechists": "Catequistas (tope)",
+    "catechumens": "Catequizandos (tope)",
+    "starts": "Inicio: {{date}}",
+    "ends": "Término: {{date}}",
+    "status_ACTIVE": "Activo",
+    "status_SUSPENDED": "Suspendido",
+    "status_INACTIVE": "Inactivo",
+    "status_NONE": "Sin acuerdo",
+    "status_CANCELED": "Inactivo",
+    "status_TRIAL": "En prueba",
+    "status_PAST_DUE": "Atrasado"
   }
 }

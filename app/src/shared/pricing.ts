@@ -85,6 +85,7 @@ import {
   resolvePlanIdOrFree,
 } from './planCatalog';
 import type { PlanId } from './planCatalog';
+import { isDioceseDealCovering } from './dioceseDeal';
 
 const ACTIVE_LIKE_STATUSES = new Set(['active', 'cancel_at_period_end', 'past_due']);
 
@@ -226,6 +227,10 @@ export interface BillingInfo {
   plan: string;
   status: string;
   trialEndsAt?: string | null | Date;
+  manualDeal?: boolean | null;
+  processor?: string | null;
+  startsAt?: string | null | Date;
+  endsAt?: string | null | Date;
 }
 
 export function isBillingActive(
@@ -327,7 +332,7 @@ export function getWorkspaceEffectivePlan(opts: {
     }
   }
 
-  if (dioceseBilling && isBillingActive(dioceseBilling)) {
+  if (dioceseBilling && isDioceseDealCovering(dioceseBilling)) {
     const umbrella = getInstitutionalPlanId(dioceseBilling);
     if (umbrella && isInstitutionalPlan(umbrella)) {
       return {

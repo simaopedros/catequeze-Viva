@@ -521,6 +521,21 @@ describe('getWorkspaceEffectivePlan', () => {
     expect(result.source).toBe('institutional');
   });
 
+  it('suspended negotiated diocese deal does not inherit coverage', () => {
+    const result = getWorkspaceEffectivePlan({
+      user: { subscriptionStatus: null, subscriptionPlan: null },
+      parishType: 'PARISH',
+      dioceseBilling: {
+        plan: 'unlimited',
+        status: 'SUSPENDED',
+        manualDeal: true,
+        processor: 'MANUAL',
+      },
+    });
+    expect(result.plan).toBe('catechist_free');
+    expect(result.source).toBe('free');
+  });
+
   it('institutional workspace with active trial returns single entitlements', () => {
     const future = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
     const result = getWorkspaceEffectivePlan({

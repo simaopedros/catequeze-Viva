@@ -4,8 +4,8 @@ import {
   resolveAllEffectiveBilling,
   getEffectiveBillingPlan,
   isBillingActive,
-  isDioceseUmbrellaPlan,
   ensureProductTrial,
+  loadDioceseDealSummaries,
 } from './billingEnforcement';
 import { getPersonalPlanId, isSubscriptionActiveLike } from '../../shared/planLimits';
 import { getDioceseParishIds } from '../auth/helpers';
@@ -211,6 +211,28 @@ export const listWorkspaces = async (_args: void, context: any) => {
     ownBillings.map((b: any) => [b.parishId, b]),
   );
 
+  const dioceseMeta = new Map<string, { id: string; name: string }>();
+  for (const m of memberships) {
+    if (m.parish?.dioceseId) {
+      dioceseMeta.set(m.parish.dioceseId, {
+        id: m.parish.dioceseId,
+        name: m.parish.diocese?.name ?? 'Diocese',
+      });
+    }
+  }
+  for (const parish of dioceseExtraParishes) {
+    if (parish.dioceseId) {
+      dioceseMeta.set(parish.dioceseId, {
+        id: parish.dioceseId,
+        name: parish.diocese?.name ?? 'Diocese',
+      });
+    }
+  }
+  const dioceseDealById = await loadDioceseDealSummaries(
+    context,
+    [...dioceseMeta.values()],
+  );
+
   for (const m of memberships) {
     if (!m.parish || seenIds.has(m.parish.id)) continue;
     seenIds.add(m.parish.id);
@@ -239,6 +261,9 @@ export const listWorkspaces = async (_args: void, context: any) => {
       dioceseName: m.parish.diocese?.name ?? null,
       planInherited,
       isManager,
+      dioceseDeal: m.parish.dioceseId
+        ? dioceseDealById.get(m.parish.dioceseId) ?? null
+        : null,
     });
   }
 
@@ -267,6 +292,9 @@ export const listWorkspaces = async (_args: void, context: any) => {
       dioceseName: parish.diocese?.name ?? null,
       planInherited,
       isManager: true,
+      dioceseDeal: parish.dioceseId
+        ? dioceseDealById.get(parish.dioceseId) ?? null
+        : null,
     });
   }
 
@@ -318,7 +346,20 @@ export const getInstitutionalManageContext = async (_args: void, context: any) =
       }),
       context.entities.TenantBilling.findMany({
         where: { dioceseId: { in: dioceseIdList } },
-        select: { dioceseId: true, plan: true, status: true, trialEndsAt: true },
+        select: {
+          dioceseId: true,
+          plan: true,
+          status: true,
+          trialEndsAt: true,
+          maxParishes: true,
+          maxClasses: true,
+          maxCatechists: true,
+          maxCatechumens: true,
+          manualDeal: true,
+          processor: true,
+          startsAt: true,
+          endsAt: true,
+        },
       }),
     ]);
 
@@ -326,14 +367,23 @@ export const getInstitutionalManageContext = async (_args: void, context: any) =
       billingRows.map((b: any) => [b.dioceseId, b]),
     );
 
+    const dealById = await loadDioceseDealSummaries(context, dioceseRows);
+
     dioceses = dioceseRows.map((diocese: any) => {
+      const deal = dealById.get(diocese.id);
       const dioceseBilling = billingByDiocese.get(diocese.id) as any;
-      // Unlimited covers diocese; DIOCESE kept for pre-migration data.
-      const licensed =
-        !!dioceseBilling &&
-        isBillingActive(dioceseBilling) &&
-        isDioceseUmbrellaPlan(dioceseBilling.plan);
-      return { id: diocese.id, name: diocese.name, licensed };
+      const licensed = Boolean(deal?.covering);
+      return {
+        id: diocese.id,
+        name: diocese.name,
+        licensed,
+        dealStatus: deal?.status ?? dioceseBilling?.status ?? null,
+        manualDeal: Boolean(deal?.manualDeal),
+        parishesUsed: deal?.parishesUsed ?? 0,
+        maxParishes: deal?.maxParishes ?? null,
+        canAddParish: deal?.canAddParish ?? false,
+        covering: licensed,
+      };
     });
   }
 

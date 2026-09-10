@@ -21,6 +21,12 @@ export const extendTenantTrial = vi.fn();
 export const setComplimentaryPlan = vi.fn();
 export const cancelTenantLicense = vi.fn();
 export const cancelUserSubscriptionImmediate = vi.fn();
+export const listDioceseDeals = vi.fn();
+export const listDioceses = vi.fn();
+export const upsertDioceseDeal = vi.fn();
+export const setDioceseDealStatus = vi.fn();
+export const getDioceseDeal = vi.fn();
+export const getMyDioceseDeal = vi.fn();
 
 export const searchDiocesesForOnboarding = vi.fn();
 export const createDiocese = vi.fn();

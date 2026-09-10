@@ -46,6 +46,7 @@ export const expireSubscriptionsJob = async (
       where: {
         status: "TRIAL",
         trialEndsAt: { lt: now },
+        NOT: { manualDeal: true },
         OR: [
           { parishId: null },
           { parish: { owner: { paymentProcessorUserId: null } } },

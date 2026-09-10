@@ -24,6 +24,18 @@ export interface Workspace {
   dioceseName?: string | null;
   planInherited?: boolean;
   membershipStatus?: "ACTIVE" | "INVITED";
+  dioceseDeal?: {
+    status?: string | null;
+    covering?: boolean;
+    manualDeal?: boolean;
+    parishesUsed?: number;
+    maxParishes?: number | null;
+    maxClasses?: number | null;
+    maxCatechists?: number | null;
+    maxCatechumens?: number | null;
+    startsAt?: string | Date | null;
+    endsAt?: string | Date | null;
+  } | null;
 }
 
 interface UseActiveWorkspaceReturn {

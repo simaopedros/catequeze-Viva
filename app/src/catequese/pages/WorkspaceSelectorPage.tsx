@@ -60,6 +60,11 @@ interface ManageDiocese {
   id: string;
   name: string;
   licensed: boolean;
+  canAddParish?: boolean;
+  dealStatus?: string | null;
+  parishesUsed?: number;
+  maxParishes?: number | null;
+  manualDeal?: boolean;
 }
 
 function planLabel(plan: string | undefined, t: any) {
@@ -540,15 +545,36 @@ export default function WorkspaceSelectorPage() {
                           canManage: true,
                         }),
                       )}
-                      <button
-                        onClick={() => createInDiocese(dioceseId)}
-                        className="w-full rounded-sm border border-dashed border-border/70 hover:bg-muted/20 transition-colors p-3 text-center text-muted-foreground flex items-center justify-center gap-2"
-                      >
-                        <Plus className="h-4 w-4" />
-                        <span className="text-sm font-semibold tracking-tight text-brand-ink">
-                          {t("workspace.create_parish_in_diocese")}
-                        </span>
-                      </button>
+                      {licensed &&
+                      manageDioceses.find((d) => d.id === dioceseId)
+                        ?.canAddParish === false ? (
+                        <p className="px-1 text-xs text-muted-foreground">
+                          {t("workspace.diocese_parish_quota", {
+                            used:
+                              manageDioceses.find((d) => d.id === dioceseId)
+                                ?.parishesUsed ?? 0,
+                            max:
+                              manageDioceses.find((d) => d.id === dioceseId)
+                                ?.maxParishes ?? "—",
+                          })}
+                        </p>
+                      ) : !licensed &&
+                        manageDioceses.find((d) => d.id === dioceseId)
+                          ?.manualDeal ? (
+                        <p className="px-1 text-xs text-muted-foreground">
+                          {t("workspace.diocese_deal_paused")}
+                        </p>
+                      ) : (
+                        <button
+                          onClick={() => createInDiocese(dioceseId)}
+                          className="w-full rounded-sm border border-dashed border-border/70 hover:bg-muted/20 transition-colors p-3 text-center text-muted-foreground flex items-center justify-center gap-2"
+                        >
+                          <Plus className="h-4 w-4" />
+                          <span className="text-sm font-semibold tracking-tight text-brand-ink">
+                            {t("workspace.create_parish_in_diocese")}
+                          </span>
+                        </button>
+                      )}
                     </div>
                   );
                 })}
@@ -578,15 +604,28 @@ export default function WorkspaceSelectorPage() {
                             : t("workspace.diocese_license_inactive")}
                         </span>
                       </div>
-                      <button
-                        onClick={() => createInDiocese(d.id)}
-                        className="w-full rounded-sm border border-dashed border-border/70 hover:bg-muted/20 transition-colors p-3 text-center text-muted-foreground flex items-center justify-center gap-2"
-                      >
-                        <Plus className="h-4 w-4" />
-                        <span className="text-sm font-semibold tracking-tight text-brand-ink">
-                          {t("workspace.create_parish_in_diocese")}
-                        </span>
-                      </button>
+                      {d.canAddParish === false && d.licensed ? (
+                        <p className="px-1 text-xs text-muted-foreground">
+                          {t("workspace.diocese_parish_quota", {
+                            used: d.parishesUsed ?? 0,
+                            max: d.maxParishes ?? "—",
+                          })}
+                        </p>
+                      ) : !d.licensed && d.manualDeal ? (
+                        <p className="px-1 text-xs text-muted-foreground">
+                          {t("workspace.diocese_deal_paused")}
+                        </p>
+                      ) : (
+                        <button
+                          onClick={() => createInDiocese(d.id)}
+                          className="w-full rounded-sm border border-dashed border-border/70 hover:bg-muted/20 transition-colors p-3 text-center text-muted-foreground flex items-center justify-center gap-2"
+                        >
+                          <Plus className="h-4 w-4" />
+                          <span className="text-sm font-semibold tracking-tight text-brand-ink">
+                            {t("workspace.create_parish_in_diocese")}
+                          </span>
+                        </button>
+                      )}
                     </div>
                   ))}
 

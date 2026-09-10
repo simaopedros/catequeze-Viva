@@ -11,6 +11,16 @@ import { getPlanLimits } from "../../shared/planCatalog";
 import { BILLING_MANAGER_ROLES } from "../../shared/billingAccess";
 import { stripeClient } from "../../payment/stripe/stripeClient";
 import { SubscriptionStatus } from "../../payment/plans";
+import { isManualDioceseDeal } from "../../shared/dioceseDeal";
+
+const MANUAL_DEAL_LOCKED =
+  "Este é um acordo diocesano negociado. Altere-o em /admin/acordos-diocese — não use cortesia, trial ou cancelamento Stripe nesta ficha.";
+
+function assertNotManualDeal(existing: { manualDeal?: boolean | null; processor?: string | null } | null) {
+  if (existing && isManualDioceseDeal(existing)) {
+    throw new HttpError(409, MANUAL_DEAL_LOCKED);
+  }
+}
 
 const MANAGEABLE = new Set(["trialing", "active", "past_due"]);
 
@@ -249,6 +259,7 @@ export const extendTenantTrial = async (
   const existing = await context.entities.TenantBilling.findUnique({
     where: billingWhere(scope),
   });
+  assertNotManualDeal(existing);
 
   const now = new Date();
   const base =
@@ -318,6 +329,7 @@ export const setComplimentaryPlan = async (
   const existing = await context.entities.TenantBilling.findUnique({
     where: billingWhere(scope),
   });
+  assertNotManualDeal(existing);
 
   const row = existing
     ? await context.entities.TenantBilling.update({
@@ -359,6 +371,7 @@ export const cancelTenantLicense = async (
   if (!existing) {
     throw new HttpError(400, "Não há licença local para cancelar.");
   }
+  assertNotManualDeal(existing);
 
   const row = await context.entities.TenantBilling.update({
     where: { id: existing.id },

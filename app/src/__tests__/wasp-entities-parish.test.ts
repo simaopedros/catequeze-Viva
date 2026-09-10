@@ -76,6 +76,27 @@ describe('Wasp entities for parish onboarding actions', () => {
     expect(entities).toContain('CatechesisClass');
   });
 
+  it('diocese deal operations declare TenantBilling, Diocese and AuditLog', () => {
+    const list = entitiesForOperation(waspSource, 'query', 'listDioceseDeals');
+    expect(list).toContain('TenantBilling');
+    expect(list).toContain('Diocese');
+    expect(list).toContain('Parish');
+
+    const upsert = entitiesForAction(waspSource, 'upsertDioceseDeal');
+    expect(upsert).toContain('TenantBilling');
+    expect(upsert).toContain('Diocese');
+    expect(upsert).toContain('AuditLog');
+    expect(upsert).toContain('User');
+
+    const status = entitiesForAction(waspSource, 'setDioceseDealStatus');
+    expect(status).toContain('AuditLog');
+    expect(status).toContain('TenantBilling');
+
+    const mine = entitiesForOperation(waspSource, 'query', 'getMyDioceseDeal');
+    expect(mine).toContain('Membership');
+    expect(mine).toContain('TenantBilling');
+  });
+
   it('hierarchical resource operations declare workspace access entities', () => {
     const official = entitiesForOperation(
       waspSource,

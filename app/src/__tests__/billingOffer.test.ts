@@ -12,6 +12,7 @@ import {
   shouldShowDioceseWorkspaceBilling,
   shouldShowInstitutionalActiveBilling,
   shouldShowParishBillingConversion,
+  shouldShowPausedDioceseDealBilling,
   shouldShowPersonalActiveBilling,
   shouldShowPersonalConversion,
   shouldShowBillingUsageContrast,
@@ -364,6 +365,35 @@ describe("managed billing surfaces", () => {
         workspaceType: "PARISH",
       }),
     ).toBe(false);
+  });
+
+  it("hides Stripe checkout when a negotiated diocese deal is paused", () => {
+    expect(
+      shouldShowPausedDioceseDealBilling({
+        canManageBilling: true,
+        planInherited: false,
+        dioceseDeal: { manualDeal: true, covering: false },
+      }),
+    ).toBe(true);
+    expect(
+      shouldShowParishBillingConversion({
+        isPersonal: false,
+        isParishManaged: false,
+        isPaidActive: false,
+        canManageBilling: true,
+        workspaceType: "PARISH",
+        dioceseDeal: { manualDeal: true, covering: false },
+      }),
+    ).toBe(false);
+    expect(
+      shouldShowParishBillingConversion({
+        isPersonal: false,
+        isParishManaged: false,
+        isPaidActive: false,
+        canManageBilling: true,
+        workspaceType: "PARISH",
+      }),
+    ).toBe(true);
   });
 });
 
