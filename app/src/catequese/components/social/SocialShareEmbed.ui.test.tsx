@@ -8,7 +8,10 @@ vi.mock("react-i18next", () => ({
     t: (key: string) => {
       const labels: Record<string, string> = {
         "nativeShare.kind.verse": "Versículo",
+        "nativeShare.kind.catechism": "Catecismo",
+        "nativeShare.kind.directory": "Diretório",
         "nativeShare.kind.document": "Biblioteca",
+        "nativeShare.kind.ai": "Assistência editorial",
       };
       return labels[key] ?? key;
     },
@@ -62,5 +65,27 @@ describe("SocialShareEmbed", () => {
       "href",
       "/app/content-library/doc-1",
     );
+  });
+
+  it.each([
+    ["CATECHISM", "CIC 1210", "/app/catechism?entry=1210", "Catecismo"],
+    ["DIRECTORY", "A iniciação cristã", "/app/directory?entry=42", "Diretório"],
+    ["AI_ARTIFACT", "Rascunho editorial", "/app/content-library/ai-1", "Assistência editorial"],
+  ] as const)("card %s aponta para a origem", (kind, title, href, label) => {
+    render(
+      <MemoryRouter>
+        <SocialShareEmbed
+          share={{
+            kind,
+            title,
+            excerpt: "Texto de apoio",
+            href,
+          }}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(label)).toBeInTheDocument();
+    expect(screen.getByRole("link")).toHaveAttribute("href", href);
   });
 });
