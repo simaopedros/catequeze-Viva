@@ -3,6 +3,7 @@ import {
   HANDLE_MAX,
   isValidWebsiteUrl,
   normalizeHandle,
+  communityProfilePath,
   profilePath,
   sanitizeBio,
   validateHandle,
@@ -32,6 +33,15 @@ describe('social handle', () => {
 
   it('builds the public profile path', () => {
     expect(profilePath('Maria_Catequista')).toBe('/u/maria_catequista');
+  });
+
+  it('keeps in-app profile links inside the app shell', () => {
+    expect(communityProfilePath('Maria', '/app/comunidade')).toBe(
+      '/app/comunidade/u/maria',
+    );
+    expect(communityProfilePath('Maria', '/comunidade')).toBe(
+      '/comunidade/u/maria',
+    );
   });
 });
 

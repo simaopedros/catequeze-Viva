@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import {
   BookMarked,
@@ -19,6 +19,7 @@ import {
   SOCIAL_RAIL_TOOL_PATHS,
   type SocialRailToolId,
 } from "../../../shared/socialRail";
+import { communityProfilePath } from "../../../shared/socialProfile";
 
 const TOOL_ICONS: Record<SocialRailToolId, typeof Users> = {
   classes: Users,
@@ -54,6 +55,7 @@ export function SocialRail({
   viewerIsAdmin?: boolean;
 }) {
   const { t } = useTranslation("social");
+  const location = useLocation();
   const { data } = useQuery(getSocialCommunityPulse);
   const members = data?.members ?? [];
   const memberCount = data?.memberCount ?? 0;
@@ -98,7 +100,7 @@ export function SocialRail({
                 title={member.displayName}
               >
                 {member.socialHandle ? (
-                  <Link to={`/comunidade/u/${member.socialHandle}`}>
+                  <Link to={communityProfilePath(member.socialHandle, location.pathname)}>
                     <SocialAvatar
                       name={member.displayName}
                       url={member.avatarUrl}

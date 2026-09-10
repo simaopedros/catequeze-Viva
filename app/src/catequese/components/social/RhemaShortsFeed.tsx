@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import {
   HandHeart,
@@ -28,6 +28,7 @@ import { SocialShareButton } from "./SocialShareButton";
 import { SocialCommentThread } from "./SocialCommentThread";
 import type { SocialPostItem } from "./SocialPostCard";
 import { isPlayableSocialVideo } from "./SocialMediaGallery";
+import { communityProfilePath } from "../../../shared/socialProfile";
 
 const REACTION_ICONS: Record<SocialReactionType, typeof HandHeart> = {
   AMEM: HandHeart,
@@ -90,6 +91,7 @@ export function RhemaShortsFeed({
   showFollow?: boolean;
 }) {
   const { t } = useTranslation("social");
+  const location = useLocation();
   const [cursor, setCursor] = useState<string | null>(null);
   const [pages, setPages] = useState<SocialPostItem[][]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -255,7 +257,7 @@ export function RhemaShortsFeed({
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 text-white">
                 {post.author.socialHandle ? (
                   <Link
-                    to={`/comunidade/u/${post.author.socialHandle}`}
+                    to={communityProfilePath(post.author.socialHandle, location.pathname)}
                     className="text-sm font-semibold hover:underline"
                   >
                     @{post.author.socialHandle}

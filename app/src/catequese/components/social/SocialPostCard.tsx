@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import {
   HandHeart,
@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { deleteSocialPost, toggleSocialReaction, toggleSocialBlock } from "wasp/client/operations";
 import { SocialShareEmbed, type SocialShareCard } from "./SocialShareEmbed";
-import { profilePath } from "../../../shared/socialProfile";
+import { communityProfilePath } from "../../../shared/socialProfile";
 import { Button } from "../../../client/components/ui/button";
 import { Badge } from "../../../client/components/ui/badge";
 import {
@@ -92,6 +92,7 @@ export function SocialPostCard({
 }) {
   const { t } = useTranslation("social");
   const { currentLocale } = useLocale();
+  const location = useLocation();
   const [reaction, setReaction] = useState(post.viewerReaction);
   const [reactionCount, setReactionCount] = useState(post.reactionCount);
   const [commentCount, setCommentCount] = useState(post.commentCount);
@@ -162,7 +163,7 @@ export function SocialPostCard({
         <div className="min-w-0 flex-1">
           {post.author.socialHandle ? (
             <Link
-              to={`/comunidade/u/${post.author.socialHandle}`}
+              to={communityProfilePath(post.author.socialHandle, location.pathname)}
               className="block truncate text-[13px] font-extrabold leading-tight hover:underline"
             >
               {post.author.displayName}

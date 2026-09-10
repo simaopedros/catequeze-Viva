@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Search } from "lucide-react";
 import { useQuery, searchSocial } from "wasp/client/operations";
 import { Input } from "../../../client/components/ui/input";
+import { communityProfilePath } from "../../../shared/socialProfile";
 
 export function SocialSearch({ className }: { className?: string }) {
   const { t } = useTranslation("social");
+  const location = useLocation();
   const [term, setTerm] = useState("");
   const [debounced, setDebounced] = useState("");
 
@@ -48,7 +50,7 @@ export function SocialSearch({ className }: { className?: string }) {
               {people.map((person: any) => (
                 <li key={person.id}>
                   <Link
-                    to={`/comunidade/u/${person.socialHandle}`}
+                    to={communityProfilePath(person.socialHandle, location.pathname)}
                     className="block px-3 py-2 text-sm hover:bg-muted/60"
                   >
                     <span className="font-medium">{person.displayName}</span>
