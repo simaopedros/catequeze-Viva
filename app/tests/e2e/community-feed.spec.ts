@@ -330,11 +330,19 @@ test.describe("Comunidade — partilha nativa e perfil", () => {
 
     await page.goto("/app/comunidade/u/coord_saojose");
     await page.waitForLoadState("domcontentloaded");
+    await dismissCookieBanner(page);
 
     await expect(page.getByText(/@coord_saojose/i)).toBeVisible({
       timeout: 20000,
     });
-    await expect(page.getByRole("button", { name: /^seguir$/i })).toBeVisible();
+    const toggle = page.getByTestId("social-block-toggle");
+    if (/desbloquear/i.test((await toggle.innerText()) || "")) {
+      await toggle.click();
+      await expect(toggle).toHaveText(/bloquear/i, { timeout: 15000 });
+    }
+    await expect(
+      page.getByRole("button", { name: /^(seguir|a seguir)$/i }),
+    ).toBeVisible();
   });
 
   test("link público /u/:handle abre o perfil no shell autenticado", async ({
@@ -380,9 +388,9 @@ test.describe("Comunidade — partilha nativa e perfil", () => {
       mimeType: "image/png",
       buffer: png,
     });
-    await expect(page.getByText(/foto atualizada/i)).toBeVisible({
-      timeout: 20000,
-    });
+    await expect(page.getByText("Foto atualizada", { exact: true })).toBeVisible(
+      { timeout: 20000 },
+    );
   });
 
   test("assinante bloqueia e desbloqueia um perfil", async ({ page }) => {
@@ -404,23 +412,25 @@ test.describe("Comunidade — partilha nativa e perfil", () => {
     await expect(toggle).toHaveText(/bloquear/i);
     await toggle.click();
 
-    await expect(page.getByText(/você bloqueou/i)).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(
+      page.locator('[data-slot="toast-title"]').filter({
+        hasText: /você bloqueou coordenador/i,
+      }),
+    ).toBeVisible({ timeout: 15000 });
     await expect(toggle).toHaveText(/desbloquear/i);
     await expect(
-      page.getByText(
-        /posts ficam ocultos|publicações ficam ocultas|bloqueou esta conta/i,
-      ),
+      page.getByText(/as publicações ficam ocultas até desbloquear/i),
     ).toBeVisible();
     await expect(page.getByRole("button", { name: /^seguir$/i })).toHaveCount(
       0,
     );
 
     await toggle.click();
-    await expect(page.getByText(/você desbloqueou/i)).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(
+      page.locator('[data-slot="toast-title"]').filter({
+        hasText: /você desbloqueou coordenador/i,
+      }),
+    ).toBeVisible({ timeout: 15000 });
     await expect(toggle).toHaveText(/bloquear/i);
     await expect(page.getByRole("button", { name: /^seguir$/i })).toBeVisible();
   });
@@ -442,22 +452,31 @@ test.describe("Comunidade — partilha nativa e perfil", () => {
       dialog.getByRole("heading", { name: /partilhar na comunidade/i }),
     ).toBeVisible();
 
-    const stacking = await page.evaluate(() => {
-      const dialogEl = document.querySelector('[data-slot="dialog-content"]');
-      const banner = document.getElementById("cc-main");
-      if (!dialogEl) return { dialogZ: 0, bannerZ: 0, bannerHidden: true };
-      const dialogZ = Number.parseFloat(getComputedStyle(dialogEl).zIndex) || 0;
-      const bannerZ = banner
-        ? Number.parseFloat(getComputedStyle(banner).zIndex) || 0
-        : 0;
-      const bannerHidden =
-        !banner || getComputedStyle(banner).visibility === "hidden";
-      return { dialogZ, bannerZ, bannerHidden };
+    const heading = dialog.getByRole("heading", {
+      name: /partilhar na comunidade/i,
     });
-
-    expect(stacking.dialogZ).toBeGreaterThan(0);
-    expect(stacking.bannerHidden || stacking.dialogZ > stacking.bannerZ).toBe(
-      true,
+    const box = await heading.boundingBox();
+    expect(box).toBeTruthy();
+    const hit = await page.evaluate(
+      ({ x, y }) => {
+        const el = document.elementFromPoint(x, y);
+        const banner = document.getElementById("cc-main");
+        const bannerStyle = banner ? getComputedStyle(banner) : null;
+        return {
+          inDialog: Boolean(el?.closest('[data-slot="dialog-content"]')),
+          bannerDisplay: bannerStyle?.display ?? "none",
+          dialogZ: Number.parseFloat(
+            getComputedStyle(
+              document.querySelector('[data-slot="dialog-content"]')!,
+            ).zIndex,
+          ),
+        };
+      },
+      { x: box!.x + box!.width / 2, y: box!.y + box!.height / 2 },
     );
+
+    expect(hit.inDialog).toBe(true);
+    expect(hit.bannerDisplay).toBe("none");
+    expect(hit.dialogZ).toBeGreaterThan(150);
   });
 });

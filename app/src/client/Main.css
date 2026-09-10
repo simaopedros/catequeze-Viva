@@ -242,6 +242,13 @@
   --z-cookie: 150;
   --z-modal: 500;
   --z-toast: 1000;
+  /* Tailwind v4 z-* utilities read --z-index-*, not --z-*. */
+  --z-index-dropdown: 50;
+  --z-index-sticky: 100;
+  --z-index-cookie: 150;
+  --z-index-overlay: 200;
+  --z-index-modal: 500;
+  --z-index-toast: 1000;
 
   /* Legacy z-index (keep for existing code) */
   --z-index-1: 1;
@@ -681,12 +688,12 @@
    Radix dialogs/sheets (z-modal: 500). Keep the banner above sticky chrome
    and below overlays so partilhar/bloquear stay clickable. */
 #cc-main {
-  --cc-z-index: var(--z-cookie, 150);
-  z-index: var(--z-cookie, 150) !important;
+  --cc-z-index: 150;
+  z-index: 150 !important;
 }
 
+/* visibility:hidden is not enough: the library sets .cm to visibility:visible. */
 body:has([data-slot="dialog-overlay"][data-state="open"]) #cc-main,
 body:has([data-slot="sheet-overlay"][data-state="open"]) #cc-main {
-  visibility: hidden;
-  pointer-events: none;
+  display: none !important;
 }
