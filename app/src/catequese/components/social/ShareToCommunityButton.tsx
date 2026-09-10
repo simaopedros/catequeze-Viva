@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Share2, Sparkles } from "lucide-react";
+import { Share2 } from "lucide-react";
 import { useAuth } from "wasp/client/auth";
 import { useQuery, getSocialPublishAccess } from "wasp/client/operations";
 import { Button } from "../../../client/components/ui/button";
@@ -106,7 +106,10 @@ export function ShareToCommunityButton({
       data-testid="share-to-community"
     >
       <Link to={buildCommunitySharePath({ body: text, topic, source })}>
-        <Sparkles className="h-4 w-4" aria-hidden />
+        <Share2
+          className={size === "icon" ? "h-4 w-4" : "mr-1 h-3.5 w-3.5"}
+          aria-hidden
+        />
         {size !== "icon" ? label || t("share.toCommunity") : null}
       </Link>
     </Button>

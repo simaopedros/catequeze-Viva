@@ -31,7 +31,12 @@ import { SocialCommentThread } from "./SocialCommentThread";
 import { SocialReportDialog } from "./SocialReportDialog";
 import { SocialFollowButton } from "./SocialFollowButton";
 import { SocialAvatar } from "./SocialAvatar";
-import { socialTopicChipClass, splitSocialHeadline } from "./socialAppearance";
+import {
+  collapseSocialBody,
+  shouldCollapseSocialBody,
+  socialTopicChipClass,
+  splitSocialHeadline,
+} from "./socialAppearance";
 
 export interface SocialPostItem {
   id: string;
@@ -141,8 +146,11 @@ export function SocialPostCard({
     }
   };
 
+  const [expanded, setExpanded] = useState(false);
   const timestamp = post.publishedAt || post.createdAt;
   const { title, rest } = splitSocialHeadline(post.body);
+  const canCollapse = shouldCollapseSocialBody(rest);
+  const visibleBody = canCollapse && !expanded ? collapseSocialBody(rest) : rest;
 
   return (
     <article className="mb-3 min-w-0 overflow-hidden rounded-2xl border border-border bg-white p-4 shadow-[0_3px_16px_rgba(18,46,76,0.07)]">
@@ -255,15 +263,25 @@ export function SocialPostCard({
         ) : null}
 
         {title ? (
-          <h3 className="mb-1.5 text-base font-semibold tracking-[-0.01em] text-brand-ink">
+          <h3 className="mb-1.5 break-words [overflow-wrap:anywhere] text-base font-semibold tracking-[-0.01em] text-brand-ink">
             {title}
           </h3>
         ) : null}
 
-        {rest ? (
+        {visibleBody ? (
           <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-relaxed text-[#5f7085]">
-            {rest}
+            {visibleBody}
           </p>
+        ) : null}
+
+        {canCollapse ? (
+          <button
+            type="button"
+            onClick={() => setExpanded((value) => !value)}
+            className="mt-1 text-[12px] font-semibold text-[#1f6ed4] underline-offset-4 hover:underline"
+          >
+            {expanded ? t("post.showLess") : t("post.showMore")}
+          </button>
         ) : null}
 
         {post.share && <SocialShareEmbed share={post.share} />}

@@ -13,6 +13,11 @@ import {
   sanitizeShareText,
 } from '../shared/socialShare';
 import { validateSocialPostDraft } from '../server/operations/socialPolicies';
+import {
+  collapseSocialBody,
+  shouldCollapseSocialBody,
+  splitSocialHeadline,
+} from '../catequese/components/social/socialAppearance';
 
 describe('social share snapshots', () => {
   it('recognises native share kinds only', () => {
@@ -89,5 +94,22 @@ describe('share query helpers coexist', () => {
       sourceId: 'verse-1',
     });
     expect(parseCommunityShareSearch(native.split('?')[1])).toBeNull();
+  });
+});
+
+describe('feed post layout', () => {
+  it('treats a short first line as a headline', () => {
+    expect(splitSocialHeadline('Paz e bem\nHoje rezámos juntos.')).toEqual({
+      title: 'Paz e bem',
+      rest: 'Hoje rezámos juntos.',
+    });
+  });
+
+  it('collapses long bodies so a card cannot dominate the feed', () => {
+    const long = 'a'.repeat(500);
+    expect(shouldCollapseSocialBody('curto')).toBe(false);
+    expect(shouldCollapseSocialBody(long)).toBe(true);
+    expect(collapseSocialBody(long).endsWith('…')).toBe(true);
+    expect(collapseSocialBody(long).length).toBeLessThan(long.length);
   });
 });

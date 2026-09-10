@@ -9,7 +9,7 @@ export function SocialAvatar({
 }: {
   name: string;
   url?: string | null;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   className?: string;
 }) {
   const dimension =
@@ -17,7 +17,9 @@ export function SocialAvatar({
       ? "h-8 w-8 text-[10px]"
       : size === "lg"
         ? "h-11 w-11 text-sm"
-        : "h-10 w-10 text-xs";
+        : size === "xl"
+          ? "h-16 w-16 text-lg"
+          : "h-10 w-10 text-xs";
 
   if (url) {
     return (

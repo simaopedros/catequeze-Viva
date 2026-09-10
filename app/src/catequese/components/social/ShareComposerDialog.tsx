@@ -4,7 +4,6 @@ import { Loader2 } from "lucide-react";
 import { useQuery, getSocialTopics, getSocialPublishAccess, previewSocialShare } from "wasp/client/operations";
 import type { SocialShareDraft, SocialShareSnapshot } from "../../../shared/socialShare";
 import { SocialComposer } from "./SocialComposer";
-import { SocialShareEmbed } from "./SocialShareEmbed";
 
 export function ShareComposerDialog({
   draft,
@@ -53,7 +52,6 @@ export function ShareComposerDialog({
 
   return (
     <div className="space-y-3">
-      <SocialShareEmbed share={preview} compact />
       <SocialComposer
         topics={topics ?? []}
         limits={access.limits}

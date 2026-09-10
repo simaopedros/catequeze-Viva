@@ -118,10 +118,12 @@ export default function PublicSocialProfilePage() {
               href={profile.websiteUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 inline-flex items-center gap-1 text-sm text-primary underline-offset-4 hover:underline"
+              className="mt-2 inline-flex max-w-full items-center gap-1 text-sm text-primary underline-offset-4 hover:underline"
             >
-              <Globe className="h-3.5 w-3.5" aria-hidden />
-              {profile.websiteUrl.replace(/^https?:\/\//, "")}
+              <Globe className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              <span className="truncate">
+                {profile.websiteUrl.replace(/^https?:\/\//, "")}
+              </span>
             </a>
           )}
           <p className="mt-3 text-xs text-muted-foreground">

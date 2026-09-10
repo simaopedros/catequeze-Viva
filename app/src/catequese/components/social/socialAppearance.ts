@@ -59,3 +59,23 @@ export function splitSocialHeadline(body: string): {
   }
   return { title: null, rest: trimmed };
 }
+
+/** Collapse long feed bodies so a single post cannot dominate the layout. */
+export const SOCIAL_POST_COLLAPSE_CHARS = 420;
+export const SOCIAL_POST_COLLAPSE_LINES = 8;
+
+export function shouldCollapseSocialBody(text: string): boolean {
+  if (!text) return false;
+  return (
+    text.length > SOCIAL_POST_COLLAPSE_CHARS ||
+    text.split("\n").length > SOCIAL_POST_COLLAPSE_LINES
+  );
+}
+
+export function collapseSocialBody(text: string): string {
+  if (!shouldCollapseSocialBody(text)) return text;
+  if (text.length > SOCIAL_POST_COLLAPSE_CHARS) {
+    return `${text.slice(0, SOCIAL_POST_COLLAPSE_CHARS).trimEnd()}…`;
+  }
+  return `${text.split("\n").slice(0, SOCIAL_POST_COLLAPSE_LINES).join("\n").trimEnd()}…`;
+}
