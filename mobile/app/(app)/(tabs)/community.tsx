@@ -1,5 +1,5 @@
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import { useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
 import { openCommunityArea } from '../../../src/screens/communityNavigation';
@@ -15,6 +15,12 @@ export default function CommunityRoute() {
   const topics = useAsync(() => api.socialTopics(), []);
   const access = useAsync(() => api.socialAccess(), []);
   const me = useAsync(() => api.mySocialProfile(), []);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (feed.data) void feed.reload();
+    }, [feed.data, feed.reload]),
+  );
 
   return (
     <CommunityScreen

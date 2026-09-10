@@ -37,7 +37,7 @@ export default function ComposeRoute() {
             body,
             share: share || (params.kind && params.sourceId ? { kind: String(params.kind), sourceId: String(params.sourceId) } : null),
           });
-          router.back();
+          router.replace('/(app)/(tabs)/community');
         } catch (err) {
           setError(err instanceof Error ? err.message : 'Não foi possível publicar.');
         } finally {
