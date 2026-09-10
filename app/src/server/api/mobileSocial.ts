@@ -31,8 +31,13 @@ type AuthedContext = {
 function toOp(context: any): AuthedContext {
   return {
     ...context,
-    // Prefer Wasp-injected PascalCase entity map; fall back to Prisma.
-    entities: context?.entities ?? prisma,
+    // Wasp only injects entities listed on each api {} — 2FA is not on the
+    // social/bible routes, so keep the injected map and fill UserTwoFactor.
+    entities: {
+      ...(context?.entities ?? {}),
+      UserTwoFactor:
+        context?.entities?.UserTwoFactor ?? (prisma as any).userTwoFactor,
+    },
   };
 }
 

@@ -50,5 +50,7 @@ describe('mobile social + bible API wiring', () => {
     );
     expect(mobileSocialSource).toContain("from '../operations/bibleOperations'");
     expect(mobileSocialSource).not.toContain("from '../operations/socialAuthor'");
+    expect(mobileSocialSource).toContain('UserTwoFactor:');
+    expect(mobileSocialSource).toContain('userTwoFactor');
   });
 });
