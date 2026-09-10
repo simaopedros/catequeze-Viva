@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation, useParams } from "react-router";
+import { Link, Navigate, useLocation, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useAuth } from "wasp/client/auth";
@@ -17,7 +17,7 @@ import {
   type SocialAccessReason,
 } from "../components/social/SocialAccessNotice";
 import { canSocialInteract } from "../../shared/socialFeatures";
-import { communityFeedPath } from "../../shared/socialProfile";
+import { communityFeedPath, communityPostPath } from "../../shared/socialProfile";
 
 /**
  * Permalink for a shared post. The same page serves the public URL and the
@@ -51,6 +51,15 @@ export default function PublicSocialPostPage() {
   }, [post, t]);
 
   const canInteract = canSocialInteract(access);
+
+  if (user && !inApp && params.slug) {
+    return (
+      <Navigate
+        to={communityPostPath(params.slug, "/app/comunidade")}
+        replace
+      />
+    );
+  }
 
   const header = (
     <Button asChild variant="ghost" size="sm" className="mb-4 gap-2">

@@ -212,3 +212,122 @@ test.describe("Comunidade — perfil público", () => {
     await expect(page.getByText(/perfil não encontrado/i)).toBeVisible();
   });
 });
+
+test.describe("Comunidade — partilha nativa e perfil", () => {
+  test.skip(!SOCIAL_FEATURES_ENABLED, "Comunidade está desabilitada");
+
+  test("assinante partilha um versículo pelo diálogo nativo", async ({
+    page,
+  }) => {
+    await login(page, USERS.leadCatechist.email);
+
+    await page.goto("/app/bible?ref=Jo%C3%A3o%203:16");
+    await page.waitForLoadState("domcontentloaded");
+
+    const share = page.getByTestId("share-to-community").first();
+    await expect(share).toBeVisible({ timeout: 20000 });
+    await share.click();
+
+    await expect(
+      page.getByRole("heading", { name: /partilhar na comunidade/i }),
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: /^publicar$/i })).toBeVisible({
+      timeout: 15000,
+    });
+  });
+
+  test("assinante partilha uma entrada do Catecismo", async ({ page }) => {
+    await login(page, USERS.leadCatechist.email);
+
+    await page.goto("/app/catechism?entry=1");
+    await page.waitForLoadState("domcontentloaded");
+
+    await expect(
+      page.getByText(/Deus, infinitamente perfeito/i).first(),
+    ).toBeVisible({ timeout: 20000 });
+    await page.getByTestId("share-to-community").first().click();
+    await expect(
+      page.getByRole("heading", { name: /partilhar na comunidade/i }),
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: /^publicar$/i })).toBeVisible({
+      timeout: 15000,
+    });
+  });
+
+  test("plano gratuito vê o rascunho e o convite para assinar", async ({
+    page,
+  }) => {
+    await login(page, USERS.communityFree.email);
+
+    await page.goto("/app/directory?entry=1");
+    await page.waitForLoadState("domcontentloaded");
+
+    await expect(
+      page.getByText(/a catequese pertence/i).first(),
+    ).toBeVisible({ timeout: 20000 });
+    await page.getByTestId("share-to-community").first().click();
+    await expect(
+      page.getByRole("heading", { name: /partilhar na comunidade/i }),
+    ).toBeVisible();
+    await expect(page.getByText(/assine para publicar/i)).toBeVisible();
+    await expect(page.getByText(/texto pronto para a publicação/i)).toBeVisible();
+  });
+
+  test("assinante partilha um documento da biblioteca", async ({ page }) => {
+    await login(page, USERS.leadCatechist.email);
+
+    await page.goto("/app/content-library");
+    await page.waitForLoadState("domcontentloaded");
+
+    await expect(
+      page.getByText(/lição sobre o espírito santo/i).first(),
+    ).toBeVisible({ timeout: 20000 });
+    await page.getByTestId("share-to-community").first().click();
+    await expect(
+      page.getByRole("heading", { name: /partilhar na comunidade/i }),
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: /^publicar$/i })).toBeVisible({
+      timeout: 15000,
+    });
+  });
+
+  test("perfil autenticado oferece seguir e o @", async ({ page }) => {
+    await login(page, USERS.leadCatechist.email);
+
+    await page.goto("/app/comunidade/u/coord_saojose");
+    await page.waitForLoadState("domcontentloaded");
+
+    await expect(page.getByText(/@coord_saojose/i)).toBeVisible({
+      timeout: 20000,
+    });
+    await expect(page.getByRole("button", { name: /^seguir$/i })).toBeVisible();
+  });
+
+  test("link público /u/:handle abre o perfil no shell autenticado", async ({
+    page,
+  }) => {
+    await login(page, USERS.leadCatechist.email);
+
+    await page.goto("/u/coord_saojose");
+    await page.waitForURL(/\/app\/comunidade\/u\/coord_saojose/, {
+      timeout: 20000,
+    });
+    await expect(page.getByText(/@coord_saojose/i)).toBeVisible();
+  });
+
+  test("settings mostram o @ e permitem copiar o link público", async ({
+    page,
+  }) => {
+    await login(page, USERS.leadCatechist.email);
+
+    await page.goto("/app/settings");
+    await page.waitForLoadState("domcontentloaded");
+
+    await expect(page.getByLabel(/nome de usuário/i)).toHaveValue(
+      "catequista_lead",
+    );
+    await expect(
+      page.getByRole("button", { name: /copiar link do perfil/i }),
+    ).toBeVisible();
+  });
+});
