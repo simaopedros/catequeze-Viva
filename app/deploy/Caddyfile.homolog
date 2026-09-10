@@ -6,7 +6,8 @@
 
 (homolog_api) {
   request_body {
-    max_size 12MB
+    # 60 MB de vídeo da Comunidade + folga (sem Bunny Stream o ficheiro passa no Node).
+    max_size 64MB
   }
   reverse_proxy server:3001 {
     header_up Host {host}

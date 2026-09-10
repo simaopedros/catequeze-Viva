@@ -6,13 +6,24 @@ import { screenSocialText } from '../../shared/socialModeration';
 import {
   MAX_COMMENT_BODY_LENGTH,
   MAX_POST_BODY_LENGTH,
+  SHORT_VIDEO_MAX_SECONDS,
+  SOCIAL_BIO_MAX,
+  SOCIAL_HANDLE_MAX,
+  SOCIAL_HANDLE_MIN,
+  SOCIAL_HANDLE_PATTERN,
 } from '../../shared/socialConstants';
 
-export { MAX_COMMENT_BODY_LENGTH, MAX_POST_BODY_LENGTH };
+export {
+  MAX_COMMENT_BODY_LENGTH,
+  MAX_POST_BODY_LENGTH,
+  SHORT_VIDEO_MAX_SECONDS,
+  SOCIAL_BIO_MAX,
+};
 
 export type SocialMediaKind = 'IMAGE' | 'VIDEO';
 export type SocialPostKind = 'TEXT' | 'IMAGE' | 'VIDEO';
 export type SocialPostStatus = 'PUBLISHED' | 'PENDING_REVIEW' | 'REMOVED';
+export type SocialVideoFormat = 'SHORT' | 'LONG';
 
 /** URL-safe slug fragment from the post body, capped for readability. */
 export function slugifySocialTitle(body: string, maxLength = 60): string {
@@ -168,4 +179,71 @@ const CRAWLER_PATTERN =
 export function isLinkPreviewCrawler(userAgent: string | null | undefined): boolean {
   if (!userAgent) return false;
   return CRAWLER_PATTERN.test(userAgent);
+}
+
+/** A video is SHORT when every attached video is at most 180s. */
+export function resolveVideoFormat(
+  media: { kind: string; durationSeconds?: number | null }[],
+): SocialVideoFormat | null {
+  const videos = media.filter((item) => item.kind === 'VIDEO');
+  if (videos.length === 0) return null;
+  const maxDuration = Math.max(...videos.map((item) => item.durationSeconds ?? 0));
+  return maxDuration > SHORT_VIDEO_MAX_SECONDS ? 'LONG' : 'SHORT';
+}
+
+export function socialRecommendationScore(post: {
+  reactionCount?: number | null;
+  commentCount?: number | null;
+  shareCount?: number | null;
+  viewCount?: number | null;
+}): number {
+  return (
+    (post.reactionCount ?? 0) * 10 +
+    (post.commentCount ?? 0) * 5 +
+    (post.shareCount ?? 0) * 20 +
+    (post.viewCount ?? 0)
+  );
+}
+
+const RESERVED_SOCIAL_HANDLES = new Set([
+  'admin',
+  'comunidade',
+  'settings',
+  'login',
+  'signup',
+  'api',
+  'app',
+  'rhema',
+  'me',
+  'u',
+  'c',
+]);
+
+export function normalizeSocialHandle(raw: string): string {
+  return String(raw || '')
+    .trim()
+    .replace(/^@+/, '')
+    .toLowerCase();
+}
+
+/** Returns an error message, or null when the handle is usable (including empty = clear). */
+export function validateSocialHandle(handle: string): string | null {
+  if (!handle) return null;
+  if (handle.length < SOCIAL_HANDLE_MIN || handle.length > SOCIAL_HANDLE_MAX) {
+    return 'Use entre 3 e 30 caracteres.';
+  }
+  if (!SOCIAL_HANDLE_PATTERN.test(handle)) {
+    return 'Use apenas letras minúsculas, números e sublinhado.';
+  }
+  if (RESERVED_SOCIAL_HANDLES.has(handle)) {
+    return 'Este handle não está disponível.';
+  }
+  return null;
+}
+
+export function validateSocialBio(bio: string): string | null {
+  if (bio.length > SOCIAL_BIO_MAX) {
+    return `A bio pode ter no máximo ${SOCIAL_BIO_MAX} caracteres.`;
+  }
+  return null;
 }

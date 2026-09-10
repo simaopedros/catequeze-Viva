@@ -8,6 +8,9 @@ const MIME_TO_EXT: Record<string, string> = {
   "image/png": "png",
   "image/webp": "webp",
   "application/pdf": "pdf",
+  "video/mp4": "mp4",
+  "video/webm": "webm",
+  "video/quicktime": "mov",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
     "docx",
   "text/plain": "txt",
@@ -45,7 +48,10 @@ export function resolveUploadFilePath(s3Key: string): string | null {
   if (
     segments.some(
       (segment) =>
-        !segment || segment === "." || segment === ".." || !SAFE_KEY_SEGMENT.test(segment),
+        !segment ||
+        segment === "." ||
+        segment === ".." ||
+        !SAFE_KEY_SEGMENT.test(segment),
     )
   ) {
     return null;

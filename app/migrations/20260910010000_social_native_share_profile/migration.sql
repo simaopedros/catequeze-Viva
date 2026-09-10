@@ -1,14 +1,8 @@
--- Comunidade: native share snapshots, public @handle, bio, and block list.
+-- Delta after Rhema (`20260909220000_rhema_social`).
+-- Homolog already has User.socialHandle / socialBio — do not add a second handle.
+-- This migration only adds websiteUrl, native share snapshots, and P2P blocks.
 
--- ─── User public profile ─────────────────────────────────────────────────────
-
-ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "handle" TEXT;
-ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "bio" TEXT;
 ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "websiteUrl" TEXT;
-
-CREATE UNIQUE INDEX IF NOT EXISTS "User_handle_key" ON "User"("handle");
-
--- ─── Native share enum + table ───────────────────────────────────────────────
 
 DO $$ BEGIN
   CREATE TYPE "SocialShareKind" AS ENUM ('VERSE', 'CATECHISM', 'DOCUMENT', 'AI_ARTIFACT', 'DIRECTORY');
@@ -40,8 +34,6 @@ DO $$ BEGIN
 EXCEPTION
   WHEN duplicate_object THEN NULL;
 END $$;
-
--- ─── Block list ──────────────────────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS "SocialBlock" (
     "id" TEXT NOT NULL,

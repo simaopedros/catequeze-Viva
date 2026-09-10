@@ -1,6 +1,6 @@
 /**
- * Comunidade (social feed) surfaces: sidebar item, app page, public feed and
- * every write operation.
+ * Comunidade / Rhema (social feed) surfaces: sidebar item, app page, public
+ * feed, shorts, profiles and every write operation.
  *
  * Flip to false to park the module again: nav hides, routes should redirect,
  * queries answer empty and writes 404.

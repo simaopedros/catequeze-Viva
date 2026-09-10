@@ -8,6 +8,7 @@ import {
 } from "../../../client/components/brand/AppChrome";
 import { EmptyState } from "../../../client/components/EmptyState";
 import { Eye, Library } from "lucide-react";
+import { RhemaPreviewCard } from "./RhemaPreviewCard";
 
 interface ReviewerDashboardProps {
   stats: any;
@@ -62,6 +63,7 @@ export function ReviewerDashboard({ stats }: ReviewerDashboardProps) {
           description={t("no_pending_review_desc")}
         />
       )}
+      <RhemaPreviewCard />
     </div>
   );
 }

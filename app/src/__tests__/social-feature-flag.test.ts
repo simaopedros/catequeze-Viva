@@ -1,7 +1,7 @@
 /**
- * The Comunidade module is complete but parked behind SOCIAL_FEATURES_ENABLED.
- * These assertions follow the real flag, so they keep holding when we turn the
- * module back on.
+ * The Comunidade / Rhema module is gated by SOCIAL_FEATURES_ENABLED.
+ * These assertions follow the real flag, so they keep holding when we turn
+ * the module on or off.
  */
 import { describe, expect, it, vi } from 'vitest';
 

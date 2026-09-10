@@ -1,10 +1,9 @@
 /**
- * Comunidade.
+ * Comunidade / Rhema.
  *
- * The module is complete but parked behind SOCIAL_FEATURES_ENABLED, so the
- * suite follows the real flag: while it is off every route must redirect away
- * and the sidebar must not offer the item. Turning the flag on re-enables the
- * feed assertions without touching this file.
+ * The suite follows SOCIAL_FEATURES_ENABLED: while the flag is off every
+ * route must redirect away and the sidebar must not offer the item. With the
+ * flag on, the public feed, Shorts, Para você and public profiles are exercised.
  */
 import { test, expect, type Page } from "@playwright/test";
 import { SOCIAL_FEATURES_ENABLED } from "../../src/shared/socialFeatures";
@@ -129,5 +128,33 @@ test.describe("Comunidade — membro autenticado", () => {
     const following = page.getByRole("tab", { name: /de quem eu sigo/i });
     await following.click();
     await expect(following).toHaveAttribute("aria-selected", "true");
+  });
+
+  test("mostra as abas Para você e Shorts", async ({ page }) => {
+    await login(page, USERS.leadCatechist.email);
+
+    await page.goto("/app/comunidade");
+    await page.waitForLoadState("domcontentloaded");
+
+    const foryou = page.getByRole("tab", { name: /para você/i });
+    await expect(foryou).toBeVisible();
+    await foryou.click();
+    await expect(foryou).toHaveAttribute("aria-selected", "true");
+
+    const shorts = page.getByRole("tab", { name: /^shorts$/i });
+    await shorts.click();
+    await expect(shorts).toHaveAttribute("aria-selected", "true");
+  });
+});
+
+test.describe("Comunidade — perfil público", () => {
+  test.skip(!SOCIAL_FEATURES_ENABLED, "Comunidade está desabilitada");
+
+  test("handle inexistente mostra perfil não encontrado", async ({ page }) => {
+    await page.goto("/comunidade/u/handle-que-nao-existe");
+    await page.waitForLoadState("domcontentloaded");
+    await dismissCookieBanner(page);
+
+    await expect(page.getByText(/perfil não encontrado/i)).toBeVisible();
   });
 });

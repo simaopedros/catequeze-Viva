@@ -36,8 +36,8 @@ import {
 } from "wasp/client/operations";
 import { useLocale } from "../../i18n/useLocale";
 import { toast } from "../../client/hooks/use-toast";
+import { PastoralCompanion } from "../components/social/PastoralCompanion";
 import { ShareToCommunityButton } from "../components/social/ShareToCommunityButton";
-import { ScrollFade } from "../../client/components/ui/scroll-fade";
 
 // ── localStorage helpers ──
 
@@ -126,6 +126,7 @@ const SEARCH_SUGGESTIONS: Record<string, string[]> = {
 export default function BiblePage() {
   const { t } = useTranslation("bible");
   const { t: tc } = useTranslation("common");
+  const { t: ts } = useTranslation("social");
   const { currentLocale } = useLocale();
   const {
     data: books = [],
@@ -742,6 +743,41 @@ export default function BiblePage() {
               </Button>
             )}
 
+            {selectedChapter !== null && chapterData && (
+              <ShareToCommunityButton
+                draft={(() => {
+                  const verse = chapterData.verses?.find(
+                    (item: { number: number; id?: string }) =>
+                      item.number === highlightedVerse,
+                  );
+                  return verse?.id
+                    ? { kind: "VERSE" as const, sourceId: verse.id }
+                    : undefined;
+                })()}
+                body={(() => {
+                  const bookName =
+                    chapterData?.book?.name || selectedBook?.name || "";
+                  const verse = chapterData.verses?.find(
+                    (item: { number: number }) =>
+                      item.number === highlightedVerse,
+                  );
+                  if (verse) {
+                    return ts("share.bibleVerseBody", {
+                      reference: `${bookName} ${selectedChapter}:${verse.number}`,
+                      text: verse.text,
+                    });
+                  }
+                  return ts("share.bibleBody", {
+                    reference: `${bookName} ${selectedChapter}`,
+                  });
+                })()}
+                topic="biblia"
+                source="bible"
+                variant="ghost"
+                className="h-10 rounded-sm"
+              />
+            )}
+
             {mode === "read" && selectedChapter !== null && (
               <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
                 <SheetTrigger asChild>
@@ -777,6 +813,8 @@ export default function BiblePage() {
           </div>
         }
       />
+
+      <PastoralCompanion surface="bible" />
 
       {/* ── SEARCH MODE ── */}
       {mode === "search" && (
@@ -839,32 +877,30 @@ export default function BiblePage() {
               <p className="text-sm text-muted-foreground">
                 {t("results_count", { count: searchResults.length })}
               </p>
-              <ScrollFade maxHeight="min(70vh, 36rem)" className="space-y-2 pr-1">
-                {searchResults.map((v: any) => (
-                  <div
-                    key={v.id}
-                    className="flex items-start gap-2 rounded-sm border border-border/70 p-3 text-sm transition-colors hover:border-brand-ink/30 hover:bg-muted/20"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => openSearchResult(v)}
-                      className="group min-w-0 flex-1 text-left"
-                    >
-                      <p className="mb-1 text-xs font-semibold tracking-tight text-brand-ink group-hover:underline">
-                        {v.chapter?.book?.name} {v.chapter?.number}:{v.number}
-                      </p>
-                      <p className="line-clamp-3">{v.text}</p>
-                    </button>
-                    <ShareToCommunityButton
-                      draft={{ kind: "VERSE", sourceId: v.id }}
-                      size="icon"
-                      variant="ghost"
-                      className="h-8 w-8 shrink-0"
-                      label={t("share_verse")}
-                    />
-                  </div>
-                ))}
-              </ScrollFade>
+              {searchResults.map((v: any) => (
+                <div
+                  key={v.id}
+                  className="flex items-start gap-2 rounded-sm border border-border/70 p-3 text-sm transition-colors hover:border-brand-ink/30 hover:bg-muted/20"
+                >
+                <button
+                  type="button"
+                  onClick={() => openSearchResult(v)}
+                  className="group min-w-0 flex-1 text-left"
+                >
+                  <p className="mb-1 text-xs font-semibold tracking-tight text-brand-ink group-hover:underline">
+                    {v.chapter?.book?.name} {v.chapter?.number}:{v.number}
+                  </p>
+                  <p className="line-clamp-3">{v.text}</p>
+                </button>
+                  <ShareToCommunityButton
+                    draft={{ kind: "VERSE", sourceId: v.id }}
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8 shrink-0"
+                    label={t("share_verse")}
+                  />
+                </div>
+              ))}
             </div>
           )}
 
@@ -1024,22 +1060,24 @@ export default function BiblePage() {
                             className="h-7 w-7"
                             label={t("share_verse")}
                           />
-                          <button
-                            type="button"
-                            onClick={() => toggleVerseFavorite(v.number)}
-                            className={isFav ? "opacity-100" : ""}
-                            title={
-                              isFav ? "Remover favorito" : "Adicionar favorito"
-                            }
-                          >
-                            <Bookmark
-                              className={`h-4 w-4 ${
-                                isFav
-                                  ? "text-brand-gold fill-brand-gold"
-                                  : "text-muted-foreground hover:text-brand-gold"
-                              }`}
-                            />
-                          </button>
+                        <button
+                          type="button"
+                          onClick={() => toggleVerseFavorite(v.number)}
+                          className={`flex-shrink-0 mt-0.5 ${
+                            isFav ? "opacity-100" : ""
+                          }`}
+                          title={
+                            isFav ? "Remover favorito" : "Adicionar favorito"
+                          }
+                        >
+                          <Bookmark
+                            className={`h-4 w-4 ${
+                              isFav
+                                ? "text-brand-gold fill-brand-gold"
+                                : "text-muted-foreground hover:text-brand-gold"
+                            }`}
+                          />
+                        </button>
                         </div>
                       </div>
                     );

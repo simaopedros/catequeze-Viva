@@ -25,6 +25,7 @@ import { MyClassesCard } from "./MyClassesCard";
 import { UpcomingBirthdaysCard } from "./UpcomingBirthdaysCard";
 import { QuickActionsGrid } from "./QuickActionsGrid";
 import { RecentMeetingsList } from "./RecentMeetingsList";
+import { RhemaPreviewCard } from "./RhemaPreviewCard";
 
 interface CoordinatorDashboardProps {
   stats: any;
@@ -168,6 +169,8 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
           {/* 3) What needs doing now */}
           <NextActionsPanel actions={actions} facts={facts} />
 
+          <RhemaPreviewCard />
+
           {/* 4) Context numbers, secondary to the actions */}
           <MyCatechesisMetrics stats={stats} />
 
@@ -215,6 +218,7 @@ export function CoordinatorDashboard({ stats }: CoordinatorDashboardProps) {
         <div className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
           <FirstStepsPanel />
           <div className="space-y-5">
+            <RhemaPreviewCard />
             <PastoralAlerts alerts={stats?.recentAlerts ?? []} />
             <AppPanel density="compact" className="space-y-3">
               <AppEyebrow>{t("how_to_start")}</AppEyebrow>

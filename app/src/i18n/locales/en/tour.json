@@ -8,6 +8,10 @@
       "title": "Dashboard",
       "description": "See a summary of your catechesis: active catechumens, classes, average attendance, and pending items."
     },
+    "community": {
+      "title": "Community · Rhema",
+      "description": "The catechesis network: testimonies, shorts, and what happens in class. Share from meetings, the library, and Scripture."
+    },
     "classes": {
       "title": "Classes",
       "description": "Manage your classes, catechists, and meetings. Each class has its own calendar and attendance records."

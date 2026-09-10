@@ -21,6 +21,16 @@
   "saving": "Saving...",
   "saved": "Saved!",
   "save_profile_error": "Error saving profile.",
+  "rhema": {
+    "title": "Rhema",
+    "hint": "Your public Community profile. The handle appears as @name.",
+    "handle": "Handle",
+    "handle_placeholder": "your_handle",
+    "bio": "Bio",
+    "bio_placeholder": "A short line about your catechesis",
+    "open_profile": "View Community profile",
+    "open_community": "Open Community"
+  },
   "change_password": "Change password",
   "current_password": "Current password",
   "new_password": "New password",

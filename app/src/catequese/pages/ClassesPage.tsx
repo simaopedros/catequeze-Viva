@@ -45,6 +45,7 @@ import {
   AppEyebrow,
   AppGoldRule,
 } from "../../client/components/brand/AppChrome";
+import { PastoralCompanion } from "../components/social/PastoralCompanion";
 
 const PAGE_SIZE = 50;
 
@@ -217,6 +218,8 @@ export default function ClassesPage() {
           },
         ]}
       />
+
+      <PastoralCompanion surface="classes" />
 
       <div className="flex snap-x gap-2 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 sm:gap-3 sm:overflow-visible">
         <AppMetric

@@ -44,8 +44,8 @@ import {
 } from "../../client/components/brand/AppChrome";
 import { ImportContentModal } from "../components/content/ImportContentModal";
 import { OriginBadge } from "../components/OriginBadge";
+import { PastoralCompanion } from "../components/social/PastoralCompanion";
 import { ShareToCommunityButton } from "../components/social/ShareToCommunityButton";
-import { ScrollFade } from "../../client/components/ui/scroll-fade";
 
 const STATUS_KEYS = [
   "all",
@@ -323,6 +323,8 @@ export default function ContentLibraryPage() {
         }
       />
 
+      <PastoralCompanion surface="library" />
+
       <div
         className={
           AI_FEATURES_ENABLED
@@ -515,7 +517,7 @@ export default function ContentLibraryPage() {
               <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
           </div>
-          <ScrollFade maxHeight="min(70vh, 40rem)" className="overflow-x-auto">
+          <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/20 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
@@ -603,10 +605,9 @@ export default function ContentLibraryPage() {
                 ))}
               </tbody>
             </table>
-          </ScrollFade>
+          </div>
         </section>
       ) : (
-        <ScrollFade maxHeight="min(80vh, 56rem)" className="pr-1">
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((item: any) => (
             <Link
@@ -708,7 +709,6 @@ export default function ContentLibraryPage() {
             </Link>
           ))}
         </div>
-        </ScrollFade>
       )}
 
       {hasMore && (

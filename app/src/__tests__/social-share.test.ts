@@ -1,11 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildCatechismHref,
+  buildCommunitySharePath,
   buildDirectoryHref,
   buildDocumentHref,
+  buildNativeSharePath,
   buildVerseHref,
   excerptFromHtml,
   isSocialShareKind,
+  parseCommunityShareSearch,
+  parseNativeShareSearch,
   sanitizeShareText,
 } from '../shared/socialShare';
 import { validateSocialPostDraft } from '../server/operations/socialPolicies';
@@ -61,5 +65,29 @@ describe('validateSocialPostDraft with native share', () => {
         hasShare: false,
       }),
     ).toMatch(/Escreva algo/);
+  });
+});
+
+describe('share query helpers coexist', () => {
+  it('parses Rhema text drafts and native source drafts separately', () => {
+    const rhema = buildCommunitySharePath({
+      body: 'Palavra de hoje',
+      topic: 'biblia',
+      source: 'bible',
+    });
+    expect(parseCommunityShareSearch(rhema.split('?')[1])).toEqual({
+      body: 'Palavra de hoje',
+      topic: 'biblia',
+      source: 'bible',
+    });
+    expect(parseNativeShareSearch(rhema.split('?')[1])).toBeNull();
+
+    const native = buildNativeSharePath({ kind: 'VERSE', sourceId: 'verse-1' });
+    expect(native).toBe('/app/comunidade?share=VERSE&sourceId=verse-1');
+    expect(parseNativeShareSearch(native.split('?')[1])).toEqual({
+      kind: 'VERSE',
+      sourceId: 'verse-1',
+    });
+    expect(parseCommunityShareSearch(native.split('?')[1])).toBeNull();
   });
 });

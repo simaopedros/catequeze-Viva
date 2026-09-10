@@ -108,7 +108,8 @@ app OpenSaaS {
 
   db: {
     seeds: [
-      import { seedPricingCatalog } from "@src/server/scripts/seedPricingCatalog"
+      import { seedPricingCatalog } from "@src/server/scripts/seedPricingCatalog",
+      import { seedSocialTopics } from "@src/server/scripts/seedSocialTopics"
     ]
   },
 }
@@ -355,6 +356,12 @@ page AppCommunityPage {
   component: import CommunityPage from "@src/catequese/pages/CommunityPage"
 }
 
+route AppSocialProfileRoute { path: "/app/comunidade/u/:handle", to: AppSocialProfilePage }
+page AppSocialProfilePage {
+  authRequired: true,
+  component: import SocialProfilePage from "@src/catequese/pages/SocialProfilePage"
+}
+
 route PublicCommunityRoute { path: "/comunidade", to: PublicCommunityPage }
 page PublicCommunityPage {
   authRequired: false,
@@ -371,6 +378,12 @@ route PublicSocialPostRoute { path: "/comunidade/p/:slug", to: PublicSocialPostP
 page PublicSocialPostPage {
   authRequired: false,
   component: import PublicSocialPostPage from "@src/catequese/pages/PublicSocialPostPage"
+}
+
+route PublicCommunityProfileRoute { path: "/comunidade/u/:handle", to: PublicCommunityProfilePage }
+page PublicCommunityProfilePage {
+  authRequired: false,
+  component: import SocialProfilePage from "@src/catequese/pages/SocialProfilePage"
 }
 
 route SocialShortLinkRoute { path: "/c/:slug", to: SocialShortLinkPage }
@@ -1545,6 +1558,14 @@ api uploadSocialImage {
   entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese]
 }
 
+api uploadSocialVideo {
+  fn: import { uploadSocialVideo } from "@src/server/api/socialMedia",
+  middlewareConfigFn: import { socialVideoUploadMiddleware } from "@src/server/api/socialMedia",
+  auth: true,
+  httpRoute: (POST, "/api/social/videos"),
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese]
+}
+
 api serveSocialMedia {
   fn: import { serveSocialMedia } from "@src/server/api/socialMedia",
   middlewareConfigFn: import { serveSocialMediaMiddleware } from "@src/server/api/socialMedia",
@@ -1673,7 +1694,7 @@ action discardSocialMedia {
 // anonymous visitors get the same published feed as members.
 query getSocialFeed {
   fn: import { getSocialFeed } from "@src/server/operations/socialOperations",
-  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, SocialFollow, SocialBlock, SocialShare, User, Parish]
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, SocialFollow, SocialBlock, SocialShare, SocialVideoWatch, User, Parish]
 }
 
 query getSocialPost {
@@ -1684,6 +1705,11 @@ query getSocialPost {
 query getSocialTopics {
   fn: import { getSocialTopics } from "@src/server/operations/socialOperations",
   entities: [SocialTopic]
+}
+
+query getSocialCommunityPulse {
+  fn: import { getSocialCommunityPulse } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialTopic, SocialPostTopic, User]
 }
 
 query getSocialComments {
@@ -1704,6 +1730,11 @@ action createSocialPost {
 query previewSocialShare {
   fn: import { previewSocialShare } from "@src/server/operations/socialShareResolve",
   entities: [BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, ContentItem, Membership, Parish]
+}
+
+action recordSocialWatch {
+  fn: import { recordSocialWatch } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialVideoWatch, User]
 }
 
 action deleteSocialPost {
@@ -1773,6 +1804,11 @@ query getSocialBlockState {
 query listMySocialBlocks {
   fn: import { listMySocialBlocks } from "@src/server/operations/socialProfileOperations",
   entities: [SocialBlock, User]
+}
+
+query searchSocial {
+  fn: import { searchSocial } from "@src/server/operations/socialDiscoveryOperations",
+  entities: [User, SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, Parish]
 }
 //#endregion
 

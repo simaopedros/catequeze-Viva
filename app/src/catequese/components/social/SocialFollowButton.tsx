@@ -28,7 +28,10 @@ export function SocialFollowButton({
           : t("discovery.unfollowSuccess", { name: authorName }),
       });
     } catch (error: any) {
-      toast({ title: error?.message || t("discovery.follow"), variant: "destructive" });
+      toast({
+        title: error?.message || t("discovery.follow"),
+        variant: "destructive",
+      });
     } finally {
       setBusy(false);
     }

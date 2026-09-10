@@ -5,31 +5,33 @@
  * so anonymous visitors get the same public feed as members. Writes go through
  * assertCanPublishSocial, which requires an active subscription.
  */
-import { randomUUID } from 'node:crypto';
-import { HttpError } from 'wasp/server';
-import { MAX_TOPICS_PER_POST } from '../../shared/socialConstants';
-import { buildSocialImageUrl } from '../storage/socialMediaStorage';
-import { buildBunnyEmbedUrl } from '../storage/bunnyStream';
+import { randomUUID } from "node:crypto";
+import { HttpError } from "wasp/server";
+import { MAX_TOPICS_PER_POST } from "../../shared/socialConstants";
+import { buildSocialImageUrl } from "../storage/socialMediaStorage";
+import { buildBunnyEmbedUrl } from "../storage/bunnyStream";
 import {
   assertCanPublishSocial,
   assertMediaWithinPlan,
   resolveSocialEntitlement,
   startOfDayUtc,
-} from '../social/publishGate';
-import { notifySocialActivity } from '../social/notifications';
-import { assertSocialEnabled, isSocialEnabled } from '../social/featureGate';
-import { detachSocialMediaAsset } from './socialMediaOperations';
-import { buildAuthorDisplayName } from './socialAuthor';
-import { collectHiddenAuthorIds } from '../../shared/socialBlock';
-import { parseShareDraft, resolveSocialShare } from './socialShareResolve';
+} from "../social/publishGate";
+import { notifySocialActivity } from "../social/notifications";
+import { assertSocialEnabled, isSocialEnabled } from "../social/featureGate";
+import { detachSocialMediaAsset } from "./socialMediaOperations";
+import { buildAuthorDisplayName } from "./socialAuthor";
+import { collectHiddenAuthorIds } from "../../shared/socialBlock";
+import { parseShareDraft, resolveSocialShare } from "./socialShareResolve";
 import {
   buildSocialSlug,
   resolveInitialStatus,
   resolvePostKind,
+  resolveVideoFormat,
   sanitizeSocialBody,
+  socialRecommendationScore,
   validateSocialCommentDraft,
   validateSocialPostDraft,
-} from './socialPolicies';
+} from "./socialPolicies";
 
 export { buildAuthorDisplayName } from './socialAuthor';
 
@@ -45,7 +47,7 @@ const PUBLIC_AUTHOR_SELECT = {
   firstName: true,
   lastName: true,
   avatarUrl: true,
-  handle: true,
+  socialHandle: true,
 } as const;
 
 const PUBLIC_MEDIA_SELECT = {
@@ -67,7 +69,7 @@ const PUBLIC_MEDIA_SELECT = {
 async function resolveActorName(context: any): Promise<string> {
   const actor = await context.entities.User.findUnique({
     where: { id: context.user.id },
-    select: { firstName: true, lastName: true, handle: true },
+    select: { firstName: true, lastName: true, socialHandle: true },
   });
   return buildAuthorDisplayName(actor ?? {});
 }
@@ -83,15 +85,22 @@ function serializeMedia(media: any) {
     height: media.height,
     durationSeconds: media.durationSeconds,
     thumbnailUrl: media.thumbnailUrl,
-    imageUrl: media.kind === 'IMAGE' ? buildSocialImageUrl(media.id, media.storageKey) : null,
+    imageUrl:
+      media.kind === "IMAGE"
+        ? buildSocialImageUrl(media.id, media.storageKey)
+        : null,
+    videoUrl:
+      media.kind === "VIDEO" && media.storageKey
+        ? buildSocialImageUrl(media.id, media.storageKey)
+        : null,
     embedUrl:
-      media.kind === 'VIDEO' && media.bunnyLibraryId && media.bunnyVideoId
+      media.kind === "VIDEO" && media.bunnyLibraryId && media.bunnyVideoId
         ? buildBunnyEmbedUrl(media.bunnyLibraryId, media.bunnyVideoId)
         : null,
   };
 }
 
-function serializePost(post: any, viewerId?: string | null) {
+export function serializePost(post: any, viewerId?: string | null) {
   return {
     id: post.id,
     slug: post.slug,
@@ -105,9 +114,10 @@ function serializePost(post: any, viewerId?: string | null) {
     shareCount: post.shareCount,
     author: {
       id: post.author.id,
-      handle: post.author.handle ?? null,
+      handle: post.author.socialHandle ?? null,
       displayName: buildAuthorDisplayName(post.author),
       avatarUrl: post.author.avatarUrl,
+      socialHandle: post.author.socialHandle ?? null,
     },
     parish: post.parish ? { id: post.parish.id, name: post.parish.name } : null,
     share: post.share
@@ -128,6 +138,7 @@ function serializePost(post: any, viewerId?: string | null) {
     })),
     viewerReaction: viewerId ? post.reactions?.[0]?.type ?? null : null,
     isOwn: Boolean(viewerId && post.author.id === viewerId),
+    videoFormat: post.videoFormat ?? null,
   };
 }
 
@@ -136,7 +147,10 @@ function postInclude(viewerId?: string | null) {
     author: { select: PUBLIC_AUTHOR_SELECT },
     parish: { select: { id: true, name: true } },
     share: true,
-    media: { select: PUBLIC_MEDIA_SELECT, orderBy: { position: 'asc' as const } },
+    media: {
+      select: PUBLIC_MEDIA_SELECT,
+      orderBy: { position: "asc" as const },
+    },
     topics: { select: { topic: { select: { slug: true, name: true } } } },
     ...(viewerId
       ? {
@@ -163,17 +177,23 @@ export const getSocialFeed = async (
     topicSlug?: string | null;
     authorId?: string | null;
     /** `trending` ranks by engagement inside the trending window. */
-    sort?: 'recent' | 'trending';
+    sort?: "recent" | "trending" | "foryou";
     /** Restrict to authors the viewer follows (ignored when anonymous). */
     following?: boolean;
+    /** Restrict to Rhema shorts or long-form video posts. */
+    videoFormat?: "SHORT" | "LONG" | null;
   },
   context: any,
 ) => {
   if (!isSocialEnabled()) return { items: [], nextCursor: null };
 
-  const limit = Math.min(Math.max(args?.limit ?? DEFAULT_PAGE_SIZE, 1), MAX_PAGE_SIZE);
+  const limit = Math.min(
+    Math.max(args?.limit ?? DEFAULT_PAGE_SIZE, 1),
+    MAX_PAGE_SIZE,
+  );
   const viewerId = context.user?.id ?? null;
-  const trending = args?.sort === 'trending';
+  const trending = args?.sort === "trending";
+  const foryou = args?.sort === "foryou";
 
   let followedAuthorIds: string[] | null = null;
   if (args?.following && viewerId) {
@@ -197,17 +217,34 @@ export const getSocialFeed = async (
     return { items: [], nextCursor: null };
   }
 
+  let watchedPostIds: string[] = [];
+  if (foryou && viewerId) {
+    const watches = await context.entities.SocialVideoWatch.findMany({
+      where: { userId: viewerId },
+      select: { postId: true },
+      orderBy: { updatedAt: "desc" },
+      take: 500,
+    });
+    watchedPostIds = watches.map((watch: any) => watch.postId);
+  }
+
   const authorFilter: any = {};
   if (args?.authorId) authorFilter.equals = args.authorId;
   if (followedAuthorIds) authorFilter.in = followedAuthorIds;
   if (hiddenAuthorIds.length > 0) authorFilter.notIn = hiddenAuthorIds;
 
   const where: any = {
-    status: 'PUBLISHED',
-    ...(args?.topicSlug ? { topics: { some: { topic: { slug: args.topicSlug } } } } : {}),
+    status: "PUBLISHED",
+    ...(args?.topicSlug
+      ? { topics: { some: { topic: { slug: args.topicSlug } } } }
+      : {}),
     ...(Object.keys(authorFilter).length > 0 ? { authorId: authorFilter } : {}),
-    ...(trending
+    ...(args?.videoFormat ? { videoFormat: args.videoFormat } : {}),
+    ...(trending || (foryou && watchedPostIds.length === 0)
       ? { publishedAt: { gte: new Date(Date.now() - TRENDING_WINDOW_MS) } }
+      : {}),
+    ...(foryou && watchedPostIds.length > 0
+      ? { id: { notIn: watchedPostIds } }
       : {}),
   };
 
@@ -215,17 +252,43 @@ export const getSocialFeed = async (
     return { items: [], nextCursor: null };
   }
 
+  if (foryou) {
+    const windowSize = Math.min(MAX_PAGE_SIZE * 4, 80);
+    const candidates = await context.entities.SocialPost.findMany({
+      where,
+      include: postInclude(viewerId),
+      take: windowSize,
+      orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
+    });
+    const ranked = [...candidates].sort((a: any, b: any) => {
+      const delta = socialRecommendationScore(b) - socialRecommendationScore(a);
+      return delta !== 0 ? delta : String(b.id).localeCompare(String(a.id));
+    });
+    let start = 0;
+    if (args?.cursor) {
+      const index = ranked.findIndex((post: any) => post.id === args.cursor);
+      start = index >= 0 ? index + 1 : 0;
+    }
+    const page = ranked.slice(start, start + limit);
+    return {
+      items: page.map((post: any) => serializePost(post, viewerId)),
+      nextCursor: ranked[start + limit]
+        ? page[page.length - 1]?.id ?? null
+        : null,
+    };
+  }
+
   const posts = await context.entities.SocialPost.findMany({
     where,
     include: postInclude(viewerId),
     orderBy: trending
       ? [
-          { reactionCount: 'desc' },
-          { commentCount: 'desc' },
-          { shareCount: 'desc' },
-          { id: 'desc' },
+          { reactionCount: "desc" },
+          { commentCount: "desc" },
+          { shareCount: "desc" },
+          { id: "desc" },
         ]
-      : [{ publishedAt: 'desc' }, { id: 'desc' }],
+      : [{ publishedAt: "desc" }, { id: "desc" }],
     take: limit + 1,
     ...(args?.cursor ? { cursor: { id: args.cursor }, skip: 1 } : {}),
   });
@@ -246,18 +309,20 @@ export const getSocialPost = async (args: { slug: string }, context: any) => {
   const viewerId = context.user?.id ?? null;
 
   const post = await context.entities.SocialPost.findUnique({
-    where: { slug: String(args?.slug || '') },
+    where: { slug: String(args?.slug || "") },
     include: postInclude(viewerId),
   });
 
   if (!post) {
-    throw new HttpError(404, 'Publicação não encontrada.');
+    throw new HttpError(404, "Publicação não encontrada.");
   }
 
   const isVisible =
-    post.status === 'PUBLISHED' || post.author.id === viewerId || context.user?.isAdmin;
+    post.status === "PUBLISHED" ||
+    post.author.id === viewerId ||
+    context.user?.isAdmin;
   if (!isVisible) {
-    throw new HttpError(404, 'Publicação não encontrada.');
+    throw new HttpError(404, "Publicação não encontrada.");
   }
 
   return serializePost(post, viewerId);
@@ -268,10 +333,74 @@ export const getSocialTopics = async (_args: unknown, context: any) => {
 
   const topics = await context.entities.SocialTopic.findMany({
     where: { active: true },
-    orderBy: [{ position: 'asc' }, { name: 'asc' }],
+    orderBy: [{ position: "asc" }, { name: "asc" }],
     select: { slug: true, name: true, nameEn: true, nameEs: true },
   });
   return topics;
+};
+
+export const getSocialCommunityPulse = async (_args: unknown, context: any) => {
+  if (!isSocialEnabled()) {
+    return { memberCount: 0, members: [], topics: [] };
+  }
+
+  const [authors, recent, topics] = await Promise.all([
+    context.entities.SocialPost.findMany({
+      where: { status: "PUBLISHED" },
+      distinct: ["authorId"],
+      select: { authorId: true },
+    }),
+    context.entities.SocialPost.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
+      take: 24,
+      select: { author: { select: PUBLIC_AUTHOR_SELECT } },
+    }),
+    context.entities.SocialTopic.findMany({
+      where: { active: true },
+      orderBy: [{ position: "asc" }, { name: "asc" }],
+      select: {
+        slug: true,
+        name: true,
+        nameEn: true,
+        nameEs: true,
+        _count: { select: { posts: true } },
+      },
+    }),
+  ]);
+
+  const seen = new Set<string>();
+  const members: {
+    id: string;
+    displayName: string;
+    avatarUrl: string | null;
+    socialHandle: string | null;
+  }[] = [];
+
+  for (const post of recent) {
+    const author = post.author;
+    if (!author || seen.has(author.id)) continue;
+    seen.add(author.id);
+    members.push({
+      id: author.id,
+      displayName: buildAuthorDisplayName(author),
+      avatarUrl: author.avatarUrl ?? null,
+      socialHandle: author.socialHandle ?? null,
+    });
+    if (members.length >= 6) break;
+  }
+
+  return {
+    memberCount: authors.length,
+    members,
+    topics: topics.map((topic: any) => ({
+      slug: topic.slug,
+      name: topic.name,
+      nameEn: topic.nameEn,
+      nameEs: topic.nameEs,
+      postCount: topic._count?.posts ?? 0,
+    })),
+  };
 };
 
 /** Comments of a published post, oldest first. Open to anonymous readers. */
@@ -281,24 +410,31 @@ export const getSocialComments = async (
 ) => {
   assertSocialEnabled();
 
-  const limit = Math.min(Math.max(args?.limit ?? DEFAULT_PAGE_SIZE, 1), MAX_PAGE_SIZE);
+  const limit = Math.min(
+    Math.max(args?.limit ?? DEFAULT_PAGE_SIZE, 1),
+    MAX_PAGE_SIZE,
+  );
   const viewerId = context.user?.id ?? null;
 
   const post = await context.entities.SocialPost.findUnique({
-    where: { id: String(args?.postId || '') },
+    where: { id: String(args?.postId || "") },
     select: { id: true, status: true, authorId: true },
   });
   if (!post) {
-    throw new HttpError(404, 'Publicação não encontrada.');
+    throw new HttpError(404, "Publicação não encontrada.");
   }
-  if (post.status !== 'PUBLISHED' && post.authorId !== viewerId && !context.user?.isAdmin) {
-    throw new HttpError(404, 'Publicação não encontrada.');
+  if (
+    post.status !== "PUBLISHED" &&
+    post.authorId !== viewerId &&
+    !context.user?.isAdmin
+  ) {
+    throw new HttpError(404, "Publicação não encontrada.");
   }
 
   const comments = await context.entities.SocialComment.findMany({
-    where: { postId: post.id, status: 'PUBLISHED' },
+    where: { postId: post.id, status: "PUBLISHED" },
     include: { author: { select: PUBLIC_AUTHOR_SELECT } },
-    orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+    orderBy: [{ createdAt: "asc" }, { id: "asc" }],
     take: limit + 1,
     ...(args?.cursor ? { cursor: { id: args.cursor }, skip: 1 } : {}),
   });
@@ -314,7 +450,7 @@ export const getSocialComments = async (
       parentId: comment.parentId,
       author: {
         id: comment.author.id,
-        handle: comment.author.handle ?? null,
+        handle: comment.author.socialHandle ?? null,
         displayName: buildAuthorDisplayName(comment.author),
         avatarUrl: comment.author.avatarUrl,
       },
@@ -330,11 +466,21 @@ export const getSocialComments = async (
  */
 export const getSocialPublishAccess = async (_args: unknown, context: any) => {
   if (!isSocialEnabled()) {
-    return { authenticated: false, canPublish: false, plan: 'catechist_free', reason: null };
+    return {
+      authenticated: false,
+      canPublish: false,
+      plan: "catechist_free",
+      reason: null,
+    };
   }
 
   if (!context.user) {
-    return { authenticated: false, canPublish: false, plan: 'catechist_free', reason: 'anonymous' };
+    return {
+      authenticated: false,
+      canPublish: false,
+      plan: "catechist_free",
+      reason: "anonymous",
+    };
   }
 
   const entitlement = await resolveSocialEntitlement(context, context.user.id);
@@ -355,7 +501,8 @@ export const getSocialPublishAccess = async (_args: unknown, context: any) => {
 
   return {
     authenticated: true,
-    canPublish: entitlement.canPublish && !banned?.socialBannedAt && quotaLeft !== 0,
+    canPublish:
+      entitlement.canPublish && !banned?.socialBannedAt && quotaLeft !== 0,
     banned: Boolean(banned?.socialBannedAt),
     plan: entitlement.plan,
     source: entitlement.source,
@@ -363,11 +510,11 @@ export const getSocialPublishAccess = async (_args: unknown, context: any) => {
     postsToday,
     quotaLeft,
     reason: !entitlement.canPublish
-      ? 'subscription'
+      ? "subscription"
       : banned?.socialBannedAt
-        ? 'banned'
+        ? "banned"
         : quotaLeft === 0
-          ? 'quota'
+          ? "quota"
           : null,
   };
 };
@@ -387,8 +534,10 @@ export const createSocialPost = async (
 ) => {
   const entitlement = await assertCanPublishSocial(context);
 
-  const mediaIds = Array.isArray(args.mediaIds) ? [...new Set(args.mediaIds)] : [];
-  const body = sanitizeSocialBody(args.body || '');
+  const mediaIds = Array.isArray(args.mediaIds)
+    ? [...new Set(args.mediaIds)]
+    : [];
+  const body = sanitizeSocialBody(args.body || "");
   const shareDraft = args.share ? parseShareDraft(args.share) : null;
   const share = shareDraft ? await resolveSocialShare(shareDraft, context) : null;
 
@@ -404,16 +553,26 @@ export const createSocialPost = async (
 
   const media = mediaIds.length
     ? await context.entities.SocialMedia.findMany({
-        where: { id: { in: mediaIds }, uploaderId: context.user.id, postId: null },
+        where: {
+          id: { in: mediaIds },
+          uploaderId: context.user.id,
+          postId: null,
+        },
         select: { id: true, kind: true, status: true, durationSeconds: true },
       })
     : [];
 
   if (media.length !== mediaIds.length) {
-    throw new HttpError(400, 'Alguma mídia não está disponível. Envie novamente.');
+    throw new HttpError(
+      400,
+      "Alguma mídia não está disponível. Envie novamente.",
+    );
   }
-  if (media.some((item: any) => item.status === 'FAILED')) {
-    throw new HttpError(400, 'Uma das mídias falhou no processamento. Remova-a e tente de novo.');
+  if (media.some((item: any) => item.status === "FAILED")) {
+    throw new HttpError(
+      400,
+      "Uma das mídias falhou no processamento. Remova-a e tente de novo.",
+    );
   }
 
   assertMediaWithinPlan(entitlement, media as any);
@@ -432,7 +591,11 @@ export const createSocialPost = async (
   let parishId: string | null = null;
   if (args.parishId) {
     const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, parishId: args.parishId, status: 'ACTIVE' },
+      where: {
+        userId: context.user.id,
+        parishId: args.parishId,
+        status: "ACTIVE",
+      },
       select: { id: true },
     });
     if (membership) parishId = args.parishId;
@@ -448,8 +611,9 @@ export const createSocialPost = async (
       parishId,
       body,
       kind: resolvePostKind(media as any),
+      videoFormat: resolveVideoFormat(media as any),
       status,
-      publishedAt: status === 'PUBLISHED' ? new Date() : null,
+      publishedAt: status === "PUBLISHED" ? new Date() : null,
       mediaConsentAckAt: mediaIds.length ? new Date() : null,
       topics: topics.length
         ? { create: topics.map((topic: any) => ({ topicId: topic.id })) }
@@ -485,27 +649,32 @@ export const createSocialPost = async (
   return { id: post.id, slug: post.slug, status: post.status };
 };
 
-export const deleteSocialPost = async (args: { postId: string }, context: any) => {
+export const deleteSocialPost = async (
+  args: { postId: string },
+  context: any,
+) => {
   assertSocialEnabled();
 
   if (!context.user) {
-    throw new HttpError(401, 'Você precisa estar autenticado.');
+    throw new HttpError(401, "Você precisa estar autenticado.");
   }
 
   const post = await context.entities.SocialPost.findUnique({
-    where: { id: String(args?.postId || '') },
+    where: { id: String(args?.postId || "") },
     select: {
       id: true,
       authorId: true,
-      media: { select: { id: true, kind: true, storageKey: true, bunnyVideoId: true } },
+      media: {
+        select: { id: true, kind: true, storageKey: true, bunnyVideoId: true },
+      },
     },
   });
 
   if (!post) {
-    throw new HttpError(404, 'Publicação não encontrada.');
+    throw new HttpError(404, "Publicação não encontrada.");
   }
   if (post.authorId !== context.user.id && !context.user.isAdmin) {
-    throw new HttpError(403, 'Você só pode remover as suas publicações.');
+    throw new HttpError(403, "Você só pode remover as suas publicações.");
   }
 
   for (const media of post.media) {
@@ -518,33 +687,38 @@ export const deleteSocialPost = async (args: { postId: string }, context: any) =
 };
 
 export const toggleSocialReaction = async (
-  args: { postId: string; type?: 'AMEM' | 'REZO' | 'ALELUIA' },
+  args: { postId: string; type?: "AMEM" | "REZO" | "ALELUIA" },
   context: any,
 ) => {
   await assertCanPublishSocial(context, { skipQuota: true });
 
   const post = await context.entities.SocialPost.findUnique({
-    where: { id: String(args?.postId || '') },
+    where: { id: String(args?.postId || "") },
     select: { id: true, status: true, slug: true, authorId: true },
   });
-  if (!post || post.status !== 'PUBLISHED') {
-    throw new HttpError(404, 'Publicação não encontrada.');
+  if (!post || post.status !== "PUBLISHED") {
+    throw new HttpError(404, "Publicação não encontrada.");
   }
 
-  const type = args.type || 'AMEM';
+  const type = args.type || "AMEM";
   const existing = await context.entities.SocialReaction.findUnique({
     where: { postId_userId: { postId: post.id, userId: context.user.id } },
     select: { id: true, type: true },
   });
 
   if (existing && existing.type === type) {
-    await context.entities.SocialReaction.delete({ where: { id: existing.id } });
+    await context.entities.SocialReaction.delete({
+      where: { id: existing.id },
+    });
     const updated = await context.entities.SocialPost.update({
       where: { id: post.id },
       data: { reactionCount: { decrement: 1 } },
       select: { reactionCount: true },
     });
-    return { reaction: null, reactionCount: Math.max(0, updated.reactionCount) };
+    return {
+      reaction: null,
+      reactionCount: Math.max(0, updated.reactionCount),
+    };
   }
 
   if (existing) {
@@ -571,7 +745,7 @@ export const toggleSocialReaction = async (
   await notifySocialActivity(context, {
     recipientId: post.authorId,
     actorName: await resolveActorName(context),
-    event: 'REACTION',
+    event: "REACTION",
     postId: post.id,
     postSlug: post.slug,
   });
@@ -586,14 +760,14 @@ export const createSocialComment = async (
   await assertCanPublishSocial(context, { skipQuota: true });
 
   const post = await context.entities.SocialPost.findUnique({
-    where: { id: String(args?.postId || '') },
+    where: { id: String(args?.postId || "") },
     select: { id: true, status: true, slug: true, authorId: true },
   });
-  if (!post || post.status !== 'PUBLISHED') {
-    throw new HttpError(404, 'Publicação não encontrada.');
+  if (!post || post.status !== "PUBLISHED") {
+    throw new HttpError(404, "Publicação não encontrada.");
   }
 
-  const body = sanitizeSocialBody(args.body || '');
+  const body = sanitizeSocialBody(args.body || "");
   const validationError = validateSocialCommentDraft(body);
   if (validationError) {
     throw new HttpError(400, validationError);
@@ -605,7 +779,7 @@ export const createSocialComment = async (
       select: { id: true, postId: true },
     });
     if (!parent || parent.postId !== post.id) {
-      throw new HttpError(400, 'Comentário original não encontrado.');
+      throw new HttpError(400, "Comentário original não encontrado.");
     }
   }
 
@@ -618,15 +792,15 @@ export const createSocialComment = async (
       parentId: args.parentId || null,
       body,
       // Flagged comments are hidden until a moderator reviews them.
-      status: status === 'PUBLISHED' ? 'PUBLISHED' : 'REMOVED',
-      ...(status === 'PUBLISHED'
+      status: status === "PUBLISHED" ? "PUBLISHED" : "REMOVED",
+      ...(status === "PUBLISHED"
         ? {}
-        : { removedAt: new Date(), removalReason: 'Triagem automática' }),
+        : { removedAt: new Date(), removalReason: "Triagem automática" }),
     },
     select: { id: true, status: true },
   });
 
-  if (comment.status === 'PUBLISHED') {
+  if (comment.status === "PUBLISHED") {
     await context.entities.SocialPost.update({
       where: { id: post.id },
       data: { commentCount: { increment: 1 } },
@@ -635,28 +809,31 @@ export const createSocialComment = async (
     await notifySocialActivity(context, {
       recipientId: post.authorId,
       actorName: await resolveActorName(context),
-      event: 'COMMENT',
+      event: "COMMENT",
       postId: post.id,
       postSlug: post.slug,
       excerpt: body,
     });
   }
 
-  return { id: comment.id, held: comment.status !== 'PUBLISHED' };
+  return { id: comment.id, held: comment.status !== "PUBLISHED" };
 };
 
 /**
  * Best-effort share counter. Open to anonymous visitors, since sharing is one
  * of the things that does not require an account.
  */
-export const registerSocialShare = async (args: { postId: string }, context: any) => {
+export const registerSocialShare = async (
+  args: { postId: string },
+  context: any,
+) => {
   if (!isSocialEnabled()) return { success: true };
 
   const post = await context.entities.SocialPost.findUnique({
-    where: { id: String(args?.postId || '') },
+    where: { id: String(args?.postId || "") },
     select: { id: true, status: true },
   });
-  if (!post || post.status !== 'PUBLISHED') {
+  if (!post || post.status !== "PUBLISHED") {
     // Never leak whether a hidden post exists.
     return { success: true };
   }
@@ -670,27 +847,30 @@ export const registerSocialShare = async (args: { postId: string }, context: any
   return { success: true, shareCount: updated.shareCount };
 };
 
-export const deleteSocialComment = async (args: { commentId: string }, context: any) => {
+export const deleteSocialComment = async (
+  args: { commentId: string },
+  context: any,
+) => {
   assertSocialEnabled();
 
   if (!context.user) {
-    throw new HttpError(401, 'Você precisa estar autenticado.');
+    throw new HttpError(401, "Você precisa estar autenticado.");
   }
 
   const comment = await context.entities.SocialComment.findUnique({
-    where: { id: String(args?.commentId || '') },
+    where: { id: String(args?.commentId || "") },
     select: { id: true, authorId: true, postId: true, status: true },
   });
   if (!comment) {
-    throw new HttpError(404, 'Comentário não encontrado.');
+    throw new HttpError(404, "Comentário não encontrado.");
   }
   if (comment.authorId !== context.user.id && !context.user.isAdmin) {
-    throw new HttpError(403, 'Você só pode remover os seus comentários.');
+    throw new HttpError(403, "Você só pode remover os seus comentários.");
   }
 
   await context.entities.SocialComment.delete({ where: { id: comment.id } });
 
-  if (comment.status === 'PUBLISHED') {
+  if (comment.status === "PUBLISHED") {
     await context.entities.SocialPost.update({
       where: { id: comment.postId },
       data: { commentCount: { decrement: 1 } },
@@ -698,4 +878,72 @@ export const deleteSocialComment = async (args: { commentId: string }, context: 
   }
 
   return { success: true };
+};
+
+export const recordSocialWatch = async (
+  args: {
+    postId: string;
+    watchSeconds?: number;
+    completionRate?: number | null;
+  },
+  context: any,
+) => {
+  assertSocialEnabled();
+
+  if (!context.user) {
+    throw new HttpError(401, "Você precisa estar autenticado.");
+  }
+
+  const postId = String(args?.postId || "");
+  if (!postId) {
+    throw new HttpError(400, "Publicação inválida.");
+  }
+
+  const post = await context.entities.SocialPost.findUnique({
+    where: { id: postId },
+    select: { id: true, status: true },
+  });
+  if (!post || post.status !== "PUBLISHED") {
+    throw new HttpError(404, "Publicação não encontrada.");
+  }
+
+  const watchSeconds = Math.max(0, Math.floor(Number(args?.watchSeconds) || 0));
+  const completionRate =
+    args?.completionRate == null
+      ? null
+      : Math.min(1, Math.max(0, Number(args.completionRate)));
+
+  const existing = await context.entities.SocialVideoWatch.findUnique({
+    where: { userId_postId: { userId: context.user.id, postId } },
+    select: { id: true, watchSeconds: true, completionRate: true },
+  });
+
+  if (!existing) {
+    await context.entities.SocialVideoWatch.create({
+      data: {
+        userId: context.user.id,
+        postId,
+        watchSeconds,
+        completionRate,
+      },
+    });
+    await context.entities.SocialPost.update({
+      where: { id: postId },
+      data: { viewCount: { increment: 1 } },
+    });
+    return { created: true };
+  }
+
+  await context.entities.SocialVideoWatch.update({
+    where: { id: existing.id },
+    data: {
+      watchSeconds: Math.max(existing.watchSeconds, watchSeconds),
+      completionRate:
+        completionRate == null
+          ? existing.completionRate
+          : Math.max(existing.completionRate ?? 0, completionRate),
+    },
+  });
+
+  return { created: false };
 };

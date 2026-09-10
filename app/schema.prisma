@@ -304,6 +304,11 @@ enum SocialShareKind {
   DIRECTORY
 }
 
+enum SocialVideoFormat {
+  SHORT
+  LONG
+}
+
 enum SocialPostStatus {
   PUBLISHED
   PENDING_REVIEW
@@ -406,10 +411,6 @@ model User {
   lastName  String?
   phone     String?
   avatarUrl String?
-  /// Public Comunidade @handle (not the login username, which is often the email)
-  handle     String? @unique
-  bio        String?
-  websiteUrl String?
   locale    String  @default("pt-BR")
   timezone  String  @default("America/Sao_Paulo")
 
@@ -427,6 +428,14 @@ model User {
   // Comunidade (social) moderation state
   socialBannedAt   DateTime?
   socialBanReason  String?
+
+  /// Public @handle for Rhema / Comunidade profiles (single handle model)
+  socialHandle String? @unique
+  socialBio    String?
+  websiteUrl   String?
+
+  socialFollowersCount  Int @default(0)
+  socialFollowingCount  Int @default(0)
 
   // Platform admin lifecycle (login blocked; impersonation still allowed)
   suspendedAt     DateTime?
@@ -482,6 +491,7 @@ model User {
   socialFollowers        SocialFollow[]   @relation("SocialFollowed")
   socialBlocksMade       SocialBlock[]    @relation("SocialBlocker")
   socialBlocksReceived   SocialBlock[]    @relation("SocialBlocked")
+  socialWatches          SocialVideoWatch[]
 
   emailPreferences       EmailPreference[]
 
@@ -1940,8 +1950,9 @@ model SocialPost {
   parishId String?
   parish   Parish? @relation(fields: [parishId], references: [id], onDelete: SetNull)
 
-  kind   SocialPostKind   @default(TEXT)
-  status SocialPostStatus @default(PUBLISHED)
+  kind        SocialPostKind    @default(TEXT)
+  status      SocialPostStatus  @default(PUBLISHED)
+  videoFormat SocialVideoFormat?
 
   body   String
   locale String @default("pt-BR")
@@ -1968,10 +1979,12 @@ model SocialPost {
   comments SocialComment[]
   reactions SocialReaction[]
   share    SocialShare?
+  watches  SocialVideoWatch[]
 
   @@index([status, publishedAt])
   @@index([authorId, createdAt])
   @@index([parishId])
+  @@index([videoFormat, status, publishedAt])
 }
 
 /// Image (Bunny Storage) or video (Bunny Stream) attached to a post.
@@ -2152,6 +2165,26 @@ model SocialBlock {
 
   @@unique([blockerId, blockedId])
   @@index([blockedId])
+}
+
+/// Watch / completion signal used by the Rhema "Para você" ranking.
+model SocialVideoWatch {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId String
+  post   SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  watchSeconds   Int   @default(0)
+  completionRate Float?
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@index([userId, updatedAt])
 }
 
 // ─── Email platform (provider-agnostic outbox) ───────────────────────────────

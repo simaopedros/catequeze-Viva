@@ -15,33 +15,35 @@ import { buildAuthorDisplayName } from './socialAuthor';
 
 const PUBLIC_PROFILE_SELECT = {
   id: true,
-  handle: true,
+  socialHandle: true,
   firstName: true,
   lastName: true,
   avatarUrl: true,
-  bio: true,
+  socialBio: true,
   websiteUrl: true,
   createdAt: true,
 } as const;
 
 function serializeProfile(user: {
   id: string;
-  handle: string | null;
+  socialHandle: string | null;
   firstName?: string | null;
   lastName?: string | null;
   avatarUrl: string | null;
-  bio: string | null;
+  socialBio: string | null;
   websiteUrl: string | null;
   createdAt: Date;
 }) {
-  const handle = user.handle;
+  const handle = user.socialHandle;
   return {
     id: user.id,
     handle,
+    socialHandle: handle,
     profilePath: handle ? profilePath(handle) : null,
     displayName: buildAuthorDisplayName(user),
     avatarUrl: user.avatarUrl,
-    bio: user.bio,
+    bio: user.socialBio,
+    socialBio: user.socialBio,
     websiteUrl: user.websiteUrl,
     createdAt: user.createdAt,
   };
@@ -60,7 +62,7 @@ export const getSocialProfile = async (
   }
 
   const user = await context.entities.User.findFirst({
-    where: handle ? { handle } : { id: userId },
+    where: handle ? { socialHandle: handle } : { id: userId },
     select: PUBLIC_PROFILE_SELECT,
   });
   if (!user) {
@@ -98,14 +100,27 @@ export const getSocialProfile = async (
       : null,
   ]);
 
+  const serialized = serializeProfile(user);
+  const isOwn = Boolean(viewerId && viewerId === user.id);
+  const isFollowing = Boolean(follow);
+  const isBlocked = Boolean(block);
   return {
-    ...serializeProfile(user),
+    ...serialized,
+    profile: {
+      ...serialized,
+      followersCount: followerCount,
+      followingCount,
+      isOwn,
+      isFollowing,
+      isBlocked,
+    },
     followerCount,
     followingCount,
+    followersCount: followerCount,
     postCount,
-    isOwn: Boolean(viewerId && viewerId === user.id),
-    isFollowing: Boolean(follow),
-    isBlocked: Boolean(block),
+    isOwn,
+    isFollowing,
+    isBlocked,
   };
 };
 
@@ -140,7 +155,9 @@ export const getMySocialProfile = async (_args: unknown, context: any) => {
 export const updateSocialProfile = async (
   args: {
     handle?: string | null;
+    socialHandle?: string | null;
     bio?: string | null;
+    socialBio?: string | null;
     websiteUrl?: string | null;
     firstName?: string | null;
     lastName?: string | null;
@@ -153,28 +170,28 @@ export const updateSocialProfile = async (
 
   const data: Record<string, unknown> = {};
 
-  if (args.handle !== undefined) {
-    const handle = normalizeHandle(args.handle || '');
+  if (args.handle !== undefined || args.socialHandle !== undefined) {
+    const handle = normalizeHandle((args.handle ?? args.socialHandle) || '');
     const handleError = validateHandle(handle);
     if (handleError) {
       throw new HttpError(400, handleError);
     }
     const taken = await context.entities.User.findFirst({
-      where: { handle, id: { not: context.user.id } },
+      where: { socialHandle: handle, id: { not: context.user.id } },
       select: { id: true },
     });
     if (taken) {
       throw new HttpError(409, 'Este @ já está em uso.');
     }
-    data.handle = handle;
+    data.socialHandle = handle;
   }
 
-  if (args.bio !== undefined) {
-    const bio = sanitizeBio(args.bio || '');
+  if (args.bio !== undefined || args.socialBio !== undefined) {
+    const bio = sanitizeBio((args.bio ?? args.socialBio) || '');
     if (bio.length > BIO_MAX) {
       throw new HttpError(400, `A bio deve ter no máximo ${BIO_MAX} caracteres.`);
     }
-    data.bio = bio || null;
+    data.socialBio = bio || null;
   }
 
   if (args.websiteUrl !== undefined) {
@@ -282,7 +299,7 @@ export const listMySocialBlocks = async (_args: unknown, context: any) => {
     where: { blockerId: context.user.id },
     include: {
       blocked: {
-        select: { id: true, handle: true, firstName: true, lastName: true, avatarUrl: true },
+        select: { id: true, socialHandle: true, firstName: true, lastName: true, avatarUrl: true },
       },
     },
     orderBy: { createdAt: 'desc' },
@@ -292,7 +309,7 @@ export const listMySocialBlocks = async (_args: unknown, context: any) => {
   return {
     items: blocks.map((block: any) => ({
       id: block.blocked.id,
-      handle: block.blocked.handle,
+      handle: block.blocked.socialHandle,
       displayName: buildAuthorDisplayName(block.blocked),
       avatarUrl: block.blocked.avatarUrl,
     })),

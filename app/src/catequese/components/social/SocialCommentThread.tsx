@@ -54,7 +54,10 @@ export function SocialCommentThread({
       }
       await refetch();
     } catch (error: any) {
-      toast({ title: error?.message || t("comments.send"), variant: "destructive" });
+      toast({
+        title: error?.message || t("comments.send"),
+        variant: "destructive",
+      });
     } finally {
       setSending(false);
     }
@@ -66,7 +69,10 @@ export function SocialCommentThread({
       toast({ title: t("comments.deleted") });
       await refetch();
     } catch (error: any) {
-      toast({ title: error?.message || t("comments.delete"), variant: "destructive" });
+      toast({
+        title: error?.message || t("comments.delete"),
+        variant: "destructive",
+      });
     }
   };
 
@@ -80,37 +86,41 @@ export function SocialCommentThread({
           {t("feed.loading")}
         </p>
       ) : comments.length === 0 ? (
-        <p className="mt-2 text-sm text-muted-foreground">{t("comments.empty")}</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {t("comments.empty")}
+        </p>
       ) : (
         <ScrollFade maxHeight="16rem" className="mt-2">
-        <ul className="space-y-3">
-          {comments.map((comment: any) => (
-            <li key={comment.id} className="flex gap-2">
-              <div className="min-w-0 flex-1 rounded-xl bg-muted/60 px-3 py-2">
-                <p className="truncate text-xs font-semibold">
-                  {comment.author.displayName}
-                  <span className="ml-2 font-normal text-muted-foreground">
-                    {formatRelativeTime(
-                      new Date(comment.createdAt).toISOString(),
-                      currentLocale,
-                    )}
-                  </span>
-                </p>
-                <p className="mt-0.5 whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm">{comment.body}</p>
-              </div>
-              {comment.isOwn && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => remove(comment.id)}
-                  aria-label={t("comments.delete")}
-                >
-                  <Trash2 className="h-4 w-4" aria-hidden />
-                </Button>
-              )}
-            </li>
-          ))}
-        </ul>
+          <ul className="space-y-3">
+            {comments.map((comment: any) => (
+              <li key={comment.id} className="flex gap-2">
+                <div className="min-w-0 flex-1 rounded-xl bg-muted/60 px-3 py-2">
+                  <p className="text-xs font-semibold">
+                    {comment.author.displayName}
+                    <span className="ml-2 font-normal text-muted-foreground">
+                      {formatRelativeTime(
+                        new Date(comment.createdAt).toISOString(),
+                        currentLocale,
+                      )}
+                    </span>
+                  </p>
+                  <p className="mt-0.5 whitespace-pre-wrap break-words text-sm">
+                    {comment.body}
+                  </p>
+                </div>
+                {comment.isOwn && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => remove(comment.id)}
+                    aria-label={t("comments.delete")}
+                  >
+                    <Trash2 className="h-4 w-4" aria-hidden />
+                  </Button>
+                )}
+              </li>
+            ))}
+          </ul>
         </ScrollFade>
       )}
 

@@ -20,8 +20,18 @@
     "family-portal",
     "sacraments",
     "library",
+    "rhema",
     "ai-planner"
   ],
+  "features": {
+    "rhema": {
+      "title": "Rhema Community, in the same rhythm as catechesis",
+      "desc": "The pastoral network lives alongside the class, the calendar, and the library. After the meeting, the testimony continues in the Community — without leaving the platform.",
+      "b1": "Dashboard, classes, and Community in the same daily flow",
+      "b2": "Share meetings, Scripture, and the library in one tap",
+      "b3": "Families also follow the Community in the portal"
+    }
+  },
   "ai_showcase_title": "And also: AI-powered meeting preparation",
   "ai_showcase_subtitle": "Beyond management, the platform includes editorial assistance to create meeting scripts in seconds.",
   "mockup_dashboard": {
@@ -88,6 +98,11 @@
     "plan_title": "Plan: God's Love",
     "published": "Published",
     "plan_detail": "Confirmation · 45 min"
+  },
+  "mockup_rhema": {
+    "handle": "@catequista_ana",
+    "caption": "Today's meeting: the Our Father. Amen!",
+    "amen": "Amen"
   },
   "footer": {
     "create_account": "Create free account",

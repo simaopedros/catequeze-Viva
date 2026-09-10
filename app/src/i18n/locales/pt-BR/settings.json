@@ -21,6 +21,16 @@
   "saving": "Salvando...",
   "saved": "Salvo!",
   "save_profile_error": "Erro ao salvar perfil.",
+  "rhema": {
+    "title": "Rhema",
+    "hint": "Seu perfil público na Comunidade. O handle aparece como @nome.",
+    "handle": "Handle",
+    "handle_placeholder": "seu_handle",
+    "bio": "Bio",
+    "bio_placeholder": "Uma frase sobre a sua catequese",
+    "open_profile": "Ver perfil na Comunidade",
+    "open_community": "Abrir Comunidade"
+  },
   "change_password": "Trocar senha",
   "current_password": "Senha atual",
   "new_password": "Nova senha",
