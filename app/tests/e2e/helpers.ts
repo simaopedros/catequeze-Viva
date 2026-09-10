@@ -56,6 +56,12 @@ export const PASSWORD = "Teste@123";
 // ═══ Login ═══════════════════════════════════════════════════════════════════
 /** Remove vanilla-cookieconsent overlay so it cannot block pointer events in e2e. */
 export async function dismissCookieBanner(page: Page) {
+  const reject = page.getByRole("button", {
+    name: /rejeitar todos|reject all|rechazar todo/i,
+  });
+  if (await reject.isVisible({ timeout: 800 }).catch(() => false)) {
+    await reject.click().catch(() => {});
+  }
   await page
     .evaluate(() => {
       document.getElementById("cc-main")?.remove();
