@@ -1,4 +1,14 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('wasp/server', () => ({
+  HttpError: class HttpError extends Error {
+    statusCode: number;
+    constructor(statusCode: number, message?: string) {
+      super(message);
+      this.statusCode = statusCode;
+    }
+  },
+}));
 import {
   buildCatechismHref,
   buildCommunitySharePath,
@@ -111,5 +121,82 @@ describe('feed post layout', () => {
     expect(shouldCollapseSocialBody(long)).toBe(true);
     expect(collapseSocialBody(long).endsWith('…')).toBe(true);
     expect(collapseSocialBody(long).length).toBeLessThan(long.length);
+  });
+});
+
+describe('resolveSocialShare', () => {
+  it('rejects invalid drafts', async () => {
+    const { parseShareDraft } = await import('../server/operations/socialShareResolve');
+    expect(() => parseShareDraft({ kind: 'TEXT', sourceId: 'x' })).toThrow();
+    expect(parseShareDraft({ kind: 'VERSE', sourceId: 'verse-1' })).toEqual({
+      kind: 'VERSE',
+      sourceId: 'verse-1',
+    });
+  });
+
+  it('builds a verse card from the source of truth, not client copy', async () => {
+    const { resolveSocialShare } = await import('../server/operations/socialShareResolve');
+    const snap = await resolveSocialShare(
+      { kind: 'VERSE', sourceId: 'v1' },
+      {
+        entities: {
+          BibleVerse: {
+            findUnique: async () => ({
+              id: 'v1',
+              number: 16,
+              text: 'Porque Deus amou o mundo de tal maneira',
+              chapter: {
+                number: 3,
+                book: { id: 'joao', name: 'João', abbreviation: 'Jo' },
+              },
+            }),
+          },
+        },
+      },
+    );
+    expect(snap.title).toBe('João 3:16');
+    expect(snap.href).toBe('/app/bible?book=joao&chapter=3&verse=16');
+    expect(snap.excerpt).toContain('Deus amou');
+  });
+
+  it('builds catechism and directory deep-links', async () => {
+    const { resolveSocialShare } = await import('../server/operations/socialShareResolve');
+    const cic = await resolveSocialShare(
+      { kind: 'CATECHISM', sourceId: 'c1' },
+      {
+        entities: {
+          CatechismEntry: {
+            findUnique: async () => ({
+              id: 'c1',
+              number: 1210,
+              question: 'O que é o Batismo?',
+              answer: 'É o sacramento da nova vida.',
+              category: 'sacramentos',
+            }),
+          },
+        },
+      },
+    );
+    expect(cic.title).toBe('CIC 1210');
+    expect(cic.href).toBe('/app/catechism?entry=1210');
+
+    const directory = await resolveSocialShare(
+      { kind: 'DIRECTORY', sourceId: 'd1' },
+      {
+        entities: {
+          DirectoryEntry: {
+            findUnique: async () => ({
+              id: 'd1',
+              number: 42,
+              title: 'A iniciação cristã',
+              content: '<p>O Diretório descreve o caminho.</p>',
+              part: 2,
+            }),
+          },
+        },
+      },
+    );
+    expect(directory.href).toBe('/app/directory?entry=42');
+    expect(directory.excerpt).toContain('caminho');
   });
 });

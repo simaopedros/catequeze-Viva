@@ -51,7 +51,7 @@ export function SocialShareEmbed({
     >
       <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
         <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
-        <span className="truncate">{share.sourceLabel || label}</span>
+        <span className="truncate">{label}</span>
       </p>
       <p className="mt-1.5 truncate font-semibold leading-tight text-brand-ink">
         {share.title}
