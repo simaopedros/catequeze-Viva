@@ -107,6 +107,20 @@ export function communityPostPath(
     : `/comunidade/p/${postSlug}`;
 }
 
+/**
+ * Lift a stored/public Comunidade URL into the authenticated app shell.
+ * Leaves other links (settings, classes, absolute URLs) untouched.
+ */
+export function toAppCommunityPath(link: string): string {
+  const trimmed = (link || "").trim();
+  if (!trimmed.startsWith("/comunidade")) return trimmed;
+  const [path, query] = trimmed.split("?");
+  if (path !== "/comunidade" && !path.startsWith("/comunidade/")) {
+    return trimmed;
+  }
+  return query ? `/app${path}?${query}` : `/app${path}`;
+}
+
 /** In-app stays in the app shell; public feed uses the public Comunidade route. */
 export function communityProfilePath(
   handle: string | null | undefined,
