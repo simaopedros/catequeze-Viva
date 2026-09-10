@@ -100,3 +100,6 @@ export const reportSocialContent = vi.fn();
 export const getSocialPublishAccess = vi.fn();
 export const getSocialTopics = vi.fn();
 export const previewSocialShare = vi.fn();
+export const getMySocialProfile = vi.fn();
+export const updateSocialProfile = vi.fn();
+export const listMySocialBlocks = vi.fn();
