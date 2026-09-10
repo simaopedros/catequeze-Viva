@@ -213,6 +213,13 @@ test.describe("Comunidade — perfil público", () => {
   });
 });
 
+async function openNativeShare(page: Page) {
+  await dismissCookieBanner(page);
+  const share = page.getByTestId("share-to-community").first();
+  await expect(share).toBeVisible({ timeout: 20000 });
+  await share.click({ force: true });
+}
+
 test.describe("Comunidade — partilha nativa e perfil", () => {
   test.skip(!SOCIAL_FEATURES_ENABLED, "Comunidade está desabilitada");
 
@@ -223,10 +230,12 @@ test.describe("Comunidade — partilha nativa e perfil", () => {
 
     await page.goto("/app/bible?ref=Jo%C3%A3o%203:16");
     await page.waitForLoadState("domcontentloaded");
+    await dismissCookieBanner(page);
+    await expect(page.getByTestId("share-to-community").first()).toBeVisible({
+      timeout: 20000,
+    });
 
-    const share = page.getByTestId("share-to-community").first();
-    await expect(share).toBeVisible({ timeout: 20000 });
-    await share.click();
+    await openNativeShare(page);
 
     await expect(
       page.getByRole("heading", { name: /partilhar na comunidade/i }),
@@ -241,11 +250,12 @@ test.describe("Comunidade — partilha nativa e perfil", () => {
 
     await page.goto("/app/catechism?entry=1");
     await page.waitForLoadState("domcontentloaded");
+    await dismissCookieBanner(page);
 
     await expect(
       page.getByText(/Deus, infinitamente perfeito/i).first(),
     ).toBeVisible({ timeout: 20000 });
-    await page.getByTestId("share-to-community").first().click();
+    await openNativeShare(page);
     await expect(
       page.getByRole("heading", { name: /partilhar na comunidade/i }),
     ).toBeVisible();
@@ -261,11 +271,12 @@ test.describe("Comunidade — partilha nativa e perfil", () => {
 
     await page.goto("/app/directory?entry=1");
     await page.waitForLoadState("domcontentloaded");
+    await dismissCookieBanner(page);
 
     await expect(
       page.getByText(/a catequese pertence/i).first(),
     ).toBeVisible({ timeout: 20000 });
-    await page.getByTestId("share-to-community").first().click();
+    await openNativeShare(page);
     await expect(
       page.getByRole("heading", { name: /partilhar na comunidade/i }),
     ).toBeVisible();
@@ -278,11 +289,12 @@ test.describe("Comunidade — partilha nativa e perfil", () => {
 
     await page.goto("/app/content-library");
     await page.waitForLoadState("domcontentloaded");
+    await dismissCookieBanner(page);
 
     await expect(
       page.getByText(/lição sobre o espírito santo/i).first(),
     ).toBeVisible({ timeout: 20000 });
-    await page.getByTestId("share-to-community").first().click();
+    await openNativeShare(page);
     await expect(
       page.getByRole("heading", { name: /partilhar na comunidade/i }),
     ).toBeVisible();

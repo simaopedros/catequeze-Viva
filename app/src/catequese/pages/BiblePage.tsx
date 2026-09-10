@@ -38,6 +38,7 @@ import { useLocale } from "../../i18n/useLocale";
 import { toast } from "../../client/hooks/use-toast";
 import { PastoralCompanion } from "../components/social/PastoralCompanion";
 import { ShareToCommunityButton } from "../components/social/ShareToCommunityButton";
+import { bibleBookMatchesRef } from "../../shared/bibleBookRef";
 
 // ── localStorage helpers ──
 
@@ -263,10 +264,8 @@ export default function BiblePage() {
       const refMatch = refParam.match(/^(.+?)\s+(\d+)(?::(\d+))?$/);
       if (refMatch) {
         const [, bookPart, refChapter, refVerse] = refMatch;
-        const matchingBook = books.find(
-          (b: any) =>
-            b.name.toLowerCase() === bookPart.toLowerCase() ||
-            b.abbreviation?.toLowerCase() === bookPart.toLowerCase(),
+        const matchingBook = books.find((b: any) =>
+          bibleBookMatchesRef(b, bookPart),
         );
         if (matchingBook) {
           const next = new URLSearchParams();
