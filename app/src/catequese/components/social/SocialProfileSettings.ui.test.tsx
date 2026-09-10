@@ -1,3 +1,4 @@
+// @ts-nocheck — o tsc do SDK Wasp também vê os *.ui.test.tsx.
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import {
