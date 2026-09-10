@@ -104,7 +104,7 @@ export function SocialCommentThread({
                       )}
                     </span>
                   </p>
-                  <p className="mt-0.5 whitespace-pre-wrap break-words text-sm">
+                  <p className="mt-0.5 whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm">
                     {comment.body}
                   </p>
                 </div>

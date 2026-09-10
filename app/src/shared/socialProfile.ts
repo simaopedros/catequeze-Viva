@@ -1,13 +1,21 @@
 /**
  * Public Comunidade profile: @handle, bio and profile URL.
  * Separate from User.username, which signup still fills with the email.
+ * Limits match the homologação Rhema (`socialConstants`).
  */
-export const HANDLE_MIN = 3;
-export const HANDLE_MAX = 24;
-export const BIO_MAX = 280;
+import {
+  SOCIAL_BIO_MAX,
+  SOCIAL_HANDLE_MAX,
+  SOCIAL_HANDLE_MIN,
+  SOCIAL_HANDLE_PATTERN,
+} from "./socialConstants";
+
+export const HANDLE_MIN = SOCIAL_HANDLE_MIN;
+export const HANDLE_MAX = SOCIAL_HANDLE_MAX;
+export const BIO_MAX = SOCIAL_BIO_MAX;
 export const WEBSITE_MAX = 200;
 
-export const HANDLE_PATTERN = /^[a-z][a-z0-9_]{2,23}$/;
+export const HANDLE_PATTERN = SOCIAL_HANDLE_PATTERN;
 
 export const RESERVED_HANDLES = new Set([
   'admin',
@@ -34,6 +42,7 @@ export const RESERVED_HANDLES = new Set([
   'pricing',
   'privacy',
   'profile',
+  'rhema',
   'root',
   'settings',
   'signup',
@@ -58,7 +67,7 @@ export function validateHandle(raw: string): string | null {
   if (handle.length < HANDLE_MIN) return `O @ deve ter pelo menos ${HANDLE_MIN} caracteres.`;
   if (handle.length > HANDLE_MAX) return `O @ deve ter no máximo ${HANDLE_MAX} caracteres.`;
   if (!HANDLE_PATTERN.test(handle)) {
-    return 'Use letras minúsculas, números e underscore, começando por uma letra.';
+    return 'Use letras minúsculas, números e underscore.';
   }
   if (RESERVED_HANDLES.has(handle)) return 'Este @ não está disponível.';
   return null;

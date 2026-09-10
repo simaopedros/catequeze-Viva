@@ -25,7 +25,7 @@ describe('social handle', () => {
   it('rejects reserved, short, and invalid handles', () => {
     expect(validateHandle('admin')).toMatch(/não está disponível/);
     expect(validateHandle('ab')).toMatch(/pelo menos/);
-    expect(validateHandle('1maria')).toMatch(/letras minúsculas/);
+    expect(validateHandle('1maria')).toBeNull();
     expect(validateHandle('Maria Catequista')).toMatch(/letras minúsculas/);
     expect(validateHandle('a'.repeat(HANDLE_MAX + 1))).toMatch(/no máximo/);
   });
