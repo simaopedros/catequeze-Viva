@@ -2,9 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Papel litúrgico — alinhado à marca da Catequese Viva (Tailwind v3 + Starlight). */
+/* Papel litúrgico — alinhado à marca da Catequese Viva (Tailwind v3 + Starlight).
+   Tema claro only: mesmo que o Starlight marque data-theme=dark (prefers-color-scheme),
+   as superfícies continuam paper + ink. */
 :root,
-[data-theme="light"] {
+[data-theme="light"],
+[data-theme="dark"] {
+  color-scheme: light;
   --cv-ink: #071a2d;
   --cv-ink-soft: #0a2540;
   --cv-midnight: #153a63;
@@ -38,15 +42,8 @@
   --sl-color-gray-7: #071a2d;
 }
 
-html[data-theme="dark"] {
-  --sl-color-accent-low: #153a63;
-  --sl-color-accent: #d39a2b;
-  --sl-color-accent-high: #f4cf7a;
-  --sl-color-text: #e8eef5;
-  --sl-color-text-accent: #f4cf7a;
-  --sl-color-bg: #071a2d;
-  --sl-color-bg-nav: #071a2d;
-  --sl-color-bg-sidebar: #0a2540;
+html {
+  background: var(--cv-paper);
 }
 
 .site-title,

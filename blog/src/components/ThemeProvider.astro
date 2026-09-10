@@ -1,0 +1,14 @@
+---
+/**
+ * Light-only product: ignore system preference and Starlight's stored theme.
+ * ThemeSelect stays mounted (hidden) so starlight-blog can wrap it.
+ */
+---
+
+<script is:inline>
+	document.documentElement.dataset.theme = 'light';
+	document.documentElement.style.colorScheme = 'light';
+	try {
+		localStorage.setItem('starlight-theme', 'light');
+	} catch {}
+</script>
