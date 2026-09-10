@@ -41,6 +41,7 @@ import {
 import {
   completeMemberOnboarding,
   createPastoralGroup,
+  getPastoralGroup,
   joinPastoralGroup,
   leavePastoralGroup,
   listPastoralGroups,
@@ -198,6 +199,41 @@ describe("pastoralGroupOperations", () => {
       ),
     ).rejects.toMatchObject({ statusCode: 403 });
     expect(entities.PastoralGroup.create).not.toHaveBeenCalled();
+  });
+
+  it("returns canManage on restricted private-group details", async () => {
+    const entities = {
+      PastoralGroup: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: "g-private",
+          slug: "coral",
+          name: "Coral",
+          kind: "CHOIR",
+          visibility: "PRIVATE",
+          description: "Ensaios",
+          city: "Campinas",
+          state: "SP",
+          customKindLabel: null,
+          active: true,
+          workspace: { id: "ws", name: "Pessoal", type: "PERSONAL" },
+          parish: { id: "p1", name: "São José" },
+          _count: { memberships: 4 },
+        }),
+      },
+      GroupMembership: {
+        findUnique: vi.fn().mockResolvedValue(null),
+      },
+      PastoralGroupNotice: { findMany: vi.fn() },
+    };
+    const result = await getPastoralGroup(
+      { id: "g-private" },
+      context({ id: "u-free", isAdmin: false }, entities),
+    );
+    expect(result.restricted).toBe(true);
+    expect(result.canManage).toBe(false);
+    expect(result.notices).toEqual([]);
+    expect(result.members).toEqual([]);
+    expect(entities.PastoralGroupNotice.findMany).not.toHaveBeenCalled();
   });
 
   it("lets a free member join a public group as ACTIVE", async () => {

@@ -177,6 +177,9 @@ export const getPastoralGroup = async (
     return {
       ...publicGroupCard(group, membership),
       restricted: true,
+      workspaceName: group.workspace?.name ?? null,
+      parishName: group.parish?.name ?? null,
+      canManage: false,
       notices: [],
       members: [],
     };
