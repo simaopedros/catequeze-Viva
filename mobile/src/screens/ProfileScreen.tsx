@@ -1,7 +1,8 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { BrandButton, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import type { SocialProfile } from '../api/types';
+import { PostCard } from '../components/PostCard';
+import type { SocialPost, SocialProfile } from '../api/types';
 import { colors } from '../theme';
 
 export function ProfileScreen({
@@ -11,6 +12,9 @@ export function ProfileScreen({
   onFollow,
   onBlock,
   busy,
+  posts,
+  onOpenPost,
+  onOpenAuthor,
 }: {
   profile?: SocialProfile | null;
   loading?: boolean;
@@ -18,6 +22,9 @@ export function ProfileScreen({
   onFollow: () => void;
   onBlock: () => void;
   busy?: boolean;
+  posts?: SocialPost[];
+  onOpenPost?: (slug: string) => void;
+  onOpenAuthor?: (handle: string) => void;
 }) {
   const data = profile?.profile ?? profile;
   if (loading) {
@@ -60,6 +67,16 @@ export function ProfileScreen({
         </>
       ) : (
         <Text style={{ color: colors.muted }}>Este é o seu perfil público.</Text>
+      )}
+      <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginTop: 20, marginBottom: 8 }}>
+        Publicações
+      </Text>
+      {(posts ?? []).length === 0 ? (
+        <EmptyState title="Ainda sem publicações" body="Quando este perfil publicar, as mensagens aparecem aqui." />
+      ) : (
+        (posts ?? []).map((post) => (
+          <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
+        ))
       )}
     </Screen>
   );

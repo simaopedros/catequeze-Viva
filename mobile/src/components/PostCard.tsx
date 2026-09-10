@@ -30,9 +30,11 @@ export function ShareCard({
 export function PostCard({
   post,
   onOpenAuthor,
+  onOpenPost,
 }: {
   post: SocialPost;
   onOpenAuthor?: (handle: string) => void;
+  onOpenPost?: (slug: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const long = (post.body || '').length > LONG_BODY;
@@ -50,7 +52,14 @@ export function PostCard({
         <Text style={styles.author}>{post.author.displayName}</Text>
         {handle ? <Text style={styles.handle}>@{handle}</Text> : null}
       </Pressable>
-      {post.body ? <Text style={styles.body}>{body}</Text> : null}
+      <Pressable
+        accessibilityRole="button"
+        testID={`post-${post.id}`}
+        onPress={() => post.slug && onOpenPost?.(post.slug)}
+        disabled={!onOpenPost}
+      >
+        {post.body ? <Text style={styles.body}>{body}</Text> : null}
+      </Pressable>
       {long ? (
         <Pressable onPress={() => setExpanded((value) => !value)} testID={`post-expand-${post.id}`}>
           <Text style={styles.more}>{expanded ? 'Ver menos' : 'Ver mais'}</Text>

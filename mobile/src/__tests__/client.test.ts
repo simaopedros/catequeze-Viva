@@ -78,6 +78,11 @@ describe('mobile HTTP client', () => {
     await client.toggleFollow('user-2');
     await client.toggleBlock('user-2');
     await client.previewShare('VERSE', 'gn:1:1');
+    await client.socialPost('paz');
+    await client.socialComments('post-1');
+    await client.createComment('post-1', 'Amém');
+    await client.toggleReaction('post-1', 'AMEM');
+    await client.searchSocial('catequista');
     await client.bibleBooks();
     await client.bibleBook('gn');
     await client.bibleChapter('gn', 1);

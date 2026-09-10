@@ -25,7 +25,8 @@ const post = (overrides: Partial<SocialPost> = {}): SocialPost => ({
 describe('PostCard', () => {
   it('collapses long text and opens the author profile', () => {
     const onOpenAuthor = jest.fn();
-    const view = render(<PostCard post={post()} onOpenAuthor={onOpenAuthor} />);
+    const onOpenPost = jest.fn();
+    const view = render(<PostCard post={post()} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />);
 
     expect(view.getByText('Ana Silva')).toBeTruthy();
     expect(view.getByText('@ana')).toBeTruthy();
@@ -37,5 +38,7 @@ describe('PostCard', () => {
 
     fireEvent.press(view.getByTestId('post-author-p1'));
     expect(onOpenAuthor).toHaveBeenCalledWith('ana');
+    fireEvent.press(view.getByTestId('post-p1'));
+    expect(onOpenPost).toHaveBeenCalledWith('paz');
   });
 });

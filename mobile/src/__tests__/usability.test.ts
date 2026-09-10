@@ -8,6 +8,9 @@ describe('usability map', () => {
       appRoutes.home,
       appRoutes.community,
       appRoutes.compose,
+      appRoutes.search,
+      appRoutes.post('paz'),
+      appRoutes.topic('liturgia'),
       appRoutes.profile('catequista'),
       appRoutes.classes,
       appRoutes.classDetails('class-1'),
@@ -22,7 +25,7 @@ describe('usability map', () => {
     ];
 
     expect(signedOut).toHaveLength(3);
-    expect(signedIn).toHaveLength(14);
+    expect(signedIn).toHaveLength(17);
     expect(APP_TABS).toHaveLength(5);
   });
 });

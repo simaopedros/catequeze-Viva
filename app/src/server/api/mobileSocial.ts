@@ -6,7 +6,11 @@ import type { Request, Response } from 'express';
 import { prisma } from 'wasp/server';
 import {
   getSocialFeed,
+  getSocialPost,
+  getSocialComments,
   createSocialPost,
+  createSocialComment,
+  toggleSocialReaction,
   getSocialTopics,
   getSocialPublishAccess,
 } from '../operations/socialOperations';
@@ -16,7 +20,7 @@ import {
   toggleSocialBlock,
   getMySocialProfile,
 } from '../operations/socialProfileOperations';
-import { toggleSocialFollow } from '../operations/socialDiscoveryOperations';
+import { searchSocial, toggleSocialFollow } from '../operations/socialDiscoveryOperations';
 import { previewSocialShare } from '../operations/socialShareResolve';
 import { listBibleBooks, getBibleBook, getBibleChapter } from '../operations/bibleOperations';
 import { assertTwoFactorSessionVerified } from '../operations/twoFactorOperations';
@@ -128,6 +132,59 @@ export async function mobileSocialBlock(req: Request, res: Response, context: an
 export async function mobileSocialSharePreview(req: Request, res: Response, context: any) {
   const opCtx = await requireSession(context);
   return res.json(await previewSocialShare(req.body ?? {}, opCtx));
+}
+
+export async function mobileSocialPost(req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  return res.json(
+    await getSocialPost({ slug: optionalString(req.params.slug) || optionalString(req.query.slug) || '' }, opCtx),
+  );
+}
+
+export async function mobileSocialComments(req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  return res.json(
+    await getSocialComments(
+      {
+        postId: optionalString(req.query.postId) || optionalString(req.params.postId) || '',
+        cursor: optionalString(req.query.cursor) ?? null,
+        limit: optionalInt(req.query.limit, 40),
+      },
+      opCtx,
+    ),
+  );
+}
+
+export async function mobileSocialCreateComment(req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  return res.json(
+    await createSocialComment(
+      {
+        postId: String(req.body?.postId || ''),
+        body: String(req.body?.body || ''),
+        parentId: req.body?.parentId ? String(req.body.parentId) : null,
+      },
+      opCtx,
+    ),
+  );
+}
+
+export async function mobileSocialReact(req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  return res.json(
+    await toggleSocialReaction(
+      {
+        postId: String(req.body?.postId || ''),
+        type: req.body?.type === 'REZO' || req.body?.type === 'ALELUIA' ? req.body.type : 'AMEM',
+      },
+      opCtx,
+    ),
+  );
+}
+
+export async function mobileSocialSearch(req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  return res.json(await searchSocial({ q: optionalString(req.query.q) || String(req.body?.q || '') }, opCtx));
 }
 
 export async function mobileBibleBooks(req: Request, res: Response, context: any) {

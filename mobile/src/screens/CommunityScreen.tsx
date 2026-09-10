@@ -12,6 +12,8 @@ const SORTS = [
 ] as const;
 
 export function CommunityScreen({
+  title = 'Comunidade',
+  subtitle = 'Ler e seguir é livre. Publicar pede assinatura.',
   posts,
   topics,
   access,
@@ -22,7 +24,12 @@ export function CommunityScreen({
   onChangeSort,
   onChangeTopic,
   onOpenAuthor,
+  onOpenPost,
+  onOpenTopic,
   onCompose,
+  onSearch,
+  following,
+  onToggleFollowing,
 }: {
   posts: SocialPost[];
   topics: SocialTopic[];
@@ -34,11 +41,29 @@ export function CommunityScreen({
   onChangeSort: (sort: 'recent' | 'trending' | 'foryou') => void;
   onChangeTopic: (slug: string | null) => void;
   onOpenAuthor: (handle: string) => void;
+  onOpenPost?: (slug: string) => void;
+  onOpenTopic?: (slug: string) => void;
   onCompose: () => void;
+  onSearch?: () => void;
+  following?: boolean;
+  onToggleFollowing?: () => void;
+  title?: string;
+  subtitle?: string;
 }) {
   return (
     <Screen testID="community-screen">
-      <ScreenTitle title="Comunidade" subtitle="Ler e seguir é livre. Publicar pede assinatura." />
+      <ScreenTitle title={title} subtitle={subtitle} />
+      {onSearch ? (
+        <BrandButton variant="ghost" label="Pesquisar pessoas e publicações" onPress={onSearch} testID="open-search" />
+      ) : null}
+      {onToggleFollowing ? (
+        <BrandButton
+          variant={following ? 'primary' : 'ghost'}
+          label={following ? 'A ver quem segue' : 'Só quem eu sigo'}
+          onPress={onToggleFollowing}
+          testID="filter-following"
+        />
+      ) : null}
       {access && !access.canPublish ? (
         <Text style={{ color: colors.goldDark, marginBottom: spacing.md }}>
           {access.reason === 'subscription'
@@ -72,7 +97,11 @@ export function CommunityScreen({
           <Text style={{ color: !topicSlug ? colors.goldDark : colors.muted, fontWeight: '700' }}>Todos</Text>
         </Pressable>
         {topics.map((topic) => (
-          <Pressable key={topic.slug} onPress={() => onChangeTopic(topic.slug)} testID={`topic-${topic.slug}`}>
+          <Pressable
+            key={topic.slug}
+            onPress={() => (onOpenTopic ? onOpenTopic(topic.slug) : onChangeTopic(topic.slug))}
+            testID={`topic-${topic.slug}`}
+          >
             <Text style={{ color: topicSlug === topic.slug ? colors.goldDark : colors.muted, fontWeight: '700' }}>
               {topic.name}
             </Text>
@@ -85,7 +114,9 @@ export function CommunityScreen({
       {!loading && posts.length === 0 ? (
         <EmptyState title="Ainda não há publicações" body="Quando a Comunidade tiver posts, eles aparecem aqui." />
       ) : (
-        posts.map((post) => <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} />)
+        posts.map((post) => (
+          <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
+        ))
       )}
     </Screen>
   );

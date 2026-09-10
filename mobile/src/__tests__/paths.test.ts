@@ -18,6 +18,10 @@ describe('mobile path contract', () => {
     expect(MOBILE_PATHS.socialPosts).toBe('/mobile/social/posts');
     expect(MOBILE_PATHS.socialProfile('Ana')).toBe('/mobile/social/profile/Ana');
     expect(MOBILE_PATHS.socialMe).toBe('/mobile/social/me');
+    expect(MOBILE_PATHS.socialPost('paz')).toBe('/mobile/social/posts/paz');
+    expect(MOBILE_PATHS.socialComments).toBe('/mobile/social/comments');
+    expect(MOBILE_PATHS.socialReact).toBe('/mobile/social/react');
+    expect(MOBILE_PATHS.socialSearch).toBe('/mobile/social/search');
     expect(MOBILE_PATHS.bibleBooks).toBe('/mobile/bible/books');
     expect(MOBILE_PATHS.bibleChapter('jo', 3)).toBe('/mobile/bible/books/jo/chapters/3');
   });

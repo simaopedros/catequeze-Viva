@@ -33,6 +33,10 @@ export const MOBILE_PATHS = {
   socialFollow: '/mobile/social/follow',
   socialBlock: '/mobile/social/block',
   socialSharePreview: '/mobile/social/share/preview',
+  socialPost: (slug: string) => `/mobile/social/posts/${encodeURIComponent(slug)}`,
+  socialComments: '/mobile/social/comments',
+  socialReact: '/mobile/social/react',
+  socialSearch: '/mobile/social/search',
   bibleBooks: '/mobile/bible/books',
   bibleBook: (id: string) => `/mobile/bible/books/${encodeURIComponent(id)}`,
   bibleChapter: (bookId: string, chapter: number) =>

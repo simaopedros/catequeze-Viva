@@ -5,9 +5,11 @@ import type {
   BibleChapter,
   BootstrapPayload,
   SocialAccess,
+  SocialComment,
   SocialFeed,
   SocialPost,
   SocialProfile,
+  SocialSearch,
   SocialShare,
   SocialTopic,
 } from './types';
@@ -181,6 +183,7 @@ export function createMobileClient(options: MobileClientOptions) {
       cursor?: string | null;
       sort?: 'recent' | 'trending' | 'foryou';
       topicSlug?: string | null;
+      authorId?: string | null;
       following?: boolean;
     }) {
       return request<SocialFeed>(withQuery(MOBILE_PATHS.socialFeed, query));
@@ -226,6 +229,29 @@ export function createMobileClient(options: MobileClientOptions) {
         method: 'POST',
         body: JSON.stringify({ kind, sourceId }),
       });
+    },
+    socialPost(slug: string) {
+      return request<SocialPost>(MOBILE_PATHS.socialPost(slug));
+    },
+    socialComments(postId: string) {
+      return request<{ items: SocialComment[]; nextCursor: string | null }>(
+        withQuery(MOBILE_PATHS.socialComments, { postId }),
+      );
+    },
+    createComment(postId: string, body: string) {
+      return request<{ id: string; held?: boolean }>(MOBILE_PATHS.socialComments, {
+        method: 'POST',
+        body: JSON.stringify({ postId, body }),
+      });
+    },
+    toggleReaction(postId: string, type: 'AMEM' | 'REZO' | 'ALELUIA' = 'AMEM') {
+      return request<{ reaction: string | null; reactionCount: number }>(MOBILE_PATHS.socialReact, {
+        method: 'POST',
+        body: JSON.stringify({ postId, type }),
+      });
+    },
+    searchSocial(q: string) {
+      return request<SocialSearch>(withQuery(MOBILE_PATHS.socialSearch, { q }));
     },
     bibleBooks(locale = 'pt-BR') {
       return request<BibleBook[]>(withQuery(MOBILE_PATHS.bibleBooks, { locale }));

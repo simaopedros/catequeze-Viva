@@ -9,7 +9,8 @@ export default function CommunityRoute() {
   const router = useRouter();
   const [sort, setSort] = useState<'recent' | 'trending' | 'foryou'>('recent');
   const [topicSlug, setTopicSlug] = useState<string | null>(null);
-  const feed = useAsync(() => api.socialFeed({ sort, topicSlug }), [sort, topicSlug]);
+  const [following, setFollowing] = useState(false);
+  const feed = useAsync(() => api.socialFeed({ sort, topicSlug, following }), [sort, topicSlug, following]);
   const topics = useAsync(() => api.socialTopics(), []);
   const access = useAsync(() => api.socialAccess(), []);
 
@@ -20,12 +21,17 @@ export default function CommunityRoute() {
       access={access.data}
       sort={sort}
       topicSlug={topicSlug}
+      following={following}
       loading={feed.loading}
       error={feed.error}
       onChangeSort={setSort}
       onChangeTopic={setTopicSlug}
+      onToggleFollowing={() => setFollowing((value) => !value)}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
+      onOpenPost={(slug) => router.push(`/(app)/community/p/${slug}`)}
+      onOpenTopic={(slug) => router.push(`/(app)/community/t/${slug}`)}
       onCompose={() => router.push('/(app)/community/compose')}
+      onSearch={() => router.push('/(app)/community/search')}
     />
   );
 }

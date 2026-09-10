@@ -19,6 +19,11 @@ const REQUIRED_ROUTES = [
   ['mobileSocialFollow', 'POST', '/mobile/social/follow'],
   ['mobileSocialBlock', 'POST', '/mobile/social/block'],
   ['mobileSocialSharePreview', 'POST', '/mobile/social/share/preview'],
+  ['mobileSocialPost', 'GET', '/mobile/social/posts/:slug'],
+  ['mobileSocialComments', 'GET', '/mobile/social/comments'],
+  ['mobileSocialCreateComment', 'POST', '/mobile/social/comments'],
+  ['mobileSocialReact', 'POST', '/mobile/social/react'],
+  ['mobileSocialSearch', 'GET', '/mobile/social/search'],
   ['mobileBibleBooks', 'GET', '/mobile/bible/books'],
   ['mobileBibleBook', 'GET', '/mobile/bible/books/:id'],
   ['mobileBibleChapter', 'GET', '/mobile/bible/books/:bookId/chapters/:chapter'],
@@ -39,6 +44,11 @@ describe('mobile social + bible API wiring', () => {
     expect(mobileSocialSource).toContain('getSocialTopics');
     expect(mobileSocialSource).toContain('getSocialFeed');
     expect(mobileSocialSource).toContain('createSocialPost');
+    expect(mobileSocialSource).toContain('getSocialPost');
+    expect(mobileSocialSource).toContain('getSocialComments');
+    expect(mobileSocialSource).toContain('createSocialComment');
+    expect(mobileSocialSource).toContain('toggleSocialReaction');
+    expect(mobileSocialSource).toContain('searchSocial');
     expect(mobileSocialSource).toContain(
       "from '../operations/socialProfileOperations'",
     );

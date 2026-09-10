@@ -10,6 +10,9 @@ describe('navigation gate', () => {
 
   it('builds deep links for perfil, encontro, bíblia e presença', () => {
     expect(appRoutes.profile('ana')).toBe('/(app)/community/ana');
+    expect(appRoutes.post('paz-e-bem')).toBe('/(app)/community/p/paz-e-bem');
+    expect(appRoutes.topic('liturgia')).toBe('/(app)/community/t/liturgia');
+    expect(appRoutes.search).toBe('/(app)/community/search');
     expect(appRoutes.attendance('meet-1')).toBe('/(app)/meeting/meet-1/attendance');
     expect(appRoutes.bibleChapter('gn', 1)).toBe('/(app)/bible/gn/1');
   });

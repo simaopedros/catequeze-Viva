@@ -66,6 +66,28 @@ export type SocialPost = {
   topics?: { slug: string; name: string }[];
   media?: { id: string; kind?: string; url?: string | null }[];
   isOwn?: boolean;
+  viewerReaction?: 'AMEM' | 'REZO' | 'ALELUIA' | null;
+};
+
+export type SocialComment = {
+  id: string;
+  body: string;
+  createdAt?: string;
+  parentId?: string | null;
+  author: SocialAuthor;
+  isOwn?: boolean;
+};
+
+export type SocialSearch = {
+  people: {
+    id: string;
+    displayName: string;
+    avatarUrl?: string | null;
+    socialHandle?: string | null;
+    handle?: string | null;
+    followersCount?: number;
+  }[];
+  posts: SocialPost[];
 };
 
 export type SocialFeed = {
