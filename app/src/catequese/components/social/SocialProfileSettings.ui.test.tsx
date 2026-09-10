@@ -13,7 +13,8 @@ vi.mock("react-i18next", () => ({
     t: (key: string) => {
       const labels: Record<string, string> = {
         social_profile: "Perfil na Comunidade",
-        social_profile_desc: "Seu @ público, bio e foto aparecem nas partilhas e no feed.",
+        social_profile_desc:
+          "Seu @ público, bio e foto aparecem nas partilhas e no feed.",
         social_handle: "Nome de usuário (@)",
         social_bio: "Bio",
         social_website: "Link pessoal",
@@ -62,7 +63,12 @@ describe("SocialProfileSettings", () => {
           refetch: vi.fn(),
         };
       }
-      return { data: undefined, isLoading: false, error: null, refetch: vi.fn() };
+      return {
+        data: undefined,
+        isLoading: false,
+        error: null,
+        refetch: vi.fn(),
+      };
     }) as typeof useQuery);
   });
 
@@ -81,7 +87,16 @@ describe("SocialProfileSettings", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Contas bloqueadas")).toBeInTheDocument();
     expect(screen.getByText(/João/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Desbloquear" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Desbloquear" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Trocar foto" }),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("social-avatar-input")).toHaveAttribute(
+      "accept",
+      "image/jpeg,image/png,image/webp",
+    );
   });
 
   it("normaliza o @ enquanto a pessoa escreve", () => {
@@ -101,6 +116,8 @@ describe("SocialProfileSettings", () => {
     expect(input).toHaveValue("novo_handle");
 
     rerender(<SocialProfileSettings />);
-    expect(screen.getByLabelText("Nome de usuário (@)")).toHaveValue("novo_handle");
+    expect(screen.getByLabelText("Nome de usuário (@)")).toHaveValue(
+      "novo_handle",
+    );
   });
 });

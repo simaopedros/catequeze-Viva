@@ -16,6 +16,7 @@ import {
   collectHiddenAuthorIds,
   shouldExcludeAuthorFromFeed,
 } from '../shared/socialBlock';
+import { zIndex } from '../shared/designTokens';
 
 describe('social handle', () => {
   it('normalises @ prefix and case', () => {
@@ -97,6 +98,14 @@ describe('profile fields', () => {
     expect(isValidWebsiteUrl('http://localhost:3000')).toBe(true);
     expect(isValidWebsiteUrl('javascript:alert(1)')).toBe(false);
     expect(isValidWebsiteUrl('ftp://files')).toBe(false);
+  });
+});
+
+describe('cookie stacking', () => {
+  it('keeps the cookie banner above sticky chrome and below dialogs', () => {
+    expect(zIndex.cookieBanner).toBeGreaterThan(zIndex.sticky);
+    expect(zIndex.cookieBanner).toBeLessThan(zIndex.overlay);
+    expect(zIndex.cookieBanner).toBeLessThan(zIndex.modal);
   });
 });
 

@@ -64,7 +64,9 @@ test.describe("Comunidade — visitante anônimo", () => {
     await openPublicFeed(page);
 
     await expect(page.getByTestId("community-hero")).toBeVisible();
-    await expect(page.getByRole("heading", { name: /juntos na missão/i })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /juntos na missão/i }),
+    ).toBeVisible();
     await expect(page).toHaveURL(/\/comunidade$/);
 
     const overflow = await page.evaluate(() => {
@@ -90,7 +92,9 @@ test.describe("Comunidade — visitante anônimo", () => {
   test("não mostra o composer", async ({ page }) => {
     await openPublicFeed(page);
 
-    await expect(page.getByRole("button", { name: /^publicar$/i })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /^publicar$/i })).toHaveCount(
+      0,
+    );
   });
 
   test("alterna Para você, Recentes e Em alta", async ({ page }) => {
@@ -105,7 +109,9 @@ test.describe("Comunidade — visitante anônimo", () => {
     await expect(recent).toHaveAttribute("aria-selected", "true");
     await trending.click();
     await expect(trending).toHaveAttribute("aria-selected", "true");
-    await expect(page.getByRole("tab", { name: /de quem eu sigo/i })).toHaveCount(0);
+    await expect(
+      page.getByRole("tab", { name: /de quem eu sigo/i }),
+    ).toHaveCount(0);
   });
 });
 
@@ -122,7 +128,9 @@ test.describe("Comunidade — membro autenticado", () => {
     await expect(page.getByTestId("community-hero")).toBeVisible();
   });
 
-  test("vê o composer ou o convite para assinar, nunca os dois", async ({ page }) => {
+  test("vê o composer ou o convite para assinar, nunca os dois", async ({
+    page,
+  }) => {
     await login(page, USERS.leadCatechist.email);
 
     await page.goto("/app/comunidade");
@@ -137,10 +145,14 @@ test.describe("Comunidade — membro autenticado", () => {
       })
       .toBeGreaterThan(0);
 
-    expect((await composer.count()) === 0 || (await upsell.count()) === 0).toBe(true);
+    expect((await composer.count()) === 0 || (await upsell.count()) === 0).toBe(
+      true,
+    );
   });
 
-  test("alterna entre Recentes, Em alta e De quem eu sigo", async ({ page }) => {
+  test("alterna entre Recentes, Em alta e De quem eu sigo", async ({
+    page,
+  }) => {
     await login(page, USERS.leadCatechist.email);
 
     await page.goto("/app/comunidade");
@@ -196,7 +208,9 @@ test.describe("Comunidade — membro autenticado", () => {
 test.describe("Comunidade — perfil público", () => {
   test.skip(!SOCIAL_FEATURES_ENABLED, "Comunidade está desabilitada");
 
-  test("permalink inexistente mostra publicação não encontrada", async ({ page }) => {
+  test("permalink inexistente mostra publicação não encontrada", async ({
+    page,
+  }) => {
     await page.goto("/comunidade/p/slug-que-nao-existe");
     await page.waitForLoadState("domcontentloaded");
     await dismissCookieBanner(page);
@@ -240,9 +254,11 @@ test.describe("Comunidade — partilha nativa e perfil", () => {
     await expect(
       page.getByRole("heading", { name: /partilhar na comunidade/i }),
     ).toBeVisible();
-    await expect(page.getByRole("button", { name: /^publicar$/i })).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(page.getByRole("button", { name: /^publicar$/i })).toBeVisible(
+      {
+        timeout: 15000,
+      },
+    );
   });
 
   test("assinante partilha uma entrada do Catecismo", async ({ page }) => {
@@ -259,9 +275,11 @@ test.describe("Comunidade — partilha nativa e perfil", () => {
     await expect(
       page.getByRole("heading", { name: /partilhar na comunidade/i }),
     ).toBeVisible();
-    await expect(page.getByRole("button", { name: /^publicar$/i })).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(page.getByRole("button", { name: /^publicar$/i })).toBeVisible(
+      {
+        timeout: 15000,
+      },
+    );
   });
 
   test("plano gratuito vê o rascunho e o convite para assinar", async ({
@@ -273,15 +291,17 @@ test.describe("Comunidade — partilha nativa e perfil", () => {
     await page.waitForLoadState("domcontentloaded");
     await dismissCookieBanner(page);
 
-    await expect(
-      page.getByText(/a catequese pertence/i).first(),
-    ).toBeVisible({ timeout: 20000 });
+    await expect(page.getByText(/a catequese pertence/i).first()).toBeVisible({
+      timeout: 20000,
+    });
     await openNativeShare(page);
     await expect(
       page.getByRole("heading", { name: /partilhar na comunidade/i }),
     ).toBeVisible();
     await expect(page.getByText(/assine para publicar/i)).toBeVisible();
-    await expect(page.getByText(/texto pronto para a publicação/i)).toBeVisible();
+    await expect(
+      page.getByText(/texto pronto para a publicação/i),
+    ).toBeVisible();
   });
 
   test("assinante partilha um documento da biblioteca", async ({ page }) => {
@@ -298,9 +318,11 @@ test.describe("Comunidade — partilha nativa e perfil", () => {
     await expect(
       page.getByRole("heading", { name: /partilhar na comunidade/i }),
     ).toBeVisible();
-    await expect(page.getByRole("button", { name: /^publicar$/i })).toBeVisible({
-      timeout: 15000,
-    });
+    await expect(page.getByRole("button", { name: /^publicar$/i })).toBeVisible(
+      {
+        timeout: 15000,
+      },
+    );
   });
 
   test("perfil autenticado oferece seguir e o @", async ({ page }) => {
@@ -341,5 +363,101 @@ test.describe("Comunidade — partilha nativa e perfil", () => {
     await expect(
       page.getByRole("button", { name: /copiar link do perfil/i }),
     ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /trocar foto/i }),
+    ).toBeVisible();
+    await expect(page.getByTestId("social-avatar-input")).toHaveAttribute(
+      "accept",
+      /image\/(jpeg|png|webp)/,
+    );
+
+    const png = Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+      "base64",
+    );
+    await page.getByTestId("social-avatar-input").setInputFiles({
+      name: "avatar.png",
+      mimeType: "image/png",
+      buffer: png,
+    });
+    await expect(page.getByText(/foto atualizada/i)).toBeVisible({
+      timeout: 20000,
+    });
+  });
+
+  test("assinante bloqueia e desbloqueia um perfil", async ({ page }) => {
+    await login(page, USERS.leadCatechist.email);
+
+    await page.goto("/app/comunidade/u/coord_saojose");
+    await page.waitForLoadState("domcontentloaded");
+    await dismissCookieBanner(page);
+
+    await expect(page.getByText(/@coord_saojose/i)).toBeVisible({
+      timeout: 20000,
+    });
+
+    const toggle = page.getByTestId("social-block-toggle");
+    if (/desbloquear/i.test((await toggle.innerText()) || "")) {
+      await toggle.click();
+      await expect(toggle).toHaveText(/bloquear/i, { timeout: 15000 });
+    }
+    await expect(toggle).toHaveText(/bloquear/i);
+    await toggle.click();
+
+    await expect(page.getByText(/você bloqueou/i)).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(toggle).toHaveText(/desbloquear/i);
+    await expect(
+      page.getByText(
+        /posts ficam ocultos|publicações ficam ocultas|bloqueou esta conta/i,
+      ),
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: /^seguir$/i })).toHaveCount(
+      0,
+    );
+
+    await toggle.click();
+    await expect(page.getByText(/você desbloqueou/i)).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(toggle).toHaveText(/bloquear/i);
+    await expect(page.getByRole("button", { name: /^seguir$/i })).toBeVisible();
+  });
+
+  test("o diálogo de partilha fica acima do banner de cookies", async ({
+    page,
+  }) => {
+    await login(page, USERS.leadCatechist.email);
+
+    await page.goto("/app/bible?ref=Jo%C3%A3o%203:16");
+    await page.waitForLoadState("domcontentloaded");
+    await expect(page.getByTestId("share-to-community").first()).toBeVisible({
+      timeout: 20000,
+    });
+
+    await page.getByTestId("share-to-community").first().click({ force: true });
+    const dialog = page.getByRole("dialog");
+    await expect(
+      dialog.getByRole("heading", { name: /partilhar na comunidade/i }),
+    ).toBeVisible();
+
+    const stacking = await page.evaluate(() => {
+      const dialogEl = document.querySelector('[data-slot="dialog-content"]');
+      const banner = document.getElementById("cc-main");
+      if (!dialogEl) return { dialogZ: 0, bannerZ: 0, bannerHidden: true };
+      const dialogZ = Number.parseFloat(getComputedStyle(dialogEl).zIndex) || 0;
+      const bannerZ = banner
+        ? Number.parseFloat(getComputedStyle(banner).zIndex) || 0
+        : 0;
+      const bannerHidden =
+        !banner || getComputedStyle(banner).visibility === "hidden";
+      return { dialogZ, bannerZ, bannerHidden };
+    });
+
+    expect(stacking.dialogZ).toBeGreaterThan(0);
+    expect(stacking.bannerHidden || stacking.dialogZ > stacking.bannerZ).toBe(
+      true,
+    );
   });
 });

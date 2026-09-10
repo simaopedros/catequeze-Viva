@@ -11,8 +11,12 @@ import {
 import { Button } from "../../../client/components/ui/button";
 import { Input } from "../../../client/components/ui/input";
 import { Textarea } from "../../../client/components/ui/textarea";
-import { AppEyebrow, AppPanel } from "../../../client/components/brand/AppChrome";
+import {
+  AppEyebrow,
+  AppPanel,
+} from "../../../client/components/brand/AppChrome";
 import { toast } from "../../../client/hooks/use-toast";
+import { invalidateSocialFollowQueries } from "../../../client/hooks/socialQueryCache";
 import { uploadProfileAvatar } from "../../../client/utils/profileAvatarUpload";
 import { SOCIAL_FEATURES_ENABLED } from "../../../shared/socialFeatures";
 import {
@@ -57,7 +61,10 @@ export function SocialProfileSettings() {
       await refetch();
       toast({ title: t("saved") });
     } catch (error: any) {
-      toast({ title: error?.message || t("save_profile_error"), variant: "destructive" });
+      toast({
+        title: error?.message || t("save_profile_error"),
+        variant: "destructive",
+      });
     } finally {
       setSaving(false);
     }
@@ -82,7 +89,10 @@ export function SocialProfileSettings() {
       await refetch();
       toast({ title: t("social_avatar_updated") });
     } catch (error: any) {
-      toast({ title: error?.message || t("social_avatar_error"), variant: "destructive" });
+      toast({
+        title: error?.message || t("social_avatar_error"),
+        variant: "destructive",
+      });
     } finally {
       setUploading(false);
     }
@@ -91,11 +101,17 @@ export function SocialProfileSettings() {
   return (
     <AppPanel className="space-y-4">
       <AppEyebrow>{t("social_profile")}</AppEyebrow>
-      <p className="text-sm text-muted-foreground">{t("social_profile_desc")}</p>
+      <p className="text-sm text-muted-foreground">
+        {t("social_profile_desc")}
+      </p>
 
       <div className="flex items-center gap-4">
         {avatarUrl ? (
-          <img src={avatarUrl} alt="" className="h-16 w-16 rounded-full object-cover" />
+          <img
+            src={avatarUrl}
+            alt=""
+            className="h-16 w-16 rounded-full object-cover"
+          />
         ) : (
           <div
             aria-hidden
@@ -110,6 +126,7 @@ export function SocialProfileSettings() {
             type="file"
             accept="image/jpeg,image/png,image/webp"
             className="hidden"
+            data-testid="social-avatar-input"
             onChange={(event) => {
               const file = event.target.files?.[0];
               event.target.value = "";
@@ -123,7 +140,9 @@ export function SocialProfileSettings() {
             onClick={() => fileInput.current?.click()}
             disabled={uploading}
           >
-            {uploading && <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" aria-hidden />}
+            {uploading && (
+              <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" aria-hidden />
+            )}
             {t("social_change_avatar")}
           </Button>
         </div>
@@ -140,7 +159,9 @@ export function SocialProfileSettings() {
             value={handle}
             onChange={(event) => {
               dirtyRef.current = true;
-              setHandle(normalizeHandle(event.target.value).slice(0, HANDLE_MAX));
+              setHandle(
+                normalizeHandle(event.target.value).slice(0, HANDLE_MAX),
+              );
             }}
             maxLength={HANDLE_MAX}
             className="h-10 rounded-sm"
@@ -186,11 +207,27 @@ export function SocialProfileSettings() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Button type="button" size="sm" onClick={save} disabled={saving} className="gap-1">
-          {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <Save className="h-3.5 w-3.5" aria-hidden />}
+        <Button
+          type="button"
+          size="sm"
+          onClick={save}
+          disabled={saving}
+          className="gap-1"
+        >
+          {saving ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+          ) : (
+            <Save className="h-3.5 w-3.5" aria-hidden />
+          )}
           {saving ? t("saving") : t("social_save")}
         </Button>
-        <Button type="button" variant="outline" size="sm" onClick={copyLink} className="gap-1">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={copyLink}
+          className="gap-1"
+        >
           <Copy className="h-3.5 w-3.5" aria-hidden />
           {t("social_copy_link")}
         </Button>
@@ -204,7 +241,10 @@ export function SocialProfileSettings() {
           <ScrollFade maxHeight="12rem">
             <ul className="space-y-2">
               {blocks!.items.map((item: any) => (
-                <li key={item.id} className="flex items-center justify-between gap-2 text-sm">
+                <li
+                  key={item.id}
+                  className="flex items-center justify-between gap-2 text-sm"
+                >
                   <span className="truncate">
                     {item.displayName}
                     {item.handle ? ` (@${item.handle})` : ""}
@@ -215,6 +255,7 @@ export function SocialProfileSettings() {
                     size="sm"
                     onClick={async () => {
                       await toggleSocialBlock({ userId: item.id });
+                      void invalidateSocialFollowQueries();
                       await refetchBlocks();
                     }}
                   >
