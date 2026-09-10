@@ -33,6 +33,7 @@ import {
   Sparkles,
   Landmark,
   Megaphone,
+  UsersRound,
 } from "lucide-react";
 import { useUserContext } from "../client/hooks/useUserContext";
 import {
@@ -42,6 +43,7 @@ import {
 } from "../shared/navigation";
 import { useQuery, getUnreadMessagesCount } from "wasp/client/operations";
 import { useActiveWorkspace } from "../client/hooks/useActiveWorkspace";
+import { planCanAccessCatechesis } from "../shared/pricing";
 import { usePageVisibility } from "../client/hooks/usePageVisibility";
 import { BrandLockup, BrandMark } from "../client/components/brand/Brand";
 import {
@@ -54,6 +56,7 @@ import {
 // ---- Icon Map (iconKey → Lucide component) ----
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   dashboard: LayoutDashboard,
+  groups: UsersRound,
   parishes: Church,
   communities: Building2,
   classes: Users,
@@ -239,7 +242,7 @@ export function Sidebar() {
     () => new Set(["people"]),
   );
   const { userRole, isAdmin } = useUserContext();
-  const { workspaceType, workspaceId } = useActiveWorkspace();
+  const { workspaceType, workspaceId, workspacePlan } = useActiveWorkspace();
   const isVisible = usePageVisibility();
 
   const { data: unreadMessages } = useQuery(
@@ -259,6 +262,7 @@ export function Sidebar() {
     role: userRole,
     isAdmin,
     workspaceType,
+    canAccessCatechesis: planCanAccessCatechesis(workspacePlan),
   });
 
   const toggleSection = (section: string) => {

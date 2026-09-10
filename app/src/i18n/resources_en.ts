@@ -300,6 +300,9 @@ export const admin_en = {
         "limit_catechumens": "Max catechumens",
         "limit_catechists": "Max catechists",
         "limit_parishes": "Max parishes",
+        "limit_groups": "Max pastoral groups",
+        "can_create_groups": "Can create groups",
+        "can_access_catechesis": "Catequese Viva access",
         "ai_monthly": "AI credits / month",
         "ai_daily": "Daily AI limit",
         "ai_initial": "Initial credits",
@@ -1399,6 +1402,13 @@ export const billing_en = {
         "cta": "Unlock full team",
         "checklist": "Bring in more catechists without moving classes, messages, or history elsewhere.",
         "toast_description": "Your catechesis now depends on more people. Unlock the full team in the same workspace."
+      },
+      "group_limit": {
+        "title": "Your next group needs more room",
+        "description": "You used {{currentCount}} of {{maxAllowed}} groups on {{currentPlanName}}. Upgrade to {{plan}} and keep organizing ministries in the same place.",
+        "cta": "Unlock more groups",
+        "checklist": "You open the next group without splitting notices, members, or pastoral work.",
+        "toast_description": "You reached the pastoral group limit. Unlock more capacity without interrupting the ministry."
       }
     },
     "switch_annual_title": "Save by switching to the annual plan",
@@ -2254,7 +2264,8 @@ export const common_en = {
       "CATECHUMEN": "Catechumen",
       "CONTENT_REVIEWER": "Reviewer",
       "PASTORAL_VIEWER": "Visitor",
-      "PERSONAL_OWNER": "Owner"
+      "PERSONAL_OWNER": "Owner",
+      "PLATFORM_MEMBER": "Member"
     },
     "roles_desc": {
       "PARISH_COORDINATOR": "Coordinates catechesis in this space: team, classes, invites, and settings.",
@@ -3453,6 +3464,86 @@ export const family_en = {
     }
   } as const;
 
+export const groups_en = {
+    "title": "Groups",
+    "eyebrow": "Catechis",
+    "subtitle": "Discover pastoral groups and take part in the life of the Church.",
+    "create": "Create group",
+    "create_title": "New group",
+    "create_subtitle": "Give it a name, choose the type, and who can join.",
+    "upgrade_to_create": "Subscribe to create",
+    "tab_discover": "Discover",
+    "tab_mine": "My groups",
+    "search_placeholder": "Search by name or description",
+    "all_kinds": "All types",
+    "load_error": "Could not load groups.",
+    "empty_discover": "No public groups here yet.",
+    "empty_mine": "You have not joined a group yet.",
+    "empty_hint_create": "Create the first group in your community.",
+    "empty_hint_join": "Join a public group or ask an organizer for an invite.",
+    "member_count": "{{count}} member",
+    "member_count_plural": "{{count}} members",
+    "status_pending": "Request sent",
+    "status_invited": "Invited",
+    "status_left": "Left",
+    "created": "Group created",
+    "create_error": "Could not create the group.",
+    "field_name": "Name",
+    "field_kind": "Type",
+    "field_visibility": "Who can join",
+    "field_custom_kind": "Custom type name",
+    "field_city": "City",
+    "field_state": "State",
+    "field_description": "Description",
+    "no_city": "City not set",
+    "join": "Join",
+    "joined": "You joined the group",
+    "leave": "Leave",
+    "left": "You left the group",
+    "action_error": "Could not complete this action.",
+    "restricted": "This group is restricted. Ask an organizer for an invite.",
+    "notices": "Notices",
+    "notice_placeholder": "Write a short notice for the group",
+    "post_notice": "Post notice",
+    "notice_posted": "Notice posted",
+    "no_notices": "No notices yet.",
+    "members": "Members",
+    "join_accepted": "Request accepted",
+    "join_rejected": "Request declined",
+    "home_eyebrow": "Home",
+    "home_hello": "Hello, {{name}}",
+    "home_hello_default": "Welcome to Catechis",
+    "home_subtitle": "Join groups and read the Bible and Catechism. Subscribe to create a group.",
+    "home_groups_hint": "Discover youth, music, prayer, and other ministry groups.",
+    "home_bible": "Bible",
+    "home_bible_hint": "Read Sacred Scripture.",
+    "home_catechism": "Catechism",
+    "home_catechism_hint": "Consult the Catechism of the Catholic Church.",
+    "open_bible": "Open Bible",
+    "open_catechism": "Open Catechism",
+    "kinds": {
+      "YOUTH": "Youth",
+      "MUSIC": "Music",
+      "PRAYER": "Prayer",
+      "LITURGY": "Liturgy",
+      "CHARITY": "Charity",
+      "FAMILY": "Family",
+      "MOVEMENT": "Movement",
+      "FORMATION": "Formation",
+      "CUSTOM": "Custom"
+    },
+    "visibility": {
+      "PUBLIC": "Public — join immediately",
+      "PRIVATE": "Private — approval required",
+      "INVITE_ONLY": "Invite only"
+    },
+    "roles": {
+      "OWNER": "Owner",
+      "LEADER": "Leader",
+      "MEMBER": "Member"
+    }
+  } as const;
+
 export const hierarchy_en = {
     "origin": {
       "platform": "Platform",
@@ -3925,15 +4016,16 @@ export const landing_en = {
     "steps_cta": "Start my catechesis",
     "pricing_eyebrow": "Start your way",
     "pricing_title": "Start your way.",
-    "pricing_subtitle": "You can begin on your own and, as your catechesis grows, bring the organization to the whole parish.",
+    "pricing_subtitle": "A member account is free. To create groups or catechesis, subscribe. You can begin on your own and, as you grow, bring the organization to the whole parish.",
     "pricing_institutional_link": "Parish or diocese? See institutional plans",
     "plans": {
       "single": {
         "name": "Catechist Plan",
         "audience": "For you",
-        "desc": "To organize your class and your meetings.",
+        "desc": "To organize pastoral groups and up to 3 catechesis classes.",
         "price": "R$ 9.90",
         "features": [
+          "Up to 3 pastoral groups",
           "Up to 3 classes",
           "150 catechumens",
           "Attendance and calendar",
@@ -3946,6 +4038,7 @@ export const landing_en = {
         "desc": "To bring your team, classes, and families together.",
         "price": "R$ 99",
         "features": [
+          "Unlimited pastoral groups",
           "Unlimited classes and team",
           "Unlimited catechumens",
           "Institutional workspace",
@@ -5131,6 +5224,7 @@ export const messages_en = {
 
 export const navigation_en = {
     "dashboard": "Dashboard",
+    "groups": "Groups",
     "classes": "Classes",
     "catechumens": "Catechumens",
     "catechumens_short": "Students",
@@ -5253,7 +5347,11 @@ export const onboarding_en = {
     "welcome": {
       "hello": "Hello, {{name}}",
       "hello_default": "Welcome",
-      "question": "How will you use Catequese Viva?",
+      "question": "How will you use Catechis?",
+      "member_title": "I am a member — I want to take part",
+      "member_desc": "Join for free, discover groups, and follow the life of the Church. No card required.",
+      "organizer_title": "I want to organize a group",
+      "organizer_desc": "Create and lead a youth, music, prayer, or other ministry group. A subscription is needed to create.",
       "personal_title": "I am a catechist and run my class",
       "personal_desc": "Create the class, add catechumens, and use it every week.",
       "personal_features": [],
@@ -5898,8 +5996,8 @@ export const public_en = {
       "aria": "Open a conversation on the sales WhatsApp"
     },
     "pricing": {
-      "title": "Three paths: catechist, parish, and diocese",
-      "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7-day free trial; card now, charge after trial.",
+      "title": "Join free. Organizers subscribe.",
+      "subtitle": "A member account is free. To organize groups or catechesis: Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7-day free trial for paid plans; card now, charge after trial.",
       "payment_card": "Card",
       "annual_savings": "Save 17% on annual",
       "monthly_tab": "Monthly",
@@ -5911,8 +6009,8 @@ export const public_en = {
       "cta_paid": "Start the 7 days",
       "most_popular": "Built for the catechist",
       "plan_desc": {
-        "single": "For you to care for your class — attendance, history, and calendar in one place, with more time left for people. Covers up to 3 classes if you walk with more than one.",
-        "unlimited": "For the parish: unlimited classes, catechumens, and team in an institutional workspace."
+        "single": "Organize pastoral groups and, if you want, up to 3 catechesis classes — attendance, history, and calendar in one place.",
+        "unlimited": "For the parish: unlimited groups, classes, catechumens, and team in an institutional workspace."
       },
       "diocese_name": "Diocese Plan",
       "diocese_audience": "For the diocese — assisted sales",
@@ -5927,11 +6025,11 @@ export const public_en = {
       "faq": [
         {
           "q": "How can I try the platform before subscribing?",
-          "a": "You try it for 7 days. We ask for a card now and only charge after the trial. Use it with your real class and cancel if it does not make sense to continue."
+          "a": "You can create a free member account, join groups, and read the Bible and Catechism. To create groups or use Catequese Viva, try 7 days. We ask for a card now and only charge after the trial."
         },
         {
           "q": "What is the price?",
-          "a": "The Catechist Plan costs R$ 9.90/month (or R$ 99/year) and covers up to 3 classes and 150 catechumens in total — more than enough for your reality."
+          "a": "Taking part is free. The Catechist Plan costs R$ 9.90/month (or R$ 99/year) and covers up to 3 pastoral groups, 3 classes, and 150 catechumens — more than enough for your reality."
         },
         {
           "q": "How does payment work?",
@@ -5943,7 +6041,7 @@ export const public_en = {
         },
         {
           "q": "What if my catechesis grows?",
-          "a": "The Catechist Plan covers up to 3 classes and 150 catechumens. If you need a team and more classes, organize as a parish (Parish Plan). If the diocese takes over, talk to sales — the diocese license covers the parishes. Your data and class history are preserved."
+          "a": "The Catechist Plan covers up to 3 groups, 3 classes, and 150 catechumens. If you need a team and more classes, organize as a parish (Parish Plan). If the diocese takes over, talk to sales — the diocese license covers the parishes. Your data and history are preserved."
         },
         {
           "q": "Is my data secure?",
@@ -6728,6 +6826,7 @@ export const resources_en = {
   dashboard: dashboard_en,
   emails: emails_en,
   family: family_en,
+  groups: groups_en,
   hierarchy: hierarchy_en,
   landing: landing_en,
   landingIa: landingIa_en,

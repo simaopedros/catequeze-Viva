@@ -6,10 +6,9 @@ import {
 } from "../shared/billingAccess";
 
 describe("billingAccess", () => {
-  it("treats coordinators and personal owners as billing managers", () => {
-    expect(isBillingManagerRole("PARISH_COORDINATOR")).toBe(true);
-    expect(isBillingManagerRole("PERSONAL_OWNER")).toBe(true);
-    expect(canManageWorkspaceBilling("PARISH_COORDINATOR")).toBe(true);
+  it("treats platform members as payers for their own organizer upgrade", () => {
+    expect(isBillingManagerRole("PLATFORM_MEMBER")).toBe(true);
+    expect(canManageWorkspaceBilling("PLATFORM_MEMBER")).toBe(true);
   });
 
   it("treats lead and assistant catechists as collaborators (not payers)", () => {

@@ -9,9 +9,11 @@ import { ReviewerDashboard } from "../components/dashboard/ReviewerDashboard";
 import { PastoralDashboard } from "../components/dashboard/PastoralDashboard";
 import { CoordinatorDashboard } from "../components/dashboard/CoordinatorDashboard";
 import { InstitutionalDashboard } from "../components/dashboard/InstitutionalDashboard";
+import { MemberDashboard } from "../components/dashboard/MemberDashboard";
 import { SkeletonPage } from "../../client/components/Skeletons";
 import { FAMILY_PORTAL_ROLES, isFamilyPortalHost } from "../../shared/portal";
 import { shouldUseInstitutionalDashboard } from "../../shared/dashboardGate";
+import { planCanAccessCatechesis } from "../../shared/pricing";
 
 export { shouldUseInstitutionalDashboard };
 
@@ -68,6 +70,16 @@ export default function DashboardPage() {
 
   if (isInstitutional) {
     return <InstitutionalDashboard />;
+  }
+
+  const familyDashboardRoles = new Set(["GUARDIAN", "CATECHUMEN"]);
+  if (
+    effectiveRole === "PLATFORM_MEMBER" ||
+    (!planCanAccessCatechesis(workspacePlan) &&
+      !isFamilyHost &&
+      !familyDashboardRoles.has(effectiveRole))
+  ) {
+    return <MemberDashboard />;
   }
 
   const roleDashboards: Record<string, React.ComponentType<{ stats: any }>> = {

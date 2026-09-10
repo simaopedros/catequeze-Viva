@@ -387,6 +387,13 @@ export const billing_pt_BR_core = {
         "cta": "Liberar equipe completa",
         "checklist": "Você integra mais catequistas sem tirar turmas, mensagens e histórico do lugar.",
         "toast_description": "Sua catequese já depende de mais gente. Libere a equipe completa no mesmo espaço."
+      },
+      "group_limit": {
+        "title": "Seu próximo grupo precisa de espaço",
+        "description": "Você usou {{currentCount}} de {{maxAllowed}} grupos do {{currentPlanName}}. Faça upgrade para o {{plan}} e continue organizando ministérios no mesmo lugar.",
+        "cta": "Liberar mais grupos",
+        "checklist": "Você cria o próximo grupo sem espalhar avisos, membros e avisos pastorais.",
+        "toast_description": "Você chegou ao limite de grupos pastorais. Libere mais capacidade sem interromper o ministério."
       }
     },
     "switch_annual_title": "Economize trocando para o plano anual",
@@ -732,7 +739,8 @@ export const common_pt_BR_core = {
       "CATECHUMEN": "Catequizando",
       "CONTENT_REVIEWER": "Revisor",
       "PASTORAL_VIEWER": "Visitante",
-      "PERSONAL_OWNER": "Proprietário"
+      "PERSONAL_OWNER": "Proprietário",
+      "PLATFORM_MEMBER": "Membro"
     },
     "roles_desc": {
       "PARISH_COORDINATOR": "Coordena a catequese deste espaço: equipe, turmas, convites e configurações.",
@@ -1456,15 +1464,16 @@ export const landing_pt_BR_core = {
     "steps_cta": "Começar minha catequese",
     "pricing_eyebrow": "Comece do seu jeito",
     "pricing_title": "Comece do seu jeito.",
-    "pricing_subtitle": "Você pode começar sozinho e, quando sua catequese crescer, levar a organização para toda a paróquia.",
+    "pricing_subtitle": "A conta de membro é gratuita. Para criar grupos ou catequese, assine. Você pode começar sozinho e, quando crescer, levar a organização para a paróquia.",
     "pricing_institutional_link": "Paróquia ou diocese? Ver planos institucionais",
     "plans": {
       "single": {
         "name": "Plano Catequista",
         "audience": "Para você",
-        "desc": "Para organizar sua turma e seus encontros.",
+        "desc": "Para organizar grupos pastorais e até 3 turmas de catequese.",
         "price": "R$ 9,90",
         "features": [
+          "Até 3 grupos pastorais",
           "Até 3 turmas",
           "150 catequizandos",
           "Presença e calendário",
@@ -1477,6 +1486,7 @@ export const landing_pt_BR_core = {
         "desc": "Para reunir sua equipe, turmas e famílias.",
         "price": "R$ 99",
         "features": [
+          "Grupos pastorais ilimitados",
           "Turmas e equipe ilimitadas",
           "Catequizandos ilimitados",
           "Espaço institucional",
@@ -2439,6 +2449,7 @@ export const legal_pt_BR_core = {
 
 export const navigation_pt_BR_core = {
     "dashboard": "Painel",
+    "groups": "Grupos",
     "classes": "Turmas",
     "catechumens": "Catequizandos",
     "catechumens_short": "Quizandos",
@@ -2561,8 +2572,8 @@ export const public_pt_BR_core = {
       "aria": "Abrir conversa no WhatsApp de vendas"
     },
     "pricing": {
-      "title": "Três caminhos: catequista, paróquia e diocese",
-      "subtitle": "Catequista R$ 9,90/mês (ou R$ 99/ano). Paróquia a partir de R$ 99/mês. Diocese sob consulta. 7 dias grátis; o cartão é pedido agora e a cobrança só começa depois do trial.",
+      "title": "Membro grátis. Quem organiza, assina.",
+      "subtitle": "Conta de membro é gratuita. Organizar grupos ou catequese: Catequista R$ 9,90/mês (ou R$ 99/ano). Paróquia a partir de R$ 99/mês. Diocese sob consulta. 7 dias grátis para quem assina; o cartão é pedido agora e a cobrança só começa depois do trial.",
       "payment_card": "Cartão",
       "annual_savings": "Economize 17% no anual",
       "monthly_tab": "Mensal",
@@ -2574,8 +2585,8 @@ export const public_pt_BR_core = {
       "cta_paid": "Começar os 7 dias",
       "most_popular": "Feito para o catequista",
       "plan_desc": {
-        "single": "Para você cuidar da sua turma — chamada, histórico e calendário no mesmo lugar, com mais tempo para as pessoas. Cobre até 3 turmas, se você acompanhar mais de uma.",
-        "unlimited": "Para a paróquia: turmas, catequizandos e equipe ilimitados no espaço institucional."
+        "single": "Para organizar grupos pastorais e, se quiser, até 3 turmas de catequese — chamada, histórico e calendário no mesmo lugar.",
+        "unlimited": "Para a paróquia: grupos, turmas, catequizandos e equipe ilimitados no espaço institucional."
       },
       "diocese_name": "Plano Diocese",
       "diocese_audience": "Para a diocese — venda assistida",
@@ -2590,11 +2601,11 @@ export const public_pt_BR_core = {
       "faq": [
         {
           "q": "Como conheço a plataforma antes de assinar?",
-          "a": "Você testa por 7 dias. O cartão é pedido agora; a cobrança só começa depois do trial. Use na sua turma de verdade e cancele se não fizer sentido continuar."
+          "a": "Você pode criar uma conta de membro grátis, entrar em grupos e ler Bíblia e Catecismo. Para criar grupos ou usar a Catequese Viva, teste 7 dias. O cartão é pedido agora; a cobrança só começa depois do trial."
         },
         {
           "q": "Qual é o preço?",
-          "a": "O Plano Catequista custa R$ 9,90/mês (ou R$ 99/ano) e cobre até 3 turmas e 150 catequizandos no total — mais do que suficiente para a sua realidade."
+          "a": "Participar é grátis. O Plano Catequista custa R$ 9,90/mês (ou R$ 99/ano) e cobre até 3 grupos pastorais, 3 turmas e 150 catequizandos — mais do que suficiente para a sua realidade."
         },
         {
           "q": "Como funciona o pagamento?",
@@ -2606,7 +2617,7 @@ export const public_pt_BR_core = {
         },
         {
           "q": "E se a minha catequese crescer?",
-          "a": "O Plano Catequista cobre até 3 turmas e 150 catequizandos. Se precisar de equipe e mais turmas, organize como paróquia (Plano Paróquia). Se a diocese assume, fale com vendas — a licença diocesana cobre as paróquias. Seus dados e o histórico da turma são preservados."
+          "a": "O Plano Catequista cobre até 3 grupos, 3 turmas e 150 catequizandos. Se precisar de equipe e mais turmas, organize como paróquia (Plano Paróquia). Se a diocese assume, fale com vendas — a licença diocesana cobre as paróquias. Seus dados e o histórico são preservados."
         },
         {
           "q": "Os dados ficam seguros?",

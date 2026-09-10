@@ -14,10 +14,29 @@ const UNGATED_APP_PREFIXES = [
   "/app/bible",
   "/app/catechism",
   "/app/directory",
+  "/app/settings",
+  "/app/calendar",
 ] as const;
+
+export function isCreateGroupPath(pathname: string): boolean {
+  const path = pathname.split("?")[0];
+  return path === "/app/grupos/novo" || path.startsWith("/app/grupos/novo/");
+}
+
+/** Member home, groups (except create), liturgy — no subscription required. */
+export function isMemberAppPath(pathname: string): boolean {
+  const path = pathname.split("?")[0];
+  if (path === "/app" || path === "/app/") return true;
+  if (path === "/app/grupos" || path.startsWith("/app/grupos/")) {
+    return !isCreateGroupPath(path);
+  }
+  return false;
+}
 
 export function isUngatedAppPath(pathname: string): boolean {
   if (pathname === "/account" || pathname.startsWith("/account/")) return true;
+  if (isCreateGroupPath(pathname)) return false;
+  if (isMemberAppPath(pathname)) return true;
   if (isSocialAppPath(pathname)) return true;
   return UNGATED_APP_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),

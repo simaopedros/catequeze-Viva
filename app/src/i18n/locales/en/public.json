@@ -36,8 +36,8 @@
     "aria": "Open a conversation on the sales WhatsApp"
   },
   "pricing": {
-    "title": "Three paths: catechist, parish, and diocese",
-    "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7-day free trial; card now, charge after trial.",
+    "title": "Join free. Organizers subscribe.",
+    "subtitle": "A member account is free. To organize groups or catechesis: Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7-day free trial for paid plans; card now, charge after trial.",
     "payment_card": "Card",
     "annual_savings": "Save 17% on annual",
     "monthly_tab": "Monthly",
@@ -49,8 +49,8 @@
     "cta_paid": "Start the 7 days",
     "most_popular": "Built for the catechist",
     "plan_desc": {
-      "single": "For you to care for your class — attendance, history, and calendar in one place, with more time left for people. Covers up to 3 classes if you walk with more than one.",
-      "unlimited": "For the parish: unlimited classes, catechumens, and team in an institutional workspace."
+      "single": "Organize pastoral groups and, if you want, up to 3 catechesis classes — attendance, history, and calendar in one place.",
+      "unlimited": "For the parish: unlimited groups, classes, catechumens, and team in an institutional workspace."
     },
     "diocese_name": "Diocese Plan",
     "diocese_audience": "For the diocese — assisted sales",
@@ -65,11 +65,11 @@
     "faq": [
       {
         "q": "How can I try the platform before subscribing?",
-        "a": "You try it for 7 days. We ask for a card now and only charge after the trial. Use it with your real class and cancel if it does not make sense to continue."
+        "a": "You can create a free member account, join groups, and read the Bible and Catechism. To create groups or use Catequese Viva, try 7 days. We ask for a card now and only charge after the trial."
       },
       {
         "q": "What is the price?",
-        "a": "The Catechist Plan costs R$ 9.90/month (or R$ 99/year) and covers up to 3 classes and 150 catechumens in total — more than enough for your reality."
+        "a": "Taking part is free. The Catechist Plan costs R$ 9.90/month (or R$ 99/year) and covers up to 3 pastoral groups, 3 classes, and 150 catechumens — more than enough for your reality."
       },
       {
         "q": "How does payment work?",
@@ -81,7 +81,7 @@
       },
       {
         "q": "What if my catechesis grows?",
-        "a": "The Catechist Plan covers up to 3 classes and 150 catechumens. If you need a team and more classes, organize as a parish (Parish Plan). If the diocese takes over, talk to sales — the diocese license covers the parishes. Your data and class history are preserved."
+        "a": "The Catechist Plan covers up to 3 groups, 3 classes, and 150 catechumens. If you need a team and more classes, organize as a parish (Parish Plan). If the diocese takes over, talk to sales — the diocese license covers the parishes. Your data and history are preserved."
       },
       {
         "q": "Is my data secure?",

@@ -196,6 +196,9 @@ describe('AI scope', () => {
     expect(PLANS.catechist_free.ai.monthlyCredits).toBe(0);
     expect(PLANS.catechist_free.limits.maxClasses).toBe(0);
     expect(PLANS.catechist_free.limits.maxCatechumens).toBe(0);
+    expect(PLANS.catechist_free.limits.maxGroups).toBe(0);
+    expect(PLANS.catechist_free.limits.canCreateGroups).toBe(false);
+    expect(PLANS.catechist_free.limits.canAccessCatechesis).toBe(false);
   });
 });
 

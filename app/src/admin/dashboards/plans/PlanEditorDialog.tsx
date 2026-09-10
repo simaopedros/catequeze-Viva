@@ -38,6 +38,9 @@ export type PlanEditorValues = {
   maxCatechumens: number | null;
   maxCatechists: number | null;
   maxParishes: number | null;
+  maxGroups: number | null;
+  canCreateGroups: boolean;
+  canAccessCatechesis: boolean;
   aiMonthlyCredits: number;
   aiDailyLimit: number;
   aiInitialCredits: number;
@@ -70,6 +73,9 @@ function fromAdminPlan(plan: AdminPricingPlan): PlanEditorValues {
     maxCatechumens: plan.maxCatechumens,
     maxCatechists: plan.maxCatechists,
     maxParishes: plan.maxParishes,
+    maxGroups: plan.maxGroups ?? null,
+    canCreateGroups: Boolean(plan.canCreateGroups),
+    canAccessCatechesis: plan.canAccessCatechesis ?? false,
     aiMonthlyCredits: plan.aiMonthlyCredits,
     aiDailyLimit: plan.aiDailyLimit,
     aiInitialCredits: plan.aiInitialCredits,
@@ -100,6 +106,9 @@ function emptyPlan(): PlanEditorValues {
     maxCatechumens: 150,
     maxCatechists: 1,
     maxParishes: 1,
+    maxGroups: 3,
+    canCreateGroups: true,
+    canAccessCatechesis: true,
     aiMonthlyCredits: 0,
     aiDailyLimit: 0,
     aiInitialCredits: 0,
@@ -305,6 +314,25 @@ export function PlanEditorDialog({
             value={values.maxParishes}
             onChange={(value) => update("maxParishes", value)}
           />
+          <LimitField
+            label={t("pages.plans.limit_groups")}
+            value={values.maxGroups}
+            onChange={(value) => update("maxGroups", value)}
+          />
+          <div className="flex items-center justify-between rounded-sm border border-border/70 px-3 py-2">
+            <Label>{t("pages.plans.can_create_groups")}</Label>
+            <Switch
+              checked={values.canCreateGroups}
+              onCheckedChange={(checked) => update("canCreateGroups", checked)}
+            />
+          </div>
+          <div className="flex items-center justify-between rounded-sm border border-border/70 px-3 py-2">
+            <Label>{t("pages.plans.can_access_catechesis")}</Label>
+            <Switch
+              checked={values.canAccessCatechesis}
+              onCheckedChange={(checked) => update("canAccessCatechesis", checked)}
+            />
+          </div>
 
           <div className="space-y-1.5">
             <Label>{t("pages.plans.ai_monthly")}</Label>

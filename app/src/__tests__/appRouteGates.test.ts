@@ -71,6 +71,20 @@ describe("isUngatedAppPath", () => {
     expect(isUngatedAppPath("/app/comunidade")).toBe(true);
     expect(isUngatedAppPath("/app/classes")).toBe(false);
   });
+
+  it("opens member home and group discovery without a subscription", () => {
+    expect(isUngatedAppPath("/app")).toBe(true);
+    expect(isUngatedAppPath("/app/")).toBe(true);
+    expect(isUngatedAppPath("/app/grupos")).toBe(true);
+    expect(isUngatedAppPath("/app/grupos/abc")).toBe(true);
+  });
+
+  it("keeps create-group and catechesis surfaces gated", () => {
+    expect(isUngatedAppPath("/app/grupos/novo")).toBe(false);
+    expect(isUngatedAppPath("/app/grupos/novo/")).toBe(false);
+    expect(isUngatedAppPath("/app/classes")).toBe(false);
+    expect(isUngatedAppPath("/app/catechumens")).toBe(false);
+  });
 });
 
 describe("shouldRenderGatedRoute", () => {

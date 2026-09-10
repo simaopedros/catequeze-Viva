@@ -7,6 +7,8 @@ type UserContextResult = {
   needsOnboarding: boolean;
   hasPendingInvitations: boolean;
   personalWorkspaceId: string | null;
+  memberOnboardedAt: string | null;
+  platformIntent: string | null;
   memberships: {
     id: string;
     parishId: string;
@@ -43,6 +45,8 @@ export const getCurrentUserContext = async (
       needsOnboarding: false,
       hasPendingInvitations: false,
       personalWorkspaceId: null,
+      memberOnboardedAt: null,
+      platformIntent: null,
       memberships: [],
       pendingInvitations: [],
     };
@@ -95,6 +99,11 @@ export const getCurrentUserContext = async (
   const personalWorkspace = await context.entities.Parish.findFirst({
     where: { ownerId: context.user.id, type: 'PERSONAL' },
     select: { id: true },
+  });
+
+  const profile = await context.entities.User.findUnique({
+    where: { id: context.user.id },
+    select: { memberOnboardedAt: true, platformIntent: true },
   });
 
   const activeMemberships = memberships.filter((m: any) => m.status === 'ACTIVE');
@@ -159,14 +168,21 @@ export const getCurrentUserContext = async (
   const hasPendingInvitations =
     invitedMemberships.length > 0 || pendingRows.length > 0;
 
+  const memberOnboardedAt = profile?.memberOnboardedAt
+    ? new Date(profile.memberOnboardedAt).toISOString()
+    : null;
+
   return {
     userId: context.user.id,
     isAdmin: context.user.isAdmin,
     personalWorkspaceId: personalWorkspace?.id || null,
     hasPendingInvitations,
+    memberOnboardedAt,
+    platformIntent: profile?.platformIntent ?? null,
     needsOnboarding: context.user.isAdmin
       ? false
-      : activeMemberships.length === 0 &&
+      : !memberOnboardedAt &&
+        activeMemberships.length === 0 &&
         invitedMemberships.length === 0 &&
         pendingRows.length === 0 &&
         !personalWorkspace,

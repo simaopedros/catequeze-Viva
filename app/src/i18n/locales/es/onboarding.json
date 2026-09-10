@@ -36,7 +36,11 @@
   "welcome": {
     "hello": "Hola, {{name}}",
     "hello_default": "Bienvenido/a",
-    "question": "¿Cómo vas a usar Catequese Viva?",
+    "question": "¿Cómo vas a usar Catechis?",
+    "member_title": "Soy miembro — quiero participar",
+    "member_desc": "Entra gratis, descubre grupos y acompaña la vida de la Iglesia. Sin tarjeta.",
+    "organizer_title": "Quiero organizar un grupo",
+    "organizer_desc": "Crear y cuidar un grupo de jóvenes, música, oración u otro ministerio. Se necesita suscripción para crear.",
     "personal_title": "Soy catequista y cuido mi grupo",
     "personal_desc": "Crear el grupo, incluir catequizandos y usarlo en el día a día.",
     "personal_features": [],

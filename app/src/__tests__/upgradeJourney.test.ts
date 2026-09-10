@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { PaymentPlanId } from "../payment/plans";
-import { getSuggestedUpgradePlan } from "../catequese/lib/upgradeJourney";
+import {
+  getSuggestedUpgradePlan,
+  inferUpgradeJourneyReasonFromMessage,
+} from "../catequese/lib/upgradeJourney";
 
 describe("getSuggestedUpgradePlan", () => {
   it("does not suggest Plano Paróquia checkout from a personal Catequista space", () => {
@@ -28,5 +31,13 @@ describe("getSuggestedUpgradePlan", () => {
         isPersonalWorkspace: false,
       }),
     ).toBeNull();
+  });
+
+  it("maps group limit copy to group_limit", () => {
+    expect(
+      inferUpgradeJourneyReasonFromMessage(
+        "LIMIT: Assine para criar e organizar grupos pastorais.",
+      ),
+    ).toBe("group_limit");
   });
 });

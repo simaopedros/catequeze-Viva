@@ -29,10 +29,12 @@ import {
   Landmark,
   Megaphone,
   Sparkles,
+  UsersRound,
 } from "lucide-react";
 import { getVisibleNavigation } from "../../shared/navigation";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
+import { planCanAccessCatechesis } from "../../shared/pricing";
 import {
   SheetContent,
   SheetHeader,
@@ -41,6 +43,7 @@ import {
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   dashboard: LayoutDashboard,
+  groups: UsersRound,
   community: Sparkles,
   classes: Users,
   catechumens: GraduationCap,
@@ -84,12 +87,13 @@ export function BottomSheetNav({ onNavigate }: BottomSheetNavProps) {
   const { t } = useTranslation("navigation");
   const { t: tc } = useTranslation("common");
   const { userRole, isAdmin } = useUserContext();
-  const { workspaceType } = useActiveWorkspace();
+  const { workspaceType, workspacePlan } = useActiveWorkspace();
 
   const { sheetGroups } = getVisibleNavigation({
     role: userRole,
     isAdmin,
     workspaceType,
+    canAccessCatechesis: planCanAccessCatechesis(workspacePlan),
   });
 
   return (

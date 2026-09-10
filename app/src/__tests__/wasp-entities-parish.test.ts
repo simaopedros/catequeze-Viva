@@ -140,4 +140,21 @@ describe('Wasp entities for parish onboarding actions', () => {
     expect(createModule).toContain('FormationModule');
     expect(createModule).toContain('FormationTrack');
   });
+
+  it('pastoral group operations declare group, membership and billing entities', () => {
+    const list = entitiesForOperation(waspSource, 'query', 'listPastoralGroups');
+    expect(list).toContain('PastoralGroup');
+    expect(list).toContain('GroupMembership');
+
+    const create = entitiesForAction(waspSource, 'createPastoralGroup');
+    expect(create).toContain('PastoralGroup');
+    expect(create).toContain('GroupMembership');
+    expect(create).toContain('Parish');
+    expect(create).toContain('TenantBilling');
+    expect(create).toContain('PricingPlan');
+    expect(create).toContain('User');
+
+    const member = entitiesForAction(waspSource, 'completeMemberOnboarding');
+    expect(member).toContain('User');
+  });
 });

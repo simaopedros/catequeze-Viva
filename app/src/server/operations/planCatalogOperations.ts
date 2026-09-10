@@ -67,7 +67,10 @@ export const getPlanCatalog = async (_args: void, context: any): Promise<PublicP
       maxCatechumens: plan.limits.maxCatechumens,
       maxCatechists: plan.limits.maxCatechists,
       maxParishes: plan.limits.maxParishes,
+      maxGroups: plan.limits.maxGroups ?? null,
     },
+    canCreateGroups: plan.limits.canCreateGroups ?? false,
+    canAccessCatechesis: plan.limits.canAccessCatechesis ?? false,
     ai: {
       initialCredits: plan.ai.initialCredits,
       monthlyCredits: plan.ai.monthlyCredits,

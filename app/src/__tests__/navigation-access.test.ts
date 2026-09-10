@@ -159,6 +159,26 @@ describe('Navigation Role Filtering', () => {
     });
   });
 
+  describe('PLATFORM_MEMBER', () => {
+    const paths = visiblePaths('PLATFORM_MEMBER');
+
+    it('sees groups, bible, calendar and billing', () => {
+      expect(paths).toContain('/app');
+      expect(paths).toContain('/app/grupos');
+      expect(paths).toContain('/app/bible');
+      expect(paths).toContain('/app/catechism');
+      expect(paths).toContain('/app/calendar');
+      expect(paths).toContain('/app/billing');
+    });
+
+    it('does NOT see catechesis management', () => {
+      expect(paths).not.toContain('/app/classes');
+      expect(paths).not.toContain('/app/catechumens');
+      expect(paths).not.toContain('/app/families');
+      expect(paths).not.toContain('/app/parishes');
+    });
+  });
+
   describe('No role (empty string)', () => {
     it('returns empty array', () => {
       const paths = visiblePaths('');
@@ -431,5 +451,33 @@ describe('getVisibleNavigation SSOT', () => {
       'calendar',
       'messages',
     ]);
+  });
+
+  it('PLATFORM_MEMBER bottomBar is Início, Grupos, Bíblia, Agenda', () => {
+    const nav = getVisibleNavigation({
+      role: 'PLATFORM_MEMBER',
+      isAdmin: false,
+      canAccessCatechesis: false,
+    });
+    expect(nav.bottomBar.map((i) => i.iconKey)).toEqual([
+      'dashboard',
+      'groups',
+      'bible',
+      'calendar',
+    ]);
+    expect(nav.all.map((i) => i.to)).toContain('/app/grupos');
+    expect(nav.all.map((i) => i.to)).not.toContain('/app/classes');
+  });
+
+  it('hides catechesis destinations when the workspace has no entitlement', () => {
+    const nav = getVisibleNavigation({
+      role: 'PERSONAL_OWNER',
+      isAdmin: false,
+      workspaceType: 'PERSONAL',
+      canAccessCatechesis: false,
+    });
+    expect(nav.all.map((i) => i.to)).toContain('/app/grupos');
+    expect(nav.all.map((i) => i.to)).not.toContain('/app/classes');
+    expect(nav.all.map((i) => i.iconKey)).not.toContain('catechumens');
   });
 });

@@ -191,15 +191,16 @@
   "steps_cta": "Start my catechesis",
   "pricing_eyebrow": "Start your way",
   "pricing_title": "Start your way.",
-  "pricing_subtitle": "You can begin on your own and, as your catechesis grows, bring the organization to the whole parish.",
+  "pricing_subtitle": "A member account is free. To create groups or catechesis, subscribe. You can begin on your own and, as you grow, bring the organization to the whole parish.",
   "pricing_institutional_link": "Parish or diocese? See institutional plans",
   "plans": {
     "single": {
       "name": "Catechist Plan",
       "audience": "For you",
-      "desc": "To organize your class and your meetings.",
+      "desc": "To organize pastoral groups and up to 3 catechesis classes.",
       "price": "R$ 9.90",
       "features": [
+        "Up to 3 pastoral groups",
         "Up to 3 classes",
         "150 catechumens",
         "Attendance and calendar",
@@ -212,6 +213,7 @@
       "desc": "To bring your team, classes, and families together.",
       "price": "R$ 99",
       "features": [
+        "Unlimited pastoral groups",
         "Unlimited classes and team",
         "Unlimited catechumens",
         "Institutional workspace",

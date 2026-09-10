@@ -52,6 +52,36 @@ export interface PlanLimits {
   maxCatechumens: number | null;
   maxCatechists: number | null;
   maxParishes: number | null;
+  /** null = unlimited groups. 0 = cannot create. */
+  maxGroups?: number | null;
+  canCreateGroups?: boolean;
+  canAccessCatechesis?: boolean;
+}
+
+export type ResolvedPlanLimits = Required<PlanLimits>;
+
+export function normalizePlanLimits(limits: PlanLimits): ResolvedPlanLimits {
+  const canAccessCatechesis =
+    limits.canAccessCatechesis ??
+    (limits.maxClasses === null || (limits.maxClasses ?? 0) > 0);
+  const canCreateGroups = limits.canCreateGroups ?? canAccessCatechesis;
+  const maxGroups =
+    limits.maxGroups !== undefined
+      ? limits.maxGroups
+      : canCreateGroups
+        ? limits.maxClasses === null
+          ? null
+          : 3
+        : 0;
+  return {
+    maxClasses: limits.maxClasses,
+    maxCatechumens: limits.maxCatechumens,
+    maxCatechists: limits.maxCatechists,
+    maxParishes: limits.maxParishes,
+    maxGroups,
+    canCreateGroups,
+    canAccessCatechesis,
+  };
 }
 
 export interface CatalogPrice {
@@ -203,6 +233,9 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
       maxCatechumens: 0,
       maxCatechists: 0,
       maxParishes: 0,
+      maxGroups: 0,
+      canCreateGroups: false,
+      canAccessCatechesis: false,
     },
     ai: { monthlyCredits: 0, dailyLimit: 0, scope: 'user' },
     social: { maxPostsPerDay: 0, maxMediaPerPost: 0, maxVideoSeconds: 0 },
@@ -218,7 +251,7 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
   {
     slug: 'single',
     name: 'Plano Catequista',
-    description: '1 paróquia, 3 turmas, 150 catequizandos no total.',
+    description: 'Organize grupos pastorais e até 3 turmas de catequese.',
     kind: 'subscription',
     level: 'personal',
     creditsAmount: null,
@@ -232,11 +265,15 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
       maxCatechumens: 150,
       maxCatechists: 1,
       maxParishes: 1,
+      maxGroups: 3,
+      canCreateGroups: true,
+      canAccessCatechesis: true,
     },
     ai: { monthlyCredits: 0, dailyLimit: 0, scope: 'user' },
     social: { maxPostsPerDay: 5, maxMediaPerPost: 4, maxVideoSeconds: 180 },
     features: [
-      'Até 3 turmas',
+      'Até 3 grupos pastorais',
+      'Até 3 turmas de catequese',
       '150 catequizandos no total',
       'Presença e calendário litúrgico',
       'Publicar na Comunidade',
@@ -246,7 +283,8 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
       en: {
         name: 'Catechist Plan',
         features: [
-          'Up to 3 classes',
+          'Up to 3 pastoral groups',
+          'Up to 3 catechesis classes',
           '150 catechumens in total',
           'Attendance and liturgical calendar',
           'Portal for the families in your class',
@@ -256,7 +294,8 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
       es: {
         name: 'Plan Catequista',
         features: [
-          'Hasta 3 grupos',
+          'Hasta 3 grupos pastorales',
+          'Hasta 3 grupos de catequesis',
           '150 catecúmenos en total',
           'Asistencia y calendario litúrgico',
           'Portal para las familias de tu grupo',
@@ -274,7 +313,7 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
   {
     slug: 'unlimited',
     name: 'Plano Paróquia',
-    description: 'Paróquia — turmas, catequizandos e equipe ilimitados.',
+    description: 'Paróquia — grupos, turmas, catequizandos e equipe ilimitados.',
     kind: 'subscription',
     level: 'institutional',
     creditsAmount: null,
@@ -288,10 +327,14 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
       maxCatechumens: null,
       maxCatechists: null,
       maxParishes: null,
+      maxGroups: null,
+      canCreateGroups: true,
+      canAccessCatechesis: true,
     },
     ai: { monthlyCredits: 0, dailyLimit: 0, scope: 'user' },
     social: { maxPostsPerDay: 30, maxMediaPerPost: 10, maxVideoSeconds: 900 },
     features: [
+      'Grupos pastorais ilimitados',
       'Turmas e equipe ilimitadas',
       'Catequizandos ilimitados',
       'Espaço institucional da paróquia',
@@ -303,6 +346,7 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
       en: {
         name: 'Parish Plan',
         features: [
+          'Unlimited pastoral groups',
           'Unlimited classes and team',
           'Unlimited catechumens',
           'Institutional parish workspace',
@@ -314,7 +358,8 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
       es: {
         name: 'Plan Parroquia',
         features: [
-          'Grupos y equipo ilimitados',
+          'Grupos pastorales ilimitados',
+          'Grupos de catequesis y equipo ilimitados',
           'Catecúmenos ilimitados',
           'Espacio institucional de la parroquia',
           'Comunicación integrada',
@@ -347,6 +392,9 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
       maxCatechumens: 0,
       maxCatechists: 0,
       maxParishes: 0,
+      maxGroups: 0,
+      canCreateGroups: false,
+      canAccessCatechesis: false,
     },
     ai: { monthlyCredits: 0, dailyLimit: 0, scope: 'user' },
     social: { maxPostsPerDay: 0, maxMediaPerPost: 0, maxVideoSeconds: 0 },
@@ -376,6 +424,9 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
       maxCatechumens: 0,
       maxCatechists: 0,
       maxParishes: 0,
+      maxGroups: 0,
+      canCreateGroups: false,
+      canAccessCatechesis: false,
     },
     ai: { monthlyCredits: 0, dailyLimit: 0, scope: 'user' },
     social: { maxPostsPerDay: 0, maxMediaPerPost: 0, maxVideoSeconds: 0 },
@@ -510,13 +561,31 @@ export const LIMIT_LABELS: Record<string, string> = {
   catechumen_limit: 'catequizando',
   catechist_limit: 'catequista',
   social_post_limit: 'publicação diária',
+  group_limit: 'grupo',
 };
 
 export function getPlanLimits(
   plan: string | null | undefined,
   catalog: CatalogBySlug = DEFAULT_PLANS_BY_SLUG,
-): PlanLimits {
-  return getCatalogPlan(plan, catalog).limits;
+): ResolvedPlanLimits {
+  return normalizePlanLimits(getCatalogPlan(plan, catalog).limits);
+}
+
+export function planCanCreateGroups(
+  plan: string | null | undefined,
+  catalog: CatalogBySlug = DEFAULT_PLANS_BY_SLUG,
+): boolean {
+  const limits = getPlanLimits(plan, catalog);
+  if (!limits.canCreateGroups) return false;
+  return limits.maxGroups === null || (limits.maxGroups ?? 0) > 0;
+}
+
+export function planCanAccessCatechesis(
+  plan: string | null | undefined,
+  catalog: CatalogBySlug = DEFAULT_PLANS_BY_SLUG,
+): boolean {
+  const limits = getPlanLimits(plan, catalog);
+  return limits.canAccessCatechesis;
 }
 
 export function getSocialLimits(

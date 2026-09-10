@@ -50,6 +50,10 @@ function generateMockUserData(): MockUserData {
     avatarUrl: null,
     locale: "pt-BR",
     timezone: "America/Sao_Paulo",
+    city: null,
+    state: null,
+    platformIntent: null,
+    memberOnboardedAt: null,
     subscriptionStatus,
     paymentProcessorUserId: hasUserPaidOnStripe
       ? `cus_test_${faker.string.uuid()}`
