@@ -92,3 +92,25 @@ export const useQuery = vi.fn((_query?: unknown) => ({
   refetch: vi.fn(),
 }));
 export const useAction = (fn: unknown) => fn;
+
+export const deleteSocialPost = vi.fn();
+export const toggleSocialReaction = vi.fn();
+export const toggleSocialBlock = vi.fn();
+export const registerSocialShare = vi.fn();
+export const getSocialComments = vi.fn();
+export const createSocialComment = vi.fn();
+export const deleteSocialComment = vi.fn();
+export const getSocialFollowState = vi.fn();
+export const getSocialProfile = vi.fn();
+export const toggleSocialFollow = vi.fn();
+export const queryClientInitialized = Promise.resolve({
+  invalidateQueries: vi.fn(async () => {}),
+});
+export const reportSocialContent = vi.fn();
+export const getSocialPublishAccess = vi.fn();
+export const getSocialTopics = vi.fn();
+export const previewSocialShare = vi.fn();
+export const getMySocialProfile = vi.fn();
+export const updateSocialProfile = vi.fn();
+export const listMySocialBlocks = vi.fn();
+export const getSocialFeed = vi.fn();

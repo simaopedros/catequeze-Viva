@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toggleSocialFollow } from "wasp/client/operations";
 import { Button } from "../../../client/components/ui/button";
 import { toast } from "../../../client/hooks/use-toast";
+import { invalidateSocialFollowQueries } from "../../../client/hooks/socialQueryCache";
 
 export function SocialFollowButton({
   authorId,
@@ -17,18 +18,26 @@ export function SocialFollowButton({
   const [following, setFollowing] = useState(initiallyFollowing);
   const [busy, setBusy] = useState(false);
 
+  useEffect(() => {
+    setFollowing(initiallyFollowing);
+  }, [authorId, initiallyFollowing]);
+
   const toggle = async () => {
     setBusy(true);
     try {
       const result = await toggleSocialFollow({ authorId });
       setFollowing(result.following);
+      void invalidateSocialFollowQueries();
       toast({
         title: result.following
           ? t("discovery.followSuccess", { name: authorName })
           : t("discovery.unfollowSuccess", { name: authorName }),
       });
     } catch (error: any) {
-      toast({ title: error?.message || t("discovery.follow"), variant: "destructive" });
+      toast({
+        title: error?.message || t("discovery.follow"),
+        variant: "destructive",
+      });
     } finally {
       setBusy(false);
     }

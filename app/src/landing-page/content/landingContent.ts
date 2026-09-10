@@ -13,6 +13,7 @@ import {
   Search,
   UserCheck,
   Users,
+  Play,
 } from 'lucide-react';
 import { PLANS } from '../../shared/pricing';
 
@@ -22,7 +23,8 @@ export type ShowcaseId =
   | 'sacraments'
   | 'library'
   | 'ai-planner'
-  | 'family-portal';
+  | 'family-portal'
+  | 'rhema';
 
 export interface Persona {
   icon: LucideIcon;
@@ -169,6 +171,17 @@ export const SHOWCASES: FeatureShowcaseItem[] = [
     ],
     direction: 'row-reverse',
   },
+  {
+    id: 'rhema',
+    title: 'Comunidade Rhema, no mesmo ritmo da catequese',
+    desc: 'A rede pastoral vive junto da turma, da agenda e da biblioteca. Depois do encontro, o testemunho continua na Comunidade — sem sair da plataforma.',
+    bullets: [
+      'Painel, turmas e Comunidade no mesmo dia a dia',
+      'Partilhe encontros, a Palavra e a biblioteca num toque',
+      'Famílias também acompanham a Comunidade no portal',
+    ],
+    direction: 'row',
+  },
 ];
 
 export const SECONDARY_FEATURES: SecondaryFeature[] = [
@@ -286,4 +299,5 @@ export const SHOWCASE_ICONS: Record<ShowcaseId, LucideIcon> = {
   library: BookOpen,
   'ai-planner': Feather,
   'family-portal': Heart,
+  rhema: Play,
 };

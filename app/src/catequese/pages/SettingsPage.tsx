@@ -40,6 +40,7 @@ import { Switch } from "../../client/components/ui/switch";
 import { EMAIL_TOPIC } from "../../shared/emailCatalog";
 import PhoneMaskInput from "../../client/components/PhoneMaskInput";
 import TwoFactorSetup from "../components/TwoFactorSetup";
+import { SocialProfileSettings } from "../components/social/SocialProfileSettings";
 import {
   changePasswordSchema,
   updateProfileSchema,
@@ -306,6 +307,8 @@ export default function SettingsPage() {
         </form>
         </Form>
       </AppPanel>
+
+      <SocialProfileSettings />
 
       <ConfirmDialog
         open={leaveGuard.dialogOpen}

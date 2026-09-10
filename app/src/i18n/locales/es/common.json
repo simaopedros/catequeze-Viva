@@ -165,6 +165,7 @@
     "emptyTitle": "Directorio para la Catequesis",
     "emptyDesc": "Documento oficial de la Santa Sede que orienta la acción catequética. Seleccione una parte o busque por palabras clave.",
     "loadError": "No se pudo cargar el directorio.",
+    "share_entry": "Compartir en la Comunidad",
     "parts": {
       "I": "Parte I — La Catequesis en la Misión Evangelizadora",
       "II": "Parte II — El Proceso de la Catequesis",

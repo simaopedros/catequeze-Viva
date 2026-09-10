@@ -9,6 +9,7 @@ import {
   MessageSquareText,
   GraduationCap,
   BarChart3,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "../client/utils";
 import { useUserContext } from "../client/hooks/useUserContext";
@@ -21,6 +22,7 @@ import { trackMobileEvent } from "../client/analytics/marketingAnalytics";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   dashboard: LayoutDashboard,
+  community: Sparkles,
   classes: Users,
   calendar: Calendar,
   messages: MessageSquareText,
@@ -87,7 +89,9 @@ export function BottomNav() {
             const labelKey =
               item.labelKey === "catechumens"
                 ? "catechumens_short"
-                : item.labelKey;
+                : item.labelKey === "community"
+                  ? "community_short"
+                  : item.labelKey;
             const label = t(labelKey, { defaultValue: t(item.labelKey) });
             return (
               <NavLink

@@ -11,6 +11,7 @@ import { formatDate } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
 import { FileText, Calendar, MessageSquare } from "lucide-react";
 import { EncounterFocusCard } from "./EncounterFocusCard";
+import { RhemaPreviewCard } from "./RhemaPreviewCard";
 import { useActiveParish } from "../../../client/hooks/useActiveParish";
 
 interface CatechumenDashboardProps {
@@ -82,6 +83,9 @@ export function CatechumenDashboard({ stats }: CatechumenDashboardProps) {
 
       <div className="flex flex-wrap gap-2">
         <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
+          <Link to="/app/comunidade">{tn("community")}</Link>
+        </Button>
+        <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
           <Link to="/app/calendar">
             <Calendar className="mr-2 h-4 w-4" />
             {tn("calendar")}
@@ -100,6 +104,8 @@ export function CatechumenDashboard({ stats }: CatechumenDashboardProps) {
           </Link>
         </Button>
       </div>
+
+      <RhemaPreviewCard />
     </div>
   );
 }

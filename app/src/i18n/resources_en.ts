@@ -860,7 +860,8 @@ export const ai_en = {
       "elapsed": "{{seconds}}s",
       "keep_page_open": "This usually takes 10–40 seconds. Keep this page open.",
       "slow_hint": "Taking longer than usual. We keep trying for up to 2 minutes; if it fails you can retry."
-    }
+    },
+    "share_community": "Share to Community"
   } as const;
 
 export const attendance_en = {
@@ -1166,7 +1167,8 @@ export const bible_en = {
     "copy_reference": "Copy reference",
     "reference_copied": "Reference copied!",
     "no_favorites": "No favorite verses yet.",
-    "no_recent": "No recent readings."
+    "no_recent": "No recent readings.",
+    "share_verse": "Share verse to Community"
   } as const;
 
 export const billing_en = {
@@ -1742,7 +1744,8 @@ export const catechism_en = {
       "prayer": "Prayer",
       "virtues": "The Virtues",
       "sin": "Sin"
-    }
+    },
+    "share_entry": "Share to Community"
   } as const;
 
 export const classes_en = {
@@ -2296,6 +2299,7 @@ export const common_en = {
       "emptyTitle": "Directory for Catechesis",
       "emptyDesc": "Official document of the Holy See that guides catechetical action. Select a part or search by keywords.",
       "loadError": "Could not load the directory.",
+      "share_entry": "Share to Community",
       "parts": {
         "I": "Part I — Catechesis in the Evangelizing Mission",
         "II": "Part II — The Process of Catechesis",
@@ -2764,7 +2768,8 @@ export const content_en = {
       "error_import_invalid_file": "Invalid or corrupted file.",
       "error_import_storage_not_configured": "File storage is unavailable. Try again later.",
       "error_import_parse_failed": "Could not read the file.",
-      "error_download_original": "Could not download the original file."
+      "error_download_original": "Could not download the original file.",
+      "share_community": "Share to Community"
     },
     "detail": {
       "by_author": "by {{name}}",
@@ -2957,13 +2962,19 @@ export const dashboard_en = {
     "greeting_afternoon_anonymous": "Good afternoon!",
     "greeting_evening": "Good evening, {{name}}!",
     "greeting_evening_anonymous": "Good evening!",
-    "hero_subtitle": "Here is what needs your attention today.",
+    "hero_subtitle": "Here is what needs your attention today — in class and in the Community.",
     "search_placeholder": "Search...",
     "next_actions": "Next actions",
     "see_all": "See all",
     "fact_catechumens": "Catechumens",
     "fact_upcoming_meetings": "Upcoming encounters",
     "fact_attendance": "Attendance",
+    "rhema": {
+      "title": "Rhema",
+      "subtitle": "The Community in the same daily flow as the class: testimonies, shorts, and people you follow.",
+      "cta": "Open Community",
+      "empty": "No posts yet. Be the first to share."
+    },
     "priority": {
       "high": "High priority",
       "important": "Important",
@@ -3084,6 +3095,8 @@ export const dashboard_en = {
     "quick_new_catechumen": "Register catechumen",
     "quick_ai": "Editorial assistance",
     "quick_ai_desc": "Prepare meeting outlines",
+    "quick_community": "Community",
+    "quick_community_desc": "Share a moment from catechesis",
     "no_meetings_today": "No meetings today.",
     "institutional_title": "Pastoral Management Dashboard",
     "institutional_subtitle": "Consolidated KPIs, trends and alerts.",
@@ -3838,6 +3851,13 @@ export const landing_en = {
         "b1": "Milestones by catechumen",
         "b2": "Reusable templates per parish",
         "b3": "Progress visible to coordination and guardians"
+      },
+      "rhema": {
+        "title": "Rhema Community, in the same rhythm as catechesis",
+        "desc": "The pastoral network lives alongside the class, the calendar, and the library. After the meeting, the testimony continues in the Community — without leaving the platform.",
+        "b1": "Dashboard, classes, and Community in the same daily flow",
+        "b2": "Share meetings, Scripture, and the library in one tap",
+        "b3": "Families also follow the Community in the portal"
       }
     },
     "mission_title": "Meeting prepared. Class embraced. Faith shared with the families.",
@@ -3847,7 +3867,7 @@ export const landing_en = {
     "personas": [
       {
         "title": "Catechist",
-        "desc": "Organize your class, prepare meetings with the pastoral library, and take attendance on mobile."
+        "desc": "Organize your class, prepare meetings with the pastoral library, and share what you lived in the Community."
       },
       {
         "title": "Parish Coordinator",
@@ -3855,7 +3875,7 @@ export const landing_en = {
       },
       {
         "title": "Parents & Guardians",
-        "desc": "Follow attendance, notices, documents, and justifications through the portal."
+        "desc": "Follow attendance, notices, documents, and the Community through the portal."
       },
       {
         "title": "Pastor",
@@ -4069,6 +4089,11 @@ export const landing_en = {
       "plan_title": "Plan: God's Love",
       "published": "Published",
       "plan_detail": "Confirmation · 45 min"
+    },
+    "mockup_rhema": {
+      "handle": "@catequista_ana",
+      "caption": "Today's meeting: the Our Father. Amen!",
+      "amen": "Amen"
     },
     "footer": {
       "create_account": "Start the 7 days",
@@ -4707,8 +4732,18 @@ export const landingSistema_en = {
       "family-portal",
       "sacraments",
       "library",
+      "rhema",
       "ai-planner"
     ],
+    "features": {
+      "rhema": {
+        "title": "Rhema Community, in the same rhythm as catechesis",
+        "desc": "The pastoral network lives alongside the class, the calendar, and the library. After the meeting, the testimony continues in the Community — without leaving the platform.",
+        "b1": "Dashboard, classes, and Community in the same daily flow",
+        "b2": "Share meetings, Scripture, and the library in one tap",
+        "b3": "Families also follow the Community in the portal"
+      }
+    },
     "ai_showcase_title": "And also: AI-powered meeting preparation",
     "ai_showcase_subtitle": "Beyond management, the platform includes editorial assistance to create meeting scripts in seconds.",
     "mockup_dashboard": {
@@ -4775,6 +4810,11 @@ export const landingSistema_en = {
       "plan_title": "Plan: God's Love",
       "published": "Published",
       "plan_detail": "Confirmation · 45 min"
+    },
+    "mockup_rhema": {
+      "handle": "@catequista_ana",
+      "caption": "Today's meeting: the Our Father. Amen!",
+      "amen": "Amen"
     },
     "footer": {
       "create_account": "Create free account",
@@ -5171,7 +5211,8 @@ export const navigation_en = {
       "community": "Communities"
     },
     "sidebarSection": "Sidebar navigation",
-    "community": "Community"
+    "community": "Community · Rhema",
+    "community_short": "Rhema"
   } as const;
 
 export const onboarding_en = {
@@ -6029,6 +6070,7 @@ export const publicNav_en = {
     "how_it_works": "How it works",
     "faq": "FAQ",
     "blog": "Blog",
+    "community": "Community",
     "footer_explore": "Explore",
     "footer_talk": "Talk to us",
     "footer_start": "Try it",
@@ -6248,6 +6290,16 @@ export const settings_en = {
     "saving": "Saving...",
     "saved": "Saved!",
     "save_profile_error": "Error saving profile.",
+    "rhema": {
+      "title": "Rhema",
+      "hint": "Your public Community profile. The handle appears as @name.",
+      "handle": "Handle",
+      "handle_placeholder": "your_handle",
+      "bio": "Bio",
+      "bio_placeholder": "A short line about your catechesis",
+      "open_profile": "View Community profile",
+      "open_community": "Open Community"
+    },
     "change_password": "Change password",
     "current_password": "Current password",
     "new_password": "New password",
@@ -6282,14 +6334,54 @@ export const settings_en = {
     "email_pref_lifecycle": "Activation tips, trial, and win-back emails",
     "email_pref_product": "Product news and newsletter",
     "email_pref_pastoral": "Class and parish announcements",
-    "email_pref_saved": "Email preferences saved."
+    "email_pref_saved": "Email preferences saved.",
+    "social_profile": "Community profile",
+    "social_profile_desc": "Your public @, bio and photo appear on shares and in the feed.",
+    "social_handle": "Username (@)",
+    "social_bio": "Bio",
+    "social_website": "Personal link",
+    "social_change_avatar": "Change photo",
+    "social_avatar_updated": "Photo updated",
+    "social_avatar_error": "Could not update the photo.",
+    "social_save": "Save public profile",
+    "social_copy_link": "Copy profile link",
+    "social_handle_required": "Set an @ to copy the link.",
+    "social_blocked": "Blocked accounts",
+    "social_unblock": "Unblock"
   } as const;
 
 export const social_en = {
     "title": "Community",
-    "eyebrow": "Pastoral network",
-    "subtitle": "Share the life of your catechesis with images and videos.",
-    "publicSubtitle": "Testimonies, catechesis and parish life shared by catechists across Brazil.",
+    "eyebrow": "Community",
+    "subtitle": "A space where catechesis continues after class, the calendar, and the library.",
+    "publicSubtitle": "A space where catechesis continues after class, the calendar, and the library.",
+    "hero": {
+      "eyebrow": "COMMUNITY",
+      "title": "Together on the mission to evangelize",
+      "description": "A space where catechesis continues after class, the calendar, and the library."
+    },
+    "rail": {
+      "members": "Community members",
+      "membersCount": "{{count}} member",
+      "membersCount_plural": "{{count}} members",
+      "membersEmpty": "No published authors yet.",
+      "seeMembers": "See the community",
+      "promoTitle": "Meet Catechis",
+      "promoBody": "Tools for the catechist’s day-to-day. Prepare remarkable meetings in minutes with AI.",
+      "promoCta": "Learn more →",
+      "popularTopics": "Popular topics",
+      "events": "Upcoming events",
+      "eventsBody": "Formation, gatherings and your parish calendar live in Catechis.",
+      "eventsCta": "Open calendar →",
+      "toolsTitle": "Catechesis continues here",
+      "toolClasses": "Classes",
+      "toolLibrary": "Library",
+      "toolBible": "Bible",
+      "toolCatechism": "Catechism",
+      "toolMessages": "Messages",
+      "missionTitle": "Together we are stronger",
+      "missionSubtitle": "Share, inspire, evangelize!"
+    },
     "feed": {
       "empty": "No posts yet",
       "emptyDescription": "Be the first to share a moment from your catechesis.",
@@ -6305,7 +6397,7 @@ export const social_en = {
     },
     "composer": {
       "title": "New post",
-      "placeholder": "Share a moment, a reflection or a testimony...",
+      "placeholder": "Share something with the community...",
       "addImage": "Image",
       "addVideo": "Video",
       "topics": "Topics",
@@ -6322,8 +6414,10 @@ export const social_en = {
       "quotaLeft": "{{count}} post left today",
       "quotaLeft_plural": "{{count}} posts left today",
       "videoTooLong": "Your plan allows videos up to {{minutes}} minutes.",
+      "videoTooLarge": "Videos can be at most 60 MB.",
       "tooManyMedia": "Your plan allows {{count}} media items per post.",
-      "uploadFailed": "Failed to upload the media."
+      "uploadFailed": "Failed to upload the media.",
+      "sharePlaceholder": "Add a word about this content..."
     },
     "upsell": {
       "title": "Subscribe to publish",
@@ -6363,7 +6457,15 @@ export const social_en = {
       "copied": "Link copied",
       "whatsapp": "WhatsApp",
       "count": "{{count}} share",
-      "count_plural": "{{count}} shares"
+      "count_plural": "{{count}} shares",
+      "toCommunity": "Share to Community",
+      "draftHint": "Publishing from catechesis",
+      "meetingBody": "We just finished the meeting “{{title}}”{{classSuffix}}. Peace be with you!",
+      "contentBody": "Sharing a library resource: {{title}}",
+      "bibleBody": "Scripture: {{reference}}",
+      "bibleVerseBody": "{{reference}} — “{{text}}”",
+      "catechismBody": "CCC {{number}} — {{question}}\n\n{{answer}}",
+      "directoryBody": "Compendium §{{number}}{{titleSuffix}}\n\n{{content}}"
     },
     "post": {
       "delete": "Delete post",
@@ -6373,7 +6475,9 @@ export const social_en = {
       "notFound": "Post not found",
       "notFoundDescription": "It may have been removed by the author or by moderation.",
       "backToFeed": "Back to the Community",
-      "pendingReview": "Under moderation review"
+      "pendingReview": "Under moderation review",
+      "showMore": "Show more",
+      "showLess": "Show less"
     },
     "report": {
       "title": "Report content",
@@ -6423,7 +6527,93 @@ export const social_en = {
       "followSuccess": "You now follow {{name}}",
       "unfollowSuccess": "You unfollowed {{name}}",
       "emptyFollowing": "You are not following anyone yet",
-      "emptyFollowingDescription": "Follow catechists to build your feed."
+      "emptyFollowingDescription": "Follow catechists to build your feed.",
+      "foryou": "For you",
+      "shorts": "Shorts",
+      "emptyForyou": "We are still learning what you like",
+      "emptyForyouDescription": "React and watch shorts to get recommendations.",
+      "block": "Block",
+      "unblock": "Unblock",
+      "blockSuccess": "You blocked {{name}}",
+      "unblockSuccess": "You unblocked {{name}}"
+    },
+    "search": {
+      "placeholder": "Search people and posts",
+      "empty": "Nothing found"
+    },
+    "profile": {
+      "title": "Profile",
+      "notFound": "Profile not found",
+      "notFoundDescription": "This @ does not exist or the profile is unavailable.",
+      "copyLink": "Copy profile link",
+      "linkCopied": "Profile link copied",
+      "edit": "Edit profile",
+      "blockedNotice": "You blocked this account. Posts stay hidden until you unblock.",
+      "emptyPosts": "No posts yet",
+      "emptyPostsDescription": "When this person publishes, their shares appear here.",
+      "stats": "{{posts}} posts · {{followers}} followers · {{following}} following"
+    },
+    "shorts": {
+      "empty": "No shorts yet",
+      "emptyDescription": "Publish a short video to appear in this tab."
+    },
+    "companion": {
+      "cta": "Open Community",
+      "announcements": {
+        "title": "Announcements and Community",
+        "body": "Announcements are official parish notices. Testimonies and conversation live in the Community."
+      },
+      "messages": {
+        "title": "Private messages, open Community",
+        "body": "Talk with your parish here. In the Community, catechesis is shared with everyone."
+      },
+      "calendar": {
+        "title": "Calendar and Community",
+        "body": "The calendar organizes meetings. Afterward, share what you lived in the Community."
+      },
+      "library": {
+        "title": "Library and Community",
+        "body": "The library holds the material. The Community is where it comes alive."
+      },
+      "formation": {
+        "title": "Formation and Community",
+        "body": "Formation happens here. Share what you learned in the Community."
+      },
+      "bible": {
+        "title": "Scripture and Community",
+        "body": "Read the Word here. If you wish, share an inspiration in the Community."
+      },
+      "classes": {
+        "title": "Class and Community",
+        "body": "The class is the in-person meeting. The Community is where what you lived there keeps bearing fruit."
+      },
+      "catechism": {
+        "title": "Catechism and Community",
+        "body": "Study the Catechism here. If an answer lights up your class, share it in the Community."
+      },
+      "sacraments": {
+        "title": "Sacraments and Community",
+        "body": "The sacramental journey is pastoral accompaniment. The Community is the public witness of that faith."
+      },
+      "directory": {
+        "title": "Compendium and Community",
+        "body": "The Compendium deepens doctrine. The Community is where it becomes conversation."
+      }
+    },
+    "nativeShare": {
+      "action": "Share to Community",
+      "dialogTitle": "Share to Community",
+      "dialogDescription": "The content is attached to the post with a shortcut back to the source.",
+      "textDialogDescription": "The text is ready in the composer. Publishing still requires a subscription.",
+      "pendingPreview": "Text ready for the post",
+      "previewFailed": "Could not prepare this share.",
+      "kind": {
+        "verse": "Verse",
+        "catechism": "Catechism",
+        "document": "Library",
+        "ai": "Editorial assistance",
+        "directory": "Directory"
+      }
     }
   } as const;
 
@@ -6491,6 +6681,10 @@ export const tour_en = {
       "dashboard": {
         "title": "Dashboard",
         "description": "See a summary of your catechesis: active catechumens, classes, average attendance, and pending items."
+      },
+      "community": {
+        "title": "Community · Rhema",
+        "description": "The catechesis network: testimonies, shorts, and what happens in class. Share from meetings, the library, and Scripture."
       },
       "classes": {
         "title": "Classes",

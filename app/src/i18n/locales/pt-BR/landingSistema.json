@@ -20,8 +20,18 @@
     "family-portal",
     "sacraments",
     "library",
+    "rhema",
     "ai-planner"
   ],
+  "features": {
+    "rhema": {
+      "title": "Comunidade Rhema, no mesmo ritmo da catequese",
+      "desc": "A rede pastoral vive junto da turma, da agenda e da biblioteca. Depois do encontro, o testemunho continua na Comunidade — sem sair da plataforma.",
+      "b1": "Painel, turmas e Comunidade no mesmo dia a dia",
+      "b2": "Partilhe encontros, a Palavra e a biblioteca num toque",
+      "b3": "Famílias também acompanham a Comunidade no portal"
+    }
+  },
   "ai_showcase_title": "E também: preparação de encontros com assistência editorial",
   "ai_showcase_subtitle": "Além da gestão, a plataforma inclui assistência editorial para criar roteiros de encontros em segundos.",
   "mockup_dashboard": {
@@ -88,6 +98,11 @@
     "plan_title": "Plano: O amor de Deus",
     "published": "Publicado",
     "plan_detail": "Crisma · 45 min"
+  },
+  "mockup_rhema": {
+    "handle": "@catequista_ana",
+    "caption": "Encontro de hoje: o Pai-Nosso. Amém!",
+    "amen": "Amém"
   },
   "footer": {
     "create_account": "Criar conta gratuita",

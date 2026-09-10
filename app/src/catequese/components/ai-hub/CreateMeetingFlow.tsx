@@ -11,6 +11,7 @@ import { AiHubLayout } from "./AiHubLayout";
 import { Button } from "../../../client/components/ui/button";
 import { Circle, UsersRound, RotateCcw, Pencil } from "lucide-react";
 import { useNavigate } from "react-router";
+import { ShareToCommunityButton } from "../social/ShareToCommunityButton";
 
 function CreateMeetingWorkspace() {
   const { t } = useTranslation("ai");
@@ -57,12 +58,18 @@ function CreateMeetingWorkspace() {
             {t("planner.generate_new")}
           </Button>
           {contentItemId && (
-            <Button variant="outline" size="sm" asChild>
-              <Link to={`/app/content-library/${contentItemId}/edit`}>
-                <Pencil className="mr-1 h-3.5 w-3.5" />
-                {t("planner.edit_publish")}
-              </Link>
-            </Button>
+            <>
+              <Button variant="outline" size="sm" asChild>
+                <Link to={`/app/content-library/${contentItemId}/edit`}>
+                  <Pencil className="mr-1 h-3.5 w-3.5" />
+                  {t("planner.edit_publish")}
+                </Link>
+              </Button>
+              <ShareToCommunityButton
+                draft={{ kind: "AI_ARTIFACT", sourceId: contentItemId }}
+                label={t("share_community")}
+              />
+            </>
           )}
         </div>
       </div>

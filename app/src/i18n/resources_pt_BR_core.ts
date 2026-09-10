@@ -777,6 +777,7 @@ export const common_pt_BR_core = {
       "emptyTitle": "Diretório para a Catequese",
       "emptyDesc": "Documento oficial da Santa Sé que orienta a ação catequética. Selecione uma parte ou busque por palavras-chave.",
       "loadError": "Não foi possível carregar o diretório.",
+      "share_entry": "Partilhar na Comunidade",
       "parts": {
         "I": "Parte I — A Catequese na Missão Evangelizadora",
         "II": "Parte II — O Processo da Catequese",
@@ -1381,6 +1382,13 @@ export const landing_pt_BR_core = {
         "b1": "Marcos por catequizando",
         "b2": "Modelos reutilizáveis por paróquia",
         "b3": "Progresso visível para coordenação e responsáveis"
+      },
+      "rhema": {
+        "title": "Comunidade Rhema, no mesmo ritmo da catequese",
+        "desc": "A rede pastoral vive junto da turma, da agenda e da biblioteca. Depois do encontro, o testemunho continua na Comunidade — sem sair da plataforma.",
+        "b1": "Painel, turmas e Comunidade no mesmo dia a dia",
+        "b2": "Partilhe encontros, a Palavra e a biblioteca num toque",
+        "b3": "Famílias também acompanham a Comunidade no portal"
       }
     },
     "mission_title": "Encontro preparado. Turma acolhida. Fé partilhada com as famílias.",
@@ -1390,7 +1398,7 @@ export const landing_pt_BR_core = {
     "personas": [
       {
         "title": "Catequista",
-        "desc": "Organize sua turma, prepare encontros com a biblioteca pastoral e registre presença pelo celular."
+        "desc": "Organize sua turma, prepare encontros com a biblioteca pastoral e partilhe o que viveu na Comunidade."
       },
       {
         "title": "Coordenador Paroquial",
@@ -1398,7 +1406,7 @@ export const landing_pt_BR_core = {
       },
       {
         "title": "Pais e Responsáveis",
-        "desc": "Acompanhe presença, avisos, documentos e justificativas pelo portal."
+        "desc": "Acompanhe presença, avisos, documentos e a Comunidade pelo portal."
       },
       {
         "title": "Pároco",
@@ -1612,6 +1620,11 @@ export const landing_pt_BR_core = {
       "plan_title": "Plano: O amor de Deus",
       "published": "Publicado",
       "plan_detail": "Crisma · 45 min"
+    },
+    "mockup_rhema": {
+      "handle": "@catequista_ana",
+      "caption": "Encontro de hoje: o Pai-Nosso. Amém!",
+      "amen": "Amém"
     },
     "footer": {
       "create_account": "Começar os 7 dias",
@@ -2250,8 +2263,18 @@ export const landingSistema_pt_BR_core = {
       "family-portal",
       "sacraments",
       "library",
+      "rhema",
       "ai-planner"
     ],
+    "features": {
+      "rhema": {
+        "title": "Comunidade Rhema, no mesmo ritmo da catequese",
+        "desc": "A rede pastoral vive junto da turma, da agenda e da biblioteca. Depois do encontro, o testemunho continua na Comunidade — sem sair da plataforma.",
+        "b1": "Painel, turmas e Comunidade no mesmo dia a dia",
+        "b2": "Partilhe encontros, a Palavra e a biblioteca num toque",
+        "b3": "Famílias também acompanham a Comunidade no portal"
+      }
+    },
     "ai_showcase_title": "E também: preparação de encontros com assistência editorial",
     "ai_showcase_subtitle": "Além da gestão, a plataforma inclui assistência editorial para criar roteiros de encontros em segundos.",
     "mockup_dashboard": {
@@ -2318,6 +2341,11 @@ export const landingSistema_pt_BR_core = {
       "plan_title": "Plano: O amor de Deus",
       "published": "Publicado",
       "plan_detail": "Crisma · 45 min"
+    },
+    "mockup_rhema": {
+      "handle": "@catequista_ana",
+      "caption": "Encontro de hoje: o Pai-Nosso. Amém!",
+      "amen": "Amém"
     },
     "footer": {
       "create_account": "Criar conta gratuita",
@@ -2491,7 +2519,8 @@ export const navigation_pt_BR_core = {
       "community": "Comunidades"
     },
     "sidebarSection": "Navegação lateral",
-    "community": "Comunidade"
+    "community": "Comunidade · Rhema",
+    "community_short": "Rhema"
   } as const;
 
 export const public_pt_BR_core = {
@@ -2704,6 +2733,7 @@ export const publicNav_pt_BR_core = {
     "how_it_works": "Como funciona",
     "faq": "Dúvidas",
     "blog": "Blog",
+    "community": "Comunidade",
     "footer_explore": "Explorar",
     "footer_talk": "Fale com a gente",
     "footer_start": "Experimentar",

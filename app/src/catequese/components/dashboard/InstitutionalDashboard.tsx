@@ -45,6 +45,7 @@ import { Alert } from "../../../client/components/ui/alert";
 import { EmptyState } from "../../../client/components/EmptyState";
 import { Button } from "../../../client/components/ui/button";
 import { Link } from "react-router";
+import { RhemaPreviewCard } from "./RhemaPreviewCard";
 
 const InstitutionalChartsPanel = lazy(() =>
   import("./InstitutionalChartsPanel").then((m) => ({
@@ -497,6 +498,8 @@ export function InstitutionalDashboard() {
 
       <AlertBanner alerts={alerts} />
 
+      <RhemaPreviewCard />
+
       {emptyOverview ? (
         <EmptyState
           icon={BookOpen}
@@ -504,9 +507,7 @@ export function InstitutionalDashboard() {
           description={t("no_classes_description")}
         >
           <Button asChild className="mt-4 h-11 min-h-11 rounded-sm">
-            <Link to="/app/classes/new">
-              {t("create_class")}
-            </Link>
+            <Link to="/app/classes/new">{t("create_class")}</Link>
           </Button>
         </EmptyState>
       ) : overview ? (

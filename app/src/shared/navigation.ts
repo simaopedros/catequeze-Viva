@@ -141,6 +141,14 @@ export const NAV_GROUPS: NavGroupConfig[] = [
         roles: LEARNER_ROLES,
         groupId: "operation",
       }),
+      // Comunidade / Rhema sits with daily pastoral work — not buried in Content.
+      item({
+        to: "/app/comunidade",
+        labelKey: "community",
+        iconKey: "community",
+        roles: ALL_ROLES,
+        groupId: "operation",
+      }),
       item({
         to: "/app/classes",
         labelKey: "classes",
@@ -223,15 +231,6 @@ export const NAV_GROUPS: NavGroupConfig[] = [
         labelKey: "official_library",
         iconKey: "official_library",
         roles: [...CATECHIST_ROLES, "CONTENT_REVIEWER"],
-        groupId: "content",
-      }),
-      // The Comunidade feed is open to every role: anyone may read and share,
-      // only subscribers may publish (enforced server-side).
-      item({
-        to: "/app/comunidade",
-        labelKey: "community",
-        iconKey: "community",
-        roles: ALL_ROLES,
         groupId: "content",
       }),
       ...(AI_FEATURES_ENABLED
@@ -398,12 +397,12 @@ export const NAV_SECTIONS: NavSectionConfig[] = [
 
 // ---- Bottom Navigation Items (Mobile) ----
 // Max 4 primary destinations + "Mais" trigger = 5 slots total.
-/** Default staff/catechist bar (frequency-first) */
+/** Default staff/catechist bar (frequency-first, Comunidade as a daily stop) */
 export const BOTTOM_NAV_KEYS = [
   "dashboard",
+  "community",
   "classes",
   "calendar",
-  "messages",
 ] as const;
 
 /**
@@ -417,22 +416,22 @@ export function getBottomNavKeysForRole(
   isAdmin: boolean,
 ): string[] {
   if (isAdmin) {
-    return ["dashboard", "classes", "calendar", "messages"];
+    return ["dashboard", "community", "classes", "calendar"];
   }
   if (COORDINATOR_ROLES.has(role) || role === "PERSONAL_OWNER") {
-    return ["dashboard", "classes", "calendar", "catechumens"];
+    return ["dashboard", "community", "classes", "calendar"];
   }
   if (CATECHIST_ONLY_ROLES.has(role)) {
-    return ["dashboard", "classes", "calendar", "messages"];
+    return ["dashboard", "community", "classes", "calendar"];
   }
   if (role === "GUARDIAN") {
-    return ["dashboard", "calendar", "messages", "catechumens"];
+    return ["dashboard", "community", "calendar", "messages"];
   }
   if (role === "CATECHUMEN") {
-    return ["dashboard", "calendar", "messages"];
+    return ["dashboard", "community", "calendar", "messages"];
   }
   if (role === "PASTORAL_VIEWER" || role === "CONTENT_REVIEWER") {
-    return ["dashboard", "classes", "calendar", "reports"].filter(Boolean);
+    return ["dashboard", "community", "classes", "calendar"];
   }
   return [...BOTTOM_NAV_KEYS];
 }

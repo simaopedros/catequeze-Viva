@@ -6,6 +6,7 @@ import { AttendanceMock } from './mockups/AttendanceMock';
 import { DashboardMock } from './mockups/DashboardMock';
 import { FamilyPortalMock } from './mockups/FamilyPortalMock';
 import { LibraryMock } from './mockups/LibraryMock';
+import { RhemaMock } from './mockups/RhemaMock';
 import { SacramentsMock } from './mockups/SacramentsMock';
 
 const MOCK_COMPONENTS: Record<ShowcaseId, ComponentType<{ ns?: string }>> = {
@@ -15,6 +16,7 @@ const MOCK_COMPONENTS: Record<ShowcaseId, ComponentType<{ ns?: string }>> = {
   library: LibraryMock,
   'ai-planner': AiPlannerMock,
   'family-portal': FamilyPortalMock,
+  rhema: RhemaMock,
 };
 
 const screenshotCache = new Map<string, string | null>();

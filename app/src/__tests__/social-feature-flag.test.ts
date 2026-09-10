@@ -1,7 +1,7 @@
 /**
- * The Comunidade module is complete but parked behind SOCIAL_FEATURES_ENABLED.
- * These assertions follow the real flag, so they keep holding when we turn the
- * module back on.
+ * The Comunidade / Rhema module is gated by SOCIAL_FEATURES_ENABLED.
+ * These assertions follow the real flag, so they keep holding when we turn
+ * the module on or off.
  */
 import { describe, expect, it, vi } from 'vitest';
 
@@ -17,6 +17,7 @@ vi.mock('wasp/server', () => ({
 
 import {
   SOCIAL_FEATURES_ENABLED,
+  canSocialInteract,
   isSocialAppPath,
   isSocialPublicPath,
   shouldShowSocialNavItem,
@@ -29,6 +30,8 @@ describe('social path helpers', () => {
   it('recognises the app path and its children', () => {
     expect(isSocialAppPath('/app/comunidade')).toBe(true);
     expect(isSocialAppPath('/app/comunidade/qualquer')).toBe(true);
+    expect(isSocialAppPath('/app/comunidade/t/liturgia')).toBe(true);
+    expect(isSocialAppPath('/app/comunidade/p/paz-e-bem')).toBe(true);
     expect(isSocialAppPath('/app/comunidades')).toBe(false);
     expect(isSocialAppPath('/app/classes')).toBe(false);
   });
@@ -38,6 +41,7 @@ describe('social path helpers', () => {
     expect(isSocialPublicPath('/comunidade/t/liturgia')).toBe(true);
     expect(isSocialPublicPath('/comunidade/p/slug-abc')).toBe(true);
     expect(isSocialPublicPath('/c/slug-abc')).toBe(true);
+    expect(isSocialPublicPath('/u/maria_catequista')).toBe(true);
     expect(isSocialPublicPath('/pricing')).toBe(false);
   });
 
@@ -83,15 +87,14 @@ describe('server guards follow the flag', () => {
   });
 
   it('the public feed answers empty while disabled', async () => {
+    if (SOCIAL_FEATURES_ENABLED) return;
+
     const { getSocialFeed } = await import('../server/operations/socialOperations');
 
     // No entities are provided on purpose: while disabled the query must return
     // before it touches the database.
     const feed = await getSocialFeed({}, { user: null, entities: {} } as any);
-
-    if (!SOCIAL_FEATURES_ENABLED) {
-      expect(feed).toEqual({ items: [], nextCursor: null });
-    }
+    expect(feed).toEqual({ items: [], nextCursor: null });
   });
 
   it('publish access reports no permission while disabled', async () => {
@@ -133,5 +136,34 @@ describe('server guards follow the flag', () => {
         { user: null, entities: {} } as any,
       ),
     ).rejects.toMatchObject({ statusCode: 404 });
+  });
+});
+
+describe('canSocialInteract', () => {
+  it('lets a paid or trial plan react even after the daily post quota', () => {
+    expect(
+      canSocialInteract({
+        authenticated: true,
+        banned: false,
+        plan: 'catechist',
+      }),
+    ).toBe(true);
+    expect(
+      canSocialInteract({
+        authenticated: true,
+        banned: false,
+        plan: 'catechist_free',
+      }),
+    ).toBe(false);
+    expect(
+      canSocialInteract({
+        authenticated: true,
+        banned: true,
+        plan: 'catechist',
+      }),
+    ).toBe(false);
+    expect(canSocialInteract({ authenticated: false, plan: 'catechist' })).toBe(
+      false,
+    );
   });
 });

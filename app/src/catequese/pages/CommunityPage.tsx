@@ -1,76 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import { useQuery, getSocialTopics, getSocialPublishAccess } from "wasp/client/operations";
-import { AppPageHeader } from "../../client/components/brand/AppChrome";
-import { SocialComposer } from "../components/social/SocialComposer";
-import { SocialFeed } from "../components/social/SocialFeed";
-import { SocialTopicPills } from "../components/social/SocialTopicPills";
-import {
-  SocialAccessNotice,
-  type SocialAccessReason,
-} from "../components/social/SocialAccessNotice";
-import {
-  SocialFeedTabs,
-  type SocialFeedMode,
-} from "../components/social/SocialFeedTabs";
+import { SocialCommunityBoard } from "../components/social/SocialCommunityBoard";
+import { useUserContext } from "../../client/hooks/useUserContext";
+import { communityTopicPath } from "../../shared/socialProfile";
 
 /** Authenticated Comunidade feed: read for everyone, publish for subscribers. */
 export default function CommunityPage() {
   const { t } = useTranslation("social");
-  const [topicSlug, setTopicSlug] = useState<string | null>(null);
-  const [mode, setMode] = useState<SocialFeedMode>("recent");
-  const [reloadToken, setReloadToken] = useState(0);
+  const { userRole, isAdmin } = useUserContext();
+  const navigate = useNavigate();
+  const params = useParams<{ topic?: string }>();
+  const [topicSlug, setTopicSlug] = useState<string | null>(
+    params.topic ?? null,
+  );
 
-  const { data: topics } = useQuery(getSocialTopics);
-  const { data: access, refetch: refetchAccess } = useQuery(getSocialPublishAccess);
+  useEffect(() => {
+    setTopicSlug(params.topic ?? null);
+  }, [params.topic]);
 
-  const canPublish = Boolean(access?.canPublish);
-  const canInteract = Boolean(access?.authenticated && !access?.banned && access?.plan !== "catechist_free");
+  const selectTopic = (slug: string | null) => {
+    setTopicSlug(slug);
+    navigate(communityTopicPath(slug, "/app/comunidade"));
+  };
 
   return (
-    <div className="space-y-5">
-      <AppPageHeader
-        eyebrow={t("eyebrow")}
-        title={t("title")}
-        subtitle={t("subtitle")}
-        documentTitle={t("title")}
-      />
-
-      {canPublish && access?.limits ? (
-        <SocialComposer
-          topics={topics ?? []}
-          limits={access.limits}
-          quotaLeft={access.quotaLeft ?? null}
-          onPublished={() => {
-            setReloadToken((value) => value + 1);
-            void refetchAccess();
-          }}
-        />
-      ) : (
-        <SocialAccessNotice reason={(access?.reason ?? null) as SocialAccessReason} />
-      )}
-
-      <div className="space-y-3">
-        <SocialFeedTabs mode={mode} onChange={setMode} showFollowing />
-        <SocialTopicPills
-          topics={topics ?? []}
-          activeSlug={topicSlug}
-          onSelect={setTopicSlug}
-        />
-      </div>
-
-      <SocialFeed
-        topicSlug={topicSlug}
-        canInteract={canInteract}
-        reloadToken={reloadToken}
-        sort={mode === "trending" ? "trending" : "recent"}
-        following={mode === "following"}
-        showFollow
-        emptyTitle={mode === "following" ? t("discovery.emptyFollowing") : undefined}
-        emptyDescription={
-          mode === "following" ? t("discovery.emptyFollowingDescription") : undefined
-        }
-      />
-    </div>
+    <SocialCommunityBoard
+      topicSlug={topicSlug}
+      onSelectTopic={selectTopic}
+      showFollowing
+      alwaysShowAccessNotice
+      calendarTo="/app/calendar"
+      membersTo="/app/comunidade"
+      promoTo="/pricing"
+      subtitle={t("subtitle")}
+      viewerRole={userRole}
+      viewerIsAdmin={isAdmin}
+    />
   );
 }

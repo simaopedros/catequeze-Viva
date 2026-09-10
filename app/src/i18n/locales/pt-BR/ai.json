@@ -218,5 +218,6 @@
     "elapsed": "{{seconds}}s",
     "keep_page_open": "Isso costuma levar entre 10 e 40 segundos. Mantenha esta página aberta.",
     "slow_hint": "Está demorando mais que o habitual. Continuamos tentando por até 2 minutos; se falhar, você poderá tentar novamente."
-  }
+  },
+  "share_community": "Partilhar na Comunidade"
 }

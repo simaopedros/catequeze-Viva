@@ -8,6 +8,10 @@
       "title": "Panel de Control",
       "description": "Aquí ve un resumen de su catequesis: catecúmenos activos, grupos, asistencia media y pendientes."
     },
+    "community": {
+      "title": "Comunidad · Rhema",
+      "description": "La red de la catequesis: testimonios, shorts y lo que se vive en los grupos. Comparte desde encuentros, la biblioteca y la Palabra."
+    },
     "classes": {
       "title": "Grupos",
       "description": "Gestione sus grupos, catequistas y encuentros. Cada grupo tiene su propio calendario y registro de asistencia."

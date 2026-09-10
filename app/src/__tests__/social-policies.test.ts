@@ -4,12 +4,16 @@ import {
   buildOgTitle,
   buildSocialSlug,
   isLinkPreviewCrawler,
+  normalizeSocialHandle,
   renderOgHtml,
   resolveInitialStatus,
   resolvePostKind,
+  resolveVideoFormat,
   sanitizeSocialBody,
   slugifySocialTitle,
+  socialRecommendationScore,
   validateSocialCommentDraft,
+  validateSocialHandle,
   validateSocialPostDraft,
 } from '../server/operations/socialPolicies';
 import { extractLinks, screenSocialText } from '../shared/socialModeration';
@@ -64,11 +68,54 @@ describe('resolvePostKind', () => {
   });
 });
 
+describe('resolveVideoFormat', () => {
+  it('returns null when there is no video', () => {
+    expect(resolveVideoFormat([])).toBeNull();
+    expect(resolveVideoFormat([{ kind: 'IMAGE' }])).toBeNull();
+  });
+
+  it('treats videos up to 180s as SHORT', () => {
+    expect(resolveVideoFormat([{ kind: 'VIDEO', durationSeconds: 180 }])).toBe('SHORT');
+    expect(resolveVideoFormat([{ kind: 'VIDEO', durationSeconds: null }])).toBe('SHORT');
+  });
+
+  it('treats videos longer than 180s as LONG', () => {
+    expect(resolveVideoFormat([{ kind: 'VIDEO', durationSeconds: 181 }])).toBe('LONG');
+  });
+});
+
+describe('socialRecommendationScore', () => {
+  it('weights shares above reactions and comments', () => {
+    expect(
+      socialRecommendationScore({
+        reactionCount: 1,
+        commentCount: 1,
+        shareCount: 1,
+        viewCount: 1,
+      }),
+    ).toBe(36);
+  });
+});
+
+describe('social handle', () => {
+  it('normalises @prefix and casing', () => {
+    expect(normalizeSocialHandle('@Ana_Maria')).toBe('ana_maria');
+  });
+
+  it('rejects reserved and invalid handles', () => {
+    expect(validateSocialHandle('admin')).toMatch(/não está disponível/i);
+    expect(validateSocialHandle('ab')).toMatch(/3 e 30/);
+    expect(validateSocialHandle('Ana Maria')).toMatch(/letras/i);
+    expect(validateSocialHandle('catequista_ana')).toBeNull();
+    expect(validateSocialHandle('')).toBeNull();
+  });
+});
+
 describe('validateSocialPostDraft', () => {
   it('requires text or media', () => {
     expect(
       validateSocialPostDraft({ body: '   ', mediaCount: 0, mediaConsentAck: false }),
-    ).toMatch(/Escreva algo/);
+    ).toMatch(/Escreva algo|partilhe um conteúdo/);
   });
 
   it('requires the image-use acknowledgement when media is attached', () => {

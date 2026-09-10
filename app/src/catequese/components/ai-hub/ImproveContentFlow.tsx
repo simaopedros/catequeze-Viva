@@ -9,6 +9,7 @@ import { MeetingEditor } from "../collaborative/MeetingEditor";
 import { QuickSetupPanel } from "../collaborative/QuickSetupPanel";
 import { AiHubLayout } from "./AiHubLayout";
 import { ContentSourcePicker } from "./ContentSourcePicker";
+import { ShareToCommunityButton } from "../social/ShareToCommunityButton";
 import { Button } from "../../../client/components/ui/button";
 import { Card } from "../../../client/components/ui/card";
 import {
@@ -190,12 +191,18 @@ function ImproveWorkspace() {
             {t("planner.back_to_hub")}
           </Button>
           {contentItemId && (
-            <Button variant="outline" size="sm" asChild>
-              <Link to={`/app/content-library/${contentItemId}/edit`}>
-                <Pencil className="mr-1 h-3.5 w-3.5" />
-                {t("planner.edit_publish")}
-              </Link>
-            </Button>
+            <>
+              <Button variant="outline" size="sm" asChild>
+                <Link to={`/app/content-library/${contentItemId}/edit`}>
+                  <Pencil className="mr-1 h-3.5 w-3.5" />
+                  {t("planner.edit_publish")}
+                </Link>
+              </Button>
+              <ShareToCommunityButton
+                draft={{ kind: "AI_ARTIFACT", sourceId: contentItemId }}
+                label={t("share_community")}
+              />
+            </>
           )}
         </div>
       </div>

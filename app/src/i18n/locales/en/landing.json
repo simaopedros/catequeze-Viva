@@ -117,6 +117,13 @@
       "b1": "Milestones by catechumen",
       "b2": "Reusable templates per parish",
       "b3": "Progress visible to coordination and guardians"
+    },
+    "rhema": {
+      "title": "Rhema Community, in the same rhythm as catechesis",
+      "desc": "The pastoral network lives alongside the class, the calendar, and the library. After the meeting, the testimony continues in the Community — without leaving the platform.",
+      "b1": "Dashboard, classes, and Community in the same daily flow",
+      "b2": "Share meetings, Scripture, and the library in one tap",
+      "b3": "Families also follow the Community in the portal"
     }
   },
   "mission_title": "Meeting prepared. Class embraced. Faith shared with the families.",
@@ -126,7 +133,7 @@
   "personas": [
     {
       "title": "Catechist",
-      "desc": "Organize your class, prepare meetings with the pastoral library, and take attendance on mobile."
+      "desc": "Organize your class, prepare meetings with the pastoral library, and share what you lived in the Community."
     },
     {
       "title": "Parish Coordinator",
@@ -134,7 +141,7 @@
     },
     {
       "title": "Parents & Guardians",
-      "desc": "Follow attendance, notices, documents, and justifications through the portal."
+      "desc": "Follow attendance, notices, documents, and the Community through the portal."
     },
     {
       "title": "Pastor",
@@ -348,6 +355,11 @@
     "plan_title": "Plan: God's Love",
     "published": "Published",
     "plan_detail": "Confirmation · 45 min"
+  },
+  "mockup_rhema": {
+    "handle": "@catequista_ana",
+    "caption": "Today's meeting: the Our Father. Amen!",
+    "amen": "Amen"
   },
   "footer": {
     "create_account": "Start the 7 days",

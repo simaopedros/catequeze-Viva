@@ -6,7 +6,7 @@ import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 
 interface TourStep {
   target: string;
-  stepKey: "dashboard" | "classes" | "ai" | "messages" | "search";
+  stepKey: "dashboard" | "community" | "classes" | "ai" | "messages" | "search";
   position?: "top" | "bottom" | "left" | "right";
 }
 
@@ -15,6 +15,11 @@ const TOUR_STEP_DEFS: TourStep[] = [
     target: '[data-tour="dashboard-stats"]',
     stepKey: "dashboard",
     position: "bottom",
+  },
+  {
+    target: '[data-tour="sidebar-community"]',
+    stepKey: "community",
+    position: "right",
   },
   {
     target: '[data-tour="sidebar-classes"]',

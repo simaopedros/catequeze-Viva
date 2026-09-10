@@ -47,7 +47,7 @@ npx playwright test --ui   # Run e2e tests in Playwright UI
 ## Test seed data
 
 ```bash
-./seed_tests.sh            # Depopulates + seeds 1 diocese, 3 parishes, 16 users, classes, meetings
+./seed_tests.sh            # Depopulates + seeds 1 diocese, 3 parishes, 17 users, classes, meetings
 ```
 Default password for all seed users: `Teste@123`. All fixture IDs are hardcoded — change them only in conjunction with the tests.
 

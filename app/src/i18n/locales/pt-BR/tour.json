@@ -8,6 +8,10 @@
       "title": "Painel de Controlo",
       "description": "Aqui você vê um resumo da sua catequese: catequizandos ativos, turmas, presença média e pendências."
     },
+    "community": {
+      "title": "Comunidade · Rhema",
+      "description": "A rede da catequese: testemunhos, shorts e o que se vive nas turmas. Partilhe a partir de encontros, da biblioteca e da Palavra."
+    },
     "classes": {
       "title": "Turmas",
       "description": "Gerencie suas turmas, catequistas e encontros. Cada turma tem seu próprio calendário e registo de presenças."

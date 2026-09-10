@@ -4,8 +4,10 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "wasp/client/auth";
 import { UserDropdown } from "../user/UserDropdown";
 import { TwoFactorGate } from "./components/TwoFactorGate";
-import { Home, Calendar, MessageSquare } from "lucide-react";
+import { Home, Calendar, MessageSquare, Sparkles } from "lucide-react";
 import { BrandLockup } from "../client/components/brand/Brand";
+import { SOCIAL_FEATURES_ENABLED } from "../shared/socialFeatures";
+import { isFamilyPortalPath } from "../shared/familyPortal";
 
 interface FamilyAppShellProps {
   children: ReactNode;
@@ -22,24 +24,22 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
   const { t } = useTranslation("navigation");
 
   useEffect(() => {
-    const path = location.pathname;
-    const isFamilyRoute =
-      path === "/app" ||
-      path === "/app/calendar" ||
-      path.startsWith("/app/messages") ||
-      path.startsWith("/app/meetings/") ||
-      path === "/app/documents" ||
-      path.startsWith("/app/documents/") ||
-      path === "/app/consents" ||
-      path.startsWith("/app/consents/");
-
-    if (!isFamilyRoute) {
+    if (!isFamilyPortalPath(location.pathname)) {
       navigate("/app", { replace: true });
     }
   }, [location.pathname, navigate]);
 
   const navItems = [
     { to: "/app", icon: Home, label: t("dashboard") },
+    ...(SOCIAL_FEATURES_ENABLED
+      ? [
+          {
+            to: "/app/comunidade",
+            icon: Sparkles,
+            label: t("community_short"),
+          },
+        ]
+      : []),
     { to: "/app/calendar", icon: Calendar, label: t("calendar") },
     { to: "/app/messages", icon: MessageSquare, label: t("messages") },
   ];
@@ -59,6 +59,32 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
                 {t("family_label")}
               </span>
             </div>
+            <nav
+              className="hidden min-w-0 flex-1 items-center justify-center gap-1 md:flex"
+              aria-label={t("primarySection", { defaultValue: "Principal" })}
+            >
+              {navItems.map((item) => {
+                const isActive =
+                  location.pathname === item.to ||
+                  (item.to !== "/app" && location.pathname.startsWith(item.to));
+                return (
+                  <button
+                    key={item.to}
+                    type="button"
+                    onClick={() => navigate(item.to)}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`inline-flex h-9 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition-colors ${
+                      isActive
+                        ? "bg-brand-ink/8 text-brand-ink"
+                        : "text-muted-foreground hover:text-brand-ink"
+                    }`}
+                  >
+                    <item.icon className="h-4 w-4" aria-hidden />
+                    {item.label}
+                  </button>
+                );
+              })}
+            </nav>
             <div className="flex items-center gap-2">
               {user && <UserDropdown user={user} />}
             </div>

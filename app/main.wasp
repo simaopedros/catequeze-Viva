@@ -108,7 +108,8 @@ app OpenSaaS {
 
   db: {
     seeds: [
-      import { seedPricingCatalog } from "@src/server/scripts/seedPricingCatalog"
+      import { seedPricingCatalog } from "@src/server/scripts/seedPricingCatalog",
+      import { seedSocialTopics } from "@src/server/scripts/seedSocialTopics"
     ]
   },
 }
@@ -355,39 +356,64 @@ page AppNewClassPage {
 
 
 //#region Comunidade (social) - pages
-// PARKED: the module is complete but disabled via SOCIAL_FEATURES_ENABLED in
-// @src/shared/socialFeatures. Every route redirects away until we resume the
-// social work. To re-enable, flip that flag and point these pages back to
-// CommunityPage, PublicCommunityPage, PublicSocialPostPage and
-// SocialShortLinkPage respectively.
 route AppCommunityRoute { path: "/app/comunidade", to: AppCommunityPage }
 page AppCommunityPage {
   authRequired: true,
-  component: import RedirectDisabledSocial from "@src/catequese/pages/RedirectDisabledSocial"
+  component: import CommunityPage from "@src/catequese/pages/CommunityPage"
+}
+
+route AppCommunityTopicRoute { path: "/app/comunidade/t/:topic", to: AppCommunityTopicPage }
+page AppCommunityTopicPage {
+  authRequired: true,
+  component: import CommunityPage from "@src/catequese/pages/CommunityPage"
+}
+
+route AppSocialPostRoute { path: "/app/comunidade/p/:slug", to: AppSocialPostPage }
+page AppSocialPostPage {
+  authRequired: true,
+  component: import PublicSocialPostPage from "@src/catequese/pages/PublicSocialPostPage"
+}
+
+route AppSocialProfileRoute { path: "/app/comunidade/u/:handle", to: AppSocialProfilePage }
+page AppSocialProfilePage {
+  authRequired: true,
+  component: import SocialProfilePage from "@src/catequese/pages/SocialProfilePage"
 }
 
 route PublicCommunityRoute { path: "/comunidade", to: PublicCommunityPage }
 page PublicCommunityPage {
   authRequired: false,
-  component: import RedirectDisabledSocial from "@src/catequese/pages/RedirectDisabledSocial"
+  component: import PublicCommunityPage from "@src/catequese/pages/PublicCommunityPage"
 }
 
 route PublicCommunityTopicRoute { path: "/comunidade/t/:topic", to: PublicCommunityTopicPage }
 page PublicCommunityTopicPage {
   authRequired: false,
-  component: import RedirectDisabledSocial from "@src/catequese/pages/RedirectDisabledSocial"
+  component: import PublicCommunityPage from "@src/catequese/pages/PublicCommunityPage"
 }
 
 route PublicSocialPostRoute { path: "/comunidade/p/:slug", to: PublicSocialPostPage }
 page PublicSocialPostPage {
   authRequired: false,
-  component: import RedirectDisabledSocial from "@src/catequese/pages/RedirectDisabledSocial"
+  component: import PublicSocialPostPage from "@src/catequese/pages/PublicSocialPostPage"
+}
+
+route PublicCommunityProfileRoute { path: "/comunidade/u/:handle", to: PublicCommunityProfilePage }
+page PublicCommunityProfilePage {
+  authRequired: false,
+  component: import SocialProfilePage from "@src/catequese/pages/SocialProfilePage"
 }
 
 route SocialShortLinkRoute { path: "/c/:slug", to: SocialShortLinkPage }
 page SocialShortLinkPage {
   authRequired: false,
-  component: import RedirectDisabledSocial from "@src/catequese/pages/RedirectDisabledSocial"
+  component: import SocialShortLinkPage from "@src/catequese/pages/SocialShortLinkPage"
+}
+
+route PublicSocialProfileRoute { path: "/u/:handle", to: PublicSocialProfilePage }
+page PublicSocialProfilePage {
+  authRequired: false,
+  component: import PublicSocialProfilePage from "@src/catequese/pages/PublicSocialProfilePage"
 }
 //#endregion
 
@@ -1550,11 +1576,27 @@ api uploadSocialImage {
   entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese]
 }
 
+api uploadSocialVideo {
+  fn: import { uploadSocialVideo } from "@src/server/api/socialMedia",
+  middlewareConfigFn: import { socialVideoUploadMiddleware } from "@src/server/api/socialMedia",
+  auth: true,
+  httpRoute: (POST, "/api/social/videos"),
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese]
+}
+
 api serveSocialMedia {
   fn: import { serveSocialMedia } from "@src/server/api/socialMedia",
   middlewareConfigFn: import { serveSocialMediaMiddleware } from "@src/server/api/socialMedia",
   httpRoute: (GET, "/api/social/media/:mediaId"),
-  entities: [SocialMedia, SocialPost]
+  entities: [SocialMedia, SocialPost, User]
+}
+
+api uploadProfileAvatar {
+  fn: import { uploadProfileAvatar } from "@src/server/api/profileAvatar",
+  middlewareConfigFn: import { profileAvatarUploadMiddleware } from "@src/server/api/profileAvatar",
+  auth: true,
+  httpRoute: (POST, "/api/profile/avatar"),
+  entities: [SocialMedia, User]
 }
 
 // Canonical share link. Serves Open Graph tags to crawlers, redirects humans
@@ -1670,17 +1712,22 @@ action discardSocialMedia {
 // anonymous visitors get the same published feed as members.
 query getSocialFeed {
   fn: import { getSocialFeed } from "@src/server/operations/socialOperations",
-  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, SocialFollow, User, Parish]
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, SocialFollow, SocialBlock, SocialShare, SocialVideoWatch, User, Parish]
 }
 
 query getSocialPost {
   fn: import { getSocialPost } from "@src/server/operations/socialOperations",
-  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, User, Parish]
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, SocialShare, User, Parish]
 }
 
 query getSocialTopics {
   fn: import { getSocialTopics } from "@src/server/operations/socialOperations",
   entities: [SocialTopic]
+}
+
+query getSocialCommunityPulse {
+  fn: import { getSocialCommunityPulse } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialTopic, SocialPostTopic, User]
 }
 
 query getSocialComments {
@@ -1695,7 +1742,17 @@ query getSocialPublishAccess {
 
 action createSocialPost {
   fn: import { createSocialPost } from "@src/server/operations/socialOperations",
-  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, User, Membership, Parish, TenantBilling, Diocese, PricingPlan, PricingPlanPrice]
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialShare, User, Membership, Parish, TenantBilling, Diocese, PricingPlan, PricingPlanPrice, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, ContentItem]
+}
+
+query previewSocialShare {
+  fn: import { previewSocialShare } from "@src/server/operations/socialShareResolve",
+  entities: [BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, ContentItem, Membership, Parish]
+}
+
+action recordSocialWatch {
+  fn: import { recordSocialWatch } from "@src/server/operations/socialOperations",
+  entities: [SocialPost, SocialVideoWatch, User]
 }
 
 action deleteSocialPost {
@@ -1729,12 +1786,47 @@ action registerSocialShare {
 // Following is consumption, so any signed-in user may follow an author.
 action toggleSocialFollow {
   fn: import { toggleSocialFollow } from "@src/server/operations/socialDiscoveryOperations",
-  entities: [SocialFollow, Notification, User]
+  entities: [SocialFollow, SocialBlock, Notification, User]
 }
 
 query getSocialFollowState {
   fn: import { getSocialFollowState } from "@src/server/operations/socialDiscoveryOperations",
   entities: [SocialFollow]
+}
+
+query getSocialProfile {
+  fn: import { getSocialProfile } from "@src/server/operations/socialProfileOperations",
+  entities: [User, SocialFollow, SocialBlock, SocialPost]
+}
+
+query getMySocialProfile {
+  fn: import { getMySocialProfile } from "@src/server/operations/socialProfileOperations",
+  entities: [User, SocialFollow, SocialBlock]
+}
+
+action updateSocialProfile {
+  fn: import { updateSocialProfile } from "@src/server/operations/socialProfileOperations",
+  entities: [User]
+}
+
+action toggleSocialBlock {
+  fn: import { toggleSocialBlock } from "@src/server/operations/socialProfileOperations",
+  entities: [SocialBlock, SocialFollow, User]
+}
+
+query getSocialBlockState {
+  fn: import { getSocialBlockState } from "@src/server/operations/socialProfileOperations",
+  entities: [SocialBlock]
+}
+
+query listMySocialBlocks {
+  fn: import { listMySocialBlocks } from "@src/server/operations/socialProfileOperations",
+  entities: [SocialBlock, User]
+}
+
+query searchSocial {
+  fn: import { searchSocial } from "@src/server/operations/socialDiscoveryOperations",
+  entities: [User, SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, Parish]
 }
 //#endregion
 

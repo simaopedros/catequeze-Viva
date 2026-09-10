@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef, memo } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { toAppCommunityPath } from "../shared/socialProfile";
 import { useQuery, globalSearch } from "wasp/client/operations";
 import {
   listNotifications,
@@ -73,6 +74,7 @@ export const TopBar = memo(function TopBar() {
   const { currentLocale } = useLocale();
   const { data: user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [focused, setFocused] = useState(false);
@@ -110,7 +112,13 @@ export const TopBar = memo(function TopBar() {
         await markNotificationRead({ notificationId: notif.id });
       } catch {}
     }
-    if (notif.link) navigate(notif.link);
+    if (notif.link) {
+      navigate(
+        location.pathname.startsWith("/app/")
+          ? toAppCommunityPath(notif.link)
+          : notif.link,
+      );
+    }
     setNotifOpen(false);
   };
 

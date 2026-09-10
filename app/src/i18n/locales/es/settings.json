@@ -21,6 +21,16 @@
   "saving": "Guardando...",
   "saved": "¡Guardado!",
   "save_profile_error": "Error al guardar perfil.",
+  "rhema": {
+    "title": "Rhema",
+    "hint": "Tu perfil público en la Comunidad. El handle aparece como @nombre.",
+    "handle": "Handle",
+    "handle_placeholder": "tu_handle",
+    "bio": "Bio",
+    "bio_placeholder": "Una frase sobre tu catequesis",
+    "open_profile": "Ver perfil en la Comunidad",
+    "open_community": "Abrir Comunidad"
+  },
   "change_password": "Cambiar contraseña",
   "current_password": "Contraseña actual",
   "new_password": "Nueva contraseña",
@@ -55,5 +65,18 @@
   "email_pref_lifecycle": "Consejos de activación, prueba y retorno a la cuenta",
   "email_pref_product": "Novedades del producto y boletín",
   "email_pref_pastoral": "Comunicados de los grupos y de la parroquia",
-  "email_pref_saved": "Preferencias de correo guardadas."
+  "email_pref_saved": "Preferencias de correo guardadas.",
+  "social_profile": "Perfil en la Comunidad",
+  "social_profile_desc": "Tu @ público, bio y foto aparecen en las publicaciones y en el feed.",
+  "social_handle": "Nombre de usuario (@)",
+  "social_bio": "Bio",
+  "social_website": "Enlace personal",
+  "social_change_avatar": "Cambiar foto",
+  "social_avatar_updated": "Foto actualizada",
+  "social_avatar_error": "No se pudo actualizar la foto.",
+  "social_save": "Guardar perfil público",
+  "social_copy_link": "Copiar enlace del perfil",
+  "social_handle_required": "Define un @ para copiar el enlace.",
+  "social_blocked": "Cuentas bloqueadas",
+  "social_unblock": "Desbloquear"
 }

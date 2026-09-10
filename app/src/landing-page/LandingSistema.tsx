@@ -59,6 +59,7 @@ export default function LandingSistema() {
             "family-portal",
             "sacraments",
             "library",
+            "rhema",
             "ai-planner",
           ]}
         />

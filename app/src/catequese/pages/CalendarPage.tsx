@@ -48,6 +48,7 @@ import { useConfirm } from "../../client/hooks/useConfirm";
 import { toast } from "../../client/hooks/use-toast";
 import { OriginBadge } from "../components/OriginBadge";
 import { findCalendarConflicts } from "../../shared/resourceInheritance";
+import { PastoralCompanion } from "../components/social/PastoralCompanion";
 import {
   Alert,
   AlertDescription,
@@ -371,6 +372,8 @@ export default function CalendarPage() {
           },
         ]}
       />
+
+      <PastoralCompanion surface="calendar" />
 
       {conflicts.length > 0 && (
         <Alert variant="warning" data-testid="calendar-conflicts">

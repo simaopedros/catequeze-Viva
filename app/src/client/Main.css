@@ -245,8 +245,16 @@
   --z-dropdown: 50;
   --z-sticky: 100;
   --z-overlay: 200;
+  --z-cookie: 150;
   --z-modal: 500;
   --z-toast: 1000;
+  /* Tailwind v4 z-* utilities read --z-index-*, not --z-*. */
+  --z-index-dropdown: 50;
+  --z-index-sticky: 100;
+  --z-index-cookie: 150;
+  --z-index-overlay: 200;
+  --z-index-modal: 500;
+  --z-index-toast: 1000;
 
   /* Legacy z-index (keep for existing code) */
   --z-index-1: 1;
@@ -402,6 +410,21 @@
 @utility skeleton-stable {
   min-height: 4rem;
   transition: opacity var(--motion-duration-fast, 150ms) var(--motion-easing-default, ease-out);
+}
+
+@utility scroll-fade-top {
+  mask-image: linear-gradient(to bottom, transparent 0, #000 1.25rem, #000 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 1.25rem, #000 100%);
+}
+
+@utility scroll-fade-bottom {
+  mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 1.25rem), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 1.25rem), transparent 100%);
+}
+
+@utility scroll-fade-both {
+  mask-image: linear-gradient(to bottom, transparent 0, #000 1.25rem, #000 calc(100% - 1.25rem), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 1.25rem, #000 calc(100% - 1.25rem), transparent 100%);
 }
 
 /* ── Surface micro-interactions ───────────────────────────────────── */
@@ -706,4 +729,18 @@
   font-size: 0.9375rem !important;
   font-weight: 500 !important;
   color: hsl(var(--foreground)) !important;
+}
+
+/* vanilla-cookieconsent defaults to a near-max z-index and would sit above
+   Radix dialogs/sheets (z-modal: 500). Keep the banner above sticky chrome
+   and below overlays so partilhar/bloquear stay clickable. */
+#cc-main {
+  --cc-z-index: 150;
+  z-index: 150 !important;
+}
+
+/* visibility:hidden is not enough: the library sets .cm to visibility:visible. */
+body:has([data-slot="dialog-overlay"][data-state="open"]) #cc-main,
+body:has([data-slot="sheet-overlay"][data-state="open"]) #cc-main {
+  display: none !important;
 }

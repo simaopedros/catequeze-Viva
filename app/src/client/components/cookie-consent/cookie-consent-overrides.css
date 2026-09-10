@@ -1,0 +1,13 @@
+/* Loaded after vanilla-cookieconsent.css so :root --cc-z-index wins. */
+:root {
+  --cc-z-index: 150;
+}
+
+#cc-main {
+  z-index: 150 !important;
+}
+
+body:has([data-slot="dialog-overlay"][data-state="open"]) #cc-main,
+body:has([data-slot="sheet-overlay"][data-state="open"]) #cc-main {
+  display: none !important;
+}

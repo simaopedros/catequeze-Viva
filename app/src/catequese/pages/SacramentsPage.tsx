@@ -46,6 +46,7 @@ import { toast } from "../../client/hooks/use-toast";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
 import { useDebouncedValue } from "../../client/hooks/useDebouncedValue";
+import { PastoralCompanion } from "../components/social/PastoralCompanion";
 
 type FilterKey =
   | "all"
@@ -363,10 +364,7 @@ export default function SacramentsPage() {
               />
             </div>
             {canManage && (
-              <Button
-                className="h-10 rounded-md"
-                onClick={openForm}
-              >
+              <Button className="h-10 rounded-md" onClick={openForm}>
                 <Plus className="mr-1 h-4 w-4" />
                 {t("page.new_journey")}
               </Button>
@@ -374,6 +372,8 @@ export default function SacramentsPage() {
           </div>
         }
       />
+
+      <PastoralCompanion surface="sacraments" />
 
       <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
         <AppMetric label={t("page.total")} value={statusCounts.total} />

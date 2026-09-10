@@ -1,8 +1,26 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
-import { HandHeart, MessageCircle, MoreHorizontal, Trash2, Flag } from "lucide-react";
-import { deleteSocialPost, toggleSocialReaction } from "wasp/client/operations";
+import {
+  HandHeart,
+  MessageCircle,
+  MoreHorizontal,
+  Trash2,
+  Flag,
+  Ban,
+} from "lucide-react";
+import {
+  deleteSocialPost,
+  toggleSocialReaction,
+  toggleSocialBlock,
+} from "wasp/client/operations";
+import { invalidateSocialFollowQueries } from "../../../client/hooks/socialQueryCache";
+import { SocialShareEmbed, type SocialShareCard } from "./SocialShareEmbed";
+import {
+  communityPostPath,
+  communityProfilePath,
+  communityTopicPath,
+} from "../../../shared/socialProfile";
 import { Button } from "../../../client/components/ui/button";
 import { Badge } from "../../../client/components/ui/badge";
 import {
@@ -21,6 +39,13 @@ import { SocialShareButton } from "./SocialShareButton";
 import { SocialCommentThread } from "./SocialCommentThread";
 import { SocialReportDialog } from "./SocialReportDialog";
 import { SocialFollowButton } from "./SocialFollowButton";
+import { SocialAvatar } from "./SocialAvatar";
+import {
+  collapseSocialBody,
+  shouldCollapseSocialBody,
+  socialTopicChipClass,
+  splitSocialHeadline,
+} from "./socialAppearance";
 
 export interface SocialPostItem {
   id: string;
@@ -33,33 +58,24 @@ export interface SocialPostItem {
   reactionCount: number;
   commentCount: number;
   shareCount: number;
-  author: { id: string; displayName: string; avatarUrl: string | null };
+  author: {
+    id: string;
+    displayName: string;
+    avatarUrl: string | null;
+    socialHandle?: string | null;
+    handle?: string | null;
+  };
   parish: { id: string; name: string } | null;
+  share?: SocialShareCard | null;
   media: SocialMediaItem[];
   topics: { slug: string; name: string }[];
   viewerReaction: "AMEM" | "REZO" | "ALELUIA" | null;
   isOwn: boolean;
+  videoFormat?: "SHORT" | "LONG" | null;
 }
 
 function AuthorAvatar({ name, url }: { name: string; url: string | null }) {
-  if (url) {
-    return (
-      <img
-        src={url}
-        alt=""
-        className="h-10 w-10 rounded-full object-cover"
-        loading="lazy"
-      />
-    );
-  }
-  return (
-    <div
-      aria-hidden
-      className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary"
-    >
-      {name.charAt(0).toUpperCase()}
-    </div>
-  );
+  return <SocialAvatar name={name} url={url} />;
 }
 
 export function SocialPostCard({
@@ -85,6 +101,7 @@ export function SocialPostCard({
 }) {
   const { t } = useTranslation("social");
   const { currentLocale } = useLocale();
+  const location = useLocation();
   const [reaction, setReaction] = useState(post.viewerReaction);
   const [reactionCount, setReactionCount] = useState(post.reactionCount);
   const [commentCount, setCommentCount] = useState(post.commentCount);
@@ -100,11 +117,17 @@ export function SocialPostCard({
     }
     setBusy(true);
     try {
-      const result = await toggleSocialReaction({ postId: post.id, type: "AMEM" });
+      const result = await toggleSocialReaction({
+        postId: post.id,
+        type: "AMEM",
+      });
       setReaction(result.reaction);
       setReactionCount(result.reactionCount);
     } catch (error: any) {
-      toast({ title: error?.message || t("upsell.title"), variant: "destructive" });
+      toast({
+        title: error?.message || t("upsell.title"),
+        variant: "destructive",
+      });
     } finally {
       setBusy(false);
     }
@@ -124,23 +147,54 @@ export function SocialPostCard({
       toast({ title: t("post.deleted") });
       onDeleted?.(post.id);
     } catch (error: any) {
-      toast({ title: error?.message || t("post.delete"), variant: "destructive" });
+      toast({
+        title: error?.message || t("post.delete"),
+        variant: "destructive",
+      });
     } finally {
       setBusy(false);
     }
   };
 
+  const [expanded, setExpanded] = useState(false);
   const timestamp = post.publishedAt || post.createdAt;
+  const { title, rest } = splitSocialHeadline(post.body);
+  const canCollapse = shouldCollapseSocialBody(rest);
+  const visibleBody =
+    canCollapse && !expanded ? collapseSocialBody(rest) : rest;
 
   return (
-    <article className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
-      <header className="flex items-start gap-3">
-        <AuthorAvatar name={post.author.displayName} url={post.author.avatarUrl} />
+    <article className="mb-3 min-w-0 overflow-hidden rounded-2xl border border-border bg-white p-4 shadow-[0_3px_16px_rgba(18,46,76,0.07)]">
+      <header className="flex items-center gap-2.5">
+        <AuthorAvatar
+          name={post.author.displayName}
+          url={post.author.avatarUrl}
+        />
         <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold leading-tight">{post.author.displayName}</p>
-          <p className="text-xs text-muted-foreground">
-            {formatRelativeTime(new Date(timestamp).toISOString(), currentLocale)}
-            {post.parish ? ` · ${t("feed.postedIn", { parish: post.parish.name })}` : ""}
+          {post.author.socialHandle ? (
+            <Link
+              to={communityProfilePath(
+                post.author.socialHandle,
+                location.pathname,
+              )}
+              className="block truncate text-[13px] font-extrabold leading-tight hover:underline"
+            >
+              {post.author.displayName}
+            </Link>
+          ) : (
+            <p className="truncate text-[13px] font-extrabold leading-tight">
+              {post.author.displayName}
+            </p>
+          )}
+          <p className="mt-0.5 text-[11px] text-muted-foreground">
+            {post.author.socialHandle ? `@${post.author.socialHandle} · ` : ""}
+            {formatRelativeTime(
+              new Date(timestamp).toISOString(),
+              currentLocale,
+            )}
+            {post.parish
+              ? ` · ${t("feed.postedIn", { parish: post.parish.name })}`
+              : ""}
           </p>
         </div>
 
@@ -160,7 +214,12 @@ export function SocialPostCard({
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="shrink-0" disabled={busy}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 shrink-0 text-[#53667e]"
+              disabled={busy}
+            >
               <MoreHorizontal className="h-4 w-4" aria-hidden />
               <span className="sr-only">{t("feed.openPost")}</span>
             </Button>
@@ -172,46 +231,118 @@ export function SocialPostCard({
                 {t("post.delete")}
               </DropdownMenuItem>
             ) : (
-              <DropdownMenuItem onClick={() => setReporting(true)}>
-                <Flag className="mr-2 h-4 w-4" aria-hidden />
-                {t("post.report")}
-              </DropdownMenuItem>
+              <>
+                <DropdownMenuItem onClick={() => setReporting(true)}>
+                  <Flag className="mr-2 h-4 w-4" aria-hidden />
+                  {t("post.report")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={async () => {
+                    try {
+                      const result = await toggleSocialBlock({
+                        userId: post.author.id,
+                      });
+                      void invalidateSocialFollowQueries();
+                      toast({
+                        title: result.blocked
+                          ? t("discovery.blockSuccess", {
+                              name: post.author.displayName,
+                            })
+                          : t("discovery.unblockSuccess", {
+                              name: post.author.displayName,
+                            }),
+                      });
+                      if (result.blocked) onDeleted?.(post.id);
+                    } catch (error: any) {
+                      toast({
+                        title: error?.message || t("discovery.block"),
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                >
+                  <Ban className="mr-2 h-4 w-4" aria-hidden />
+                  {t("discovery.block")}
+                </DropdownMenuItem>
+              </>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
       </header>
 
-      {post.body && (
-        <p className="mt-3 whitespace-pre-wrap break-words text-[0.95rem] leading-relaxed">
-          {post.body}
-        </p>
-      )}
+      <div className="pt-3">
+        {post.topics[0] ? (
+          <Link
+            to={communityTopicPath(post.topics[0].slug, location.pathname)}
+            className={cn(
+              "mb-2 inline-flex rounded-full px-2.5 py-1 text-[10px] font-extrabold",
+              socialTopicChipClass(post.topics[0].slug),
+            )}
+          >
+            {post.topics[0].name}
+          </Link>
+        ) : null}
 
-      <SocialMediaGallery media={post.media} />
+        {title ? (
+          <h3 className="mb-1.5 break-words [overflow-wrap:anywhere] text-base font-semibold tracking-[-0.01em] text-brand-ink">
+            {title}
+          </h3>
+        ) : null}
 
-      {post.topics.length > 0 && (
-        <ul className="mt-3 flex flex-wrap gap-1.5">
-          {post.topics.map((topic) => (
-            <li key={topic.slug}>
-              <Link to={`/comunidade/t/${topic.slug}`}>
-                <Badge variant="secondary" className="hover:bg-secondary/80">
+        {visibleBody ? (
+          <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-relaxed text-[#5f7085]">
+            {visibleBody}
+          </p>
+        ) : null}
+
+        {canCollapse ? (
+          <button
+            type="button"
+            onClick={() => setExpanded((value) => !value)}
+            className="mt-1 text-[12px] font-semibold text-[#1f6ed4] underline-offset-4 hover:underline"
+          >
+            {expanded ? t("post.showLess") : t("post.showMore")}
+          </button>
+        ) : null}
+
+        {post.share && <SocialShareEmbed share={post.share} />}
+
+        <SocialMediaGallery media={post.media} />
+
+        {post.topics.length > 1 && (
+          <ul className="mt-2.5 flex flex-wrap gap-1.5">
+            {post.topics.slice(1).map((topic) => (
+              <li key={topic.slug}>
+                <Link
+                  to={communityTopicPath(topic.slug, location.pathname)}
+                  className={cn(
+                    "inline-flex rounded-full px-2.5 py-1 text-[10px] font-extrabold",
+                    socialTopicChipClass(topic.slug),
+                  )}
+                >
                   {topic.name}
-                </Badge>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
-      <footer className="mt-3 flex flex-wrap items-center gap-1 border-t border-border pt-2">
+      <footer className="mt-3 flex flex-wrap items-center gap-4 border-t border-[#edf0f3] pt-3 text-[11px] text-[#5c7088]">
         <Button
           variant="ghost"
           size="sm"
           onClick={react}
           disabled={busy}
-          className={cn("gap-2", reaction && "text-primary")}
+          className={cn(
+            "h-auto gap-1.5 px-0 text-[11px] hover:bg-transparent hover:text-brand-ink",
+            reaction && "font-bold text-[#1f6ed4]",
+          )}
         >
-          <HandHeart className={cn("h-4 w-4", reaction && "fill-current")} aria-hidden />
+          <HandHeart
+            className={cn("h-4 w-4", reaction && "fill-current")}
+            aria-hidden
+          />
           <span>{reactionCount > 0 ? reactionCount : t("reactions.AMEM")}</span>
         </Button>
 
@@ -219,7 +350,7 @@ export function SocialPostCard({
           variant="ghost"
           size="sm"
           onClick={() => setShowComments((value) => !value)}
-          className="gap-2"
+          className="h-auto gap-1.5 px-0 text-[11px] hover:bg-transparent hover:text-brand-ink"
         >
           <MessageCircle className="h-4 w-4" aria-hidden />
           <span>{commentCount > 0 ? commentCount : t("comments.title")}</span>
@@ -230,12 +361,13 @@ export function SocialPostCard({
           slug={post.slug}
           body={post.body}
           shareCount={post.shareCount}
+          className="h-auto gap-1.5 px-0 text-[11px] hover:bg-transparent hover:text-brand-ink"
         />
 
         {linkToDetail && (
           <Link
-            to={`/comunidade/p/${post.slug}`}
-            className="ml-auto text-xs text-muted-foreground underline-offset-4 hover:underline"
+            to={communityPostPath(post.slug, location.pathname)}
+            className="ml-auto text-[11px] text-muted-foreground underline-offset-4 hover:underline"
           >
             {t("feed.openPost")}
           </Link>

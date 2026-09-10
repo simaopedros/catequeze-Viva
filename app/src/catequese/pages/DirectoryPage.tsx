@@ -5,8 +5,6 @@ import {
   Search,
   BookOpen,
   Loader2,
-  ChevronDown,
-  ChevronUp,
   AlertCircle,
 } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
@@ -21,6 +19,8 @@ import {
   getDirectoryEntry,
 } from "wasp/client/operations";
 import { useLocale } from "../../i18n/useLocale";
+import { PastoralCompanion } from "../components/social/PastoralCompanion";
+import { DirectoryEntryCard } from "../components/DirectoryEntryCard";
 
 const PART_KEYS = ["I", "II", "III"] as const;
 
@@ -89,8 +89,10 @@ export default function DirectoryPage() {
     setLoading(false);
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim() || searchQuery.length < 2) return;
+  const handleSearch = async (raw?: string) => {
+    const query = (raw ?? searchQuery).trim();
+    if (query.length < 2) return;
+    setSearchQuery(query);
     setLoading(true);
     setPart("");
     setEntries([]);
@@ -99,7 +101,7 @@ export default function DirectoryPage() {
     try {
       setSearchResults(
         (await searchDirectory({
-          query: searchQuery,
+          query,
           locale: currentLocale,
         })) || [],
       );
@@ -120,18 +122,19 @@ export default function DirectoryPage() {
         title={t("directory.title")}
         subtitle={t("directory.subtitle")}
       />
+      <PastoralCompanion surface="directory" />
       <div className="flex gap-3">
         <input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          onKeyDown={(e) => e.key === "Enter" && void handleSearch()}
           className="flex-1 h-9 rounded-sm border border-input bg-background px-3 text-sm"
           placeholder={t("directory.searchPlaceholder")}
           aria-label={t("directory.searchPlaceholder")}
         />
         <Button
           size="sm"
-          onClick={handleSearch}
+          onClick={() => void handleSearch()}
           disabled={loading || searchQuery.length < 2}
         >
           <Search className="mr-1 h-4 w-4" />
@@ -149,8 +152,7 @@ export default function DirectoryPage() {
               <button
                 key={topic}
                 onClick={() => {
-                  setSearchQuery(topic);
-                  handleSearch();
+                  void handleSearch(topic);
                 }}
                 className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-brand-ink/30 hover:text-brand-ink"
               >
@@ -204,47 +206,16 @@ export default function DirectoryPage() {
             {displayEntries.length} {t("directory.paragraphs")}
           </p>
           {displayEntries.map((entry: any) => (
-            <div
+            <DirectoryEntryCard
               key={entry.id}
-              ref={(el) => {
+              entry={entry}
+              expanded={Boolean(expanded[entry.id])}
+              onToggle={() => toggle(entry.id)}
+              registerRef={(el) => {
                 if (el) entryRefs.current.set(entry.id, el);
                 else entryRefs.current.delete(entry.id);
               }}
-              className="rounded-sm border border-border/70 bg-white"
-            >
-              <button
-                onClick={() => toggle(entry.id)}
-                className="w-full text-left p-4 flex items-start justify-between gap-3"
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
-                      §{entry.number}
-                    </span>
-                    {entry.title && (
-                      <span className="text-sm font-semibold tracking-tight text-brand-ink">
-                        {entry.title}
-                      </span>
-                    )}
-                    {entry.chapter && (
-                      <span className="text-xs text-muted-foreground">
-                        ({entry.chapter})
-                      </span>
-                    )}
-                  </div>
-                  {expanded[entry.id] && (
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                      {entry.content}
-                    </p>
-                  )}
-                </div>
-                {expanded[entry.id] ? (
-                  <ChevronUp className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                )}
-              </button>
-            </div>
+            />
           ))}
         </div>
       ) : part ? (

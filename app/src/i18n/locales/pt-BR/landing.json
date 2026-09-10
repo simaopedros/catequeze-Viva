@@ -117,6 +117,13 @@
       "b1": "Marcos por catequizando",
       "b2": "Modelos reutilizáveis por paróquia",
       "b3": "Progresso visível para coordenação e responsáveis"
+    },
+    "rhema": {
+      "title": "Comunidade Rhema, no mesmo ritmo da catequese",
+      "desc": "A rede pastoral vive junto da turma, da agenda e da biblioteca. Depois do encontro, o testemunho continua na Comunidade — sem sair da plataforma.",
+      "b1": "Painel, turmas e Comunidade no mesmo dia a dia",
+      "b2": "Partilhe encontros, a Palavra e a biblioteca num toque",
+      "b3": "Famílias também acompanham a Comunidade no portal"
     }
   },
   "mission_title": "Encontro preparado. Turma acolhida. Fé partilhada com as famílias.",
@@ -126,7 +133,7 @@
   "personas": [
     {
       "title": "Catequista",
-      "desc": "Organize sua turma, prepare encontros com a biblioteca pastoral e registre presença pelo celular."
+      "desc": "Organize sua turma, prepare encontros com a biblioteca pastoral e partilhe o que viveu na Comunidade."
     },
     {
       "title": "Coordenador Paroquial",
@@ -134,7 +141,7 @@
     },
     {
       "title": "Pais e Responsáveis",
-      "desc": "Acompanhe presença, avisos, documentos e justificativas pelo portal."
+      "desc": "Acompanhe presença, avisos, documentos e a Comunidade pelo portal."
     },
     {
       "title": "Pároco",
@@ -348,6 +355,11 @@
     "plan_title": "Plano: O amor de Deus",
     "published": "Publicado",
     "plan_detail": "Crisma · 45 min"
+  },
+  "mockup_rhema": {
+    "handle": "@catequista_ana",
+    "caption": "Encontro de hoje: o Pai-Nosso. Amém!",
+    "amen": "Amém"
   },
   "footer": {
     "create_account": "Começar os 7 dias",
