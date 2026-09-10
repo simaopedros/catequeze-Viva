@@ -12,6 +12,8 @@ export function MoreScreen({
   onSelectWorkspace,
   onOpenBible,
   onOpenDocuments,
+  onOpenCommunity,
+  onOpenEditProfile,
   onOpenProfile,
   onSaveProfile,
   onLogout,
@@ -27,6 +29,8 @@ export function MoreScreen({
   onSelectWorkspace: (id: string) => void;
   onOpenBible: () => void;
   onOpenDocuments: () => void;
+  onOpenCommunity?: () => void;
+  onOpenEditProfile?: () => void;
   onOpenProfile: () => void;
   onSaveProfile: () => void;
   onLogout: () => void;
@@ -40,8 +44,14 @@ export function MoreScreen({
       <ScreenTitle title="Mais" subtitle={name} />
       <BrandButton label="Bíblia" onPress={onOpenBible} testID="open-bible" />
       <BrandButton variant="ghost" label="Documentos" onPress={onOpenDocuments} />
+      {onOpenCommunity ? (
+        <BrandButton variant="ghost" label="Áreas da Comunidade" onPress={onOpenCommunity} testID="open-community" />
+      ) : null}
       {profile?.handle ? (
         <BrandButton variant="ghost" label={`Ver perfil @${profile.handle}`} onPress={onOpenProfile} />
+      ) : null}
+      {onOpenEditProfile ? (
+        <BrandButton variant="ghost" label="Editar perfil público" onPress={onOpenEditProfile} testID="open-edit-profile" />
       ) : null}
       <Card>
         <Text style={{ color: colors.ink, fontWeight: '700', marginBottom: 8 }}>Espaço de trabalho</Text>

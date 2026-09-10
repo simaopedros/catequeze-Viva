@@ -32,6 +32,8 @@ export default function MoreRoute() {
       onSelectWorkspace={(id) => setWorkspaceId(id)}
       onOpenBible={() => router.push('/(app)/bible')}
       onOpenDocuments={() => router.push('/(app)/documents')}
+      onOpenCommunity={() => router.push('/(app)/(tabs)/community')}
+      onOpenEditProfile={() => router.push('/(app)/community/edit')}
       onOpenProfile={() => {
         if (profile.data?.handle) router.push(`/(app)/community/${profile.data.handle}`);
       }}

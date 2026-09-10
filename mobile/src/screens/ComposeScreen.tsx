@@ -5,6 +5,7 @@ import type { SocialShare } from '../api/types';
 
 export function ComposeScreen({
   canPublish,
+  accessLoading,
   onPublish,
   onPreviewShare,
   preview,
@@ -12,6 +13,7 @@ export function ComposeScreen({
   error,
 }: {
   canPublish: boolean;
+  accessLoading?: boolean;
   onPublish: (body: string, share?: { kind: string; sourceId: string } | null) => Promise<void> | void;
   onPreviewShare?: (kind: string, sourceId: string) => Promise<void> | void;
   preview?: SocialShare | null;
@@ -26,7 +28,13 @@ export function ComposeScreen({
     <Screen testID="compose-screen">
       <ScreenTitle
         title="Nova publicação"
-        subtitle={canPublish ? 'Partilhe um momento ou um versículo com a Comunidade.' : 'A publicação exige assinatura.'}
+        subtitle={
+          accessLoading
+            ? 'A verificar se a sua conta pode publicar…'
+            : canPublish
+              ? 'Partilhe um momento ou um versículo com a Comunidade.'
+              : 'A publicação exige assinatura.'
+        }
       />
       <ErrorText message={error} />
       <Field label="Texto" value={body} onChangeText={setBody} multiline testID="compose-body" />
@@ -50,7 +58,7 @@ export function ComposeScreen({
       <BrandButton
         testID="compose-submit"
         label={busy ? 'A publicar…' : 'Publicar'}
-        disabled={!canPublish || busy || !body.trim()}
+        disabled={(!canPublish && !accessLoading) || busy || !body.trim()}
         onPress={() => onPublish(body.trim(), sourceId ? { kind, sourceId } : null)}
       />
     </Screen>

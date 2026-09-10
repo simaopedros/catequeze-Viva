@@ -13,6 +13,15 @@ describe('navigation gate', () => {
     expect(appRoutes.post('paz-e-bem')).toBe('/(app)/community/p/paz-e-bem');
     expect(appRoutes.topic('liturgia')).toBe('/(app)/community/t/liturgia');
     expect(appRoutes.search).toBe('/(app)/community/search');
+    expect(appRoutes.members).toBe('/(app)/community/members');
+    expect(appRoutes.topics).toBe('/(app)/community/topics');
+    expect(appRoutes.shorts).toBe('/(app)/community/shorts');
+    expect(appRoutes.followingFeed).toBe('/(app)/community/following');
+    expect(appRoutes.editProfile).toBe('/(app)/community/edit');
+    expect(appRoutes.blocked).toBe('/(app)/community/blocked');
+    expect(appRoutes.connections('ana', 'followers')).toBe(
+      '/(app)/community/connections?handle=ana&kind=followers',
+    );
     expect(appRoutes.attendance('meet-1')).toBe('/(app)/meeting/meet-1/attendance');
     expect(appRoutes.bibleChapter('gn', 1)).toBe('/(app)/bible/gn/1');
   });

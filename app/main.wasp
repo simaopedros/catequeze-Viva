@@ -2108,6 +2108,34 @@ api mobileSocialSearch {
   entities: [User, SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, SocialFollow, SocialBlock, SocialShare, Parish]
 }
 
+api mobileSocialPulse {
+  fn: import { mobileSocialPulse } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/pulse"),
+  entities: [SocialPost, SocialTopic, SocialPostTopic, User]
+}
+
+api mobileSocialConnections {
+  fn: import { mobileSocialConnections } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/connections"),
+  entities: [User, SocialFollow, SocialBlock]
+}
+
+api mobileSocialBlocks {
+  fn: import { mobileSocialBlocks } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/blocks"),
+  entities: [SocialBlock, User]
+}
+
+api mobileSocialReport {
+  fn: import { mobileSocialReport } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/report"),
+  entities: [SocialReport, SocialPost, SocialComment]
+}
+
 api mobileBibleBooks {
   fn: import { mobileBibleBooks } from "@src/server/api/mobileSocial",
   auth: true,

@@ -109,14 +109,50 @@ export type SocialTopic = {
   name: string;
   nameEn?: string | null;
   nameEs?: string | null;
+  postCount?: number;
 };
+
+export type SocialPerson = {
+  id: string;
+  displayName: string;
+  handle?: string | null;
+  socialHandle?: string | null;
+  avatarUrl?: string | null;
+  followersCount?: number;
+};
+
+export type SocialPulse = {
+  memberCount: number;
+  members: SocialPerson[];
+  topics: SocialTopic[];
+};
+
+export type SocialConnections = {
+  items: SocialPerson[];
+  nextCursor: string | null;
+};
+
+export type SocialBlocks = {
+  items: SocialPerson[];
+};
+
+export type SocialReportReason =
+  | 'DOCTRINE'
+  | 'HATE'
+  | 'SEXUAL'
+  | 'VIOLENCE'
+  | 'SPAM'
+  | 'MINOR_PRIVACY'
+  | 'OTHER';
 
 export type SocialProfile = {
   id: string;
   handle: string | null;
+  socialHandle?: string | null;
   displayName: string;
   avatarUrl: string | null;
   bio?: string | null;
+  socialBio?: string | null;
   websiteUrl?: string | null;
   followerCount?: number;
   followingCount?: number;

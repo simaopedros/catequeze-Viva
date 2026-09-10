@@ -5,10 +5,14 @@ import type {
   BibleChapter,
   BootstrapPayload,
   SocialAccess,
+  SocialBlocks,
   SocialComment,
+  SocialConnections,
   SocialFeed,
   SocialPost,
   SocialProfile,
+  SocialPulse,
+  SocialReportReason,
   SocialSearch,
   SocialShare,
   SocialTopic,
@@ -185,6 +189,7 @@ export function createMobileClient(options: MobileClientOptions) {
       topicSlug?: string | null;
       authorId?: string | null;
       following?: boolean;
+      videoFormat?: 'SHORT' | 'LONG' | null;
     }) {
       return request<SocialFeed>(withQuery(MOBILE_PATHS.socialFeed, query));
     },
@@ -252,6 +257,31 @@ export function createMobileClient(options: MobileClientOptions) {
     },
     searchSocial(q: string) {
       return request<SocialSearch>(withQuery(MOBILE_PATHS.socialSearch, { q }));
+    },
+    socialPulse(memberLimit = 40) {
+      return request<SocialPulse>(withQuery(MOBILE_PATHS.socialPulse, { memberLimit }));
+    },
+    socialConnections(query: {
+      handle?: string | null;
+      userId?: string | null;
+      kind?: 'followers' | 'following';
+      cursor?: string | null;
+    }) {
+      return request<SocialConnections>(withQuery(MOBILE_PATHS.socialConnections, query));
+    },
+    socialBlocks() {
+      return request<SocialBlocks>(MOBILE_PATHS.socialBlocks);
+    },
+    reportSocial(body: {
+      targetType: 'POST' | 'COMMENT';
+      targetId: string;
+      reason?: SocialReportReason;
+      details?: string;
+    }) {
+      return request<{ created?: boolean; duplicate?: boolean }>(MOBILE_PATHS.socialReport, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
     },
     bibleBooks(locale = 'pt-BR') {
       return request<BibleBook[]>(withQuery(MOBILE_PATHS.bibleBooks, { locale }));

@@ -15,6 +15,7 @@ export default function PostRoute() {
   );
   const access = useAsync(() => api.socialAccess(), []);
   const [busy, setBusy] = useState(false);
+  const [reportMessage, setReportMessage] = useState<string | null>(null);
 
   return (
     <PostDetailScreen
@@ -35,12 +36,26 @@ export default function PostRoute() {
           setBusy(false);
         }
       }}
+      reportMessage={reportMessage}
       onComment={async (body) => {
         if (!post.data?.id) return;
         setBusy(true);
         try {
           await api.createComment(post.data.id, body);
           await Promise.all([post.reload(), comments.reload()]);
+        } finally {
+          setBusy(false);
+        }
+      }}
+      onReport={async (reason) => {
+        if (!post.data?.id) return;
+        setBusy(true);
+        setReportMessage(null);
+        try {
+          await api.reportSocial({ targetType: 'POST', targetId: post.data.id, reason });
+          setReportMessage('Denúncia enviada. Obrigado.');
+        } catch (err) {
+          setReportMessage(err instanceof Error ? err.message : 'Não foi possível denunciar.');
         } finally {
           setBusy(false);
         }

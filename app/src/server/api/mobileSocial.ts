@@ -13,14 +13,21 @@ import {
   toggleSocialReaction,
   getSocialTopics,
   getSocialPublishAccess,
+  getSocialCommunityPulse,
 } from '../operations/socialOperations';
 import {
   getSocialProfile,
   updateSocialProfile,
   toggleSocialBlock,
   getMySocialProfile,
+  listMySocialBlocks,
 } from '../operations/socialProfileOperations';
-import { searchSocial, toggleSocialFollow } from '../operations/socialDiscoveryOperations';
+import {
+  listSocialConnections,
+  searchSocial,
+  toggleSocialFollow,
+} from '../operations/socialDiscoveryOperations';
+import { reportSocialContent } from '../operations/socialModerationOperations';
 import { previewSocialShare } from '../operations/socialShareResolve';
 import { listBibleBooks, getBibleBook, getBibleChapter } from '../operations/bibleOperations';
 import { assertTwoFactorSessionVerified } from '../operations/twoFactorOperations';
@@ -185,6 +192,52 @@ export async function mobileSocialReact(req: Request, res: Response, context: an
 export async function mobileSocialSearch(req: Request, res: Response, context: any) {
   const opCtx = await requireSession(context);
   return res.json(await searchSocial({ q: optionalString(req.query.q) || String(req.body?.q || '') }, opCtx));
+}
+
+export async function mobileSocialPulse(req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  return res.json(
+    await getSocialCommunityPulse(
+      { memberLimit: optionalInt(req.query.memberLimit, 40) },
+      opCtx,
+    ),
+  );
+}
+
+export async function mobileSocialConnections(req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  return res.json(
+    await listSocialConnections(
+      {
+        handle: optionalString(req.query.handle) ?? optionalString(req.params.handle) ?? null,
+        userId: optionalString(req.query.userId) ?? null,
+        kind: optionalString(req.query.kind) === 'following' ? 'following' : 'followers',
+        cursor: optionalString(req.query.cursor) ?? null,
+        limit: optionalInt(req.query.limit, 30),
+      },
+      opCtx,
+    ),
+  );
+}
+
+export async function mobileSocialBlocks(_req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  return res.json(await listMySocialBlocks(undefined, opCtx));
+}
+
+export async function mobileSocialReport(req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  return res.json(
+    await reportSocialContent(
+      {
+        targetType: req.body?.targetType === 'COMMENT' ? 'COMMENT' : 'POST',
+        targetId: String(req.body?.targetId || ''),
+        reason: optionalString(req.body?.reason),
+        details: optionalString(req.body?.details),
+      },
+      opCtx,
+    ),
+  );
 }
 
 export async function mobileBibleBooks(req: Request, res: Response, context: any) {

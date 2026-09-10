@@ -9,6 +9,13 @@ describe('usability map', () => {
       appRoutes.community,
       appRoutes.compose,
       appRoutes.search,
+      appRoutes.members,
+      appRoutes.topics,
+      appRoutes.shorts,
+      appRoutes.followingFeed,
+      appRoutes.editProfile,
+      appRoutes.blocked,
+      appRoutes.connections('catequista', 'followers'),
       appRoutes.post('paz'),
       appRoutes.topic('liturgia'),
       appRoutes.profile('catequista'),
@@ -25,7 +32,7 @@ describe('usability map', () => {
     ];
 
     expect(signedOut).toHaveLength(3);
-    expect(signedIn).toHaveLength(17);
+    expect(signedIn).toHaveLength(24);
     expect(APP_TABS).toHaveLength(5);
   });
 });

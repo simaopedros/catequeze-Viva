@@ -1,9 +1,10 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { PostCard } from '../components/PostCard';
-import { BrandButton, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import type { SocialAccess, SocialPost, SocialTopic } from '../api/types';
 import { colors, spacing } from '../theme';
+import { COMMUNITY_AREAS, type CommunityAreaId } from './communityAreas';
 
 const SORTS = [
   { id: 'recent', label: 'Recentes' },
@@ -30,6 +31,8 @@ export function CommunityScreen({
   onSearch,
   following,
   onToggleFollowing,
+  showHub,
+  onOpenArea,
 }: {
   posts: SocialPost[];
   topics: SocialTopic[];
@@ -49,10 +52,34 @@ export function CommunityScreen({
   onToggleFollowing?: () => void;
   title?: string;
   subtitle?: string;
+  showHub?: boolean;
+  onOpenArea?: (id: CommunityAreaId) => void;
 }) {
   return (
     <Screen testID="community-screen">
       <ScreenTitle title={title} subtitle={subtitle} />
+      {showHub && onOpenArea ? (
+        <View testID="community-hub" style={{ marginBottom: spacing.lg }}>
+          <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm }}>
+            Áreas da rede
+          </Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+            {COMMUNITY_AREAS.map((area) => (
+              <Pressable
+                key={area.id}
+                testID={`area-${area.id}`}
+                onPress={() => onOpenArea(area.id)}
+                style={{ width: '48%', flexGrow: 1 }}
+              >
+                <Card>
+                  <Text style={{ color: colors.ink, fontWeight: '700' }}>{area.label}</Text>
+                  <Text style={{ color: colors.muted, marginTop: 4, fontSize: 12 }}>{area.hint}</Text>
+                </Card>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      ) : null}
       {onSearch ? (
         <BrandButton variant="ghost" label="Pesquisar pessoas e publicações" onPress={onSearch} testID="open-search" />
       ) : null}
@@ -86,7 +113,7 @@ export function CommunityScreen({
               borderColor: colors.line,
             }}
           >
-            <Text style={{ color: sort === item.id ? colors.white : colors.ink, fontWeight: '600' }}>
+            <Text style={{ color: sort === item.id ? colors.white : colors.ink, fontWeight: '700' }}>
               {item.label}
             </Text>
           </Pressable>

@@ -83,6 +83,10 @@ describe('mobile HTTP client', () => {
     await client.createComment('post-1', 'Amém');
     await client.toggleReaction('post-1', 'AMEM');
     await client.searchSocial('catequista');
+    await client.socialPulse(40);
+    await client.socialConnections({ handle: 'ana', kind: 'followers' });
+    await client.socialBlocks();
+    await client.reportSocial({ targetType: 'POST', targetId: 'post-1', reason: 'OTHER' });
     await client.bibleBooks();
     await client.bibleBook('gn');
     await client.bibleChapter('gn', 1);
@@ -91,6 +95,12 @@ describe('mobile HTTP client', () => {
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialAccess);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialProfile('ana'));
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.bibleChapter('gn', 1) + '?locale=pt-BR');
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialPulse + '?memberLimit=40');
+    expect(urls).toContain(
+      'http://localhost:3001' + MOBILE_PATHS.socialConnections + '?handle=ana&kind=followers',
+    );
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialBlocks);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialReport);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.attendance);
   });
 });

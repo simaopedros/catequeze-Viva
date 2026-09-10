@@ -17,6 +17,7 @@ export default function ComposeRoute() {
   return (
     <ComposeScreen
       canPublish={Boolean(access.data?.canPublish)}
+      accessLoading={access.loading}
       preview={preview}
       busy={busy}
       error={error}
