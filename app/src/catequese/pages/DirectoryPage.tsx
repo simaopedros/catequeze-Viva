@@ -127,14 +127,14 @@ export default function DirectoryPage() {
         <input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          onKeyDown={(e) => e.key === "Enter" && void handleSearch()}
           className="flex-1 h-9 rounded-sm border border-input bg-background px-3 text-sm"
           placeholder={t("directory.searchPlaceholder")}
           aria-label={t("directory.searchPlaceholder")}
         />
         <Button
           size="sm"
-          onClick={handleSearch}
+          onClick={() => void handleSearch()}
           disabled={loading || searchQuery.length < 2}
         >
           <Search className="mr-1 h-4 w-4" />
