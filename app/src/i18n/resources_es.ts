@@ -6528,6 +6528,8 @@ export const social_es = {
       "action": "Compartir en la Comunidad",
       "dialogTitle": "Compartir en la Comunidad",
       "dialogDescription": "El contenido queda unido a la publicación con un atajo de vuelta al origen.",
+      "textDialogDescription": "El texto queda listo en el compositor. Publicar sigue pidiendo suscripción.",
+      "pendingPreview": "Texto listo para la publicación",
       "previewFailed": "No se pudo preparar esta publicación.",
       "kind": {
         "verse": "Versículo",

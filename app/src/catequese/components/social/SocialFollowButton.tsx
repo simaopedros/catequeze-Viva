@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { toggleSocialFollow } from "wasp/client/operations";
 import { Button } from "../../../client/components/ui/button";
 import { toast } from "../../../client/hooks/use-toast";
+import { invalidateSocialFollowQueries } from "../../../client/hooks/socialQueryCache";
 
 export function SocialFollowButton({
   authorId,
@@ -26,6 +27,7 @@ export function SocialFollowButton({
     try {
       const result = await toggleSocialFollow({ authorId });
       setFollowing(result.following);
+      void invalidateSocialFollowQueries();
       toast({
         title: result.following
           ? t("discovery.followSuccess", { name: authorName })

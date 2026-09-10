@@ -6528,6 +6528,8 @@ export const social_en = {
       "action": "Share to Community",
       "dialogTitle": "Share to Community",
       "dialogDescription": "The content is attached to the post with a shortcut back to the source.",
+      "textDialogDescription": "The text is ready in the composer. Publishing still requires a subscription.",
+      "pendingPreview": "Text ready for the post",
       "previewFailed": "Could not prepare this share.",
       "kind": {
         "verse": "Verse",

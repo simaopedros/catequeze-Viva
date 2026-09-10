@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, Navigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Ban, Copy, Globe, Loader2 } from "lucide-react";
 import { useAuth } from "wasp/client/auth";
@@ -16,13 +16,32 @@ import { SocialFeed } from "../components/social/SocialFeed";
 import { SocialFollowButton } from "../components/social/SocialFollowButton";
 import { ScrollFade } from "../../client/components/ui/scroll-fade";
 import { canSocialInteract } from "../../shared/socialFeatures";
-import { profilePath } from "../../shared/socialProfile";
+import { communityProfilePath, normalizeHandle, profilePath } from "../../shared/socialProfile";
 
 export default function PublicSocialProfilePage() {
   const { t } = useTranslation("social");
   const params = useParams<{ handle: string }>();
-  const { data: viewer } = useAuth();
+  const { data: viewer, isLoading: authLoading } = useAuth();
   const [blocked, setBlocked] = useState(false);
+
+  const appProfilePath = params.handle
+    ? communityProfilePath(normalizeHandle(params.handle), "/app/comunidade")
+    : "/app/comunidade";
+
+  if (authLoading) {
+    return (
+      <main className="mx-auto w-full max-w-2xl px-4 py-12">
+        <p className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+          {t("feed.loading")}
+        </p>
+      </main>
+    );
+  }
+
+  if (viewer) {
+    return <Navigate to={appProfilePath} replace />;
+  }
 
   const { data: profile, isLoading, error } = useQuery(getSocialProfile, {
     handle: params.handle || "",

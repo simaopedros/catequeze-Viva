@@ -6528,6 +6528,8 @@ export const social_pt_BR = {
       "action": "Partilhar na Comunidade",
       "dialogTitle": "Partilhar na Comunidade",
       "dialogDescription": "O conteúdo fica anexado à publicação com um atalho de volta à origem.",
+      "textDialogDescription": "O texto fica pronto no compositor. Publicar continua a pedir assinatura.",
+      "pendingPreview": "Texto pronto para a publicação",
       "previewFailed": "Não foi possível preparar esta partilha.",
       "kind": {
         "verse": "Versículo",
