@@ -3,11 +3,15 @@
 @tailwind utilities;
 
 /* Papel litúrgico — alinhado à marca da Catequese Viva (Tailwind v3 + Starlight).
-   Tema claro only: mesmo que o Starlight marque data-theme=dark (prefers-color-scheme),
-   as superfícies continuam paper + ink. */
+   Tema claro only. Os seletores incluem `:root[data-theme]` para ganhar da
+   folha do Starlight (especificidade 0,2,0). A escala gray segue a semântica
+   do tema claro do Starlight (1 = tinta, 7 = paper), para o header não
+   recair no cinza frio padrão. */
 :root,
-[data-theme="light"],
-[data-theme="dark"] {
+:root[data-theme="light"],
+:root[data-theme="dark"],
+[data-theme="light"] ::backdrop,
+[data-theme="dark"] ::backdrop {
   color-scheme: light;
   --cv-ink: #071a2d;
   --cv-ink-soft: #0a2540;
@@ -21,29 +25,38 @@
   --sl-font-system: var(--sl-font);
   --sl-font-heading: "Cormorant Garamond", Georgia, serif;
 
-  --sl-color-white: #fff7e7;
-  --sl-color-black: #071a2d;
-  --sl-color-accent-low: #fff7e7;
+  --sl-color-white: #071a2d;
+  --sl-color-black: #fff7e7;
+  --sl-color-gray-1: #071a2d;
+  --sl-color-gray-2: #153a63;
+  --sl-color-gray-3: #4a5d6e;
+  --sl-color-gray-4: #8a7a5c;
+  --sl-color-gray-5: #eadfc4;
+  --sl-color-gray-6: #fff4dc;
+  --sl-color-gray-7: #fff7e7;
+
+  --sl-color-accent-low: #f8e8c4;
   --sl-color-accent: #d39a2b;
   --sl-color-accent-high: #8a6418;
   --sl-color-text: #071a2d;
   --sl-color-text-accent: #8a6418;
+  --sl-color-text-invert: #fff7e7;
   --sl-color-bg: #fff7e7;
   --sl-color-bg-nav: #fff7e7;
   --sl-color-bg-sidebar: #fff4dc;
   --sl-color-bg-inline-code: #f8e8c4;
   --sl-color-hairline: color-mix(in srgb, #071a2d 12%, transparent);
-  --sl-color-gray-1: #fff7e7;
-  --sl-color-gray-2: #f8efe0;
-  --sl-color-gray-3: #eadfc4;
-  --sl-color-gray-4: #c5b98f;
-  --sl-color-gray-5: #8a7a5c;
-  --sl-color-gray-6: #4a5d6e;
-  --sl-color-gray-7: #071a2d;
+  --sl-color-hairline-light: color-mix(in srgb, #071a2d 10%, transparent);
+  --sl-color-hairline-shade: color-mix(in srgb, #071a2d 12%, transparent);
 }
 
 html {
   background: var(--cv-paper);
+}
+
+header.header {
+  background-color: var(--cv-paper) !important;
+  border-bottom-color: var(--sl-color-hairline);
 }
 
 .site-title,
