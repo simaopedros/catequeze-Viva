@@ -3,6 +3,7 @@ import {
   getPostCheckoutDestination,
   isMinimalAppPath,
   isPublicOnlyPath,
+  isUngatedAppPath,
   needsFullAppNamespaces,
   shouldHoldOnboardingRedirectOnBilling,
   shouldRenderGatedRoute,
@@ -59,6 +60,16 @@ describe("isMinimalAppPath", () => {
         hasWorkspace: true,
       }),
     ).toBe(false);
+  });
+});
+
+describe("isUngatedAppPath", () => {
+  it("keeps Bíblia, Catecismo, Diretório and Comunidade readable on the free plan", () => {
+    expect(isUngatedAppPath("/app/bible")).toBe(true);
+    expect(isUngatedAppPath("/app/catechism")).toBe(true);
+    expect(isUngatedAppPath("/app/directory")).toBe(true);
+    expect(isUngatedAppPath("/app/comunidade")).toBe(true);
+    expect(isUngatedAppPath("/app/classes")).toBe(false);
   });
 });
 
