@@ -17,6 +17,7 @@ import { SocialFeedTabs, type SocialFeedMode } from "./SocialFeedTabs";
 import { RhemaShortsFeed } from "./RhemaShortsFeed";
 import { SocialHero } from "./SocialHero";
 import { SocialRail } from "./SocialRail";
+import { canSocialInteract } from "../../../shared/socialFeatures";
 
 export function SocialCommunityBoard({
   topicSlug,
@@ -55,11 +56,7 @@ export function SocialCommunityBoard({
   );
 
   const canPublish = Boolean(access?.canPublish);
-  const canInteract = Boolean(
-    access?.authenticated &&
-      !access?.banned &&
-      access?.plan !== "catechist_free",
-  );
+  const canInteract = canSocialInteract(access);
 
   const noticeReason = ((): SocialAccessReason => {
     if (canPublish) return null;

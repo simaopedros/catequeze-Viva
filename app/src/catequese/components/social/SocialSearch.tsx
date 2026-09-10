@@ -4,7 +4,10 @@ import { useTranslation } from "react-i18next";
 import { Search } from "lucide-react";
 import { useQuery, searchSocial } from "wasp/client/operations";
 import { Input } from "../../../client/components/ui/input";
-import { communityProfilePath } from "../../../shared/socialProfile";
+import {
+  communityPostPath,
+  communityProfilePath,
+} from "../../../shared/socialProfile";
 
 export function SocialSearch({ className }: { className?: string }) {
   const { t } = useTranslation("social");
@@ -63,7 +66,7 @@ export function SocialSearch({ className }: { className?: string }) {
               {posts.map((post: any) => (
                 <li key={post.id}>
                   <Link
-                    to={`/comunidade/p/${post.slug}`}
+                    to={communityPostPath(post.slug, location.pathname)}
                     className="block px-3 py-2 text-sm hover:bg-muted/60"
                   >
                     <span className="line-clamp-2">{post.body}</span>

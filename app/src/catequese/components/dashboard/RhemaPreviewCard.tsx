@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { useQuery, getSocialFeed } from "wasp/client/operations";
 import { Button } from "../../../client/components/ui/button";
 import { SOCIAL_FEATURES_ENABLED } from "../../../shared/socialFeatures";
+import { communityPostPath } from "../../../shared/socialProfile";
 import { SocialAvatar } from "../social/SocialAvatar";
 import { splitSocialHeadline } from "../social/socialAppearance";
 
@@ -64,7 +65,7 @@ export function RhemaPreviewCard() {
               return (
                 <li key={post.id}>
                   <Link
-                    to={`/comunidade/p/${post.slug}`}
+                    to={communityPostPath(post.slug, "/app/comunidade")}
                     className="flex items-start gap-3 rounded-md px-1 py-2 hover:bg-muted/40"
                   >
                     <SocialAvatar

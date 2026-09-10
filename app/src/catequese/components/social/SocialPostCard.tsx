@@ -11,7 +11,11 @@ import {
 } from "lucide-react";
 import { deleteSocialPost, toggleSocialReaction, toggleSocialBlock } from "wasp/client/operations";
 import { SocialShareEmbed, type SocialShareCard } from "./SocialShareEmbed";
-import { communityProfilePath } from "../../../shared/socialProfile";
+import {
+  communityPostPath,
+  communityProfilePath,
+  communityTopicPath,
+} from "../../../shared/socialProfile";
 import { Button } from "../../../client/components/ui/button";
 import { Badge } from "../../../client/components/ui/badge";
 import {
@@ -253,7 +257,7 @@ export function SocialPostCard({
       <div className="pt-3">
         {post.topics[0] ? (
           <Link
-            to={`/comunidade/t/${post.topics[0].slug}`}
+            to={communityTopicPath(post.topics[0].slug, location.pathname)}
             className={cn(
               "mb-2 inline-flex rounded-full px-2.5 py-1 text-[10px] font-extrabold",
               socialTopicChipClass(post.topics[0].slug),
@@ -294,7 +298,7 @@ export function SocialPostCard({
             {post.topics.slice(1).map((topic) => (
               <li key={topic.slug}>
                 <Link
-                  to={`/comunidade/t/${topic.slug}`}
+                  to={communityTopicPath(topic.slug, location.pathname)}
                   className={cn(
                     "inline-flex rounded-full px-2.5 py-1 text-[10px] font-extrabold",
                     socialTopicChipClass(topic.slug),
@@ -346,7 +350,7 @@ export function SocialPostCard({
 
         {linkToDetail && (
           <Link
-            to={`/comunidade/p/${post.slug}`}
+            to={communityPostPath(post.slug, location.pathname)}
             className="ml-auto text-[11px] text-muted-foreground underline-offset-4 hover:underline"
           >
             {t("feed.openPost")}

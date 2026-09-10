@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "wasp/client/auth";
 import { SocialCommunityBoard } from "../components/social/SocialCommunityBoard";
+import { communityTopicPath } from "../../shared/socialProfile";
 
 /**
  * Public Comunidade feed — no authentication required. Visitors read, open and
@@ -23,7 +24,7 @@ export default function PublicCommunityPage() {
 
   const selectTopic = (slug: string | null) => {
     setTopicSlug(slug);
-    navigate(slug ? `/comunidade/t/${slug}` : "/comunidade");
+    navigate(communityTopicPath(slug, "/comunidade"));
   };
 
   return (

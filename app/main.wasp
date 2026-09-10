@@ -356,6 +356,18 @@ page AppCommunityPage {
   component: import CommunityPage from "@src/catequese/pages/CommunityPage"
 }
 
+route AppCommunityTopicRoute { path: "/app/comunidade/t/:topic", to: AppCommunityTopicPage }
+page AppCommunityTopicPage {
+  authRequired: true,
+  component: import CommunityPage from "@src/catequese/pages/CommunityPage"
+}
+
+route AppSocialPostRoute { path: "/app/comunidade/p/:slug", to: AppSocialPostPage }
+page AppSocialPostPage {
+  authRequired: true,
+  component: import PublicSocialPostPage from "@src/catequese/pages/PublicSocialPostPage"
+}
+
 route AppSocialProfileRoute { path: "/app/comunidade/u/:handle", to: AppSocialProfilePage }
 page AppSocialProfilePage {
   authRequired: true,

@@ -3,7 +3,10 @@ import {
   HANDLE_MAX,
   isValidWebsiteUrl,
   normalizeHandle,
+  communityFeedPath,
+  communityPostPath,
   communityProfilePath,
+  communityTopicPath,
   profilePath,
   sanitizeBio,
   validateHandle,
@@ -41,6 +44,24 @@ describe('social handle', () => {
     );
     expect(communityProfilePath('Maria', '/comunidade')).toBe(
       '/comunidade/u/maria',
+    );
+  });
+
+  it('keeps topic, post and feed links inside the current shell', () => {
+    expect(communityFeedPath('/app/comunidade')).toBe('/app/comunidade');
+    expect(communityFeedPath('/comunidade')).toBe('/comunidade');
+    expect(communityTopicPath('Liturgia', '/app/comunidade')).toBe(
+      '/app/comunidade/t/liturgia',
+    );
+    expect(communityTopicPath('liturgia', '/comunidade')).toBe(
+      '/comunidade/t/liturgia',
+    );
+    expect(communityTopicPath(null, '/app/comunidade')).toBe('/app/comunidade');
+    expect(communityPostPath('paz-e-bem', '/app/dashboard')).toBe(
+      '/app/comunidade/p/paz-e-bem',
+    );
+    expect(communityPostPath('paz-e-bem', '/comunidade')).toBe(
+      '/comunidade/p/paz-e-bem',
     );
   });
 });

@@ -17,6 +17,7 @@ vi.mock('wasp/server', () => ({
 
 import {
   SOCIAL_FEATURES_ENABLED,
+  canSocialInteract,
   isSocialAppPath,
   isSocialPublicPath,
   shouldShowSocialNavItem,
@@ -29,6 +30,8 @@ describe('social path helpers', () => {
   it('recognises the app path and its children', () => {
     expect(isSocialAppPath('/app/comunidade')).toBe(true);
     expect(isSocialAppPath('/app/comunidade/qualquer')).toBe(true);
+    expect(isSocialAppPath('/app/comunidade/t/liturgia')).toBe(true);
+    expect(isSocialAppPath('/app/comunidade/p/paz-e-bem')).toBe(true);
     expect(isSocialAppPath('/app/comunidades')).toBe(false);
     expect(isSocialAppPath('/app/classes')).toBe(false);
   });
@@ -133,5 +136,34 @@ describe('server guards follow the flag', () => {
         { user: null, entities: {} } as any,
       ),
     ).rejects.toMatchObject({ statusCode: 404 });
+  });
+});
+
+describe('canSocialInteract', () => {
+  it('lets a paid or trial plan react even after the daily post quota', () => {
+    expect(
+      canSocialInteract({
+        authenticated: true,
+        banned: false,
+        plan: 'catechist',
+      }),
+    ).toBe(true);
+    expect(
+      canSocialInteract({
+        authenticated: true,
+        banned: false,
+        plan: 'catechist_free',
+      }),
+    ).toBe(false);
+    expect(
+      canSocialInteract({
+        authenticated: true,
+        banned: true,
+        plan: 'catechist',
+      }),
+    ).toBe(false);
+    expect(canSocialInteract({ authenticated: false, plan: 'catechist' })).toBe(
+      false,
+    );
   });
 });

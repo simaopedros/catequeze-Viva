@@ -77,13 +77,43 @@ export function profilePath(handle: string): string {
   return `/u/${normalizeHandle(handle)}`;
 }
 
+function isAppShellPath(pathname?: string): boolean {
+  return Boolean(pathname?.startsWith("/app/"));
+}
+
+export function communityFeedPath(pathname?: string): string {
+  return isAppShellPath(pathname) ? "/app/comunidade" : "/comunidade";
+}
+
+export function communityTopicPath(
+  slug: string | null | undefined,
+  pathname?: string,
+): string {
+  const topic = (slug || "").trim().toLowerCase();
+  if (!topic) return communityFeedPath(pathname);
+  return isAppShellPath(pathname)
+    ? `/app/comunidade/t/${topic}`
+    : `/comunidade/t/${topic}`;
+}
+
+export function communityPostPath(
+  slug: string | null | undefined,
+  pathname?: string,
+): string {
+  const postSlug = (slug || "").trim();
+  if (!postSlug) return communityFeedPath(pathname);
+  return isAppShellPath(pathname)
+    ? `/app/comunidade/p/${postSlug}`
+    : `/comunidade/p/${postSlug}`;
+}
+
 /** In-app stays in the app shell; public feed uses the public Comunidade route. */
 export function communityProfilePath(
   handle: string | null | undefined,
   pathname?: string,
 ): string {
   const normalized = normalizeHandle(handle || "");
-  if (pathname?.startsWith("/app/")) {
+  if (isAppShellPath(pathname)) {
     return `/app/comunidade/u/${normalized}`;
   }
   return `/comunidade/u/${normalized}`;

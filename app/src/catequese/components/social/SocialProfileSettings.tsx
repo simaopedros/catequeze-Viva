@@ -15,7 +15,12 @@ import { AppEyebrow, AppPanel } from "../../../client/components/brand/AppChrome
 import { toast } from "../../../client/hooks/use-toast";
 import { uploadProfileAvatar } from "../../../client/utils/profileAvatarUpload";
 import { SOCIAL_FEATURES_ENABLED } from "../../../shared/socialFeatures";
-import { HANDLE_MAX, BIO_MAX, profilePath } from "../../../shared/socialProfile";
+import {
+  HANDLE_MAX,
+  BIO_MAX,
+  normalizeHandle,
+  profilePath,
+} from "../../../shared/socialProfile";
 import { ScrollFade } from "../../../client/components/ui/scroll-fade";
 
 export function SocialProfileSettings() {
@@ -38,7 +43,7 @@ export function SocialProfileSettings() {
     setBio(profile.bio || "");
     setWebsiteUrl(profile.websiteUrl || "");
     setAvatarUrl(profile.avatarUrl);
-  }, [profile]);
+  }, [profile?.handle, profile?.bio, profile?.websiteUrl, profile?.avatarUrl]);
 
   if (!SOCIAL_FEATURES_ENABLED) return null;
 
@@ -129,7 +134,9 @@ export function SocialProfileSettings() {
           <Input
             id="social-handle"
             value={handle}
-            onChange={(event) => setHandle(event.target.value)}
+            onChange={(event) =>
+              setHandle(normalizeHandle(event.target.value).slice(0, HANDLE_MAX))
+            }
             maxLength={HANDLE_MAX}
             className="h-10 rounded-sm"
             autoComplete="username"

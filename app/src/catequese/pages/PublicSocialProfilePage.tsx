@@ -15,6 +15,7 @@ import { toast } from "../../client/hooks/use-toast";
 import { SocialFeed } from "../components/social/SocialFeed";
 import { SocialFollowButton } from "../components/social/SocialFollowButton";
 import { ScrollFade } from "../../client/components/ui/scroll-fade";
+import { canSocialInteract } from "../../shared/socialFeatures";
 import { profilePath } from "../../shared/socialProfile";
 
 export default function PublicSocialProfilePage() {
@@ -36,9 +37,7 @@ export default function PublicSocialProfilePage() {
     }
   }, [profile?.isBlocked]);
 
-  const canInteract = Boolean(
-    access?.authenticated && !access?.banned && access?.plan !== "catechist_free",
-  );
+  const canInteract = canSocialInteract(access);
 
   const copyLink = async () => {
     const handle = profile?.handle;

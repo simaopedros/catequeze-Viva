@@ -63,8 +63,19 @@ test.describe("Comunidade — visitante anônimo", () => {
   test("abre o feed público sem login", async ({ page }) => {
     await openPublicFeed(page);
 
-    await expect(page.getByRole("heading", { name: /comunidade/i })).toBeVisible();
+    await expect(page.getByTestId("community-hero")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /juntos na missão/i })).toBeVisible();
     await expect(page).toHaveURL(/\/comunidade$/);
+
+    const overflow = await page.evaluate(() => {
+      const doc = document.documentElement;
+      return {
+        x: doc.scrollWidth - doc.clientWidth,
+        title: document.title,
+      };
+    });
+    expect(overflow.x).toBeLessThan(8);
+    expect(overflow.title.toLowerCase()).toMatch(/comunidade/);
   });
 
   test("filtra por tema pela URL", async ({ page }) => {
@@ -73,13 +84,28 @@ test.describe("Comunidade — visitante anônimo", () => {
     await dismissCookieBanner(page);
 
     await expect(page).toHaveURL(/\/comunidade\/t\/liturgia$/);
-    await expect(page.getByRole("heading", { name: /comunidade/i })).toBeVisible();
+    await expect(page.getByTestId("community-hero")).toBeVisible();
   });
 
   test("não mostra o composer", async ({ page }) => {
     await openPublicFeed(page);
 
     await expect(page.getByRole("button", { name: /^publicar$/i })).toHaveCount(0);
+  });
+
+  test("alterna Para você, Recentes e Em alta", async ({ page }) => {
+    await openPublicFeed(page);
+
+    const foryou = page.getByRole("tab", { name: /para você/i });
+    const recent = page.getByRole("tab", { name: /recentes/i });
+    const trending = page.getByRole("tab", { name: /em alta/i });
+
+    await expect(foryou).toHaveAttribute("aria-selected", "true");
+    await recent.click();
+    await expect(recent).toHaveAttribute("aria-selected", "true");
+    await trending.click();
+    await expect(trending).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByRole("tab", { name: /de quem eu sigo/i })).toHaveCount(0);
   });
 });
 
@@ -93,7 +119,7 @@ test.describe("Comunidade — membro autenticado", () => {
     await page.waitForLoadState("domcontentloaded");
 
     await expect(page).toHaveURL(/\/app\/comunidade/);
-    await expect(page.getByRole("heading", { name: /comunidade/i })).toBeVisible();
+    await expect(page.getByTestId("community-hero")).toBeVisible();
   });
 
   test("vê o composer ou o convite para assinar, nunca os dois", async ({ page }) => {
@@ -128,6 +154,26 @@ test.describe("Comunidade — membro autenticado", () => {
     const following = page.getByRole("tab", { name: /de quem eu sigo/i });
     await following.click();
     await expect(following).toHaveAttribute("aria-selected", "true");
+  });
+
+  test("filtra por tema sem sair do shell do app", async ({ page }) => {
+    await login(page, USERS.leadCatechist.email);
+
+    await page.goto("/app/comunidade/t/liturgia");
+    await page.waitForLoadState("domcontentloaded");
+
+    await expect(page).toHaveURL(/\/app\/comunidade\/t\/liturgia$/);
+    await expect(page.getByTestId("community-hero")).toBeVisible();
+  });
+
+  test("permalink de post inexistente fica no app", async ({ page }) => {
+    await login(page, USERS.leadCatechist.email);
+
+    await page.goto("/app/comunidade/p/slug-que-nao-existe");
+    await page.waitForLoadState("domcontentloaded");
+
+    await expect(page).toHaveURL(/\/app\/comunidade\/p\/slug-que-nao-existe/);
+    await expect(page.getByText(/não encontrad/i)).toBeVisible();
   });
 
   test("mostra as abas Para você e Shorts", async ({ page }) => {
