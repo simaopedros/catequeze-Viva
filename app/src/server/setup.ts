@@ -49,6 +49,33 @@ export function scrubSentryEvent<T extends Record<string, any>>(input: T): T {
 export const serverSetup: ServerSetupFn = async ({ app, server }) => {
   const MAX_BODY = '2mb';
 
+  // Expo web (and other localhost clients) call /mobile from another origin.
+  // Native Expo Go does not need this; browsers do.
+  app.use('/mobile', (req: any, res: any, next: any) => {
+    const origin = req.headers.origin;
+    const isLocalDev =
+      process.env.NODE_ENV !== 'production' &&
+      typeof origin === 'string' &&
+      /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+    if (isLocalDev) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Vary', 'Origin');
+      res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Content-Type, Authorization, Accept',
+      );
+      res.setHeader(
+        'Access-Control-Allow-Methods',
+        'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+      );
+      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+      if (req.method === 'OPTIONS') {
+        return res.status(204).end();
+      }
+    }
+    next();
+  });
+
   // ── Security headers ────────────────────────────────────────────────
   app.use((_req: any, res: any, next: any) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
