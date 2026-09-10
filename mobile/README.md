@@ -41,9 +41,10 @@ Partilhar um versículo: Bíblia → capítulo → «Partilhar na Comunidade». 
 ```bash
 npm test
 npm run typecheck
+npx expo export --platform web --output-dir dist
 ```
 
-Não há simulador iOS/Android neste ambiente de CI: a usabilidade nativa (gestos, teclado, partilha do SO) fica por verificar no dispositivo.
+Não há simulador iOS/Android neste ambiente de CI: a usabilidade nativa (gestos, teclado, partilha do SO) fica por verificar no dispositivo. O `expo export` web confirma que o bundler fecha; não substitui um device.
 
 ## API
 
