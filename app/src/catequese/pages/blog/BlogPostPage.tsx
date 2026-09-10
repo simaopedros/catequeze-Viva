@@ -136,7 +136,7 @@ export default function BlogPostPage() {
                 __html: sanitizeBlogHtml(post.bodyHtml),
               }}
             />
-            <div className="mt-12 rounded-sm border border-brand-ink/10 bg-[#FFF7E7] p-6">
+            <div className="mt-12 rounded-sm border border-brand-ink/10 bg-brand-paper p-6">
               <p className="font-semibold text-brand-ink">{t("cta_title")}</p>
               <p className="mt-2 text-sm text-muted-foreground">
                 {t("cta_text")}

@@ -14,11 +14,11 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default: "border-transparent bg-brand-ink text-white",
-        secondary: "border-transparent bg-muted text-brand-ink",
+        secondary: "border-transparent bg-brand-paper text-brand-ink",
         destructive:
           "border-destructive/20 bg-destructive/10 text-destructive",
-        outline: "border-border text-brand-ink",
-        brand: "border-transparent bg-brand-ink/8 text-brand-ink",
+        outline: "border-brand-ink/15 text-brand-ink",
+        brand: "border-brand-gold/30 bg-brand-gold/10 text-brand-gold-muted",
         success: "border-success/20 bg-success/10 text-success",
         warning:
           "border-brand-gold/30 bg-brand-gold/12 text-brand-gold-muted",

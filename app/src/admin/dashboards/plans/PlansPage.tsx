@@ -189,7 +189,7 @@ const PlansPage = ({ user }: { user: AuthUser }) => {
 
         {isLoading ? (
           <div className="flex justify-center py-12" aria-busy="true">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-ink border-t-transparent" />
           </div>
         ) : error && plans.length === 0 ? (
           <QueryErrorState error={error} onRetry={refetch} />

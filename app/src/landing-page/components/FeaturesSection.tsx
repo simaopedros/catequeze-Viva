@@ -22,10 +22,7 @@ export function FeaturesSection({
       <div className="max-w-6xl mx-auto px-4 pt-20 pb-6">
         <div ref={headerRef} className={`text-center space-y-3 ${headerClass}`}>
           <div className="mx-auto h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
-          <h2
-            className="text-title-xl font-semibold tracking-tight text-brand-ink"
-            style={{ fontFamily: "var(--font-brand-display)" }}
-          >
+          <h2 className="font-brand-display text-title-xl font-semibold tracking-tight text-brand-ink">
             {t("features_title")}
           </h2>
           <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">

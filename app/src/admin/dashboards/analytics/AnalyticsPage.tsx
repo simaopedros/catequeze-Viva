@@ -160,7 +160,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-ink border-t-transparent" />
           </div>
         ) : (
           <>
@@ -185,7 +185,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                   <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {t("pages.analytics.funnel_title")}
                   </h2>
-                  <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                  <div className="h-px w-8 bg-brand-gold" aria-hidden />
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
                   {t("pages.analytics.funnel_hint")}
@@ -198,10 +198,10 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="text-sm font-semibold tracking-tight text-[#071A2D]">
+                          <p className="text-sm font-semibold tracking-tight text-brand-ink">
                             {t(`pages.analytics.step_${step.key}`)}
                           </p>
-                          <p className="mt-1 text-2xl font-semibold tracking-tight tabular-nums text-[#071A2D]">
+                          <p className="mt-1 text-2xl font-semibold tracking-tight tabular-nums text-brand-ink">
                             {step.count}
                           </p>
                         </div>
@@ -218,10 +218,10 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                 <div className="rounded-sm border border-border/70 bg-white p-5">
                   <div className="space-y-1.5">
                     <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      <Users className="h-3.5 w-3.5 text-[#071A2D]" />
+                      <Users className="h-3.5 w-3.5 text-brand-ink" />
                       {t("pages.analytics.invites_title")}
                     </h2>
-                    <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                    <div className="h-px w-8 bg-brand-gold" aria-hidden />
                   </div>
                   <div className="mt-4 space-y-3 text-sm">
                     <div className="flex items-center justify-between">
@@ -248,10 +248,10 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                 <div className="rounded-sm border border-border/70 bg-white p-5">
                   <div className="space-y-1.5">
                     <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      <Share2 className="h-3.5 w-3.5 text-[#071A2D]" />
+                      <Share2 className="h-3.5 w-3.5 text-brand-ink" />
                       {t("pages.analytics.top_plans")}
                     </h2>
-                    <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                    <div className="h-px w-8 bg-brand-gold" aria-hidden />
                   </div>
                   <div className="mt-4 space-y-3 text-sm">
                     {data?.topPlans.length ? (
@@ -279,7 +279,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                     <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("pages.analytics.processors")}
                     </h2>
-                    <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                    <div className="h-px w-8 bg-brand-gold" aria-hidden />
                   </div>
                   <div className="mt-4 space-y-3 text-sm">
                     {data?.topProcessors.length ? (
@@ -309,7 +309,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                 <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   {t("pages.analytics.recent_purchases")}
                 </h2>
-                <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                <div className="h-px w-8 bg-brand-gold" aria-hidden />
               </div>
               <p className="mt-2 text-sm text-muted-foreground">
                 {t("pages.analytics.recent_hint")}

@@ -11,7 +11,7 @@ const SourcesTable = ({
         <h4 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
           Top Sources
         </h4>
-        <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+        <div className="h-px w-8 bg-brand-gold" aria-hidden />
       </div>
 
       <div className="flex flex-col">
@@ -37,13 +37,13 @@ const SourcesTable = ({
           sources.map((source) => (
             <div className="border-border grid grid-cols-3 border-b">
               <div className="flex items-center gap-3 p-2.5 xl:p-5">
-                <p className="font-semibold tracking-tight text-[#071A2D]">
+                <p className="font-semibold tracking-tight text-brand-ink">
                   {source.name}
                 </p>
               </div>
 
               <div className="flex items-center justify-center p-2.5 xl:p-5">
-                <p className="font-semibold tabular-nums tracking-tight text-[#071A2D]">
+                <p className="font-semibold tabular-nums tracking-tight text-brand-ink">
                   {source.visitors}
                 </p>
               </div>

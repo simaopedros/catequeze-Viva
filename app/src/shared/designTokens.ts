@@ -2,46 +2,57 @@
  * Design tokens for programmatic access (charts, dynamic styles, etc.)
  * Mirrors CSS custom properties in Main.css.
  * Official theme for this product stage: light only.
+ * Visual language: papel litúrgico (ink + gold + paper).
  */
 
 export const brandColors = {
   /** Deep institutional ink */
   ink: "#071A2D",
   inkSoft: "#0a2540",
+  midnight: "#153A63",
   /** Pure gold accent */
   gold: "#D39A2B",
   goldMuted: "#8A6418",
+  lightGold: "#F4CF7A",
+  paper: "#FFF7E7",
+  inkForeground: "#E8EEF5",
+  inkMuted: "#A8B8C9",
+  inkFaint: "#C5D0DC",
 } as const;
 
 export const colors = {
   brand: {
     primary: "hsl(210, 73%, 10%)",
-    warm: "hsl(40, 66%, 50%)",
-    support: "hsl(33, 74%, 62%)",
+    warm: "hsl(36, 22%, 94%)",
+    support: "hsl(38, 28%, 93%)",
     ink: brandColors.ink,
     gold: brandColors.gold,
+    midnight: brandColors.midnight,
+    paper: brandColors.paper,
+    lightGold: brandColors.lightGold,
   },
   semantic: {
-    success: "hsl(141, 71%, 48%)",
-    warning: "hsl(40, 66%, 50%)",
-    error: "hsl(0, 84.2%, 60.2%)",
+    success: "hsl(152, 62%, 30%)",
+    warning: "hsl(38, 92%, 50%)",
+    error: "hsl(0, 74%, 46%)",
     info: "hsl(200, 98%, 39%)",
   },
   surface: {
-    base: "hsl(0, 0%, 100%)",
-    subtle: "hsl(210, 16%, 96%)",
+    base: "hsl(38, 32%, 97%)",
+    subtle: "hsl(36, 22%, 94%)",
     elevated: "hsl(0, 0%, 100%)",
-    muted: "hsl(210, 14%, 90%)",
+    muted: "hsl(36, 18%, 90%)",
+    paper: brandColors.paper,
   },
   text: {
     primary: "hsl(210, 73%, 10%)",
-    secondary: "hsl(210, 12%, 40%)",
-    tertiary: "hsl(210, 12%, 40%, 0.7)",
+    secondary: "hsl(215, 18%, 34%)",
+    tertiary: "hsl(215, 18%, 34%, 0.9)",
     inverse: "hsl(0, 0%, 100%)",
   },
   stroke: {
-    default: "hsl(210, 14%, 90%)",
-    strong: "hsl(210, 14%, 85%)",
+    default: "hsl(36, 18%, 86%)",
+    strong: "hsl(36, 16%, 82%)",
   },
 } as const;
 
@@ -51,22 +62,20 @@ export const brandClasses = {
   textGold: "text-brand-gold",
   bgInk: "bg-brand-ink",
   bgGold: "bg-brand-gold",
+  bgPaper: "bg-brand-paper",
+  bgMidnight: "bg-brand-midnight",
   borderInk: "border-brand-ink",
   borderGold: "border-brand-gold",
-  /** Fallback when utility tokens not yet in all builds */
-  textInkHex: "text-[#071A2D]",
-  textGoldHex: "text-[#D39A2B]",
-  bgGoldHex: "bg-[#D39A2B]",
-  bgWhite: "bg-surface-base",
+  bgWhite: "bg-surface-elevated",
 } as const;
 
 /** Chart color palette — distributed, high contrast, accessible */
 export const chartColors = [
   colors.brand.primary,
-  colors.brand.warm,
+  colors.brand.gold,
   colors.semantic.success,
   colors.semantic.info,
-  colors.brand.support,
+  brandColors.midnight,
   colors.semantic.warning,
   "hsl(262, 83%, 58%)",
   "hsl(340, 82%, 52%)",
@@ -125,11 +134,11 @@ export const zIndex = {
 
 /** Elevation tokens for inline styles */
 export const elevation = {
-  xs: "0px 1px 2px rgba(0, 0, 0, 0.05)",
-  sm: "0px 1px 3px rgba(0, 0, 0, 0.08)",
-  md: "0px 4px 10px rgba(0, 0, 0, 0.10)",
-  lg: "0px 8px 20px rgba(0, 0, 0, 0.10)",
-  xl: "0px 12px 32px rgba(0, 0, 0, 0.12)",
+  xs: "0px 1px 1px rgba(7, 26, 45, 0.05)",
+  sm: "0px 1px 1px rgba(7, 26, 45, 0.04), 0 1px 3px -1px rgba(7, 26, 45, 0.05)",
+  md: "0px 2px 3px -1px rgba(7, 26, 45, 0.05), 0 6px 14px -4px rgba(7, 26, 45, 0.08)",
+  lg: "0px 4px 8px -2px rgba(7, 26, 45, 0.06), 0 16px 32px -8px rgba(7, 26, 45, 0.12)",
+  xl: "0px 12px 32px rgba(7, 26, 45, 0.12)",
 } as const;
 
 /** Supported color scheme for this product stage */

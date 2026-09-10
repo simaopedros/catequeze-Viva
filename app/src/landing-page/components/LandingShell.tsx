@@ -37,7 +37,7 @@ export function LandingShell({
   }, [location.pathname, ns]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-brand-ink">
+    <div className="canvas-public relative flex min-h-screen flex-col">
       <SkipToContent />
       <PublicNavbar />
       <main

@@ -23,14 +23,14 @@ const TotalPageViewsCard = ({
   return (
     <Card className="rounded-sm border-border/70">
       <CardHeader>
-        <div className="flex h-11 w-11 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-[#071A2D]">
+        <div className="flex h-11 w-11 items-center justify-center rounded-sm border border-border/70 bg-muted/30 text-brand-ink">
           <Eye className="size-5" />
         </div>
       </CardHeader>
 
       <CardContent className="flex justify-between">
         <div>
-          <h4 className="text-title-md font-semibold tracking-tight tabular-nums text-[#071A2D]">
+          <h4 className="text-title-md font-semibold tracking-tight tabular-nums text-brand-ink">
             {totalPageViews}
           </h4>
           <span className="text-sm font-medium text-muted-foreground">

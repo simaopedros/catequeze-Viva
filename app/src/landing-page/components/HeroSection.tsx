@@ -46,7 +46,7 @@ export function HeroSection({
     if (value) signupParams.set(key, value);
   }
   const signupHref = `/signup${
-    signupParams.size ? `?${signupParams.toString()}` : ""
+  signupParams.size ? `?${signupParams.toString()}` : ""
   }`;
   const isCentered = variant === "centered";
   const ctaClassName = responsiveCtas
@@ -146,7 +146,7 @@ export function HeroSection({
         >
           {trustParts.map((part) => (
             <li key={part} className="inline-flex items-center gap-1.5">
-              <Check className="h-3 w-3 text-emerald-600" aria-hidden />
+              <Check className="h-3 w-3 text-brand-gold" aria-hidden />
               {part}
             </li>
           ))}
@@ -248,8 +248,9 @@ export function HeroSection({
 
   if (isCentered) {
     return (
-      <section data-landing-hero className="relative bg-white">
-        <div className="mx-auto max-w-[70rem] px-5 py-14 sm:py-16 lg:py-[4.75rem]">
+      <section data-landing-hero className="relative overflow-hidden bg-brand-paper">
+        <div className="pointer-events-none absolute inset-0 liturgical-halo grain-overlay" aria-hidden />
+        <div className="relative mx-auto max-w-[70rem] px-5 py-14 sm:py-16 lg:py-[4.75rem]">
           {copyBlock}
           {productBlock}
         </div>
@@ -258,8 +259,8 @@ export function HeroSection({
   }
 
   return (
-    <section data-landing-hero className="relative border-b border-border/50">
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,hsl(210_45%_97%)_0%,hsl(0_0%_100%)_55%)]" />
+    <section data-landing-hero className="relative overflow-hidden border-b border-brand-ink/10 bg-brand-paper">
+      <div className="pointer-events-none absolute inset-0 liturgical-halo grain-overlay" aria-hidden />
       <div className="relative mx-auto max-w-6xl overflow-x-clip px-4 py-14 sm:py-16 lg:overflow-visible lg:py-20">
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-14 xl:gap-16">
           {copyBlock}

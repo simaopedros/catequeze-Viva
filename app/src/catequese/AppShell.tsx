@@ -256,7 +256,7 @@ export function AppShell({ children }: AppShellProps) {
             <div className="no-print">
               <ErrorBoundary
                 fallback={
-                  <div className="flex h-14 items-center border-b border-border/70 bg-white px-4" />
+                  <div className="flex h-14 items-center border-b border-brand-ink/10 bg-brand-paper px-4" />
                 }
               >
                 <TopBar />

@@ -69,7 +69,7 @@ export function EmptyState({
         )}
       >
         {Icon && (
-          <div className="mb-3 rounded-sm border border-border/70 bg-muted/30 p-3">
+          <div className="mb-3 rounded-sm border border-brand-gold/25 bg-brand-paper p-3">
             <Icon className="h-5 w-5 text-brand-ink" />
           </div>
         )}
@@ -95,7 +95,7 @@ export function EmptyState({
       padded={false}
     >
       {Icon && (
-        <div className="mb-4 rounded-sm border border-border/70 bg-muted/30 p-4">
+        <div className="mb-4 rounded-sm border border-brand-gold/25 bg-brand-paper p-4">
           <Icon className="h-8 w-8 text-brand-ink" />
         </div>
       )}

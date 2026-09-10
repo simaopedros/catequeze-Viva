@@ -61,7 +61,7 @@ export default function PublicUploadDocsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background dark:bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-brand-ink" />
       </div>
     );
@@ -69,7 +69,7 @@ export default function PublicUploadDocsPage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background dark:bg-background p-6">
+      <div className="min-h-screen flex items-center justify-center bg-background p-6">
         <div className="w-full max-w-md space-y-4 rounded-sm border border-border/70 bg-white p-8 text-center">
           <div className="mx-auto w-fit rounded-sm border border-destructive/20 bg-destructive/10 p-4">
             <Clock className="h-8 w-8 text-destructive" />

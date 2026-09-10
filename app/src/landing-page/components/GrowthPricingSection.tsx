@@ -85,7 +85,7 @@ export function GrowthPricingSection({ ns = "landing" }: { ns?: string }) {
   return (
     <section
       id="planos"
-      className="scroll-mt-20 border-y border-border/70 bg-muted/40"
+      className="scroll-mt-20 border-y border-brand-ink/10 bg-white/40"
       data-landing-growth-pricing
     >
       <div className="mx-auto max-w-[70rem] px-5 py-16 sm:py-20">
@@ -258,10 +258,10 @@ function PlanCard({
     <div
       id={`planos-${planId}`}
       className={cn(
-        "relative flex flex-col rounded-xl border bg-white p-6",
+        "relative flex flex-col rounded-xl border bg-card p-6",
         highlighted
-          ? "border-2 border-brand-gold shadow-[0_12px_35px_rgba(9,32,53,0.08)]"
-          : "border-border/70",
+          ? "border-brand-gold/50 bg-brand-paper shadow-elevation-sm"
+          : "border-brand-ink/10",
       )}
     >
       {badge ? (
@@ -305,7 +305,7 @@ function PlanCard({
               className="flex items-start gap-2 text-xs text-brand-ink/80"
             >
               <Check
-                className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600"
+                className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-gold"
                 aria-hidden
               />
               {item}
@@ -321,8 +321,6 @@ function PlanCard({
         asChild
         className={cn(
           "mt-5 w-full rounded-md",
-          highlighted &&
-            "bg-brand-gold text-white shadow-none hover:bg-brand-gold/90 hover:text-white",
         )}
       >
         {external ? (

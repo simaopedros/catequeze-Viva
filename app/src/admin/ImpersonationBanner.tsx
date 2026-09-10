@@ -26,7 +26,7 @@ export function ImpersonationBanner() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-[200] flex items-center justify-center gap-3 bg-[#8A6418] px-4 py-2 text-sm text-white"
+      className="fixed bottom-0 left-0 right-0 z-[200] flex items-center justify-center gap-3 bg-brand-gold-muted px-4 py-2 text-sm text-white"
       role="status"
     >
       <Eye className="h-4 w-4 shrink-0" />
@@ -34,7 +34,7 @@ export function ImpersonationBanner() {
       <Button
         size="sm"
         variant="secondary"
-        className="h-8 rounded-sm bg-white text-[#8A6418] hover:bg-white/90"
+        className="h-8 rounded-sm bg-white text-brand-gold-muted hover:bg-white/90"
         onClick={() => {
           stopImpersonation();
           window.location.href = "/admin/users";

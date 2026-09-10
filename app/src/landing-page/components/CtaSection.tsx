@@ -26,11 +26,12 @@ export function CtaSection({
 
   return (
     <section
-      className="bg-brand-ink text-white"
+      className="relative overflow-hidden bg-brand-ink text-white"
       data-landing-closing-cta
       id="contato"
     >
-      <div className="mx-auto max-w-[70rem] px-5 py-16 sm:py-[4.5rem]">
+      <div className="pointer-events-none absolute inset-0 liturgical-halo" aria-hidden />
+      <div className="relative mx-auto max-w-[70rem] px-5 py-16 sm:py-[4.5rem]">
         <div className="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-center lg:gap-12">
           <div className="max-w-[42rem] space-y-3.5">
             {eyebrow ? (
@@ -48,7 +49,7 @@ export function CtaSection({
               size="xl"
               asChild
               className={cn(
-                "rounded-md bg-brand-gold text-white shadow-none hover:bg-brand-gold/90 hover:text-white",
+                "rounded-md bg-brand-paper text-brand-ink shadow-none hover:bg-white hover:text-brand-ink",
                 ctaClassName,
               )}
             >
@@ -68,7 +69,7 @@ export function CtaSection({
               </Link>
             </Button>
             {ctaHelper ? (
-              <p className="mt-2.5 text-[11px] text-[#9fb0c0]">{ctaHelper}</p>
+              <p className="mt-2.5 text-[11px] text-brand-ink-muted">{ctaHelper}</p>
             ) : null}
           </div>
         </div>
@@ -91,7 +92,7 @@ function CtaBody({
   if (lines.length === 0 && !subtitle) return null;
 
   return (
-    <div className="space-y-3 text-[15px] leading-relaxed text-[#bdcad5]">
+    <div className="space-y-3 text-[15px] leading-relaxed text-brand-ink-muted">
       {subtitle ? <p>{subtitle}</p> : null}
       {lines.map((line) => (
         <p key={line}>{line}</p>

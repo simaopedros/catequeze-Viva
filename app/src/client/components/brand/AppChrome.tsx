@@ -17,9 +17,9 @@ import type {
 } from "../../../shared/uiPresentation";
 
 /**
- * Shared chrome for the logged-in app — linguagem "soft modern":
- * superfícies elevadas em vez de bordas duras, raio suave, ink e gold
- * preservados como marca. Light theme only for this product stage.
+ * Shared chrome for the logged-in app — linguagem "papel litúrgico":
+ * canvas creme, hairline ink, Cormorant nos títulos de página, ouro como
+ * acento raro. Light theme only for this product stage.
  */
 
 export function AppEyebrow({
@@ -71,7 +71,7 @@ export function AppDisplayTitle({
   return (
     <Tag
       className={cn(
-        "font-sans font-semibold tracking-tight text-brand-ink text-title-sm sm:text-title-md",
+        "font-brand-display font-semibold tracking-tight text-brand-ink text-title-sm sm:text-title-md",
         className,
       )}
     >
@@ -176,7 +176,7 @@ export function AppPageHeader({
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 border-b border-border sm:flex-row sm:items-end sm:justify-between sm:gap-4",
+        "flex flex-col gap-3 border-b border-brand-ink/10 sm:flex-row sm:items-end sm:justify-between sm:gap-4",
         density === "compact" ? "pb-3 sm:pb-4" : "pb-4 sm:pb-6",
         className,
       )}
@@ -196,7 +196,7 @@ export function AppPageHeader({
             {title}
           </AppDisplayTitle>
           {count !== undefined && (
-            <span className="rounded-full bg-muted px-2.5 py-0.5 text-body-sm font-medium tabular-nums text-text-secondary">
+            <span className="rounded-full bg-brand-paper px-2.5 py-0.5 text-body-sm font-medium tabular-nums text-text-secondary">
               {count}
             </span>
           )}
@@ -295,7 +295,7 @@ export function AppPanel({
   return (
     <section
       className={cn(
-        "rounded-lg border border-border bg-surface-elevated shadow-elevation-sm",
+        "rounded-lg border border-brand-ink/10 bg-surface-elevated shadow-elevation-xs",
         padded && (density === "compact" ? "p-4 sm:p-5" : "p-5 sm:p-6"),
         className,
       )}
@@ -323,7 +323,7 @@ export function AppMetric({
       <p className="text-xs font-medium tracking-wide text-muted-foreground">
         {label}
       </p>
-      <p className="mt-1.5 font-sans text-title-md font-semibold tabular-nums text-brand-ink">
+      <p className="mt-1.5 font-brand-display text-title-md font-semibold tabular-nums text-brand-ink">
         {value}
       </p>
     </>
@@ -334,7 +334,7 @@ export function AppMetric({
       <Link
         to={href}
         className={cn(
-          "block rounded-lg border border-border bg-surface-elevated px-4 py-3.5 shadow-elevation-xs transition-[box-shadow,transform,border-color] duration-150 ease-out hover:-translate-y-0.5 hover:border-input hover:shadow-elevation-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 motion-reduce:hover:translate-y-0",
+          "block rounded-lg border border-brand-ink/10 bg-surface-elevated px-4 py-3.5 shadow-elevation-xs transition-[box-shadow,transform,border-color] duration-150 ease-out hover:-translate-y-0.5 hover:border-brand-gold/35 hover:shadow-elevation-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 motion-reduce:hover:translate-y-0",
           className,
         )}
       >
@@ -345,7 +345,7 @@ export function AppMetric({
 
   return (
     <div
-      className={cn("rounded-lg border border-border bg-surface-elevated px-4 py-3.5 shadow-elevation-xs", className)}
+      className={cn("rounded-lg border border-brand-ink/10 bg-surface-elevated px-4 py-3.5 shadow-elevation-xs", className)}
     >
       {body}
     </div>
@@ -367,8 +367,8 @@ export function AppListLink({
     <Link
       to={to}
       className={cn(
-        "group flex min-h-11 items-start justify-between gap-3 border-b border-border/60 py-3.5 last:border-0",
-        "transition-colors hover:bg-muted/20",
+        "group flex min-h-11 items-start justify-between gap-3 border-b border-brand-ink/10 py-3.5 last:border-0",
+        "transition-colors hover:bg-brand-paper/60",
         className,
       )}
     >

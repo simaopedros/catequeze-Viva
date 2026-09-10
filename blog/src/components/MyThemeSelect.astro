@@ -1,28 +1,19 @@
 ---
-import StarlightThemeSelect from '@astrojs/starlight/components/ThemeSelect.astro'
-import type { Props } from '@astrojs/starlight/props'
+import StarlightThemeSelect from "@astrojs/starlight/components/ThemeSelect.astro";
+import type { Props } from "@astrojs/starlight/props";
 ---
 
-<StarlightThemeSelect {...Astro.props}>
-  <slot />
-</StarlightThemeSelect>
+{
+  /* Light-only product: keep the Starlight control mounted but hidden. */
+}
+<div class="theme-select-hidden">
+  <StarlightThemeSelect {...Astro.props}>
+    <slot />
+  </StarlightThemeSelect>
+</div>
 
 <style>
-  div {
-    border-inline-end: 1px solid var(--sl-color-gray-5);
+  .theme-select-hidden {
     display: none;
-    padding-inline-end: 1rem;
-  }
-
-  @media (min-width: 50rem) {
-    div {
-      display: flex;
-    }
-  }
-
-  a {
-    color: var(--sl-color-text-accent);
-    font-weight: 600;
-    text-decoration: none;
   }
 </style>

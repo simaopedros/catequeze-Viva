@@ -45,11 +45,11 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
   const statusIcon = (status: string) => {
     switch (status) {
       case "ACTIVE":
-        return <BadgeCheck className="h-3.5 w-3.5 text-[#071A2D]" />;
+        return <BadgeCheck className="h-3.5 w-3.5 text-brand-ink" />;
       case "TRIAL":
-        return <CircleDot className="h-3.5 w-3.5 text-[#071A2D]" />;
+        return <CircleDot className="h-3.5 w-3.5 text-brand-ink" />;
       case "PAST_DUE":
-        return <AlertTriangle className="h-3.5 w-3.5 text-[#8A6418]" />;
+        return <AlertTriangle className="h-3.5 w-3.5 text-brand-gold-muted" />;
       case "CANCELED":
         return <AlertTriangle className="h-3.5 w-3.5 text-destructive" />;
       default:
@@ -72,7 +72,7 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
             dioceseFilter ? (
               <button
                 type="button"
-                className="text-xs text-muted-foreground hover:text-[#071A2D]"
+                className="text-xs text-muted-foreground hover:text-brand-ink"
                 onClick={() => setSearchParams({})}
               >
                 {t("pages.parishes.clear_filter")}
@@ -83,7 +83,7 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-ink border-t-transparent" />
           </div>
         ) : error && parishes.length === 0 ? (
           <QueryErrorState error={error} onRetry={refetch} />
@@ -135,11 +135,11 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <Church className="h-4 w-4 text-[#071A2D] shrink-0" />
+                        <Church className="h-4 w-4 text-brand-ink shrink-0" />
                         <div>
                           <NavLink
                             to={`/admin/parishes/${p.id}`}
-                            className="font-semibold tracking-tight text-[#071A2D] hover:underline"
+                            className="font-semibold tracking-tight text-brand-ink hover:underline"
                             aria-label={t("pages.parishes.open_row", {
                               name: p.name,
                             })}
@@ -148,7 +148,7 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                             {p.name}
                           </NavLink>
                           {!p.active && (
-                            <span className="ml-2 rounded-sm bg-[#D39A2B]/15 px-1.5 py-0.5 text-xs text-[#8A6418]">
+                            <span className="ml-2 rounded-sm bg-brand-gold/15 px-1.5 py-0.5 text-xs text-brand-gold-muted">
                               {t("pages.parishes.archived")}
                             </span>
                           )}
@@ -183,7 +183,7 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                       {p.billing?.plan ? (
                         <span className="flex items-center gap-1">
                           {statusIcon(p.billing.status)}
-                          <span className="text-xs font-semibold tracking-tight text-[#071A2D]">
+                          <span className="text-xs font-semibold tracking-tight text-brand-ink">
                             {p.billing.plan}
                           </span>
                         </span>

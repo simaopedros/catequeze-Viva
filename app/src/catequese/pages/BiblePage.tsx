@@ -991,7 +991,7 @@ export default function BiblePage() {
                         }}
                         className={`group flex gap-3 py-1 px-2 -mx-2 rounded transition-colors ${
                           highlightedVerse === v.number
-                            ? "bg-brand-gold/15 bg-brand-gold/10 ring-1 ring-brand-gold/40 dark:ring-brand-gold/50"
+                            ? "bg-brand-gold/15 ring-1 ring-brand-gold/40"
                             : ""
                         }`}
                       >

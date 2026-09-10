@@ -10,14 +10,26 @@ export default defineConfig({
   trailingSlash: "always",
   integrations: [
     starlight({
-      title: "Your SaaS",
+      title: "Catequese Viva",
       customCss: ["./src/styles/tailwind.css"],
-      description: "Documentation for your SaaS.",
+      description: "Blog e guias da Catequese Viva.",
       logo: {
-        src: "/src/assets/logo.webp",
-        alt: "Your SaaS",
+        src: "./src/assets/mark.svg",
+        alt: "Catequese Viva",
       },
-      head: [],
+      head: [
+        {
+          tag: "link",
+          attrs: {
+            rel: "stylesheet",
+            href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap",
+          },
+        },
+        {
+          tag: "meta",
+          attrs: { name: "theme-color", content: "#071A2D" },
+        },
+      ],
       editLink: {
         baseUrl: "https://github.com/<your-repo>",
       },
@@ -58,9 +70,9 @@ export default defineConfig({
           customCss: ["./src/styles/tailwind.css"],
           authors: {
             Dev: {
-              name: "Dev",
-              title: "Dev @ Your SaaS",
-              picture: "/CRAIG_ROCK.png", // Images in the `public` directory are supported.
+              name: "Catequese Viva",
+              title: "Equipe Catequese Viva",
+              picture: "/CRAIG_ROCK.png",
               url: "https://your-site.com",
             },
           },

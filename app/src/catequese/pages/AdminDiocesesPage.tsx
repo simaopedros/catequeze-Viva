@@ -206,7 +206,7 @@ export default function AdminDiocesesPage({ user }: { user: AuthUser }) {
                           <div className="flex justify-end gap-2">
                             <NavLink
                               to={`/admin/parishes?dioceseId=${d.id}`}
-                              className="text-xs text-[#071A2D] hover:underline"
+                              className="text-xs text-brand-ink hover:underline"
                             >
                               {t("view_parishes")}
                             </NavLink>

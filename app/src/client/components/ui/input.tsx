@@ -29,7 +29,7 @@ function Input({
       type={type}
       data-slot="input"
       className={cn(
-        "file:text-brand-ink file:font-semibold placeholder:text-muted-foreground focus-visible:ring-ring/35 flex h-12 min-h-12 w-full rounded-md border border-input px-3.5 py-2 text-base shadow-elevation-xs transition-[border-color,box-shadow,background-color] duration-150 ease-out file:border-0 file:bg-transparent file:text-sm file:font-medium hover:border-input focus-visible:border-brand-ink/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:border-dashed disabled:text-muted-foreground disabled:opacity-70 disabled:shadow-none md:h-11 md:min-h-11 md:text-sm",
+        "file:text-brand-ink file:font-semibold placeholder:text-muted-foreground focus-visible:ring-ring/35 flex h-12 min-h-12 w-full rounded-md border border-brand-ink/15 bg-card px-3.5 py-2 text-base shadow-none transition-[border-color,box-shadow,background-color] duration-150 ease-out file:border-0 file:bg-transparent file:text-sm file:font-medium hover:border-brand-ink/25 focus-visible:border-brand-ink/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:border-dashed disabled:text-muted-foreground disabled:opacity-70 disabled:shadow-none md:h-11 md:min-h-11 md:text-sm",
         variantStyles[variant],
         stateStyles[state],
         className,

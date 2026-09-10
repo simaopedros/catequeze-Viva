@@ -50,11 +50,11 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
   const statusIcon = (status: string) => {
     switch (status) {
       case "ACTIVE":
-        return <BadgeCheck className="h-3.5 w-3.5 text-[#071A2D]" />;
+        return <BadgeCheck className="h-3.5 w-3.5 text-brand-ink" />;
       case "TRIAL":
-        return <CircleDot className="h-3.5 w-3.5 text-[#071A2D]" />;
+        return <CircleDot className="h-3.5 w-3.5 text-brand-ink" />;
       case "PAST_DUE":
-        return <AlertTriangle className="h-3.5 w-3.5 text-[#8A6418]" />;
+        return <AlertTriangle className="h-3.5 w-3.5 text-brand-gold-muted" />;
       case "CANCELED":
         return <AlertTriangle className="h-3.5 w-3.5 text-destructive" />;
       default:
@@ -79,7 +79,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
     return (
       <DefaultLayout user={user}>
         <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-ink border-t-transparent" />
         </div>
       </DefaultLayout>
     );
@@ -102,11 +102,11 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
     <DefaultLayout user={user}>
       <div className="space-y-6">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <NavLink to="/admin/parishes" className="hover:text-[#071A2D]">
+          <NavLink to="/admin/parishes" className="hover:text-brand-ink">
             {t("pages.parishes.title")}
           </NavLink>
           <span>/</span>
-          <span className="font-semibold tracking-tight text-[#071A2D]">
+          <span className="font-semibold tracking-tight text-brand-ink">
             {parish.name}
           </span>
         </div>
@@ -193,7 +193,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
               <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t("pages.parish.diocese")}
               </h2>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
             <div className="flex flex-wrap items-end gap-2">
               <select
@@ -229,10 +229,10 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
         <div className="rounded-sm border border-border/70 bg-white p-5">
           <div className="mb-4 space-y-1.5">
             <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              <CircleDot className="h-3.5 w-3.5 text-[#071A2D]" />
+              <CircleDot className="h-3.5 w-3.5 text-brand-ink" />
               {t("pages.parish.license")}
             </h2>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
           {parish.billing ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
@@ -240,7 +240,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                 <p className="text-xs text-muted-foreground">
                   {t("pages.parish.plan")}
                 </p>
-                <p className="font-semibold tracking-tight text-[#071A2D]">
+                <p className="font-semibold tracking-tight text-brand-ink">
                   {parish.billing.plan}
                 </p>
               </div>
@@ -248,7 +248,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                 <p className="text-xs text-muted-foreground">
                   {t("pages.parish.status")}
                 </p>
-                <p className="flex items-center gap-1 font-semibold tracking-tight text-[#071A2D]">
+                <p className="flex items-center gap-1 font-semibold tracking-tight text-brand-ink">
                   {statusIcon(parish.billing.status)}
                   {parish.billing.status}
                 </p>
@@ -257,7 +257,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                 <p className="text-xs text-muted-foreground">
                   {t("pages.parish.trial_until")}
                 </p>
-                <p className="font-semibold tracking-tight text-[#071A2D]">
+                <p className="font-semibold tracking-tight text-brand-ink">
                   {parish.billing.trialEndsAt
                     ? formatDate(parish.billing.trialEndsAt, currentLocale)
                     : "—"}
@@ -267,7 +267,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                 <p className="text-xs text-muted-foreground">
                   {t("pages.parish.limits")}
                 </p>
-                <p className="font-semibold tracking-tight text-[#071A2D]">
+                <p className="font-semibold tracking-tight text-brand-ink">
                   {t("pages.parish.limits_value", {
                     classes:
                       parish.billing.maxClasses ||
@@ -286,7 +286,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
           )}
           <NavLink
             to="/admin/billing"
-            className="mt-4 inline-block text-xs text-[#071A2D] hover:underline"
+            className="mt-4 inline-block text-xs text-brand-ink hover:underline"
           >
             {t("pages.parish.manage_license")}
           </NavLink>
@@ -295,12 +295,12 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
         <div className="rounded-sm border border-border/70 bg-white p-5">
           <div className="mb-4 space-y-1.5">
             <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              <Users className="h-3.5 w-3.5 text-[#071A2D]" />
+              <Users className="h-3.5 w-3.5 text-brand-ink" />
               {t("pages.parish.members", {
                 count: parish.members?.length || 0,
               })}
             </h2>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
           <div className="divide-y -mx-5">
             {!parish.members || parish.members.length === 0 ? (
@@ -314,7 +314,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                   className="px-5 py-3 flex items-center justify-between"
                 >
                   <div>
-                    <p className="text-sm font-semibold tracking-tight text-[#071A2D]">
+                    <p className="text-sm font-semibold tracking-tight text-brand-ink">
                       {m.user.email}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -335,10 +335,10 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
         <div className="rounded-sm border border-border/70 bg-white p-5">
           <div className="mb-4 space-y-1.5">
             <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              <History className="h-3.5 w-3.5 text-[#071A2D]" />
+              <History className="h-3.5 w-3.5 text-brand-ink" />
               {t("pages.parish.recent_activity")}
             </h2>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
           <div className="divide-y -mx-5">
             {!parish.recentAudit || parish.recentAudit.length === 0 ? (
@@ -352,7 +352,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                   className="px-5 py-2.5 flex items-center justify-between text-xs"
                 >
                   <div>
-                    <span className="font-semibold tracking-tight text-[#071A2D]">
+                    <span className="font-semibold tracking-tight text-brand-ink">
                       {log.action}
                     </span>
                     <span className="text-muted-foreground ml-2">

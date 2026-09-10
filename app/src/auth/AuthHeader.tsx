@@ -9,8 +9,8 @@ export function AuthHeader({ mobileOnly = false }: { mobileOnly?: boolean }) {
     <header
       className={
         mobileOnly
-          ? "border-b border-brand-ink/8 bg-white lg:hidden"
-          : "border-b border-brand-ink/8 bg-white"
+          ? "border-b border-brand-ink/10 bg-brand-paper lg:hidden"
+          : "border-b border-brand-ink/10 bg-brand-paper"
       }
     >
       <div className="mx-auto flex h-14 max-w-6xl items-center px-4 sm:px-6">

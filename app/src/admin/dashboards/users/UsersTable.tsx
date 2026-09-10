@@ -150,7 +150,7 @@ const UsersTable = () => {
         {data?.users?.map((user: any) => (
           <tr key={user.id} className="border-t">
             <td className="px-4 py-3">
-              <div className="flex items-center gap-2 truncate text-sm font-semibold tracking-tight text-[#071A2D]">
+              <div className="flex items-center gap-2 truncate text-sm font-semibold tracking-tight text-brand-ink">
                 <span className="truncate">{user.email || "—"}</span>
                 {user.suspendedAt && (
                   <span className="shrink-0 rounded-sm bg-destructive/10 px-1.5 py-0.5 text-[10px] font-medium text-destructive">
@@ -164,7 +164,7 @@ const UsersTable = () => {
                 ? `${user.firstName} ${user.lastName || ""}`
                 : "—"}
             </td>
-            <td className="hidden px-4 py-3 text-xs text-[#071A2D] lg:table-cell">
+            <td className="hidden px-4 py-3 text-xs text-brand-ink lg:table-cell">
               {user.subscriptionPlan || "—"}
               {user.subscriptionStatus ? (
                 <span className="ml-1 text-muted-foreground">

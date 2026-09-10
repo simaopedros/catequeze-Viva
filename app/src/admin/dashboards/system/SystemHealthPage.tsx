@@ -43,7 +43,7 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
 
         {isLoading ? (
           <div className="flex justify-center py-12" aria-busy="true">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-ink border-t-transparent" />
           </div>
         ) : error && !health ? (
           <QueryErrorState error={error} onRetry={refetch} />
@@ -76,7 +76,7 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
                       count: health.recentErrors.length,
                     })}
                   </h2>
-                  <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                  <div className="h-px w-8 bg-brand-gold" aria-hidden />
                 </div>
                 <div className="divide-y -mx-5">
                   {health.recentErrors.map((err: any) => (
@@ -95,10 +95,10 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
               <div className="rounded-sm border border-border/70 bg-white p-5">
                 <div className="mb-4 space-y-1.5">
                   <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    <TrendingUp className="h-3.5 w-3.5 text-[#071A2D]" />
+                    <TrendingUp className="h-3.5 w-3.5 text-brand-ink" />
                     {t("pages.system.daily_stats")}
                   </h2>
-                  <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                  <div className="h-px w-8 bg-brand-gold" aria-hidden />
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs">
@@ -130,10 +130,10 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
             <div className="rounded-sm border border-border/70 bg-white p-5">
               <div className="mb-4 space-y-1.5">
                 <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  <Activity className="h-3.5 w-3.5 text-[#071A2D]" />
+                  <Activity className="h-3.5 w-3.5 text-brand-ink" />
                   {t("pages.system.scheduled_jobs")}
                 </h2>
-                <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+                <div className="h-px w-8 bg-brand-gold" aria-hidden />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                 {MAINTENANCE_TASKS.map((task) => (
@@ -141,9 +141,9 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
                     key={task}
                     className="flex items-start gap-2 p-3 rounded-sm border border-border/70 bg-white"
                   >
-                    <Activity className="h-3.5 w-3.5 text-[#071A2D] mt-0.5 shrink-0" />
+                    <Activity className="h-3.5 w-3.5 text-brand-ink mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-xs font-semibold tracking-tight text-[#071A2D]">
+                      <p className="text-xs font-semibold tracking-tight text-brand-ink">
                         {task}
                       </p>
                       <p className="text-xs text-muted-foreground">

@@ -7,14 +7,14 @@ const cardVariants = cva("rounded-lg border", {
   variants: {
     variant: {
       default:
-        "border-border bg-surface-elevated text-brand-ink shadow-elevation-sm",
+        "border-brand-ink/10 bg-surface-elevated text-brand-ink shadow-elevation-xs",
       accent:
-        "border-border bg-card-accent text-card-accent-foreground shadow-elevation-sm",
+        "border-brand-gold/20 bg-brand-paper text-brand-ink shadow-none",
       bento:
         "border-none bg-card-subtle text-card-subtle-foreground shadow-none",
       interactive:
-        "cursor-pointer border-border bg-surface-elevated text-brand-ink shadow-elevation-sm transition-[box-shadow,transform,border-color] duration-150 ease-out hover:-translate-y-0.5 hover:border-input hover:shadow-elevation-md motion-reduce:hover:translate-y-0",
-      flat: "border-0 bg-muted/50 shadow-none",
+        "cursor-pointer border-brand-ink/10 bg-surface-elevated text-brand-ink shadow-elevation-xs transition-[box-shadow,transform,border-color] duration-150 ease-out hover:-translate-y-0.5 hover:border-brand-gold/35 hover:shadow-elevation-sm motion-reduce:hover:translate-y-0",
+      flat: "border-0 bg-brand-paper/70 shadow-none",
     },
   },
 });

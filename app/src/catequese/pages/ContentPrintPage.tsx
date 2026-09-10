@@ -293,7 +293,7 @@ export default function ContentPrintPage() {
               className="print-doc-header print-keep mb-8 border-b border-brand-ink/15 pb-6 text-center"
               data-print-keep="true"
             >
-              <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6b7c8a]">
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                 {t("print_page.header_badge")}
               </p>
               <h1 className="mb-2 text-2xl font-semibold tracking-tight text-brand-ink sm:text-[1.75rem]">
@@ -304,11 +304,11 @@ export default function ContentPrintPage() {
                 aria-hidden
               />
               {item.theme && (
-                <p className="mb-3 text-base italic text-[#4a5d6e] sm:text-lg">
+                <p className="mb-3 text-base italic text-muted-foreground sm:text-lg">
                   {item.theme}
                 </p>
               )}
-              <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-[#6b7c8a]">
+              <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                 {item.estimatedTime && (
                   <span className="inline-flex items-center gap-1">
                     <Clock className="h-3.5 w-3.5" />
@@ -336,7 +336,7 @@ export default function ContentPrintPage() {
             {hasReferences && (
               <section className="mt-10 space-y-5">
                 <div className="print-section-title border-b border-brand-ink/12 pb-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8a96a0]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                     {t("print_page.pastoral_support", {
                       defaultValue: "Apoio pastoral",
                     })}
@@ -365,7 +365,7 @@ export default function ContentPrintPage() {
                             {ref.label}
                           </div>
                           {ref.text ? (
-                            <p className="text-[15px] leading-7 text-[#1a2f42]">
+                            <p className="text-[15px] leading-7 text-brand-ink">
                               {ref.text}
                             </p>
                           ) : null}
@@ -396,7 +396,7 @@ export default function ContentPrintPage() {
                             </p>
                           )}
                           {ref.text && (
-                            <p className="text-[15px] leading-7 text-[#1a2f42]">
+                            <p className="text-[15px] leading-7 text-brand-ink">
                               {ref.text}
                             </p>
                           )}
@@ -430,7 +430,7 @@ export default function ContentPrintPage() {
                             </p>
                           )}
                           {ref.text && (
-                            <p className="text-[15px] leading-7 text-[#1a2f42]">
+                            <p className="text-[15px] leading-7 text-brand-ink">
                               {ref.text}
                             </p>
                           )}
@@ -444,7 +444,7 @@ export default function ContentPrintPage() {
 
             {activities.length > 0 && (
               <section className="mt-10">
-                <h2 className="print-section-title mb-3 border-b border-brand-ink/12 pb-2 text-sm font-semibold uppercase tracking-[0.12em] text-[#24394d]">
+                <h2 className="print-section-title mb-3 border-b border-brand-ink/12 pb-2 text-sm font-semibold uppercase tracking-[0.12em] text-brand-ink">
                   {t("print_page.activities_title", {
                     count: activities.length,
                   })}
@@ -464,7 +464,7 @@ export default function ContentPrintPage() {
                           {index + 1}. {activity.title} — {typeLabel}
                         </h3>
                         {activity.description && (
-                          <p className="mb-3 text-sm italic text-[#6b7c8a]">
+                          <p className="mb-3 text-sm italic text-muted-foreground">
                             {activity.description}
                           </p>
                         )}
@@ -520,7 +520,7 @@ export default function ContentPrintPage() {
               </section>
             )}
 
-            <footer className="print-keep mt-10 border-t border-brand-ink/10 pt-4 text-center text-xs text-[#8a96a0]">
+            <footer className="print-keep mt-10 border-t border-brand-ink/10 pt-4 text-center text-xs text-muted-foreground">
               {t("print_page.footer")}
             </footer>
           </div>

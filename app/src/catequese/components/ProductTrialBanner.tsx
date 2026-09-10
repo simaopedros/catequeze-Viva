@@ -200,7 +200,7 @@ export function ProductTrialBanner({
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 border-b border-brand-gold/30 bg-[#FFF9F0] px-4 py-2.5 text-brand-ink sm:flex-row sm:items-center sm:justify-between",
+        "flex flex-col gap-2 border-b border-brand-gold/30 bg-brand-paper px-4 py-2.5 text-brand-ink sm:flex-row sm:items-center sm:justify-between",
         wrapperClass,
       )}
       role="status"

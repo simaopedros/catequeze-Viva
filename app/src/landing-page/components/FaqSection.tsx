@@ -19,7 +19,7 @@ export function FaqSection({
   const faqCtaHelper = String(tr("faq_cta_helper") || "").trim();
 
   return (
-    <section id="duvidas" className="scroll-mt-20 bg-white">
+    <section id="duvidas" className="scroll-mt-20 bg-brand-paper">
       <div className="mx-auto max-w-[70rem] px-5 py-16 sm:py-20">
         <div className="grid gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
           <div className="space-y-3 lg:sticky lg:top-24 lg:self-start">

@@ -49,13 +49,13 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
       <div className="mobile-screen-height flex flex-col bg-background">
         {/* Top bar */}
         <header
-          className="sticky top-0 z-sticky border-b border-border/70 bg-white"
+          className="sticky top-0 z-sticky border-b border-brand-ink/10 bg-brand-paper/90"
           style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
         >
           <div className="flex h-14 items-center justify-between gap-2 px-3 min-[360px]:px-4">
             <div className="flex min-w-0 items-center gap-2 min-[360px]:gap-3">
               <BrandLockup compact hideBadge />
-              <span className="hidden rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground min-[360px]:inline-flex">
+              <span className="hidden rounded-sm border border-brand-gold/30 bg-brand-paper px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.1em] text-brand-gold-muted min-[360px]:inline-flex">
                 {t("family_label")}
               </span>
             </div>

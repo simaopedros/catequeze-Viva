@@ -207,7 +207,7 @@ const BlogEditPage = ({ user }: { user: AuthUser }) => {
           <QueryErrorState error={error} onRetry={() => refetch()} />
         ) : isLoading || !post ? (
           <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-ink border-t-transparent" />
           </div>
         ) : (
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">

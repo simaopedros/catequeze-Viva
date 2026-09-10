@@ -14,7 +14,15 @@ A marca da Catequese Viva combina tres referencias centrais do produto:
 - `#153A63` `brand-midnight`: apoio para gradientes e superfícies hero.
 - `#D39A2B` `brand-gold`: calor, liturgia e destaque.
 - `#F4CF7A` `brand-light-gold`: halo, bordas e acentos.
-- `#FFF7E7` `brand-paper`: contraste suave para miolo do simbolo.
+- `#FFF7E7` `brand-paper`: canvas das superfícies públicas e miolo do símbolo.
+
+## Superfícies
+
+- Landings, auth e blog usam `brand-paper` como fundo (`canvas-public`).
+- O app logado e o admin usam o canvas creme de `--background` (não o paper
+  pleno) para tabelas e formulários densos manterem contraste WCAG AA.
+- Prefira `bg-brand-paper`, `bg-brand-midnight`, `text-brand-ink-muted` em
+  vez de hex avulsos.
 
 ## Arquivos
 

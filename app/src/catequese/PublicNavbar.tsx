@@ -26,7 +26,7 @@ export function PublicNavbar({
     "text-[0.8125rem] font-medium tracking-wide text-muted-foreground transition-colors hover:text-brand-ink";
 
   return (
-    <header className="sticky top-0 z-sticky border-b border-brand-ink/8 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/90">
+    <header className="sticky top-0 z-sticky border-b border-brand-ink/10 bg-brand-paper/90 backdrop-blur supports-[backdrop-filter]:bg-brand-paper/80">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-4 sm:px-6">
         <Link
           to="/"
@@ -89,7 +89,7 @@ export function PublicNavbar({
       </div>
 
       {open && (
-        <div className="border-t border-brand-ink/8 bg-white md:hidden">
+        <div className="border-t border-brand-ink/10 bg-brand-paper md:hidden">
           <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
             <nav className="flex flex-col">
               <a

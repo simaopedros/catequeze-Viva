@@ -29,7 +29,7 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
   const { currentLocale, setLocale, supportedLocales } = useLocale();
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="canvas-public flex min-h-screen flex-col">
       <SkipToContent />
       {/* With panel: brand is on the left (desktop); header only on mobile. Without panel: always show header. */}
       <AuthHeader mobileOnly={Boolean(panel)} />
@@ -37,23 +37,19 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
       <div className="flex flex-1">
         {/* Brand panel — desktop */}
         {panel && (
-          <aside className="relative hidden w-[min(42%,28rem)] shrink-0 flex-col justify-between bg-brand-ink px-10 py-10 text-[#E8EEF5] lg:flex xl:w-[28rem] xl:px-12">
+          <aside className="relative hidden w-[min(42%,28rem)] shrink-0 flex-col justify-between overflow-hidden bg-brand-ink px-10 py-10 text-brand-ink-foreground lg:flex xl:w-[28rem] xl:px-12">
             <div
-              className="pointer-events-none absolute inset-0 opacity-[0.08]"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle at 15% 20%, #F4CF7A 0%, transparent 42%), radial-gradient(circle at 85% 75%, #D39A2B 0%, transparent 38%)",
-              }}
+              className="pointer-events-none absolute inset-0 liturgical-halo"
               aria-hidden
             />
-            <div className="relative space-y-10">
+            <div className="relative z-[2] space-y-10">
               <Link to="/" className="inline-block">
                 <BrandLockup compact hideBadge tone="inverse" />
               </Link>
 
               <div className="space-y-4">
                 {panel.eyebrow && (
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-gold/90">
+                  <p className="text-overline font-semibold uppercase tracking-[0.2em] text-brand-gold">
                     {panel.eyebrow}
                   </p>
                 )}
@@ -62,7 +58,7 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
                 </h1>
                 <div className="h-px w-12 bg-brand-gold" aria-hidden />
                 {panel.subtitle && (
-                  <p className="text-sm leading-relaxed text-[#A8B8C9] max-w-[20rem]">
+                  <p className="max-w-[20rem] text-sm leading-relaxed text-brand-ink-muted">
                     {panel.subtitle}
                   </p>
                 )}
@@ -73,7 +69,7 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
                   {panel.points.map((point, i) => (
                     <li
                       key={point}
-                      className="flex gap-3 text-sm leading-snug text-[#C5D0DC]"
+                      className="flex gap-3 text-sm leading-snug text-brand-ink-faint"
                     >
                       <span className="font-brand-display mt-0.5 shrink-0 text-[0.7rem] font-semibold tabular-nums text-brand-gold">
                         {String(i + 1).padStart(2, "0")}
@@ -85,7 +81,7 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
               )}
             </div>
 
-            <p className="relative text-xs text-[#6B7C8F]">
+            <p className="relative z-[2] text-xs text-brand-ink-muted">
               © {new Date().getFullYear()} Catequese Viva
             </p>
           </aside>
@@ -108,7 +104,7 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
             </div>
           </main>
 
-          <footer className="border-t border-brand-ink/8 px-4 py-4 sm:px-8">
+          <footer className="border-t border-brand-ink/10 px-4 py-4 sm:px-8">
             <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs text-muted-foreground">
                 {t("footer_copyright", {

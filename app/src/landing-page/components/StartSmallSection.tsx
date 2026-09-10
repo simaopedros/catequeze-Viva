@@ -24,7 +24,7 @@ export function StartSmallSection({
   const subtitle = String(tr("start_small.subtitle") || "").trim();
 
   return (
-    <section className="border-y border-border/50 bg-muted/20">
+    <section className="border-y border-brand-ink/10 bg-white/40">
       <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
         <div className="max-w-xl space-y-3">
           {eyebrow ? (
@@ -63,7 +63,7 @@ export function StartSmallSection({
             size="xl"
             asChild
             className={cn(
-              "rounded-sm bg-brand-gold text-brand-ink shadow-none hover:bg-brand-gold/90 hover:text-brand-ink",
+              "rounded-sm shadow-none",
               responsiveCtas &&
                 "h-auto min-h-12 w-full px-6 text-center leading-snug whitespace-normal sm:w-auto sm:px-8",
             )}

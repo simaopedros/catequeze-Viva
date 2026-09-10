@@ -8,7 +8,7 @@ export function PainPointsSection({ ns = "landing" }: { ns?: string }) {
   const pains = t("pains", { returnObjects: true }) as any[];
 
   return (
-    <section className="bg-muted/30 border-y">
+    <section className="border-y border-brand-ink/10 bg-brand-paper/50">
       <div className="max-w-4xl mx-auto px-4 py-16">
         <div
           ref={headerRef}

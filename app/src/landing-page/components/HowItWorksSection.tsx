@@ -23,7 +23,7 @@ export function HowItWorksSection({ ns = "landing" }: { ns?: string }) {
   if (rows.length === 0) return null;
 
   return (
-    <section id="como" className="scroll-mt-20 bg-white">
+    <section id="como" className="scroll-mt-20">
       <div className="mx-auto max-w-[70rem] px-5 py-16 sm:py-20">
         <div className="mx-auto mb-12 max-w-xl text-center sm:mb-16">
           {eyebrow ? (

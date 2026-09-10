@@ -52,7 +52,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
     return (
       <DefaultLayout user={user}>
         <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-ink border-t-transparent" />
         </div>
       </DefaultLayout>
     );
@@ -85,11 +85,11 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
     <DefaultLayout user={user}>
       <div className="space-y-6">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <NavLink to="/admin/users" className="hover:text-[#071A2D]">
+          <NavLink to="/admin/users" className="hover:text-brand-ink">
             {t("pages.user.breadcrumb")}
           </NavLink>
           <span>/</span>
-          <span className="font-semibold tracking-tight text-[#071A2D]">
+          <span className="font-semibold tracking-tight text-brand-ink">
             {u.email}
           </span>
         </div>
@@ -97,11 +97,11 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
         <AppPageHeader
           eyebrow={t("pages.user.eyebrow")}
           title={u.firstName ? `${u.firstName} ${u.lastName || ""}` : u.email}
-          subtitle={
-            u.suspendedAt
-              ? `${u.email} · ${t("pages.user.suspended")}`
-              : u.isAdmin
-                ? `${u.email} · ${t("pages.admin")}`
+     subtitle={
+      u.suspendedAt
+       ? `${u.email} · ${t("pages.user.suspended")}`
+       : u.isAdmin
+        ? `${u.email} · ${t("pages.admin")}`
                 : u.email
           }
           actions={
@@ -145,17 +145,17 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
           <div className="rounded-sm border border-border/70 bg-white p-5">
             <div className="mb-4 space-y-1.5">
               <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <Users className="h-3.5 w-3.5 text-[#071A2D]" />
+                <Users className="h-3.5 w-3.5 text-brand-ink" />
                 {t("pages.user.profile")}
               </h2>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <p className="text-xs text-muted-foreground">
                   {t("pages.user.username")}
                 </p>
-                <p className="font-semibold tracking-tight text-[#071A2D]">
+                <p className="font-semibold tracking-tight text-brand-ink">
                   {u.username || "—"}
                 </p>
               </div>
@@ -163,7 +163,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                 <p className="text-xs text-muted-foreground">
                   {t("pages.user.phone")}
                 </p>
-                <p className="font-semibold tracking-tight text-[#071A2D]">
+                <p className="font-semibold tracking-tight text-brand-ink">
                   {u.phone || "—"}
                 </p>
               </div>
@@ -171,7 +171,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                 <p className="text-xs text-muted-foreground">
                   {t("pages.user.locale")}
                 </p>
-                <p className="font-semibold tracking-tight text-[#071A2D]">
+                <p className="font-semibold tracking-tight text-brand-ink">
                   {u.locale}
                 </p>
               </div>
@@ -179,7 +179,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                 <p className="text-xs text-muted-foreground">
                   {t("pages.user.created_at")}
                 </p>
-                <p className="font-semibold tracking-tight text-[#071A2D]">
+                <p className="font-semibold tracking-tight text-brand-ink">
                   {formatDate(u.createdAt, currentLocale)}
                 </p>
               </div>
@@ -187,7 +187,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                 <p className="text-xs text-muted-foreground">
                   {t("pages.user.two_factor")}
                 </p>
-                <p className="font-semibold tracking-tight text-[#071A2D]">
+                <p className="font-semibold tracking-tight text-brand-ink">
                   {u.twoFactorEnabled ? t("yes_filter") : t("no_filter")}
                 </p>
               </div>
@@ -197,17 +197,17 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
           <div className="rounded-sm border border-border/70 bg-white p-5">
             <div className="mb-4 space-y-1.5">
               <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <CreditCard className="h-3.5 w-3.5 text-[#071A2D]" />
+                <CreditCard className="h-3.5 w-3.5 text-brand-ink" />
                 {t("pages.user.billing")}
               </h2>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <p className="text-xs text-muted-foreground">
                   {t("pages.user.plan")}
                 </p>
-                <p className="font-semibold tracking-tight text-[#071A2D]">
+                <p className="font-semibold tracking-tight text-brand-ink">
                   {u.subscriptionPlan || "—"}
                 </p>
               </div>
@@ -215,7 +215,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                 <p className="text-xs text-muted-foreground">
                   {t("pages.user.status")}
                 </p>
-                <p className="font-semibold tracking-tight text-[#071A2D]">
+                <p className="font-semibold tracking-tight text-brand-ink">
                   {u.subscriptionStatus || "—"}
                 </p>
               </div>
@@ -223,7 +223,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                 <p className="text-xs text-muted-foreground">
                   {t("pages.user.ai_credits")}
                 </p>
-                <p className="font-semibold tabular-nums tracking-tight text-[#071A2D]">
+                <p className="font-semibold tabular-nums tracking-tight text-brand-ink">
                   {u.creditsLeft}
                 </p>
               </div>
@@ -275,10 +275,10 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
         <div className="rounded-sm border border-border/70 bg-white p-5">
           <div className="mb-4 space-y-1.5">
             <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              <History className="h-3.5 w-3.5 text-[#071A2D]" />
+              <History className="h-3.5 w-3.5 text-brand-ink" />
               {t("pages.user.billing_timeline")}
             </h2>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
           <div className="divide-y -mx-5">
             {!u.billingTimeline || u.billingTimeline.length === 0 ? (
@@ -292,7 +292,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                   className="px-5 py-2.5 flex items-center justify-between gap-3 text-xs"
                 >
                   <div>
-                    <span className="font-semibold tracking-tight text-[#071A2D]">
+                    <span className="font-semibold tracking-tight text-brand-ink">
                       {row.name}
                     </span>
                     <span className="text-muted-foreground ml-2">
@@ -311,10 +311,10 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
         <div className="rounded-sm border border-border/70 bg-white p-5">
           <div className="mb-4 space-y-1.5">
             <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              <Building2 className="h-3.5 w-3.5 text-[#071A2D]" />
+              <Building2 className="h-3.5 w-3.5 text-brand-ink" />
               {t("pages.user.parishes", { count: u.memberships?.length || 0 })}
             </h2>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
           <div className="divide-y -mx-5">
             {!u.memberships || u.memberships.length === 0 ? (
@@ -330,7 +330,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                   <div>
                     <NavLink
                       to={`/admin/parishes/${m.parish.id}`}
-                      className="font-semibold tracking-tight text-[#071A2D] hover:underline"
+                      className="font-semibold tracking-tight text-brand-ink hover:underline"
                     >
                       {m.parish.name}
                     </NavLink>
@@ -370,10 +370,10 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
         <div className="rounded-sm border border-border/70 bg-white p-5">
           <div className="mb-4 space-y-1.5">
             <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              <History className="h-3.5 w-3.5 text-[#071A2D]" />
+              <History className="h-3.5 w-3.5 text-brand-ink" />
               {t("pages.user.audit")}
             </h2>
-            <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
           </div>
           <div className="divide-y -mx-5">
             {!u.auditLog || u.auditLog.length === 0 ? (
@@ -387,7 +387,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                   className="px-5 py-2.5 flex items-center justify-between text-xs"
                 >
                   <div>
-                    <span className="font-semibold tracking-tight text-[#071A2D]">
+                    <span className="font-semibold tracking-tight text-brand-ink">
                       {log.action}
                     </span>
                     <span className="text-muted-foreground ml-2">
@@ -407,10 +407,10 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
           <div className="rounded-sm border border-border/70 bg-white p-5">
             <div className="mb-4 space-y-1.5">
               <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <BarChart3 className="h-3.5 w-3.5 text-[#071A2D]" />
+                <BarChart3 className="h-3.5 w-3.5 text-brand-ink" />
                 {t("pages.user.ai_usage")}
               </h2>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
             <div className="divide-y -mx-5">
               {u.aiUsage.map((d: any) => (
@@ -419,7 +419,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                   className="px-5 py-2 flex items-center justify-between text-xs"
                 >
                   <span>{formatDate(d.date, currentLocale)}</span>
-                  <span className="font-semibold tabular-nums tracking-tight text-[#071A2D]">
+                  <span className="font-semibold tabular-nums tracking-tight text-brand-ink">
                     {t("pages.user.credits_value", { count: d.count })}
                   </span>
                 </div>

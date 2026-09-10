@@ -20,7 +20,7 @@ export function TrustSection({ ns = "landing" }: { ns?: string }) {
   }
 
   return (
-    <section className="bg-muted/30 border-y">
+    <section className="border-y border-brand-ink/10 bg-brand-paper/50">
       <div className="max-w-5xl mx-auto px-4 py-20">
         <div
           ref={headerRef}

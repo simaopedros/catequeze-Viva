@@ -23,7 +23,7 @@ export function ComparisonSection({ ns = "landing" }: { ns?: string }) {
   if (rowList.length === 0) return null;
 
   return (
-    <section className="border-y bg-muted/20">
+    <section className="border-y border-brand-ink/10 bg-white/40">
       <div className="mx-auto max-w-5xl px-4 py-16 md:py-20">
         <div
           ref={headerRef}

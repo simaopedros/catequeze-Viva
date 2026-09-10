@@ -89,7 +89,7 @@ const BlogListPage = ({ user }: { user: AuthUser }) => {
           <QueryErrorState error={error} onRetry={() => refetch()} />
         ) : isLoading ? (
           <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-ink border-t-transparent" />
           </div>
         ) : posts.length === 0 ? (
           <EmptyState

@@ -73,7 +73,7 @@ export function ActivityResultPanel({
               </Badge>
             </div>
             {activity.points > 0 && (
-              <div className="flex items-center gap-1 text-sm font-medium text-brand-gold-muted dark:text-brand-gold shrink-0">
+              <div className="flex items-center gap-1 text-sm font-medium text-brand-gold-muted shrink-0">
                 <Star className="h-4 w-4 fill-current" />
                 {activity.points} {t("activity.points")}
               </div>

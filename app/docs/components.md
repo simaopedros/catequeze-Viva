@@ -1,25 +1,29 @@
 # Componentes — Catequese Viva
 
-## Linguagem visual: "soft modern"
+## Linguagem visual: "papel litúrgico"
 
-A marca institucional (ink `#071A2D` + gold `#D39A2B`) e a serifa `Cormorant
-Garamond` continuam sendo a identidade. O que mudou foi a **linguagem de
-superfície**:
+A marca institucional (ink `#071A2D` + gold `#D39A2B` + paper `#FFF7E7`) e a
+serifa `Cormorant Garamond` são a identidade. A linguagem de superfície é
+**editorial e litúrgica**, não SaaS genérico:
 
-- **Hierarquia por elevação, não por borda dura.** O canvas do app é off-white
-  (`--background: 210 25% 98%`) e os cards são branco puro, então a separação
-  vem do contraste de superfície + sombra. A borda virou hairline de apoio.
-- **Sombras tingidas de ink**, nunca preto puro — em superfície clara o preto
-  suja, o ink lê como profundidade.
-- **Raio suave**: todo o app usa `rounded-sm`, e a escala inteira é derivada de
-  `--radius`. Trocar essa variável move os ~1200 usos de uma vez.
-- **Serifa reservada** a hero, landings e estados vazios. Títulos de página,
-  de card e de diálogo são Inter semibold com tracking negativo.
-- **Gold como acento**, não como moldura editorial. `AppGoldRule` é um fio em
-  degradê, não mais um traço sólido de 40px.
+- **Público (landings, auth, blog):** canvas `bg-brand-paper`, halo
+  (`liturgical-halo`) e grain só em hero/auth. Cormorant é a voz de display.
+- **Produto e admin:** canvas creme quente (`--background: 38 32% 97%`),
+  cards branco puro, hairline ink. Inter no miolo operacional; Cormorant em
+  títulos de página, diálogos e empty states.
+- **Hierarquia por papel + hairline**, não por card flutuante. Sombra é
+  apoio curto; a borda `border-brand-ink/10` faz o trabalho.
+- **Sombras tingidas de ink**, nunca preto puro.
+- **Raio suave**: todo o app usa `rounded-sm`; a escala deriva de `--radius`.
+- **Gold como metal litúrgico**, raro: foco sagrado (`ring-sacred`,
+  `sacred-selected`), progresso sacramental, `AppGoldRule`. Não preencher
+  botões primários de ouro.
 
-Tema **claro apenas**. Os tokens `.dark` permanecem no `Main.css` como legado —
-não expandir UX escura sem antes verificar tela a tela.
+Tema **claro apenas**. Não expandir UX escura. Classes `dark:` mortas devem
+ser removidas, não reativadas.
+
+Utilitários de atmosfera: `surface-paper`, `canvas-public`,
+`liturgical-halo`, `grain-overlay`, `ring-sacred`, `sacred-selected`.
 
 ## Escala de raio
 
@@ -67,7 +71,7 @@ Derivada de `--radius: 0.75rem`. Não introduza valores avulsos.
 | **Superfície** | `surface-base` → `bg-surface-base`, `surface-subtle` → `bg-surface-subtle`, `surface-elevated` → `bg-surface-elevated` |
 | **Texto** | `text-primary` → `text-text-primary`, `text-secondary` → `text-text-secondary`, `text-tertiary` → `text-text-tertiary` |
 | **Borda** | `stroke-default` → `border-stroke-default`, `stroke-strong` → `border-stroke-strong` |
-| **Marca** | `brand-primary`, `brand-warm`, `brand-support` |
+| **Marca** | `brand-ink`, `brand-gold`, `brand-paper`, `brand-midnight`, `brand-light-gold` |
 | **Feedback** | `feedback-success`, `feedback-warning`, `feedback-error`, `feedback-info` |
 
 ## Escala tipográfica
@@ -96,10 +100,8 @@ espacejamento precisa ser para o título parecer desenhado e não esticado.
 
 ## Elevação
 
-Cada degrau combina uma sombra de contato curta com uma de ambiente longa, em
-ink translúcido. Os alfas foram calibrados contra o canvas off-white — numa
-primeira passada com alfas de 0.05–0.08 o degrau baixo sumia e card elevado
-ficava idêntico a card plano.
+Cada degrau é uma sombra curta tingida de ink. A hierarquia vem da hairline e
+do contraste papel/branco, não do card flutuante.
 
 | Utility | Uso |
 |---|---|

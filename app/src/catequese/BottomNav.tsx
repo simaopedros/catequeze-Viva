@@ -66,7 +66,7 @@ export function BottomNav() {
       }}
     >
       <nav
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-sticky border-t border-border bg-surface-elevated/90 shadow-[0_-1px_3px_rgba(7,26,45,0.05)] backdrop-blur-md supports-[backdrop-filter]:bg-surface-elevated/80"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-sticky border-t border-brand-ink/10 bg-brand-paper/90 shadow-elevation-sticky backdrop-blur-md supports-[backdrop-filter]:bg-brand-paper/80"
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
         aria-label={t("primarySection", { defaultValue: "Primary" })}
       >
@@ -78,8 +78,8 @@ export function BottomNav() {
             // dos vizinhos e o truncate nunca dispara. Em 320px os itens ficavam
             // colados, sem folga.
             gridTemplateColumns: `repeat(${
-              visible.length + 1
-            }, minmax(0, 1fr))`,
+       visible.length + 1
+      }, minmax(0, 1fr))`,
             height: "var(--height-bottom-nav, 3.5rem)",
           }}
         >

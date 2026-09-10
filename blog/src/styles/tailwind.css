@@ -1,3 +1,58 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Papel litúrgico — alinhado à marca da Catequese Viva (Tailwind v3 + Starlight). */
+:root,
+[data-theme="light"] {
+  --cv-ink: #071a2d;
+  --cv-ink-soft: #0a2540;
+  --cv-midnight: #153a63;
+  --cv-gold: #d39a2b;
+  --cv-gold-muted: #8a6418;
+  --cv-light-gold: #f4cf7a;
+  --cv-paper: #fff7e7;
+
+  --sl-font: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --sl-font-system: var(--sl-font);
+  --sl-font-heading: "Cormorant Garamond", Georgia, serif;
+
+  --sl-color-white: #fff7e7;
+  --sl-color-black: #071a2d;
+  --sl-color-accent-low: #fff7e7;
+  --sl-color-accent: #d39a2b;
+  --sl-color-accent-high: #8a6418;
+  --sl-color-text: #071a2d;
+  --sl-color-text-accent: #8a6418;
+  --sl-color-bg: #fff7e7;
+  --sl-color-bg-nav: #fff7e7;
+  --sl-color-bg-sidebar: #fff4dc;
+  --sl-color-bg-inline-code: #f8e8c4;
+  --sl-color-hairline: color-mix(in srgb, #071a2d 12%, transparent);
+  --sl-color-gray-1: #fff7e7;
+  --sl-color-gray-2: #f8efe0;
+  --sl-color-gray-3: #eadfc4;
+  --sl-color-gray-4: #c5b98f;
+  --sl-color-gray-5: #8a7a5c;
+  --sl-color-gray-6: #4a5d6e;
+  --sl-color-gray-7: #071a2d;
+}
+
+html[data-theme="dark"] {
+  --sl-color-accent-low: #153a63;
+  --sl-color-accent: #d39a2b;
+  --sl-color-accent-high: #f4cf7a;
+  --sl-color-text: #e8eef5;
+  --sl-color-text-accent: #f4cf7a;
+  --sl-color-bg: #071a2d;
+  --sl-color-bg-nav: #071a2d;
+  --sl-color-bg-sidebar: #0a2540;
+}
+
+.site-title,
+h1,
+h2,
+h3 {
+  font-family: var(--sl-font-heading);
+  letter-spacing: -0.015em;
+}

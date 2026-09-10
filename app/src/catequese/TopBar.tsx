@@ -230,7 +230,7 @@ export const TopBar = memo(function TopBar() {
 
   return (
     <header
-      className="flex items-center gap-2 sm:gap-3 border-b border-border/70 bg-white px-3 sm:px-4 lg:px-5"
+      className="flex items-center gap-2 sm:gap-3 border-b border-brand-ink/10 bg-brand-paper/90 px-3 sm:px-4 lg:px-5 backdrop-blur supports-[backdrop-filter]:bg-brand-paper/80"
       style={{
         height: "calc(3.5rem + env(safe-area-inset-top, 0px))",
         paddingTop: "env(safe-area-inset-top, 0px)",

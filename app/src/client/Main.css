@@ -109,11 +109,21 @@
   --color-brand-primary: hsl(var(--primary));
   --color-brand-warm: hsl(var(--secondary));
   --color-brand-support: hsl(var(--accent));
-  /* Explicit brand hex aliases (institutional ink + gold) */
+  /* Explicit brand hex aliases (institutional ink + gold + paper) */
   --color-brand-ink: #071A2D;
   --color-brand-ink-soft: #0a2540;
+  --color-brand-midnight: #153A63;
   --color-brand-gold: #D39A2B;
   --color-brand-gold-muted: #8A6418;
+  --color-brand-light-gold: #F4CF7A;
+  --color-brand-paper: #FFF7E7;
+  /* Text on ink panels (auth, admin chrome, hero overlays) */
+  --color-brand-ink-foreground: #E8EEF5;
+  --color-brand-ink-muted: #A8B8C9;
+  --color-brand-ink-faint: #C5D0DC;
+
+  --color-surface-paper: var(--color-brand-paper);
+  --color-ring-gold: var(--color-brand-gold);
 
   /* Mobile chrome & control sizing */
   --height-touch-min: 2.75rem; /* 44px */
@@ -188,9 +198,8 @@
   --text-overline--letter-spacing: 0.05em;
 
   /* ── Radius scale ────────────────────────────────────────────────── */
-  /* Soft modern: o app inteiro usa `rounded-sm` (1223 ocorrências) e nenhum
-     rounded-md/lg/xl — então a suavização propaga por `--radius` abaixo.
-     sm 8px · md 10px · lg 12px. */
+  /* Papel litúrgico: o app inteiro usa `rounded-sm` e a escala deriva de
+     `--radius`. sm 8px · md 10px · lg 12px. */
   --radius-none: 0px;
   --radius-xs: 0.25rem;
   /* --radius-sm, --radius-md, --radius-lg are shadcn-compatible aliases defined below */
@@ -200,20 +209,17 @@
   --radius-full: 9999px;
 
   /* ── Elevation scale ─────────────────────────────────────────────── */
-  /* Sombras tingidas com o ink institucional (7,26,45) em vez de preto puro:
-     em superfícies claras o preto puro suja, o ink lê como profundidade. */
-  /* Alfas calibrados contra o canvas off-white: na primeira passada o degrau
-     baixo (xs/sm/md) usava 0.05–0.08 e sumia — card elevado ficava idêntico a
-     card plano, anulando a hierarquia por elevação. Cada degrau agora combina
-     uma sombra de contato curta com uma de ambiente longa. */
-  --shadow-elevation-xs: 0 1px 2px rgba(7, 26, 45, 0.07);
-  --shadow-elevation-sm: 0 1px 2px rgba(7, 26, 45, 0.06), 0 2px 6px -1px rgba(7, 26, 45, 0.08);
-  --shadow-elevation-md: 0 2px 4px -1px rgba(7, 26, 45, 0.06), 0 8px 16px -4px rgba(7, 26, 45, 0.10);
-  --shadow-elevation-lg: 0 4px 8px -2px rgba(7, 26, 45, 0.06), 0 16px 32px -8px rgba(7, 26, 45, 0.13);
+  /* Papel litúrgico: hairline ink + sombra curta. Menos “card SaaS
+     flutuante”, mais folha sobre mesa. Sombras tingidas de ink, nunca
+     preto puro. */
+  --shadow-elevation-xs: 0 1px 1px rgba(7, 26, 45, 0.05);
+  --shadow-elevation-sm: 0 1px 1px rgba(7, 26, 45, 0.04), 0 1px 3px -1px rgba(7, 26, 45, 0.05);
+  --shadow-elevation-md: 0 2px 3px -1px rgba(7, 26, 45, 0.05), 0 6px 14px -4px rgba(7, 26, 45, 0.08);
+  --shadow-elevation-lg: 0 4px 8px -2px rgba(7, 26, 45, 0.06), 0 16px 32px -8px rgba(7, 26, 45, 0.12);
   --shadow-elevation-xl: 0 8px 16px -4px rgba(7, 26, 45, 0.07), 0 28px 48px -12px rgba(7, 26, 45, 0.16);
-  --shadow-elevation-modal: 0 12px 24px -8px rgba(7, 26, 45, 0.10), 0 40px 72px -16px rgba(7, 26, 45, 0.24);
-  --shadow-elevation-dropdown: 0 4px 8px -2px rgba(7, 26, 45, 0.06), 0 12px 28px -6px rgba(7, 26, 45, 0.14);
-  --shadow-elevation-sticky: 0 1px 3px rgba(7, 26, 45, 0.07);
+  --shadow-elevation-modal: 0 12px 24px -8px rgba(7, 26, 45, 0.10), 0 40px 72px -16px rgba(7, 26, 45, 0.22);
+  --shadow-elevation-dropdown: 0 4px 8px -2px rgba(7, 26, 45, 0.06), 0 12px 28px -6px rgba(7, 26, 45, 0.12);
+  --shadow-elevation-sticky: 0 1px 2px rgba(7, 26, 45, 0.05);
 
   /* Legacy shadow aliases (keep for existing code) */
   --shadow-1: var(--shadow-elevation-sm);
@@ -330,6 +336,48 @@
   animation: content-fade-in var(--motion-duration-normal, 250ms) var(--motion-easing-default, ease-out) both;
 }
 
+/* ── Papel litúrgico ─────────────────────────────────────────────── */
+
+@utility surface-paper {
+  background-color: var(--color-brand-paper);
+}
+
+@utility canvas-public {
+  background-color: var(--color-brand-paper);
+  color: var(--color-brand-ink);
+}
+
+@utility liturgical-halo {
+  background-image:
+    radial-gradient(ellipse 80% 55% at 12% -10%, color-mix(in srgb, var(--color-brand-light-gold) 32%, transparent), transparent 58%),
+    radial-gradient(ellipse 70% 50% at 92% 110%, color-mix(in srgb, var(--color-brand-midnight) 16%, transparent), transparent 52%);
+}
+
+@utility grain-overlay {
+  position: relative;
+  isolation: isolate;
+  &::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 0.18;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+  }
+}
+
+@utility ring-sacred {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-brand-gold) 55%, transparent);
+}
+
+@utility sacred-selected {
+  border-color: color-mix(in srgb, var(--color-brand-gold) 42%, transparent);
+  background-color: color-mix(in srgb, var(--color-brand-gold) 10%, white);
+}
+
 /* ── Content area stabilization ───────────────────────────────────── */
 
 /* Prevent content containers from collapsing during loading/transitions */
@@ -390,33 +438,32 @@
 
 @layer base {
   :root {
-    /* Institutional brand: ink #071A2D · gold #D39A2B */
-    /* Surface — canvas levemente frio, cards em branco puro.
-       A separação canvas/card é o que substitui a borda dura como
-       mecanismo primário de hierarquia. */
-    --background: 210 25% 98%;
+    /* Institutional brand: ink #071A2D · gold #D39A2B · paper #FFF7E7
+       Linguagem: papel litúrgico. Canvas do produto é creme quente (não o
+       paper pleno das landings) para tabelas densas manterem contraste.
+       Cards permanecem branco puro; a hairline ink separa mais que a sombra. */
+    --background: 38 32% 97%;
     --foreground: 210 73% 10%;
     --card: 0 0% 100%;
     --card-foreground: 210 73% 10%;
-    --card-accent: 0 0% 100%;
+    --card-accent: 40 55% 97%;
     --card-accent-foreground: 210 73% 10%;
-    --card-subtle: 210 25% 97.5%;
+    --card-subtle: 38 28% 95.5%;
     --card-subtle-foreground: 210 73% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 210 73% 10%;
-    --muted: 210 22% 96%;
-    /* Contraste elevado de 40% → 38% de luminosidade: passa 4.5:1 sobre o card. */
-    --muted-foreground: 211 14% 38%;
+    --muted: 36 22% 94%;
+    /* 34% de luminosidade: 4.5:1 sobre o canvas creme e sobre o paper #FFF7E7. */
+    --muted-foreground: 215 18% 34%;
 
     /* Brand */
     --primary: 210 73% 10%;
     --primary-foreground: 0 0% 100%;
-    /* Neutral soft surfaces; pure gold remains via explicit #D39A2B */
-    --secondary: 210 22% 96%;
+    --secondary: 36 22% 94%;
     --secondary-foreground: 210 73% 10%;
-    --secondary-muted: 210 18% 91%;
+    --secondary-muted: 36 18% 90%;
     --secondary-muted-foreground: 210 73% 10%;
-    --accent: 210 22% 95%;
+    --accent: 38 28% 93%;
     --accent-foreground: 210 73% 10%;
 
     /* Feedback — luminosidades escolhidas para o texto de contraste passar 4.5:1
@@ -429,12 +476,12 @@
     --warning: 38 92% 50%;
     --warning-foreground: 210 73% 10%;
 
-    /* Borders & inputs — hairline mais suave, já que a elevação divide o trabalho */
-    --border: 213 22% 92%;
-    --input: 213 20% 88%;
+    /* Borders & inputs — hairline ink-warm, papel sobre mesa */
+    --border: 36 18% 86%;
+    --input: 36 16% 82%;
     --ring: 210 73% 10%;
 
-    /* Radius — soft modern: sm 8px · md 10px · lg 12px */
+    /* Radius — papel litúrgico: sm 8px · md 10px · lg 12px */
     --radius: 0.75rem;
 
     /* ── Motion ──────────────────────────────────────────────────────── */

@@ -101,8 +101,8 @@ export function BrandLockup({
     tone === "inverse"
       ? {
           name: "text-white",
-          badge: "border-[#f4cf7a]/30 bg-[#f4cf7a]/14 text-[#fff4dc]",
-          subline: "text-[#f6d08a]",
+          badge: "border-brand-light-gold/30 bg-brand-light-gold/14 text-brand-paper",
+          subline: "text-brand-light-gold",
         }
       : {
           name: "text-brand-ink",

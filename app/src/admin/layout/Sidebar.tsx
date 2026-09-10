@@ -73,15 +73,15 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     cn(
-      "group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-muted-foreground transition-colors duration-200 hover:bg-muted/50 hover:text-[#071A2D]",
-      { "bg-[#071A2D]/8 font-semibold text-[#071A2D]": isActive },
+      "group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-muted-foreground transition-colors duration-200 hover:bg-brand-paper hover:text-brand-ink",
+      { "bg-brand-ink/8 font-semibold text-brand-ink": isActive },
     );
 
   return (
     <aside
       ref={sidebar}
       className={cn(
-        "absolute left-0 top-0 z-9999 flex h-screen w-64 flex-col overflow-y-hidden border-r border-border/70 bg-white duration-300 ease-linear lg:static lg:translate-x-0",
+        "absolute left-0 top-0 z-9999 flex h-screen w-64 flex-col overflow-y-hidden border-r border-brand-ink/10 bg-brand-paper duration-300 ease-linear lg:static lg:translate-x-0",
         { "translate-x-0": sidebarOpen, "-translate-x-full": !sidebarOpen },
       )}
     >
@@ -104,7 +104,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         <nav className="mt-5 px-4 py-4 lg:mt-9 lg:px-6">
           {/* VISÃO GERAL */}
           <div>
-            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <h3 className="mb-4 ml-4 text-overline font-semibold uppercase tracking-[0.18em] text-brand-gold-muted">
               {t("sidebar.overview")}
             </h3>
             <ul className="mb-6 flex flex-col gap-1.5">
@@ -125,7 +125,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
           {/* GOVERNANÇA */}
           <div>
-            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <h3 className="mb-4 ml-4 text-overline font-semibold uppercase tracking-[0.18em] text-brand-gold-muted">
               {t("sidebar.governance")}
             </h3>
             <ul className="mb-6 flex flex-col gap-1.5">
@@ -164,7 +164,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
           {/* OPERAÇÕES */}
           <div>
-            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <h3 className="mb-4 ml-4 text-overline font-semibold uppercase tracking-[0.18em] text-brand-gold-muted">
               {t("sidebar.operations")}
             </h3>
             <ul className="mb-6 flex flex-col gap-1.5">
@@ -205,7 +205,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
           {/* OUTROS */}
           <div>
-            <h3 className="mb-4 ml-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <h3 className="mb-4 ml-4 text-overline font-semibold uppercase tracking-[0.18em] text-brand-gold-muted">
               {t("sidebar.other")}
             </h3>
             <ul className="mb-6 flex flex-col gap-1.5">

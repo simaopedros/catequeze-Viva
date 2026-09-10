@@ -19,8 +19,8 @@ export function ShellBase({
 }: ShellBaseProps) {
   const variantStyles: Record<string, string> = {
     app: "flex h-screen overflow-hidden bg-background",
-    public: "min-h-screen bg-background",
-    auth: "min-h-screen bg-surface-subtle flex flex-col",
+    public: "min-h-screen canvas-public",
+    auth: "min-h-screen canvas-public flex flex-col",
     family: "min-h-screen bg-background flex flex-col",
   };
 
@@ -55,7 +55,7 @@ export function ShellHeader({ children, className }: ShellHeaderProps) {
   return (
     <header
       className={cn(
-        "flex h-14 items-center gap-3 border-b border-border bg-surface-elevated/85 px-4 backdrop-blur-md supports-[backdrop-filter]:bg-surface-elevated/70",
+        "flex h-14 items-center gap-3 border-b border-brand-ink/10 bg-brand-paper/80 px-4 backdrop-blur-md supports-[backdrop-filter]:bg-brand-paper/70",
         className,
       )}
     >

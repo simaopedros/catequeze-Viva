@@ -23,7 +23,7 @@ export default function MySupportPage() {
 
       {isLoading ? (
         <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-ink border-t-transparent" />
         </div>
       ) : messages.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
@@ -50,11 +50,11 @@ export default function MySupportPage() {
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t("support_inbox.your_message")}
               </p>
-              <p className="mt-1 whitespace-pre-wrap text-sm text-[#071A2D]">
+              <p className="mt-1 whitespace-pre-wrap text-sm text-brand-ink">
                 {msg.content}
               </p>
               {msg.replyBody ? (
-                <div className="mt-4 rounded-sm border-l-[3px] border-[#D39A2B] bg-muted/40 px-4 py-3">
+                <div className="mt-4 rounded-sm border-l-[3px] border-brand-gold bg-muted/40 px-4 py-3">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {t("support_inbox.our_reply")}
                   </p>
@@ -63,7 +63,7 @@ export default function MySupportPage() {
                       {formatDateTime(msg.repliedAt, currentLocale)}
                     </p>
                   )}
-                  <p className="mt-2 whitespace-pre-wrap text-sm text-[#071A2D]">
+                  <p className="mt-2 whitespace-pre-wrap text-sm text-brand-ink">
                     {msg.replyBody}
                   </p>
                 </div>

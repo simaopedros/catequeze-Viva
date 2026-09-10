@@ -5,7 +5,7 @@ const LoadingSpinner = () => {
   const { t } = useTranslation("common");
   return (
     <div role="status" className="flex items-center justify-center py-10">
-      <Loader2 className="h-8 w-8 animate-spin text-[#071A2D]" />
+      <Loader2 className="h-8 w-8 animate-spin text-brand-ink" />
       <span className="sr-only">{t("loading")}</span>
     </div>
   );

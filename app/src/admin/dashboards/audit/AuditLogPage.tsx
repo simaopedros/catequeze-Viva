@@ -137,7 +137,7 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-ink border-t-transparent" />
           </div>
         ) : !data?.logs || data.logs.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">
@@ -201,7 +201,7 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
                                   ? "bg-destructive/10 text-destructive"
                                   : log.action === "REJECT"
                                     ? "bg-orange-100 text-orange-800"
-                                    : "bg-[#071A2D]/8 text-[#071A2D]"
+                                    : "bg-brand-ink/8 text-brand-ink"
                               }`}
                             >
                               {log.action}

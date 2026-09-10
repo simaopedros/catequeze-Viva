@@ -111,7 +111,7 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
               <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t("pages.dashboard.growth_title")}
               </h2>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
             <div className="h-[260px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -146,10 +146,10 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
           <div className="rounded-sm border border-border/70 bg-white p-5">
             <div className="mb-3 space-y-1.5">
               <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <AlertTriangle className="h-3.5 w-3.5 text-[#D39A2B]" />
+                <AlertTriangle className="h-3.5 w-3.5 text-brand-gold" />
                 {t("pages.dashboard.alerts_title")}
               </h2>
-              <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
+              <div className="h-px w-8 bg-brand-gold" aria-hidden />
             </div>
             <div className="space-y-2">
               {alerts.map((alert: any, i: number) => (
@@ -157,10 +157,10 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
                   key={`${alert.code}-${i}`}
                   className={`flex items-center gap-2 rounded-sm border border-border/70 px-3 py-2 text-sm ${
                     alert.type === "warning"
-                      ? "bg-muted/40 font-medium tracking-tight text-[#071A2D]"
+                      ? "bg-muted/40 font-medium tracking-tight text-brand-ink"
                       : alert.type === "error"
                         ? "border-destructive/30 bg-destructive/5 text-destructive"
-                        : "bg-muted/30 font-medium tracking-tight text-[#071A2D]"
+                        : "bg-muted/30 font-medium tracking-tight text-brand-ink"
                   }`}
                 >
                   <CircleDot className="h-3 w-3 shrink-0" />

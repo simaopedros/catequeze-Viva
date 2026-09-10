@@ -26,9 +26,9 @@ export function BrowserFrame({
     >
       <div className="flex items-center gap-2 border-b border-border/60 bg-muted/40 px-3 py-2 sm:px-4 sm:py-2.5">
         <div className="flex gap-1.5" aria-hidden>
-          <span className="h-2.5 w-2.5 rounded-full bg-[#D0D0D0]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#D0D0D0]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#D0D0D0]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-brand-ink/15" />
+          <span className="h-2.5 w-2.5 rounded-full bg-brand-ink/15" />
+          <span className="h-2.5 w-2.5 rounded-full bg-brand-ink/15" />
         </div>
         <div className="mx-auto max-w-[220px] flex-1 truncate rounded-sm border border-border/50 bg-white/90 px-3 py-1 text-center text-[11px] text-muted-foreground">
           {url}

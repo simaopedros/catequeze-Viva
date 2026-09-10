@@ -100,11 +100,11 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
   const statusIcon = (status: string | null) => {
     switch (status) {
       case "ACTIVE":
-        return <BadgeCheck className="h-3.5 w-3.5 text-[#071A2D]" />;
+        return <BadgeCheck className="h-3.5 w-3.5 text-brand-ink" />;
       case "TRIAL":
-        return <CircleDot className="h-3.5 w-3.5 text-[#071A2D]" />;
+        return <CircleDot className="h-3.5 w-3.5 text-brand-ink" />;
       case "PAST_DUE":
-        return <AlertTriangle className="h-3.5 w-3.5 text-[#8A6418]" />;
+        return <AlertTriangle className="h-3.5 w-3.5 text-brand-gold-muted" />;
       case "CANCELED":
         return <AlertTriangle className="h-3.5 w-3.5 text-destructive" />;
       default:
@@ -161,7 +161,7 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-ink border-t-transparent" />
           </div>
         ) : loadError && licenses.length === 0 ? (
           <QueryErrorState error={loadError} onRetry={refetch} />
@@ -221,14 +221,14 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
                           {row.kind === "parish" ? (
                             <NavLink
                               to={`/admin/parishes/${row.entityId}`}
-                              className="font-semibold tracking-tight text-[#071A2D] hover:underline"
+                              className="font-semibold tracking-tight text-brand-ink hover:underline"
                             >
                               {row.name}
                             </NavLink>
                           ) : (
                             <NavLink
                               to={`/admin/parishes?dioceseId=${row.entityId}`}
-                              className="font-semibold tracking-tight text-[#071A2D] hover:underline"
+                              className="font-semibold tracking-tight text-brand-ink hover:underline"
                             >
                               {row.name}
                             </NavLink>
@@ -245,7 +245,7 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
                                 row.ownerEmail || row.ownerName || row.ownerId,
                             })}
                           >
-                            <span className="block truncate text-xs font-semibold tracking-tight text-[#071A2D]">
+                            <span className="block truncate text-xs font-semibold tracking-tight text-brand-ink">
                               {row.ownerEmail ||
                                 row.ownerName ||
                                 t("pages.licenses.no_owner")}
@@ -267,7 +267,7 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
                           ? t("pages.licenses.diocese")
                           : row.type || t("pages.licenses.parish")}
                       </td>
-                      <td className="px-4 py-3 text-xs font-semibold tracking-tight text-[#071A2D]">
+                      <td className="px-4 py-3 text-xs font-semibold tracking-tight text-brand-ink">
                         {row.plan || t("pages.licenses.no_plan")}
                       </td>
                       <td className="px-4 py-3">
@@ -364,7 +364,7 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
             <DialogDescription>
               {t("pages.licenses.extend_desc")}
               {target && (
-                <span className="mt-2 block text-[#071A2D]">
+                <span className="mt-2 block text-brand-ink">
                   {target.name} · {ownerLabel(target)}
                 </span>
               )}
@@ -410,7 +410,7 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
             <DialogDescription>
               {t("pages.licenses.complimentary_desc")}
               {target && (
-                <span className="mt-2 block text-[#071A2D]">
+                <span className="mt-2 block text-brand-ink">
                   {target.name} · {ownerLabel(target)}
                 </span>
               )}

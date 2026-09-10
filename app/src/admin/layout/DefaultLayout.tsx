@@ -31,7 +31,7 @@ const DefaultLayout: FC<Props> = ({ children, user }) => {
       <div className="relative flex flex-1 flex-col overflow-y-auto">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} user={user} />
         <main>
-          <div className="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6 2xl:p-10">
+          <div className="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6 2xl:p-10 bg-background">
             {children}
           </div>
         </main>

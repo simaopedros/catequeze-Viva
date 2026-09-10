@@ -710,7 +710,7 @@ export default function AttendancePage() {
                         "PRESENT",
                       )
                     }
-                    className="rounded-sm border border-brand-ink/25 bg-brand-ink/8 px-1.5 py-0.5 text-brand-ink hover:bg-brand-ink/12 dark:border-brand-ink/30 dark:bg-brand-ink/10 dark:text-brand-ink"
+                    className="rounded-sm border border-brand-ink/25 bg-brand-ink/8 px-1.5 py-0.5 text-brand-ink hover:bg-brand-ink/12"
                     title={t("matrix.mark_all_present")}
                   >
                     ✓{t("matrix.present_letter")}
@@ -817,7 +817,7 @@ export default function AttendancePage() {
                     </td>
                     {meetings.map((m: any) => (
                       <td key={m.id} className="p-2 text-center text-overline">
-                        <span className="text-brand-ink dark:text-brand-ink">
+                        <span className="text-brand-ink">
                           {stats[m.id]?.presentes || 0}
                           {t("matrix.present_letter")}
                         </span>{" "}
@@ -825,7 +825,7 @@ export default function AttendancePage() {
                           {stats[m.id]?.faltas || 0}
                           {t("matrix.absent_letter")}
                         </span>{" "}
-                        <span className="text-muted-foreground dark:text-muted-foreground">
+                        <span className="text-muted-foreground">
                           {stats[m.id]?.abonados || 0}
                           {t("matrix.justified_letter")}
                         </span>

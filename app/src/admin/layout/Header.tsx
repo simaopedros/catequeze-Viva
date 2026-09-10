@@ -13,7 +13,7 @@ const Header = (props: {
 }) => {
   const { t } = useTranslation("admin");
   return (
-    <header className="sticky top-0 z-10 flex w-full border-b border-border/70 bg-white">
+    <header className="sticky top-0 z-10 flex w-full border-b border-brand-ink/10 bg-brand-paper/90 backdrop-blur supports-[backdrop-filter]:bg-brand-paper/80">
       <div className="flex grow items-center justify-between px-4 py-3 sm:gap-5">
         <div className="flex items-center gap-3">
           <button
@@ -28,7 +28,7 @@ const Header = (props: {
               <span className="du-block absolute right-0 h-full w-full">
                 <span
                   className={cn(
-                    "relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-[#071A2D] delay-0 duration-200 ease-in-out",
+                    "relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-brand-ink delay-0 duration-200 ease-in-out",
                     {
                       "w-full! delay-300": !props.sidebarOpen,
                     },
@@ -36,7 +36,7 @@ const Header = (props: {
                 ></span>
                 <span
                   className={cn(
-                    "bg-[#071A2D] relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm delay-150 duration-200 ease-in-out",
+                    "bg-brand-ink relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm delay-150 duration-200 ease-in-out",
                     {
                       "delay-400 w-full!": !props.sidebarOpen,
                     },
@@ -44,7 +44,7 @@ const Header = (props: {
                 ></span>
                 <span
                   className={cn(
-                    "bg-[#071A2D] relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm delay-200 duration-200 ease-in-out",
+                    "bg-brand-ink relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm delay-200 duration-200 ease-in-out",
                     {
                       "w-full! delay-500": !props.sidebarOpen,
                     },
@@ -54,7 +54,7 @@ const Header = (props: {
               <span className="absolute right-0 h-full w-full rotate-45">
                 <span
                   className={cn(
-                    "bg-[#071A2D] absolute left-2.5 top-0 block h-full w-0.5 rounded-sm delay-300 duration-200 ease-in-out",
+                    "bg-brand-ink absolute left-2.5 top-0 block h-full w-0.5 rounded-sm delay-300 duration-200 ease-in-out",
                     {
                       "h-0! delay-0!": !props.sidebarOpen,
                     },
@@ -62,7 +62,7 @@ const Header = (props: {
                 ></span>
                 <span
                   className={cn(
-                    "delay-400 bg-[#071A2D] absolute left-0 top-2.5 block h-0.5 w-full rounded-sm duration-200 ease-in-out",
+                    "delay-400 bg-brand-ink absolute left-0 top-2.5 block h-0.5 w-full rounded-sm duration-200 ease-in-out",
                     {
                       "h-0! delay-200!": !props.sidebarOpen,
                     },

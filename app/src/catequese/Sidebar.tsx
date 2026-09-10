@@ -275,11 +275,11 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "flex h-full flex-col border-r border-border bg-surface-elevated transition-all duration-200",
+        "flex h-full flex-col border-r border-brand-ink/10 bg-brand-paper transition-all duration-200",
         collapsed ? "w-16" : "w-60",
       )}
     >
-      <div className="flex h-14 items-center border-b border-border px-3">
+      <div className="flex h-14 items-center border-b border-brand-ink/10 px-3">
         {!collapsed && <BrandLockup compact hideBadge className="max-w-full" />}
         {collapsed && <BrandMark className="mx-auto h-8 w-8" />}
       </div>

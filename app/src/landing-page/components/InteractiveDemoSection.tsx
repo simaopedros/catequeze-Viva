@@ -82,12 +82,12 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
   const doneNote = String(tr("demo.done_note") || "").trim();
 
   return (
-    <section id="demo" className="scroll-mt-20 bg-sky-50/80">
+    <section id="demo" className="scroll-mt-20">
       <div className="mx-auto max-w-[70rem] px-5 py-16 sm:py-20">
         <div
           ref={ref}
           className={cn(
-            "grid items-center gap-10 rounded-2xl border border-border/70 bg-white p-6 sm:p-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12 lg:p-12",
+            "grid items-center gap-10 rounded-2xl border border-brand-ink/10 bg-card p-6 sm:p-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12 lg:p-12",
             className,
           )}
         >
@@ -119,8 +119,8 @@ export function InteractiveDemoSection({ ns = "landing" }: { ns?: string }) {
                     className={cn(
                       "rounded-md border px-3 py-1.5 text-sm font-medium transition-colors",
                       selectedId === topic.id
-                        ? "border-brand-ink bg-brand-ink text-white"
-                        : "border-border bg-card text-muted-foreground hover:border-brand-ink/40 hover:text-brand-ink",
+                        ? "sacred-selected border-brand-gold/40 text-brand-ink"
+                        : "border-brand-ink/15 bg-card text-muted-foreground hover:border-brand-ink/40 hover:text-brand-ink",
                     )}
                   >
                     {topic.label}

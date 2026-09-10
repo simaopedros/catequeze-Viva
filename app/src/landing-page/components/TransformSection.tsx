@@ -15,7 +15,7 @@ export function TransformSection({ ns = "landing" }: { ns?: string }) {
   if (list.length === 0) return null;
 
   return (
-    <section className="border-y border-border/50 bg-muted/20">
+    <section className="border-y border-brand-ink/10 bg-white/40">
       <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
         <div className="max-w-xl space-y-3">
           {eyebrow ? (

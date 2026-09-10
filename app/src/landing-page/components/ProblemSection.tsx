@@ -18,7 +18,7 @@ export function ProblemSection({ ns = "landing" }: { ns?: string }) {
   return (
     <section
       id="recursos"
-      className="scroll-mt-20 border-y border-border/70 bg-muted/40"
+      className="scroll-mt-20 border-y border-brand-ink/10 bg-brand-paper/60"
     >
       <div className="mx-auto max-w-[70rem] px-5 py-16 sm:py-20">
         <div className="mx-auto mb-12 max-w-xl text-center">
