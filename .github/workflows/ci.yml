@@ -1,5 +1,9 @@
 name: CI
 
+# Self-hosted na VPS homolog — não gasta minutos ubuntu-latest.
+# Instalar: app/deploy/scripts/install-github-runner.sh
+# Sem runner online, estes jobs ficam em fila (não falham por billing).
+# Override: variável de repositório CI_RUNS_ON=ubuntu-latest
 on:
   push:
     branches: [main, master]
@@ -8,7 +12,7 @@ on:
 jobs:
   unit-tests:
     name: Unit + i18n
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.CI_RUNS_ON || 'self-hosted' }}
     defaults:
       run:
         working-directory: app
@@ -37,7 +41,7 @@ jobs:
 
   integration-tests:
     name: Integration tests
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.CI_RUNS_ON || 'self-hosted' }}
     needs: [compile]
     services:
       postgres:
@@ -47,7 +51,8 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: catequese_test
         ports:
-          - 5432:5432
+          # 5433 no host: a VPS de homolog já usa 5432 para o Postgres da app.
+          - 5433:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -73,12 +78,12 @@ jobs:
 
       - name: Run DB migrations
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/catequese_test
+          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5433/catequese_test
         run: wasp db migrate-dev
 
       - name: Seed test data
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/catequese_test
+          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5433/catequese_test
           NODE_ENV: development
           SKIP_EMAIL_VERIFICATION_IN_DEV: "true"
           WASP_SERVER_URL: http://localhost:3001
@@ -111,7 +116,7 @@ jobs:
 
       - name: Run integration tests
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/catequese_test
+          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5433/catequese_test
           NODE_ENV: development
           SKIP_EMAIL_VERIFICATION_IN_DEV: "true"
           WASP_SERVER_URL: http://localhost:3001
@@ -144,12 +149,18 @@ jobs:
 
   compile:
     name: Wasp compile
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.CI_RUNS_ON || 'self-hosted' }}
     defaults:
       run:
         working-directory: app
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
 
       - name: Install Wasp CLI
         run: npm install -g @wasp.sh/wasp-cli@0.22.0 @wasp.sh/wasp-cli-linux-x64-glibc@0.22.0
