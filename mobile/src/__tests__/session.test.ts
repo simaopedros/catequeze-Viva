@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+import { createFallbackStorage, createSecureStorage } from '../auth/secureStorage';
 import { createMemoryStorage, createSessionStore, SESSION_KEY, WORKSPACE_KEY } from '../auth/session';
 
 describe('session store', () => {
@@ -18,5 +20,13 @@ describe('session store', () => {
     expect(await store.getWorkspaceId()).toBe('parish-2');
     await store.clearWorkspace();
     expect(await store.getSessionId()).toBe('s1');
+  });
+
+  it('creates a working storage without crashing when SecureStore is unavailable', async () => {
+    const storage = Platform.OS === 'web' ? createFallbackStorage() : await createSecureStorage();
+    await storage.setItem(SESSION_KEY, 'web-session');
+    expect(await storage.getItem(SESSION_KEY)).toBe('web-session');
+    await storage.removeItem(SESSION_KEY);
+    expect(await storage.getItem(SESSION_KEY)).toBeNull();
   });
 });
