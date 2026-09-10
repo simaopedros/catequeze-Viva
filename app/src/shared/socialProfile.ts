@@ -78,8 +78,11 @@ export function profilePath(handle: string): string {
 }
 
 /** In-app stays in the app shell; public feed uses the public Comunidade route. */
-export function communityProfilePath(handle: string, pathname?: string): string {
-  const normalized = normalizeHandle(handle);
+export function communityProfilePath(
+  handle: string | null | undefined,
+  pathname?: string,
+): string {
+  const normalized = normalizeHandle(handle || "");
   if (pathname?.startsWith("/app/")) {
     return `/app/comunidade/u/${normalized}`;
   }

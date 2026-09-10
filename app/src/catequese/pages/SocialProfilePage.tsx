@@ -116,7 +116,9 @@ export default function SocialProfilePage() {
               size="sm"
               className="gap-1"
               onClick={async () => {
-                const url = `${window.location.origin}${profilePath(data.profile.socialHandle)}`;
+                const handle = data.profile.socialHandle;
+                if (!handle) return;
+                const url = `${window.location.origin}${profilePath(handle)}`;
                 await navigator.clipboard.writeText(url);
                 toast({ title: t("profile.linkCopied") });
               }}
