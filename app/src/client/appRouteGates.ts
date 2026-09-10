@@ -4,6 +4,26 @@
  * still loading (or failed after a deploy).
  */
 
+import { isSocialAppPath } from "../shared/socialFeatures";
+
+/** Reading and publishing-adjacent surfaces that stay open on the free plan. */
+const UNGATED_APP_PREFIXES = [
+  "/app/billing",
+  "/app/onboarding",
+  "/app/select-workspace",
+  "/app/bible",
+  "/app/catechism",
+  "/app/directory",
+] as const;
+
+export function isUngatedAppPath(pathname: string): boolean {
+  if (pathname === "/account" || pathname.startsWith("/account/")) return true;
+  if (isSocialAppPath(pathname)) return true;
+  return UNGATED_APP_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
 const PUBLIC_PATH_PREFIXES = [
   "/ia",
   "/presenca",
