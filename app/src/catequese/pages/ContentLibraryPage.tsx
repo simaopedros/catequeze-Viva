@@ -703,6 +703,7 @@ export default function ContentLibraryPage() {
                     size="icon"
                     variant="ghost"
                     className="h-8 w-8"
+                    label={t("library.share_community")}
                   />
                 </span>
               </div>
