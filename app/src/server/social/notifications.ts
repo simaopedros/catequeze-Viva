@@ -3,6 +3,7 @@
  * SYSTEM type so the feed does not need its own inbox.
  */
 import { logger } from '../logger';
+import { communityFeedPath, communityPostPath } from '../../shared/socialProfile';
 
 type SocialEvent = 'REACTION' | 'COMMENT' | 'FOLLOW';
 
@@ -39,7 +40,9 @@ export async function notifySocialActivity(
         body: params.excerpt
           ? `${params.actorName}: ${params.excerpt.slice(0, 140)}`
           : params.actorName,
-        link: params.postSlug ? `/comunidade/p/${params.postSlug}` : '/comunidade',
+        link: params.postSlug
+          ? communityPostPath(params.postSlug, '/app')
+          : communityFeedPath('/app'),
         entityType: 'SocialPost',
         entityId: params.postId ?? null,
       },

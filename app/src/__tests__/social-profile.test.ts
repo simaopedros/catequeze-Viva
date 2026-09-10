@@ -8,6 +8,7 @@ import {
   communityProfilePath,
   communityTopicPath,
   profilePath,
+  toAppCommunityPath,
   sanitizeBio,
   validateHandle,
 } from '../shared/socialProfile';
@@ -63,6 +64,18 @@ describe('social handle', () => {
     expect(communityPostPath('paz-e-bem', '/comunidade')).toBe(
       '/comunidade/p/paz-e-bem',
     );
+  });
+
+  it('rewrites stored public Comunidade links into the app shell', () => {
+    expect(toAppCommunityPath('/comunidade')).toBe('/app/comunidade');
+    expect(toAppCommunityPath('/comunidade/p/paz-e-bem')).toBe(
+      '/app/comunidade/p/paz-e-bem',
+    );
+    expect(toAppCommunityPath('/comunidade/t/liturgia?tab=1')).toBe(
+      '/app/comunidade/t/liturgia?tab=1',
+    );
+    expect(toAppCommunityPath('/app/classes')).toBe('/app/classes');
+    expect(toAppCommunityPath('/settings')).toBe('/settings');
   });
 });
 
