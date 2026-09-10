@@ -40,5 +40,7 @@ describe('PostCard', () => {
     expect(onOpenAuthor).toHaveBeenCalledWith('ana');
     fireEvent.press(view.getByTestId('post-p1'));
     expect(onOpenPost).toHaveBeenCalledWith('paz');
+    fireEvent.press(view.getByTestId('open-post-p1'));
+    expect(onOpenPost).toHaveBeenCalledTimes(2);
   });
 });

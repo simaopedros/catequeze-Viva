@@ -73,9 +73,17 @@ export function PostCard({
           excerpt={post.share.excerpt}
         />
       ) : null}
-      <Text style={styles.meta}>
-        {post.reactionCount ?? 0} reações · {post.commentCount ?? 0} comentários
-      </Text>
+      <Pressable
+        accessibilityRole="button"
+        testID={`open-post-${post.id}`}
+        onPress={() => post.slug && onOpenPost?.(post.slug)}
+        disabled={!onOpenPost}
+      >
+        <Text style={styles.meta}>
+          {post.reactionCount ?? 0} reações · {post.commentCount ?? 0} comentários
+        </Text>
+        {onOpenPost ? <Text style={styles.open}>Abrir publicação</Text> : null}
+      </Pressable>
     </Card>
   );
 }
@@ -86,6 +94,7 @@ const styles = StyleSheet.create({
   body: { color: colors.inkSoft, fontSize: 16, lineHeight: 23 },
   more: { color: colors.goldDark, fontWeight: '700', marginTop: 8 },
   meta: { color: colors.muted, marginTop: spacing.sm, fontSize: 13 },
+  open: { color: colors.goldDark, fontWeight: '700', marginTop: 8 },
   share: {
     marginTop: spacing.sm,
     padding: spacing.sm,
