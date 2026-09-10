@@ -13,6 +13,9 @@ describe('Plan Limits Configuration (simplified plans)', () => {
     expect(limits.maxCatechumens).toBe(0);
     expect(limits.maxParishes).toBe(0);
     expect(limits.maxCatechists).toBe(0);
+    expect(limits.maxGroups).toBe(0);
+    expect(limits.canCreateGroups).toBe(false);
+    expect(limits.canAccessCatechesis).toBe(false);
   });
 
   it('SINGLE has capped limits (3 classes, 150 catechumens total, 1 parish)', () => {
@@ -21,6 +24,9 @@ describe('Plan Limits Configuration (simplified plans)', () => {
     expect(limits.maxCatechumens).toBe(150);
     expect(limits.maxParishes).toBe(1);
     expect(limits.maxCatechists).toBe(1);
+    expect(limits.maxGroups).toBe(3);
+    expect(limits.canCreateGroups).toBe(true);
+    expect(limits.canAccessCatechesis).toBe(true);
   });
 
   it('UNLIMITED has null (unlimited) limits', () => {
@@ -29,6 +35,9 @@ describe('Plan Limits Configuration (simplified plans)', () => {
     expect(limits.maxCatechumens).toBeNull();
     expect(limits.maxCatechists).toBeNull();
     expect(limits.maxParishes).toBeNull();
+    expect(limits.maxGroups).toBeNull();
+    expect(limits.canCreateGroups).toBe(true);
+    expect(limits.canAccessCatechesis).toBe(true);
   });
 
   it('legacy aliases resolve to their canonical plan limits', () => {

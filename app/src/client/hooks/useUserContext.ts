@@ -24,6 +24,8 @@ interface UseUserContextReturn {
   needsOnboarding: boolean;
   hasPendingInvitations: boolean;
   personalWorkspaceId: string | null;
+  memberOnboardedAt: string | null;
+  platformIntent: string | null;
   memberships: MembershipInfo[];
   allMemberships: MembershipInfo[];
   userRole: string;
@@ -48,6 +50,7 @@ const ROLE_PRIORITY = [
   "PASTORAL_VIEWER",
   "GUARDIAN",
   "CATECHUMEN",
+  "PLATFORM_MEMBER",
 ];
 
 function pickBestMembership(
@@ -127,11 +130,17 @@ export function useUserContext(): UseUserContextReturn {
     needsOnboarding: ctx.needsOnboarding ?? false,
     hasPendingInvitations: ctx.hasPendingInvitations ?? false,
     personalWorkspaceId: ctx.personalWorkspaceId ?? null,
+    memberOnboardedAt: ctx.memberOnboardedAt ?? null,
+    platformIntent: ctx.platformIntent ?? null,
     memberships: workspaceMemberships,
     allMemberships,
     userRole:
       effectiveMembership?.role ??
-      (isPersonalActive ? "PERSONAL_OWNER" : ""),
+      (isPersonalActive
+        ? "PERSONAL_OWNER"
+        : ctx.memberOnboardedAt || ctx.platformIntent
+          ? "PLATFORM_MEMBER"
+          : ""),
     parishId:
       effectiveMembership?.parishId ??
       (isPersonalActive ? ctx.personalWorkspaceId : ""),

@@ -226,6 +226,13 @@
       "cta": "Unlock full team",
       "checklist": "Bring in more catechists without moving classes, messages, or history elsewhere.",
       "toast_description": "Your catechesis now depends on more people. Unlock the full team in the same workspace."
+    },
+    "group_limit": {
+      "title": "Your next group needs more room",
+      "description": "You used {{currentCount}} of {{maxAllowed}} groups on {{currentPlanName}}. Upgrade to {{plan}} and keep organizing ministries in the same place.",
+      "cta": "Unlock more groups",
+      "checklist": "You open the next group without splitting notices, members, or pastoral work.",
+      "toast_description": "You reached the pastoral group limit. Unlock more capacity without interrupting the ministry."
     }
   },
   "switch_annual_title": "Save by switching to the annual plan",

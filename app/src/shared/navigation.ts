@@ -30,6 +30,8 @@ export type WorkspaceNavContext = {
   isAdmin: boolean;
   /** PERSONAL | PARISH | DIOCESE | COMMUNITY — UX filter only, not AuthZ */
   workspaceType?: string | null;
+  /** When false, hide Catequese Viva destinations (turmas, famílias, …). */
+  canAccessCatechesis?: boolean;
 };
 
 export type VisibleNavGroup = {
@@ -70,6 +72,7 @@ const ALL_ROLES = [
   "CONTENT_REVIEWER",
   "PASTORAL_VIEWER",
   "PERSONAL_OWNER",
+  "PLATFORM_MEMBER",
 ];
 
 const STAFF_ROLES = [
@@ -90,7 +93,7 @@ const VIEWER_ROLES = [
   "PASTORAL_VIEWER",
   "CONTENT_REVIEWER",
 ];
-const LEARNER_ROLES = [...VIEWER_ROLES, "GUARDIAN", "CATECHUMEN"];
+const LEARNER_ROLES = [...VIEWER_ROLES, "GUARDIAN", "CATECHUMEN", "PLATFORM_MEMBER"];
 
 const COORDINATOR_ROLES = new Set([
   "SUPER_ADMIN",
@@ -120,6 +123,28 @@ export const PERSONAL_HIDDEN_ICON_KEYS = new Set([
   "formation",
 ]);
 
+/** Catequese Viva module — hidden when the plan cannot access catechesis. */
+export const CATECHESIS_ICON_KEYS = new Set([
+  "classes",
+  "catechumens",
+  "families",
+  "team",
+  "family_portal_invites",
+  "content_library",
+  "official_library",
+  "sacraments",
+  "journey_templates",
+  "documents",
+  "parishes",
+  "communities",
+  "reports",
+  "catechetical_years",
+  "formation",
+  "announcements",
+  "ai_hub",
+  "activities",
+]);
+
 function item(
   partial: Omit<NavItemConfig, "groupId"> & { groupId: NavGroupId },
 ): NavItemConfig {
@@ -139,6 +164,13 @@ export const NAV_GROUPS: NavGroupConfig[] = [
         labelKey: "dashboard",
         iconKey: "dashboard",
         roles: LEARNER_ROLES,
+        groupId: "operation",
+      }),
+      item({
+        to: "/app/grupos",
+        labelKey: "groups",
+        iconKey: "groups",
+        roles: ALL_ROLES,
         groupId: "operation",
       }),
       // Comunidade / Rhema sits with daily pastoral work — not buried in Content.
@@ -353,7 +385,7 @@ export const NAV_GROUPS: NavGroupConfig[] = [
         to: "/app/billing",
         labelKey: "billing",
         iconKey: "billing",
-        roles: STAFF_ROLES,
+        roles: [...STAFF_ROLES, "PLATFORM_MEMBER"],
         groupId: "settings",
       }),
       item({
@@ -430,6 +462,9 @@ export function getBottomNavKeysForRole(
   if (role === "CATECHUMEN") {
     return ["dashboard", "community", "calendar", "messages"];
   }
+  if (role === "PLATFORM_MEMBER") {
+    return ["dashboard", "groups", "bible", "calendar"];
+  }
   if (role === "PASTORAL_VIEWER" || role === "CONTENT_REVIEWER") {
     return ["dashboard", "community", "classes", "calendar"];
   }
@@ -474,6 +509,14 @@ export function filterLaunchHidden(items: NavItemConfig[]): NavItemConfig[] {
   );
 }
 
+export function filterByCatechesisAccess(
+  items: NavItemConfig[],
+  canAccessCatechesis?: boolean,
+): NavItemConfig[] {
+  if (canAccessCatechesis !== false) return items;
+  return items.filter((i) => !CATECHESIS_ICON_KEYS.has(i.iconKey));
+}
+
 /**
  * Single source of truth for sidebar, bottom bar, and More sheet visibility.
  */
@@ -482,9 +525,12 @@ export function getVisibleNavigation(
 ): VisibleNavigation {
   const apply = (items: NavItemConfig[]) =>
     filterLaunchHidden(
-      filterByWorkspace(
-        filterByRole(items, ctx.role, ctx.isAdmin),
-        ctx.workspaceType,
+      filterByCatechesisAccess(
+        filterByWorkspace(
+          filterByRole(items, ctx.role, ctx.isAdmin),
+          ctx.workspaceType,
+        ),
+        ctx.canAccessCatechesis,
       ),
     );
 

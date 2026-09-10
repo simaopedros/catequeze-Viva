@@ -13,6 +13,7 @@ export const BILLING_MANAGER_ROLES = [
   "PARISH_COORDINATOR",
   "COMMUNITY_COORDINATOR",
   "PERSONAL_OWNER",
+  "PLATFORM_MEMBER",
 ] as const;
 
 /** Staff who collaborate under someone else's plan. */

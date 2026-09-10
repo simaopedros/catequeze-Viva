@@ -6,6 +6,7 @@ export type UpgradeJourneyReason =
   | "catechumen_limit"
   | "parish_limit"
   | "catechist_limit"
+  | "group_limit"
   | "required"
   | "generic";
 
@@ -40,6 +41,7 @@ const REASONS: UpgradeJourneyReason[] = [
   "catechumen_limit",
   "parish_limit",
   "catechist_limit",
+  "group_limit",
   "required",
   "generic",
 ];
@@ -58,6 +60,7 @@ export function inferUpgradeJourneyReasonFromMessage(
 ): UpgradeJourneyReason {
   const normalized = message.toLowerCase();
 
+  if (normalized.includes("grupo")) return "group_limit";
   if (normalized.includes("catequizand")) return "catechumen_limit";
   if (normalized.includes("turma")) return "class_limit";
   if (normalized.includes("paróquia") || normalized.includes("paroquia"))

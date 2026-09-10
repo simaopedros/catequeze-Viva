@@ -226,6 +226,13 @@
       "cta": "Liberar equipe completa",
       "checklist": "Você integra mais catequistas sem tirar turmas, mensagens e histórico do lugar.",
       "toast_description": "Sua catequese já depende de mais gente. Libere a equipe completa no mesmo espaço."
+    },
+    "group_limit": {
+      "title": "Seu próximo grupo precisa de espaço",
+      "description": "Você usou {{currentCount}} de {{maxAllowed}} grupos do {{currentPlanName}}. Faça upgrade para o {{plan}} e continue organizando ministérios no mesmo lugar.",
+      "cta": "Liberar mais grupos",
+      "checklist": "Você cria o próximo grupo sem espalhar avisos, membros e avisos pastorais.",
+      "toast_description": "Você chegou ao limite de grupos pastorais. Libere mais capacidade sem interromper o ministério."
     }
   },
   "switch_annual_title": "Economize trocando para o plano anual",

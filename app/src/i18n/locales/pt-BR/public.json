@@ -36,8 +36,8 @@
     "aria": "Abrir conversa no WhatsApp de vendas"
   },
   "pricing": {
-    "title": "Três caminhos: catequista, paróquia e diocese",
-    "subtitle": "Catequista R$ 9,90/mês (ou R$ 99/ano). Paróquia a partir de R$ 99/mês. Diocese sob consulta. 7 dias grátis; o cartão é pedido agora e a cobrança só começa depois do trial.",
+    "title": "Membro grátis. Quem organiza, assina.",
+    "subtitle": "Conta de membro é gratuita. Organizar grupos ou catequese: Catequista R$ 9,90/mês (ou R$ 99/ano). Paróquia a partir de R$ 99/mês. Diocese sob consulta. 7 dias grátis para quem assina; o cartão é pedido agora e a cobrança só começa depois do trial.",
     "payment_card": "Cartão",
     "annual_savings": "Economize 17% no anual",
     "monthly_tab": "Mensal",
@@ -49,8 +49,8 @@
     "cta_paid": "Começar os 7 dias",
     "most_popular": "Feito para o catequista",
     "plan_desc": {
-      "single": "Para você cuidar da sua turma — chamada, histórico e calendário no mesmo lugar, com mais tempo para as pessoas. Cobre até 3 turmas, se você acompanhar mais de uma.",
-      "unlimited": "Para a paróquia: turmas, catequizandos e equipe ilimitados no espaço institucional."
+      "single": "Para organizar grupos pastorais e, se quiser, até 3 turmas de catequese — chamada, histórico e calendário no mesmo lugar.",
+      "unlimited": "Para a paróquia: grupos, turmas, catequizandos e equipe ilimitados no espaço institucional."
     },
     "diocese_name": "Plano Diocese",
     "diocese_audience": "Para a diocese — venda assistida",
@@ -65,11 +65,11 @@
     "faq": [
       {
         "q": "Como conheço a plataforma antes de assinar?",
-        "a": "Você testa por 7 dias. O cartão é pedido agora; a cobrança só começa depois do trial. Use na sua turma de verdade e cancele se não fizer sentido continuar."
+        "a": "Você pode criar uma conta de membro grátis, entrar em grupos e ler Bíblia e Catecismo. Para criar grupos ou usar a Catequese Viva, teste 7 dias. O cartão é pedido agora; a cobrança só começa depois do trial."
       },
       {
         "q": "Qual é o preço?",
-        "a": "O Plano Catequista custa R$ 9,90/mês (ou R$ 99/ano) e cobre até 3 turmas e 150 catequizandos no total — mais do que suficiente para a sua realidade."
+        "a": "Participar é grátis. O Plano Catequista custa R$ 9,90/mês (ou R$ 99/ano) e cobre até 3 grupos pastorais, 3 turmas e 150 catequizandos — mais do que suficiente para a sua realidade."
       },
       {
         "q": "Como funciona o pagamento?",
@@ -81,7 +81,7 @@
       },
       {
         "q": "E se a minha catequese crescer?",
-        "a": "O Plano Catequista cobre até 3 turmas e 150 catequizandos. Se precisar de equipe e mais turmas, organize como paróquia (Plano Paróquia). Se a diocese assume, fale com vendas — a licença diocesana cobre as paróquias. Seus dados e o histórico da turma são preservados."
+        "a": "O Plano Catequista cobre até 3 grupos, 3 turmas e 150 catequizandos. Se precisar de equipe e mais turmas, organize como paróquia (Plano Paróquia). Se a diocese assume, fale com vendas — a licença diocesana cobre as paróquias. Seus dados e o histórico são preservados."
       },
       {
         "q": "Os dados ficam seguros?",

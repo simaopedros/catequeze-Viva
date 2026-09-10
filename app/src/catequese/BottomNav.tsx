@@ -10,10 +10,13 @@ import {
   GraduationCap,
   BarChart3,
   Sparkles,
+  UsersRound,
+  BookMarked,
 } from "lucide-react";
 import { cn } from "../client/utils";
 import { useUserContext } from "../client/hooks/useUserContext";
 import { useActiveWorkspace } from "../client/hooks/useActiveWorkspace";
+import { planCanAccessCatechesis } from "../shared/pricing";
 import { useUnreadNotificationCount } from "../client/hooks/useUnreadNotificationCount";
 import { getVisibleNavigation } from "../shared/navigation";
 import { BottomSheetNav } from "./components/BottomSheetNav";
@@ -22,18 +25,20 @@ import { trackMobileEvent } from "../client/analytics/marketingAnalytics";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   dashboard: LayoutDashboard,
+  groups: UsersRound,
   community: Sparkles,
   classes: Users,
   calendar: Calendar,
   messages: MessageSquareText,
   catechumens: GraduationCap,
   reports: BarChart3,
+  bible: BookMarked,
 };
 
 export function BottomNav() {
   const { t } = useTranslation("navigation");
   const { userRole, isAdmin } = useUserContext();
-  const { workspaceType } = useActiveWorkspace();
+  const { workspaceType, workspacePlan } = useActiveWorkspace();
   const [sheetOpen, setSheetOpen] = useState(false);
   const unreadCount = useUnreadNotificationCount();
 
@@ -41,6 +46,7 @@ export function BottomNav() {
     role: userRole,
     isAdmin,
     workspaceType,
+    canAccessCatechesis: planCanAccessCatechesis(workspacePlan),
   });
 
   const visible = bottomBar

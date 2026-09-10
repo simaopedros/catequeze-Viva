@@ -199,7 +199,8 @@
     "CATECHUMEN": "Catechumen",
     "CONTENT_REVIEWER": "Reviewer",
     "PASTORAL_VIEWER": "Visitor",
-    "PERSONAL_OWNER": "Owner"
+    "PERSONAL_OWNER": "Owner",
+    "PLATFORM_MEMBER": "Member"
   },
   "roles_desc": {
     "PARISH_COORDINATOR": "Coordinates catechesis in this space: team, classes, invites, and settings.",

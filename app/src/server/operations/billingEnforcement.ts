@@ -842,3 +842,60 @@ export async function assertCanEnrollCatechumen(
     throw capacity.limitError();
   }
 }
+
+// ─── Pastoral groups ─────────────────────────────────────────────────────────
+
+export async function assertCanCreateGroup(
+  context: any,
+  workspaceId: string,
+): Promise<void> {
+  if (!context.user) throw new HttpError(401);
+  const parish = await context.entities.Parish.findUnique({
+    where: { id: workspaceId },
+    select: { type: true },
+  });
+  if (!parish) throw new HttpError(404, 'Espaço não encontrado.');
+
+  if (parish.type === 'PERSONAL') {
+    const freshUser = await ensureProductTrial(context, context.user.id);
+    const plan = getPersonalPlanId(freshUser);
+    const limits = await catalogLimits(context, plan);
+    if (!limits.canCreateGroups) {
+      throw new HttpError(
+        403,
+        'LIMIT: Assine para criar e organizar grupos pastorais.',
+      );
+    }
+    if (limits.maxGroups === null) return;
+    const current = await context.entities.PastoralGroup.count({
+      where: { workspaceId, active: true },
+    });
+    if (current >= limits.maxGroups) {
+      throw new HttpError(
+        403,
+        buildLimitMessage('group_limit', plan, current, limits.maxGroups),
+      );
+    }
+    return;
+  }
+
+  const billing = await resolveEffectiveBilling(context, workspaceId);
+  const effectivePlan = getEffectiveBillingPlan(billing);
+  const planLimits = await catalogLimits(context, effectivePlan);
+  if (!planLimits.canCreateGroups) {
+    throw new HttpError(
+      403,
+      'LIMIT: Assine o Plano Paróquia para criar grupos pastorais.',
+    );
+  }
+  if (planLimits.maxGroups === null) return;
+  const current = await context.entities.PastoralGroup.count({
+    where: { workspaceId, active: true },
+  });
+  if (current >= planLimits.maxGroups) {
+    throw new HttpError(
+      403,
+      buildLimitMessage('group_limit', effectivePlan, current, planLimits.maxGroups),
+    );
+  }
+}

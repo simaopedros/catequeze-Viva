@@ -16,6 +16,7 @@ export function useRoleLabels() {
       CONTENT_REVIEWER: t('roles.CONTENT_REVIEWER'),
       PASTORAL_VIEWER: t('roles.PASTORAL_VIEWER'),
       PERSONAL_OWNER: t('roles.PERSONAL_OWNER'),
+      PLATFORM_MEMBER: t('roles.PLATFORM_MEMBER'),
     }),
     [t],
   );

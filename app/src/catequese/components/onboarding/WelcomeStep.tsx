@@ -9,6 +9,8 @@ import {
 } from "../../../client/components/brand/AppChrome";
 
 interface WelcomeStepProps {
+  onMember: () => void;
+  onOrganizer: () => void;
   onPersonal: () => void;
   onManager: () => void;
   onDiocese?: () => void;
@@ -16,6 +18,8 @@ interface WelcomeStepProps {
 }
 
 export function WelcomeStep({
+  onMember,
+  onOrganizer,
   onPersonal,
   onManager,
   onDiocese,
@@ -44,6 +48,16 @@ export function WelcomeStep({
       </div>
 
       <div className="divide-y divide-border/70 border-y border-border/70">
+        <PathOption
+          label={t("welcome.member_title")}
+          description={t("welcome.member_desc")}
+          onClick={onMember}
+        />
+        <PathOption
+          label={t("welcome.organizer_title")}
+          description={t("welcome.organizer_desc")}
+          onClick={onOrganizer}
+        />
         <PathOption
           label={t("welcome.personal_title")}
           description={t("welcome.personal_desc")}

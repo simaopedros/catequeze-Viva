@@ -348,6 +348,25 @@ page AppDashboardAliasPage {
   authRequired: true,
   component: import RedirectDashboardToApp from "@src/catequese/pages/RedirectDashboardToApp"
 }
+
+route AppGroupsRoute { path: "/app/grupos", to: AppGroupsPage }
+page AppGroupsPage {
+  authRequired: true,
+  component: import GroupsPage from "@src/catequese/pages/GroupsPage"
+}
+
+route AppNewGroupRoute { path: "/app/grupos/novo", to: AppNewGroupPage }
+page AppNewGroupPage {
+  authRequired: true,
+  component: import CreateGroupPage from "@src/catequese/pages/CreateGroupPage"
+}
+
+route AppGroupDetailRoute { path: "/app/grupos/:id", to: AppGroupDetailPage }
+page AppGroupDetailPage {
+  authRequired: true,
+  component: import GroupDetailPage from "@src/catequese/pages/GroupDetailPage"
+}
+
 route AppNewClassRoute { path: "/app/classes/new", to: AppNewClassPage }
 page AppNewClassPage {
   authRequired: true,
@@ -657,6 +676,11 @@ action completeCoordinatorOnboarding {
   fn: import { completeCoordinatorOnboarding } from "@src/server/operations/onboardingOperations",
   // User is required by resolveNewParishBilling (fresh subscription lookup).
   entities: [Parish, Membership, TenantBilling, CatecheticalYear, CatechesisClass, PricingPlan, PricingPlanPrice, User]
+}
+
+action completeMemberOnboarding {
+  fn: import { completeMemberOnboarding } from "@src/server/operations/pastoralGroupOperations",
+  entities: [User]
 }
 
 action updateParish {
@@ -2376,6 +2400,42 @@ action updateCommunity {
   fn: import { updateCommunity } from "@src/server/operations/communityOperations",
   entities: [Community, Membership, Parish]
 }
+
+query listPastoralGroups {
+  fn: import { listPastoralGroups } from "@src/server/operations/pastoralGroupOperations",
+  entities: [PastoralGroup, GroupMembership, User, Parish, Membership]
+}
+
+query getPastoralGroup {
+  fn: import { getPastoralGroup } from "@src/server/operations/pastoralGroupOperations",
+  entities: [PastoralGroup, GroupMembership, PastoralGroupNotice, User, Parish]
+}
+
+action createPastoralGroup {
+  fn: import { createPastoralGroup } from "@src/server/operations/pastoralGroupOperations",
+  entities: [PastoralGroup, GroupMembership, Parish, User, Membership, TenantBilling, PricingPlan, PricingPlanPrice]
+}
+
+action joinPastoralGroup {
+  fn: import { joinPastoralGroup } from "@src/server/operations/pastoralGroupOperations",
+  entities: [PastoralGroup, GroupMembership, User]
+}
+
+action leavePastoralGroup {
+  fn: import { leavePastoralGroup } from "@src/server/operations/pastoralGroupOperations",
+  entities: [GroupMembership]
+}
+
+action decideGroupJoin {
+  fn: import { decideGroupJoin } from "@src/server/operations/pastoralGroupOperations",
+  entities: [GroupMembership, PastoralGroup]
+}
+
+action postGroupNotice {
+  fn: import { postGroupNotice } from "@src/server/operations/pastoralGroupOperations",
+  entities: [PastoralGroupNotice, GroupMembership, PastoralGroup, User]
+}
+//#endregion
 //#endregion
 
 route PricingPageRoute { path: "/pricing", to: PricingPage }

@@ -300,6 +300,9 @@ export const admin_pt_BR = {
         "limit_catechumens": "Máx. catequizandos",
         "limit_catechists": "Máx. catequistas",
         "limit_parishes": "Máx. paróquias",
+        "limit_groups": "Máx. grupos pastorais",
+        "can_create_groups": "Pode criar grupos",
+        "can_access_catechesis": "Acesso à Catequese Viva",
         "ai_monthly": "Créditos IA / mês",
         "ai_daily": "Limite diário de IA",
         "ai_initial": "Créditos iniciais",
@@ -1399,6 +1402,13 @@ export const billing_pt_BR = {
         "cta": "Liberar equipe completa",
         "checklist": "Você integra mais catequistas sem tirar turmas, mensagens e histórico do lugar.",
         "toast_description": "Sua catequese já depende de mais gente. Libere a equipe completa no mesmo espaço."
+      },
+      "group_limit": {
+        "title": "Seu próximo grupo precisa de espaço",
+        "description": "Você usou {{currentCount}} de {{maxAllowed}} grupos do {{currentPlanName}}. Faça upgrade para o {{plan}} e continue organizando ministérios no mesmo lugar.",
+        "cta": "Liberar mais grupos",
+        "checklist": "Você cria o próximo grupo sem espalhar avisos, membros e avisos pastorais.",
+        "toast_description": "Você chegou ao limite de grupos pastorais. Libere mais capacidade sem interromper o ministério."
       }
     },
     "switch_annual_title": "Economize trocando para o plano anual",
@@ -2175,7 +2185,8 @@ export const common_pt_BR = {
       "CATECHUMEN": "Catequizando",
       "CONTENT_REVIEWER": "Revisor",
       "PASTORAL_VIEWER": "Visitante",
-      "PERSONAL_OWNER": "Proprietário"
+      "PERSONAL_OWNER": "Proprietário",
+      "PLATFORM_MEMBER": "Membro"
     },
     "roles_desc": {
       "PARISH_COORDINATOR": "Coordena a catequese deste espaço: equipe, turmas, convites e configurações.",
@@ -3453,6 +3464,86 @@ export const family_pt_BR = {
     }
   } as const;
 
+export const groups_pt_BR = {
+    "title": "Grupos",
+    "eyebrow": "Catechis",
+    "subtitle": "Descubra grupos pastorais e participe da vida da Igreja.",
+    "create": "Criar grupo",
+    "create_title": "Novo grupo",
+    "create_subtitle": "Dê um nome, escolha o tipo e quem pode entrar.",
+    "upgrade_to_create": "Assinar para criar",
+    "tab_discover": "Descobrir",
+    "tab_mine": "Meus grupos",
+    "search_placeholder": "Buscar por nome ou descrição",
+    "all_kinds": "Todos os tipos",
+    "load_error": "Não foi possível carregar os grupos.",
+    "empty_discover": "Nenhum grupo público por aqui ainda.",
+    "empty_mine": "Você ainda não entrou em um grupo.",
+    "empty_hint_create": "Crie o primeiro grupo da sua comunidade.",
+    "empty_hint_join": "Entre em um grupo público ou peça convite a quem organiza.",
+    "member_count": "{{count}} membro",
+    "member_count_plural": "{{count}} membros",
+    "status_pending": "Pedido enviado",
+    "status_invited": "Convidado",
+    "status_left": "Saiu",
+    "created": "Grupo criado",
+    "create_error": "Não foi possível criar o grupo.",
+    "field_name": "Nome",
+    "field_kind": "Tipo",
+    "field_visibility": "Quem pode entrar",
+    "field_custom_kind": "Nome do tipo",
+    "field_city": "Cidade",
+    "field_state": "UF",
+    "field_description": "Descrição",
+    "no_city": "Cidade não informada",
+    "join": "Entrar",
+    "joined": "Você entrou no grupo",
+    "leave": "Sair",
+    "left": "Você saiu do grupo",
+    "action_error": "Não foi possível concluir esta ação.",
+    "restricted": "Este grupo é restrito. Peça um convite a quem organiza.",
+    "notices": "Avisos",
+    "notice_placeholder": "Escreva um aviso curto para o grupo",
+    "post_notice": "Publicar aviso",
+    "notice_posted": "Aviso publicado",
+    "no_notices": "Nenhum aviso ainda.",
+    "members": "Membros",
+    "join_accepted": "Pedido aceito",
+    "join_rejected": "Pedido recusado",
+    "home_eyebrow": "Início",
+    "home_hello": "Olá, {{name}}",
+    "home_hello_default": "Bem-vindo(a) ao Catechis",
+    "home_subtitle": "Entre em grupos, leia a Bíblia e o Catecismo. Para criar um grupo, assine.",
+    "home_groups_hint": "Descubra grupos de jovens, música, oração e outros ministérios.",
+    "home_bible": "Bíblia",
+    "home_bible_hint": "Leia a Sagrada Escritura.",
+    "home_catechism": "Catecismo",
+    "home_catechism_hint": "Consulte o Catecismo da Igreja Católica.",
+    "open_bible": "Abrir Bíblia",
+    "open_catechism": "Abrir Catecismo",
+    "kinds": {
+      "YOUTH": "Jovens",
+      "MUSIC": "Música",
+      "PRAYER": "Oração",
+      "LITURGY": "Liturgia",
+      "CHARITY": "Caridade",
+      "FAMILY": "Família",
+      "MOVEMENT": "Movimento",
+      "FORMATION": "Formação",
+      "CUSTOM": "Personalizado"
+    },
+    "visibility": {
+      "PUBLIC": "Público — entra direto",
+      "PRIVATE": "Privado — precisa de aprovação",
+      "INVITE_ONLY": "Somente convite"
+    },
+    "roles": {
+      "OWNER": "Responsável",
+      "LEADER": "Líder",
+      "MEMBER": "Membro"
+    }
+  } as const;
+
 export const hierarchy_pt_BR = {
     "origin": {
       "platform": "Plataforma",
@@ -3925,15 +4016,16 @@ export const landing_pt_BR = {
     "steps_cta": "Começar minha catequese",
     "pricing_eyebrow": "Comece do seu jeito",
     "pricing_title": "Comece do seu jeito.",
-    "pricing_subtitle": "Você pode começar sozinho e, quando sua catequese crescer, levar a organização para toda a paróquia.",
+    "pricing_subtitle": "A conta de membro é gratuita. Para criar grupos ou catequese, assine. Você pode começar sozinho e, quando crescer, levar a organização para a paróquia.",
     "pricing_institutional_link": "Paróquia ou diocese? Ver planos institucionais",
     "plans": {
       "single": {
         "name": "Plano Catequista",
         "audience": "Para você",
-        "desc": "Para organizar sua turma e seus encontros.",
+        "desc": "Para organizar grupos pastorais e até 3 turmas de catequese.",
         "price": "R$ 9,90",
         "features": [
+          "Até 3 grupos pastorais",
           "Até 3 turmas",
           "150 catequizandos",
           "Presença e calendário",
@@ -3946,6 +4038,7 @@ export const landing_pt_BR = {
         "desc": "Para reunir sua equipe, turmas e famílias.",
         "price": "R$ 99",
         "features": [
+          "Grupos pastorais ilimitados",
           "Turmas e equipe ilimitadas",
           "Catequizandos ilimitados",
           "Espaço institucional",
@@ -5131,6 +5224,7 @@ export const messages_pt_BR = {
 
 export const navigation_pt_BR = {
     "dashboard": "Painel",
+    "groups": "Grupos",
     "classes": "Turmas",
     "catechumens": "Catequizandos",
     "catechumens_short": "Quizandos",
@@ -5253,7 +5347,11 @@ export const onboarding_pt_BR = {
     "welcome": {
       "hello": "Olá, {{name}}",
       "hello_default": "Bem-vindo(a)",
-      "question": "Como você vai usar a Catequese Viva?",
+      "question": "Como você vai usar o Catechis?",
+      "member_title": "Sou membro — quero participar",
+      "member_desc": "Entrar grátis, descobrir grupos e acompanhar a vida da Igreja. Sem cartão.",
+      "organizer_title": "Quero organizar um grupo",
+      "organizer_desc": "Criar e cuidar de um grupo de jovens, música, oração ou outro ministério. Assinatura para criar.",
       "personal_title": "Sou catequista e cuido da minha turma",
       "personal_desc": "Criar a turma, incluir catequizandos e usar no dia a dia.",
       "personal_features": [],
@@ -5898,8 +5996,8 @@ export const public_pt_BR = {
       "aria": "Abrir conversa no WhatsApp de vendas"
     },
     "pricing": {
-      "title": "Três caminhos: catequista, paróquia e diocese",
-      "subtitle": "Catequista R$ 9,90/mês (ou R$ 99/ano). Paróquia a partir de R$ 99/mês. Diocese sob consulta. 7 dias grátis; o cartão é pedido agora e a cobrança só começa depois do trial.",
+      "title": "Membro grátis. Quem organiza, assina.",
+      "subtitle": "Conta de membro é gratuita. Organizar grupos ou catequese: Catequista R$ 9,90/mês (ou R$ 99/ano). Paróquia a partir de R$ 99/mês. Diocese sob consulta. 7 dias grátis para quem assina; o cartão é pedido agora e a cobrança só começa depois do trial.",
       "payment_card": "Cartão",
       "annual_savings": "Economize 17% no anual",
       "monthly_tab": "Mensal",
@@ -5911,8 +6009,8 @@ export const public_pt_BR = {
       "cta_paid": "Começar os 7 dias",
       "most_popular": "Feito para o catequista",
       "plan_desc": {
-        "single": "Para você cuidar da sua turma — chamada, histórico e calendário no mesmo lugar, com mais tempo para as pessoas. Cobre até 3 turmas, se você acompanhar mais de uma.",
-        "unlimited": "Para a paróquia: turmas, catequizandos e equipe ilimitados no espaço institucional."
+        "single": "Para organizar grupos pastorais e, se quiser, até 3 turmas de catequese — chamada, histórico e calendário no mesmo lugar.",
+        "unlimited": "Para a paróquia: grupos, turmas, catequizandos e equipe ilimitados no espaço institucional."
       },
       "diocese_name": "Plano Diocese",
       "diocese_audience": "Para a diocese — venda assistida",
@@ -5927,11 +6025,11 @@ export const public_pt_BR = {
       "faq": [
         {
           "q": "Como conheço a plataforma antes de assinar?",
-          "a": "Você testa por 7 dias. O cartão é pedido agora; a cobrança só começa depois do trial. Use na sua turma de verdade e cancele se não fizer sentido continuar."
+          "a": "Você pode criar uma conta de membro grátis, entrar em grupos e ler Bíblia e Catecismo. Para criar grupos ou usar a Catequese Viva, teste 7 dias. O cartão é pedido agora; a cobrança só começa depois do trial."
         },
         {
           "q": "Qual é o preço?",
-          "a": "O Plano Catequista custa R$ 9,90/mês (ou R$ 99/ano) e cobre até 3 turmas e 150 catequizandos no total — mais do que suficiente para a sua realidade."
+          "a": "Participar é grátis. O Plano Catequista custa R$ 9,90/mês (ou R$ 99/ano) e cobre até 3 grupos pastorais, 3 turmas e 150 catequizandos — mais do que suficiente para a sua realidade."
         },
         {
           "q": "Como funciona o pagamento?",
@@ -5943,7 +6041,7 @@ export const public_pt_BR = {
         },
         {
           "q": "E se a minha catequese crescer?",
-          "a": "O Plano Catequista cobre até 3 turmas e 150 catequizandos. Se precisar de equipe e mais turmas, organize como paróquia (Plano Paróquia). Se a diocese assume, fale com vendas — a licença diocesana cobre as paróquias. Seus dados e o histórico da turma são preservados."
+          "a": "O Plano Catequista cobre até 3 grupos, 3 turmas e 150 catequizandos. Se precisar de equipe e mais turmas, organize como paróquia (Plano Paróquia). Se a diocese assume, fale com vendas — a licença diocesana cobre as paróquias. Seus dados e o histórico são preservados."
         },
         {
           "q": "Os dados ficam seguros?",
@@ -6728,6 +6826,7 @@ export const resources_pt_BR = {
   dashboard: dashboard_pt_BR,
   emails: emails_pt_BR,
   family: family_pt_BR,
+  groups: groups_pt_BR,
   hierarchy: hierarchy_pt_BR,
   landing: landing_pt_BR,
   landingIa: landingIa_pt_BR,

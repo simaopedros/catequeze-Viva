@@ -6,13 +6,14 @@ import {
   getWorkspaceEffectivePlan,
   hasPersonalAccess,
   isOnProductTrial,
+  planCanCreateGroups,
 } from "../../shared/pricing";
 import { canManageWorkspaceBilling } from "../../shared/billingAccess";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { buildBillingJourneyHref } from "../lib/upgradeJourney";
 import { PaymentPlanId } from "../../payment/plans";
-import { isUngatedAppPath, shouldRenderGatedRoute } from "../../client/appRouteGates";
+import { isCreateGroupPath, isUngatedAppPath, shouldRenderGatedRoute } from "../../client/appRouteGates";
 
 interface WorkspaceBilling {
   plan?: string | null;
@@ -74,13 +75,15 @@ function workspaceHasAccess(
 
 export function SubscriptionGate({ children }: { children: ReactNode }) {
   const { data: user } = useAuth();
-  const { isPersonal, workspace } = useActiveWorkspace();
+  const { isPersonal, workspace, workspacePlan } = useActiveWorkspace();
   const { userRole, isAdmin } = useUserContext();
   const location = useLocation();
   const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
 
   const alwaysAccessible = isUngatedAppPath(location.pathname);
+  const needsGroupPlan =
+    isCreateGroupPath(location.pathname) && !planCanCreateGroups(workspacePlan);
 
   const isBillingManager = canManageWorkspaceBilling(
     workspace?.role || userRole,
@@ -106,16 +109,16 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (user === undefined) return;
-    if (alwaysAccessible) {
+    if (alwaysAccessible && !needsGroupPlan) {
       setChecked(true);
       return;
     }
     // Never send invited collaborators to billing — they are not payers.
-    if (!hasAccess && isBillingManager) {
+    if ((!hasAccess || needsGroupPlan) && isBillingManager) {
       navigate(
         buildBillingJourneyHref({
           planId: isPersonal ? PaymentPlanId.Single : PaymentPlanId.Unlimited,
-          reason: "required",
+          reason: needsGroupPlan ? "group_limit" : "required",
           source: "subscription_gate",
           required: true,
         }),
@@ -128,6 +131,7 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
     user,
     hasAccess,
     alwaysAccessible,
+    needsGroupPlan,
     navigate,
     isPersonal,
     isBillingManager,
@@ -136,8 +140,8 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
   if (
     !shouldRenderGatedRoute({
       userLoaded: user !== undefined,
-      alwaysAccessible,
-      hasAccess,
+      alwaysAccessible: alwaysAccessible && !needsGroupPlan,
+      hasAccess: hasAccess && !needsGroupPlan,
       isBillingManager,
       checked,
     })

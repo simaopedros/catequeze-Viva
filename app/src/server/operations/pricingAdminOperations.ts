@@ -36,6 +36,9 @@ const upsertSchema = z.object({
   maxCatechumens: z.number().int().nonnegative().nullable(),
   maxCatechists: z.number().int().nonnegative().nullable(),
   maxParishes: z.number().int().nonnegative().nullable(),
+  maxGroups: z.number().int().nonnegative().nullable().optional(),
+  canCreateGroups: z.boolean().optional(),
+  canAccessCatechesis: z.boolean().optional(),
   aiMonthlyCredits: z.number().int().nonnegative().optional().default(0),
   aiDailyLimit: z.number().int().nonnegative().optional().default(0),
   aiInitialCredits: z.number().int().nonnegative().optional().default(0),
@@ -159,7 +162,8 @@ export const upsertPricingPlan = async (rawInput: unknown, context: any) => {
     limitReduced(existing.maxClasses, input.maxClasses) ||
     limitReduced(existing.maxCatechumens, input.maxCatechumens) ||
     limitReduced(existing.maxCatechists, input.maxCatechists) ||
-    limitReduced(existing.maxParishes, input.maxParishes)
+    limitReduced(existing.maxParishes, input.maxParishes) ||
+    limitReduced(existing.maxGroups, input.maxGroups)
   );
 
   const subscribers = existing ? await countActiveSubscribers(context, existing.slug) : { users: 0, tenants: 0, total: 0 };
@@ -192,6 +196,9 @@ export const upsertPricingPlan = async (rawInput: unknown, context: any) => {
     maxCatechumens: input.maxCatechumens,
     maxCatechists: input.maxCatechists,
     maxParishes: input.maxParishes,
+    maxGroups: input.maxGroups !== undefined ? input.maxGroups : existing?.maxGroups ?? null,
+    canCreateGroups: input.canCreateGroups ?? existing?.canCreateGroups ?? false,
+    canAccessCatechesis: input.canAccessCatechesis ?? existing?.canAccessCatechesis ?? false,
     aiMonthlyCredits: input.aiMonthlyCredits ?? 0,
     aiDailyLimit: input.aiDailyLimit ?? 0,
     aiInitialCredits: input.aiInitialCredits ?? 0,

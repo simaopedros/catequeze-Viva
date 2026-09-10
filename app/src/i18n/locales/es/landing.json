@@ -191,16 +191,17 @@
   "steps_cta": "Empezar mi catequesis",
   "pricing_eyebrow": "Empieza a tu manera",
   "pricing_title": "Empieza a tu manera.",
-  "pricing_subtitle": "Puedes empezar solo y, cuando tu catequesis crezca, llevar la organización a toda la parroquia.",
+  "pricing_subtitle": "La cuenta de miembro es gratuita. Para crear grupos o catequesis, suscríbete. Puedes empezar solo y, cuando crezcas, llevar la organización a toda la parroquia.",
   "pricing_institutional_link": "¿Parroquia o diócesis? Ver planes institucionales",
   "plans": {
     "single": {
       "name": "Plan Catequista",
       "audience": "Para ti",
-      "desc": "Para organizar tu grupo y tus encuentros.",
+      "desc": "Para organizar grupos pastorales y hasta 3 grupos de catequesis.",
       "price": "R$ 9,90",
       "features": [
-        "Hasta 3 grupos",
+        "Hasta 3 grupos pastorales",
+        "Hasta 3 grupos de catequesis",
         "150 catequizandos",
         "Asistencia y calendario",
         "Publicar en la Comunidad"
@@ -212,7 +213,8 @@
       "desc": "Para reunir a tu equipo, grupos y familias.",
       "price": "R$ 99",
       "features": [
-        "Grupos y equipo ilimitados",
+        "Grupos pastorales ilimitados",
+        "Grupos de catequesis y equipo ilimitados",
         "Catecúmenos ilimitados",
         "Espacio institucional",
         "Comunicación con familias",

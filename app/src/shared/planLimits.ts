@@ -6,6 +6,8 @@ export {
   getPlanLimits,
   getSocialLimits,
   planCanPublishSocial,
+  planCanCreateGroups,
+  planCanAccessCatechesis,
   planName,
   PLAN_NAMES,
   LIMIT_LABELS,

@@ -51,6 +51,9 @@ export type AdminPricingPlan = {
   maxCatechumens: number | null;
   maxCatechists: number | null;
   maxParishes: number | null;
+  maxGroups: number | null;
+  canCreateGroups: boolean;
+  canAccessCatechesis: boolean;
   aiMonthlyCredits: number;
   aiDailyLimit: number;
   aiInitialCredits: number;

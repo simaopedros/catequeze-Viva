@@ -21,6 +21,7 @@ enum UserRole {
   CONTENT_REVIEWER
   PASTORAL_VIEWER
   PERSONAL_OWNER
+  PLATFORM_MEMBER
 }
 
 enum MembershipStatus {
@@ -35,6 +36,12 @@ enum ParishType {
   PARISH      // Parish workspace (multi-catechist)
   DIOCESE     // Diocese workspace (multi-parish)
   COMMUNITY   // Community workspace
+}
+
+enum PlatformIntent {
+  MEMBER
+  ORGANIZER
+  CATECHESIS
 }
 
 enum ClassStatus {
@@ -415,6 +422,12 @@ model User {
   avatarUrl String?
   locale    String  @default("pt-BR")
   timezone  String  @default("America/Sao_Paulo")
+  city      String?
+  state     String?
+
+  // Catechis member vs organizer onboarding (no workspace required for members)
+  platformIntent     PlatformIntent?
+  memberOnboardedAt  DateTime?
 
   // Payment (Stripe only, BRL)
   paymentProcessorUserId        String?   @unique
@@ -510,6 +523,9 @@ model User {
   formationLessonProgress   FormationLessonProgress[]
   resourceAdoptions         ResourceAdoption[]
   authoredBlogPosts         BlogPost[]                   @relation("BlogPostAuthor")
+  createdPastoralGroups     PastoralGroup[]              @relation("CreatedPastoralGroups")
+  groupMemberships         GroupMembership[]
+  groupNotices              PastoralGroupNotice[]       @relation("GroupNoticeAuthor")
 }
 
 // ─── Multi-tenant ─────────────────────────────────────────────────────────────
@@ -583,6 +599,8 @@ model Parish {
   announcements        PastoralAnnouncement[]
   itineraries          CatecheticalItinerary[]
   formationTracks      FormationTrack[]
+  ownedPastoralGroups  PastoralGroup[] @relation("WorkspacePastoralGroups")
+  linkedPastoralGroups PastoralGroup[] @relation("ParishPastoralGroups")
 }
 enum CommunityType {
   CHAPEL
@@ -652,6 +670,106 @@ model Membership {
   @@index([userId, status])
   @@index([parishId])
   @@index([inviteToken])
+}
+
+enum PastoralGroupKind {
+  YOUTH
+  MUSIC
+  PRAYER
+  LITURGY
+  CHARITY
+  FAMILY
+  MOVEMENT
+  FORMATION
+  CUSTOM
+}
+
+enum PastoralGroupVisibility {
+  PUBLIC
+  PRIVATE
+  INVITE_ONLY
+}
+
+enum GroupMemberRole {
+  OWNER
+  LEADER
+  MEMBER
+}
+
+enum GroupMembershipStatus {
+  ACTIVE
+  PENDING
+  INVITED
+  LEFT
+}
+
+model PastoralGroup {
+  id        String   @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  name            String
+  slug            String                  @unique
+  kind            PastoralGroupKind
+  visibility      PastoralGroupVisibility @default(PUBLIC)
+  description     String?
+  city            String?
+  state           String?
+  customKindLabel String?
+  active          Boolean                 @default(true)
+
+  workspaceId String
+  workspace   Parish @relation("WorkspacePastoralGroups", fields: [workspaceId], references: [id])
+
+  parishId String?
+  parish   Parish? @relation("ParishPastoralGroups", fields: [parishId], references: [id])
+
+  createdByUserId String
+  createdBy       User   @relation("CreatedPastoralGroups", fields: [createdByUserId], references: [id])
+
+  memberships GroupMembership[]
+  notices      PastoralGroupNotice[]
+
+  @@index([workspaceId])
+  @@index([parishId])
+  @@index([kind])
+  @@index([visibility, active])
+  @@index([city, state])
+}
+
+model GroupMembership {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  groupId String
+  group   PastoralGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  role   GroupMemberRole       @default(MEMBER)
+  status GroupMembershipStatus @default(ACTIVE)
+
+  @@unique([groupId, userId])
+  @@index([userId, status])
+  @@index([groupId, status])
+}
+
+model PastoralGroupNotice {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  groupId String
+  group   PastoralGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   User   @relation("GroupNoticeAuthor", fields: [authorId], references: [id])
+
+  body String
+
+  @@index([groupId, createdAt])
 }
 
 // Unaccepted invitation for an email (with or without an existing User account).
@@ -1646,6 +1764,9 @@ model PricingPlan {
   maxCatechumens Int?
   maxCatechists  Int?
   maxParishes    Int?
+  maxGroups      Int?
+  canCreateGroups     Boolean @default(false)
+  canAccessCatechesis Boolean @default(false)
 
   aiMonthlyCredits Int @default(0)
   aiDailyLimit     Int @default(0)

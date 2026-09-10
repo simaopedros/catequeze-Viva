@@ -120,7 +120,8 @@
     "CATECHUMEN": "Catequizando",
     "CONTENT_REVIEWER": "Revisor",
     "PASTORAL_VIEWER": "Visitante",
-    "PERSONAL_OWNER": "Proprietário"
+    "PERSONAL_OWNER": "Proprietário",
+    "PLATFORM_MEMBER": "Membro"
   },
   "roles_desc": {
     "PARISH_COORDINATOR": "Coordena a catequese deste espaço: equipe, turmas, convites e configurações.",

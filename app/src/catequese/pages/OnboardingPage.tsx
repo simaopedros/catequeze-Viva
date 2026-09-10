@@ -31,6 +31,7 @@ import {
   createClass,
   createMeeting as createMeetingAction,
   ensurePersonalWorkspace,
+  completeMemberOnboarding,
 } from "wasp/client/operations";
 import { useAuth } from "wasp/client/auth";
 import { getPersonalOnboardingNextPath } from "../../shared/activation";
@@ -668,6 +669,60 @@ export default function OnboardingPage() {
       {step === "welcome" && (
         <WelcomeStep
           launchCatequistaOnly={launchCatequistaOnly}
+          onMember={async () => {
+            setSaving(true);
+            setError("");
+            try {
+              try {
+                sessionStorage.setItem(
+                  "cv-onboarding-started-at",
+                  String(Date.now()),
+                );
+              } catch {
+                /* ignore */
+              }
+              trackMarketingEvent("onboarding_started", {
+                account_type: "member",
+                intent: "join_groups",
+              });
+              await completeMemberOnboarding({ intent: "MEMBER" });
+              invalidateShellContext();
+              clearPersisted();
+              window.location.assign("/app/grupos");
+            } catch (err: unknown) {
+              setError(
+                err instanceof Error ? err.message : t("finish_error"),
+              );
+              setSaving(false);
+            }
+          }}
+          onOrganizer={async () => {
+            setSaving(true);
+            setError("");
+            try {
+              try {
+                sessionStorage.setItem(
+                  "cv-onboarding-started-at",
+                  String(Date.now()),
+                );
+              } catch {
+                /* ignore */
+              }
+              trackMarketingEvent("onboarding_started", {
+                account_type: "organizer",
+                intent: "organize_groups",
+              });
+              await completeMemberOnboarding({ intent: "ORGANIZER" });
+              invalidateShellContext();
+              clearPersisted();
+              window.location.assign("/app/grupos/novo");
+            } catch (err: unknown) {
+              setError(
+                err instanceof Error ? err.message : t("finish_error"),
+              );
+              setSaving(false);
+            }
+          }}
           onPersonal={() => {
             try {
               sessionStorage.setItem(

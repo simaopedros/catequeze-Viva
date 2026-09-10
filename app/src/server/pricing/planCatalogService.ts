@@ -146,6 +146,9 @@ function rowToCatalogPlan(row: any): CatalogPlan {
       maxCatechumens: row.maxCatechumens ?? null,
       maxCatechists: row.maxCatechists ?? null,
       maxParishes: row.maxParishes ?? null,
+      maxGroups: row.maxGroups ?? undefined,
+      canCreateGroups: row.canCreateGroups ?? undefined,
+      canAccessCatechesis: row.canAccessCatechesis ?? undefined,
     },
     ai: {
       monthlyCredits: row.aiMonthlyCredits ?? 0,
