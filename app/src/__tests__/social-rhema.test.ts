@@ -478,6 +478,80 @@ describe("getSocialCommunityPulse", () => {
     expect(result.members[0].socialHandle).toBe("ana");
     expect(result.topics[0]).toMatchObject({ slug: "oracao", postCount: 4 });
   });
+
+  it("honours a larger memberLimit for the mobile directory", async () => {
+    const { getSocialCommunityPulse } = await import(
+      "../server/operations/socialOperations"
+    );
+    const findMany = vi.fn(async (args: any) => {
+      if (args.distinct) return [{ authorId: "a" }];
+      return [];
+    });
+    await getSocialCommunityPulse(
+      { memberLimit: 40 },
+      {
+        entities: {
+          SocialPost: { findMany },
+          SocialTopic: { findMany: vi.fn(async () => []) },
+        },
+      } as any,
+    );
+    const recentQuery = findMany.mock.calls.find((call) => !call[0].distinct);
+    expect(recentQuery?.[0].take).toBe(160);
+  });
+});
+
+describe("listSocialConnections", () => {
+  it("lists followers of a handle and hides blocked viewers", async () => {
+    const { listSocialConnections } = await import(
+      "../server/operations/socialDiscoveryOperations"
+    );
+
+    const follower = {
+      id: "u-2",
+      firstName: "João",
+      lastName: "Livre",
+      avatarUrl: null,
+      socialHandle: "joao",
+      socialFollowersCount: 3,
+    };
+
+    const result = await listSocialConnections(
+      { handle: "ana", kind: "followers" },
+      {
+        user: { id: "viewer" },
+        entities: {
+          User: {
+            findFirst: vi.fn(async () => ({ id: "author-1" })),
+          },
+          SocialBlock: {
+            findUnique: vi.fn(async () => null),
+          },
+          SocialFollow: {
+            findMany: vi.fn(async () => [
+              {
+                id: "f1",
+                follower,
+                author: { id: "author-1", socialHandle: "ana" },
+              },
+            ]),
+          },
+        },
+      } as any,
+    );
+
+    expect(result.items).toEqual([
+      {
+        id: "u-2",
+        displayName: "João Livre",
+        handle: "joao",
+        socialHandle: "joao",
+        avatarUrl: null,
+        followersCount: 3,
+      },
+    ]);
+    expect(result.nextCursor).toBeNull();
+  });
 });
 
 describe("community share URL", () => {

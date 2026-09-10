@@ -339,10 +339,19 @@ export const getSocialTopics = async (_args: unknown, context: any) => {
   return topics;
 };
 
-export const getSocialCommunityPulse = async (_args: unknown, context: any) => {
+export const getSocialCommunityPulse = async (
+  args: { memberLimit?: number } | undefined,
+  context: any,
+) => {
   if (!isSocialEnabled()) {
     return { memberCount: 0, members: [], topics: [] };
   }
+
+  const memberLimit = Math.min(
+    Math.max(Number(args?.memberLimit) || 6, 1),
+    60,
+  );
+  const recentTake = Math.min(Math.max(memberLimit * 4, 24), 240);
 
   const [authors, recent, topics] = await Promise.all([
     context.entities.SocialPost.findMany({
@@ -353,7 +362,7 @@ export const getSocialCommunityPulse = async (_args: unknown, context: any) => {
     context.entities.SocialPost.findMany({
       where: { status: "PUBLISHED" },
       orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
-      take: 24,
+      take: recentTake,
       select: { author: { select: PUBLIC_AUTHOR_SELECT } },
     }),
     context.entities.SocialTopic.findMany({
@@ -387,7 +396,7 @@ export const getSocialCommunityPulse = async (_args: unknown, context: any) => {
       avatarUrl: author.avatarUrl ?? null,
       socialHandle: author.socialHandle ?? null,
     });
-    if (members.length >= 6) break;
+    if (members.length >= memberLimit) break;
   }
 
   return {

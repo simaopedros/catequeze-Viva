@@ -8,6 +8,7 @@ import { preloadReferenceCache } from './cache/referenceCache';
 import { registerLandingHtmlMeta } from './middleware/landingHtmlMeta';
 import { registerBlogCrawlerHtml } from './middleware/blogCrawlerHtml';
 import { portalRequestContextMiddleware } from './requestPortalContext';
+import { applyLocalMobileCors, prependMiddleware } from './mobileLocalCors';
 
 const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
 const TOKEN_QUERY_RE = /([?&](token|key|code|session|access_token)=)[^&#\s]+/gi;
@@ -48,6 +49,10 @@ export function scrubSentryEvent<T extends Record<string, any>>(input: T): T {
 
 export const serverSetup: ServerSetupFn = async ({ app, server }) => {
   const MAX_BODY = '2mb';
+
+  // Expo web calls /mobile from :8081. Wasp mounts POST routes before serverSetup,
+  // so this middleware must be prepended or OPTIONS never gets CORS headers.
+  prependMiddleware(app as any, '/mobile', applyLocalMobileCors);
 
   // ── Security headers ────────────────────────────────────────────────
   app.use((_req: any, res: any, next: any) => {

@@ -2008,6 +2008,160 @@ api mobileDocumentUpload {
   httpRoute: (POST, "/mobile/documents/upload"),
   entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish]
 }
+
+api mobileSocialFeed {
+  fn: import { mobileSocialFeed } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/feed"),
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, SocialFollow, SocialBlock, SocialShare, SocialVideoWatch, User, Parish]
+}
+
+api mobileSocialAccess {
+  fn: import { mobileSocialAccess } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/access"),
+  entities: [User, Membership, Parish, TenantBilling, Diocese, SocialPost, PricingPlan, PricingPlanPrice]
+}
+
+api mobileSocialTopics {
+  fn: import { mobileSocialTopics } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/topics"),
+  entities: [SocialTopic]
+}
+
+api mobileSocialCreatePost {
+  fn: import { mobileSocialCreatePost } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/posts"),
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialShare, User, Membership, Parish, TenantBilling, Diocese, PricingPlan, PricingPlanPrice, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, ContentItem]
+}
+
+api mobileSocialProfile {
+  fn: import { mobileSocialProfile } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/profile/:handle"),
+  entities: [User, SocialFollow, SocialBlock, SocialPost]
+}
+
+api mobileMySocialProfile {
+  fn: import { mobileMySocialProfile } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/me"),
+  entities: [User, SocialFollow, SocialBlock]
+}
+
+api mobileUpdateSocialProfile {
+  fn: import { mobileUpdateSocialProfile } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/profile"),
+  entities: [User]
+}
+
+api mobileSocialFollow {
+  fn: import { mobileSocialFollow } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/follow"),
+  entities: [SocialFollow, SocialBlock, Notification, User]
+}
+
+api mobileSocialBlock {
+  fn: import { mobileSocialBlock } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/block"),
+  entities: [SocialBlock, SocialFollow, User]
+}
+
+api mobileSocialSharePreview {
+  fn: import { mobileSocialSharePreview } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/share/preview"),
+  entities: [BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, ContentItem, Membership, Parish]
+}
+
+api mobileSocialPost {
+  fn: import { mobileSocialPost } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/posts/:slug"),
+  entities: [SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, SocialFollow, SocialBlock, SocialShare, SocialVideoWatch, User, Parish]
+}
+
+api mobileSocialComments {
+  fn: import { mobileSocialComments } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/comments"),
+  entities: [SocialComment, SocialPost, User]
+}
+
+api mobileSocialCreateComment {
+  fn: import { mobileSocialCreateComment } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/comments"),
+  entities: [SocialComment, SocialPost, Notification, User, Membership, Parish, TenantBilling, Diocese, PricingPlan, PricingPlanPrice]
+}
+
+api mobileSocialReact {
+  fn: import { mobileSocialReact } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/react"),
+  entities: [SocialReaction, SocialPost, Notification, User, Membership, Parish, TenantBilling, Diocese, PricingPlan, PricingPlanPrice]
+}
+
+api mobileSocialSearch {
+  fn: import { mobileSocialSearch } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/search"),
+  entities: [User, SocialPost, SocialMedia, SocialTopic, SocialPostTopic, SocialReaction, SocialFollow, SocialBlock, SocialShare, Parish]
+}
+
+api mobileSocialPulse {
+  fn: import { mobileSocialPulse } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/pulse"),
+  entities: [SocialPost, SocialTopic, SocialPostTopic, User]
+}
+
+api mobileSocialConnections {
+  fn: import { mobileSocialConnections } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/connections"),
+  entities: [User, SocialFollow, SocialBlock]
+}
+
+api mobileSocialBlocks {
+  fn: import { mobileSocialBlocks } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/blocks"),
+  entities: [SocialBlock, User]
+}
+
+api mobileSocialReport {
+  fn: import { mobileSocialReport } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/report"),
+  entities: [SocialReport, SocialPost, SocialComment]
+}
+
+api mobileBibleBooks {
+  fn: import { mobileBibleBooks } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/bible/books"),
+  entities: [BibleBook]
+}
+
+api mobileBibleBook {
+  fn: import { mobileBibleBook } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/bible/books/:id"),
+  entities: [BibleBook, BibleChapter]
+}
+
+api mobileBibleChapter {
+  fn: import { mobileBibleChapter } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/bible/books/:bookId/chapters/:chapter"),
+  entities: [BibleBook, BibleChapter, BibleVerse]
+}
 //#endregion
 
 api chatStreamApi {

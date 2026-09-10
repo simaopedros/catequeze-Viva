@@ -108,6 +108,86 @@ export const toggleSocialFollow = async (args: { authorId: string }, context: an
 };
 
 /** Which of the given authors the viewer already follows. */
+export const listSocialConnections = async (
+  args: {
+    handle?: string | null;
+    userId?: string | null;
+    kind?: 'followers' | 'following';
+    cursor?: string | null;
+    limit?: number;
+  },
+  context: any,
+) => {
+  assertSocialEnabled();
+
+  const handle = normalizeSocialHandle(String(args?.handle || ''));
+  const userId = String(args?.userId || '');
+  const kind = args?.kind === 'following' ? 'following' : 'followers';
+  const limit = Math.min(Math.max(args?.limit ?? 30, 1), 60);
+
+  if (!handle && !userId) {
+    throw new HttpError(400, 'Perfil inválido.');
+  }
+
+  const user = await context.entities.User.findFirst({
+    where: handle ? { socialHandle: handle } : { id: userId },
+    select: { id: true },
+  });
+  if (!user) {
+    throw new HttpError(404, 'Perfil não encontrado.');
+  }
+
+  const viewerId = context.user?.id ?? null;
+  if (viewerId && viewerId !== user.id) {
+    const theyBlockedViewer = await context.entities.SocialBlock.findUnique({
+      where: { blockerId_blockedId: { blockerId: user.id, blockedId: viewerId } },
+      select: { id: true },
+    });
+    if (theyBlockedViewer) {
+      throw new HttpError(404, 'Perfil não encontrado.');
+    }
+  }
+
+  const personSelect = {
+    id: true,
+    firstName: true,
+    lastName: true,
+    avatarUrl: true,
+    socialHandle: true,
+    socialFollowersCount: true,
+  } as const;
+
+  const rows = await context.entities.SocialFollow.findMany({
+    where: kind === 'followers' ? { authorId: user.id } : { followerId: user.id },
+    include: {
+      follower: { select: personSelect },
+      author: { select: personSelect },
+    },
+    orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+    take: limit + 1,
+    ...(args?.cursor ? { cursor: { id: args.cursor }, skip: 1 } : {}),
+  });
+
+  const hasMore = rows.length > limit;
+  const page = hasMore ? rows.slice(0, limit) : rows;
+
+  return {
+    items: page.map((row: any) => {
+      const person = kind === 'followers' ? row.follower : row.author;
+      const socialHandle = person?.socialHandle ?? null;
+      return {
+        id: person.id,
+        displayName: buildAuthorDisplayName(person),
+        handle: socialHandle,
+        socialHandle,
+        avatarUrl: person.avatarUrl ?? null,
+        followersCount: Math.max(0, person.socialFollowersCount ?? 0),
+      };
+    }),
+    nextCursor: hasMore ? page[page.length - 1].id : null,
+  };
+};
+
 export const getSocialFollowState = async (args: { authorIds: string[] }, context: any) => {
   if (!isSocialEnabled()) return { following: [] as string[] };
   if (!context.user) return { following: [] as string[] };
