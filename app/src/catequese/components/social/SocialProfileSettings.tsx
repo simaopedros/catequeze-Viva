@@ -36,13 +36,15 @@ export function SocialProfileSettings() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const dirtyRef = useRef(false);
 
   useEffect(() => {
     if (!profile) return;
+    setAvatarUrl(profile.avatarUrl);
+    if (dirtyRef.current) return;
     setHandle(profile.handle || "");
     setBio(profile.bio || "");
     setWebsiteUrl(profile.websiteUrl || "");
-    setAvatarUrl(profile.avatarUrl);
   }, [profile?.handle, profile?.bio, profile?.websiteUrl, profile?.avatarUrl]);
 
   if (!SOCIAL_FEATURES_ENABLED) return null;
@@ -51,6 +53,7 @@ export function SocialProfileSettings() {
     setSaving(true);
     try {
       await updateSocialProfile({ handle, bio, websiteUrl });
+      dirtyRef.current = false;
       await refetch();
       toast({ title: t("saved") });
     } catch (error: any) {
@@ -76,6 +79,7 @@ export function SocialProfileSettings() {
     try {
       const url = await uploadProfileAvatar(file);
       setAvatarUrl(url);
+      await refetch();
       toast({ title: t("social_avatar_updated") });
     } catch (error: any) {
       toast({ title: error?.message || t("social_avatar_error"), variant: "destructive" });
@@ -134,9 +138,10 @@ export function SocialProfileSettings() {
           <Input
             id="social-handle"
             value={handle}
-            onChange={(event) =>
-              setHandle(normalizeHandle(event.target.value).slice(0, HANDLE_MAX))
-            }
+            onChange={(event) => {
+              dirtyRef.current = true;
+              setHandle(normalizeHandle(event.target.value).slice(0, HANDLE_MAX));
+            }}
             maxLength={HANDLE_MAX}
             className="h-10 rounded-sm"
             autoComplete="username"
@@ -151,7 +156,10 @@ export function SocialProfileSettings() {
         <Textarea
           id="social-bio"
           value={bio}
-          onChange={(event) => setBio(event.target.value)}
+          onChange={(event) => {
+            dirtyRef.current = true;
+            setBio(event.target.value);
+          }}
           maxLength={BIO_MAX}
           rows={3}
           className="resize-none"
@@ -168,7 +176,10 @@ export function SocialProfileSettings() {
         <Input
           id="social-website"
           value={websiteUrl}
-          onChange={(event) => setWebsiteUrl(event.target.value)}
+          onChange={(event) => {
+            dirtyRef.current = true;
+            setWebsiteUrl(event.target.value);
+          }}
           placeholder="https://"
           className="h-10 rounded-sm"
         />

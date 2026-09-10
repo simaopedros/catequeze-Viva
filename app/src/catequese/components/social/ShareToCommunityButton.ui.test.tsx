@@ -14,6 +14,9 @@ vi.mock("react-i18next", () => ({
         "nativeShare.dialogDescription":
           "O conteúdo fica anexado à publicação com um atalho de volta à origem.",
         "share.toCommunity": "Levar à Comunidade",
+        "nativeShare.textDialogDescription":
+          "O texto fica pronto no compositor. Publicar continua a pedir assinatura.",
+        "nativeShare.pendingPreview": "Texto pronto para a publicação",
         "upsell.anonymousTitle": "Entre para participar",
         "upsell.anonymousDescription": "Crie a sua conta para reagir, comentar e publicar.",
         "upsell.login": "Entrar",
@@ -58,7 +61,8 @@ describe("ShareToCommunityButton", () => {
     );
   });
 
-  it("no fluxo de texto aponta para o composer da Comunidade", () => {
+  it("no fluxo de texto abre o diálogo e mostra o rascunho", async () => {
+    const user = userEvent.setup();
     render(
       <MemoryRouter>
         <ShareToCommunityButton
@@ -69,9 +73,15 @@ describe("ShareToCommunityButton", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByTestId("share-to-community")).toHaveAttribute(
-      "href",
-      "/app/comunidade?share=1&body=Palavra+de+hoje&topic=biblia&from=bible",
-    );
+    const trigger = screen.getByTestId("share-to-community");
+    expect(trigger).toHaveAccessibleName("Levar à Comunidade");
+    expect(trigger).not.toHaveAttribute("href");
+    await user.click(trigger);
+
+    expect(
+      screen.getByRole("heading", { name: "Partilhar na Comunidade" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Palavra de hoje")).toBeInTheDocument();
+    expect(screen.getByText("Entre para participar")).toBeInTheDocument();
   });
 });

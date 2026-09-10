@@ -14,7 +14,13 @@ export type SocialAccessReason =
  * Explains why the composer is unavailable. Reading and sharing stay open, so
  * this is always an invitation rather than a blocker.
  */
-export function SocialAccessNotice({ reason }: { reason: SocialAccessReason }) {
+export function SocialAccessNotice({
+  reason,
+  preview,
+}: {
+  reason: SocialAccessReason;
+  preview?: string;
+}) {
   const { t } = useTranslation("social");
   if (!reason) return null;
 
@@ -57,6 +63,14 @@ export function SocialAccessNotice({ reason }: { reason: SocialAccessReason }) {
           <p className="mt-1 text-sm text-muted-foreground">
             {copy.description}
           </p>
+          {preview ? (
+            <blockquote className="mt-3 whitespace-pre-wrap break-words rounded-sm border border-border/70 bg-muted/30 px-3 py-2 text-sm leading-relaxed text-foreground">
+              <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {t("nativeShare.pendingPreview")}
+              </p>
+              {preview}
+            </blockquote>
+          ) : null}
           {copy.to && copy.cta && (
             <Button asChild size="sm" className="mt-3">
               <Link to={copy.to}>{copy.cta}</Link>

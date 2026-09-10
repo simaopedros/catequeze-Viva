@@ -110,15 +110,31 @@ export function communityPostPath(
 /**
  * Lift a stored/public Comunidade URL into the authenticated app shell.
  * Leaves other links (settings, classes, absolute URLs) untouched.
+ *
+ * Public share URLs stay `/u/:handle` and `/c/:slug` when copied; this helper
+ * is for opening those links (or older `/comunidade/...` notifications) inside
+ * `/app` after login.
  */
 export function toAppCommunityPath(link: string): string {
   const trimmed = (link || "").trim();
-  if (!trimmed.startsWith("/comunidade")) return trimmed;
   const [path, query] = trimmed.split("?");
-  if (path !== "/comunidade" && !path.startsWith("/comunidade/")) {
-    return trimmed;
+  const suffix = query ? `?${query}` : "";
+
+  if (path === "/comunidade" || path.startsWith("/comunidade/")) {
+    return `/app${path}${suffix}`;
   }
-  return query ? `/app${path}?${query}` : `/app${path}`;
+
+  const profile = path.match(/^\/u\/([^/]+)$/);
+  if (profile) {
+    return `/app/comunidade/u/${profile[1]}${suffix}`;
+  }
+
+  const short = path.match(/^\/c\/([^/]+)$/);
+  if (short) {
+    return `/app/comunidade/p/${short[1]}${suffix}`;
+  }
+
+  return trimmed;
 }
 
 /** In-app stays in the app shell; public feed uses the public Comunidade route. */

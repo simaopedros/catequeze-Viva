@@ -74,6 +74,12 @@ describe('social handle', () => {
     expect(toAppCommunityPath('/comunidade/t/liturgia?tab=1')).toBe(
       '/app/comunidade/t/liturgia?tab=1',
     );
+    expect(toAppCommunityPath('/u/maria_catequista')).toBe(
+      '/app/comunidade/u/maria_catequista',
+    );
+    expect(toAppCommunityPath('/c/paz-e-bem?ref=share')).toBe(
+      '/app/comunidade/p/paz-e-bem?ref=share',
+    );
     expect(toAppCommunityPath('/app/classes')).toBe('/app/classes');
     expect(toAppCommunityPath('/settings')).toBe('/settings');
   });

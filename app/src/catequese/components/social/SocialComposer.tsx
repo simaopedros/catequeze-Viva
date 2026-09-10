@@ -46,12 +46,16 @@ export function SocialComposer({
   quotaLeft,
   onPublished,
   initialShare = null,
+  initialBody = "",
+  initialTopic,
 }: {
   topics: { slug: string; name: string }[];
   limits: { maxMediaPerPost: number; maxVideoSeconds: number };
   quotaLeft: number | null;
   onPublished: () => void;
   initialShare?: SocialShareDraft | null;
+  initialBody?: string;
+  initialTopic?: string;
 }) {
   const { t } = useTranslation("social");
   const { data: user } = useAuth();
@@ -63,12 +67,16 @@ export function SocialComposer({
     getUserDisplayFirstName(user) ||
     t("title");
 
-  const [body, setBody] = useState("");
+  const [body, setBody] = useState(initialBody);
   const [media, setMedia] = useState<DraftMedia[]>([]);
-  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>(
+    initialTopic ? [initialTopic] : [],
+  );
   const [consent, setConsent] = useState(false);
   const [publishing, setPublishing] = useState(false);
-  const [fromShare, setFromShare] = useState(false);
+  const [fromShare, setFromShare] = useState(
+    Boolean(initialBody || initialTopic || initialShare),
+  );
   const [nativeShare, setNativeShare] = useState<SocialShareDraft | null>(
     initialShare,
   );

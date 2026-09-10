@@ -92,4 +92,15 @@ describe("SocialProfileSettings", () => {
 
     expect(input).toHaveValue("maria_catequista");
   });
+
+  it("não apaga o @ se o perfil recarregar a meio da edição", () => {
+    const { rerender } = render(<SocialProfileSettings />);
+
+    const input = screen.getByLabelText("Nome de usuário (@)");
+    fireEvent.change(input, { target: { value: "novo_handle" } });
+    expect(input).toHaveValue("novo_handle");
+
+    rerender(<SocialProfileSettings />);
+    expect(screen.getByLabelText("Nome de usuário (@)")).toHaveValue("novo_handle");
+  });
 });

@@ -1052,7 +1052,7 @@ export default function BiblePage() {
                         <p className={`flex-1 ${FONT_SIZE_CLASS[fontSize]}`}>
                           {v.text}
                         </p>
-                        <div className="flex shrink-0 flex-col items-center gap-1 opacity-100 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+                        <div className="flex shrink-0 flex-col items-center gap-1">
                           <ShareToCommunityButton
                             draft={{ kind: "VERSE", sourceId: v.id }}
                             size="icon"

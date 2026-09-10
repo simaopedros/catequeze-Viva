@@ -95,7 +95,11 @@ export const getSocialComments = vi.fn();
 export const createSocialComment = vi.fn();
 export const deleteSocialComment = vi.fn();
 export const getSocialFollowState = vi.fn();
+export const getSocialProfile = vi.fn();
 export const toggleSocialFollow = vi.fn();
+export const queryClientInitialized = Promise.resolve({
+  invalidateQueries: vi.fn(async () => {}),
+});
 export const reportSocialContent = vi.fn();
 export const getSocialPublishAccess = vi.fn();
 export const getSocialTopics = vi.fn();
