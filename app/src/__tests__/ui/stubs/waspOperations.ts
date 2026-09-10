@@ -86,3 +86,14 @@ export const useQuery = vi.fn((_query?: unknown) => ({
   refetch: vi.fn(),
 }));
 export const useAction = (fn: unknown) => fn;
+
+export const deleteSocialPost = vi.fn();
+export const toggleSocialReaction = vi.fn();
+export const toggleSocialBlock = vi.fn();
+export const registerSocialShare = vi.fn();
+export const getSocialComments = vi.fn();
+export const createSocialComment = vi.fn();
+export const deleteSocialComment = vi.fn();
+export const getSocialFollowState = vi.fn();
+export const toggleSocialFollow = vi.fn();
+export const reportSocialContent = vi.fn();
