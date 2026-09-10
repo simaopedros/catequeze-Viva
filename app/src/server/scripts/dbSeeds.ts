@@ -69,6 +69,7 @@ function generateMockUserData(): MockUserData {
     socialBanReason: null,
     socialHandle: null,
     socialBio: null,
+    websiteUrl: null,
     socialFollowersCount: 0,
     socialFollowingCount: 0,
     suspendedAt: null,
