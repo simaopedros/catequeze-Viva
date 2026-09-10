@@ -41,8 +41,9 @@ export default function PublicSocialProfilePage() {
   );
 
   const copyLink = async () => {
-    if (!profile?.handle) return;
-    const url = `${window.location.origin}${profilePath(profile.handle)}`;
+    const handle = profile?.handle;
+    if (!handle) return;
+    const url = `${window.location.origin}${profilePath(handle)}`;
     await navigator.clipboard.writeText(url);
     toast({ title: t("profile.linkCopied") });
   };

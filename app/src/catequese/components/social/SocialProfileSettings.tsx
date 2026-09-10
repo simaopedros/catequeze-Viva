@@ -56,11 +56,12 @@ export function SocialProfileSettings() {
   };
 
   const copyLink = async () => {
-    if (!profile?.handle) {
+    const handle = profile?.handle;
+    if (!handle) {
       toast({ title: t("social_handle_required"), variant: "destructive" });
       return;
     }
-    const url = `${window.location.origin}${profilePath(profile.handle)}`;
+    const url = `${window.location.origin}${profilePath(handle)}`;
     await navigator.clipboard.writeText(url);
     toast({ title: ts("profile.linkCopied") });
   };
