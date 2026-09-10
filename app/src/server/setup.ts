@@ -8,6 +8,7 @@ import { preloadReferenceCache } from './cache/referenceCache';
 import { registerLandingHtmlMeta } from './middleware/landingHtmlMeta';
 import { registerBlogCrawlerHtml } from './middleware/blogCrawlerHtml';
 import { portalRequestContextMiddleware } from './requestPortalContext';
+import { applyLocalMobileCors, prependMiddleware } from './mobileLocalCors';
 
 const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
 const TOKEN_QUERY_RE = /([?&](token|key|code|session|access_token)=)[^&#\s]+/gi;
@@ -49,32 +50,9 @@ export function scrubSentryEvent<T extends Record<string, any>>(input: T): T {
 export const serverSetup: ServerSetupFn = async ({ app, server }) => {
   const MAX_BODY = '2mb';
 
-  // Expo web (and other localhost clients) call /mobile from another origin.
-  // Native Expo Go does not need this; browsers do.
-  app.use('/mobile', (req: any, res: any, next: any) => {
-    const origin = req.headers.origin;
-    const isLocalDev =
-      process.env.NODE_ENV !== 'production' &&
-      typeof origin === 'string' &&
-      /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
-    if (isLocalDev) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-      res.setHeader('Vary', 'Origin');
-      res.setHeader(
-        'Access-Control-Allow-Headers',
-        'Content-Type, Authorization, Accept',
-      );
-      res.setHeader(
-        'Access-Control-Allow-Methods',
-        'GET,POST,PUT,PATCH,DELETE,OPTIONS',
-      );
-      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-      if (req.method === 'OPTIONS') {
-        return res.status(204).end();
-      }
-    }
-    next();
-  });
+  // Expo web calls /mobile from :8081. Wasp mounts POST routes before serverSetup,
+  // so this middleware must be prepended or OPTIONS never gets CORS headers.
+  prependMiddleware(app as any, '/mobile', applyLocalMobileCors);
 
   // ── Security headers ────────────────────────────────────────────────
   app.use((_req: any, res: any, next: any) => {
