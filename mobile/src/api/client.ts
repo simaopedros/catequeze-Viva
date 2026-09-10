@@ -69,8 +69,17 @@ export function createMobileClient(options: MobileClientOptions) {
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }
+    const baseUrl = options.getBaseUrl().replace(/\/$/, '');
+    try {
+      const host = new URL(baseUrl).hostname;
+      if (host.endsWith('.loca.lt')) {
+        headers['Bypass-Tunnel-Reminder'] = 'true';
+      }
+    } catch {
+      // ignore invalid base URL — the fetch below will fail clearly
+    }
 
-    const response = await (options.fetchImpl ?? fetch)(`${options.getBaseUrl().replace(/\/$/, '')}${path}`, {
+    const response = await (options.fetchImpl ?? fetch)(`${baseUrl}${path}`, {
       ...init,
       headers,
     });
