@@ -97,3 +97,6 @@ export const deleteSocialComment = vi.fn();
 export const getSocialFollowState = vi.fn();
 export const toggleSocialFollow = vi.fn();
 export const reportSocialContent = vi.fn();
+export const getSocialPublishAccess = vi.fn();
+export const getSocialTopics = vi.fn();
+export const previewSocialShare = vi.fn();

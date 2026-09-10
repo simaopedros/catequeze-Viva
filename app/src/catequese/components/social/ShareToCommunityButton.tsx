@@ -8,6 +8,7 @@ import { Button } from "../../../client/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "../../../client/components/ui/dialog";
@@ -71,6 +72,7 @@ export function ShareToCommunityButton({
           <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>{t("nativeShare.dialogTitle")}</DialogTitle>
+              <DialogDescription>{t("nativeShare.dialogDescription")}</DialogDescription>
             </DialogHeader>
             {!user ? (
               <SocialAccessNotice reason="anonymous" />

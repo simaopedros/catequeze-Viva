@@ -3814,6 +3814,7 @@ export const social_pt_BR_app = {
     "nativeShare": {
       "action": "Partilhar na Comunidade",
       "dialogTitle": "Partilhar na Comunidade",
+      "dialogDescription": "O conteúdo fica anexado à publicação com um atalho de volta à origem.",
       "previewFailed": "Não foi possível preparar esta partilha.",
       "kind": {
         "verse": "Versículo",

@@ -251,6 +251,7 @@
   "nativeShare": {
     "action": "Compartir en la Comunidad",
     "dialogTitle": "Compartir en la Comunidad",
+    "dialogDescription": "El contenido queda unido a la publicación con un atajo de vuelta al origen.",
     "previewFailed": "No se pudo preparar esta publicación.",
     "kind": {
       "verse": "Versículo",
