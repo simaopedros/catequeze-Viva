@@ -239,6 +239,7 @@
   --z-dropdown: 50;
   --z-sticky: 100;
   --z-overlay: 200;
+  --z-cookie: 150;
   --z-modal: 500;
   --z-toast: 1000;
 
@@ -674,4 +675,18 @@
   font-size: 0.9375rem !important;
   font-weight: 500 !important;
   color: hsl(var(--foreground)) !important;
+}
+
+/* vanilla-cookieconsent defaults to a near-max z-index and would sit above
+   Radix dialogs/sheets (z-modal: 500). Keep the banner above sticky chrome
+   and below overlays so partilhar/bloquear stay clickable. */
+#cc-main {
+  --cc-z-index: var(--z-cookie, 150);
+  z-index: var(--z-cookie, 150) !important;
+}
+
+body:has([data-slot="dialog-overlay"][data-state="open"]) #cc-main,
+body:has([data-slot="sheet-overlay"][data-state="open"]) #cc-main {
+  visibility: hidden;
+  pointer-events: none;
 }

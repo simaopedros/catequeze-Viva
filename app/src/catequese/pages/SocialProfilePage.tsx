@@ -16,6 +16,7 @@ import { toast } from "../../client/hooks/use-toast";
 import { SocialFeed } from "../components/social/SocialFeed";
 import { SocialFollowButton } from "../components/social/SocialFollowButton";
 import { SocialAvatar } from "../components/social/SocialAvatar";
+import { invalidateSocialFollowQueries } from "../../client/hooks/socialQueryCache";
 import { canSocialInteract } from "../../shared/socialFeatures";
 import { communityProfilePath, profilePath } from "../../shared/socialProfile";
 
@@ -73,7 +74,10 @@ export default function SocialProfilePage() {
       {t("feed.loading")}
     </p>
   ) : error || !data?.profile ? (
-    <EmptyState title={t("profile.notFound")} description={t("profile.notFoundDescription")} />
+    <EmptyState
+      title={t("profile.notFound")}
+      description={t("profile.notFoundDescription")}
+    />
   ) : (
     <div className="space-y-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -90,7 +94,9 @@ export default function SocialProfilePage() {
             <h1 className="mt-1 break-words text-2xl font-semibold tracking-tight">
               {data.profile.displayName}
             </h1>
-            <p className="text-sm text-muted-foreground">@{data.profile.socialHandle}</p>
+            <p className="text-sm text-muted-foreground">
+              @{data.profile.socialHandle}
+            </p>
             {data.profile.socialBio ? (
               <p className="mt-3 max-w-xl whitespace-pre-wrap break-words text-sm leading-relaxed">
                 {data.profile.socialBio}
@@ -109,10 +115,14 @@ export default function SocialProfilePage() {
               </p>
             ) : null}
             <p className="mt-3 text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">{data.profile.followersCount}</span>{" "}
+              <span className="font-medium text-foreground">
+                {data.profile.followersCount}
+              </span>{" "}
               {t("discovery.followers")}
               <span className="mx-2">·</span>
-              <span className="font-medium text-foreground">{data.profile.followingCount}</span>{" "}
+              <span className="font-medium text-foreground">
+                {data.profile.followingCount}
+              </span>{" "}
               {t("discovery.following")}
             </p>
           </div>
@@ -147,14 +157,22 @@ export default function SocialProfilePage() {
               variant="ghost"
               size="sm"
               className="gap-1"
+              data-testid="social-block-toggle"
               onClick={async () => {
                 try {
-                  const result = await toggleSocialBlock({ userId: data.profile.id });
+                  const result = await toggleSocialBlock({
+                    userId: data.profile.id,
+                  });
                   setBlocked(result.blocked);
+                  void invalidateSocialFollowQueries();
                   toast({
                     title: result.blocked
-                      ? t("discovery.blockSuccess", { name: data.profile.displayName })
-                      : t("discovery.unblockSuccess", { name: data.profile.displayName }),
+                      ? t("discovery.blockSuccess", {
+                          name: data.profile.displayName,
+                        })
+                      : t("discovery.unblockSuccess", {
+                          name: data.profile.displayName,
+                        }),
                   });
                 } catch (err: any) {
                   toast({

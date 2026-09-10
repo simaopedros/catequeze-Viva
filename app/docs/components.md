@@ -146,6 +146,7 @@ horizontal, que é o sintoma clássico de mudança de densidade que apertou layo
 |---|---|
 | `z-dropdown` | Dropdowns (50) |
 | `z-sticky` | Headers, bottom nav (100) |
+| `z-cookie` | Banner de cookies (150; abaixo de diálogos) |
 | `z-overlay` | Sidebar overlay (200) |
 | `z-modal` | Dialogs, sheets (500) |
 | `z-toast` | Toasts (1000) |

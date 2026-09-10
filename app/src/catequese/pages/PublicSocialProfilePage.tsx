@@ -12,11 +12,16 @@ import {
 import { Button } from "../../client/components/ui/button";
 import { EmptyState } from "../../client/components/EmptyState";
 import { toast } from "../../client/hooks/use-toast";
+import { invalidateSocialFollowQueries } from "../../client/hooks/socialQueryCache";
 import { SocialFeed } from "../components/social/SocialFeed";
 import { SocialFollowButton } from "../components/social/SocialFollowButton";
 import { ScrollFade } from "../../client/components/ui/scroll-fade";
 import { canSocialInteract } from "../../shared/socialFeatures";
-import { communityProfilePath, normalizeHandle, profilePath } from "../../shared/socialProfile";
+import {
+  communityProfilePath,
+  normalizeHandle,
+  profilePath,
+} from "../../shared/socialProfile";
 
 export default function PublicSocialProfilePage() {
   const { t } = useTranslation("social");
@@ -29,7 +34,11 @@ export default function PublicSocialProfilePage() {
     ? communityProfilePath(normalizeHandle(handle), "/app/comunidade")
     : "/app/comunidade";
 
-  const { data: profile, isLoading, error } = useQuery(
+  const {
+    data: profile,
+    isLoading,
+    error,
+  } = useQuery(
     getSocialProfile,
     { handle },
     { enabled: Boolean(handle) && !authLoading && !viewer },
@@ -74,13 +83,17 @@ export default function PublicSocialProfilePage() {
     try {
       const result = await toggleSocialBlock({ userId: profile.id });
       setBlocked(result.blocked);
+      void invalidateSocialFollowQueries();
       toast({
         title: result.blocked
           ? t("discovery.blockSuccess", { name: profile.displayName })
           : t("discovery.unblockSuccess", { name: profile.displayName }),
       });
     } catch (err: any) {
-      toast({ title: err?.message || t("discovery.block"), variant: "destructive" });
+      toast({
+        title: err?.message || t("discovery.block"),
+        variant: "destructive",
+      });
     }
   };
 
@@ -160,7 +173,12 @@ export default function PublicSocialProfilePage() {
 
       <div className="flex flex-wrap gap-2">
         {profile.handle && (
-          <Button variant="outline" size="sm" onClick={copyLink} className="gap-1">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={copyLink}
+            className="gap-1"
+          >
             <Copy className="h-3.5 w-3.5" aria-hidden />
             {t("profile.copyLink")}
           </Button>
@@ -179,7 +197,13 @@ export default function PublicSocialProfilePage() {
               />
             )}
             {viewer && (
-              <Button variant="ghost" size="sm" onClick={toggleBlock} className="gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleBlock}
+                className="gap-1"
+                data-testid="social-block-toggle"
+              >
                 <Ban className="h-3.5 w-3.5" aria-hidden />
                 {blocked ? t("discovery.unblock") : t("discovery.block")}
               </Button>

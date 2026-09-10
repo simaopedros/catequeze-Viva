@@ -107,3 +107,4 @@ export const previewSocialShare = vi.fn();
 export const getMySocialProfile = vi.fn();
 export const updateSocialProfile = vi.fn();
 export const listMySocialBlocks = vi.fn();
+export const getSocialFeed = vi.fn();

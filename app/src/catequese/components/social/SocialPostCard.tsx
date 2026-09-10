@@ -9,7 +9,12 @@ import {
   Flag,
   Ban,
 } from "lucide-react";
-import { deleteSocialPost, toggleSocialReaction, toggleSocialBlock } from "wasp/client/operations";
+import {
+  deleteSocialPost,
+  toggleSocialReaction,
+  toggleSocialBlock,
+} from "wasp/client/operations";
+import { invalidateSocialFollowQueries } from "../../../client/hooks/socialQueryCache";
 import { SocialShareEmbed, type SocialShareCard } from "./SocialShareEmbed";
 import {
   communityPostPath,
@@ -155,7 +160,8 @@ export function SocialPostCard({
   const timestamp = post.publishedAt || post.createdAt;
   const { title, rest } = splitSocialHeadline(post.body);
   const canCollapse = shouldCollapseSocialBody(rest);
-  const visibleBody = canCollapse && !expanded ? collapseSocialBody(rest) : rest;
+  const visibleBody =
+    canCollapse && !expanded ? collapseSocialBody(rest) : rest;
 
   return (
     <article className="mb-3 min-w-0 overflow-hidden rounded-2xl border border-border bg-white p-4 shadow-[0_3px_16px_rgba(18,46,76,0.07)]">
@@ -167,7 +173,10 @@ export function SocialPostCard({
         <div className="min-w-0 flex-1">
           {post.author.socialHandle ? (
             <Link
-              to={communityProfilePath(post.author.socialHandle, location.pathname)}
+              to={communityProfilePath(
+                post.author.socialHandle,
+                location.pathname,
+              )}
               className="block truncate text-[13px] font-extrabold leading-tight hover:underline"
             >
               {post.author.displayName}
@@ -230,11 +239,18 @@ export function SocialPostCard({
                 <DropdownMenuItem
                   onClick={async () => {
                     try {
-                      const result = await toggleSocialBlock({ userId: post.author.id });
+                      const result = await toggleSocialBlock({
+                        userId: post.author.id,
+                      });
+                      void invalidateSocialFollowQueries();
                       toast({
                         title: result.blocked
-                          ? t("discovery.blockSuccess", { name: post.author.displayName })
-                          : t("discovery.unblockSuccess", { name: post.author.displayName }),
+                          ? t("discovery.blockSuccess", {
+                              name: post.author.displayName,
+                            })
+                          : t("discovery.unblockSuccess", {
+                              name: post.author.displayName,
+                            }),
                       });
                       if (result.blocked) onDeleted?.(post.id);
                     } catch (error: any) {

@@ -7,6 +7,8 @@ import {
   getSocialFollowState,
   getSocialProfile,
   getMySocialProfile,
+  getSocialFeed,
+  listMySocialBlocks,
 } from "wasp/client/operations";
 
 function queryKeyOf(fn: { queryCacheKey?: string[] }): string[] {
@@ -21,6 +23,8 @@ export async function invalidateSocialFollowQueries(): Promise<void> {
       queryKeyOf(getSocialFollowState as { queryCacheKey?: string[] }),
       queryKeyOf(getSocialProfile as { queryCacheKey?: string[] }),
       queryKeyOf(getMySocialProfile as { queryCacheKey?: string[] }),
+      queryKeyOf(getSocialFeed as { queryCacheKey?: string[] }),
+      queryKeyOf(listMySocialBlocks as { queryCacheKey?: string[] }),
     ].filter((key) => key.length > 0);
 
     await Promise.all(
