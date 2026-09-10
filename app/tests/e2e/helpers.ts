@@ -45,6 +45,10 @@ export const USERS = {
     email: "catequista.sem.turma@catequese.com",
     role: "Catequista sem Turma",
   },
+  communityFree: {
+    email: "comunidade.livre@catequese.com",
+    role: "Catequista livre",
+  },
 };
 
 export const PASSWORD = "Teste@123";

@@ -24,9 +24,25 @@ export default function PublicSocialProfilePage() {
   const { data: viewer, isLoading: authLoading } = useAuth();
   const [blocked, setBlocked] = useState(false);
 
-  const appProfilePath = params.handle
-    ? communityProfilePath(normalizeHandle(params.handle), "/app/comunidade")
+  const handle = params.handle || "";
+  const appProfilePath = handle
+    ? communityProfilePath(normalizeHandle(handle), "/app/comunidade")
     : "/app/comunidade";
+
+  const { data: profile, isLoading, error } = useQuery(
+    getSocialProfile,
+    { handle },
+    { enabled: Boolean(handle) && !authLoading && !viewer },
+  );
+  const { data: access } = useQuery(getSocialPublishAccess, undefined, {
+    enabled: Boolean(viewer),
+  });
+
+  useEffect(() => {
+    if (typeof profile?.isBlocked === "boolean") {
+      setBlocked(profile.isBlocked);
+    }
+  }, [profile?.isBlocked]);
 
   if (authLoading) {
     return (
@@ -42,19 +58,6 @@ export default function PublicSocialProfilePage() {
   if (viewer) {
     return <Navigate to={appProfilePath} replace />;
   }
-
-  const { data: profile, isLoading, error } = useQuery(getSocialProfile, {
-    handle: params.handle || "",
-  });
-  const { data: access } = useQuery(getSocialPublishAccess, undefined, {
-    enabled: Boolean(viewer),
-  });
-
-  useEffect(() => {
-    if (typeof profile?.isBlocked === "boolean") {
-      setBlocked(profile.isBlocked);
-    }
-  }, [profile?.isBlocked]);
 
   const canInteract = canSocialInteract(access);
 

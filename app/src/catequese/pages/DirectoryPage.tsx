@@ -89,8 +89,10 @@ export default function DirectoryPage() {
     setLoading(false);
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim() || searchQuery.length < 2) return;
+  const handleSearch = async (raw?: string) => {
+    const query = (raw ?? searchQuery).trim();
+    if (query.length < 2) return;
+    setSearchQuery(query);
     setLoading(true);
     setPart("");
     setEntries([]);
@@ -99,7 +101,7 @@ export default function DirectoryPage() {
     try {
       setSearchResults(
         (await searchDirectory({
-          query: searchQuery,
+          query,
           locale: currentLocale,
         })) || [],
       );
@@ -150,8 +152,7 @@ export default function DirectoryPage() {
               <button
                 key={topic}
                 onClick={() => {
-                  setSearchQuery(topic);
-                  handleSearch();
+                  void handleSearch(topic);
                 }}
                 className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-brand-ink/30 hover:text-brand-ink"
               >

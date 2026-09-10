@@ -3,7 +3,7 @@
  * 
  * Cria 1 Diocese com plano corporativo ativo, 3 paróquias (São José com plano pago,
  * Santa Maria com plano grátis herdando da Diocese, São João sem diocese no plano grátis limitado),
- * 16 utilizadores com múltiplos papéis, turmas, encontros, presenças, documentos e mensagens.
+ * 17 utilizadores com múltiplos papéis, turmas, encontros, presenças, documentos e mensagens.
  * 
  * Password para todos os utilizadores: Teste@123
  * 
@@ -395,7 +395,30 @@ async function seed() {
       subscriptionPlan: 'single',
     },
   });
-  console.log(`✅ ${users.length} Utilizadores criados com senha padrão (Teste@123)`);
+  const socialHandles = {
+    'catequista.lead@catequese.com': 'catequista_lead',
+    'coord.saojose@catequese.com': 'coord_saojose',
+    'responsavel@catequese.com': 'familia_silva',
+  };
+  for (const [email, socialHandle] of Object.entries(socialHandles)) {
+    await p.user.update({ where: { email }, data: { socialHandle } });
+  }
+  await createUser(
+    'user-social-free-01',
+    'comunidade.livre@catequese.com',
+    'Catequista',
+    'Livre',
+    false,
+  );
+  await p.user.update({
+    where: { email: 'comunidade.livre@catequese.com' },
+    data: {
+      subscriptionStatus: null,
+      subscriptionPlan: 'catechist_free',
+      socialHandle: 'catequista_livre',
+    },
+  });
+  console.log(`✅ ${users.length + 1} Utilizadores criados com senha padrão (Teste@123)`);
 
   // ═══ 8. Create Memberships ═══
   const memberships = [
@@ -419,7 +442,8 @@ async function seed() {
     { id: 'mem-lead-sm-00001', userId: 'user-lead-sm-00001', parishId: PARISH_SANTA_MARIA_ID, role: 'LEAD_CATECHIST' },
     // São João (Rural/Independente)
     { id: 'mem-coord-so-0001', userId: 'user-coord-so-0001', parishId: PARISH_SAN_JOAO_ID, role: 'PARISH_COORDINATOR' },
-    { id: 'mem-lead-so-00001', userId: 'user-lead-so-00001', parishId: PARISH_SAN_JOAO_ID, role: 'LEAD_CATECHIST' }
+    { id: 'mem-lead-so-00001', userId: 'user-lead-so-00001', parishId: PARISH_SAN_JOAO_ID, role: 'LEAD_CATECHIST' },
+    { id: 'mem-social-free-01', userId: 'user-social-free-01', parishId: PARISH_SAN_JOAO_ID, role: 'LEAD_CATECHIST' }
   ];
 
   for (const m of memberships) {
