@@ -9,6 +9,10 @@ vi.mock('wasp/server', () => ({
     }
   },
 }));
+
+vi.mock('../server/auth/contentAccess', () => ({
+  assertCanAccessContent: vi.fn(async () => undefined),
+}));
 import {
   buildCatechismHref,
   buildCommunitySharePath,
@@ -198,5 +202,41 @@ describe('resolveSocialShare', () => {
     );
     expect(directory.href).toBe('/app/directory?entry=42');
     expect(directory.excerpt).toContain('caminho');
+  });
+
+  it('builds library and AI artifact cards from ContentItem', async () => {
+    const { resolveSocialShare } = await import('../server/operations/socialShareResolve');
+    const item = {
+      id: 'doc-1',
+      title: 'Encontro sobre o Batismo',
+      theme: 'Sacramentos',
+      pastoralObjective: '<p>Preparar a turma para a água.</p>',
+      mainContent: '',
+      openingPrayer: '',
+      isAiGenerated: false,
+      parishId: 'p1',
+    };
+
+    const document = await resolveSocialShare(
+      { kind: 'DOCUMENT', sourceId: 'doc-1' },
+      { user: { id: 'u1' }, entities: { ContentItem: { findUnique: async () => item } } },
+    );
+    expect(document.kind).toBe('DOCUMENT');
+    expect(document.href).toBe('/app/content-library/doc-1');
+    expect(document.excerpt).toContain('água');
+
+    const ai = await resolveSocialShare(
+      { kind: 'AI_ARTIFACT', sourceId: 'doc-1' },
+      {
+        user: { id: 'u1' },
+        entities: {
+          ContentItem: {
+            findUnique: async () => ({ ...item, isAiGenerated: true }),
+          },
+        },
+      },
+    );
+    expect(ai.kind).toBe('AI_ARTIFACT');
+    expect(ai.sourceLabel).toMatch(/editorial/i);
   });
 });

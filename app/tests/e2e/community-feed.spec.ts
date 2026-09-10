@@ -196,6 +196,14 @@ test.describe("Comunidade — membro autenticado", () => {
 test.describe("Comunidade — perfil público", () => {
   test.skip(!SOCIAL_FEATURES_ENABLED, "Comunidade está desabilitada");
 
+  test("permalink inexistente mostra publicação não encontrada", async ({ page }) => {
+    await page.goto("/comunidade/p/slug-que-nao-existe");
+    await page.waitForLoadState("domcontentloaded");
+    await dismissCookieBanner(page);
+
+    await expect(page.getByText(/não encontrad/i)).toBeVisible();
+  });
+
   test("handle inexistente mostra perfil não encontrado", async ({ page }) => {
     await page.goto("/comunidade/u/handle-que-nao-existe");
     await page.waitForLoadState("domcontentloaded");
