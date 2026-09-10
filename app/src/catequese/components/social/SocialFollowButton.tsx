@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toggleSocialFollow } from "wasp/client/operations";
 import { Button } from "../../../client/components/ui/button";
@@ -16,6 +16,10 @@ export function SocialFollowButton({
   const { t } = useTranslation("social");
   const [following, setFollowing] = useState(initiallyFollowing);
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    setFollowing(initiallyFollowing);
+  }, [authorId, initiallyFollowing]);
 
   const toggle = async () => {
     setBusy(true);

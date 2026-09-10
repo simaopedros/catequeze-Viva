@@ -69,7 +69,7 @@ export function ShareToCommunityButton({
         </Button>
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-h-[85vh] max-w-lg overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{t("nativeShare.dialogTitle")}</DialogTitle>
               <DialogDescription>{t("nativeShare.dialogDescription")}</DialogDescription>

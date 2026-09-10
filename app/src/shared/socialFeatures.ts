@@ -31,3 +31,20 @@ export function shouldShowSocialNavItem(item: { to: string; iconKey: string }): 
   if (item.iconKey === "community") return false;
   return !isSocialAppPath(item.to);
 }
+
+/**
+ * React / comment on the feed. Quota only blocks new posts (`canPublish`);
+ * a paid or trial plan may still interact after hitting the daily limit.
+ */
+export function canSocialInteract(access?: {
+  authenticated?: boolean;
+  banned?: boolean;
+  plan?: string | null;
+} | null): boolean {
+  return Boolean(
+    access?.authenticated &&
+      !access?.banned &&
+      access.plan &&
+      access.plan !== "catechist_free",
+  );
+}

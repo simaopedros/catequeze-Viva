@@ -1,6 +1,6 @@
 // @ts-nocheck — o tsc do SDK Wasp também vê os *.ui.test.tsx.
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   useQuery,
   getMySocialProfile,
@@ -82,5 +82,14 @@ describe("SocialProfileSettings", () => {
     expect(screen.getByText("Contas bloqueadas")).toBeInTheDocument();
     expect(screen.getByText(/João/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Desbloquear" })).toBeInTheDocument();
+  });
+
+  it("normaliza o @ enquanto a pessoa escreve", () => {
+    render(<SocialProfileSettings />);
+
+    const input = screen.getByLabelText("Nome de usuário (@)");
+    fireEvent.change(input, { target: { value: "@Maria_Catequista" } });
+
+    expect(input).toHaveValue("maria_catequista");
   });
 });

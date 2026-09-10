@@ -16,6 +16,7 @@ import { toast } from "../../client/hooks/use-toast";
 import { SocialFeed } from "../components/social/SocialFeed";
 import { SocialFollowButton } from "../components/social/SocialFollowButton";
 import { SocialAvatar } from "../components/social/SocialAvatar";
+import { canSocialInteract } from "../../shared/socialFeatures";
 import { profilePath } from "../../shared/socialProfile";
 
 export default function SocialProfilePage() {
@@ -46,9 +47,7 @@ export default function SocialProfilePage() {
       : `${t("profile.title")} · Catequese Viva`;
   }, [data, t]);
 
-  const canInteract = Boolean(
-    access?.authenticated && !access?.banned && access?.plan !== "catechist_free",
-  );
+  const canInteract = canSocialInteract(access);
 
   const header = (
     <Button asChild variant="ghost" size="sm" className="mb-4 gap-2">

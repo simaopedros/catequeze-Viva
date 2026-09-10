@@ -65,7 +65,7 @@ function post(overrides: Partial<SocialPostItem> = {}): SocialPostItem {
       href: "/app/bible?book=joao&chapter=3&verse=16",
     },
     media: [],
-    topics: [],
+    topics: [{ slug: "biblia", name: "Bíblia" }],
     viewerReaction: null,
     isOwn: false,
     ...overrides,
@@ -103,6 +103,31 @@ describe("SocialPostCard", () => {
     expect(screen.getByRole("link", { name: /joão 3:16/i })).toHaveAttribute(
       "href",
       "/app/bible?book=joao&chapter=3&verse=16",
+    );
+    expect(screen.getByRole("link", { name: "Bíblia" })).toHaveAttribute(
+      "href",
+      "/app/comunidade/t/biblia",
+    );
+    expect(screen.getByRole("link", { name: "Abrir publicação" })).toHaveAttribute(
+      "href",
+      "/app/comunidade/p/paz-e-bem",
+    );
+  });
+
+  it("no feed público mantém tema e permalink fora do shell", () => {
+    render(
+      <MemoryRouter initialEntries={["/comunidade"]}>
+        <SocialPostCard post={post()} canInteract={false} />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole("link", { name: "Bíblia" })).toHaveAttribute(
+      "href",
+      "/comunidade/t/biblia",
+    );
+    expect(screen.getByRole("link", { name: "Abrir publicação" })).toHaveAttribute(
+      "href",
+      "/comunidade/p/paz-e-bem",
     );
   });
 });
