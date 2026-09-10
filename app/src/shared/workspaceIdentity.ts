@@ -168,13 +168,13 @@ export function formatEffectivePlanCopy(
 export function workspaceKindAccentClass(kind: WorkspaceKind): string {
   switch (kind) {
     case "PERSONAL":
-      return "bg-sky-100 text-sky-800";
+      return "bg-brand-paper text-brand-midnight";
     case "PARISH":
-      return "bg-emerald-100 text-emerald-800";
+      return "bg-brand-ink/10 text-brand-ink";
     case "DIOCESE":
-      return "bg-violet-100 text-violet-800";
+      return "bg-brand-midnight/10 text-brand-midnight";
     case "COMMUNITY":
-      return "bg-amber-100 text-amber-800";
+      return "bg-brand-light-gold/35 text-brand-gold-muted";
     default:
       return "bg-muted text-muted-foreground";
   }
@@ -183,13 +183,13 @@ export function workspaceKindAccentClass(kind: WorkspaceKind): string {
 export function workspaceKindDotClass(kind: WorkspaceKind): string {
   switch (kind) {
     case "PERSONAL":
-      return "bg-sky-500";
+      return "bg-brand-midnight";
     case "PARISH":
-      return "bg-emerald-500";
+      return "bg-brand-ink";
     case "DIOCESE":
-      return "bg-violet-500";
+      return "bg-brand-gold";
     case "COMMUNITY":
-      return "bg-amber-500";
+      return "bg-brand-gold-muted";
     default:
       return "bg-muted-foreground";
   }

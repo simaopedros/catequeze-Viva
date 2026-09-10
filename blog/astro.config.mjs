@@ -6,7 +6,7 @@ import tailwind from "@astrojs/tailwind";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://your-site.com",
+  site: "https://catechis.app",
   trailingSlash: "always",
   integrations: [
     starlight({
@@ -31,7 +31,8 @@ export default defineConfig({
         },
       ],
       editLink: {
-        baseUrl: "https://github.com/<your-repo>",
+        baseUrl:
+          "https://github.com/simaopedros/catequeze-Viva/edit/main/blog",
       },
       components: {
         SiteTitle: "./src/components/MyHeader.astro",
@@ -41,9 +42,7 @@ export default defineConfig({
         PageTitle: "./src/components/TitleWithBannerImage.astro",
       },
       social: {
-        github: "https://github.com/wasp-lang/open-saas",
-        twitter: "https://twitter.com/wasplang",
-        discord: "https://discord.gg/aCamt5wCpS",
+        github: "https://github.com/simaopedros/catequeze-Viva",
       },
       sidebar: [
         {
@@ -74,7 +73,7 @@ export default defineConfig({
               name: "Catequese Viva",
               title: "Equipe Catequese Viva",
               picture: "/CRAIG_ROCK.png",
-              url: "https://your-site.com",
+              url: "https://catechis.app",
             },
           },
         }),

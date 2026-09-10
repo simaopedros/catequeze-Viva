@@ -35,7 +35,7 @@ export function AppProductMock({ ns = "landing" }: { ns?: string }) {
           <p className="font-brand-display text-lg font-semibold tracking-tight text-brand-ink sm:text-xl">
             Olá, catequista!
           </p>
-          <span className="rounded-full bg-emerald-50 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">
+          <span className="rounded-full bg-success/10 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-success">
             Plano ativo
           </span>
         </div>
@@ -108,7 +108,7 @@ export function PhoneAttendanceMock() {
             </span>
             <span
               className={`flex h-4 w-4 items-center justify-center rounded-full ${
-                row.present ? "bg-emerald-100 text-emerald-700" : "bg-muted"
+                row.present ? "bg-success/15 text-success" : "bg-muted"
               }`}
             >
               {row.present ? (
