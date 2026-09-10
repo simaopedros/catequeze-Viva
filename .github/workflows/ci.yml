@@ -1,9 +1,8 @@
 name: CI
 
-# Self-hosted na VPS homolog — não gasta minutos ubuntu-latest.
-# Instalar: app/deploy/scripts/install-github-runner.sh
-# Sem runner online, estes jobs ficam em fila (não falham por billing).
-# Override: variável de repositório CI_RUNS_ON=ubuntu-latest
+# Repo público: ubuntu-latest é grátis (não conta a quota privada).
+# Override: variável de repositório CI_RUNS_ON=self-hosted
+# (app/deploy/scripts/install-github-runner.sh)
 on:
   push:
     branches: [main, master]
@@ -12,7 +11,7 @@ on:
 jobs:
   unit-tests:
     name: Unit + i18n
-    runs-on: ${{ vars.CI_RUNS_ON || 'self-hosted' }}
+    runs-on: ${{ vars.CI_RUNS_ON || 'ubuntu-latest' }}
     defaults:
       run:
         working-directory: app
@@ -41,7 +40,7 @@ jobs:
 
   integration-tests:
     name: Integration tests
-    runs-on: ${{ vars.CI_RUNS_ON || 'self-hosted' }}
+    runs-on: ${{ vars.CI_RUNS_ON || 'ubuntu-latest' }}
     needs: [compile]
     services:
       postgres:
@@ -149,7 +148,7 @@ jobs:
 
   compile:
     name: Wasp compile
-    runs-on: ${{ vars.CI_RUNS_ON || 'self-hosted' }}
+    runs-on: ${{ vars.CI_RUNS_ON || 'ubuntu-latest' }}
     defaults:
       run:
         working-directory: app

@@ -17,7 +17,7 @@ env:
 
 jobs:
   deploy:
-    runs-on: ${{ vars.CI_RUNS_ON || 'self-hosted' }}
+    runs-on: ${{ vars.CI_RUNS_ON || 'ubuntu-latest' }}
     environment: production
     permissions:
       contents: read

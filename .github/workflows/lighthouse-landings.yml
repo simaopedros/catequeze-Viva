@@ -23,7 +23,7 @@ on:
 jobs:
   lighthouse:
     name: Mobile landings budgets
-    runs-on: ${{ vars.CI_RUNS_ON || 'self-hosted' }}
+    runs-on: ${{ vars.CI_RUNS_ON || 'ubuntu-latest' }}
     defaults:
       run:
         working-directory: app

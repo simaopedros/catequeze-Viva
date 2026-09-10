@@ -49,34 +49,21 @@ catechis-worker-1    worker    3001 (expose)
 
 ---
 
-## CI (sem minutos hosted da GitHub)
+## CI
 
-Os workflows usam `runs-on: self-hosted` na VPS de **homolog**. Não consomem
-a quota de 2.000 min de `ubuntu-latest`. Sem runner online, os jobs ficam em
-fila (não falham por billing).
-
-### Instalar o runner (uma vez, só na VPS de homolog)
-
-Não instalar em produção: o runner vê secrets de deploy e o disco da app.
-
-1. Confirme disco (`df -h /`). Precisa de vários GB livres — o homolog já
-   encheu o disco noutros deploys.
-2. Abra [New self-hosted runner](https://github.com/simaopedros/catequeze-Viva/settings/actions/runners/new)
-   (Linux x64). Copie o token `XXXX` (vale ~1 h).
-3. Na VPS de homolog, no clone do repo (ou copie só o script):
-
-   ```bash
-   sudo GITHUB_RUNNER_TOKEN=XXXX ./app/deploy/scripts/install-github-runner.sh
-   ```
-
-4. Em Settings → Actions → Runners o nome `catequese-homolog` deve ficar Idle.
-5. No PR, **Re-run failed jobs** (ou um push novo). Os checks passam a
-   correr na VPS, a $0.
+Com o repositório **público**, `ubuntu-latest` é grátis e não conta os
+2.000 min de repos privados. Override: variável `CI_RUNS_ON`.
 
 Fora da GitHub, na pasta `app/`: `npm run ci` (i18n + unit + UI).
 
-Para voltar aos runners da GitHub (quando a quota/billing permitir): variável
-de repositório `CI_RUNS_ON=ubuntu-latest`.
+### Runner self-hosted (opcional, se o repo voltar a privado)
+
+Não instalar em produção: o runner vê secrets de deploy e o disco da app.
+
+1. Confirme disco (`df -h /`). Precisa de vários GB livres.
+2. [New self-hosted runner](https://github.com/simaopedros/catequeze-Viva/settings/actions/runners/new)
+3. `sudo GITHUB_RUNNER_TOKEN=XXXX ./app/deploy/scripts/install-github-runner.sh`
+4. Variável de repositório `CI_RUNS_ON=self-hosted`
 
 ## Pipeline de deploy
 
