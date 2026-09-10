@@ -5,8 +5,6 @@ import {
   Search,
   BookOpen,
   Loader2,
-  ChevronDown,
-  ChevronUp,
   AlertCircle,
 } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
@@ -22,13 +20,12 @@ import {
 } from "wasp/client/operations";
 import { useLocale } from "../../i18n/useLocale";
 import { PastoralCompanion } from "../components/social/PastoralCompanion";
-import { ShareToCommunityButton } from "../components/social/ShareToCommunityButton";
+import { DirectoryEntryCard } from "../components/DirectoryEntryCard";
 
 const PART_KEYS = ["I", "II", "III"] as const;
 
 export default function DirectoryPage() {
   const { t } = useTranslation("common");
-  const { t: ts } = useTranslation("social");
   const { currentLocale } = useLocale();
   const [searchParams] = useSearchParams();
 
@@ -208,60 +205,16 @@ export default function DirectoryPage() {
             {displayEntries.length} {t("directory.paragraphs")}
           </p>
           {displayEntries.map((entry: any) => (
-            <div
+            <DirectoryEntryCard
               key={entry.id}
-              ref={(el) => {
+              entry={entry}
+              expanded={Boolean(expanded[entry.id])}
+              onToggle={() => toggle(entry.id)}
+              registerRef={(el) => {
                 if (el) entryRefs.current.set(entry.id, el);
                 else entryRefs.current.delete(entry.id);
               }}
-              className="rounded-sm border border-border/70 bg-white"
-            >
-              <button
-                type="button"
-                onClick={() => toggle(entry.id)}
-                className="flex w-full items-start justify-between gap-3 p-4 text-left"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
-                      §{entry.number}
-                    </span>
-                    {entry.title && (
-                      <span className="text-sm font-semibold tracking-tight text-brand-ink">
-                        {entry.title}
-                      </span>
-                    )}
-                    {entry.chapter && (
-                      <span className="text-xs text-muted-foreground">
-                        ({entry.chapter})
-                      </span>
-                    )}
-                  </div>
-                </div>
-                {expanded[entry.id] ? (
-                  <ChevronUp className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                )}
-              </button>
-              {expanded[entry.id] ? (
-                <div className="space-y-3 px-4 pb-4">
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {entry.content}
-                  </p>
-                  <ShareToCommunityButton
-                    draft={{ kind: "DIRECTORY", sourceId: entry.id }}
-                    body={ts("share.directoryBody", {
-                      number: entry.number,
-                      titleSuffix: entry.title ? ` — ${entry.title}` : "",
-                      content: entry.content,
-                    })}
-                    topic="formacao"
-                    source="directory"
-                  />
-                </div>
-              ) : null}
-            </div>
+            />
           ))}
         </div>
       ) : part ? (
