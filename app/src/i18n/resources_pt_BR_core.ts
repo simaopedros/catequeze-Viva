@@ -588,6 +588,28 @@ export const billing_pt_BR_core = {
     }
   } as const;
 
+export const blog_pt_BR_core = {
+    "kicker": "Para catequistas",
+    "title": "Blog da Catequese Viva",
+    "intro": "Formação, dicas de encontro, liturgia e gestão da catequese — conteúdo para quem acompanha turmas de verdade.",
+    "all_categories": "Todos",
+    "empty_title": "Ainda não há artigos publicados",
+    "empty_desc": "Em breve, conteúdos práticos para a rotina do catequista.",
+    "back": "Todos os artigos",
+    "not_found": "Artigo não encontrado",
+    "not_found_desc": "Este endereço não corresponde a um artigo publicado.",
+    "cta_title": "Organize a catequese no mesmo lugar",
+    "cta_text": "Prepare encontros, faça a chamada e fale com as famílias. Comece os 7 dias grátis.",
+    "categories": {
+      "FORMATION": "Formação",
+      "PRACTICAL_TIPS": "Dicas práticas",
+      "LITURGY": "Liturgia",
+      "FAMILY": "Família",
+      "MANAGEMENT": "Gestão da catequese",
+      "TESTIMONY": "Testemunhos"
+    }
+  } as const;
+
 export const common_pt_BR_core = {
     "app_name": "Catequese Viva",
     "app_tagline": "Plataforma pastoral de iniciação cristã",
@@ -2421,6 +2443,9 @@ export const navigation_pt_BR_core = {
     "documents": "Documentos",
     "consents": "Consentimentos",
     "catechetical_years": "Anos Catequéticos",
+    "official_library": "Pasta oficial",
+    "announcements": "Comunicados",
+    "formation": "Formação",
     "bible": "Bíblia",
     "catechism": "Catecismo",
     "directory": "Diretório",
@@ -2678,6 +2703,7 @@ export const publicNav_pt_BR_core = {
     "share_text": "Organize a catequese sem papel e improviso — prepare encontros, faça a chamada e fale com as famílias no mesmo lugar.",
     "how_it_works": "Como funciona",
     "faq": "Dúvidas",
+    "blog": "Blog",
     "footer_explore": "Explorar",
     "footer_talk": "Fale com a gente",
     "footer_start": "Experimentar",
@@ -2743,6 +2769,7 @@ export const topbar_pt_BR_core = {
 export const resources_pt_BR_core = {
   auth: auth_pt_BR_core,
   billing: billing_pt_BR_core,
+  blog: blog_pt_BR_core,
   common: common_pt_BR_core,
   components: components_pt_BR_core,
   cookie: cookie_pt_BR_core,

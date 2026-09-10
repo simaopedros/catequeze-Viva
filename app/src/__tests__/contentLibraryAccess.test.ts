@@ -93,7 +93,14 @@ describe("listContentItems", () => {
     const result = await listContentItems(
       { workspaceId: PARISH_ID, paginated: true, take: 20 },
       context({
-        Parish: { findFirst: vi.fn().mockResolvedValue(null) },
+        Parish: {
+          findFirst: vi.fn().mockResolvedValue(null),
+          findUnique: vi.fn().mockResolvedValue({
+            id: PARISH_ID,
+            type: "PARISH",
+            dioceseId: null,
+          }),
+        },
         Membership: {
           findFirst: vi
             .fn()

@@ -36,6 +36,7 @@ const CORE_NS = new Set([
   'cookie',
   'components',
   'topbar',
+  'blog',
 ]);
 
 function splitBundleTargets(namespaces) {

@@ -10,6 +10,11 @@ import {
 } from "../auth/contentAccess";
 import { requireWorkspaceAccess } from "./sharedScope";
 import {
+  defaultPolicyFor,
+  visibilityScopeForOwner,
+} from "../../shared/resourceInheritance";
+import { resolveResourceActor, withOrigin } from "./resourceScope";
+import {
   CONTENT_DOCUMENT_VERSION,
   buildLegacyContentDocument,
   createEmptyContentDocument,
@@ -106,9 +111,25 @@ export const listContentItems = async (
 
   // Prefer explicit workspace; fall back to all accessible parishes
   let parishFilter: any;
+  let actor: Awaited<ReturnType<typeof resolveResourceActor>> | null = null;
   if (args.workspaceId?.trim()) {
     await requireWorkspaceAccess(context, args.workspaceId.trim());
-    parishFilter = { parishId: args.workspaceId.trim() };
+    actor = await resolveResourceActor(context, args.workspaceId.trim());
+    const or: any[] = [{ parishId: args.workspaceId.trim() }];
+    if (actor.dioceseId) {
+      if (actor.ownerType === "DIOCESE") {
+        or.push({ dioceseId: actor.dioceseId, ownerType: "DIOCESE" });
+      } else {
+        or.push({
+          dioceseId: actor.dioceseId,
+          ownerType: "DIOCESE",
+          visibilityScope: "DIOCESE",
+          status: { in: ["APPROVED", "PUBLISHED"] },
+          inheritancePolicy: { not: "LOCAL" },
+        });
+      }
+    }
+    parishFilter = or.length === 1 ? or[0] : { OR: or };
   } else {
     const parishIds = await getParishIds(context);
     if (parishIds.length === 0) return emptyPage(useCursorPage);
@@ -122,7 +143,15 @@ export const listContentItems = async (
     skip,
     include,
   });
-  return wrapDateIdPage(rows, pageSize, useCursorPage, "updatedAt");
+  const page = wrapDateIdPage(rows, pageSize, useCursorPage, "updatedAt");
+  if (!actor) return page;
+  if (Array.isArray(page)) {
+    return page.map((row: any) => withOrigin(row, actor!));
+  }
+  return {
+    ...page,
+    items: page.items.map((row: any) => withOrigin(row, actor!)),
+  };
 };
 
 export const getContentItem = async (args: { id: string }, context: any) => {
@@ -173,9 +202,22 @@ export const getContentItem = async (args: { id: string }, context: any) => {
 
 export const createContentItem = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
-  const { role, parishId } = await getUserRoleAndParish(context);
+  const workspaceId =
+    typeof args.workspaceId === "string" ? args.workspaceId.trim() : undefined;
+  const actor = workspaceId
+    ? await resolveResourceActor(context, workspaceId)
+    : null;
+  const { role, parishId } = actor
+    ? { role: actor.role, parishId: actor.parishId }
+    : await getUserRoleAndParish(context);
   if (!canCreateContent(role))
     throw new HttpError(403, "Sem permissão para criar conteúdo.");
+
+  const ownerType = actor?.ownerType || "PARISH";
+  const requestedScope =
+    args.visibilityScope === "DIOCESE" || args.visibilityScope === "COMMUNITY"
+      ? args.visibilityScope
+      : visibilityScopeForOwner(ownerType);
 
   const title =
     String(args.title || "Novo encontro")
@@ -221,7 +263,11 @@ export const createContentItem = async (args: any, context: any) => {
       status: "DRAFT",
       locale: resolveUserLocale(context.user),
       createdById: context.user.id,
-      parishId: parishId || null,
+      parishId: ownerType === "DIOCESE" ? null : parishId || null,
+      dioceseId: actor?.dioceseId ?? null,
+      ownerType,
+      inheritancePolicy: defaultPolicyFor("CONTENT", ownerType),
+      visibilityScope: requestedScope,
     },
   });
 };
@@ -234,7 +280,15 @@ export const updateContentStatus = async (
 
   const item = await context.entities.ContentItem.findUnique({
     where: { id: args.id },
-    select: { parishId: true, createdById: true },
+    select: {
+      parishId: true,
+      createdById: true,
+      dioceseId: true,
+      ownerType: true,
+      visibilityScope: true,
+      inheritancePolicy: true,
+      status: true,
+    },
   });
   if (!item) throw new HttpError(404, "Conteúdo não encontrado.");
 
@@ -251,9 +305,17 @@ export const updateContentStatus = async (
     );
   }
 
+  const data: any = { status: args.status as any };
+  if (
+    ["APPROVED", "PUBLISHED"].includes(args.status) &&
+    item.ownerType === "DIOCESE"
+  ) {
+    data.visibilityScope = "DIOCESE";
+  }
+
   return context.entities.ContentItem.update({
     where: { id: args.id },
-    data: { status: args.status as any },
+    data,
   });
 };
 

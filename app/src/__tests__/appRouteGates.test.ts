@@ -21,7 +21,10 @@ describe("needsFullAppNamespaces", () => {
   it("keeps marketing/auth on the core bundle", () => {
     expect(isPublicOnlyPath("/")).toBe(true);
     expect(isPublicOnlyPath("/login")).toBe(true);
+    expect(isPublicOnlyPath("/blog")).toBe(true);
+    expect(isPublicOnlyPath("/blog/um-artigo")).toBe(true);
     expect(needsFullAppNamespaces("/login")).toBe(false);
+    expect(needsFullAppNamespaces("/blog")).toBe(false);
   });
 });
 

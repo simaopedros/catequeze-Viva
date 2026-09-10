@@ -71,6 +71,11 @@ export function PublicFooter({
                   {t("faq")}
                 </a>
               </li>
+              <li>
+                <Link to="/blog" className="transition-colors hover:text-white">
+                  {t("blog")}
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -144,6 +149,12 @@ export function PublicFooter({
               className="transition-colors hover:text-[#E8EEF5]"
             >
               {t("about")}
+            </Link>
+            <Link
+              to="/blog"
+              className="transition-colors hover:text-[#E8EEF5]"
+            >
+              {t("blog")}
             </Link>
             <Link
               to="/privacy"

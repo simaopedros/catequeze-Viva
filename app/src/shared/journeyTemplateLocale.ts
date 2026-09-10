@@ -43,6 +43,7 @@ export function buildJourneyTemplateListWhere(args: {
       { parishId: { in: args.parishIds } },
       { parish: { dioceseId: { in: args.dioceseIds } } },
       { parishId: null },
+      { dioceseId: { in: args.dioceseIds }, ownerType: "DIOCESE" },
     ],
   };
 }

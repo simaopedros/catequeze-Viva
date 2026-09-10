@@ -240,6 +240,7 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
       '150 catequizandos no total',
       'Presença e calendário litúrgico',
       'Publicar na Comunidade',
+      'Consome calendário e subsídios oficiais da paróquia',
     ],
     translations: {
       en: {
@@ -249,6 +250,7 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
           '150 catechumens in total',
           'Attendance and liturgical calendar',
           'Portal for the families in your class',
+          'Receives official parish calendar and subsidies',
         ],
       },
       es: {
@@ -258,6 +260,7 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
           '150 catecúmenos en total',
           'Asistencia y calendario litúrgico',
           'Portal para las familias de tu grupo',
+          'Recibe el calendario y los subsidios oficiales de la parroquia',
         ],
       },
     },
@@ -294,6 +297,7 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
       'Espaço institucional da paróquia',
       'Comunicação integrada (pais/catequizandos)',
       'Documentos e certidões',
+      'Calendário, pasta e comunicados para comunidades e turmas',
     ],
     translations: {
       en: {
@@ -304,6 +308,7 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
           'Institutional parish workspace',
           'Integrated communication',
           'Documents and certificates',
+          'Calendar, folder and announcements for communities and classes',
         ],
       },
       es: {
@@ -314,6 +319,7 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
           'Espacio institucional de la parroquia',
           'Comunicación integrada',
           'Documentos y certificados',
+          'Calendario, carpeta y comunicados para comunidades y grupos',
         ],
       },
     },

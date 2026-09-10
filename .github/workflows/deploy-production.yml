@@ -53,8 +53,23 @@ jobs:
           docker pull "${IMAGE}:homolog-${{ github.sha }}"
           docker tag "${IMAGE}:homolog-${{ github.sha }}" "${IMAGE}:prod-${{ github.sha }}"
           docker tag "${IMAGE}:homolog-${{ github.sha }}" "${IMAGE}:prod-latest"
-          docker push "${IMAGE}:prod-${{ github.sha }}"
-          docker push "${IMAGE}:prod-latest"
+          # GHCR sometimes returns "unknown blob" on the first push (layer race).
+          push_with_retry() {
+            local ref="$1"
+            local attempt
+            for attempt in 1 2 3 4 5; do
+              if docker push "$ref"; then
+                return 0
+              fi
+              echo "⚠️ docker push ${ref} falhou (tentativa ${attempt}/5)"
+              sleep $((attempt * 8))
+            done
+            echo "ERROR: docker push ${ref} falhou depois de 5 tentativas"
+            return 1
+          }
+          push_with_retry "${IMAGE}:prod-${{ github.sha }}"
+          sleep 5
+          push_with_retry "${IMAGE}:prod-latest"
           echo "✅ Promoted homolog image to production"
 
       - name: Build and push production Docker image
@@ -69,8 +84,23 @@ jobs:
             --build-arg REACT_APP_STAFF_PORTAL_HOST=catechis.app \
             --build-arg REACT_APP_META_PIXEL_ID=2069332313989772 \
             -t "${IMAGE}:prod-${{ github.sha }}" -t "${IMAGE}:prod-latest" .
-          docker push "${IMAGE}:prod-${{ github.sha }}"
-          docker push "${IMAGE}:prod-latest"
+          # GHCR sometimes returns "unknown blob" on the first push (layer race).
+          push_with_retry() {
+            local ref="$1"
+            local attempt
+            for attempt in 1 2 3 4 5; do
+              if docker push "$ref"; then
+                return 0
+              fi
+              echo "⚠️ docker push ${ref} falhou (tentativa ${attempt}/5)"
+              sleep $((attempt * 8))
+            done
+            echo "ERROR: docker push ${ref} falhou depois de 5 tentativas"
+            return 1
+          }
+          push_with_retry "${IMAGE}:prod-${{ github.sha }}"
+          sleep 5
+          push_with_retry "${IMAGE}:prod-latest"
 
       - name: Smoke-test production image
         run: |
@@ -140,7 +170,13 @@ jobs:
               df -h /
               exit 1
             fi
-            docker compose -f docker-compose.yml up -d
+            # --force-recreate: o Caddyfile é bind-mount. Sem recreate, um
+            # `up -d` deixa o Caddy antigo em memória e rotas novas (ex.:
+            # /blog/sitemap.xml) continuam a cair no SPA.
+            docker compose -f docker-compose.yml up -d --force-recreate --remove-orphans
+            sleep 3
+            docker compose -f docker-compose.yml exec -T caddy caddy reload --config /etc/caddy/Caddyfile \
+              || echo "⚠️ caddy reload falhou — o force-recreate acima já deveria ter carregado o Caddyfile"
             sleep 5
             docker compose -f docker-compose.yml run --rm --entrypoint "npx" server prisma migrate deploy --schema=../db/schema.prisma
             sleep 5
@@ -154,5 +190,12 @@ jobs:
             echo "✅ Journey templates and pricing catalog seeded; remaining seed started in background"
             sleep 10
             curl -fsS https://api.catechis.app/health
+            sitemap=$(curl -fsS --max-time 15 https://catechis.app/blog/sitemap.xml || true)
+            echo "$sitemap" | grep -q '<urlset' || {
+              echo "ERROR: /blog/sitemap.xml não é XML (Caddy ainda no SPA?)"
+              echo "$sitemap" | head -c 240
+              exit 1
+            }
+            echo "✅ blog sitemap xml ok"
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}

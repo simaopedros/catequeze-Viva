@@ -318,6 +318,24 @@ page AdminPlansPage {
   component: import AdminPlans from "@src/admin/dashboards/plans/PlansPage"
 }
 
+route AdminBlogRoute { path: "/admin/blog", to: AdminBlogPage }
+page AdminBlogPage {
+  authRequired: true,
+  component: import AdminBlog from "@src/admin/dashboards/blog/BlogListPage"
+}
+
+route AdminBlogNewRoute { path: "/admin/blog/new", to: AdminBlogNewPage }
+page AdminBlogNewPage {
+  authRequired: true,
+  component: import AdminBlogNew from "@src/admin/dashboards/blog/BlogNewPage"
+}
+
+route AdminBlogEditRoute { path: "/admin/blog/:id", to: AdminBlogEditPage }
+page AdminBlogEditPage {
+  authRequired: true,
+  component: import AdminBlogEdit from "@src/admin/dashboards/blog/BlogEditPage"
+}
+
 //#region Catequese Viva App Routes
 route AppDashboardRoute { path: "/app", to: AppDashboardPage }
 page AppDashboardPage {
@@ -487,6 +505,30 @@ route AppCalendarRoute { path: "/app/calendar", to: AppCalendarPage }
 page AppCalendarPage {
   authRequired: true,
   component: import CalendarPage from "@src/catequese/pages/CalendarPage"
+}
+
+route AppOfficialLibraryRoute { path: "/app/official-library", to: AppOfficialLibraryPage }
+page AppOfficialLibraryPage {
+  authRequired: true,
+  component: import OfficialLibraryPage from "@src/catequese/pages/OfficialLibraryPage"
+}
+
+route AppAnnouncementsRoute { path: "/app/announcements", to: AppAnnouncementsPage }
+page AppAnnouncementsPage {
+  authRequired: true,
+  component: import PastoralAnnouncementsPage from "@src/catequese/pages/PastoralAnnouncementsPage"
+}
+
+route AppFormationRoute { path: "/app/formation", to: AppFormationPage }
+page AppFormationPage {
+  authRequired: true,
+  component: import FormationPage from "@src/catequese/pages/FormationPage"
+}
+
+route AppFormationTrackRoute { path: "/app/formation/:id", to: AppFormationTrackPage }
+page AppFormationTrackPage {
+  authRequired: true,
+  component: import FormationTrackPage from "@src/catequese/pages/FormationTrackPage"
 }
 
 route AppSacramentalJourneysRoute { path: "/app/sacramental-journeys", to: AppSacramentalJourneysPage }
@@ -1030,17 +1072,17 @@ query getInstitutionalDashboardInsights {
 //#region Catequese Viva - Content Library
 query listContentItems {
   fn: import { listContentItems } from "@src/server/operations/contentOperations",
-  entities: [ContentItem, Membership, Parish, ClassCatechist]
+  entities: [ContentItem, Membership, Parish, ClassCatechist, Diocese]
 }
 
 query getContentItem {
   fn: import { getContentItem } from "@src/server/operations/contentOperations",
-  entities: [ContentItem, ContentVersion, Activity, Meeting, User, ContentBibleReference, ContentCatechismReference, ContentDirectoryReference, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Membership]
+  entities: [ContentItem, ContentVersion, Activity, Meeting, User, ContentBibleReference, ContentCatechismReference, ContentDirectoryReference, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Membership, Parish]
 }
 
 action createContentItem {
   fn: import { createContentItem } from "@src/server/operations/contentOperations",
-  entities: [ContentItem, Membership]
+  entities: [ContentItem, Membership, Parish, Diocese, ClassCatechist]
 }
 
 action deleteContentItem {
@@ -1054,7 +1096,7 @@ action updateContentStatus {
 }
 action updateContentItem {
   fn: import { updateContentItem } from "@src/server/operations/contentOperations",
-  entities: [ContentItem, Membership]
+  entities: [ContentItem, Membership, Parish]
 }
 action addBibleRef {
   fn: import { addBibleRef } from "@src/server/operations/contentOperations",
@@ -1130,7 +1172,7 @@ action updateJourney {
 
 query listJourneyTemplates {
   fn: import { listJourneyTemplates } from "@src/server/operations/sacramentOperations",
-  entities: [SacramentalJourneyTemplate, SacramentalMilestoneTemplate, Membership, Parish, Sacrament]
+  entities: [SacramentalJourneyTemplate, SacramentalMilestoneTemplate, Membership, Parish, Sacrament, Diocese]
 }
 
 action createTemplate {
@@ -1160,7 +1202,7 @@ action copyTemplate {
 
 action publishTemplate {
   fn: import { publishTemplate } from "@src/server/operations/sacramentOperations",
-  entities: [SacramentalJourneyTemplate, SacramentalMilestoneTemplate, Membership, Parish]
+  entities: [SacramentalJourneyTemplate, SacramentalMilestoneTemplate, Membership, Parish, Diocese]
 }
 //#endregion
 
@@ -1196,17 +1238,204 @@ action toggleBirthdayGift {
 //#region Catequese Viva - Calendar
 query listLiturgicalEvents {
   fn: import { listLiturgicalEvents } from "@src/server/operations/calendarOperations",
-  entities: [LiturgicalEvent, Membership, Parish]
+  entities: [LiturgicalEvent, Membership, Parish, Diocese, Community, ClassCatechist]
 }
 
 action createLiturgicalEvent {
   fn: import { createLiturgicalEvent } from "@src/server/operations/calendarOperations",
-  entities: [LiturgicalEvent, Membership, Parish]
+  entities: [LiturgicalEvent, Membership, Parish, Diocese, Community, ClassCatechist]
 }
 
 action deleteLiturgicalEvent {
   fn: import { deleteLiturgicalEvent } from "@src/server/operations/calendarOperations",
-  entities: [LiturgicalEvent, Membership, Parish]
+  entities: [LiturgicalEvent, Membership, Parish, Diocese, ClassCatechist]
+}
+//#endregion
+
+//#region Hierarchical pastoral resources
+query listOfficialResources {
+  fn: import { listOfficialResources } from "@src/server/operations/officialResourceOperations",
+  entities: [OfficialResource, OfficialResourceAdoption, OfficialResourceAttachment, Membership, Parish, User, Diocese, Community, ClassCatechist]
+}
+
+action createOfficialResource {
+  fn: import { createOfficialResource } from "@src/server/operations/officialResourceOperations",
+  entities: [OfficialResource, Membership, Parish, Diocese, Community, ClassCatechist]
+}
+
+action publishOfficialResource {
+  fn: import { publishOfficialResource } from "@src/server/operations/officialResourceOperations",
+  entities: [OfficialResource, Membership, Parish, ClassCatechist]
+}
+
+action adoptOfficialResource {
+  fn: import { adoptOfficialResource } from "@src/server/operations/officialResourceOperations",
+  entities: [OfficialResource, OfficialResourceAdoption, OfficialResourceAttachment, Membership, Parish, ClassCatechist]
+}
+
+action updateOfficialResource {
+  fn: import { updateOfficialResource } from "@src/server/operations/officialResourceOperations",
+  entities: [OfficialResource, OfficialResourceAttachment, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action deleteOfficialResource {
+  fn: import { deleteOfficialResource } from "@src/server/operations/officialResourceOperations",
+  entities: [OfficialResource, OfficialResourceAttachment, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action removeOfficialResourceAttachment {
+  fn: import { removeOfficialResourceAttachment } from "@src/server/operations/officialResourceOperations",
+  entities: [OfficialResource, OfficialResourceAttachment, Membership, Parish, Diocese, ClassCatechist]
+}
+
+query listPastoralAnnouncements {
+  fn: import { listPastoralAnnouncements } from "@src/server/operations/pastoralAnnouncementOperations",
+  entities: [PastoralAnnouncement, PastoralAnnouncementAck, Membership, Parish, User, Diocese, Community, ClassCatechist]
+}
+
+action createPastoralAnnouncement {
+  fn: import { createPastoralAnnouncement } from "@src/server/operations/pastoralAnnouncementOperations",
+  entities: [PastoralAnnouncement, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action publishPastoralAnnouncement {
+  fn: import { publishPastoralAnnouncement } from "@src/server/operations/pastoralAnnouncementOperations",
+  entities: [PastoralAnnouncement, Membership, Parish, ClassCatechist]
+}
+
+action acknowledgePastoralAnnouncement {
+  fn: import { acknowledgePastoralAnnouncement } from "@src/server/operations/pastoralAnnouncementOperations",
+  entities: [PastoralAnnouncement, PastoralAnnouncementAck]
+}
+
+action republishPastoralAnnouncement {
+  fn: import { republishPastoralAnnouncement } from "@src/server/operations/pastoralAnnouncementOperations",
+  entities: [PastoralAnnouncement, Membership, Parish, ClassCatechist]
+}
+
+query listCatecheticalItineraries {
+  fn: import { listCatecheticalItineraries } from "@src/server/operations/itineraryOperations",
+  entities: [CatecheticalItinerary, CatecheticalItineraryStage, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action createCatecheticalItinerary {
+  fn: import { createCatecheticalItinerary } from "@src/server/operations/itineraryOperations",
+  entities: [CatecheticalItinerary, CatecheticalItineraryStage, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action publishCatecheticalItinerary {
+  fn: import { publishCatecheticalItinerary } from "@src/server/operations/itineraryOperations",
+  entities: [CatecheticalItinerary, CatecheticalItineraryStage, Membership, Parish, ClassCatechist]
+}
+
+action instantiateCatecheticalItinerary {
+  fn: import { instantiateCatecheticalItinerary } from "@src/server/operations/itineraryOperations",
+  entities: [CatecheticalItinerary, CatecheticalItineraryStage, CatecheticalYear, Stage, ResourceAdoption, Membership, Parish, ClassCatechist]
+}
+
+action updateCatecheticalItinerary {
+  fn: import { updateCatecheticalItinerary } from "@src/server/operations/itineraryOperations",
+  entities: [CatecheticalItinerary, CatecheticalItineraryStage, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action deleteCatecheticalItinerary {
+  fn: import { deleteCatecheticalItinerary } from "@src/server/operations/itineraryOperations",
+  entities: [CatecheticalItinerary, CatecheticalItineraryStage, Membership, Parish, Diocese, ClassCatechist]
+}
+
+query listFormationTracks {
+  fn: import { listFormationTracks } from "@src/server/operations/formationOperations",
+  entities: [FormationTrack, FormationSession, FormationEnrollment, FormationModule, FormationLesson, Membership, Parish, User, Diocese, ClassCatechist]
+}
+
+query getFormationTrack {
+  fn: import { getFormationTrack } from "@src/server/operations/formationOperations",
+  entities: [FormationTrack, FormationSession, FormationEnrollment, FormationAttendance, FormationModule, FormationLesson, FormationLessonProgress, Membership, Parish, User, Diocese, ClassCatechist]
+}
+
+action createFormationTrack {
+  fn: import { createFormationTrack } from "@src/server/operations/formationOperations",
+  entities: [FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action updateFormationTrack {
+  fn: import { updateFormationTrack } from "@src/server/operations/formationOperations",
+  entities: [FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action deleteFormationTrack {
+  fn: import { deleteFormationTrack } from "@src/server/operations/formationOperations",
+  entities: [FormationTrack, FormationModule, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action createFormationSession {
+  fn: import { createFormationSession } from "@src/server/operations/formationOperations",
+  entities: [FormationSession, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action updateFormationSession {
+  fn: import { updateFormationSession } from "@src/server/operations/formationOperations",
+  entities: [FormationSession, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action deleteFormationSession {
+  fn: import { deleteFormationSession } from "@src/server/operations/formationOperations",
+  entities: [FormationSession, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action enrollInFormationTrack {
+  fn: import { enrollInFormationTrack } from "@src/server/operations/formationOperations",
+  entities: [FormationEnrollment, FormationTrack, Membership, Parish, ClassCatechist]
+}
+
+action unenrollFromFormationTrack {
+  fn: import { unenrollFromFormationTrack } from "@src/server/operations/formationOperations",
+  entities: [FormationEnrollment, FormationTrack, Membership, Parish, ClassCatechist]
+}
+
+action markFormationAttendance {
+  fn: import { markFormationAttendance } from "@src/server/operations/formationOperations",
+  entities: [FormationAttendance, FormationEnrollment, FormationSession, FormationTrack, Membership, Parish, ClassCatechist]
+}
+
+action createFormationModule {
+  fn: import { createFormationModule } from "@src/server/operations/formationOperations",
+  entities: [FormationModule, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action updateFormationModule {
+  fn: import { updateFormationModule } from "@src/server/operations/formationOperations",
+  entities: [FormationModule, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action deleteFormationModule {
+  fn: import { deleteFormationModule } from "@src/server/operations/formationOperations",
+  entities: [FormationModule, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action createFormationLesson {
+  fn: import { createFormationLesson } from "@src/server/operations/formationOperations",
+  entities: [FormationLesson, FormationModule, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action updateFormationLesson {
+  fn: import { updateFormationLesson } from "@src/server/operations/formationOperations",
+  entities: [FormationLesson, FormationModule, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action deleteFormationLesson {
+  fn: import { deleteFormationLesson } from "@src/server/operations/formationOperations",
+  entities: [FormationLesson, FormationModule, FormationTrack, Membership, Parish, Diocese, ClassCatechist]
+}
+
+action markFormationLessonComplete {
+  fn: import { markFormationLessonComplete } from "@src/server/operations/formationOperations",
+  entities: [FormationLessonProgress, FormationLesson, FormationModule, FormationTrack, FormationEnrollment, Membership, Parish, Diocese, ClassCatechist]
+}
+
+query getHierarchyAdoptionReport {
+  fn: import { getHierarchyAdoptionReport } from "@src/server/operations/formationOperations",
+  entities: [Parish, OfficialResource, OfficialResourceAdoption, CatecheticalItinerary, FormationTrack, ResourceAdoption, Membership, Diocese, ClassCatechist]
 }
 //#endregion
 
@@ -1264,6 +1493,22 @@ api authenticatedDocumentUpload {
   auth: true,
   httpRoute: (POST, "/api/documents/upload"),
   entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish]
+}
+
+api uploadOfficialResourceAttachment {
+  fn: import { uploadOfficialResourceAttachment } from "@src/server/api/officialResourceAttachments",
+  middlewareConfigFn: import { officialResourceAttachmentMiddleware } from "@src/server/api/officialResourceAttachments",
+  auth: true,
+  httpRoute: (POST, "/api/official-resources/:id/attachments"),
+  entities: [OfficialResource, OfficialResourceAttachment, Membership, Parish, Diocese, ClassCatechist]
+}
+
+api serveOfficialResourceAttachment {
+  fn: import { serveOfficialResourceAttachment } from "@src/server/api/officialResourceAttachments",
+  middlewareConfigFn: import { officialResourceAttachmentMiddleware } from "@src/server/api/officialResourceAttachments",
+  auth: true,
+  httpRoute: (GET, "/api/official-resources/attachments/:id"),
+  entities: [OfficialResource, OfficialResourceAttachment, Membership, Parish, Diocese, ClassCatechist]
 }
 
 api uploadContentImage {
@@ -1327,6 +1572,75 @@ api socialSitemap {
   httpRoute: (GET, "/comunidade/sitemap.xml"),
   entities: [SocialPost]
 }
+
+//#region Blog (public CMS)
+query listPublishedBlogPosts {
+  fn: import { listPublishedBlogPosts } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User]
+}
+
+query getPublishedBlogPost {
+  fn: import { getPublishedBlogPost } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User]
+}
+
+query listBlogPostsAdmin {
+  fn: import { listBlogPostsAdmin } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User]
+}
+
+query getBlogPostAdmin {
+  fn: import { getBlogPostAdmin } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User]
+}
+
+action createBlogPost {
+  fn: import { createBlogPost } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User, AuditLog]
+}
+
+action updateBlogPost {
+  fn: import { updateBlogPost } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User, AuditLog]
+}
+
+action publishBlogPost {
+  fn: import { publishBlogPost } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User, AuditLog]
+}
+
+action unpublishBlogPost {
+  fn: import { unpublishBlogPost } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User, AuditLog]
+}
+
+action archiveBlogPost {
+  fn: import { archiveBlogPost } from "@src/server/operations/blogOperations",
+  entities: [BlogPost, User, AuditLog]
+}
+
+api uploadBlogImage {
+  fn: import { uploadBlogImage } from "@src/server/api/blogImages",
+  middlewareConfigFn: import { blogImageUploadMiddleware } from "@src/server/api/blogImages",
+  auth: true,
+  httpRoute: (POST, "/api/blog/images"),
+  entities: [BlogPost, User]
+}
+
+api serveBlogImage {
+  fn: import { serveBlogImage } from "@src/server/api/blogImages",
+  middlewareConfigFn: import { blogImageServeMiddleware } from "@src/server/api/blogImages",
+  httpRoute: (GET, "/api/blog/images"),
+  entities: [BlogPost]
+}
+
+api blogSitemap {
+  fn: import { blogSitemap } from "@src/server/api/blogShare",
+  middlewareConfigFn: import { blogSitemapMiddleware } from "@src/server/api/blogShare",
+  httpRoute: (GET, "/blog/sitemap.xml"),
+  entities: [BlogPost]
+}
+//#endregion
 
 api bunnyStreamWebhook {
   fn: import { bunnyStreamWebhook } from "@src/server/api/socialMedia",
@@ -1759,6 +2073,12 @@ action submitActivity {
 route AboutPublicRoute { path: "/about", to: AboutPublicPage }
 page AboutPublicPage { component: import AboutPage from "@src/catequese/pages/AboutPage" }
 
+route BlogIndexRoute { path: "/blog", to: BlogIndexPage }
+page BlogIndexPage { component: import BlogIndexPage from "@src/catequese/pages/blog/BlogIndexPage" }
+
+route BlogPostPublicRoute { path: "/blog/:slug", to: BlogPostPublicPage }
+page BlogPostPublicPage { component: import BlogPostPage from "@src/catequese/pages/blog/BlogPostPage" }
+
 route PrivacyPublicRoute { path: "/privacy", to: PrivacyPublicPage }
 page PrivacyPublicPage { component: import PrivacyPage from "@src/catequese/pages/PrivacyPage" }
 
@@ -1910,12 +2230,12 @@ action markAllNotificationsRead {
 //#region Communication Hub - Templates
 query listMessageTemplates {
   fn: import { listMessageTemplates } from "@src/server/operations/templateOperations",
-  entities: [MessageTemplate, Membership]
+  entities: [MessageTemplate, Membership, Parish, Diocese]
 }
 
 action createMessageTemplate {
   fn: import { createMessageTemplate } from "@src/server/operations/templateOperations",
-  entities: [MessageTemplate, Membership, Parish]
+  entities: [MessageTemplate, Membership, Parish, Diocese, ClassCatechist]
 }
 
 action updateMessageTemplate {
@@ -1933,7 +2253,7 @@ action deleteMessageTemplate {
 //#region Missing blueprint operations
 query listCatecheticalYears {
   fn: import { listCatecheticalYears } from "@src/server/operations/missingOperations",
-  entities: [CatecheticalYear, Membership, Parish]
+  entities: [CatecheticalYear, Membership, Parish, CatecheticalItinerary]
 }
 
 query listMessageCampaigns {
@@ -2069,7 +2389,7 @@ query getMonthlyPlan {
 
 query listDioceseSharedContent {
   fn: import { listDioceseSharedContent } from "@src/server/operations/dioceseContentOperations",
-  entities: [ContentItem, Membership, Parish]
+  entities: [ContentItem, Membership, Parish, Diocese]
 }
 
 query getClassComparison {

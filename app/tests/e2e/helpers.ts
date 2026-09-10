@@ -154,7 +154,7 @@ export async function navigateTo(page: Page, path: string) {
 
 export async function selectWorkspace(page: Page, workspaceName?: string) {
   // If redirected to workspace selector
-  if (page.url().includes("workspace-selector")) {
+  if (page.url().includes("workspace")) {
     if (workspaceName) {
       await page.click(`button:has-text("${workspaceName}")`);
     } else {
@@ -163,6 +163,28 @@ export async function selectWorkspace(page: Page, workspaceName?: string) {
     }
     await page.waitForURL(/\/app/, { timeout: 10000 });
   }
+}
+
+/** Switch the header workspace picker when already inside /app. */
+export async function ensureWorkspace(page: Page, workspaceName: string) {
+  if (page.url().includes("workspace")) {
+    await selectWorkspace(page, workspaceName);
+    await dismissCookieBanner(page);
+    return;
+  }
+  await waitForAppShell(page);
+  const trigger = page.getByTestId("workspace-context-trigger");
+  await expect(trigger).toBeVisible({ timeout: 15000 });
+  const current = (await trigger.innerText()) || "";
+  if (current.includes(workspaceName)) return;
+
+  await trigger.click();
+  const option = page
+    .locator("[data-radix-menu-content] button, [role='menu'] button")
+    .filter({ hasText: workspaceName })
+    .first();
+  await option.click({ timeout: 10000 });
+  await expect(trigger).toContainText(workspaceName, { timeout: 10000 });
 }
 
 // ═══ Assertions ══════════════════════════════════════════════════════════════
@@ -180,6 +202,8 @@ export async function expectPageTitle(page: Page, title: string) {
 // ═══ Seed data IDs ═══════════════════════════════════════════════════════════
 export const PARISH_SAO_JOSE = "aaaaaaaa-1111-4aaa-a111-aaaaaaaaaaaa";
 export const PARISH_SANTA_MARIA = "bbbbbbbb-2222-4bbb-b222-bbbbbbbbbbbb";
+export const WORKSPACE_CURIA = "99999999-9999-4999-a999-999999999999";
+export const CURIA_WORKSPACE_NAME = "Cúria Diocesana (TESTE)";
 export const CLASS_CRISMA = "test-class-crisma-001";
 export const CLASS_INFANTIL = "test-class-infantil-001";
 export const CLASS_EUCARISTIA = "test-class-eucaristia-001";

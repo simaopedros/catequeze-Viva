@@ -9,12 +9,14 @@
     "liturgical": "Litúrgico",
     "parish": "Parroquial",
     "class": "Grupos",
-    "sacramental": "Sacramental"
+    "sacramental": "Sacramental",
+    "diocese": "Diócesis"
   },
   "event_types": {
     "liturgical": "Litúrgico",
     "parish": "Parroquial",
-    "class": "Grupo"
+    "class": "Grupo",
+    "diocese": "Diócesis"
   },
   "meeting_default": "Encuentro",
   "day_title": "Día {{day}} de {{month}}",
@@ -58,5 +60,7 @@
   "create_primary": "Nuevo evento",
   "confirm_delete_event": "¿Eliminar este evento?",
   "confirm_delete_event_desc": "Esta acción no se puede deshacer.",
-  "delete_error": "Error al eliminar el evento"
+  "delete_error": "Error al eliminar el evento",
+  "conflicts_title": "Posible conflicto en el calendario",
+  "conflicts_desc": "{{count}} encuentro(s) coinciden con un evento obligatorio de la diócesis o de la parroquia."
 }

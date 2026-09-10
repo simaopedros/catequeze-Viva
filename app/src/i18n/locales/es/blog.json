@@ -1,0 +1,21 @@
+{
+  "kicker": "Para catequistas",
+  "title": "Blog de Catequese Viva",
+  "intro": "Formación, ideas para el encuentro, liturgia y gestión de la catequesis — contenido para quien acompaña grupos de verdad.",
+  "all_categories": "Todos",
+  "empty_title": "Aún no hay artículos publicados",
+  "empty_desc": "Pronto habrá contenidos prácticos para la rutina del catequista.",
+  "back": "Todos los artículos",
+  "not_found": "Artículo no encontrado",
+  "not_found_desc": "Esta dirección no corresponde a un artículo publicado.",
+  "cta_title": "Organiza la catequesis en un solo lugar",
+  "cta_text": "Prepara encuentros, pasa lista y habla con las familias. Empieza los 7 días gratis.",
+  "categories": {
+    "FORMATION": "Formación",
+    "PRACTICAL_TIPS": "Consejos prácticos",
+    "LITURGY": "Liturgia",
+    "FAMILY": "Familia",
+    "MANAGEMENT": "Gestión de la catequesis",
+    "TESTIMONY": "Testimonios"
+  }
+}

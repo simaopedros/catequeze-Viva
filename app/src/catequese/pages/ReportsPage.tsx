@@ -20,8 +20,13 @@ import {
 } from "../../client/components/brand/AppChrome";
 import { EmptyState } from "../../client/components/EmptyState";
 import { ChartSuspenseFallback } from "../../client/components/ChartSuspenseFallback";
-import { useQuery, getReportsOverview } from "wasp/client/operations";
+import {
+  useQuery,
+  getReportsOverview,
+  getHierarchyAdoptionReport,
+} from "wasp/client/operations";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
+import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 
 const ReportsChartsPanel = lazy(() =>
   import("./ReportsChartsPanel").then((m) => ({
@@ -31,8 +36,11 @@ const ReportsChartsPanel = lazy(() =>
 
 export default function ReportsPage() {
   const { t } = useTranslation("reports");
+  const { t: th } = useTranslation("hierarchy");
   const { t: tc } = useTranslation("common");
   const { activeParishId } = useActiveParish();
+  const { workspaceType } = useActiveWorkspace();
+  const isDioceseView = workspaceType === "DIOCESE";
   const {
     data,
     isLoading: loading,
@@ -43,7 +51,12 @@ export default function ReportsPage() {
     { workspaceId: activeParishId || undefined } as any,
     { enabled: Boolean(activeParishId) },
   );
-  const [tab, setTab] = useState<"presenca" | "ranking" | "grafico">(
+  const { data: adoption } = useQuery(
+    getHierarchyAdoptionReport,
+    { workspaceId: activeParishId || undefined } as any,
+    { enabled: Boolean(activeParishId) && isDioceseView },
+  );
+  const [tab, setTab] = useState<"presenca" | "ranking" | "grafico" | "adesao">(
     "presenca",
   );
   const [period, setPeriod] = useState("all");
@@ -242,6 +255,19 @@ export default function ReportsPage() {
               </span>
             ),
           },
+          ...(isDioceseView
+            ? [
+                {
+                  value: "adesao",
+                  label: (
+                    <span className="inline-flex items-center gap-1">
+                      <Activity className="h-3 w-3" />
+                      {th("report.tab")}
+                    </span>
+                  ),
+                },
+              ]
+            : []),
         ]}
         value={tab}
         onChange={(v) => setTab(v as typeof tab)}
@@ -446,6 +472,50 @@ export default function ReportsPage() {
             absentKey={absentKey}
           />
         </Suspense>
+      )}
+
+      {tab === "adesao" && isDioceseView && (
+        <AppPanel className="space-y-4" data-testid="adoption-report">
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            {th("report.title")}
+          </h3>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <AppMetric
+              label={th("report.resources")}
+              value={adoption?.publishedResources ?? 0}
+            />
+            <AppMetric
+              label={th("report.itineraries")}
+              value={adoption?.publishedItineraries ?? 0}
+            />
+            <AppMetric
+              label={th("report.enrollments")}
+              value={adoption?.formationEnrollments ?? 0}
+            />
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs text-muted-foreground">
+                  <th className="py-2 pr-3">{th("report.parish")}</th>
+                  <th className="py-2 pr-3">{th("report.classes")}</th>
+                  <th className="py-2 pr-3">{th("report.official")}</th>
+                  <th className="py-2">{th("report.itinerary_adoptions")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(adoption?.parishes || []).map((p: any) => (
+                  <tr key={p.id} className="border-t border-border/60">
+                    <td className="py-2 pr-3 font-medium">{p.name}</td>
+                    <td className="py-2 pr-3">{p.classCount}</td>
+                    <td className="py-2 pr-3">{p.officialAdoptions}</td>
+                    <td className="py-2">{p.itineraryAdoptions}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </AppPanel>
       )}
     </div>
   );

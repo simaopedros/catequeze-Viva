@@ -12,6 +12,7 @@ import {
   Flag,
   Handshake,
   Tags,
+  Newspaper,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router";
@@ -188,6 +189,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   </NavLink>
                 </li>
               )}
+              <li>
+                <NavLink to="/admin/blog" className={navLinkClass}>
+                  <Newspaper />
+                  {t("sidebar.blog")}
+                </NavLink>
+              </li>
               <li>
                 <NavLink to="/admin/audit" end className={navLinkClass}>
                   <ShieldCheck />
