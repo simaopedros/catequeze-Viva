@@ -83,6 +83,9 @@ export const createLiturgicalEvent = vi.fn();
 export const deleteLiturgicalEvent = vi.fn();
 
 export const getAppBootstrap = vi.fn();
+export const getCurrentUserContext = vi.fn();
+export const listWorkspaces = vi.fn();
+export const getDashboardStats = vi.fn();
 export const updateLocalePreference = vi.fn();
 
 export const useQuery = vi.fn((_query?: unknown) => ({

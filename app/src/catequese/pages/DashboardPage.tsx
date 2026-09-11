@@ -14,6 +14,7 @@ import { SkeletonPage } from "../../client/components/Skeletons";
 import { FAMILY_PORTAL_ROLES, isFamilyPortalHost } from "../../shared/portal";
 import { shouldUseInstitutionalDashboard } from "../../shared/dashboardGate";
 import { planCanAccessCatechesis } from "../../shared/pricing";
+import { SocialInvitePrompt } from "../components/social/SocialInvitePrompt";
 
 export { shouldUseInstitutionalDashboard };
 
@@ -68,8 +69,15 @@ export default function DashboardPage() {
     return <SkeletonPage />;
   }
 
+  const withInvite = (node: React.ReactNode) => (
+    <>
+      <SocialInvitePrompt compact />
+      {node}
+    </>
+  );
+
   if (isInstitutional) {
-    return <InstitutionalDashboard />;
+    return withInvite(<InstitutionalDashboard />);
   }
 
   const familyDashboardRoles = new Set(["GUARDIAN", "CATECHUMEN"]);
@@ -79,7 +87,7 @@ export default function DashboardPage() {
       !isFamilyHost &&
       !familyDashboardRoles.has(effectiveRole))
   ) {
-    return <MemberDashboard />;
+    return withInvite(<MemberDashboard />);
   }
 
   const roleDashboards: Record<string, React.ComponentType<{ stats: any }>> = {
@@ -93,5 +101,5 @@ export default function DashboardPage() {
     roleDashboards[effectiveRole] ||
     (isFamilyHost ? GuardianDashboard : CoordinatorDashboard);
 
-  return <DashboardComponent stats={stats} />;
+  return withInvite(<DashboardComponent stats={stats} />);
 }

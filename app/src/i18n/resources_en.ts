@@ -6698,6 +6698,16 @@ export const social_en = {
         "body": "The Compendium deepens doctrine. The Community is where it becomes conversation."
       }
     },
+    "invitePrompt": {
+      "title": "Invite someone to the Community",
+      "description": "Faith grows in company. Send your link to a friend or family member.",
+      "copyLink": "Copy link",
+      "whatsapp": "WhatsApp",
+      "share": "Share",
+      "dismiss": "Not now",
+      "copied": "Link copied",
+      "message": "Come join the Community with me:"
+    },
     "nativeShare": {
       "action": "Share to Community",
       "dialogTitle": "Share to Community",
