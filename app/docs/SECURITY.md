@@ -30,4 +30,4 @@ ufw allow 22/tcp && ufw allow 80/tcp && ufw allow 443/tcp && ufw enable
 | `HOMOLOG_SSH_*`, `HOMOLOG_DATABASE_URL` | Homolog |
 | `PROD_SSH_*`, `PROD_DATABASE_URL` | Produção |
 
-Templates: `app/deploy/.env.server.homolog.example`, `.env.server.prod.example`
+Templates: `app/.env.server.example`, `app/deploy/.env.server.homolog.example`. O `.env.server` de produção não entra no git.

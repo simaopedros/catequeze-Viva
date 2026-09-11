@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { getPlanPriceCents } from "../shared/pricing";
 
-const HOMOLOG_TEST_MONTHLY = "price_1U9lJjQ654W7D9A6bWCcgQBP";
+const TEST_MONTHLY = "price_1TestMonthlyXXXXXXXX";
 
 vi.mock("wasp/server", () => ({
   env: {
@@ -26,7 +26,7 @@ describe("buildStripeCheckoutSessionCreateParams", () => {
     );
 
     const params = buildStripeCheckoutSessionCreateParams({
-      priceId: HOMOLOG_TEST_MONTHLY,
+      priceId: TEST_MONTHLY,
       customerId: "cus_test",
       userId: "user-1",
       mode: "subscription",
@@ -42,7 +42,7 @@ describe("buildStripeCheckoutSessionCreateParams", () => {
 
     expect(params.mode).toBe("subscription");
     expect(params.line_items).toEqual([
-      { price: HOMOLOG_TEST_MONTHLY, quantity: 1 },
+      { price: TEST_MONTHLY, quantity: 1 },
     ]);
     expect(getPlanPriceCents("single", "monthly")).toBe(990);
     expect(params.success_url).toBe(
@@ -68,7 +68,7 @@ describe("buildStripeCheckoutSessionCreateParams", () => {
     );
 
     const params = buildStripeCheckoutSessionCreateParams({
-      priceId: HOMOLOG_TEST_MONTHLY,
+      priceId: TEST_MONTHLY,
       customerId: "cus_test",
       userId: "user-1",
       mode: "subscription",

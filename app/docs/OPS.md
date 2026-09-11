@@ -101,11 +101,13 @@ Não instalar em produção: o runner vê secrets de deploy e o disco da app.
 
 ## Rollback
 
+O host de produção vem do secret GitHub `PROD_SSH_HOST` (ou da tua sessão local). Não commitar o IP.
+
 ### Encontrar a tag anterior
 
 ```bash
 # No VPS (tags em cache local):
-ssh root@13.140.171.132
+ssh root@"$PROD_SSH_HOST"
 docker images ghcr.io/simaopedros/catequeze-viva --format '{{.Tag}}' | grep '^prod-'
 
 # No GitHub (todas as tags disponíveis):
@@ -115,7 +117,7 @@ gh api repos/simaopedros/catequeze-Viva/packages/container/catequeze-viva/versio
 ### Executar rollback
 
 ```bash
-ssh root@13.140.171.132
+ssh root@"$PROD_SSH_HOST"
 cd /opt/catechis
 ./scripts/rollback.sh prod-060ee02bbc28f431fa90c6df67ac606a6cfe2b4d
 ```
@@ -170,7 +172,7 @@ Logs: /var/log/catechis-backup.log
 ### Backup manual
 
 ```bash
-ssh root@13.140.171.132
+ssh root@"$PROD_SSH_HOST"
 cd /opt/catechis
 set -a && source .env.server && set +a
 bash scripts/backup-db.sh prod
@@ -247,7 +249,7 @@ docker compose -f docker-compose.homolog.yml logs -f --tail=100 server worker
 ### Atualizar `.env.server`
 
 ```bash
-ssh root@13.140.171.132
+ssh root@"$PROD_SSH_HOST"
 cd /opt/catechis
 vim .env.server  # editar variáveis
 docker compose -f docker-compose.yml up -d --force-recreate server worker
@@ -256,7 +258,7 @@ docker compose -f docker-compose.yml up -d --force-recreate server worker
 ### Rodar migrações manualmente
 
 ```bash
-ssh root@13.140.171.132
+ssh root@"$PROD_SSH_HOST"
 cd /opt/catechis
 docker compose -f docker-compose.yml run --rm --entrypoint "npx" server \
   prisma migrate deploy --schema=../db/schema.prisma
@@ -265,7 +267,7 @@ docker compose -f docker-compose.yml run --rm --entrypoint "npx" server \
 ### Reiniciar containers
 
 ```bash
-ssh root@13.140.171.132
+ssh root@"$PROD_SSH_HOST"
 cd /opt/catechis
 docker compose -f docker-compose.yml up -d --force-recreate
 ```
@@ -273,7 +275,7 @@ docker compose -f docker-compose.yml up -d --force-recreate
 ### Verificar status dos containers
 
 ```bash
-ssh root@13.140.171.132
+ssh root@"$PROD_SSH_HOST"
 docker compose -f docker-compose.yml ps
 docker stats --no-stream
 ```
@@ -294,7 +296,7 @@ docker stats --no-stream
 
 | Serviço | Produção | Homolog |
 |---------|----------|---------|
-| **VPS** | Contabo `13.140.171.132` | Contabo (Homolog) |
+| **VPS** | Contabo (`PROD_SSH_HOST`) | Contabo (Homolog) |
 | **Database** | Neon `catechis-prod` (PITR) | Neon `catechis-homolog` |
 | **Storage** | Bunny `catechis-prod` | Bunny `catechis-homolog` |
 | **Email** | Resend `noreply@catechis.app` | Resend `noreply@catechis.app` (test) |

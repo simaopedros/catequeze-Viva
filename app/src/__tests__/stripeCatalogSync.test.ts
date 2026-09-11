@@ -66,7 +66,7 @@ describe('stripeCatalogSync', () => {
 
   it('importStripePrice only retrieves and never creates', async () => {
     stripeMocks.pricesRetrieve.mockResolvedValue({
-      id: 'price_1U9lJjQ654W7D9A6bWCcgQBP',
+      id: 'price_1TestMonthlyXXXXXXXX',
       unit_amount: 990,
       currency: 'brl',
       recurring: { interval: 'month' },
@@ -74,7 +74,7 @@ describe('stripeCatalogSync', () => {
       product: 'prod_1',
       active: true,
     });
-    const imported = await importStripePrice('price_1U9lJjQ654W7D9A6bWCcgQBP');
+    const imported = await importStripePrice('price_1TestMonthlyXXXXXXXX');
     expect(imported?.unitAmountCents).toBe(990);
     expect(imported?.interval).toBe('monthly');
     expect(stripeMocks.pricesCreate).not.toHaveBeenCalled();

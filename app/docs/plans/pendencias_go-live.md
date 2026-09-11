@@ -83,7 +83,7 @@ O ambiente `homolog.catechis.app` / `familia-homolog.catechis.app` / `api-homolo
 
 **Commits QA:** `4b910aa` … `c12ee42` (email worker, Resend from, members guard, XHR proxy, Google auth) → `86f21f7` (script pastoral + E2E + checklist) → `060ee02` (Sentry, env produção, billing anual, infra go-live).
 
-**Deploy produção:** tag `v0.1.0`, VPS `13.140.171.132`, Docker 3 containers (caddy + server + worker). Health: `status: ok, database: ok, storage: healthy, ai: ok`.
+**Deploy produção:** tag `v0.1.0`, VPS (`PROD_SSH_HOST`), Docker 3 containers (caddy + server + worker). Health: `status: ok, database: ok, storage: healthy, ai: ok`.
 
 ---
 
@@ -159,7 +159,7 @@ Guia detalhado: [`PROVISIONING.md`](../PROVISIONING.md). Este é o **gate blocke
 | - | `PRICING_ROLLOUT_PERCENTAGE` | `100` |
 | - | `OPENAI_API_KEY` | Chave produção |
 
-Template completo: [`deploy/.env.server.prod.example`](../../deploy/.env.server.prod.example)
+Template: [`app/.env.server.example`](../../.env.server.example) — preencher só no VPS, nunca no git.
 
 ### 3.6 GitHub Secrets
 
@@ -235,4 +235,4 @@ Scripts prontos em `deploy/scripts/`. Executar após primeiro deploy de produç�
 | [`STRIPE_ANNUAL_SETUP.md`](../STRIPE_ANNUAL_SETUP.md) | Criar Prices anuais no Stripe |
 | [`deploy/scripts/qa-pastoral-homolog.sh`](../../deploy/scripts/qa-pastoral-homolog.sh) | Script QA pastoral (smoke + extendido) |
 | [`e2e-tests/tests/homologPastoral.spec.ts`](../../../e2e-tests/tests/homologPastoral.spec.ts) | E2E Playwright homolog |
-| [`deploy/.env.server.prod.example`](../../deploy/.env.server.prod.example) | Template `.env.server` produção |
+| [`app/.env.server.example`](../../.env.server.example) | Template `.env.server` (preencher só no VPS) |

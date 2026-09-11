@@ -88,7 +88,7 @@ Aplica-se ao hostname `api-homolog.catechis.app` (e também aos portais se algu�
 |-------|-------|
 | **Action** | Allow |
 | **Rule name** | `Team emails` |
-| **Include** | Emails → lista da equipa (ex. `simaopedros@gmail.com`, `dev@catechis.app`) |
+| **Include** | Emails → lista da equipa (ex. `admin@catechis.app`, `dev@catechis.app`) |
 
 Método de login na app: **One-time PIN** enviado ao email permitido.
 

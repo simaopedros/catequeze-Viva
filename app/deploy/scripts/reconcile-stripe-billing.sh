@@ -2,8 +2,8 @@
 # Reconcilia assinatura Stripe → User no Neon quando webhooks falharam (ex. HTTP 400).
 # Uso no VPS homolog:
 #   cd /opt/catechis
-#   bash scripts/reconcile-stripe-billing.sh simaopedros@gmail.com
-#   bash scripts/reconcile-stripe-billing.sh --resend-last-invoice simaopedros@gmail.com
+#   bash scripts/reconcile-stripe-billing.sh you@example.com
+#   bash scripts/reconcile-stripe-billing.sh --resend-last-invoice you@example.com
 set -euo pipefail
 
 COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.homolog.yml}"
