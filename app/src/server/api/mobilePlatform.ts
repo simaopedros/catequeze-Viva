@@ -104,11 +104,23 @@ export async function mobileCalendar(req: Request, res: Response, context: any) 
   let meetings: any[] = [];
   try {
     const classesPayload = await listClasses({ workspaceId, take: 50, skip: 0 }, opCtx);
-    const classIds = asList(classesPayload)
+    const classes = asList(classesPayload);
+    const classIds = classes
       .map((row) => row?.id)
       .filter((id): id is string => typeof id === 'string' && id.length > 0);
+    const classNameById = new Map(
+      classes
+        .filter((row) => typeof row?.id === 'string')
+        .map((row) => [row.id as string, row.name || 'Turma']),
+    );
     if (classIds.length > 0) {
-      meetings = await listMeetingsForClasses({ classIds }, opCtx);
+      meetings = (await listMeetingsForClasses({ classIds }, opCtx)).map((meeting: any) => ({
+        ...meeting,
+        class: meeting.class || {
+          id: meeting.classId,
+          name: classNameById.get(meeting.classId) || 'Turma',
+        },
+      }));
     }
   } catch {
     meetings = [];
