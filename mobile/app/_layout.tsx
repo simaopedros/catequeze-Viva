@@ -1,5 +1,6 @@
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import {
   SourceSerif4_400Regular,
@@ -12,10 +13,12 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { AuthProvider, useAuth } from '../src/auth/AuthContext';
 import { colors, fonts } from '../src/theme';
+
+void SplashScreen.preventAutoHideAsync();
 
 function Gate({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
@@ -46,7 +49,7 @@ function Gate({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
-  const [loaded] = useFonts({
+  const [loaded, fontError] = useFonts({
     SourceSerif4_400Regular,
     SourceSerif4_600SemiBold,
     SourceSerif4_700Bold,
@@ -55,13 +58,21 @@ export default function RootLayout() {
     Inter_600SemiBold,
     Inter_700Bold,
   });
+  const [timedOut, setTimedOut] = useState(false);
 
-  if (!loaded) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.paper }}>
-        <ActivityIndicator color={colors.gold} />
-      </View>
-    );
+  useEffect(() => {
+    const timer = setTimeout(() => setTimedOut(true), 6000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const ready = loaded || Boolean(fontError) || timedOut;
+
+  useEffect(() => {
+    if (ready) void SplashScreen.hideAsync();
+  }, [ready]);
+
+  if (!ready) {
+    return <View style={{ flex: 1, backgroundColor: colors.paper }} />;
   }
 
   return (
