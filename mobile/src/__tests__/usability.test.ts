@@ -1,4 +1,5 @@
 import { APP_TABS } from '../api/paths';
+import { getMobileBottomTabKeys } from '../screens/bottomTabs';
 import { appRoutes, publicRoutes } from '../navigation/routes';
 
 describe('usability map', () => {
@@ -51,5 +52,12 @@ describe('usability map', () => {
     expect(appRoutes.calendar).toBe('/(app)/(tabs)/calendar');
     expect(appRoutes.messages).toBe('/(app)/messages');
     expect(APP_TABS.map((tab) => tab.name)).toEqual(['index', 'community', 'classes', 'calendar', 'more']);
+    expect(getMobileBottomTabKeys('PARISH_COORDINATOR')).toEqual([
+      'dashboard',
+      'community',
+      'classes',
+      'calendar',
+    ]);
+    expect(getMobileBottomTabKeys('GUARDIAN')).toEqual(['dashboard', 'community', 'calendar', 'messages']);
   });
 });

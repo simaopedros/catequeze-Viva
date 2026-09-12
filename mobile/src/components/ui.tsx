@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -157,7 +156,7 @@ export function MenuRow({
           {hint ? <Text style={styles.compactHint}>{hint}</Text> : null}
           {badge ? <Text style={styles.compactBadge}>{badge}</Text> : null}
         </View>
-        <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+        <Text style={styles.compactChevron}>›</Text>
       </Pressable>
     );
   }
@@ -252,6 +251,7 @@ const styles = StyleSheet.create({
   compactLabel: { color: colors.ink, fontSize: 16, fontWeight: '600' },
   compactHint: { color: colors.muted, fontSize: 13, marginTop: 2 },
   compactBadge: { color: colors.goldDark, fontSize: 12, marginTop: 4 },
+  compactChevron: { color: colors.muted, fontSize: 22, fontWeight: '300' },
   chip: {
     borderWidth: 1,
     borderColor: colors.line,

@@ -73,6 +73,9 @@ describe('platform catalogue', () => {
     const guardianIds = guardian.flatMap((section) => section.items.map((item) => item.id));
     expect(guardianIds).toContain('consents');
     expect(guardianIds).not.toContain('parishes');
+
+    const guardianBar = getMoreSections({ role: 'GUARDIAN', hiddenIds: ['messages'] });
+    expect(guardianBar.flatMap((section) => section.items.map((item) => item.id))).not.toContain('messages');
   });
 
   it('matches the new Wasp /mobile platform routes', () => {

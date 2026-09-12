@@ -266,16 +266,19 @@ export type MoreNavContext = {
   workspaceType?: string | null;
   role?: string | null;
   isAdmin?: boolean;
+  hiddenIds?: string[];
 };
 
 export function getMoreSections(ctx: MoreNavContext = {}): MoreSection[] {
   const role = ctx.role || '';
   const isAdmin = Boolean(ctx.isAdmin);
   const personal = ctx.workspaceType === 'PERSONAL';
+  const hidden = new Set(ctx.hiddenIds ?? []);
 
   return MORE_SECTIONS.map((section) => ({
     ...section,
     items: section.items.filter((item) => {
+      if (hidden.has(item.id)) return false;
       if (personal && (item.hideInPersonal || PERSONAL_HIDDEN_IDS.has(item.id))) {
         return false;
       }
