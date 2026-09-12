@@ -1,25 +1,34 @@
 import React, { useMemo, useState } from 'react';
-import { Pressable, Text } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { Pressable, Text, View } from 'react-native';
+import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle, StatusChip } from '../components/ui';
+import { formatDate, personName, statusLabel } from '../lib/payload';
+import { colors, spacing } from '../theme';
 
-const STATUSES = ['PRESENT', 'ABSENT', 'LATE', 'EXCUSED'] as const;
+const STATUSES = [
+  { id: 'PRESENT', label: 'Presente', tone: 'success' as const },
+  { id: 'ABSENT', label: 'Ausente', tone: 'danger' as const },
+  { id: 'LATE', label: 'Atrasado', tone: 'gold' as const },
+  { id: 'JUSTIFIED', label: 'Justificado', tone: 'neutral' as const },
+] as const;
 
 export function AttendanceScreen({
   meeting,
   loading,
   error,
   onSave,
+  onSelectMeeting,
   busy,
 }: {
   meeting: any;
   loading?: boolean;
   error?: string | null;
   onSave: (catechumenProfileId: string, status: string) => Promise<void> | void;
+  onSelectMeeting?: (id: string) => void;
   busy?: boolean;
 }) {
   const rows = useMemo(() => {
     return (
+      meeting?.participants ||
       meeting?.attendance ||
       meeting?.records ||
       meeting?.enrollments ||
@@ -28,6 +37,9 @@ export function AttendanceScreen({
     );
   }, [meeting]);
   const [draft, setDraft] = useState<Record<string, string>>({});
+  const summary = meeting?.summary;
+  const siblings = meeting?.siblingMeetings || [];
+  const currentMeetingId = meeting?.meeting?.id;
 
   if (loading) {
     return (
@@ -39,31 +51,84 @@ export function AttendanceScreen({
 
   return (
     <Screen testID="attendance-screen">
-      <ScreenTitle title="Presença" subtitle="Toque no estado e grave cada catequizando." />
+      <ScreenTitle
+        title="Presença"
+        subtitle={meeting?.meeting?.title || meeting?.title || 'Toque no estado e salve cada catequizando.'}
+      />
       {error ? <EmptyState title="Não foi possível carregar" body={error} /> : null}
+      {siblings.length > 1 ? (
+        <View style={{ marginBottom: spacing.sm }}>
+          <Text style={{ color: colors.ink, fontWeight: '700', marginBottom: 8 }}>Encontros desta turma</Text>
+          {siblings.map((item: any) => {
+            const selected = item.id === currentMeetingId;
+            return (
+              <Pressable
+                key={item.id}
+                testID={`sibling-meeting-${item.id}`}
+                onPress={() => item.id !== currentMeetingId && onSelectMeeting?.(item.id)}
+                disabled={!onSelectMeeting || selected}
+              >
+                <Card
+                  style={
+                    selected
+                      ? { borderColor: colors.gold, backgroundColor: colors.paper }
+                      : undefined
+                  }
+                >
+                  <Text style={{ color: colors.ink, fontWeight: selected ? '700' : '600' }}>
+                    {item.title || item.theme || 'Encontro'}
+                  </Text>
+                  <Text style={{ color: colors.muted, marginTop: 4 }}>
+                    {formatDate(item.date)}
+                    {item.status ? ` · ${statusLabel(item.status)}` : ''}
+                  </Text>
+                </Card>
+              </Pressable>
+            );
+          })}
+        </View>
+      ) : null}
+      {summary ? (
+        <Card>
+          <Text style={{ color: colors.muted }}>Resumo</Text>
+          <Text style={{ color: colors.ink, marginTop: 6 }}>
+            {summary.registered ?? 0} de {summary.total ?? rows.length} preenchidos
+          </Text>
+          <Text style={{ color: colors.muted, marginTop: 4 }}>
+            {summary.present ?? 0} presentes · {summary.absent ?? 0} ausentes · {summary.late ?? 0} atrasados ·{' '}
+            {summary.justified ?? 0} justificados
+          </Text>
+        </Card>
+      ) : null}
       {rows.length === 0 ? (
         <EmptyState title="Sem lista" body="Este encontro ainda não tem catequizandos para marcar." />
       ) : (
         rows.map((row: any) => {
-          const id = row.catechumenProfileId || row.id;
-          const name =
-            row.displayName ||
-            row.name ||
-            [row.firstName, row.lastName].filter(Boolean).join(' ') ||
-            'Catequizando';
-          const status = draft[id] || row.status || 'PRESENT';
+          const id = row.catechumenProfileId || row.catechumenProfile?.id || row.id;
+          const name = personName(row.catechumenProfile || row, 'Catequizando');
+          const status = draft[id] || row.status || null;
           return (
             <Card key={id}>
               <Text style={{ color: colors.ink, fontWeight: '700' }}>{name}</Text>
-              <Text style={{ color: colors.muted, marginVertical: 8 }}>Estado: {status}</Text>
-              {STATUSES.map((item) => (
-                <Pressable key={item} onPress={() => setDraft((current) => ({ ...current, [id]: item }))}>
-                  <Text style={{ color: status === item ? colors.goldDark : colors.muted, marginBottom: 4 }}>
-                    {item}
-                  </Text>
-                </Pressable>
-              ))}
-              <BrandButton label={busy ? 'A gravar…' : 'Gravar'} disabled={busy} onPress={() => onSave(id, status)} />
+              <Text style={{ color: colors.muted, marginVertical: 8 }}>
+                Estado: {status ? statusLabel(status) || status : 'Não preenchido'}
+              </Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginBottom: spacing.sm }}>
+                {STATUSES.map((item) => (
+                  <StatusChip
+                    key={item.id}
+                    label={item.label}
+                    tone={item.tone}
+                    selected={status === item.id}
+                    onPress={() => setDraft((current) => ({ ...current, [id]: item.id }))}
+                  />
+                ))}
+              </View>
+              <BrandButton
+                label={busy ? 'Salvando…' : 'Salvar'}
+                disabled={busy || !status}
+                onPress={() => status && onSave(id, status)}
+              />
             </Card>
           );
         })

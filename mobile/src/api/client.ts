@@ -151,6 +151,9 @@ export function createMobileClient(options: MobileClientOptions) {
     meetingDetails(id: string) {
       return request<any>(MOBILE_PATHS.meetingDetails(id));
     },
+    meetingAttendance(id: string) {
+      return request<any>(MOBILE_PATHS.meetingAttendance(id));
+    },
     saveAttendance(body: {
       meetingId: string;
       catechumenProfileId: string;
@@ -291,6 +294,99 @@ export function createMobileClient(options: MobileClientOptions) {
     },
     bibleChapter(bookId: string, chapter: number, locale = 'pt-BR') {
       return request<BibleChapter>(withQuery(MOBILE_PATHS.bibleChapter(bookId, chapter), { locale }));
+    },
+    catechumens(workspaceId?: string, search?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.catechumens, { workspaceId, search, take: 50 }));
+    },
+    catechumenDetails(id: string) {
+      return request<any>(MOBILE_PATHS.catechumenDetails(id));
+    },
+    families(workspaceId?: string, search?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.families, { workspaceId, search, take: 50 }));
+    },
+    familyDetails(id: string, workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.familyDetails(id), { workspaceId }));
+    },
+    markAllNotificationsRead() {
+      return request<any>(MOBILE_PATHS.notificationsReadAll, { method: 'POST' });
+    },
+    content(workspaceId?: string, search?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.content, { workspaceId, search, take: 50 }));
+    },
+    contentDetails(id: string) {
+      return request<any>(MOBILE_PATHS.contentDetails(id));
+    },
+    calendar(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.calendar, { workspaceId }));
+    },
+    announcements(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.announcements, { workspaceId }));
+    },
+    acknowledgeAnnouncement(id: string) {
+      return request<any>(MOBILE_PATHS.announcementAck(id), { method: 'POST' });
+    },
+    formation(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.formation, { workspaceId }));
+    },
+    formationTrack(id: string, workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.formationTrack(id), { workspaceId }));
+    },
+    sacraments(workspaceId?: string, search?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.sacraments, { workspaceId, search, take: 50 }));
+    },
+    sacramentDetails(id: string) {
+      return request<any>(MOBILE_PATHS.sacramentDetails(id));
+    },
+    catechismSearch(q: string, locale = 'pt-BR') {
+      return request<any>(withQuery(MOBILE_PATHS.catechism, { q, locale }));
+    },
+    catechismEntry(number: number, locale = 'pt-BR') {
+      return request<any>(withQuery(MOBILE_PATHS.catechismEntry(number), { locale }));
+    },
+    directorySearch(q: string, locale = 'pt-BR') {
+      return request<any>(withQuery(MOBILE_PATHS.directory, { q, locale }));
+    },
+    directoryEntry(number: number, locale = 'pt-BR') {
+      return request<any>(withQuery(MOBILE_PATHS.directoryEntry(number), { locale }));
+    },
+    reports(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.reports, { workspaceId }));
+    },
+    birthdays(classId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.birthdays, { classId, days: 30 }));
+    },
+    officialLibrary(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.officialLibrary, { workspaceId }));
+    },
+    groups(query?: { q?: string; mine?: boolean }) {
+      return request<any>(withQuery(MOBILE_PATHS.groups, query));
+    },
+    groupDetails(id: string) {
+      return request<any>(MOBILE_PATHS.groupDetails(id));
+    },
+    team(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.team, { workspaceId }));
+    },
+    communities(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.communities, { workspaceId }));
+    },
+    billing() {
+      return request<any>(MOBILE_PATHS.billing);
+    },
+    catecheticalYears() {
+      return request<any>(MOBILE_PATHS.catecheticalYears);
+    },
+    familyInvites(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.familyInvites, { workspaceId }));
+    },
+    journeyTemplates(locale = 'pt-BR') {
+      return request<any>(withQuery(MOBILE_PATHS.journeyTemplates, { locale }));
+    },
+    parishes() {
+      return request<any>(MOBILE_PATHS.parishes);
+    },
+    consents() {
+      return request<any>(MOBILE_PATHS.consents);
     },
   };
 }

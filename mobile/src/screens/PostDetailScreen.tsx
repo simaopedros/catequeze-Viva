@@ -111,7 +111,7 @@ export function PostDetailScreen({
       <Field label="O seu comentário" value={body} onChangeText={setBody} multiline testID="comment-input" />
       <BrandButton
         testID="comment-submit"
-        label={busy ? 'A enviar…' : 'Comentar'}
+        label={busy ? 'Enviando…' : 'Comentar'}
         disabled={busy || !body.trim()}
         onPress={async () => {
           await onComment(body.trim());
@@ -146,7 +146,7 @@ export function PostDetailScreen({
           <BrandButton
             variant="ghost"
             testID="report-submit"
-            label={busy ? 'A enviar…' : 'Enviar denúncia'}
+            label={busy ? 'Enviando…' : 'Enviar denúncia'}
             disabled={busy}
             onPress={() => onReport(reason)}
           />

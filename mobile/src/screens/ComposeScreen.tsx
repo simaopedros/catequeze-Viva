@@ -30,9 +30,9 @@ export function ComposeScreen({
         title="Nova publicação"
         subtitle={
           accessLoading
-            ? 'A verificar se a sua conta pode publicar…'
+            ? 'Verificando se a sua conta pode publicar…'
             : canPublish
-              ? 'Partilhe um momento ou um versículo com a Comunidade.'
+              ? 'Compartilhe um momento ou um versículo com a Comunidade.'
               : 'A publicação exige assinatura.'
         }
       />

@@ -18,7 +18,7 @@ export function TwoFactorScreen({
     <Screen testID="two-factor-screen">
       <ScreenTitle
         title="Verificação em dois passos"
-        subtitle="Introduza o código de 6 dígitos da aplicação autenticadora."
+        subtitle="Digite o código de 6 dígitos do aplicativo autenticador."
       />
       <ErrorText message={error} />
       <Field
@@ -31,7 +31,7 @@ export function TwoFactorScreen({
       />
       <BrandButton
         testID="totp-submit"
-        label={busy ? 'A verificar…' : 'Continuar'}
+        label={busy ? 'Verificando…' : 'Continuar'}
         disabled={busy || token.length < 6}
         onPress={() => onSubmit(token)}
       />

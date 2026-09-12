@@ -4,7 +4,7 @@ import { useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
 import { MessagesScreen } from '../../../src/screens/MessagesScreen';
 
-export default function MessagesRoute() {
+export default function MessagesTabRoute() {
   const { api, workspaceId } = useAuth();
   const router = useRouter();
   const { data, loading, error } = useAsync(() => api.conversations(workspaceId || undefined), [workspaceId]);

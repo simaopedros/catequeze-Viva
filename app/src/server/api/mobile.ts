@@ -15,7 +15,7 @@ import { getDashboardStats } from '../operations/dashboardOperations';
 import { listClasses, getClassDetails } from '../operations/classOperations';
 import { listCatechumens, getCatechumenProfile } from '../operations/catechumenOperations';
 import { listHouseholds } from '../operations/familyOperations';
-import { listMeetings, getMeeting, saveAttendance } from '../operations/meetingOperations';
+import { listMeetings, getMeeting, getMeetingAttendanceSheet, saveAttendance } from '../operations/meetingOperations';
 import { listDocuments } from '../operations/documentOperations';
 import { listConversations, getConversation, sendMessage } from '../operations/conversationOperations';
 import { verifyTwoFactorLogin, assertTwoFactorSessionVerified } from '../operations/twoFactorOperations';
@@ -396,7 +396,17 @@ export async function mobileClassDetails(req: Request, res: Response, context: a
 export async function mobileCatechumens(req: Request, res: Response, context: any) {
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
-  return res.json(await listCatechumens(undefined as void, opCtx));
+  return res.json(
+    await listCatechumens(
+      {
+        workspaceId: parseOptionalString(req.query.workspaceId),
+        search: parseOptionalString(req.query.search),
+        take: parseOptionalInt(req.query.take, 50),
+        skip: parseOptionalInt(req.query.skip, 0),
+      },
+      opCtx,
+    ),
+  );
 }
 
 export async function mobileCatechumenDetails(req: Request, res: Response, context: any) {
@@ -408,15 +418,35 @@ export async function mobileCatechumenDetails(req: Request, res: Response, conte
 export async function mobileFamilies(req: Request, res: Response, context: any) {
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
-  return res.json(await listHouseholds({ communityId: parseOptionalString(req.query.communityId) }, opCtx));
+  return res.json(
+    await listHouseholds(
+      {
+        communityId: parseOptionalString(req.query.communityId),
+        workspaceId: parseOptionalString(req.query.workspaceId),
+        parishId: parseOptionalString(req.query.parishId),
+        search: parseOptionalString(req.query.search),
+        take: parseOptionalInt(req.query.take, 50),
+        skip: parseOptionalInt(req.query.skip, 0),
+      },
+      opCtx,
+    ),
+  );
 }
 
 export async function mobileFamilyDetails(req: Request, res: Response, context: any) {
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
-  const households = await listHouseholds({ communityId: parseOptionalString(req.query.communityId) }, opCtx);
+  const households = await listHouseholds(
+    {
+      communityId: parseOptionalString(req.query.communityId),
+      workspaceId: parseOptionalString(req.query.workspaceId),
+      parishId: parseOptionalString(req.query.parishId),
+    },
+    opCtx,
+  );
   const householdId = parseRequiredString(req.params.id, 'id');
-  const household = households.find((item: any) => item.id === householdId);
+  const list = Array.isArray(households) ? households : households?.items || [];
+  const household = list.find((item: any) => item.id === householdId);
   if (!household) {
     throw new HttpError(404, 'Família não encontrada.');
   }
@@ -437,6 +467,23 @@ export async function mobileMeetingDetails(req: Request, res: Response, context:
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
   return res.json(await getMeeting({ id: parseRequiredString(req.params.id, 'id') }, opCtx));
+}
+
+export async function mobileMeetingAttendance(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const meetingId = parseRequiredString(req.params.id, 'id');
+  const meeting = await getMeeting({ id: meetingId }, opCtx);
+  const classId = meeting?.classId || meeting?.class?.id;
+  if (!classId) {
+    throw new HttpError(404, 'Encontro sem turma associada.');
+  }
+  return res.json(
+    await getMeetingAttendanceSheet(
+      { classId: String(classId), meetingId, surface: 'mobile' },
+      opCtx,
+    ),
+  );
 }
 
 export async function mobileSaveAttendance(req: Request, res: Response, context: any) {

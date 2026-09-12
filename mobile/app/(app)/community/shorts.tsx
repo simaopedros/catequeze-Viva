@@ -15,7 +15,7 @@ export default function ShortsRoute() {
   return (
     <CommunityScreen
       title="Shorts"
-      subtitle="Vídeos curtos da Comunidade — o Rhema no telemóvel."
+      subtitle="Vídeos curtos da Comunidade — o Rhema no celular."
       posts={feed.data?.items ?? []}
       topics={topics.data ?? []}
       access={access.data}
