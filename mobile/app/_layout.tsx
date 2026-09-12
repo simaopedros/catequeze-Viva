@@ -36,7 +36,7 @@ function Gate({ children }: { children: React.ReactNode }) {
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <StatusBar style="light" backgroundColor={colors.ink} />
+      <StatusBar style="light" />
       <Gate>
         <Stack
           screenOptions={{
