@@ -1,11 +1,34 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import { CommunityScreen } from '../screens/CommunityScreen';
+import { CommunityScreen, communityFeedSubtitle } from '../screens/CommunityScreen';
 import { COMMUNITY_AREAS } from '../screens/communityAreas';
 import { openCommunityArea } from '../screens/communityNavigation';
 import { appRoutes } from '../navigation/routes';
 
 describe('Community hub', () => {
+  it('não promete paywall a quem já pode publicar', () => {
+    expect(communityFeedSubtitle({ authenticated: true, canPublish: true })).toBe(
+      'Ler, seguir e partilhar com a rede da catequese.',
+    );
+    expect(communityFeedSubtitle({ authenticated: true, canPublish: false })).toBe(
+      'Ler e seguir é livre. Publicar pede assinatura.',
+    );
+    const allowed = render(
+      <CommunityScreen
+        posts={[]}
+        topics={[]}
+        access={{ authenticated: true, canPublish: true }}
+        sort="recent"
+        onChangeSort={jest.fn()}
+        onChangeTopic={jest.fn()}
+        onOpenAuthor={jest.fn()}
+        onCompose={jest.fn()}
+      />,
+    );
+    expect(allowed.getByText('Ler, seguir e partilhar com a rede da catequese.')).toBeTruthy();
+    expect(allowed.queryByText(/Publicar pede assinatura/)).toBeNull();
+  });
+
   it('mostra todas as áreas da rede social', () => {
     const onOpenArea = jest.fn();
     const view = render(

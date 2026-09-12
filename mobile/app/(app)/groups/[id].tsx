@@ -3,7 +3,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import { useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
-import { personName } from '../../../src/lib/payload';
+import { personName, statusLabel } from '../../../src/lib/payload';
 import { Card } from '../../../src/components/ui';
 import { DetailScreen } from '../../../src/screens/DetailScreen';
 import { colors } from '../../../src/theme';
@@ -18,7 +18,7 @@ export default function GroupDetailRoute() {
     <DetailScreen
       testID="group-detail-screen"
       title={personName(data, 'Grupo')}
-      subtitle={[data?.kind, data?.city].filter(Boolean).join(' · ')}
+      subtitle={[statusLabel(data?.kind), data?.city].filter(Boolean).join(' · ')}
       loading={loading}
       error={error}
       rows={[{ label: 'Descrição', value: data?.description }]}

@@ -13,7 +13,7 @@ export default function OfficialLibraryRoute() {
   const items = asItems(data, ['resources']).map((row: any) => ({
     id: row.id,
     title: personName(row, 'Recurso'),
-    subtitle: [statusLabel(row.status), row.kind, row.ownerType].filter(Boolean).join(' · '),
+    subtitle: [statusLabel(row.status), statusLabel(row.kind), statusLabel(row.ownerType)].filter(Boolean).join(' · '),
   }));
 
   return (

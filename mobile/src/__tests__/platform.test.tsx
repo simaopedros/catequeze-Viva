@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import { asItems, formatDate, personName, pickItems, statusLabel, workspaceTypeLabel } from '../lib/payload';
+import { asItems, formatDate, personName, pickItems, roleLabel, statusLabel, workspaceTypeLabel } from '../lib/payload';
 import { planLabel, subscriptionStatusLabel } from '../lib/billing';
 import { MORE_SECTIONS, getMoreSections } from '../screens/moreModules';
 import { MoreScreen } from '../screens/MoreScreen';
@@ -34,6 +34,8 @@ describe('payload helpers', () => {
     expect(statusLabel('LATE')).toBe('Atrasado');
     expect(statusLabel('INITIAL')).toBe('Inicial');
     expect(workspaceTypeLabel('PARISH')).toBe('Paróquia');
+    expect(roleLabel('PARISH_COORDINATOR')).toBe('Coordenador');
+    expect(statusLabel('PRAYER')).toBe('Oração');
     expect(formatDate('2026-03-19T12:00:00.000Z')).toMatch(/2026/);
     expect(planLabel('single')).toBe('Plano Catequista');
     expect(subscriptionStatusLabel('active')).toBe('Ativa');

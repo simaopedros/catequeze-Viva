@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../src/auth/AuthContext';
 import { useAsync } from '../../src/hooks/useAsync';
-import { asItems, personName } from '../../src/lib/payload';
+import { asItems, personName, roleLabel } from '../../src/lib/payload';
 import { CatalogScreen } from '../../src/screens/CatalogScreen';
 
 export default function TeamRoute() {
@@ -13,7 +13,7 @@ export default function TeamRoute() {
   const members = asItems(data, ['memberships', 'team']).map((row: any) => ({
     id: row.id || row.userId || row.user?.id,
     title: personName(row.user || row, 'Membro'),
-    subtitle: [row.role, row.community?.name].filter(Boolean).join(' · '),
+    subtitle: [roleLabel(row.role), row.community?.name].filter(Boolean).join(' · '),
   }));
 
   return (

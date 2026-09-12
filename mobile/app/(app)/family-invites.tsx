@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../src/auth/AuthContext';
 import { useAsync } from '../../src/hooks/useAsync';
-import { asItems, formatDate, personName, statusLabel } from '../../src/lib/payload';
+import { asItems, formatDate, personName, roleLabel, statusLabel } from '../../src/lib/payload';
 import { CatalogScreen } from '../../src/screens/CatalogScreen';
 
 export default function FamilyInvitesRoute() {
@@ -13,7 +13,7 @@ export default function FamilyInvitesRoute() {
   const items = asItems(data, ['invites']).map((row: any) => ({
     id: row.id,
     title: personName(row, row.email || 'Convite'),
-    subtitle: [row.role, statusLabel(row.status), formatDate(row.expiresAt || row.createdAt)]
+    subtitle: [roleLabel(row.role), statusLabel(row.status), formatDate(row.expiresAt || row.createdAt)]
       .filter(Boolean)
       .join(' · '),
   }));

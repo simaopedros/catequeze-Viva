@@ -15,7 +15,7 @@ export default function FormationRoute() {
   const items = asItems(data, ['tracks']).map((row: any) => ({
     id: row.id,
     title: personName(row, 'Percurso'),
-    subtitle: [statusLabel(row.kind), row.hours != null ? `${row.hours} h` : row.lessonCount ? `${row.lessonCount} lições` : null]
+    subtitle: [statusLabel(row.kind), row.hours != null ? `${row.hours} horas` : row.lessonCount ? `${row.lessonCount} lições` : null]
       .filter(Boolean)
       .join(' · '),
   }));

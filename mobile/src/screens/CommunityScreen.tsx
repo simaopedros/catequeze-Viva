@@ -41,9 +41,16 @@ function Chip({
   );
 }
 
+export function communityFeedSubtitle(access?: SocialAccess | null): string {
+  if (access && !access.canPublish) {
+    return 'Ler e seguir é livre. Publicar pede assinatura.';
+  }
+  return 'Ler, seguir e partilhar com a rede da catequese.';
+}
+
 export function CommunityScreen({
   title = 'Comunidade',
-  subtitle = 'Ler e seguir é livre. Publicar pede assinatura.',
+  subtitle,
   posts,
   topics,
   access,
@@ -84,9 +91,11 @@ export function CommunityScreen({
   showHub?: boolean;
   onOpenArea?: (id: CommunityAreaId) => void;
 }) {
+  const resolvedSubtitle = subtitle ?? communityFeedSubtitle(access);
+
   return (
     <Screen testID="community-screen">
-      <ScreenTitle title={title} subtitle={subtitle} />
+      <ScreenTitle title={title} subtitle={resolvedSubtitle} />
       {showHub && onOpenArea ? (
         <View testID="community-hub" style={{ marginBottom: spacing.md }}>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>

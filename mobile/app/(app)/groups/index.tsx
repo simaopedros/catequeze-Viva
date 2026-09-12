@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
-import { asItems, personName } from '../../../src/lib/payload';
+import { asItems, personName, statusLabel } from '../../../src/lib/payload';
 import { CatalogScreen } from '../../../src/screens/CatalogScreen';
 
 export default function GroupsRoute() {
@@ -12,7 +12,7 @@ export default function GroupsRoute() {
   const items = asItems(data).map((row: any) => ({
     id: row.id,
     title: personName(row, 'Grupo'),
-    subtitle: [row.kind, row.city].filter(Boolean).join(' · '),
+    subtitle: [statusLabel(row.kind), row.city].filter(Boolean).join(' · '),
   }));
 
   return (

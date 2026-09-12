@@ -1,7 +1,8 @@
 import React from 'react';
 import { useAuth } from '../../src/auth/AuthContext';
 import { useAsync } from '../../src/hooks/useAsync';
-import { asItems, personName } from '../../src/lib/payload';
+import { planLabel } from '../../src/lib/billing';
+import { asItems, personName, workspaceTypeLabel } from '../../src/lib/payload';
 import { CatalogScreen } from '../../src/screens/CatalogScreen';
 
 export default function ParishesRoute() {
@@ -10,7 +11,13 @@ export default function ParishesRoute() {
   const items = asItems(data, ['parishes']).map((row: any) => ({
     id: row.id,
     title: personName(row, 'Paróquia'),
-    subtitle: [row.diocese?.name, row.type, row.billing?.plan].filter(Boolean).join(' · '),
+    subtitle: [
+      row.diocese?.name,
+      workspaceTypeLabel(row.type),
+      row.billing?.plan ? planLabel(row.billing.plan) : null,
+    ]
+      .filter(Boolean)
+      .join(' · '),
   }));
 
   return (

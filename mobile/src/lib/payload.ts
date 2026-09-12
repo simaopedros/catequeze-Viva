@@ -85,10 +85,35 @@ export function statusLabel(status?: string | null): string {
     PERSONAL: 'Pessoal',
     DIOCESE: 'Diocese',
     COMMUNITY: 'Comunidade',
+    SUPER_ADMIN: 'Super Admin',
+    DIOCESE_ADMIN: 'Diocese',
+    PARISH_COORDINATOR: 'Coordenador',
+    COMMUNITY_COORDINATOR: 'Coordenador(a) de comunidade',
+    LEAD_CATECHIST: 'Catequista responsável',
+    ASSISTANT_CATECHIST: 'Catequista auxiliar',
+    GUARDIAN: 'Responsável familiar',
+    CATECHUMEN: 'Catequizando',
+    CONTENT_REVIEWER: 'Revisor',
+    PASTORAL_VIEWER: 'Visitante',
+    PERSONAL_OWNER: 'Proprietário',
+    PLATFORM_MEMBER: 'Membro',
+    YOUTH: 'Jovens',
+    MUSIC: 'Música',
+    PRAYER: 'Oração',
+    LITURGY: 'Liturgia',
+    CHARITY: 'Caridade',
+    FAMILY: 'Família',
+    MOVEMENT: 'Movimento',
+    FORMATION: 'Formação',
+    CUSTOM: 'Personalizado',
   };
   return map[status] || status;
 }
 
 export function workspaceTypeLabel(type?: string | null): string {
   return statusLabel(type);
+}
+
+export function roleLabel(role?: string | null): string {
+  return statusLabel(role);
 }

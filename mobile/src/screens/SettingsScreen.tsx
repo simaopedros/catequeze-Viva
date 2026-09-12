@@ -2,6 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import { BrandButton, Card, Screen, ScreenTitle } from '../components/ui';
 import type { MobileUser, Workspace } from '../api/types';
+import { workspaceTypeLabel } from '../lib/payload';
 import { colors } from '../theme';
 
 export function SettingsScreen({
@@ -46,6 +47,7 @@ export function SettingsScreen({
             }}
           >
             {workspace.name}
+            {workspace.type ? ` · ${workspaceTypeLabel(workspace.type)}` : ''}
           </Text>
         ))}
       </Card>
