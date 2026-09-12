@@ -2173,6 +2173,36 @@ api mobileSocialReport {
   entities: [SocialReport, SocialPost, SocialComment]
 }
 
+api mobileSocialUploadImage {
+  fn: import { mobileSocialUploadImage } from "@src/server/api/mobileSocial",
+  middlewareConfigFn: import { socialImageUploadMiddleware } from "@src/server/api/socialMedia",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/images"),
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese, UserTwoFactor]
+}
+
+api mobileSocialUploadVideo {
+  fn: import { mobileSocialUploadVideo } from "@src/server/api/mobileSocial",
+  middlewareConfigFn: import { socialVideoUploadMiddleware } from "@src/server/api/socialMedia",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/videos"),
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese, UserTwoFactor]
+}
+
+api mobileSocialCreateVideoUpload {
+  fn: import { mobileSocialCreateVideoUpload } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/video-uploads"),
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese, SocialPost, PricingPlan, PricingPlanPrice, UserTwoFactor]
+}
+
+api mobileSocialDeletePost {
+  fn: import { mobileSocialDeletePost } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/posts/:id/delete"),
+  entities: [SocialPost, SocialMedia, UserTwoFactor]
+}
+
 api mobileBibleBooks {
   fn: import { mobileBibleBooks } from "@src/server/api/mobileSocial",
   auth: true,

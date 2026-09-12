@@ -11,10 +11,13 @@ import {
   createSocialPost,
   createSocialComment,
   toggleSocialReaction,
+  deleteSocialPost,
   getSocialTopics,
   getSocialPublishAccess,
   getSocialCommunityPulse,
 } from '../operations/socialOperations';
+import { createSocialVideoUpload } from '../operations/socialMediaOperations';
+import { uploadSocialImage, uploadSocialVideo } from './socialMedia';
 import {
   getSocialProfile,
   updateSocialProfile,
@@ -268,5 +271,27 @@ export async function mobileBibleChapter(req: Request, res: Response, context: a
       },
       opCtx,
     ),
+  );
+}
+
+export async function mobileSocialUploadImage(req: Request, res: Response, context: any) {
+  await requireSession(context);
+  return uploadSocialImage(req, res, context);
+}
+
+export async function mobileSocialUploadVideo(req: Request, res: Response, context: any) {
+  await requireSession(context);
+  return uploadSocialVideo(req, res, context);
+}
+
+export async function mobileSocialCreateVideoUpload(req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  return res.json(await createSocialVideoUpload(req.body ?? {}, opCtx));
+}
+
+export async function mobileSocialDeletePost(req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  return res.json(
+    await deleteSocialPost({ postId: String(req.params.id || req.body?.postId || '') }, opCtx),
   );
 }
