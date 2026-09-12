@@ -27,6 +27,18 @@ export default function DirectoryRoute() {
       }))}
       emptyTitle="Comece a pesquisar"
       emptyBody="Escreva pelo menos 2 letras para procurar no diretório."
+      onSearch={async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          const payload = await api.directorySearch(query.trim());
+          setResults(asItems(payload));
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Pedido falhou.');
+        } finally {
+          setLoading(false);
+        }
+      }}
     />
   );
 }

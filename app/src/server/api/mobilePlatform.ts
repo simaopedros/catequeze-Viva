@@ -26,7 +26,7 @@ type AuthedContext = {
   user: any;
   req?: Request;
   res?: Response;
-  entities: typeof prisma;
+  entities: any;
 };
 
 function toOp(context: any): AuthedContext {
@@ -293,7 +293,7 @@ export async function mobileCommunities(req: Request, res: Response, context: an
 
 export async function mobileBilling(_req: Request, res: Response, context: any) {
   const opCtx = await requireSession(context);
-  return res.json(await getSubscriptionDetails(undefined as void, opCtx));
+  return res.json(await getSubscriptionDetails(undefined as void, opCtx as any));
 }
 
 export async function mobileCatecheticalYears(_req: Request, res: Response, context: any) {
