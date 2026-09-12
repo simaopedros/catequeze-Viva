@@ -1,8 +1,8 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
+import { Text } from 'react-native';
 import type { SocialPerson } from '../api/types';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors, spacing } from '../theme';
+import { EmptyState, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
+import { colors, fonts, spacing } from '../theme';
 
 export function personHandle(person: SocialPerson) {
   return person.socialHandle || person.handle || null;
@@ -40,23 +40,20 @@ export function PeopleListScreen({
       {people.map((person) => {
         const handle = personHandle(person);
         return (
-          <Pressable
+          <PersonRow
             key={person.id}
             testID={`person-${person.id}`}
+            name={person.displayName}
+            photoUrl={person.avatarUrl}
+            hint={handle ? `@${handle}` : 'Sem handle público'}
+            chip={person.followersCount != null ? `${person.followersCount} seguidores` : undefined}
             onPress={() => handle && onOpenPerson(handle)}
-            disabled={!handle}
-          >
-            <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>{person.displayName}</Text>
-              <Text style={{ color: colors.goldDark, marginTop: 2 }}>
-                {handle ? `@${handle}` : 'Sem handle público'}
-                {person.followersCount != null ? ` · ${person.followersCount} seguidores` : ''}
-              </Text>
-            </Card>
-          </Pressable>
+          />
         );
       })}
-      <Text style={{ color: colors.muted, marginTop: spacing.sm }}>{people.length} pessoa(s)</Text>
+      <Text style={{ color: colors.muted, marginTop: spacing.sm, fontFamily: fonts.sans }}>
+        {people.length} pessoa(s)
+      </Text>
     </Screen>
   );
 }

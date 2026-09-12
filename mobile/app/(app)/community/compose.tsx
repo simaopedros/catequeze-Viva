@@ -21,6 +21,8 @@ export default function ComposeRoute() {
       preview={preview}
       busy={busy}
       error={error}
+      onAttachVerse={() => router.push('/(app)/bible')}
+      onAttachMeeting={() => router.push('/(app)/(tabs)/calendar')}
       onPreviewShare={async (kind, sourceId) => {
         setError(null);
         try {

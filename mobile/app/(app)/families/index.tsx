@@ -16,6 +16,7 @@ export default function FamiliesRoute() {
     id: row.id,
     title: personName(row, 'Família'),
     subtitle: `${(row.guardians || []).length} encarregado(s) · ${(row.catechumens || row.dependents || []).length} catequizando(s)`,
+    photoUrl: row.photoUrl,
   }));
 
   return (

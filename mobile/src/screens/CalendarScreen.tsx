@@ -1,8 +1,6 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { EmptyState, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
 import { formatDate } from '../lib/payload';
-import { colors } from '../theme';
 
 export type CalendarItem = {
   id: string;
@@ -34,30 +32,17 @@ export function CalendarScreen({
           body="Ainda não há encontros nem eventos litúrgicos neste espaço."
         />
       ) : null}
-      {items.map((item) => {
-        const inner = (
-          <Card>
-            <Text style={{ color: colors.goldDark, fontWeight: '700', fontSize: 12 }}>
-              {item.kind === 'meeting' ? 'Encontro' : 'Evento litúrgico'}
-            </Text>
-            <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 17, marginTop: 4 }}>{item.title}</Text>
-            {item.subtitle ? (
-              <Text style={{ color: colors.muted, marginTop: 4 }}>{item.subtitle}</Text>
-            ) : null}
-            {item.date ? (
-              <Text style={{ color: colors.muted, marginTop: 4 }}>{formatDate(item.date)}</Text>
-            ) : null}
-          </Card>
-        );
-        if (item.kind === 'meeting' && onOpenMeeting) {
-          return (
-            <Pressable key={`${item.kind}-${item.id}`} testID={`item-${item.id}`} onPress={() => onOpenMeeting(item.id)}>
-              {inner}
-            </Pressable>
-          );
-        }
-        return <React.Fragment key={`${item.kind}-${item.id}`}>{inner}</React.Fragment>;
-      })}
+      {items.map((item) => (
+        <PersonRow
+          key={`${item.kind}-${item.id}`}
+          testID={`item-${item.id}`}
+          name={item.title}
+          hint={[item.kind === 'meeting' ? 'Encontro' : 'Evento litúrgico', item.subtitle, formatDate(item.date)]
+            .filter(Boolean)
+            .join(' · ')}
+          onPress={item.kind === 'meeting' && onOpenMeeting ? () => onOpenMeeting(item.id) : undefined}
+        />
+      ))}
     </Screen>
   );
 }

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { Text } from 'react-native';
+import { EmptyState, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
 import { asItems, formatDate, personName, statusLabel } from '../lib/payload';
-import { colors, spacing } from '../theme';
+import { colors, fonts, spacing } from '../theme';
 
 export function ClassDetailScreen({
   data,
@@ -35,17 +35,14 @@ export function ClassDetailScreen({
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Turma indisponível" body={error} /> : null}
       {summary ? (
-        <Card>
-          <Text style={{ color: colors.ink, fontWeight: '700', marginBottom: 6 }}>Presença</Text>
-          <Text style={{ color: colors.muted }}>
-            {summary.attendanceRate != null
-              ? `${Math.round(Number(summary.attendanceRate))}% de presença`
-              : 'Sem taxa ainda'}
-            {summary.totalMeetings ? ` · ${summary.totalMeetings} encontros` : ''}
-          </Text>
-        </Card>
+        <Text style={{ color: colors.muted, fontFamily: fonts.sans, marginBottom: spacing.md }}>
+          {summary.attendanceRate != null
+            ? `${Math.round(Number(summary.attendanceRate))}% de presença`
+            : 'Sem taxa ainda'}
+          {summary.totalMeetings ? ` · ${summary.totalMeetings} encontros` : ''}
+        </Text>
       ) : null}
-      <Text style={{ color: colors.ink, fontWeight: '700', marginBottom: 8 }}>Catequizandos</Text>
+      <Text style={{ color: colors.ink, fontFamily: fonts.serif, fontSize: 20, marginBottom: 8 }}>Catequizandos</Text>
       {enrollments.length === 0 && !loading ? (
         <EmptyState title="Sem inscritos" body="Esta turma ainda não tem catequizandos inscritos." />
       ) : (
@@ -53,36 +50,39 @@ export function ClassDetailScreen({
           const profile = row.catechumenProfile || row;
           const id = profile.id || row.catechumenProfileId;
           return (
-            <Pressable
+            <PersonRow
               key={row.id || id}
+              name={personName(profile)}
+              hint={statusLabel(row.status)}
+              photoUrl={profile.photoUrl}
               onPress={() => id && onOpenCatechumen?.(id)}
-              disabled={!onOpenCatechumen || !id}
-            >
-              <Card>
-                <Text style={{ color: colors.ink, fontWeight: '700' }}>{personName(profile)}</Text>
-                <Text style={{ color: colors.muted }}>{statusLabel(row.status)}</Text>
-              </Card>
-            </Pressable>
+            />
           );
         })
       )}
-      <Text style={{ color: colors.ink, fontWeight: '700', marginBottom: 8, marginTop: spacing.sm }}>
+      <Text
+        style={{
+          color: colors.ink,
+          fontFamily: fonts.serif,
+          fontSize: 20,
+          marginBottom: 8,
+          marginTop: spacing.sm,
+        }}
+      >
         Encontros
       </Text>
       {meetings.length === 0 && !loading ? (
         <EmptyState title="Sem encontros" body="Esta turma ainda não tem encontros listados." />
       ) : (
         meetings.map((meeting: any) => (
-          <Pressable key={meeting.id} onPress={() => onOpenMeeting(meeting.id)}>
-            <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>
-                {meeting.title || meeting.theme || 'Encontro'}
-              </Text>
-              <Text style={{ color: colors.muted }}>
-                {formatDate(meeting.startsAt || meeting.date)} {meeting.status ? `· ${statusLabel(meeting.status)}` : ''}
-              </Text>
-            </Card>
-          </Pressable>
+          <PersonRow
+            key={meeting.id}
+            name={meeting.title || meeting.theme || 'Encontro'}
+            hint={[formatDate(meeting.startsAt || meeting.date), meeting.status ? statusLabel(meeting.status) : '']
+              .filter(Boolean)
+              .join(' · ')}
+            onPress={() => onOpenMeeting(meeting.id)}
+          />
         ))
       )}
     </Screen>

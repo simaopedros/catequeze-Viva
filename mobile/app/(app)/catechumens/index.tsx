@@ -16,6 +16,7 @@ export default function CatechumensRoute() {
     id: row.id,
     title: personName(row, 'Catequizando'),
     subtitle: [row.household?.name, row.enrollments?.[0]?.class?.name].filter(Boolean).join(' · '),
+    photoUrl: row.photoUrl,
   }));
 
   return (

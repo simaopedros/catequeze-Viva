@@ -1,8 +1,17 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, MenuRow, Screen, ScreenTitle } from '../components/ui';
+import { Text } from 'react-native';
+import {
+  EmptyState,
+  HeroHeader,
+  LoadingState,
+  PersonRow,
+  Screen,
+  ScreenTitle,
+  ShortcutRow,
+} from '../components/ui';
+import { canMarkAttendance, isFamilyRole } from '../lib/roleAccess';
 import { formatDate, personName } from '../lib/payload';
-import { colors, spacing } from '../theme';
+import { colors, fonts, spacing } from '../theme';
 
 type Meeting = {
   id: string;
@@ -21,8 +30,14 @@ type Birthday = {
   className?: string;
 };
 
+function meetingTitle(meeting?: Meeting | null) {
+  return meeting?.title || meeting?.theme || 'Encontro';
+}
+
 export function HomeScreen({
   name,
+  role,
+  isAdmin,
   stats,
   meetings,
   loading,
@@ -34,6 +49,8 @@ export function HomeScreen({
   unread,
 }: {
   name: string;
+  role?: string | null;
+  isAdmin?: boolean;
   stats?: {
     activeClasses?: number;
     activeCatechumens?: number;
@@ -53,6 +70,8 @@ export function HomeScreen({
   onOpenHref: (href: string) => void;
   unread?: number;
 }) {
+  const canAttend = canMarkAttendance(role, isAdmin);
+  const family = isFamilyRole(role);
   const upcoming =
     (meetings && meetings.length > 0 ? meetings : null) ??
     (stats?.upcomingMeetings?.length ? stats.upcomingMeetings : null) ??
@@ -61,92 +80,99 @@ export function HomeScreen({
   const recent = stats?.recentMeetings ?? [];
   const shownMeetings = upcoming.length > 0 ? upcoming : recent;
   const meetingHeading =
-    upcoming.length > 0 ? 'Próximos encontros' : shownMeetings.length > 0 ? 'Encontros recentes' : 'Próximos encontros';
-  const pending = stats?.pendingAttendanceMeeting;
+    upcoming.length > 0 ? 'A seguir' : shownMeetings.length > 0 ? 'Encontros recentes' : 'Próximos encontros';
+  const pending = canAttend ? stats?.pendingAttendanceMeeting : null;
   const birthdays = stats?.upcomingBirthdays ?? [];
+  const heroMeeting = pending || shownMeetings[0];
+
+  const shortcuts = family
+    ? [
+        { id: 'messages', label: 'Mensagens', hint: 'Falar com a turma', onPress: () => onOpenHref('/(app)/messages') },
+        { id: 'calendar', label: 'Calendário', hint: 'Encontros', onPress: () => onOpenHref('/(app)/(tabs)/calendar') },
+        { id: 'children', label: 'Catequizandos', hint: 'A sua família', onPress: () => onOpenHref('/(app)/catechumens') },
+      ]
+    : [
+        { id: 'classes', label: 'Turmas', hint: `${stats?.activeClasses ?? '—'} ativas`, onPress: () => onOpenHref('/(app)/(tabs)/classes') },
+        { id: 'people', label: 'Catequizandos', hint: `${stats?.activeCatechumens ?? '—'} inscritos`, onPress: () => onOpenHref('/(app)/catechumens') },
+        {
+          id: 'community',
+          label: 'Comunidade',
+          hint: unread ? `${unread} avisos` : 'Feed da rede',
+          onPress: onOpenCommunity,
+        },
+      ];
 
   return (
     <Screen testID="home-screen">
-      <ScreenTitle title={`Olá, ${name}`} subtitle="O essencial da catequese, no bolso." />
+      <ScreenTitle title={`Olá, ${name}`} subtitle="O que faço agora?" />
       {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Não foi possível carregar o início" body={error} /> : null}
-      <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-        <Card style={{ flex: 1 }}>
-          <Text style={{ color: colors.muted }}>Turmas</Text>
-          <Text style={{ color: colors.ink, fontSize: 28, fontWeight: '700' }}>{stats?.activeClasses ?? '—'}</Text>
-        </Card>
-        <Card style={{ flex: 1 }}>
-          <Text style={{ color: colors.muted }}>Catequizandos</Text>
-          <Text style={{ color: colors.ink, fontSize: 28, fontWeight: '700' }}>
-            {stats?.activeCatechumens ?? '—'}
-          </Text>
-        </Card>
-      </View>
-      <Card>
-        <Text style={{ color: colors.muted }}>Média de presença</Text>
-        <Text style={{ color: colors.ink, fontSize: 28, fontWeight: '700' }}>
-          {stats?.avgAttendance != null ? `${stats.avgAttendance}%` : '—'}
-        </Text>
-      </Card>
-      {pending?.id ? (
-        <Pressable onPress={() => onOpenMeeting(pending.id)} testID="pending-attendance">
-          <Card>
-            <Text style={{ color: colors.goldDark, fontWeight: '700' }}>Chamada pendente</Text>
-            <Text style={{ color: colors.ink, fontWeight: '700', marginTop: 6 }}>
-              {pending.title || pending.theme || 'Encontro'}
-            </Text>
-            <Text style={{ color: colors.muted, marginTop: 4 }}>
-              {pending.class?.name || 'Turma'}
-              {pending.date || pending.startsAt ? ` · ${formatDate(pending.date || pending.startsAt)}` : ''}
-            </Text>
-          </Card>
-        </Pressable>
+      {error ? (
+        <EmptyState title="Não foi possível carregar o início" body={error} actionLabel="Tentar de novo" />
       ) : null}
-      <BrandButton label={`Notificações${unread ? ` (${unread})` : ''}`} onPress={onOpenNotifications} />
-      <BrandButton variant="ghost" label="Ir à Comunidade" onPress={onOpenCommunity} />
-      <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginVertical: spacing.sm }}>
-        Atalhos
-      </Text>
-      <MenuRow label="Catequizandos" hint="Pessoas da catequese" onPress={() => onOpenHref('/(app)/catechumens')} />
-      <MenuRow label="Biblioteca" hint="Materiais de encontro" onPress={() => onOpenHref('/(app)/content')} />
-      <MenuRow label="Comunicados" hint="Avisos pastorais" onPress={() => onOpenHref('/(app)/announcements')} />
-      <MenuRow label="Calendário" hint="Encontros e eventos litúrgicos" onPress={() => onOpenHref('/(app)/(tabs)/calendar')} />
+      {heroMeeting?.id ? (
+        <HeroHeader
+          testID={pending?.id ? 'pending-attendance' : `meeting-${heroMeeting.id}`}
+          kicker={pending ? 'Chamada pendente' : meetingHeading}
+          title={meetingTitle(heroMeeting)}
+          subtitle={[heroMeeting.class?.name, formatDate(heroMeeting.date || heroMeeting.startsAt)]
+            .filter(Boolean)
+            .join(' · ')}
+          actionLabel={pending ? 'Marcar presença' : 'Abrir encontro'}
+          onAction={() => onOpenMeeting(heroMeeting.id)}
+        />
+      ) : !loading ? (
+        <EmptyState
+          title="Sem encontros à vista"
+          body="Quando houver um encontro marcado, aparece aqui."
+          actionLabel="Ir à Comunidade"
+          onAction={onOpenCommunity}
+        />
+      ) : null}
+      <ShortcutRow items={shortcuts} />
+      {stats?.avgAttendance != null && canAttend ? (
+        <Text style={{ color: colors.muted, fontFamily: fonts.sansMedium, marginBottom: spacing.md }}>
+          Média de presença {stats.avgAttendance}%
+        </Text>
+      ) : null}
       {birthdays.length > 0 ? (
         <>
-          <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginVertical: spacing.sm }}>
-            Aniversários próximos
+          <Text style={{ color: colors.ink, fontFamily: fonts.serif, fontSize: 20, marginBottom: spacing.sm }}>
+            Aniversários
           </Text>
           {birthdays.slice(0, 3).map((row) => (
-            <Card key={row.id}>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>{personName(row)}</Text>
-              <Text style={{ color: colors.muted, marginTop: 4 }}>
-                {row.daysUntil === 0 ? 'Hoje' : `Em ${row.daysUntil} dia(s)`}
-                {row.className ? ` · ${row.className}` : ''}
-              </Text>
-            </Card>
+            <PersonRow
+              key={row.id}
+              name={personName(row)}
+              hint={row.daysUntil === 0 ? 'Hoje' : `Em ${row.daysUntil} dia(s)`}
+              chip={row.className}
+            />
           ))}
         </>
       ) : null}
-      <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginVertical: spacing.sm }}>
-        {meetingHeading}
-      </Text>
-      {shownMeetings.length === 0 && !loading ? (
-        <EmptyState title="Sem encontros à vista" body="Quando houver um encontro marcado, aparece aqui." />
-      ) : (
-        shownMeetings.slice(0, 5).map((meeting) => (
-          <Pressable key={meeting.id} onPress={() => onOpenMeeting(meeting.id)} testID={`meeting-${meeting.id}`}>
-            <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>
-                {meeting.title || meeting.theme || 'Encontro'}
-              </Text>
-              <Text style={{ color: colors.muted, marginTop: 4 }}>
-                {meeting.class?.name || 'Turma'}{' '}
-                {meeting.startsAt || meeting.date ? `· ${formatDate(meeting.startsAt || meeting.date)}` : ''}
-              </Text>
-            </Card>
-          </Pressable>
-        ))
-      )}
+      {shownMeetings.length > 1 ? (
+        <>
+          <Text
+            style={{
+              color: colors.ink,
+              fontFamily: fonts.serif,
+              fontSize: 20,
+              marginTop: spacing.md,
+              marginBottom: spacing.sm,
+            }}
+          >
+            {meetingHeading}
+          </Text>
+          {shownMeetings.slice(pending ? 0 : 1, 5).map((meeting) => (
+            <PersonRow
+              key={meeting.id}
+              testID={`meeting-${meeting.id}`}
+              name={meetingTitle(meeting)}
+              hint={[meeting.class?.name, formatDate(meeting.startsAt || meeting.date)].filter(Boolean).join(' · ')}
+              onPress={() => onOpenMeeting(meeting.id)}
+            />
+          ))}
+        </>
+      ) : null}
     </Screen>
   );
 }

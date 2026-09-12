@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { useAuth, workspaceNavContext } from '../../../src/auth/AuthContext';
 import { getMobileBottomTabKeys } from '../../../src/screens/bottomTabs';
-import { colors } from '../../../src/theme';
+import { colors, fonts } from '../../../src/theme';
 
 export default function TabsLayout() {
   const { bootstrap, workspaceId } = useAuth();
@@ -13,11 +13,17 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: colors.ink },
-        headerTintColor: colors.cream,
-        tabBarActiveTintColor: colors.gold,
-        tabBarInactiveTintColor: '#8aa0b5',
-        tabBarStyle: { backgroundColor: colors.ink, borderTopColor: colors.inkSoft },
+        headerStyle: { backgroundColor: colors.paper },
+        headerTintColor: colors.ink,
+        headerTitleStyle: { fontFamily: fonts.serif },
+        tabBarActiveTintColor: colors.goldDark,
+        tabBarInactiveTintColor: colors.muted,
+        tabBarLabelStyle: { fontFamily: fonts.sansMedium, fontSize: 11 },
+        tabBarStyle: {
+          backgroundColor: colors.paper,
+          borderTopColor: colors.line,
+          minHeight: 56,
+        },
       }}
     >
       <Tabs.Screen
@@ -63,7 +69,7 @@ export default function TabsLayout() {
         name="more"
         options={{
           title: 'Mais',
-          tabBarIcon: ({ color, size }) => <Ionicons name="ellipsis-horizontal" color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => <Ionicons name="grid-outline" color={color} size={size} />,
         }}
       />
     </Tabs>

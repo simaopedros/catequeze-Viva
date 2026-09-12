@@ -164,12 +164,11 @@ describe('platform UI', () => {
       />,
     );
     expect(home.getByTestId('home-screen')).toBeTruthy();
-    expect(home.getByText('88%')).toBeTruthy();
+    expect(home.getByText(/88%/)).toBeTruthy();
     fireEvent.press(home.getByTestId('pending-attendance'));
     expect(onOpenMeeting).toHaveBeenCalledWith('m-pending');
-    fireEvent.press(home.getByText('Biblioteca'));
-    expect(onOpenHref).toHaveBeenCalledWith('/(app)/content');
-    expect(home.getByText('Sem encontros à vista')).toBeTruthy();
+    fireEvent.press(home.getByTestId('shortcut-people'));
+    expect(onOpenHref).toHaveBeenCalledWith('/(app)/catechumens');
   });
 
   it('shows recent meetings on home when nothing is upcoming', () => {
@@ -219,7 +218,7 @@ describe('platform UI', () => {
       />,
     );
     expect(view.getByText('Comunidade São José · Crisma')).toBeTruthy();
-    expect(view.getByText('4 catequizando(s) · 2 encontro(s)')).toBeTruthy();
+    expect(view.getByText('4 catequizandos · 2 encontros')).toBeTruthy();
     fireEvent.press(view.getByTestId('class-test-class-crisma-001'));
     expect(onOpen).toHaveBeenCalledWith('test-class-crisma-001');
   });
@@ -257,7 +256,7 @@ describe('platform UI', () => {
     );
     expect(view.getByTestId('attendance-screen')).toBeTruthy();
     expect(view.getByText('Ana Silva')).toBeTruthy();
-    expect(view.getByText('Presente')).toBeTruthy();
+    expect(view.getAllByText('Presente').length).toBeGreaterThan(0);
     expect(view.getByText('Atrasado')).toBeTruthy();
     expect(view.getByText('Justificado')).toBeTruthy();
     fireEvent.press(view.getByText('Ausente'));

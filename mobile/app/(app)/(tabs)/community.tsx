@@ -42,6 +42,12 @@ export default function CommunityRoute() {
       onOpenTopic={(slug) => router.push(`/(app)/community/t/${slug}`)}
       onCompose={() => router.push('/(app)/community/compose')}
       onSearch={() => router.push('/(app)/community/search')}
+      onShortcutVerse={() => router.push('/(app)/bible')}
+      onShortcutMeeting={() => router.push('/(app)/(tabs)/calendar')}
+      onReact={async (postId, type) => {
+        await api.toggleReaction(postId, type);
+        await feed.reload();
+      }}
     />
   );
 }

@@ -12,6 +12,7 @@ describe('auth and community UI', () => {
     );
 
     fireEvent.changeText(view.getByTestId('login-email'), 'coord@paroquia.pt');
+    fireEvent.press(view.getByTestId('login-next'));
     fireEvent.changeText(view.getByTestId('login-password'), 'Teste@123');
     fireEvent.press(view.getByTestId('login-submit'));
 

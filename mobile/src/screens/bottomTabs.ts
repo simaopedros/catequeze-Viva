@@ -1,4 +1,4 @@
-/** Staff default bar — same keys as web BOTTOM_NAV_KEYS. */
+/** Staff default bar — same keys as web BOTTOM_NAV_KEYS / getBottomNavKeysForRole. */
 export const STAFF_TAB_KEYS = ['dashboard', 'community', 'classes', 'calendar'] as const;
 
 export function getMobileBottomTabKeys(role?: string | null, isAdmin?: boolean): string[] {

@@ -1,12 +1,11 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { EmptyState, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
 
 export type CatalogRow = {
   id: string;
   title: string;
   subtitle?: string;
+  photoUrl?: string | null;
 };
 
 export function CatalogScreen({
@@ -41,22 +40,16 @@ export function CatalogScreen({
       {!loading && !error && items.length === 0 ? (
         <EmptyState title={emptyTitle} body={emptyBody} />
       ) : null}
-      {items.map((item) => {
-        const inner = (
-          <Card>
-            <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 17 }}>{item.title}</Text>
-            {item.subtitle ? (
-              <Text style={{ color: colors.muted, marginTop: 4 }}>{item.subtitle}</Text>
-            ) : null}
-          </Card>
-        );
-        if (!onOpen) return <React.Fragment key={item.id}>{inner}</React.Fragment>;
-        return (
-          <Pressable key={item.id} testID={`item-${item.id}`} onPress={() => onOpen(item.id)}>
-            {inner}
-          </Pressable>
-        );
-      })}
+      {items.map((item) => (
+        <PersonRow
+          key={item.id}
+          testID={`item-${item.id}`}
+          name={item.title}
+          hint={item.subtitle}
+          photoUrl={item.photoUrl}
+          onPress={onOpen ? () => onOpen(item.id) : undefined}
+        />
+      ))}
     </Screen>
   );
 }

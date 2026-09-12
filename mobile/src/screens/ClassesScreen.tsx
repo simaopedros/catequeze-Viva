@@ -1,7 +1,5 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { EmptyState, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
 
 type ClassItem = {
   id: string;
@@ -34,7 +32,7 @@ export function ClassesScreen({
   const items = asList(payload);
   return (
     <Screen testID="classes-screen">
-      <ScreenTitle title="Turmas" subtitle="Encontros, catequizandos e presença." />
+      <ScreenTitle title="Turmas" subtitle="Etapa, comunidade e a próxima agenda." />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Turmas indisponíveis" body={error} /> : null}
       {!loading && items.length === 0 ? (
@@ -47,20 +45,24 @@ export function ClassesScreen({
             .join(' · ');
           const enrolled = item._count?.enrollments;
           const meetingCount = item._count?.meetings;
+          const counts =
+            enrolled != null || meetingCount != null
+              ? [
+                  enrolled != null ? `${enrolled} catequizandos` : '',
+                  meetingCount != null ? `${meetingCount} encontros` : '',
+                ]
+                  .filter(Boolean)
+                  .join(' · ')
+              : undefined;
           return (
-            <Pressable key={item.id} onPress={() => onOpen(item.id)} testID={`class-${item.id}`}>
-              <Card>
-                <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 17 }}>{item.name || 'Turma'}</Text>
-                <Text style={{ color: colors.muted, marginTop: 4 }}>{contextLabel || 'Comunidade'}</Text>
-                {enrolled != null || meetingCount != null ? (
-                  <Text style={{ color: colors.muted, marginTop: 4 }}>
-                    {enrolled != null ? `${enrolled} catequizando(s)` : ''}
-                    {enrolled != null && meetingCount != null ? ' · ' : ''}
-                    {meetingCount != null ? `${meetingCount} encontro(s)` : ''}
-                  </Text>
-                ) : null}
-              </Card>
-            </Pressable>
+            <PersonRow
+              key={item.id}
+              testID={`class-${item.id}`}
+              name={item.name || 'Turma'}
+              hint={contextLabel || 'Comunidade'}
+              chip={counts}
+              onPress={() => onOpen(item.id)}
+            />
           );
         })
       )}
