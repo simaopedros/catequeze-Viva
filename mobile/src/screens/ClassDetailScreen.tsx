@@ -29,6 +29,7 @@ export function ClassDetailScreen({
         title={data?.name || 'Turma'}
         subtitle={[data?.community?.name, data?.stage?.name, data?.sacrament?.name]
           .filter(Boolean)
+          .filter((value, index, all) => all.indexOf(value) === index)
           .join(' · ')}
       />
       {loading ? <LoadingState /> : null}
