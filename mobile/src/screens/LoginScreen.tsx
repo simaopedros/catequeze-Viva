@@ -20,7 +20,7 @@ export function LoginScreen({
   return (
     <Screen testID="login-screen">
       <Text style={{ color: colors.goldDark, fontWeight: '700', marginBottom: 8 }}>CATEQUESE VIVA</Text>
-      <ScreenTitle title="Entrar" subtitle="Use a mesma conta da plataforma web. A sessão fica guardada neste telemóvel." />
+      <ScreenTitle title="Entrar" subtitle="Use a mesma conta da plataforma web. A sessão fica salva neste dispositivo." />
       <ErrorText message={error} />
       <Field
         label="E-mail"
@@ -31,7 +31,7 @@ export function LoginScreen({
         testID="login-email"
       />
       <Field
-        label="Palavra-passe"
+        label="Senha"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -40,11 +40,11 @@ export function LoginScreen({
       />
       <BrandButton
         testID="login-submit"
-        label={busy ? 'A entrar…' : 'Entrar'}
+        label={busy ? 'Entrando…' : 'Entrar'}
         disabled={busy || !email || !password}
         onPress={() => onSubmit(email.trim(), password)}
       />
-      <BrandButton variant="ghost" label="Esqueci a palavra-passe" onPress={onForgotPassword} />
+      <BrandButton variant="ghost" label="Esqueceu a senha?" onPress={onForgotPassword} />
     </Screen>
   );
 }

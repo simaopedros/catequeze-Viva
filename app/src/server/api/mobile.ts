@@ -15,7 +15,7 @@ import { getDashboardStats } from '../operations/dashboardOperations';
 import { listClasses, getClassDetails } from '../operations/classOperations';
 import { listCatechumens, getCatechumenProfile } from '../operations/catechumenOperations';
 import { listHouseholds } from '../operations/familyOperations';
-import { listMeetings, getMeeting, saveAttendance } from '../operations/meetingOperations';
+import { listMeetings, getMeeting, getMeetingAttendanceSheet, saveAttendance } from '../operations/meetingOperations';
 import { listDocuments } from '../operations/documentOperations';
 import { listConversations, getConversation, sendMessage } from '../operations/conversationOperations';
 import { verifyTwoFactorLogin, assertTwoFactorSessionVerified } from '../operations/twoFactorOperations';
@@ -467,6 +467,23 @@ export async function mobileMeetingDetails(req: Request, res: Response, context:
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
   return res.json(await getMeeting({ id: parseRequiredString(req.params.id, 'id') }, opCtx));
+}
+
+export async function mobileMeetingAttendance(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const meetingId = parseRequiredString(req.params.id, 'id');
+  const meeting = await getMeeting({ id: meetingId }, opCtx);
+  const classId = meeting?.classId || meeting?.class?.id;
+  if (!classId) {
+    throw new HttpError(404, 'Encontro sem turma associada.');
+  }
+  return res.json(
+    await getMeetingAttendanceSheet(
+      { classId: String(classId), meetingId, surface: 'mobile' },
+      opCtx,
+    ),
+  );
 }
 
 export async function mobileSaveAttendance(req: Request, res: Response, context: any) {

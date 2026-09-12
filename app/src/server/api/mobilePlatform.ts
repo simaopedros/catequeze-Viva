@@ -8,7 +8,7 @@ import { HttpError, prisma } from 'wasp/server';
 import { listContentItems, getContentItem } from '../operations/contentOperations';
 import { listPastoralAnnouncements, acknowledgePastoralAnnouncement } from '../operations/pastoralAnnouncementOperations';
 import { listFormationTracks, getFormationTrack } from '../operations/formationOperations';
-import { listSacramentalJourneys, getSacramentalJourney } from '../operations/sacramentOperations';
+import { listSacramentalJourneys, getSacramentalJourney, listJourneyTemplates } from '../operations/sacramentOperations';
 import { listLiturgicalEvents } from '../operations/calendarOperations';
 import { getReportsOverview } from '../operations/reportOperations';
 import { listUpcomingBirthdays } from '../operations/pastoralReportOperations';
@@ -17,10 +17,14 @@ import { searchCatechism, getCatechismEntry } from '../operations/bibleOperation
 import { searchDirectory, getDirectoryEntry, listDirectoryByPart } from '../operations/directoryOperations';
 import { listCommunities } from '../operations/communityOperations';
 import { listPastoralGroups, getPastoralGroup } from '../operations/pastoralGroupOperations';
-import { getParishTeam } from '../operations/memberOperations';
+import { getParishTeam, listFamilyPortalInvitations } from '../operations/memberOperations';
 import { getSubscriptionDetails } from '../../payment/operations';
 import { listCatecheticalYears } from '../operations/missingOperations';
 import { assertTwoFactorSessionVerified } from '../operations/twoFactorOperations';
+import { listClasses } from '../operations/classOperations';
+import { listMeetingsForClasses } from '../operations/meetingOperations';
+import { listParishes } from '../operations/parishOperations';
+import { listConsents } from '../operations/consentOperations';
 
 type AuthedContext = {
   user: any;
@@ -57,6 +61,14 @@ function requiredString(value: unknown, fieldName: string): string {
   return parsed;
 }
 
+function asList(payload: unknown): any[] {
+  if (Array.isArray(payload)) return payload;
+  if (payload && typeof payload === 'object' && Array.isArray((payload as any).items)) {
+    return (payload as any).items;
+  }
+  return [];
+}
+
 async function requireSession(context: any) {
   const opCtx = toOp(context);
   await assertTwoFactorSessionVerified(opCtx);
@@ -86,9 +98,22 @@ export async function mobileContentDetails(req: Request, res: Response, context:
 
 export async function mobileCalendar(req: Request, res: Response, context: any) {
   const opCtx = await requireSession(context);
-  return res.json(
-    await listLiturgicalEvents({ workspaceId: optionalString(req.query.workspaceId) }, opCtx),
-  );
+  const workspaceId = optionalString(req.query.workspaceId);
+  const eventsPayload = await listLiturgicalEvents({ workspaceId }, opCtx);
+  const events = asList(eventsPayload);
+  let meetings: any[] = [];
+  try {
+    const classesPayload = await listClasses({ workspaceId, take: 50, skip: 0 }, opCtx);
+    const classIds = asList(classesPayload)
+      .map((row) => row?.id)
+      .filter((id): id is string => typeof id === 'string' && id.length > 0);
+    if (classIds.length > 0) {
+      meetings = await listMeetingsForClasses({ classIds }, opCtx);
+    }
+  } catch {
+    meetings = [];
+  }
+  return res.json({ events, meetings });
 }
 
 export async function mobileAnnouncements(req: Request, res: Response, context: any) {
@@ -299,4 +324,32 @@ export async function mobileBilling(_req: Request, res: Response, context: any) 
 export async function mobileCatecheticalYears(_req: Request, res: Response, context: any) {
   const opCtx = await requireSession(context);
   return res.json(await listCatecheticalYears(undefined as void, opCtx));
+}
+
+export async function mobileFamilyInvites(req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  const parishId =
+    optionalString(req.query.workspaceId) || optionalString(req.query.parishId);
+  if (!parishId) throw new HttpError(400, 'workspaceId é obrigatório.');
+  return res.json(await listFamilyPortalInvitations({ parishId }, opCtx));
+}
+
+export async function mobileJourneyTemplates(req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  return res.json(
+    await listJourneyTemplates(
+      { locale: optionalString(req.query.locale) ?? 'pt-BR' },
+      opCtx,
+    ),
+  );
+}
+
+export async function mobileParishes(_req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  return res.json(await listParishes(undefined as void, opCtx));
+}
+
+export async function mobileConsents(_req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  return res.json(await listConsents(undefined as void, opCtx));
 }

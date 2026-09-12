@@ -20,11 +20,11 @@ export default function TeamRoute() {
     <CatalogScreen
       testID="team-screen"
       title="Pessoas e acessos"
-      subtitle="Equipa com acesso a este espaço."
+      subtitle="Equipe com acesso a este espaço."
       items={members}
       loading={loading}
       error={error}
-      emptyTitle="Sem equipa"
+      emptyTitle="Sem equipe"
       emptyBody="Não há membros visíveis neste espaço, ou o seu perfil não vê esta área."
     />
   );

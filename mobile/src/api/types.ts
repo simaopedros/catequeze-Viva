@@ -27,8 +27,21 @@ export type Workspace = {
   type?: string;
 };
 
+export type MembershipContext = {
+  parishId: string;
+  parishName?: string;
+  role: string;
+  parishType?: string | null;
+};
+
+export type CurrentUserContext = {
+  userId?: string;
+  isAdmin?: boolean;
+  memberships?: MembershipContext[];
+};
+
 export type BootstrapPayload = {
-  currentUserContext?: unknown;
+  currentUserContext?: CurrentUserContext;
   workspaces?: Workspace[];
   unreadNotifications?: number | { count?: number };
 };

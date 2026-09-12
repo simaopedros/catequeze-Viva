@@ -17,7 +17,7 @@ export default function YearsRoute() {
     <CatalogScreen
       testID="years-screen"
       title="Anos catequéticos"
-      subtitle="Anos lectivos deste espaço."
+      subtitle="Anos letivos deste espaço."
       items={items}
       loading={loading}
       error={error}

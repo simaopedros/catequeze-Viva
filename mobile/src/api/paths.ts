@@ -15,6 +15,7 @@ export const MOBILE_PATHS = {
   familyDetails: (id: string) => `/mobile/families/${encodeURIComponent(id)}`,
   meetings: '/mobile/meetings',
   meetingDetails: (id: string) => `/mobile/meetings/${encodeURIComponent(id)}`,
+  meetingAttendance: (id: string) => `/mobile/meetings/${encodeURIComponent(id)}/attendance`,
   attendance: '/mobile/attendance',
   messages: '/mobile/messages',
   messageDetails: (id: string) => `/mobile/messages/${encodeURIComponent(id)}`,
@@ -67,12 +68,16 @@ export const MOBILE_PATHS = {
   communities: '/mobile/communities',
   billing: '/mobile/billing',
   catecheticalYears: '/mobile/catechetical-years',
+  familyInvites: '/mobile/family-invites',
+  journeyTemplates: '/mobile/journey-templates',
+  parishes: '/mobile/parishes',
+  consents: '/mobile/consents',
 } as const;
 
 export const APP_TABS = [
   { name: 'index', href: '/(app)/(tabs)', label: 'Início', icon: 'home-outline' },
   { name: 'community', href: '/(app)/(tabs)/community', label: 'Comunidade', icon: 'people-outline' },
   { name: 'classes', href: '/(app)/(tabs)/classes', label: 'Turmas', icon: 'school-outline' },
-  { name: 'messages', href: '/(app)/(tabs)/messages', label: 'Mensagens', icon: 'chatbubble-outline' },
+  { name: 'calendar', href: '/(app)/(tabs)/calendar', label: 'Calendário', icon: 'calendar-outline' },
   { name: 'more', href: '/(app)/(tabs)/more', label: 'Mais', icon: 'ellipsis-horizontal' },
 ] as const;

@@ -91,6 +91,11 @@ describe('mobile HTTP client', () => {
     await client.bibleBook('gn');
     await client.bibleChapter('gn', 1);
     await client.saveAttendance({ meetingId: 'm1', catechumenProfileId: 'c1', status: 'PRESENT' });
+    await client.meetingAttendance('m1');
+    await client.familyInvites('ws-1');
+    await client.journeyTemplates();
+    await client.parishes();
+    await client.consents();
     await client.catechumens('ws-1');
     await client.families('ws-1');
     await client.content('ws-1', 'páscoa');
@@ -110,6 +115,8 @@ describe('mobile HTTP client', () => {
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialBlocks);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialReport);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.attendance);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.meetingAttendance('m1'));
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.familyInvites + '?workspaceId=ws-1');
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.catechumens + '?workspaceId=ws-1&take=50');
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.content + '?workspaceId=ws-1&search=p%C3%A1scoa&take=50');
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.announcementAck('a1'));

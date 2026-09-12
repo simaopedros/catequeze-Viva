@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { displayName, listWorkspaces, useAuth } from '../../../src/auth/AuthContext';
+import { displayName, listWorkspaces, useAuth, workspaceNavContext } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
 import { MoreScreen } from '../../../src/screens/MoreScreen';
 
@@ -15,6 +15,7 @@ export default function MoreRoute() {
       workspaces={listWorkspaces(bootstrap)}
       workspaceId={workspaceId}
       profile={profile.data}
+      navContext={workspaceNavContext(bootstrap, workspaceId)}
       onSelectWorkspace={(id) => setWorkspaceId(id)}
       onOpenHref={(href) => router.push(href as any)}
       onOpenProfile={() => {

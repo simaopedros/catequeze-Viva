@@ -6,6 +6,9 @@ export type MoreModule = {
   hint: string;
   href: string;
   live: boolean;
+  hideInPersonal?: boolean;
+  roles?: string[];
+  guardianOnly?: boolean;
 };
 
 export type MoreSection = {
@@ -14,7 +17,57 @@ export type MoreSection = {
   items: MoreModule[];
 };
 
+const STAFF_ROLES = [
+  'SUPER_ADMIN',
+  'DIOCESE_ADMIN',
+  'PARISH_COORDINATOR',
+  'COMMUNITY_COORDINATOR',
+  'PERSONAL_OWNER',
+];
+const CATECHIST_ROLES = [...STAFF_ROLES, 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST'];
+const VIEWER_ROLES = [...CATECHIST_ROLES, 'PASTORAL_VIEWER', 'CONTENT_REVIEWER'];
+
+export const PERSONAL_HIDDEN_IDS = new Set([
+  'years',
+  'reports',
+  'parishes',
+  'communities',
+  'official',
+  'announcements',
+  'formation',
+]);
+
+/** Groups match the web More sheet (NAV_GROUPS minus bottom-bar destinations). */
 export const MORE_SECTIONS: MoreSection[] = [
+  {
+    id: 'operation',
+    title: 'Operação',
+    items: [
+      {
+        id: 'groups',
+        label: 'Grupos',
+        hint: 'Grupos pastorais',
+        href: appRoutes.groups,
+        live: true,
+      },
+      {
+        id: 'messages',
+        label: 'Mensagens',
+        hint: 'Conversas da catequese',
+        href: appRoutes.messages,
+        live: true,
+      },
+      {
+        id: 'announcements',
+        label: 'Comunicados',
+        hint: 'Avisos pastorais',
+        href: appRoutes.announcements,
+        live: true,
+        hideInPersonal: true,
+        roles: [...CATECHIST_ROLES, 'PASTORAL_VIEWER'],
+      },
+    ],
+  },
   {
     id: 'people',
     title: 'Pessoas',
@@ -25,26 +78,37 @@ export const MORE_SECTIONS: MoreSection[] = [
         hint: 'Perfis, inscrições e jornadas',
         href: appRoutes.catechumens,
         live: true,
+        roles: [...VIEWER_ROLES, 'GUARDIAN'],
       },
       {
         id: 'families',
         label: 'Famílias',
-        hint: 'Agregados e encarregados',
+        hint: 'Agregados e responsáveis',
         href: appRoutes.families,
         live: true,
+        roles: CATECHIST_ROLES,
       },
       {
         id: 'team',
         label: 'Pessoas e acessos',
-        hint: 'Equipa da paróquia ou espaço',
+        hint: 'Equipe da paróquia ou espaço',
         href: appRoutes.team,
         live: true,
+        roles: CATECHIST_ROLES,
       },
       {
-        id: 'communities',
-        label: 'Comunidades',
-        hint: 'Comunidades da paróquia',
-        href: appRoutes.parishCommunities,
+        id: 'family-invites',
+        label: 'Convites da família',
+        hint: 'Convites do portal da família',
+        href: appRoutes.familyInvites,
+        live: true,
+        roles: CATECHIST_ROLES,
+      },
+      {
+        id: 'birthdays',
+        label: 'Aniversariantes',
+        hint: 'Próximos aniversários',
+        href: appRoutes.birthdays,
         live: true,
       },
     ],
@@ -59,6 +123,7 @@ export const MORE_SECTIONS: MoreSection[] = [
         hint: 'Encontros e materiais da catequese',
         href: appRoutes.content,
         live: true,
+        roles: [...CATECHIST_ROLES, 'CONTENT_REVIEWER'],
       },
       {
         id: 'official',
@@ -66,6 +131,8 @@ export const MORE_SECTIONS: MoreSection[] = [
         hint: 'Recursos da diocese e da paróquia',
         href: appRoutes.officialLibrary,
         live: true,
+        hideInPersonal: true,
+        roles: [...CATECHIST_ROLES, 'CONTENT_REVIEWER'],
       },
       {
         id: 'bible',
@@ -89,40 +156,6 @@ export const MORE_SECTIONS: MoreSection[] = [
         live: true,
       },
       {
-        id: 'ai',
-        label: 'Assistência editorial',
-        hint: 'Disponível na web quando a IA estiver activa',
-        href: appRoutes.aiHub,
-        live: false,
-      },
-    ],
-  },
-  {
-    id: 'pastoral',
-    title: 'Pedagogia e encontros',
-    items: [
-      {
-        id: 'calendar',
-        label: 'Calendário',
-        hint: 'Eventos litúrgicos do espaço',
-        href: appRoutes.calendar,
-        live: true,
-      },
-      {
-        id: 'announcements',
-        label: 'Comunicados',
-        hint: 'Avisos pastorais',
-        href: appRoutes.announcements,
-        live: true,
-      },
-      {
-        id: 'formation',
-        label: 'Formação',
-        hint: 'Percursos da equipa',
-        href: appRoutes.formation,
-        live: true,
-      },
-      {
         id: 'sacraments',
         label: 'Sacramentos',
         hint: 'Jornadas sacramentais',
@@ -130,31 +163,44 @@ export const MORE_SECTIONS: MoreSection[] = [
         live: true,
       },
       {
-        id: 'years',
-        label: 'Anos catequéticos',
-        hint: 'Anos lectivos da paróquia',
-        href: appRoutes.catecheticalYears,
+        id: 'journey-templates',
+        label: 'Modelos de jornada',
+        hint: 'Modelos sacramentais do espaço',
+        href: appRoutes.journeyTemplates,
         live: true,
+        roles: [...STAFF_ROLES, 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST'],
       },
       {
-        id: 'groups',
-        label: 'Grupos',
-        hint: 'Grupos pastorais',
-        href: appRoutes.groups,
+        id: 'documents',
+        label: 'Documentos',
+        hint: 'Arquivos da família e da turma',
+        href: appRoutes.documents,
         live: true,
+        roles: [...CATECHIST_ROLES, 'GUARDIAN'],
       },
     ],
   },
   {
-    id: 'ops',
-    title: 'Comunicação e gestão',
+    id: 'management',
+    title: 'Gestão',
     items: [
       {
-        id: 'documents',
-        label: 'Documentos',
-        hint: 'Ficheiros da família e da turma',
-        href: appRoutes.documents,
+        id: 'parishes',
+        label: 'Paróquias',
+        hint: 'Espaços ligados à sua conta',
+        href: appRoutes.parishes,
         live: true,
+        hideInPersonal: true,
+        roles: STAFF_ROLES,
+      },
+      {
+        id: 'communities',
+        label: 'Comunidades',
+        hint: 'Comunidades da paróquia',
+        href: appRoutes.parishCommunities,
+        live: true,
+        hideInPersonal: true,
+        roles: CATECHIST_ROLES,
       },
       {
         id: 'reports',
@@ -162,28 +208,84 @@ export const MORE_SECTIONS: MoreSection[] = [
         hint: 'Presença e visão da paróquia',
         href: appRoutes.reports,
         live: true,
+        hideInPersonal: true,
+        roles: [...STAFF_ROLES, 'PASTORAL_VIEWER'],
       },
       {
-        id: 'birthdays',
-        label: 'Aniversariantes',
-        hint: 'Próximos aniversários',
-        href: appRoutes.birthdays,
+        id: 'years',
+        label: 'Anos catequéticos',
+        hint: 'Anos letivos da paróquia',
+        href: appRoutes.catecheticalYears,
+        live: true,
+        hideInPersonal: true,
+        roles: STAFF_ROLES,
+      },
+      {
+        id: 'formation',
+        label: 'Formação',
+        hint: 'Percursos da equipe',
+        href: appRoutes.formation,
+        live: true,
+        hideInPersonal: true,
+        roles: CATECHIST_ROLES,
+      },
+    ],
+  },
+  {
+    id: 'settings',
+    title: 'Configurações',
+    items: [
+      {
+        id: 'settings',
+        label: 'Configurações',
+        hint: 'Conta, espaço e sessão',
+        href: appRoutes.settings,
         live: true,
       },
       {
         id: 'billing',
         label: 'Assinatura',
-        hint: 'Plano actual (gestão na web)',
+        hint: 'Plano atual (gestão na web)',
         href: appRoutes.billing,
         live: true,
+        roles: [...STAFF_ROLES, 'PLATFORM_MEMBER'],
       },
       {
-        id: 'settings',
-        label: 'Definições',
-        hint: 'Conta, espaço e sessão',
-        href: appRoutes.settings,
+        id: 'consents',
+        label: 'Consentimentos',
+        hint: 'Autorizações da família',
+        href: appRoutes.consents,
         live: true,
+        guardianOnly: true,
       },
     ],
   },
 ];
+
+export type MoreNavContext = {
+  workspaceType?: string | null;
+  role?: string | null;
+  isAdmin?: boolean;
+};
+
+export function getMoreSections(ctx: MoreNavContext = {}): MoreSection[] {
+  const role = ctx.role || '';
+  const isAdmin = Boolean(ctx.isAdmin);
+  const personal = ctx.workspaceType === 'PERSONAL';
+
+  return MORE_SECTIONS.map((section) => ({
+    ...section,
+    items: section.items.filter((item) => {
+      if (personal && (item.hideInPersonal || PERSONAL_HIDDEN_IDS.has(item.id))) {
+        return false;
+      }
+      if (item.guardianOnly) {
+        return isAdmin || role === 'GUARDIAN';
+      }
+      if (!item.roles || isAdmin) return true;
+      if (!role) return true;
+      const effectiveRole = role === 'PERSONAL_OWNER' ? 'PARISH_COORDINATOR' : role;
+      return item.roles.includes(effectiveRole) || item.roles.includes(role);
+    }),
+  })).filter((section) => section.items.length > 0);
+}

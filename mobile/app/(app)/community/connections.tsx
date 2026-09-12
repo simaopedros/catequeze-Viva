@@ -23,7 +23,7 @@ export default function ConnectionsRoute() {
       loading={connections.loading}
       error={connections.error}
       emptyTitle={listKind === 'following' ? 'Ainda não segue ninguém' : 'Ainda sem seguidores'}
-      emptyBody="Quando houver ligações, elas aparecem aqui."
+      emptyBody="Quando houver conexões, elas aparecem aqui."
       onOpenPerson={(next) => router.push(`/(app)/community/${next}`)}
     />
   );

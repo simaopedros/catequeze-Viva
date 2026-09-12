@@ -17,12 +17,22 @@ export function asItems<T = any>(payload: unknown, extraKeys: string[] = []): T[
     'households',
     'catechumens',
     'years',
+    'parishes',
+    'invites',
+    'templates',
+    'consents',
     ...extraKeys,
   ];
   for (const key of keys) {
     if (Array.isArray(obj[key])) return obj[key] as T[];
   }
   return [];
+}
+
+export function pickItems<T = any>(payload: unknown, key: string): T[] {
+  if (!payload || typeof payload !== 'object') return [];
+  const value = (payload as Record<string, unknown>)[key];
+  return Array.isArray(value) ? (value as T[]) : [];
 }
 
 export function personName(row: any, fallback = '—'): string {
@@ -40,7 +50,7 @@ export function formatDate(value?: string | Date | null): string {
   if (!value) return '';
   const date = typeof value === 'string' ? new Date(value) : value;
   if (Number.isNaN(date.getTime())) return String(value);
-  return date.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', year: 'numeric' });
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 export function statusLabel(status?: string | null): string {
@@ -57,8 +67,8 @@ export function statusLabel(status?: string | null): string {
     ENROLLED: 'Inscrito',
     PRESENT: 'Presente',
     ABSENT: 'Ausente',
-    LATE: 'Atraso',
-    JUSTIFIED: 'Justificada',
+    LATE: 'Atrasado',
+    JUSTIFIED: 'Justificado',
     PENDING: 'Pendente',
     IN_PROGRESS: 'Em curso',
     COMPLETED: 'Concluído',

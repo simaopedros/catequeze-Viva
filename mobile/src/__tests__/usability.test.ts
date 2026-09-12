@@ -40,10 +40,16 @@ describe('usability map', () => {
       appRoutes.reports,
       appRoutes.billing,
       appRoutes.settings,
+      appRoutes.familyInvites,
+      appRoutes.journeyTemplates,
+      appRoutes.parishes,
+      appRoutes.consents,
     ];
 
     expect(signedOut).toHaveLength(3);
-    expect(signedIn).toHaveLength(35);
-    expect(APP_TABS).toHaveLength(5);
+    expect(signedIn).toContain(appRoutes.calendar);
+    expect(appRoutes.calendar).toBe('/(app)/(tabs)/calendar');
+    expect(appRoutes.messages).toBe('/(app)/messages');
+    expect(APP_TABS.map((tab) => tab.name)).toEqual(['index', 'community', 'classes', 'calendar', 'more']);
   });
 });

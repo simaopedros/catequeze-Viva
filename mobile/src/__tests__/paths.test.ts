@@ -6,7 +6,7 @@ describe('mobile path contract', () => {
       'Início',
       'Comunidade',
       'Turmas',
-      'Mensagens',
+      'Calendário',
       'Mais',
     ]);
   });
@@ -28,5 +28,10 @@ describe('mobile path contract', () => {
     expect(MOBILE_PATHS.content).toBe('/mobile/content');
     expect(MOBILE_PATHS.catechumens).toBe('/mobile/catechumens');
     expect(MOBILE_PATHS.announcements).toBe('/mobile/announcements');
+    expect(MOBILE_PATHS.meetingAttendance('m1')).toBe('/mobile/meetings/m1/attendance');
+    expect(MOBILE_PATHS.familyInvites).toBe('/mobile/family-invites');
+    expect(MOBILE_PATHS.journeyTemplates).toBe('/mobile/journey-templates');
+    expect(MOBILE_PATHS.parishes).toBe('/mobile/parishes');
+    expect(MOBILE_PATHS.consents).toBe('/mobile/consents');
   });
 });

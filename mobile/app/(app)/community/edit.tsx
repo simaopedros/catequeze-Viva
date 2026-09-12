@@ -43,7 +43,7 @@ export default function EditProfileRoute() {
           const nextHandle = next.handle || handle;
           if (nextHandle) router.replace(`/(app)/community/${nextHandle}`);
         } catch (err) {
-          setError(err instanceof Error ? err.message : 'Não foi possível guardar.');
+          setError(err instanceof Error ? err.message : 'Não foi possível salvar.');
         } finally {
           setBusy(false);
         }

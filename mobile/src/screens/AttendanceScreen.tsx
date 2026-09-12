@@ -1,13 +1,14 @@
 import React, { useMemo, useState } from 'react';
-import { Pressable, Text } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { Text, View } from 'react-native';
+import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle, StatusChip } from '../components/ui';
+import { personName, statusLabel } from '../lib/payload';
+import { colors, spacing } from '../theme';
 
 const STATUSES = [
-  { id: 'PRESENT', label: 'Presente' },
-  { id: 'ABSENT', label: 'Ausente' },
-  { id: 'LATE', label: 'Atraso' },
-  { id: 'JUSTIFIED', label: 'Justificada' },
+  { id: 'PRESENT', label: 'Presente', tone: 'success' as const },
+  { id: 'ABSENT', label: 'Ausente', tone: 'danger' as const },
+  { id: 'LATE', label: 'Atrasado', tone: 'gold' as const },
+  { id: 'JUSTIFIED', label: 'Justificado', tone: 'neutral' as const },
 ] as const;
 
 export function AttendanceScreen({
@@ -25,6 +26,7 @@ export function AttendanceScreen({
 }) {
   const rows = useMemo(() => {
     return (
+      meeting?.participants ||
       meeting?.attendance ||
       meeting?.records ||
       meeting?.enrollments ||
@@ -33,6 +35,7 @@ export function AttendanceScreen({
     );
   }, [meeting]);
   const [draft, setDraft] = useState<Record<string, string>>({});
+  const summary = meeting?.summary;
 
   if (loading) {
     return (
@@ -44,31 +47,49 @@ export function AttendanceScreen({
 
   return (
     <Screen testID="attendance-screen">
-      <ScreenTitle title="Presença" subtitle="Toque no estado e grave cada catequizando." />
+      <ScreenTitle
+        title="Presença"
+        subtitle={meeting?.meeting?.title || meeting?.title || 'Toque no estado e salve cada catequizando.'}
+      />
       {error ? <EmptyState title="Não foi possível carregar" body={error} /> : null}
+      {summary ? (
+        <Card>
+          <Text style={{ color: colors.muted }}>Resumo</Text>
+          <Text style={{ color: colors.ink, marginTop: 6 }}>
+            {summary.present ?? 0} presentes · {summary.absent ?? 0} ausentes · {summary.late ?? 0} atrasados ·{' '}
+            {summary.justified ?? 0} justificados
+          </Text>
+        </Card>
+      ) : null}
       {rows.length === 0 ? (
         <EmptyState title="Sem lista" body="Este encontro ainda não tem catequizandos para marcar." />
       ) : (
         rows.map((row: any) => {
-          const id = row.catechumenProfileId || row.id;
-          const name =
-            row.displayName ||
-            row.name ||
-            [row.firstName, row.lastName].filter(Boolean).join(' ') ||
-            'Catequizando';
+          const id = row.catechumenProfileId || row.catechumenProfile?.id || row.id;
+          const name = personName(row.catechumenProfile || row, 'Catequizando');
           const status = draft[id] || row.status || 'PRESENT';
           return (
             <Card key={id}>
               <Text style={{ color: colors.ink, fontWeight: '700' }}>{name}</Text>
-              <Text style={{ color: colors.muted, marginVertical: 8 }}>Estado: {status}</Text>
-              {STATUSES.map((item) => (
-                <Pressable key={item.id} onPress={() => setDraft((current) => ({ ...current, [id]: item.id }))}>
-                  <Text style={{ color: status === item.id ? colors.goldDark : colors.muted, marginBottom: 4 }}>
-                    {item.label}
-                  </Text>
-                </Pressable>
-              ))}
-              <BrandButton label={busy ? 'A gravar…' : 'Gravar'} disabled={busy} onPress={() => onSave(id, status)} />
+              <Text style={{ color: colors.muted, marginVertical: 8 }}>
+                Estado: {statusLabel(status) || 'Não preenchido'}
+              </Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginBottom: spacing.sm }}>
+                {STATUSES.map((item) => (
+                  <StatusChip
+                    key={item.id}
+                    label={item.label}
+                    tone={item.tone}
+                    selected={status === item.id}
+                    onPress={() => setDraft((current) => ({ ...current, [id]: item.id }))}
+                  />
+                ))}
+              </View>
+              <BrandButton
+                label={busy ? 'Salvando…' : 'Salvar'}
+                disabled={busy}
+                onPress={() => onSave(id, status)}
+              />
             </Card>
           );
         })

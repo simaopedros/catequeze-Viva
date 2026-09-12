@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -108,7 +109,7 @@ export function ErrorText({ message }: { message?: string | null }) {
   return <Text style={styles.error}>{message}</Text>;
 }
 
-export function LoadingState({ label = 'A carregar…' }: { label?: string }) {
+export function LoadingState({ label = 'Carregando…' }: { label?: string }) {
   return (
     <View style={styles.loading} testID="loading-state">
       <ActivityIndicator color={colors.gold} />
@@ -132,13 +133,35 @@ export function MenuRow({
   onPress,
   testID,
   badge,
+  compact = false,
+  last = false,
 }: {
   label: string;
   hint?: string;
   onPress: () => void;
   testID?: string;
   badge?: string;
+  compact?: boolean;
+  last?: boolean;
 }) {
+  if (compact) {
+    return (
+      <Pressable
+        accessibilityRole="button"
+        testID={testID}
+        onPress={onPress}
+        style={[styles.compactRow, !last && styles.compactRowBorder]}
+      >
+        <View style={{ flex: 1, paddingRight: 8 }}>
+          <Text style={styles.compactLabel}>{label}</Text>
+          {hint ? <Text style={styles.compactHint}>{hint}</Text> : null}
+          {badge ? <Text style={styles.compactBadge}>{badge}</Text> : null}
+        </View>
+        <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+      </Pressable>
+    );
+  }
+
   return (
     <Pressable accessibilityRole="button" testID={testID} onPress={onPress}>
       <Card>
@@ -146,6 +169,33 @@ export function MenuRow({
         {hint ? <Text style={styles.subtitle}>{hint}</Text> : null}
         {badge ? <Text style={{ color: colors.goldDark, marginTop: 6 }}>{badge}</Text> : null}
       </Card>
+    </Pressable>
+  );
+}
+
+export function StatusChip({
+  label,
+  selected,
+  onPress,
+  tone = 'neutral',
+}: {
+  label: string;
+  selected?: boolean;
+  onPress: () => void;
+  tone?: 'success' | 'danger' | 'gold' | 'neutral';
+}) {
+  const selectedColor =
+    tone === 'success' ? colors.success : tone === 'danger' ? colors.danger : tone === 'gold' ? colors.goldDark : colors.ink;
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[
+        styles.chip,
+        selected && { backgroundColor: selectedColor, borderColor: selectedColor },
+      ]}
+    >
+      <Text style={[styles.chipLabel, selected && { color: colors.white }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -188,4 +238,27 @@ const styles = StyleSheet.create({
   },
   error: { color: colors.danger, marginBottom: spacing.sm },
   loading: { alignItems: 'center', padding: spacing.xl, gap: 10 },
+  compactRow: {
+    minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: 12,
+  },
+  compactRowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.line,
+  },
+  compactLabel: { color: colors.ink, fontSize: 16, fontWeight: '600' },
+  compactHint: { color: colors.muted, fontSize: 13, marginTop: 2 },
+  compactBadge: { color: colors.goldDark, fontSize: 12, marginTop: 4 },
+  chip: {
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: colors.white,
+  },
+  chipLabel: { color: colors.inkSoft, fontWeight: '600', fontSize: 13 },
 });

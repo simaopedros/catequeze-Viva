@@ -151,6 +151,9 @@ export function createMobileClient(options: MobileClientOptions) {
     meetingDetails(id: string) {
       return request<any>(MOBILE_PATHS.meetingDetails(id));
     },
+    meetingAttendance(id: string) {
+      return request<any>(MOBILE_PATHS.meetingAttendance(id));
+    },
     saveAttendance(body: {
       meetingId: string;
       catechumenProfileId: string;
@@ -372,6 +375,18 @@ export function createMobileClient(options: MobileClientOptions) {
     },
     catecheticalYears() {
       return request<any>(MOBILE_PATHS.catecheticalYears);
+    },
+    familyInvites(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.familyInvites, { workspaceId }));
+    },
+    journeyTemplates(locale = 'pt-BR') {
+      return request<any>(withQuery(MOBILE_PATHS.journeyTemplates, { locale }));
+    },
+    parishes() {
+      return request<any>(MOBILE_PATHS.parishes);
+    },
+    consents() {
+      return request<any>(MOBILE_PATHS.consents);
     },
   };
 }

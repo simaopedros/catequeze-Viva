@@ -19,13 +19,14 @@ export default function AppLayout() {
       <Stack.Screen name="community/following" options={{ title: 'A seguir' }} />
       <Stack.Screen name="community/edit" options={{ title: 'Editar perfil' }} />
       <Stack.Screen name="community/blocked" options={{ title: 'Bloqueados' }} />
-      <Stack.Screen name="community/connections" options={{ title: 'Ligações' }} />
+      <Stack.Screen name="community/connections" options={{ title: 'Conexões' }} />
       <Stack.Screen name="community/p/[slug]" options={{ title: 'Publicação' }} />
       <Stack.Screen name="community/t/[slug]" options={{ title: 'Tópico' }} />
       <Stack.Screen name="community/[handle]" options={{ title: 'Perfil' }} />
       <Stack.Screen name="class/[id]" options={{ title: 'Turma' }} />
       <Stack.Screen name="meeting/[id]" options={{ title: 'Encontro' }} />
       <Stack.Screen name="meeting/[id]/attendance" options={{ title: 'Presença' }} />
+      <Stack.Screen name="messages/index" options={{ title: 'Mensagens' }} />
       <Stack.Screen name="messages/[id]" options={{ title: 'Conversa' }} />
       <Stack.Screen name="bible/index" options={{ title: 'Bíblia' }} />
       <Stack.Screen name="bible/[bookId]/index" options={{ title: 'Livro' }} />
@@ -37,7 +38,7 @@ export default function AppLayout() {
       <Stack.Screen name="catechumens/[id]" options={{ title: 'Catequizando' }} />
       <Stack.Screen name="families/index" options={{ title: 'Famílias' }} />
       <Stack.Screen name="families/[id]" options={{ title: 'Família' }} />
-      <Stack.Screen name="team" options={{ title: 'Equipa' }} />
+      <Stack.Screen name="team" options={{ title: 'Pessoas e acessos' }} />
       <Stack.Screen name="communities" options={{ title: 'Comunidades' }} />
       <Stack.Screen name="content/index" options={{ title: 'Biblioteca' }} />
       <Stack.Screen name="content/[id]" options={{ title: 'Conteúdo' }} />
@@ -55,8 +56,12 @@ export default function AppLayout() {
       <Stack.Screen name="groups/index" options={{ title: 'Grupos' }} />
       <Stack.Screen name="groups/[id]" options={{ title: 'Grupo' }} />
       <Stack.Screen name="billing" options={{ title: 'Assinatura' }} />
-      <Stack.Screen name="settings" options={{ title: 'Definições' }} />
+      <Stack.Screen name="settings" options={{ title: 'Configurações' }} />
       <Stack.Screen name="years" options={{ title: 'Anos catequéticos' }} />
+      <Stack.Screen name="family-invites" options={{ title: 'Convites da família' }} />
+      <Stack.Screen name="journey-templates" options={{ title: 'Modelos de jornada' }} />
+      <Stack.Screen name="parishes" options={{ title: 'Paróquias' }} />
+      <Stack.Screen name="consents" options={{ title: 'Consentimentos' }} />
       <Stack.Screen name="ai" options={{ title: 'Assistência editorial' }} />
     </Stack>
   );

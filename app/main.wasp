@@ -1969,6 +1969,13 @@ api mobileMeetingDetails {
   httpRoute: (GET, "/mobile/meetings/:id")
 }
 
+api mobileMeetingAttendance {
+  fn: import { mobileMeetingAttendance } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/meetings/:id/attendance"),
+  entities: [Meeting, AttendanceRecord, CatechumenProfile, ClassEnrollment, CatechesisClass, Membership, Parish, ClassCatechist, UserTwoFactor]
+}
+
 api mobileSaveAttendance {
   fn: import { mobileSaveAttendance } from "@src/server/api/mobile",
   auth: true,
@@ -2205,7 +2212,7 @@ api mobileCalendar {
   fn: import { mobileCalendar } from "@src/server/api/mobilePlatform",
   auth: true,
   httpRoute: (GET, "/mobile/calendar"),
-  entities: [LiturgicalEvent, Membership, Parish, Diocese, Community, ClassCatechist, UserTwoFactor]
+  entities: [LiturgicalEvent, Membership, Parish, Diocese, Community, ClassCatechist, CatechesisClass, Meeting, UserTwoFactor]
 }
 
 api mobileAnnouncements {
@@ -2339,6 +2346,34 @@ api mobileCatecheticalYears {
   auth: true,
   httpRoute: (GET, "/mobile/catechetical-years"),
   entities: [CatecheticalYear, Membership, Parish, CatecheticalItinerary, UserTwoFactor]
+}
+
+api mobileFamilyInvites {
+  fn: import { mobileFamilyInvites } from "@src/server/api/mobilePlatform",
+  auth: true,
+  httpRoute: (GET, "/mobile/family-invites"),
+  entities: [PendingInvitation, Membership, Parish, User, UserTwoFactor]
+}
+
+api mobileJourneyTemplates {
+  fn: import { mobileJourneyTemplates } from "@src/server/api/mobilePlatform",
+  auth: true,
+  httpRoute: (GET, "/mobile/journey-templates"),
+  entities: [SacramentalJourneyTemplate, SacramentalMilestoneTemplate, Sacrament, Parish, Membership, Diocese, UserTwoFactor]
+}
+
+api mobileParishes {
+  fn: import { mobileParishes } from "@src/server/api/mobilePlatform",
+  auth: true,
+  httpRoute: (GET, "/mobile/parishes"),
+  entities: [Parish, Membership, Diocese, TenantBilling, UserTwoFactor]
+}
+
+api mobileConsents {
+  fn: import { mobileConsents } from "@src/server/api/mobilePlatform",
+  auth: true,
+  httpRoute: (GET, "/mobile/consents"),
+  entities: [ConsentRecord, Household, GuardianProfile, UserTwoFactor]
 }
 //#endregion
 

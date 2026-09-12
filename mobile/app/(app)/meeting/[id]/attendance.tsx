@@ -8,7 +8,7 @@ import { AttendanceScreen } from '../../../../src/screens/AttendanceScreen';
 export default function AttendanceRoute() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { api } = useAuth();
-  const { data, loading, error, reload } = useAsync(() => api.meetingDetails(String(id)), [id]);
+  const { data, loading, error, reload } = useAsync(() => api.meetingAttendance(String(id)), [id]);
   const [busy, setBusy] = useState(false);
 
   return (

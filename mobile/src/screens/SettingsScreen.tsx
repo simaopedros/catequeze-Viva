@@ -22,7 +22,7 @@ export function SettingsScreen({
   const name = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim();
   return (
     <Screen testID="settings-screen">
-      <ScreenTitle title="Definições" subtitle="Conta, espaço de trabalho e sessão." />
+      <ScreenTitle title="Configurações" subtitle="Conta, espaço de trabalho e sessão." />
       <Card>
         <Text style={{ color: colors.ink, fontWeight: '700' }}>{name || 'Catequista'}</Text>
         <Text style={{ color: colors.muted, marginTop: 6 }}>{user?.email || ''}</Text>
@@ -30,11 +30,11 @@ export function SettingsScreen({
           <Text style={{ color: colors.muted, marginTop: 6 }}>Idioma da conta: {user.locale}</Text>
         ) : null}
         <Text style={{ color: colors.muted, marginTop: 12 }}>
-          Nome, palavra-passe e 2FA configuram-se na plataforma web.
+          Nome, senha e 2FA configuram-se na plataforma web.
         </Text>
       </Card>
       <Card>
-        <Text style={{ color: colors.ink, fontWeight: '700', marginBottom: 8 }}>Espaço activo</Text>
+        <Text style={{ color: colors.ink, fontWeight: '700', marginBottom: 8 }}>Espaço ativo</Text>
         {workspaces.map((workspace) => (
           <Text
             key={workspace.id}
@@ -50,7 +50,7 @@ export function SettingsScreen({
         ))}
       </Card>
       <BrandButton variant="ghost" label="Ver assinatura" onPress={onOpenBilling} />
-      <BrandButton variant="danger" label="Terminar sessão" onPress={onLogout} />
+      <BrandButton variant="danger" label="Sair" onPress={onLogout} />
     </Screen>
   );
 }

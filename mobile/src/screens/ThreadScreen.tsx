@@ -34,7 +34,7 @@ export function ThreadScreen({
       ))}
       <Field label="Mensagem" value={content} onChangeText={setContent} testID="message-input" />
       <BrandButton
-        label={busy ? 'A enviar…' : 'Enviar'}
+        label={busy ? 'Enviando…' : 'Enviar'}
         disabled={busy || !content.trim()}
         onPress={async () => {
           await onSend(content.trim());
