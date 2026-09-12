@@ -1,124 +1,98 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { PostCard } from '../components/PostCard';
-import { BrandButton, EmptyState, LoadingState, Screen, ScreenTitle, SegmentedControl } from '../components/ui';
-import type { SocialAccess, SocialPost, SocialTopic } from '../api/types';
+import { BrandButton, EmptyState, LoadingState, Screen } from '../components/ui';
+import type { SocialAccess, SocialPost, SocialReportReason, SocialTopic } from '../api/types';
+import { communityPublishNotice, FEED_TABS, type FeedTabId } from '../lib/social';
 import { colors, fonts, spacing } from '../theme';
-import { COMMUNITY_AREAS, type CommunityAreaId } from './communityAreas';
-
-const SORTS = [
-  { id: 'recent', label: 'Recentes' },
-  { id: 'trending', label: 'Em alta' },
-  { id: 'foryou', label: 'Para si' },
-];
-
-export function communityFeedSubtitle(access?: SocialAccess | null): string {
-  if (access && !access.canPublish) {
-    return 'Ler e seguir é livre. Publicar pede assinatura.';
-  }
-  return 'Ler, seguir e partilhar com a rede da catequese.';
-}
 
 export function CommunityScreen({
-  title = 'Comunidade',
-  subtitle,
   posts,
   topics,
   access,
-  sort,
+  tab,
   topicSlug,
   loading,
+  refreshing,
   error,
-  onChangeSort,
+  hasMore,
+  showShorts = false,
+  onChangeTab,
   onChangeTopic,
   onOpenAuthor,
   onOpenPost,
   onOpenTopic,
   onCompose,
-  onSearch,
-  following,
-  onToggleFollowing,
-  showHub,
-  onOpenArea,
   onReact,
-  onShortcutVerse,
-  onShortcutMeeting,
+  onComment,
+  onDelete,
+  onReport,
+  onRefresh,
+  onLoadMore,
 }: {
   posts: SocialPost[];
   topics: SocialTopic[];
   access?: SocialAccess | null;
-  sort: 'recent' | 'trending' | 'foryou';
+  tab: FeedTabId;
   topicSlug?: string | null;
   loading?: boolean;
+  refreshing?: boolean;
   error?: string | null;
-  onChangeSort: (sort: 'recent' | 'trending' | 'foryou') => void;
+  hasMore?: boolean;
+  showShorts?: boolean;
+  onChangeTab: (tab: FeedTabId) => void;
   onChangeTopic: (slug: string | null) => void;
   onOpenAuthor: (handle: string) => void;
   onOpenPost?: (slug: string) => void;
   onOpenTopic?: (slug: string) => void;
   onCompose: () => void;
-  onSearch?: () => void;
-  following?: boolean;
-  onToggleFollowing?: () => void;
-  title?: string;
-  subtitle?: string;
-  showHub?: boolean;
-  onOpenArea?: (id: CommunityAreaId) => void;
   onReact?: (postId: string, type: 'AMEM' | 'REZO' | 'ALELUIA') => void;
-  onShortcutVerse?: () => void;
-  onShortcutMeeting?: () => void;
+  onComment?: (postId: string, body: string) => void;
+  onDelete?: (postId: string) => void;
+  onReport?: (postId: string, reason: SocialReportReason) => void;
+  onRefresh?: () => void;
+  onLoadMore?: () => void;
 }) {
-  const resolvedSubtitle = subtitle ?? communityFeedSubtitle(access);
+  const notice = communityPublishNotice(access);
+  const tabs = FEED_TABS.filter((item) => item.id !== 'shorts' || showShorts);
 
   return (
-    <Screen testID="community-screen">
-      <ScreenTitle title={title} subtitle={resolvedSubtitle} />
-      {showHub && onOpenArea ? (
-        <View testID="community-hub" style={{ marginBottom: spacing.md, flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {COMMUNITY_AREAS.filter((area) => area.id !== 'feed').map((area) => (
-            <Pressable
-              key={area.id}
-              testID={`area-${area.id}`}
-              onPress={() => onOpenArea(area.id)}
-              style={{
-                paddingHorizontal: 12,
-                paddingVertical: 8,
-                minHeight: 36,
-                borderRadius: 999,
-                backgroundColor: colors.canvas,
-              }}
-            >
-              <Text style={{ color: colors.ink, fontFamily: fonts.sansSemi, fontSize: 13 }}>{area.label}</Text>
-            </Pressable>
-          ))}
-        </View>
-      ) : null}
-      <SegmentedControl options={SORTS} value={sort} onChange={(id) => onChangeSort(id as typeof sort)} testID="sort" />
-      {!showHub && onSearch ? (
-        <BrandButton variant="ghost" label="Pesquisar pessoas e publicações" onPress={onSearch} testID="open-search" />
-      ) : null}
-      {showHub && onToggleFollowing ? (
-        <Pressable onPress={onToggleFollowing} testID="filter-following" style={{ marginBottom: spacing.sm }}>
-          <Text style={{ color: following ? colors.goldDark : colors.muted, fontFamily: fonts.sansSemi }}>
-            {following ? 'A ver quem segue' : 'Só quem eu sigo'}
-          </Text>
-        </Pressable>
-      ) : null}
-      {!showHub && onToggleFollowing ? (
-        <BrandButton
-          variant={following ? 'primary' : 'ghost'}
-          label={following ? 'A ver quem segue' : 'Só quem eu sigo'}
-          onPress={onToggleFollowing}
-          testID="filter-following"
-        />
-      ) : null}
-      {access && !access.canPublish ? (
-        <Text style={{ color: colors.goldDark, marginBottom: spacing.md, fontFamily: fonts.sansMedium }}>
-          {access.reason === 'subscription'
-            ? 'Pode ler e seguir. Para publicar, precisa de uma assinatura activa.'
-            : 'A publicação está limitada nesta conta.'}
+    <Screen
+      testID="community-screen"
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      onEndReached={hasMore ? onLoadMore : undefined}
+    >
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.sm }}>
+        <Text style={{ fontFamily: fonts.serif, fontSize: 28, color: colors.ink }}>Comunidade</Text>
+        <BrandButton label="Publicar" onPress={onCompose} testID="compose-open" />
+      </View>
+      {notice ? (
+        <Text testID="community-notice" style={{ color: colors.goldDark, fontFamily: fonts.sansMedium, marginBottom: spacing.md }}>
+          {notice}
         </Text>
       ) : null}
+      <View testID="feed-tabs" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: spacing.md }}>
+        {tabs.map((item) => {
+          const on = tab === item.id;
+          return (
+            <Pressable
+              key={item.id}
+              testID={`feed-tab-${item.id}`}
+              onPress={() => onChangeTab(item.id)}
+              style={{
+                minHeight: 36,
+                paddingHorizontal: 12,
+                borderRadius: 999,
+                backgroundColor: on ? colors.ink : colors.canvas,
+                justifyContent: 'center',
+              }}
+            >
+              <Text style={{ color: on ? colors.white : colors.ink, fontFamily: fonts.sansSemi, fontSize: 13 }}>{item.label}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
       <View style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.md, flexWrap: 'wrap' }}>
         <Pressable onPress={() => onChangeTopic(null)}>
           <Text style={{ color: !topicSlug ? colors.goldDark : colors.muted, fontFamily: fonts.sansBold }}>Todos</Text>
@@ -135,35 +109,14 @@ export function CommunityScreen({
           </Pressable>
         ))}
       </View>
-      <View style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.md }}>
-        <BrandButton label="Nova publicação" onPress={onCompose} testID="compose-open" />
-      </View>
-      {onShortcutVerse || onShortcutMeeting ? (
-        <View style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.md }}>
-          {onShortcutVerse ? (
-            <Pressable testID="shortcut-verse" onPress={onShortcutVerse} style={{ flex: 1, minHeight: 44, justifyContent: 'center', backgroundColor: colors.canvas, borderRadius: 12, padding: 10 }}>
-              <Text style={{ fontFamily: fonts.sansSemi, color: colors.ink }}>Partilhar um verso</Text>
-            </Pressable>
-          ) : null}
-          {onShortcutMeeting ? (
-            <Pressable testID="shortcut-meeting" onPress={onShortcutMeeting} style={{ flex: 1, minHeight: 44, justifyContent: 'center', backgroundColor: colors.canvas, borderRadius: 12, padding: 10 }}>
-              <Text style={{ fontFamily: fonts.sansSemi, color: colors.ink }}>Partilhar um encontro</Text>
-            </Pressable>
-          ) : null}
-        </View>
-      ) : null}
-      <Text
-        testID="feed-heading"
-        style={{ color: colors.ink, fontFamily: fonts.serif, fontSize: 20, marginBottom: spacing.sm }}
-      >
-        Publicações
-      </Text>
-      {loading ? <LoadingState /> : null}
+      {loading && posts.length === 0 ? <LoadingState /> : null}
       {error ? <EmptyState title="Feed indisponível" body={error} /> : null}
       {!loading && posts.length === 0 ? (
         <EmptyState
           title="Ainda não há publicações"
-          body="A Comunidade está pronta. Toque em Publicar para a primeira partilha, ou abra Tópicos e Membros."
+          body="Toque em Publicar para a primeira partilha."
+          actionLabel="Publicar"
+          onAction={onCompose}
         />
       ) : (
         posts.map((post) => (
@@ -173,9 +126,15 @@ export function CommunityScreen({
             onOpenAuthor={onOpenAuthor}
             onOpenPost={onOpenPost}
             onReact={onReact ? (type) => onReact(post.id, type) : undefined}
+            onComment={onComment ? (body) => onComment(post.id, body) : undefined}
+            onDelete={onDelete}
+            onReport={onReport ? (reason) => onReport(post.id, reason) : undefined}
           />
         ))
       )}
+      {hasMore && onLoadMore && posts.length > 0 ? (
+        <BrandButton variant="ghost" label="Carregar mais" onPress={onLoadMore} testID="feed-load-more" />
+      ) : null}
     </Screen>
   );
 }

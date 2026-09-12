@@ -23,6 +23,10 @@ describe('mobile path contract', () => {
     expect(MOBILE_PATHS.socialComments).toBe('/mobile/social/comments');
     expect(MOBILE_PATHS.socialReact).toBe('/mobile/social/react');
     expect(MOBILE_PATHS.socialSearch).toBe('/mobile/social/search');
+    expect(MOBILE_PATHS.socialImages).toBe('/mobile/social/images');
+    expect(MOBILE_PATHS.socialVideos).toBe('/mobile/social/videos');
+    expect(MOBILE_PATHS.socialVideoUploads).toBe('/mobile/social/video-uploads');
+    expect(MOBILE_PATHS.socialDeletePost('p1')).toBe('/mobile/social/posts/p1/delete');
     expect(MOBILE_PATHS.bibleBooks).toBe('/mobile/bible/books');
     expect(MOBILE_PATHS.bibleChapter('jo', 3)).toBe('/mobile/bible/books/jo/chapters/3');
     expect(MOBILE_PATHS.content).toBe('/mobile/content');

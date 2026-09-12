@@ -69,7 +69,10 @@ export function createMobileClient(options: MobileClientOptions) {
       Accept: 'application/json',
       ...(init.headers as Record<string, string> | undefined),
     };
-    if (init.body && !headers['Content-Type']) {
+    const isFormData = typeof FormData !== 'undefined' && init.body instanceof FormData;
+    if (isFormData) {
+      delete headers['Content-Type'];
+    } else if (init.body && !headers['Content-Type']) {
       headers['Content-Type'] = 'application/json';
     }
     if (token) {
@@ -188,6 +191,7 @@ export function createMobileClient(options: MobileClientOptions) {
     },
     socialFeed(query?: {
       cursor?: string | null;
+      limit?: number;
       sort?: 'recent' | 'trending' | 'foryou';
       topicSlug?: string | null;
       authorId?: string | null;
@@ -202,10 +206,42 @@ export function createMobileClient(options: MobileClientOptions) {
     socialTopics() {
       return request<SocialTopic[]>(MOBILE_PATHS.socialTopics);
     },
-    createPost(body: { body: string; topicSlugs?: string[]; share?: { kind: string; sourceId: string } | null }) {
+    createPost(body: {
+      body: string;
+      mediaIds?: string[];
+      topicSlugs?: string[];
+      mediaConsentAck?: boolean;
+      share?: { kind: string; sourceId: string } | null;
+    }) {
       return request<SocialPost>(MOBILE_PATHS.socialPosts, {
         method: 'POST',
         body: JSON.stringify(body),
+      });
+    },
+    deletePost(postId: string) {
+      return request<{ success: boolean }>(MOBILE_PATHS.socialDeletePost(postId), { method: 'POST' });
+    },
+    uploadSocialImage(file: { uri: string; name?: string; type?: string }) {
+      const form = new FormData();
+      form.append('file', file as any);
+      return request<{ mediaId: string; url: string }>(MOBILE_PATHS.socialImages, {
+        method: 'POST',
+        body: form,
+      });
+    },
+    createVideoUpload(body?: { title?: string; durationSeconds?: number }) {
+      return request<{ transport: 'server' | 'stream'; mediaId: string }>(MOBILE_PATHS.socialVideoUploads, {
+        method: 'POST',
+        body: JSON.stringify(body || {}),
+      });
+    },
+    uploadSocialVideo(file: { uri: string; name?: string; type?: string }, mediaId: string) {
+      const form = new FormData();
+      form.append('file', file as any);
+      form.append('mediaId', mediaId);
+      return request<{ mediaId: string; url?: string }>(MOBILE_PATHS.socialVideos, {
+        method: 'POST',
+        body: form,
       });
     },
     socialProfile(handle: string) {
@@ -246,10 +282,10 @@ export function createMobileClient(options: MobileClientOptions) {
         withQuery(MOBILE_PATHS.socialComments, { postId }),
       );
     },
-    createComment(postId: string, body: string) {
+    createComment(postId: string, body: string, parentId?: string | null) {
       return request<{ id: string; held?: boolean }>(MOBILE_PATHS.socialComments, {
         method: 'POST',
-        body: JSON.stringify({ postId, body }),
+        body: JSON.stringify({ postId, body, parentId: parentId || null }),
       });
     },
     toggleReaction(postId: string, type: 'AMEM' | 'REZO' | 'ALELUIA' = 'AMEM') {

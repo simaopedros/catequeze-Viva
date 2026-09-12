@@ -1,20 +1,33 @@
 import { useFocusEffect, useRouter } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
-import { openCommunityArea } from '../../../src/screens/communityNavigation';
+import type { SocialPost } from '../../../src/api/types';
+import { feedQueryForTab, type FeedTabId } from '../../../src/lib/social';
 import { CommunityScreen } from '../../../src/screens/CommunityScreen';
 
 export default function CommunityRoute() {
   const { api } = useAuth();
   const router = useRouter();
-  const [sort, setSort] = useState<'recent' | 'trending' | 'foryou'>('recent');
+  const [tab, setTab] = useState<FeedTabId>('foryou');
   const [topicSlug, setTopicSlug] = useState<string | null>(null);
-  const [following, setFollowing] = useState(false);
-  const feed = useAsync(() => api.socialFeed({ sort, topicSlug, following }), [sort, topicSlug, following]);
+  const [items, setItems] = useState<SocialPost[]>([]);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const query = useMemo(() => feedQueryForTab(tab), [tab]);
+  const feed = useAsync(
+    () => api.socialFeed({ ...query, topicSlug, cursor: null, limit: 20 }),
+    [query.sort, query.following, query.videoFormat, topicSlug],
+  );
+  const shortsProbe = useAsync(() => api.socialFeed({ videoFormat: 'SHORT', limit: 1 }), []);
   const topics = useAsync(() => api.socialTopics(), []);
   const access = useAsync(() => api.socialAccess(), []);
-  const me = useAsync(() => api.mySocialProfile(), []);
+
+  useEffect(() => {
+    if (!feed.data) return;
+    setItems(feed.data.items);
+    setCursor(feed.data.nextCursor);
+  }, [feed.data]);
 
   useFocusEffect(
     useCallback(() => {
@@ -24,29 +37,50 @@ export default function CommunityRoute() {
 
   return (
     <CommunityScreen
-      posts={feed.data?.items ?? []}
+      posts={items}
       topics={topics.data ?? []}
       access={access.data}
-      sort={sort}
+      tab={tab}
       topicSlug={topicSlug}
-      following={following}
       loading={feed.loading}
+      refreshing={refreshing}
       error={feed.error}
-      showHub
-      onOpenArea={(area) => openCommunityArea(router, area, me.data?.handle)}
-      onChangeSort={setSort}
+      hasMore={Boolean(cursor)}
+      showShorts={Boolean(shortsProbe.data?.items.length)}
+      onChangeTab={setTab}
       onChangeTopic={setTopicSlug}
-      onToggleFollowing={() => setFollowing((value) => !value)}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
       onOpenPost={(slug) => router.push(`/(app)/community/p/${slug}`)}
       onOpenTopic={(slug) => router.push(`/(app)/community/t/${slug}`)}
       onCompose={() => router.push('/(app)/community/compose')}
-      onSearch={() => router.push('/(app)/community/search')}
-      onShortcutVerse={() => router.push('/(app)/bible')}
-      onShortcutMeeting={() => router.push('/(app)/(tabs)/calendar')}
+      onRefresh={async () => {
+        setRefreshing(true);
+        try {
+          await feed.reload();
+        } finally {
+          setRefreshing(false);
+        }
+      }}
+      onLoadMore={async () => {
+        if (!cursor) return;
+        const page = await api.socialFeed({ ...query, topicSlug, cursor, limit: 20 });
+        setItems((current) => [...current, ...page.items]);
+        setCursor(page.nextCursor);
+      }}
       onReact={async (postId, type) => {
         await api.toggleReaction(postId, type);
         await feed.reload();
+      }}
+      onComment={async (postId, body) => {
+        await api.createComment(postId, body);
+        await feed.reload();
+      }}
+      onDelete={async (postId) => {
+        await api.deletePost(postId);
+        await feed.reload();
+      }}
+      onReport={async (postId, reason) => {
+        await api.reportSocial({ targetType: 'POST', targetId: postId, reason });
       }}
     />
   );

@@ -16,6 +16,7 @@ export default function PostRoute() {
   const access = useAsync(() => api.socialAccess(), []);
   const [busy, setBusy] = useState(false);
   const [reportMessage, setReportMessage] = useState<string | null>(null);
+  const [heldMessage, setHeldMessage] = useState<string | null>(null);
 
   return (
     <PostDetailScreen
@@ -25,6 +26,7 @@ export default function PostRoute() {
       loading={post.loading}
       error={post.error}
       busy={busy}
+      heldMessage={heldMessage}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
       onReact={async (type) => {
         if (!post.data?.id) return;
@@ -37,11 +39,17 @@ export default function PostRoute() {
         }
       }}
       reportMessage={reportMessage}
-      onComment={async (body) => {
+      onDelete={async (postId) => {
+        await api.deletePost(postId);
+        router.replace('/(app)/(tabs)/community');
+      }}
+      onComment={async (body, parentId) => {
         if (!post.data?.id) return;
         setBusy(true);
+        setHeldMessage(null);
         try {
-          await api.createComment(post.data.id, body);
+          const result = await api.createComment(post.data.id, body, parentId);
+          if (result.held) setHeldMessage('O seu comentário foi enviado para revisão.');
           await Promise.all([post.reload(), comments.reload()]);
         } finally {
           setBusy(false);

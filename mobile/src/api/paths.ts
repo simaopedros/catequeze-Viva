@@ -42,6 +42,10 @@ export const MOBILE_PATHS = {
   socialConnections: '/mobile/social/connections',
   socialBlocks: '/mobile/social/blocks',
   socialReport: '/mobile/social/report',
+  socialImages: '/mobile/social/images',
+  socialVideos: '/mobile/social/videos',
+  socialVideoUploads: '/mobile/social/video-uploads',
+  socialDeletePost: (id: string) => `/mobile/social/posts/${encodeURIComponent(id)}/delete`,
   bibleBooks: '/mobile/bible/books',
   bibleBook: (id: string) => `/mobile/bible/books/${encodeURIComponent(id)}`,
   bibleChapter: (bookId: string, chapter: number) =>

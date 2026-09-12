@@ -89,9 +89,9 @@ export function BibleChapterScreen({
   loading?: boolean;
   error?: string | null;
   canPublish?: boolean;
-  onShareVerse: (verseNumber: number, text: string) => void;
+  onShareVerse: (verse: { id: string; number: number; text: string }) => void;
 }) {
-  const [selected, setSelected] = useState<{ number: number; text: string } | null>(null);
+  const [selected, setSelected] = useState<{ id: string; number: number; text: string } | null>(null);
   const title = chapter?.book?.name
     ? `${chapter.book.name} ${chapter.number}`
     : `Capítulo ${chapter?.number ?? ''}`;
@@ -116,12 +116,12 @@ export function BibleChapterScreen({
                 void Share.share({ message: `${reference}\n${selected.text}` });
               }}
             />
-            {canPublish ? (
+            {canPublish && selected.id ? (
               <BrandButton
                 variant="ghost"
                 ink
                 label="Partilhar na Comunidade"
-                onPress={() => onShareVerse(selected.number, selected.text)}
+                onPress={() => onShareVerse(selected)}
               />
             ) : null}
           </View>
@@ -139,7 +139,7 @@ export function BibleChapterScreen({
         return (
           <Pressable
             key={verse.number}
-            onPress={() => setSelected({ number: verse.number, text: verse.text })}
+            onPress={() => setSelected({ id: verse.id || '', number: verse.number, text: verse.text })}
             style={{ flexDirection: 'row', gap: 10, marginBottom: 14 }}
           >
             <Text style={{ color: colors.gold, fontFamily: fonts.sansBold, width: 28 }}>{verse.number}</Text>

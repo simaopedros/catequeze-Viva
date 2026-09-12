@@ -71,7 +71,17 @@ describe('mobile HTTP client', () => {
 
     await client.socialAccess();
     await client.socialTopics();
-    await client.createPost({ body: 'Paz', share: { kind: 'VERSE', sourceId: 'gn:1:1' } });
+    await client.createPost({
+      body: 'Paz',
+      mediaIds: ['media-1'],
+      topicSlugs: ['oracao'],
+      mediaConsentAck: true,
+      share: { kind: 'VERSE', sourceId: 'verse-uuid' },
+    });
+    await client.deletePost('post-1');
+    await client.uploadSocialImage({ uri: 'file://foto.jpg', name: 'foto.jpg', type: 'image/jpeg' });
+    await client.createVideoUpload({ title: 'encontro.mp4' });
+    await client.uploadSocialVideo({ uri: 'file://clip.mp4', name: 'clip.mp4', type: 'video/mp4' }, 'media-2');
     await client.socialProfile('ana');
     await client.mySocialProfile();
     await client.updateSocialProfile({ handle: 'ana', bio: 'Catequista' });
@@ -106,6 +116,11 @@ describe('mobile HTTP client', () => {
     await client.billing();
 
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialAccess);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialPosts);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialDeletePost('post-1'));
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialImages);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialVideoUploads);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialVideos);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialProfile('ana'));
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.bibleChapter('gn', 1) + '?locale=pt-BR');
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialPulse + '?memberLimit=40');

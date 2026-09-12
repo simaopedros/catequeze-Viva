@@ -46,8 +46,8 @@ describe('auth and community UI', () => {
         ]}
         topics={[{ slug: 'liturgia', name: 'Liturgia' }]}
         access={{ authenticated: true, canPublish: true }}
-        sort="recent"
-        onChangeSort={jest.fn()}
+        tab="recent"
+        onChangeTab={jest.fn()}
         onChangeTopic={jest.fn()}
         onOpenAuthor={jest.fn()}
         onCompose={onCompose}

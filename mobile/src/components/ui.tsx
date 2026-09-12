@@ -5,6 +5,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -30,12 +31,18 @@ export function Screen({
   testID,
   footer,
   ink = false,
+  refreshing,
+  onRefresh,
+  onEndReached,
 }: {
   children: React.ReactNode;
   padded?: boolean;
   testID?: string;
   footer?: React.ReactNode;
   ink?: boolean;
+  refreshing?: boolean;
+  onRefresh?: () => void;
+  onEndReached?: () => void;
 }) {
   const background = ink ? colors.ink : colors.paper;
   const content = (
@@ -44,6 +51,22 @@ export function Screen({
       style={{ flex: 1, backgroundColor: background }}
       contentContainerStyle={[styles.screenContent, padded && { padding: spacing.lg }]}
       keyboardShouldPersistTaps="handled"
+      refreshControl={
+        onRefresh ? (
+          <RefreshControl refreshing={Boolean(refreshing)} onRefresh={onRefresh} tintColor={colors.gold} />
+        ) : undefined
+      }
+      onScroll={
+        onEndReached
+          ? (event) => {
+              const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+              if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 80) {
+                onEndReached();
+              }
+            }
+          : undefined
+      }
+      scrollEventThrottle={400}
     >
       {children}
     </ScrollView>
