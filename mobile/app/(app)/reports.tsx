@@ -1,5 +1,6 @@
+import { useRouter } from 'expo-router';
 import React from 'react';
-import { Text } from 'react-native';
+import { Pressable, Text } from 'react-native';
 import { useAuth } from '../../src/auth/AuthContext';
 import { useAsync } from '../../src/hooks/useAsync';
 import { asItems } from '../../src/lib/payload';
@@ -9,6 +10,7 @@ import { colors } from '../../src/theme';
 
 export default function ReportsRoute() {
   const { api, workspaceId } = useAuth();
+  const router = useRouter();
   const { data, loading, error } = useAsync(
     () => api.reports(workspaceId || undefined),
     [workspaceId],
@@ -38,16 +40,29 @@ export default function ReportsRoute() {
           </Text>
         </Card>
       ))}
-      {classReports.map((row: any) => (
-        <Card key={row.id || row.name}>
-          <Text style={{ color: colors.ink, fontWeight: '700' }}>{row.name || 'Turma'}</Text>
-          <Text style={{ color: colors.muted, marginTop: 4 }}>
-            {row.attendanceRate != null ? `${row.attendanceRate}% de presença` : 'Sem presença'}
-            {row.totalEnrolled != null ? ` · ${row.totalEnrolled} inscritos` : ''}
-            {row.totalMeetings != null ? ` · ${row.totalMeetings} encontros` : ''}
-          </Text>
-        </Card>
-      ))}
+      {classReports.map((row: any) => {
+        const id = row.id;
+        const inner = (
+          <Card>
+            <Text style={{ color: colors.ink, fontWeight: '700' }}>{row.name || 'Turma'}</Text>
+            <Text style={{ color: colors.muted, marginTop: 4 }}>
+              {row.attendanceRate != null ? `${row.attendanceRate}% de presença` : 'Sem presença'}
+              {row.totalEnrolled != null ? ` · ${row.totalEnrolled} inscritos` : ''}
+              {row.totalMeetings != null ? ` · ${row.totalMeetings} encontros` : ''}
+            </Text>
+          </Card>
+        );
+        if (!id) return <React.Fragment key={row.name}>{inner}</React.Fragment>;
+        return (
+          <Pressable
+            key={id}
+            testID={`report-class-${id}`}
+            onPress={() => router.push(`/(app)/class/${id}`)}
+          >
+            {inner}
+          </Pressable>
+        );
+      })}
     </DetailScreen>
   );
 }

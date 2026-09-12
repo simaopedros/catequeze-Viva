@@ -39,6 +39,11 @@ export function MessagesScreen({
               <Text style={{ color: colors.muted, marginTop: 4 }} numberOfLines={2}>
                 {item.lastMessage?.content || item.preview || ' '}
               </Text>
+              {item.unreadCount ? (
+                <Text style={{ color: colors.goldDark, marginTop: 6, fontWeight: '700' }}>
+                  {item.unreadCount} por ler
+                </Text>
+              ) : null}
             </Card>
           </Pressable>
         ))

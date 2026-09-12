@@ -1,6 +1,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import { asItems, formatDate, personName, pickItems, statusLabel } from '../lib/payload';
+import { planLabel, subscriptionStatusLabel } from '../lib/billing';
 import { MORE_SECTIONS, getMoreSections } from '../screens/moreModules';
 import { MoreScreen } from '../screens/MoreScreen';
 import { CatalogScreen } from '../screens/CatalogScreen';
@@ -8,6 +9,10 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { AttendanceScreen } from '../screens/AttendanceScreen';
 import { ClassesScreen } from '../screens/ClassesScreen';
 import { ClassDetailScreen } from '../screens/ClassDetailScreen';
+import { BillingScreen } from '../screens/BillingScreen';
+import { MessagesScreen } from '../screens/MessagesScreen';
+import { ThreadScreen } from '../screens/ThreadScreen';
+import { NotificationsScreen } from '../screens/NotificationsScreen';
 import { APP_TABS, MOBILE_PATHS } from '../api/paths';
 import { appRoutes } from '../navigation/routes';
 
@@ -17,7 +22,8 @@ describe('payload helpers', () => {
     expect(asItems({ items: [{ id: '2' }] })).toEqual([{ id: '2' }]);
     expect(asItems({ members: [{ id: '3' }] })).toEqual([{ id: '3' }]);
     expect(asItems(null)).toEqual([]);
-    expect(pickItems({ events: [{ id: 'e1' }], meetings: [{ id: 'm1' }] }, 'events')).toEqual([{ id: 'e1' }]);
+    expect(asItems({ notifications: [{ id: 'n1' }] })).toEqual([{ id: 'n1' }]);
+    expect(asItems({ classReports: [{ id: 'c1' }] }, ['classReports'])).toEqual([{ id: 'c1' }]);
   });
 
   it('formats names and pastoral statuses in Portuguese', () => {
@@ -27,6 +33,8 @@ describe('payload helpers', () => {
     expect(statusLabel('JUSTIFIED')).toBe('Justificado');
     expect(statusLabel('LATE')).toBe('Atrasado');
     expect(formatDate('2026-03-19T12:00:00.000Z')).toMatch(/2026/);
+    expect(planLabel('single')).toBe('Plano Catequista');
+    expect(subscriptionStatusLabel('active')).toBe('Ativa');
   });
 });
 
@@ -271,5 +279,74 @@ describe('platform UI', () => {
     fireEvent.press(view.getByText('Presente'));
     fireEvent.press(view.getByText('Salvar'));
     expect(onSave).toHaveBeenCalledWith('c1', 'PRESENT');
+  });
+
+  it('switches attendance to a sibling meeting of the same class', () => {
+    const onSelectMeeting = jest.fn();
+    const view = render(
+      <AttendanceScreen
+        meeting={{
+          meeting: { id: 'm2', title: 'Encontro 2' },
+          summary: { registered: 0, total: 0, present: 0, absent: 0, late: 0, justified: 0 },
+          participants: [],
+          siblingMeetings: [
+            { id: 'm2', title: 'Encontro 2 - A Crisma e o Compromisso', date: '2026-06-14T19:00:00.000Z', status: 'NOT_STARTED' },
+            { id: 'm1', title: 'Encontro 1 - O Espírito Santo', date: '2026-06-07T19:00:00.000Z', status: 'COMPLETED' },
+          ],
+        }}
+        onSave={jest.fn()}
+        onSelectMeeting={onSelectMeeting}
+      />,
+    );
+    expect(view.getByText('Encontros desta turma')).toBeTruthy();
+    fireEvent.press(view.getByTestId('sibling-meeting-m1'));
+    expect(onSelectMeeting).toHaveBeenCalledWith('m1');
+  });
+
+  it('shows Portuguese billing names and unread messages', () => {
+    const billing = render(<BillingScreen data={{ planId: 'single', status: 'active', interval: null }} />);
+    expect(billing.getByText('Plano Catequista')).toBeTruthy();
+    expect(billing.getByText('Ativa')).toBeTruthy();
+
+    const onOpen = jest.fn();
+    const messages = render(
+      <MessagesScreen
+        payload={[
+          {
+            id: 'c1',
+            title: 'Coordenação São José (TESTE)',
+            unreadCount: 1,
+            lastMessage: { content: 'Bem-vindos à coordenação!' },
+          },
+        ]}
+        onOpen={onOpen}
+      />,
+    );
+    expect(messages.getByText('1 por ler')).toBeTruthy();
+    fireEvent.press(messages.getByTestId('conversation-c1'));
+    expect(onOpen).toHaveBeenCalledWith('c1');
+
+    const thread = render(
+      <ThreadScreen
+        data={{
+          conversation: { title: 'Coordenação São José (TESTE)' },
+          messages: [
+            { id: 'm1', content: 'Olá', sender: { firstName: 'Catequista', lastName: 'Responsável' } },
+          ],
+        }}
+        onSend={jest.fn()}
+      />,
+    );
+    expect(thread.getByText('Coordenação São José (TESTE)')).toBeTruthy();
+    expect(thread.getByText('Catequista Responsável')).toBeTruthy();
+    expect(thread.getByText('Olá')).toBeTruthy();
+
+    const notes = render(
+      <NotificationsScreen
+        payload={{ notifications: [{ id: 'n1', title: 'Aviso pastoral', body: 'Encontro amanhã' }] }}
+        onRead={jest.fn()}
+      />,
+    );
+    expect(notes.getByText('Aviso pastoral')).toBeTruthy();
   });
 });

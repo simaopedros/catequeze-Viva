@@ -1,13 +1,8 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { asItems } from '../lib/payload';
 import { colors } from '../theme';
-
-function asNotifications(payload: any) {
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.items)) return payload.items;
-  return [];
-}
 
 export function NotificationsScreen({
   payload,
@@ -20,7 +15,7 @@ export function NotificationsScreen({
   error?: string | null;
   onRead: (id: string) => void;
 }) {
-  const items = asNotifications(payload);
+  const items = asItems(payload, ['notifications']);
   return (
     <Screen testID="notifications-screen">
       <ScreenTitle title="Notificações" />

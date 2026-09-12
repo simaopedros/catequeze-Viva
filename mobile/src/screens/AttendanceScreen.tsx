@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle, StatusChip } from '../components/ui';
-import { personName, statusLabel } from '../lib/payload';
+import { formatDate, personName, statusLabel } from '../lib/payload';
 import { colors, spacing } from '../theme';
 
 const STATUSES = [
@@ -16,12 +16,14 @@ export function AttendanceScreen({
   loading,
   error,
   onSave,
+  onSelectMeeting,
   busy,
 }: {
   meeting: any;
   loading?: boolean;
   error?: string | null;
   onSave: (catechumenProfileId: string, status: string) => Promise<void> | void;
+  onSelectMeeting?: (id: string) => void;
   busy?: boolean;
 }) {
   const rows = useMemo(() => {
@@ -36,6 +38,8 @@ export function AttendanceScreen({
   }, [meeting]);
   const [draft, setDraft] = useState<Record<string, string>>({});
   const summary = meeting?.summary;
+  const siblings = meeting?.siblingMeetings || [];
+  const currentMeetingId = meeting?.meeting?.id;
 
   if (loading) {
     return (
@@ -52,6 +56,38 @@ export function AttendanceScreen({
         subtitle={meeting?.meeting?.title || meeting?.title || 'Toque no estado e salve cada catequizando.'}
       />
       {error ? <EmptyState title="Não foi possível carregar" body={error} /> : null}
+      {siblings.length > 1 ? (
+        <View style={{ marginBottom: spacing.sm }}>
+          <Text style={{ color: colors.ink, fontWeight: '700', marginBottom: 8 }}>Encontros desta turma</Text>
+          {siblings.map((item: any) => {
+            const selected = item.id === currentMeetingId;
+            return (
+              <Pressable
+                key={item.id}
+                testID={`sibling-meeting-${item.id}`}
+                onPress={() => item.id !== currentMeetingId && onSelectMeeting?.(item.id)}
+                disabled={!onSelectMeeting || selected}
+              >
+                <Card
+                  style={
+                    selected
+                      ? { borderColor: colors.gold, backgroundColor: colors.paper }
+                      : undefined
+                  }
+                >
+                  <Text style={{ color: colors.ink, fontWeight: selected ? '700' : '600' }}>
+                    {item.title || item.theme || 'Encontro'}
+                  </Text>
+                  <Text style={{ color: colors.muted, marginTop: 4 }}>
+                    {formatDate(item.date)}
+                    {item.status ? ` · ${statusLabel(item.status)}` : ''}
+                  </Text>
+                </Card>
+              </Pressable>
+            );
+          })}
+        </View>
+      ) : null}
       {summary ? (
         <Card>
           <Text style={{ color: colors.muted }}>Resumo</Text>
