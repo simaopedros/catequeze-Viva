@@ -16,6 +16,7 @@ export default function ClassRoute() {
       loading={loading}
       error={error}
       onOpenMeeting={(meetingId) => router.push(`/(app)/meeting/${meetingId}`)}
+      onOpenCatechumen={(catechumenId) => router.push(`/(app)/catechumens/${catechumenId}`)}
     />
   );
 }

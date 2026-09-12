@@ -91,6 +91,14 @@ describe('mobile HTTP client', () => {
     await client.bibleBook('gn');
     await client.bibleChapter('gn', 1);
     await client.saveAttendance({ meetingId: 'm1', catechumenProfileId: 'c1', status: 'PRESENT' });
+    await client.catechumens('ws-1');
+    await client.families('ws-1');
+    await client.content('ws-1', 'páscoa');
+    await client.announcements('ws-1');
+    await client.acknowledgeAnnouncement('a1');
+    await client.catechismSearch('trindade');
+    await client.team('ws-1');
+    await client.billing();
 
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialAccess);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialProfile('ana'));
@@ -102,5 +110,9 @@ describe('mobile HTTP client', () => {
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialBlocks);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialReport);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.attendance);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.catechumens + '?workspaceId=ws-1&take=50');
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.content + '?workspaceId=ws-1&search=p%C3%A1scoa&take=50');
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.announcementAck('a1'));
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.billing);
   });
 });

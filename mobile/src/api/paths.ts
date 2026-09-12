@@ -45,6 +45,28 @@ export const MOBILE_PATHS = {
   bibleBook: (id: string) => `/mobile/bible/books/${encodeURIComponent(id)}`,
   bibleChapter: (bookId: string, chapter: number) =>
     `/mobile/bible/books/${encodeURIComponent(bookId)}/chapters/${chapter}`,
+  content: '/mobile/content',
+  contentDetails: (id: string) => `/mobile/content/${encodeURIComponent(id)}`,
+  calendar: '/mobile/calendar',
+  announcements: '/mobile/announcements',
+  announcementAck: (id: string) => `/mobile/announcements/${encodeURIComponent(id)}/ack`,
+  formation: '/mobile/formation',
+  formationTrack: (id: string) => `/mobile/formation/${encodeURIComponent(id)}`,
+  sacraments: '/mobile/sacraments',
+  sacramentDetails: (id: string) => `/mobile/sacraments/${encodeURIComponent(id)}`,
+  catechism: '/mobile/catechism',
+  catechismEntry: (number: number) => `/mobile/catechism/${number}`,
+  directory: '/mobile/directory',
+  directoryEntry: (number: number) => `/mobile/directory/${number}`,
+  reports: '/mobile/reports',
+  birthdays: '/mobile/birthdays',
+  officialLibrary: '/mobile/official-library',
+  groups: '/mobile/groups',
+  groupDetails: (id: string) => `/mobile/groups/${encodeURIComponent(id)}`,
+  team: '/mobile/team',
+  communities: '/mobile/communities',
+  billing: '/mobile/billing',
+  catecheticalYears: '/mobile/catechetical-years',
 } as const;
 
 export const APP_TABS = [

@@ -3,7 +3,12 @@ import { Pressable, Text } from 'react-native';
 import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import { colors } from '../theme';
 
-const STATUSES = ['PRESENT', 'ABSENT', 'LATE', 'EXCUSED'] as const;
+const STATUSES = [
+  { id: 'PRESENT', label: 'Presente' },
+  { id: 'ABSENT', label: 'Ausente' },
+  { id: 'LATE', label: 'Atraso' },
+  { id: 'JUSTIFIED', label: 'Justificada' },
+] as const;
 
 export function AttendanceScreen({
   meeting,
@@ -57,9 +62,9 @@ export function AttendanceScreen({
               <Text style={{ color: colors.ink, fontWeight: '700' }}>{name}</Text>
               <Text style={{ color: colors.muted, marginVertical: 8 }}>Estado: {status}</Text>
               {STATUSES.map((item) => (
-                <Pressable key={item} onPress={() => setDraft((current) => ({ ...current, [id]: item }))}>
-                  <Text style={{ color: status === item ? colors.goldDark : colors.muted, marginBottom: 4 }}>
-                    {item}
+                <Pressable key={item.id} onPress={() => setDraft((current) => ({ ...current, [id]: item.id }))}>
+                  <Text style={{ color: status === item.id ? colors.goldDark : colors.muted, marginBottom: 4 }}>
+                    {item.label}
                   </Text>
                 </Pressable>
               ))}

@@ -29,10 +29,21 @@ describe('usability map', () => {
       appRoutes.documents,
       appRoutes.notifications,
       appRoutes.more,
+      appRoutes.catechumens,
+      appRoutes.families,
+      appRoutes.content,
+      appRoutes.calendar,
+      appRoutes.announcements,
+      appRoutes.formation,
+      appRoutes.sacraments,
+      appRoutes.catechism,
+      appRoutes.reports,
+      appRoutes.billing,
+      appRoutes.settings,
     ];
 
     expect(signedOut).toHaveLength(3);
-    expect(signedIn).toHaveLength(24);
+    expect(signedIn).toHaveLength(35);
     expect(APP_TABS).toHaveLength(5);
   });
 });

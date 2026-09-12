@@ -11,12 +11,13 @@ app/           ← Main Wasp app (this directory)
   src/
     catequese/pages/        ← App page components
     server/operations/      ← Query/Action implementations
-    server/api/             ← Raw HTTP endpoints (API routes)
+    server/api/             ← Raw HTTP endpoints (API routes, including /mobile/*)
     server/scripts/         ← DB seeds, cron jobs
     shared/                 ← Shared constants, pricing, plan limits
     client/                 ← UI components (shadcn/ui, new-york style)
   migrations/ ← Wasp-managed DB migrations
   .wasp/out/  ← GENERATED — never edit
+mobile/       ← Expo app (TypeScript + Expo Router) for the same /mobile/* API
 e2e-tests/    ← Playwright e2e tests
 blog/         ← Astro blog (separate package)
 ```

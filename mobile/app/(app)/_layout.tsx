@@ -33,6 +33,31 @@ export default function AppLayout() {
       <Stack.Screen name="documents" options={{ title: 'Documentos' }} />
       <Stack.Screen name="profile" options={{ title: 'Perfil' }} />
       <Stack.Screen name="notifications" options={{ title: 'Notificações' }} />
+      <Stack.Screen name="catechumens/index" options={{ title: 'Catequizandos' }} />
+      <Stack.Screen name="catechumens/[id]" options={{ title: 'Catequizando' }} />
+      <Stack.Screen name="families/index" options={{ title: 'Famílias' }} />
+      <Stack.Screen name="families/[id]" options={{ title: 'Família' }} />
+      <Stack.Screen name="team" options={{ title: 'Equipa' }} />
+      <Stack.Screen name="communities" options={{ title: 'Comunidades' }} />
+      <Stack.Screen name="content/index" options={{ title: 'Biblioteca' }} />
+      <Stack.Screen name="content/[id]" options={{ title: 'Conteúdo' }} />
+      <Stack.Screen name="calendar" options={{ title: 'Calendário' }} />
+      <Stack.Screen name="announcements" options={{ title: 'Comunicados' }} />
+      <Stack.Screen name="formation/index" options={{ title: 'Formação' }} />
+      <Stack.Screen name="formation/[id]" options={{ title: 'Percurso' }} />
+      <Stack.Screen name="sacraments/index" options={{ title: 'Sacramentos' }} />
+      <Stack.Screen name="sacraments/[id]" options={{ title: 'Jornada' }} />
+      <Stack.Screen name="catechism/index" options={{ title: 'Catecismo' }} />
+      <Stack.Screen name="directory/index" options={{ title: 'Diretório' }} />
+      <Stack.Screen name="reports" options={{ title: 'Relatórios' }} />
+      <Stack.Screen name="birthdays" options={{ title: 'Aniversariantes' }} />
+      <Stack.Screen name="official-library" options={{ title: 'Pasta oficial' }} />
+      <Stack.Screen name="groups/index" options={{ title: 'Grupos' }} />
+      <Stack.Screen name="groups/[id]" options={{ title: 'Grupo' }} />
+      <Stack.Screen name="billing" options={{ title: 'Assinatura' }} />
+      <Stack.Screen name="settings" options={{ title: 'Definições' }} />
+      <Stack.Screen name="years" options={{ title: 'Anos catequéticos' }} />
+      <Stack.Screen name="ai" options={{ title: 'Assistência editorial' }} />
     </Stack>
   );
 }

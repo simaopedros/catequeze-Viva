@@ -186,3 +186,16 @@ export type BibleChapter = {
   book?: { id: string; name: string };
   verses: BibleVerse[];
 };
+
+export type CatalogItem = {
+  id: string;
+  title: string;
+  subtitle?: string;
+  meta?: string;
+};
+
+export type BillingPayload = {
+  interval: 'month' | 'year' | null;
+  planId: string;
+  status: string | null;
+};

@@ -11,7 +11,8 @@ describe('mobile path contract', () => {
     ]);
   });
 
-  it('matches the Wasp /mobile social and bible routes', () => {
+  it('matches the Wasp /mobile social, bible and platform routes', () => {
+    expect(MOBILE_PATHS.socialFeed).toBe('/mobile/social/feed');
     expect(MOBILE_PATHS.socialFeed).toBe('/mobile/social/feed');
     expect(MOBILE_PATHS.socialAccess).toBe('/mobile/social/access');
     expect(MOBILE_PATHS.socialTopics).toBe('/mobile/social/topics');
@@ -24,5 +25,8 @@ describe('mobile path contract', () => {
     expect(MOBILE_PATHS.socialSearch).toBe('/mobile/social/search');
     expect(MOBILE_PATHS.bibleBooks).toBe('/mobile/bible/books');
     expect(MOBILE_PATHS.bibleChapter('jo', 3)).toBe('/mobile/bible/books/jo/chapters/3');
+    expect(MOBILE_PATHS.content).toBe('/mobile/content');
+    expect(MOBILE_PATHS.catechumens).toBe('/mobile/catechumens');
+    expect(MOBILE_PATHS.announcements).toBe('/mobile/announcements');
   });
 });

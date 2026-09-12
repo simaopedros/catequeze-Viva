@@ -126,6 +126,30 @@ export function EmptyState({ title, body }: { title: string; body: string }) {
   );
 }
 
+export function MenuRow({
+  label,
+  hint,
+  onPress,
+  testID,
+  badge,
+}: {
+  label: string;
+  hint?: string;
+  onPress: () => void;
+  testID?: string;
+  badge?: string;
+}) {
+  return (
+    <Pressable accessibilityRole="button" testID={testID} onPress={onPress}>
+      <Card>
+        <Text style={styles.cardTitle}>{label}</Text>
+        {hint ? <Text style={styles.subtitle}>{hint}</Text> : null}
+        {badge ? <Text style={{ color: colors.goldDark, marginTop: 6 }}>{badge}</Text> : null}
+      </Card>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.cream },
   screenContent: { paddingBottom: 48 },

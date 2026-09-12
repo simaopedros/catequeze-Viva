@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, Card, EmptyState, LoadingState, MenuRow, Screen, ScreenTitle } from '../components/ui';
+import { formatDate } from '../lib/payload';
 import { colors, spacing } from '../theme';
 
 type Meeting = {
@@ -8,6 +9,7 @@ type Meeting = {
   title?: string;
   theme?: string;
   startsAt?: string;
+  date?: string;
   class?: { name?: string };
 };
 
@@ -20,6 +22,7 @@ export function HomeScreen({
   onOpenMeeting,
   onOpenCommunity,
   onOpenNotifications,
+  onOpenHref,
   unread,
 }: {
   name: string;
@@ -36,6 +39,7 @@ export function HomeScreen({
   onOpenMeeting: (id: string) => void;
   onOpenCommunity: () => void;
   onOpenNotifications: () => void;
+  onOpenHref: (href: string) => void;
   unread?: number;
 }) {
   const upcoming = meetings ?? stats?.upcomingMeetings ?? stats?.todayMeetings ?? [];
@@ -60,6 +64,13 @@ export function HomeScreen({
       <BrandButton label={`Notificações${unread ? ` (${unread})` : ''}`} onPress={onOpenNotifications} />
       <BrandButton variant="ghost" label="Ir à Comunidade" onPress={onOpenCommunity} />
       <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginVertical: spacing.sm }}>
+        Atalhos
+      </Text>
+      <MenuRow label="Catequizandos" hint="Pessoas da catequese" onPress={() => onOpenHref('/(app)/catechumens')} />
+      <MenuRow label="Biblioteca" hint="Materiais de encontro" onPress={() => onOpenHref('/(app)/content')} />
+      <MenuRow label="Comunicados" hint="Avisos pastorais" onPress={() => onOpenHref('/(app)/announcements')} />
+      <MenuRow label="Calendário" hint="Eventos litúrgicos" onPress={() => onOpenHref('/(app)/calendar')} />
+      <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginVertical: spacing.sm }}>
         Próximos encontros
       </Text>
       {upcoming.length === 0 && !loading ? (
@@ -72,7 +83,8 @@ export function HomeScreen({
                 {meeting.title || meeting.theme || 'Encontro'}
               </Text>
               <Text style={{ color: colors.muted, marginTop: 4 }}>
-                {meeting.class?.name || 'Turma'} {meeting.startsAt ? `· ${meeting.startsAt}` : ''}
+                {meeting.class?.name || 'Turma'}{' '}
+                {meeting.startsAt || meeting.date ? `· ${formatDate(meeting.startsAt || meeting.date)}` : ''}
               </Text>
             </Card>
           </Pressable>

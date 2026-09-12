@@ -19,6 +19,7 @@ export default function HomeRoute() {
       onOpenCommunity={() => router.push('/(app)/(tabs)/community')}
       onOpenNotifications={() => router.push('/(app)/notifications')}
       onOpenMeeting={(id) => router.push(`/(app)/meeting/${id}`)}
+      onOpenHref={(href) => router.push(href as any)}
     />
   );
 }
