@@ -53,7 +53,7 @@ docker compose -f docker-compose.homolog.yml up -d --force-recreate --pull never
 
 ## Staff
 
-- [x] Login staff + onboarding + workspace selector — validado `simaopedros@gmail.com` (11/06)
+- [x] Login staff + onboarding + workspace selector — validado em homolog (11/06)
 - [x] Criar paróquia, turma, família, catequizando — validado em homolog (11/06)
 - [x] Convidar responsável (`inviteUserToParish` role=GUARDIAN) — email + link OK
 - [x] Checkout Stripe test + webhook + plano Pro — validado sessão billing

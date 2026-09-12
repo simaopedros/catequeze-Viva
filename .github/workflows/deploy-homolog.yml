@@ -103,7 +103,6 @@ jobs:
               upsert_env COOKIE_DOMAIN ".catechis.app"
               upsert_env FAMILY_PORTAL_HOST "familia-homolog.catechis.app"
               upsert_env STAFF_PORTAL_HOST "homolog.catechis.app"
-              upsert_env BILLING_RECONCILE_EMAIL "simaopedros@gmail.com"
               sed -i '/^REACT_APP_FAMILY_PORTAL_HOST=/d' .env.server
             fi
             echo "$GHCR_TOKEN" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin

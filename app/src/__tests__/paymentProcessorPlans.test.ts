@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { PaymentPlanId, paymentPlans } from "../payment/plans";
 
-const HOMOLOG_TEST_MONTHLY = "price_1U9lJjQ654W7D9A6bWCcgQBP";
-const HOMOLOG_TEST_ANNUAL = "price_1U9lJvQ654W7D9A6ji7lHdJi";
+const TEST_MONTHLY = "price_1TestMonthlyXXXXXXXX";
+const TEST_ANNUAL = "price_1TestAnnualXXXXXXXXX";
 
 const waspEnv = {
   STRIPE_SINGLE_PLAN_ID: "",
@@ -17,24 +17,24 @@ vi.mock("wasp/server", () => ({
   env: waspEnv,
 }));
 
-describe("requireStripePriceId — homolog TEST Plano Único", () => {
+describe("requireStripePriceId — Plano Único", () => {
   beforeEach(() => {
-    process.env.STRIPE_SINGLE_PLAN_ID = HOMOLOG_TEST_MONTHLY;
-    process.env.STRIPE_SINGLE_ANNUAL_PLAN_ID = HOMOLOG_TEST_ANNUAL;
+    process.env.STRIPE_SINGLE_PLAN_ID = TEST_MONTHLY;
+    process.env.STRIPE_SINGLE_ANNUAL_PLAN_ID = TEST_ANNUAL;
     waspEnv.STRIPE_SINGLE_PLAN_ID = "price_...";
     waspEnv.STRIPE_SINGLE_ANNUAL_PLAN_ID = "price_...";
   });
 
-  it("creates checkout price ids from the VPS TEST monthly/annual prices", async () => {
+  it("creates checkout price ids from usable monthly/annual prices", async () => {
     const { requireStripePriceId } = await import(
       "../payment/paymentProcessorPlans"
     );
     expect(
       requireStripePriceId(paymentPlans[PaymentPlanId.Single], "monthly"),
-    ).toBe(HOMOLOG_TEST_MONTHLY);
+    ).toBe(TEST_MONTHLY);
     expect(
       requireStripePriceId(paymentPlans[PaymentPlanId.Single], "annual"),
-    ).toBe(HOMOLOG_TEST_ANNUAL);
+    ).toBe(TEST_ANNUAL);
   });
 
   it("refuses leftover unlimited/placeholder ids", async () => {

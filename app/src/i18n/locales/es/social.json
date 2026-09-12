@@ -248,6 +248,16 @@
       "body": "El Compendio profundiza la doctrina. La Comunidad es donde se vuelve conversación."
     }
   },
+  "invitePrompt": {
+    "title": "Invita a alguien a la Comunidad",
+    "description": "La fe crece en compañía. Envía tu enlace a un amigo o familiar.",
+    "copyLink": "Copiar enlace",
+    "whatsapp": "WhatsApp",
+    "share": "Compartir",
+    "dismiss": "Ahora no",
+    "copied": "Enlace copiado",
+    "message": "Ven a participar en la Comunidad conmigo:"
+  },
   "nativeShare": {
     "action": "Compartir en la Comunidad",
     "dialogTitle": "Compartir en la Comunidad",

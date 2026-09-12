@@ -18,6 +18,7 @@ import { RhemaShortsFeed } from "./RhemaShortsFeed";
 import { SocialHero } from "./SocialHero";
 import { SocialRail } from "./SocialRail";
 import { canSocialInteract } from "../../../shared/socialFeatures";
+import { SocialInvitePrompt } from "./SocialInvitePrompt";
 
 export function SocialCommunityBoard({
   topicSlug,
@@ -71,6 +72,7 @@ export function SocialCommunityBoard({
   return (
     <div className="mx-auto w-full max-w-[1000px] space-y-3.5">
       <SocialHero subtitle={subtitle} />
+      {user ? <SocialInvitePrompt /> : null}
 
       <div className="grid items-start gap-3.5 lg:grid-cols-[minmax(0,1fr)_270px]">
         <div className="min-w-0 space-y-3.5">

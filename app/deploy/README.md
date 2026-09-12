@@ -8,7 +8,6 @@ deploy/
 ├── docker-compose.homolog.yml
 ├── Caddyfile / Caddyfile.homolog
 ├── Dockerfile.server
-├── .env.server.prod.example
 ├── .env.server.homolog.example
 └── scripts/
     ├── deploy.sh

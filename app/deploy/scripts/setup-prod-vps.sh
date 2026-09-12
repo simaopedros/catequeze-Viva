@@ -18,7 +18,7 @@ chown -R root:root /opt/catechis
 echo ""
 echo "Next steps (manual):"
 echo "  1. Copy app/deploy/* to /opt/catechis/"
-echo "  2. cp .env.server.prod.example → .env.server and fill secrets"
+echo "  2. Copiar app/.env.server.example → .env.server e preencher os segredos no VPS"
 echo "  3. Configure Neon prod DATABASE_URL + Bunny zone catechis-prod"
 echo "  4. Cloudflare DNS: @, familia, api → this VPS IP (proxied)"
 echo "  5. GitHub secrets: PROD_SSH_HOST, PROD_SSH_USER, PROD_SSH_KEY"
