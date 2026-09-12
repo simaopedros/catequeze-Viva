@@ -40,6 +40,7 @@ export function HomeScreen({
     avgAttendance?: number;
     upcomingMeetings?: Meeting[];
     todayMeetings?: Meeting[];
+    recentMeetings?: Meeting[];
     pendingAttendanceMeeting?: Meeting | null;
     upcomingBirthdays?: Birthday[];
   } | null;
@@ -52,7 +53,15 @@ export function HomeScreen({
   onOpenHref: (href: string) => void;
   unread?: number;
 }) {
-  const upcoming = meetings ?? stats?.upcomingMeetings ?? stats?.todayMeetings ?? [];
+  const upcoming =
+    (meetings && meetings.length > 0 ? meetings : null) ??
+    (stats?.upcomingMeetings?.length ? stats.upcomingMeetings : null) ??
+    (stats?.todayMeetings?.length ? stats.todayMeetings : null) ??
+    [];
+  const recent = stats?.recentMeetings ?? [];
+  const shownMeetings = upcoming.length > 0 ? upcoming : recent;
+  const meetingHeading =
+    upcoming.length > 0 ? 'Próximos encontros' : shownMeetings.length > 0 ? 'Encontros recentes' : 'Próximos encontros';
   const pending = stats?.pendingAttendanceMeeting;
   const birthdays = stats?.upcomingBirthdays ?? [];
 
@@ -119,12 +128,12 @@ export function HomeScreen({
         </>
       ) : null}
       <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginVertical: spacing.sm }}>
-        Próximos encontros
+        {meetingHeading}
       </Text>
-      {upcoming.length === 0 && !loading ? (
+      {shownMeetings.length === 0 && !loading ? (
         <EmptyState title="Sem encontros à vista" body="Quando houver um encontro marcado, aparece aqui." />
       ) : (
-        upcoming.slice(0, 5).map((meeting) => (
+        shownMeetings.slice(0, 5).map((meeting) => (
           <Pressable key={meeting.id} onPress={() => onOpenMeeting(meeting.id)} testID={`meeting-${meeting.id}`}>
             <Card>
               <Text style={{ color: colors.ink, fontWeight: '700' }}>

@@ -56,6 +56,9 @@ export function AttendanceScreen({
         <Card>
           <Text style={{ color: colors.muted }}>Resumo</Text>
           <Text style={{ color: colors.ink, marginTop: 6 }}>
+            {summary.registered ?? 0} de {summary.total ?? rows.length} preenchidos
+          </Text>
+          <Text style={{ color: colors.muted, marginTop: 4 }}>
             {summary.present ?? 0} presentes · {summary.absent ?? 0} ausentes · {summary.late ?? 0} atrasados ·{' '}
             {summary.justified ?? 0} justificados
           </Text>
@@ -67,12 +70,12 @@ export function AttendanceScreen({
         rows.map((row: any) => {
           const id = row.catechumenProfileId || row.catechumenProfile?.id || row.id;
           const name = personName(row.catechumenProfile || row, 'Catequizando');
-          const status = draft[id] || row.status || 'PRESENT';
+          const status = draft[id] || row.status || null;
           return (
             <Card key={id}>
               <Text style={{ color: colors.ink, fontWeight: '700' }}>{name}</Text>
               <Text style={{ color: colors.muted, marginVertical: 8 }}>
-                Estado: {statusLabel(status) || 'Não preenchido'}
+                Estado: {status ? statusLabel(status) || status : 'Não preenchido'}
               </Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginBottom: spacing.sm }}>
                 {STATUSES.map((item) => (
@@ -87,8 +90,8 @@ export function AttendanceScreen({
               </View>
               <BrandButton
                 label={busy ? 'Salvando…' : 'Salvar'}
-                disabled={busy}
-                onPress={() => onSave(id, status)}
+                disabled={busy || !status}
+                onPress={() => status && onSave(id, status)}
               />
             </Card>
           );

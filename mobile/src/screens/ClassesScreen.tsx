@@ -6,8 +6,11 @@ import { colors } from '../theme';
 type ClassItem = {
   id: string;
   name?: string;
-  year?: string | number;
+  year?: string | number | { name?: string };
   community?: { name?: string };
+  stage?: { name?: string };
+  sacrament?: { name?: string };
+  _count?: { enrollments?: number; meetings?: number };
 };
 
 function asList(payload: any): ClassItem[] {
@@ -37,16 +40,29 @@ export function ClassesScreen({
       {!loading && items.length === 0 ? (
         <EmptyState title="Sem turmas" body="Quando pertencer a uma turma, ela aparece aqui." />
       ) : (
-        items.map((item) => (
-          <Pressable key={item.id} onPress={() => onOpen(item.id)} testID={`class-${item.id}`}>
-            <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 17 }}>{item.name || 'Turma'}</Text>
-              <Text style={{ color: colors.muted, marginTop: 4 }}>
-                {item.community?.name || 'Comunidade'} {item.year ? `· ${item.year}` : ''}
-              </Text>
-            </Card>
-          </Pressable>
-        ))
+        items.map((item) => {
+          const yearName = typeof item.year === 'object' ? item.year?.name : item.year;
+          const contextLabel = [item.community?.name, item.stage?.name || item.sacrament?.name, yearName]
+            .filter(Boolean)
+            .join(' · ');
+          const enrolled = item._count?.enrollments;
+          const meetingCount = item._count?.meetings;
+          return (
+            <Pressable key={item.id} onPress={() => onOpen(item.id)} testID={`class-${item.id}`}>
+              <Card>
+                <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 17 }}>{item.name || 'Turma'}</Text>
+                <Text style={{ color: colors.muted, marginTop: 4 }}>{contextLabel || 'Comunidade'}</Text>
+                {enrolled != null || meetingCount != null ? (
+                  <Text style={{ color: colors.muted, marginTop: 4 }}>
+                    {enrolled != null ? `${enrolled} catequizando(s)` : ''}
+                    {enrolled != null && meetingCount != null ? ' · ' : ''}
+                    {meetingCount != null ? `${meetingCount} encontro(s)` : ''}
+                  </Text>
+                ) : null}
+              </Card>
+            </Pressable>
+          );
+        })
       )}
     </Screen>
   );

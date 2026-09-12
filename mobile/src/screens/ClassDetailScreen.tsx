@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, Text } from 'react-native';
 import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { formatDate, personName, statusLabel } from '../lib/payload';
+import { asItems, formatDate, personName, statusLabel } from '../lib/payload';
 import { colors, spacing } from '../theme';
 
 export function ClassDetailScreen({
@@ -17,8 +17,10 @@ export function ClassDetailScreen({
   onOpenMeeting: (id: string) => void;
   onOpenCatechumen?: (id: string) => void;
 }) {
-  const meetings = data?.meetings || data?.upcomingMeetings || [];
-  const enrollments = data?.enrollments || [];
+  const meetings = asItems(data?.meetings).length
+    ? asItems(data?.meetings)
+    : asItems(data?.upcomingMeetings);
+  const enrollments = asItems(data?.enrollments, ['enrollments']);
   const summary = data?.attendanceSummary;
 
   return (

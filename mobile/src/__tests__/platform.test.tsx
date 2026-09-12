@@ -6,6 +6,8 @@ import { MoreScreen } from '../screens/MoreScreen';
 import { CatalogScreen } from '../screens/CatalogScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { AttendanceScreen } from '../screens/AttendanceScreen';
+import { ClassesScreen } from '../screens/ClassesScreen';
+import { ClassDetailScreen } from '../screens/ClassDetailScreen';
 import { APP_TABS, MOBILE_PATHS } from '../api/paths';
 import { appRoutes } from '../navigation/routes';
 
@@ -154,6 +156,78 @@ describe('platform UI', () => {
     expect(onOpenMeeting).toHaveBeenCalledWith('m-pending');
     fireEvent.press(home.getByText('Biblioteca'));
     expect(onOpenHref).toHaveBeenCalledWith('/(app)/content');
+    expect(home.getByText('Sem encontros à vista')).toBeTruthy();
+  });
+
+  it('shows recent meetings on home when nothing is upcoming', () => {
+    const onOpenMeeting = jest.fn();
+    const home = render(
+      <HomeScreen
+        name="Ana"
+        stats={{
+          upcomingMeetings: [],
+          todayMeetings: [],
+          recentMeetings: [
+            {
+              id: 'm-recent',
+              title: 'Encontro 2 - A Crisma e o Compromisso',
+              date: '2026-06-14T19:00:00.000Z',
+              class: { name: 'Turma Crisma 2026' },
+            },
+          ],
+        }}
+        onOpenMeeting={onOpenMeeting}
+        onOpenCommunity={jest.fn()}
+        onOpenNotifications={jest.fn()}
+        onOpenHref={jest.fn()}
+      />,
+    );
+    expect(home.getByText('Encontros recentes')).toBeTruthy();
+    expect(home.getByText('Encontro 2 - A Crisma e o Compromisso')).toBeTruthy();
+    expect(home.getByText(/Turma Crisma 2026/)).toBeTruthy();
+    fireEvent.press(home.getByTestId('meeting-m-recent'));
+    expect(onOpenMeeting).toHaveBeenCalledWith('m-recent');
+  });
+
+  it('lists class counts instead of a blank year', () => {
+    const onOpen = jest.fn();
+    const view = render(
+      <ClassesScreen
+        payload={[
+          {
+            id: 'test-class-crisma-001',
+            name: 'Turma Crisma 2026',
+            community: { name: 'Comunidade São José' },
+            stage: { name: 'Crisma' },
+            _count: { enrollments: 4, meetings: 2 },
+          },
+        ]}
+        onOpen={onOpen}
+      />,
+    );
+    expect(view.getByText('Comunidade São José · Crisma')).toBeTruthy();
+    expect(view.getByText('4 catequizando(s) · 2 encontro(s)')).toBeTruthy();
+    fireEvent.press(view.getByTestId('class-test-class-crisma-001'));
+    expect(onOpen).toHaveBeenCalledWith('test-class-crisma-001');
+  });
+
+  it('opens a class meeting from the turma details', () => {
+    const onOpenMeeting = jest.fn();
+    const view = render(
+      <ClassDetailScreen
+        data={{
+          name: 'Turma Crisma 2026',
+          community: { name: 'São José' },
+          attendanceSummary: { attendanceRate: 75, totalMeetings: 2 },
+          enrollments: [{ id: 'e1', status: 'ENROLLED', catechumenProfile: { id: 'c1', firstName: 'Pedro', lastName: 'Lima' } }],
+          meetings: [{ id: 'm1', title: 'Encontro 2', date: '2026-06-14T19:00:00.000Z', status: 'NOT_STARTED' }],
+        }}
+        onOpenMeeting={onOpenMeeting}
+      />,
+    );
+    expect(view.getByText(/75% de presença/)).toBeTruthy();
+    fireEvent.press(view.getByText('Encontro 2'));
+    expect(onOpenMeeting).toHaveBeenCalledWith('m1');
   });
 
   it('renders attendance chips with Portuguese labels', () => {
@@ -176,5 +250,26 @@ describe('platform UI', () => {
     fireEvent.press(view.getByText('Ausente'));
     fireEvent.press(view.getByText('Salvar'));
     expect(onSave).toHaveBeenCalledWith('c1', 'ABSENT');
+  });
+
+  it('does not pretend unfilled attendance is Presente', () => {
+    const onSave = jest.fn();
+    const view = render(
+      <AttendanceScreen
+        meeting={{
+          meeting: { title: 'Encontro 2' },
+          summary: { registered: 0, total: 1, present: 0, absent: 0, late: 0, justified: 0 },
+          participants: [{ catechumenProfileId: 'c1', firstName: 'Carlos', lastName: 'Souza', status: null }],
+        }}
+        onSave={onSave}
+      />,
+    );
+    expect(view.getByText(/Não preenchido/)).toBeTruthy();
+    expect(view.getByText(/preenchidos/)).toBeTruthy();
+    fireEvent.press(view.getByText('Salvar'));
+    expect(onSave).not.toHaveBeenCalled();
+    fireEvent.press(view.getByText('Presente'));
+    fireEvent.press(view.getByText('Salvar'));
+    expect(onSave).toHaveBeenCalledWith('c1', 'PRESENT');
   });
 });
