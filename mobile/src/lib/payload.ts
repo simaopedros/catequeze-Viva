@@ -76,6 +76,19 @@ export function statusLabel(status?: string | null): string {
     NOT_STARTED: 'Por começar',
     WAITING_APPROVAL: 'À espera de aprovação',
     REJECTED: 'Rejeitado',
+    INITIAL: 'Inicial',
+    PERMANENT: 'Permanente',
+    INSTITUTED_MINISTRY: 'Ministério instituído',
+    COORDINATION: 'Coordenação',
+    INCLUSIVE: 'Inclusiva',
+    PARISH: 'Paróquia',
+    PERSONAL: 'Pessoal',
+    DIOCESE: 'Diocese',
+    COMMUNITY: 'Comunidade',
   };
   return map[status] || status;
+}
+
+export function workspaceTypeLabel(type?: string | null): string {
+  return statusLabel(type);
 }

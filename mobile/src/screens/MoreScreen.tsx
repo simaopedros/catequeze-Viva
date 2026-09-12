@@ -1,7 +1,8 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Pressable, Text } from 'react-native';
 import { BrandButton, Card, MenuRow, Screen, ScreenTitle } from '../components/ui';
 import type { SocialProfile, Workspace } from '../api/types';
+import { workspaceTypeLabel } from '../lib/payload';
 import { colors } from '../theme';
 import { getMoreSections, type MoreNavContext } from './moreModules';
 
@@ -75,18 +76,23 @@ export function MoreScreen({
           <Text style={{ color: colors.muted }}>Nenhum espaço ligado a esta conta.</Text>
         ) : (
           workspaces.map((workspace) => (
-            <Text
+            <Pressable
               key={workspace.id}
+              testID={`workspace-${workspace.id}`}
               onPress={() => onSelectWorkspace(workspace.id)}
-              style={{
-                color: workspace.id === workspaceId ? colors.goldDark : colors.inkSoft,
-                marginBottom: 6,
-                fontWeight: workspace.id === workspaceId ? '700' : '400',
-              }}
             >
-              {workspace.name}
-              {workspace.type ? ` · ${workspace.type}` : ''}
-            </Text>
+              <Text
+                style={{
+                  color: workspace.id === workspaceId ? colors.goldDark : colors.inkSoft,
+                  marginBottom: 6,
+                  fontWeight: workspace.id === workspaceId ? '700' : '400',
+                  paddingVertical: 4,
+                }}
+              >
+                {workspace.name}
+                {workspace.type ? ` · ${workspaceTypeLabel(workspace.type)}` : ''}
+              </Text>
+            </Pressable>
           ))
         )}
       </Card>

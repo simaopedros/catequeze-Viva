@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
-import { asItems, personName } from '../../../src/lib/payload';
+import { asItems, personName, statusLabel } from '../../../src/lib/payload';
 import { CatalogScreen } from '../../../src/screens/CatalogScreen';
 
 export default function FormationRoute() {
@@ -15,7 +15,9 @@ export default function FormationRoute() {
   const items = asItems(data, ['tracks']).map((row: any) => ({
     id: row.id,
     title: personName(row, 'Percurso'),
-    subtitle: [row.kind, row.lessonCount ? `${row.lessonCount} lições` : null].filter(Boolean).join(' · '),
+    subtitle: [statusLabel(row.kind), row.hours != null ? `${row.hours} h` : row.lessonCount ? `${row.lessonCount} lições` : null]
+      .filter(Boolean)
+      .join(' · '),
   }));
 
   return (

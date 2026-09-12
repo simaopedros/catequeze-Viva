@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import { asItems, formatDate, personName, pickItems, statusLabel } from '../lib/payload';
+import { asItems, formatDate, personName, pickItems, statusLabel, workspaceTypeLabel } from '../lib/payload';
 import { planLabel, subscriptionStatusLabel } from '../lib/billing';
 import { MORE_SECTIONS, getMoreSections } from '../screens/moreModules';
 import { MoreScreen } from '../screens/MoreScreen';
@@ -32,6 +32,8 @@ describe('payload helpers', () => {
     expect(statusLabel('PRESENT')).toBe('Presente');
     expect(statusLabel('JUSTIFIED')).toBe('Justificado');
     expect(statusLabel('LATE')).toBe('Atrasado');
+    expect(statusLabel('INITIAL')).toBe('Inicial');
+    expect(workspaceTypeLabel('PARISH')).toBe('Paróquia');
     expect(formatDate('2026-03-19T12:00:00.000Z')).toMatch(/2026/);
     expect(planLabel('single')).toBe('Plano Catequista');
     expect(subscriptionStatusLabel('active')).toBe('Ativa');
@@ -109,7 +111,7 @@ describe('platform UI', () => {
     const view = render(
       <MoreScreen
         name="Ana"
-        workspaces={[{ id: 'p1', name: 'São José' }]}
+        workspaces={[{ id: 'p1', name: 'Paróquia São José (TESTE)', type: 'PARISH' }]}
         workspaceId="p1"
         onSelectWorkspace={jest.fn()}
         onOpenHref={onOpenHref}
@@ -119,6 +121,7 @@ describe('platform UI', () => {
     );
 
     expect(view.getByTestId('more-screen')).toBeTruthy();
+    expect(view.getByText(/Paróquia São José \(TESTE\) · Paróquia/)).toBeTruthy();
     expect(view.getByText('Catequizandos')).toBeTruthy();
     expect(view.getByText('Biblioteca')).toBeTruthy();
     expect(view.getByText('Mensagens')).toBeTruthy();

@@ -164,7 +164,10 @@ export function CommunityScreen({
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Feed indisponível" body={error} /> : null}
       {!loading && posts.length === 0 ? (
-        <EmptyState title="Ainda não há publicações" body="Quando a Comunidade tiver posts, eles aparecem aqui." />
+        <EmptyState
+          title="Ainda não há publicações"
+          body="A Comunidade está pronta. Toque em Publicar para a primeira partilha, ou abra Tópicos e Membros."
+        />
       ) : (
         posts.map((post) => (
           <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
