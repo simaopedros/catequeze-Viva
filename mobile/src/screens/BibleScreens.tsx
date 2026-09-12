@@ -119,6 +119,7 @@ export function BibleChapterScreen({
             {canPublish ? (
               <BrandButton
                 variant="ghost"
+                ink
                 label="Partilhar na Comunidade"
                 onPress={() => onShareVerse(selected.number, selected.text)}
               />

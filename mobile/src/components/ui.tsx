@@ -82,12 +82,14 @@ export function BrandButton({
   disabled,
   variant = 'primary',
   testID,
+  ink = false,
 }: {
   label: string;
   onPress: () => void;
   disabled?: boolean;
   variant?: 'primary' | 'ghost' | 'danger';
   testID?: string;
+  ink?: boolean;
 }) {
   return (
     <Pressable
@@ -100,6 +102,7 @@ export function BrandButton({
         styles.button,
         variant === 'primary' && styles.buttonPrimary,
         variant === 'ghost' && styles.buttonGhost,
+        variant === 'ghost' && ink && { borderColor: colors.gold },
         variant === 'danger' && styles.buttonDanger,
         disabled && styles.buttonDisabled,
       ]}
@@ -108,7 +111,7 @@ export function BrandButton({
         allowFontScaling
         style={[
           styles.buttonLabel,
-          variant === 'ghost' && { color: colors.ink },
+          variant === 'ghost' && { color: ink ? colors.gold : colors.ink },
           variant === 'danger' && { color: colors.white },
         ]}
       >
