@@ -52,7 +52,7 @@ export function Screen({
   return (
     <View testID={testID} style={[styles.flex, { backgroundColor: background }]}>
       {content}
-      <View style={styles.footer}>{footer}</View>
+      <View style={[styles.footer, ink && styles.footerInk]}>{footer}</View>
     </View>
   );
 }
@@ -692,6 +692,10 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.line,
     backgroundColor: colors.paper,
+  },
+  footerInk: {
+    backgroundColor: colors.ink,
+    borderTopColor: colors.inkSoft,
   },
   title: { ...type.title },
   subtitle: { ...type.body, color: colors.muted, marginTop: 6, fontSize: 15 },

@@ -97,7 +97,36 @@ export function BibleChapterScreen({
     : `Capítulo ${chapter?.number ?? ''}`;
 
   return (
-    <Screen testID="bible-chapter-screen" ink>
+    <Screen
+      testID="bible-chapter-screen"
+      ink
+      footer={
+        selected ? (
+          <View>
+            <ShareCard
+              ink
+              kind="Versículo"
+              title={`${chapter?.book?.name || ''} ${chapter?.number}:${selected.number}`}
+              excerpt={selected.text}
+            />
+            <BrandButton
+              label="Partilhar cartão"
+              onPress={() => {
+                const reference = `${chapter?.book?.name || ''} ${chapter?.number}:${selected.number}`;
+                void Share.share({ message: `${reference}\n${selected.text}` });
+              }}
+            />
+            {canPublish ? (
+              <BrandButton
+                variant="ghost"
+                label="Partilhar na Comunidade"
+                onPress={() => onShareVerse(selected.number, selected.text)}
+              />
+            ) : null}
+          </View>
+        ) : null
+      }
+    >
       <Text style={{ fontFamily: fonts.serif, fontSize: 28, color: colors.cream, marginBottom: 8 }}>{title}</Text>
       <Text style={{ color: colors.gold, fontFamily: fonts.sansMedium, marginBottom: spacing.md }}>
         Toque num versículo para o destacar e partilhar.
@@ -127,30 +156,6 @@ export function BibleChapterScreen({
           </Pressable>
         );
       })}
-      {selected ? (
-        <View style={{ marginTop: spacing.md }}>
-          <ShareCard
-            ink
-            kind="Versículo"
-            title={`${chapter?.book?.name || ''} ${chapter?.number}:${selected.number}`}
-            excerpt={selected.text}
-          />
-          <BrandButton
-            label="Partilhar cartão"
-            onPress={() => {
-              const reference = `${chapter?.book?.name || ''} ${chapter?.number}:${selected.number}`;
-              void Share.share({ message: `${reference}\n${selected.text}` });
-            }}
-          />
-          {canPublish ? (
-            <BrandButton
-              variant="ghost"
-              label="Partilhar na Comunidade"
-              onPress={() => onShareVerse(selected.number, selected.text)}
-            />
-          ) : null}
-        </View>
-      ) : null}
     </Screen>
   );
 }
