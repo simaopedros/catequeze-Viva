@@ -101,7 +101,7 @@ export function AttendanceScreen({
               testID={`sibling-meeting-${item.id}`}
               name={item.title || item.theme || 'Encontro'}
               hint={[formatDate(item.date), item.status ? statusLabel(item.status) : ''].filter(Boolean).join(' · ')}
-              chip={item.id === currentMeetingId ? 'Actual' : undefined}
+              chip={item.id === currentMeetingId ? 'Atual' : undefined}
               onPress={() => item.id !== currentMeetingId && onSelectMeeting?.(item.id)}
             />
           ))}

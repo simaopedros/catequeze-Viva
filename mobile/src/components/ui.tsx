@@ -391,7 +391,7 @@ export function HeroHeader({
       disabled={!onAction}
       style={styles.hero}
     >
-      <View style={styles.heroPattern} pointerEvents="none">
+      <View style={[styles.heroPattern, { pointerEvents: 'none' }]}>
         <View style={styles.heroArc} />
         <View style={[styles.heroArc, { top: 28, left: 40, opacity: 0.35 }]} />
       </View>
