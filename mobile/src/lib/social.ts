@@ -1,3 +1,5 @@
+import type { SocialAccess } from '../api/types';
+
 export const MAX_POST_BODY_LENGTH = 3000;
 export const MAX_TOPICS_PER_POST = 3;
 
@@ -29,12 +31,7 @@ export function feedQueryForTab(tab: FeedTabId) {
   return { sort: 'foryou' as const, following: false, videoFormat: null };
 }
 
-export function communityPublishNotice(access?: {
-  canPublish?: boolean;
-  banned?: boolean;
-  reason?: string | null;
-  quotaLeft?: number | null;
-} | null): string | null {
+export function communityPublishNotice(access?: Partial<SocialAccess> | null): string | null {
   if (!access) return null;
   if (access.banned || access.reason === 'banned') {
     return 'Conta suspensa na Comunidade. Fale com o suporte para rever a suspensão.';
