@@ -12,7 +12,15 @@ export default function AppLayout() {
     >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="community/compose" options={{ title: 'Publicação' }} />
-      <Stack.Screen name="community/upload" options={{ title: 'Testemunho', contentStyle: { backgroundColor: '#000' } }} />
+      <Stack.Screen
+        name="community/upload"
+        options={{
+          title: 'Testemunho',
+          headerStyle: { backgroundColor: '#000' },
+          headerTintColor: '#D4AF37',
+          contentStyle: { backgroundColor: '#000' },
+        }}
+      />
       <Stack.Screen name="community/watch/[id]" options={{ title: 'Vídeo', headerShown: false, contentStyle: { backgroundColor: '#000' } }} />
       <Stack.Screen name="community/search" options={{ title: 'Pesquisar' }} />
       <Stack.Screen name="community/members" options={{ title: 'Membros' }} />

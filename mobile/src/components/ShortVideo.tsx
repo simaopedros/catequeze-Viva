@@ -10,7 +10,7 @@ type Props = {
   testID?: string;
 };
 
-function WebVideo({ uri, active, cover, testID }: Props) {
+function WebVideo({ uri, active, cover, poster, testID }: Props) {
   const ref = React.useRef<HTMLVideoElement | null>(null);
   useEffect(() => {
     const el = ref.current;
@@ -21,6 +21,7 @@ function WebVideo({ uri, active, cover, testID }: Props) {
   return createElement('video', {
     ref,
     src: uri,
+    poster: poster || undefined,
     muted: true,
     loop: true,
     playsInline: true,

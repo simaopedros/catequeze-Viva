@@ -32,6 +32,7 @@ export function Screen({
   testID,
   footer,
   ink = false,
+  black = false,
   refreshing,
   onRefresh,
   onEndReached,
@@ -41,11 +42,12 @@ export function Screen({
   testID?: string;
   footer?: React.ReactNode;
   ink?: boolean;
+  black?: boolean;
   refreshing?: boolean;
   onRefresh?: () => void;
   onEndReached?: () => void;
 }) {
-  const background = ink ? colors.ink : colors.paper;
+  const background = black ? colors.rhemaBlack : ink ? colors.ink : colors.paper;
   const content = (
     <ScrollView
       testID={footer ? undefined : testID}

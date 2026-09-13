@@ -28,7 +28,7 @@ export function VideoUploadScreen({
   const ready = Boolean(canPublish) && consent && !busy;
 
   return (
-    <Screen testID="upload-screen" ink>
+    <Screen testID="upload-screen" black>
       <Text style={{ color: colors.rhemaGold, fontFamily: fonts.serif, fontSize: 28, marginBottom: spacing.md }}>
         Testemunho
       </Text>
@@ -105,7 +105,13 @@ export function VideoUploadScreen({
         onPress={() => onPublish(caption)}
       />
       {onOpenComposer ? (
-        <BrandButton variant="ghost" label="Publicação em texto" onPress={onOpenComposer} testID="upload-open-composer" />
+        <BrandButton
+          variant="ghost"
+          ink
+          label="Publicação em texto"
+          onPress={onOpenComposer}
+          testID="upload-open-composer"
+        />
       ) : null}
     </Screen>
   );

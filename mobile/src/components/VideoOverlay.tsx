@@ -30,9 +30,11 @@ export function VideoOverlay({
   const handle = post.author.handle || post.author.socialHandle;
   const gold = colors.rhemaGold;
   return (
-    <View pointerEvents="box-none" style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, pointerEvents: 'box-none' }} testID={`overlay-${post.id}`}>
+    <View
+      testID={`overlay-${post.id}`}
+      style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, pointerEvents: 'box-none' }}
+    >
       <View
-        pointerEvents="box-none"
         style={{
           position: 'absolute',
           right: 12,
@@ -78,7 +80,7 @@ export function VideoOverlay({
           </Pressable>
         ) : null}
       </View>
-      <View style={{ position: 'absolute', left: 16, right: 88, bottom: 28 }}>
+      <View style={{ position: 'absolute', left: 16, right: 88, bottom: 72 }}>
         <Pressable
           testID={`overlay-author-${post.id}`}
           onPress={() => handle && onOpenAuthor?.(handle)}

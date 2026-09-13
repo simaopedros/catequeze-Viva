@@ -207,7 +207,6 @@ export function CommunityScreen({
       />
 
       <View
-        pointerEvents="box-none"
         style={{
           position: 'absolute',
           top: insets.top + 4,
@@ -247,7 +246,10 @@ export function CommunityScreen({
             );
           })}
         </View>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Pressable testID="compose-text" onPress={onCompose} style={{ marginRight: 4, justifyContent: 'center' }}>
+            <Text style={{ color: colors.rhemaGold, fontFamily: fonts.sansSemi, fontSize: 12 }}>Publicação</Text>
+          </Pressable>
           <Pressable
             testID="compose-open"
             onPress={onUpload || onCompose}
@@ -265,13 +267,6 @@ export function CommunityScreen({
           </Pressable>
         </View>
       </View>
-      <Pressable
-        testID="compose-text"
-        onPress={onCompose}
-        style={{ position: 'absolute', left: 16, bottom: 18 + insets.bottom }}
-      >
-        <Text style={{ color: colors.rhemaGold, fontFamily: fonts.sansSemi }}>Publicação</Text>
-      </Pressable>
 
       <Modal visible={Boolean(drawerPostId)} animationType="slide" transparent onRequestClose={() => setDrawerPostId(null)}>
         <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.45)' }} onPress={() => setDrawerPostId(null)} />
