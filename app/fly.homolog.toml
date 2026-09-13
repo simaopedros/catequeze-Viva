@@ -1,0 +1,70 @@
+# API Wasp em homolog — só o server Node (SPA continua no VPS/Caddy).
+# Deploy: cd app && fly deploy --config fly.homolog.toml --remote-only
+# Docs: docs/FLY.md
+
+app = "catechis-api-homolog"
+primary_region = "gru"
+
+[build]
+  dockerfile = "deploy/Dockerfile.server"
+  [build.args]
+    # Dummy: wasp build não liga ao Postgres. O DATABASE_URL real é secret de runtime.
+    DATABASE_URL = "postgresql://build:build@127.0.0.1:5432/dummy"
+    REACT_APP_API_URL = "https://api-homolog.catechis.app"
+    REACT_APP_FAMILY_PORTAL_HOST = "familia-homolog.catechis.app"
+    REACT_APP_STAFF_PORTAL_HOST = "homolog.catechis.app"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3001"
+  # Um processo: HTTP + pg-boss (o compose actual também só tem `server`).
+  RUN_JOBS = "true"
+  WASP_WEB_CLIENT_URL = "https://homolog.catechis.app"
+  WASP_SERVER_URL = "https://api-homolog.catechis.app"
+  COOKIE_DOMAIN = ".catechis.app"
+  FAMILY_PORTAL_HOST = "familia-homolog.catechis.app"
+  STAFF_PORTAL_HOST = "homolog.catechis.app"
+  PRICING_CATALOG_SOURCE = "db"
+  SENTRY_ENVIRONMENT = "homolog"
+  EMAIL_FROM_TRANSACTIONAL = "noreply@catechis.app"
+  EMAIL_FROM_LIFECYCLE = "updates@catechis.app"
+  EMAIL_FROM_PASTORAL = "comunicados@catechis.app"
+  EMAIL_FROM_MARKETING = "hello@catechis.app"
+  SMTP_HOST = "smtp.resend.com"
+  SMTP_PORT = "587"
+  SMTP_USERNAME = "resend"
+  POLAR_SANDBOX_MODE = "true"
+  PAYMENTS_HOBBY_SUBSCRIPTION_PLAN_ID = "homolog-hobby"
+  PAYMENTS_PRO_SUBSCRIPTION_PLAN_ID = "homolog-pro"
+  PAYMENTS_CREDITS_10_PLAN_ID = "homolog-credits"
+  LEMONSQUEEZY_API_KEY = "homolog-placeholder"
+  LEMONSQUEEZY_STORE_ID = "homolog-store"
+  LEMONSQUEEZY_WEBHOOK_SECRET = "homolog-webhook"
+  POLAR_ORGANIZATION_ACCESS_TOKEN = "homolog-polar-token"
+  POLAR_WEBHOOK_SECRET = "homolog-polar-webhook"
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = "off"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 250
+    soft_limit = 200
+
+  [[http_service.checks]]
+    grace_period = "45s"
+    interval = "15s"
+    method = "GET"
+    path = "/health"
+    timeout = "5s"
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1
+  processes = ["app"]
