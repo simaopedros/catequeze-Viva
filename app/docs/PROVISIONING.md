@@ -2,6 +2,8 @@
 
 Guia para provisionar Neon, Contabo, Bunny.net e Cloudflare conforme o plano de produção v2.
 
+API Wasp no Fly.io (SPA no VPS): [`FLY.md`](FLY.md).
+
 ## 1. Neon PostgreSQL
 
 ### Produção

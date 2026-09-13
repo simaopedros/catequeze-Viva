@@ -1,0 +1,47 @@
+name: Deploy Fly Homolog (API)
+
+on:
+  workflow_dispatch:
+
+env:
+  FLY_APP: catechis-api-homolog
+
+jobs:
+  deploy:
+    runs-on: ${{ vars.CI_RUNS_ON || 'ubuntu-latest' }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Skip unless Fly homolog is enabled
+        if: ${{ vars.ENABLE_FLY_HOMOLOG_DEPLOY != 'true' }}
+        run: |
+          echo "Defina a variável de repositório ENABLE_FLY_HOMOLOG_DEPLOY=true"
+          echo "e o secret FLY_API_TOKEN (fly tokens create deploy)."
+          echo "Guia: app/docs/FLY.md"
+          exit 0
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+        if: ${{ vars.ENABLE_FLY_HOMOLOG_DEPLOY == 'true' }}
+
+      - name: Deploy API image to Fly
+        if: ${{ vars.ENABLE_FLY_HOMOLOG_DEPLOY == 'true' }}
+        working-directory: app
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          if [[ -z "${FLY_API_TOKEN:-}" ]]; then
+            echo "ERROR: secret FLY_API_TOKEN em falta"
+            exit 1
+          fi
+          flyctl deploy --config fly.homolog.toml --remote-only --app "${FLY_APP}"
+
+      - name: Smoke /health
+        if: ${{ vars.ENABLE_FLY_HOMOLOG_DEPLOY == 'true' }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          flyctl status --app "${FLY_APP}"
+          curl -fsS --max-time 20 "https://${FLY_APP}.fly.dev/health" | grep -q '"status":"ok"'
+          echo "✅ Fly homolog /health ok"

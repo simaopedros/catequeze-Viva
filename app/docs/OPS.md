@@ -324,6 +324,7 @@ docker stats --no-stream
 | [`HOMOLOG.md`](HOMOLOG.md) | Checklist QA homolog |
 | [`BACKUP.md`](BACKUP.md) | Estratégia de backups |
 | [`SECURITY.md`](SECURITY.md) | Rotação de credenciais + hardening |
+| [`FLY.md`](FLY.md) | API Wasp no Fly.io (SPA no VPS) |
 | [`CLOUDFLARE_ACCESS.md`](CLOUDFLARE_ACCESS.md) | Cloudflare Access homolog |
 | [`CLOUDFLARE_SSL.md`](CLOUDFLARE_SSL.md) | Configuração SSL Cloudflare |
 | [`plans/pendencias_go-live.md`](plans/pendencias_go-live.md) | Plano go-live completo |
