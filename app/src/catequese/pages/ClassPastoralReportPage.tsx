@@ -29,13 +29,13 @@ const ClassPastoralCharts = lazy(() =>
   })),
 );
 
-const RISK_COLORS = { ALTO: "#b91c1c", MÉDIO: "#D39A2B", BAIXO: "#071A2D" };
+const RISK_COLORS = { ALTO: "#b42318", MÉDIO: "#bd8b58", BAIXO: "#071d36" };
 const STATUS_COLORS: Record<string, string> = {
-  ENROLLED: "#071A2D",
-  DROPPED: "#b91c1c",
-  TRANSFERRED: "#D39A2B",
-  COMPLETED: "#071A2D",
-  MOVED_TO_OTHER_CLASS: "#071A2D",
+  ENROLLED: "#071d36",
+  DROPPED: "#b42318",
+  TRANSFERRED: "#bd8b58",
+  COMPLETED: "#071d36",
+  MOVED_TO_OTHER_CLASS: "#071d36",
 };
 
 export default function ClassPastoralReportPage() {

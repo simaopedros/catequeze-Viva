@@ -51,7 +51,7 @@ export function BrandLayout({
           <h1
             style={{
               margin: "0 0 16px",
-              color: "#071A2D",
+              color: "#071d36",
               fontSize: "22px",
               fontWeight: 600,
             }}
@@ -67,7 +67,7 @@ export function BrandLayout({
                 href={ctaUrl}
                 style={{
                   display: "inline-block",
-                  background: "#071A2D",
+                  background: "#071d36",
                   color: "#ffffff",
                   padding: "12px 20px",
                   textDecoration: "none",

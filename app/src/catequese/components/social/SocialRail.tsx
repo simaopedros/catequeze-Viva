@@ -139,8 +139,8 @@ export function SocialRail({
         </Button>
       </section>
 
-      <section className="rounded-2xl border border-[#f6dfb7] bg-gradient-to-br from-[#fff8eb] to-[#fffdf8] p-4 shadow-[0_3px_16px_rgba(18,46,76,0.07)]">
-        <div className="mb-2.5 grid h-8 w-8 place-items-center rounded-full bg-[#fff0cf] text-lg text-[#b7770c]">
+      <section className="rounded-2xl border border-brand-gold/30 bg-gradient-to-br from-brand-cream to-brand-paper p-4 shadow-elevation-sm">
+        <div className="mb-2.5 grid h-8 w-8 place-items-center rounded-full bg-brand-cream text-lg text-brand-gold-muted">
           <Sparkles className="h-4 w-4" aria-hidden />
         </div>
         <h2 className="text-sm font-bold text-brand-ink">
@@ -152,7 +152,7 @@ export function SocialRail({
         <Button
           asChild
           size="sm"
-          className="h-8 rounded-full bg-[#ee9d1d] px-4 text-[11px] font-extrabold text-white hover:bg-[#d88c12]"
+          className="h-8 rounded-full bg-brand-gold px-4 text-[11px] font-extrabold text-white hover:bg-brand-gold-muted"
         >
           <Link to={promoTo}>{t("rail.promoCta")}</Link>
         </Button>
@@ -169,18 +169,18 @@ export function SocialRail({
               (topic: { slug: string; name: string; postCount: number }) => (
                 <li
                   key={topic.slug}
-                  className="border-b border-[#edf0f3] last:border-0"
+                  className="border-b border-border last:border-0"
                 >
                   <button
                     type="button"
                     onClick={() => onSelectTopic?.(topic.slug)}
                     className="flex w-full items-center gap-2 py-2 text-left text-[11px]"
                   >
-                    <span className="text-[#8091a5]">#</span>
+                    <span className="text-muted-foreground">#</span>
                     <span className="min-w-0 flex-1 truncate font-medium">
                       {topic.name}
                     </span>
-                    <span className="rounded-full bg-[#f0f3f6] px-2 py-0.5 text-[9px] text-[#5b6f86]">
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-[9px] text-muted-foreground">
                       {topic.postCount}
                     </span>
                   </button>

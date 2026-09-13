@@ -55,7 +55,7 @@ import {
   AlertTitle,
 } from "../../client/components/ui/alert";
 
-const DEFAULT_COLOR = "#071A2D"; // brand ink — charts/ICS only
+const DEFAULT_COLOR = "#071d36"; // brand ink — charts/ICS only
 
 const FAMILY_ROLES = new Set(["GUARDIAN", "CATECHUMEN"]);
 
@@ -173,7 +173,7 @@ export default function CalendarPage() {
           ...m,
           name: m.title || t("meeting_default"),
           type: "class",
-          color: "#10b981",
+          color: "#1f7a4d",
           className:
             filteredClasses.find((c: any) => c.id === m.classId)?.name || "",
           classId: m.classId,

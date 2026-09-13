@@ -27,7 +27,7 @@ export function SocialTopicPills({
               "rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
               activeSlug === null
                 ? "border-brand-ink bg-brand-ink text-white"
-                : "border-[#e1e7ee] bg-white text-[#51657e] hover:border-[#bdcad7]",
+                    : "border-border bg-white text-muted-foreground hover:border-brand-gold/40",
             )}
           >
             {t("feed.allTopics")}
@@ -44,7 +44,7 @@ export function SocialTopicPills({
                   "rounded-full border px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors",
                   active
                     ? "border-brand-ink bg-brand-ink text-white"
-                    : "border-[#e1e7ee] bg-white text-[#51657e] hover:border-[#bdcad7]",
+                    : "border-border bg-white text-muted-foreground hover:border-brand-gold/40",
                 )}
               >
                 {topic.name}

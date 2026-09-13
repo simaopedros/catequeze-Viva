@@ -11,7 +11,7 @@ export function SocialHero({ subtitle }: { subtitle?: string }) {
       className="relative flex min-h-[184px] items-center overflow-hidden rounded-[14px] px-6 py-8 text-white shadow-[0_3px_16px_rgba(18,46,76,0.07)] sm:px-9 sm:py-9"
       style={{
         background:
-          "linear-gradient(90deg, rgba(7,26,45,0.98) 0%, rgba(7,26,45,0.88) 45%, rgba(7,26,45,0.35) 100%), radial-gradient(circle at 75% 45%, #bd8b58 0%, #705034 18%, #203246 47%, #071d36 72%)",
+          "linear-gradient(90deg, rgba(7,29,54,0.98) 0%, rgba(7,29,54,0.88) 45%, rgba(7,29,54,0.35) 100%), radial-gradient(circle at 75% 45%, #bd8b58 0%, #8d6238 18%, #123152 47%, #071d36 72%)",
       }}
     >
       <span

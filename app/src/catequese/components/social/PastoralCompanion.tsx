@@ -31,11 +31,11 @@ export function PastoralCompanion({
     <aside
       data-testid={`pastoral-companion-${surface}`}
       className={cn(
-        "flex flex-col gap-2 rounded-xl border border-brand-gold/35 bg-[#fff8eb] px-3.5 py-3 sm:flex-row sm:items-center sm:gap-3",
+        "flex flex-col gap-2 rounded-xl border border-brand-gold/35 bg-brand-cream px-3.5 py-3 sm:flex-row sm:items-center sm:gap-3",
         className,
       )}
     >
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#fff0cf] text-brand-gold-muted">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-cream text-brand-gold-muted">
         <Sparkles className="h-4 w-4" aria-hidden />
       </span>
       <div className="min-w-0 flex-1">

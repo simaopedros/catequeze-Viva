@@ -18,7 +18,7 @@ import type {
 
 /**
  * Shared chrome for the logged-in app — linguagem "papel litúrgico":
- * canvas creme, hairline ink, Cormorant nos títulos de página, ouro como
+ * canvas creme, hairline ink, Source Serif 4 nos títulos de página, ouro como
  * acento raro. Light theme only for this product stage.
  */
 

@@ -176,7 +176,7 @@ export default function ContentPrintPage() {
             max-width: none !important;
             margin: 0 !important;
             padding: 0 !important;
-            color: #071A2D !important;
+            color: #071d36 !important;
             background: #fff !important;
           }
 
@@ -283,7 +283,7 @@ export default function ContentPrintPage() {
       <div id="print-root" className="mx-auto max-w-[210mm]">
         <div
           id="print-paper"
-          className="rounded-sm border border-border/70 bg-white shadow-[0_8px_30px_rgba(7,26,45,0.08)]"
+          className="rounded-sm border border-border/70 bg-white shadow-[0_8px_30px_rgba(7,29,54,0.08)]"
         >
           <div
             id="print-content"

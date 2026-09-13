@@ -52,7 +52,7 @@ export function SocialFeedTabs({
             "relative shrink-0 px-3 py-2.5 text-sm whitespace-nowrap transition-colors",
             mode === tab.id
               ? "font-bold text-brand-ink after:absolute after:bottom-[-1px] after:left-2.5 after:right-2.5 after:h-0.5 after:bg-brand-gold"
-              : "text-[#63758c] hover:text-brand-ink",
+              : "text-muted-foreground hover:text-brand-ink",
           )}
         >
           {tab.label}

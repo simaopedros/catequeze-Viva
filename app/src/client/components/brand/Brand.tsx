@@ -43,9 +43,9 @@ export function BrandMark({
           y2="56"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#153a63" />
-          <stop offset="0.55" stopColor="#0d2745" />
-          <stop offset="1" stopColor="#071a2d" />
+          <stop stopColor="#123152" />
+          <stop offset="0.55" stopColor="#123152" />
+          <stop offset="1" stopColor="#071d36" />
         </linearGradient>
         <linearGradient
           id={goldId}
@@ -55,8 +55,8 @@ export function BrandMark({
           y2="50"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#f4cf7a" />
-          <stop offset="1" stopColor="#d39a2b" />
+          <stop stopColor="#f6efe4" />
+          <stop offset="1" stopColor="#bd8b58" />
         </linearGradient>
       </defs>
       <rect x="4" y="4" width="56" height="56" rx="18" fill={`url(#${bgId})`} />
@@ -69,21 +69,21 @@ export function BrandMark({
       />
       <path
         d="M25.5 49.5V29.5C25.5 24 28.2 21 32 21C35.8 21 38.5 24 38.5 29.5V49.5H25.5Z"
-        fill="#081728"
+        fill="#071d36"
       />
-      <rect x="30.5" y="16" width="3" height="17" rx="1.5" fill="#FFF7E7" />
-      <rect x="25" y="21.5" width="14" height="3" rx="1.5" fill="#FFF7E7" />
+      <rect x="30.5" y="16" width="3" height="17" rx="1.5" fill="#fffdf8" />
+      <rect x="25" y="21.5" width="14" height="3" rx="1.5" fill="#fffdf8" />
       <path
         d="M19 47.5C23.1 43.6 27.5 41.6 32 41.6C36.5 41.6 40.9 43.6 45 47.5"
         fill="none"
-        stroke="#F6D08A"
+        stroke="#f6efe4"
         strokeWidth="3"
         strokeLinecap="round"
       />
       <path
         d="M21.5 50.2C25.1 48.1 28.6 47 32 47C35.4 47 38.9 48.1 42.5 50.2"
         fill="none"
-        stroke="#FFF7E7"
+        stroke="#fffdf8"
         strokeWidth="3"
         strokeLinecap="round"
       />

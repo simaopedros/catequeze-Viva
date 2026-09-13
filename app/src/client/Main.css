@@ -9,10 +9,9 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ── Metric-compatible fallbacks ─────────────────────────────────────
-   While Inter / Cormorant Garamond download (display=swap), text renders
+   While Inter / Source Serif 4 download (display=swap), text renders
    with local fonts whose metrics are adjusted to match — this removes the
-   layout shift on swap (CLS) on landings. Values derived from the fonts'
-   OS/2/hhea tables against Arial / Times New Roman / Georgia. */
+   layout shift on swap (CLS) on landings. */
 @font-face {
   font-family: 'Inter Fallback';
   src: local('Arial'), local('Liberation Sans'), local('Helvetica');
@@ -22,7 +21,7 @@
   line-gap-override: 0%;
 }
 @font-face {
-  font-family: 'Cormorant Garamond Fallback';
+  font-family: 'Source Serif 4 Fallback';
   src: local('Times New Roman'), local('Liberation Serif'), local('Times');
   size-adjust: 96.72%;
   ascent-override: 95.53%;
@@ -30,7 +29,7 @@
   line-gap-override: 0%;
 }
 @font-face {
-  font-family: 'Cormorant Garamond Fallback Georgia';
+  font-family: 'Source Serif 4 Fallback Georgia';
   src: local('Georgia');
   size-adjust: 87.55%;
   ascent-override: 105.5%;
@@ -43,7 +42,7 @@
 @theme inline {
   /* Font */
   --font-sans: 'Inter', 'Inter Fallback', ui-sans-serif, system-ui, sans-serif;
-  --font-brand-display: 'Cormorant Garamond', 'Cormorant Garamond Fallback', 'Cormorant Garamond Fallback Georgia', Georgia, serif;
+  --font-brand-display: 'Source Serif 4', 'Source Serif 4 Fallback', 'Source Serif 4 Fallback Georgia', Georgia, serif;
   --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
 
   /* ── Color tokens (HSL components) ───────────────────────────────── */
@@ -110,17 +109,31 @@
   --color-brand-warm: hsl(var(--secondary));
   --color-brand-support: hsl(var(--accent));
   /* Explicit brand hex aliases (institutional ink + gold + paper) */
-  --color-brand-ink: #071A2D;
-  --color-brand-ink-soft: #0a2540;
-  --color-brand-midnight: #153A63;
-  --color-brand-gold: #D39A2B;
-  --color-brand-gold-muted: #8A6418;
-  --color-brand-light-gold: #F4CF7A;
-  --color-brand-paper: #FFF7E7;
+  --color-brand-ink: #071d36;
+  --color-brand-ink-soft: #123152;
+  --color-brand-midnight: #123152;
+  --color-brand-gold: #bd8b58;
+  --color-brand-gold-muted: #8d6238;
+  --color-brand-light-gold: #f6efe4;
+  --color-brand-paper: #fffdf8;
+  --color-brand-cream: #f6efe4;
+  --color-brand-canvas: #f4efe6;
   /* Text on ink panels (auth, admin chrome, hero overlays) */
-  --color-brand-ink-foreground: #E8EEF5;
-  --color-brand-ink-muted: #A8B8C9;
-  --color-brand-ink-faint: #C5D0DC;
+  --color-brand-ink-foreground: #e8eef5;
+  --color-brand-ink-muted: #c9d6e4;
+  --color-brand-ink-faint: #c5d0dc;
+  --color-brand-muted: #5c6b7a;
+  --color-brand-line: #e6ddd0;
+  --color-brand-danger: #b42318;
+  --color-brand-success: #1f7a4d;
+  --color-brand-late: #c47a12;
+  --color-immersive: #000000;
+  --color-immersive-elevated: #111111;
+  --color-immersive-line: #1a1a1a;
+  --radius-brand-sm: 10px;
+  --radius-brand-md: 16px;
+  --radius-brand-lg: 22px;
+  --radius-brand-pill: 999px;
 
   --color-surface-paper: var(--color-brand-paper);
   --color-ring-gold: var(--color-brand-gold);
@@ -212,14 +225,14 @@
   /* Papel litúrgico: hairline ink + sombra curta. Menos “card SaaS
      flutuante”, mais folha sobre mesa. Sombras tingidas de ink, nunca
      preto puro. */
-  --shadow-elevation-xs: 0 1px 1px rgba(7, 26, 45, 0.05);
-  --shadow-elevation-sm: 0 1px 1px rgba(7, 26, 45, 0.04), 0 1px 3px -1px rgba(7, 26, 45, 0.05);
-  --shadow-elevation-md: 0 2px 3px -1px rgba(7, 26, 45, 0.05), 0 6px 14px -4px rgba(7, 26, 45, 0.08);
-  --shadow-elevation-lg: 0 4px 8px -2px rgba(7, 26, 45, 0.06), 0 16px 32px -8px rgba(7, 26, 45, 0.12);
-  --shadow-elevation-xl: 0 8px 16px -4px rgba(7, 26, 45, 0.07), 0 28px 48px -12px rgba(7, 26, 45, 0.16);
-  --shadow-elevation-modal: 0 12px 24px -8px rgba(7, 26, 45, 0.10), 0 40px 72px -16px rgba(7, 26, 45, 0.22);
-  --shadow-elevation-dropdown: 0 4px 8px -2px rgba(7, 26, 45, 0.06), 0 12px 28px -6px rgba(7, 26, 45, 0.12);
-  --shadow-elevation-sticky: 0 1px 2px rgba(7, 26, 45, 0.05);
+  --shadow-elevation-xs: 0 1px 1px rgba(7, 29, 54, 0.05);
+  --shadow-elevation-sm: 0 1px 1px rgba(7, 29, 54, 0.04), 0 1px 3px -1px rgba(7, 29, 54, 0.05);
+  --shadow-elevation-md: 0 2px 3px -1px rgba(7, 29, 54, 0.05), 0 6px 14px -4px rgba(7, 29, 54, 0.08);
+  --shadow-elevation-lg: 0 4px 8px -2px rgba(7, 29, 54, 0.06), 0 16px 32px -8px rgba(7, 29, 54, 0.12);
+  --shadow-elevation-xl: 0 8px 16px -4px rgba(7, 29, 54, 0.07), 0 28px 48px -12px rgba(7, 29, 54, 0.16);
+  --shadow-elevation-modal: 0 12px 24px -8px rgba(7, 29, 54, 0.10), 0 40px 72px -16px rgba(7, 29, 54, 0.22);
+  --shadow-elevation-dropdown: 0 4px 8px -2px rgba(7, 29, 54, 0.06), 0 12px 28px -6px rgba(7, 29, 54, 0.12);
+  --shadow-elevation-sticky: 0 1px 2px rgba(7, 29, 54, 0.05);
 
   /* Legacy shadow aliases (keep for existing code) */
   --shadow-1: var(--shadow-elevation-sm);
@@ -461,48 +474,40 @@
 
 @layer base {
   :root {
-    /* Institutional brand: ink #071A2D · gold #D39A2B · paper #FFF7E7
-       Linguagem: papel litúrgico. Canvas do produto é creme quente (não o
-       paper pleno das landings) para tabelas densas manterem contraste.
-       Cards permanecem branco puro; a hairline ink separa mais que a sombra. */
-    --background: 38 32% 97%;
-    --foreground: 210 73% 10%;
-    --card: 0 0% 100%;
-    --card-foreground: 210 73% 10%;
-    --card-accent: 40 55% 97%;
-    --card-accent-foreground: 210 73% 10%;
-    --card-subtle: 38 28% 95.5%;
-    --card-subtle-foreground: 210 73% 10%;
+    /* Espelha Expo: ink #071d36 · gold #bd8b58 · paper #fffdf8 · canvas #f4efe6 */
+    --background: 39 39% 93%;
+    --foreground: 212 77% 12%;
+    --card: 40 55% 99%;
+    --card-foreground: 212 77% 12%;
+    --card-accent: 38 47% 93%;
+    --card-accent-foreground: 212 77% 12%;
+    --card-subtle: 38 28% 94%;
+    --card-subtle-foreground: 212 77% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 210 73% 10%;
-    --muted: 36 22% 94%;
-    /* 34% de luminosidade: 4.5:1 sobre o canvas creme e sobre o paper #FFF7E7. */
-    --muted-foreground: 215 18% 34%;
+    --popover-foreground: 212 77% 12%;
+    --muted: 38 28% 94%;
+    --muted-foreground: 210 14% 42%;
 
     /* Brand */
-    --primary: 210 73% 10%;
+    --primary: 212 77% 12%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 36 22% 94%;
-    --secondary-foreground: 210 73% 10%;
-    --secondary-muted: 36 18% 90%;
-    --secondary-muted-foreground: 210 73% 10%;
-    --accent: 38 28% 93%;
-    --accent-foreground: 210 73% 10%;
+    --secondary: 38 28% 94%;
+    --secondary-foreground: 212 77% 12%;
+    --secondary-muted: 36 22% 90%;
+    --secondary-muted-foreground: 212 77% 12%;
+    --accent: 38 47% 93%;
+    --accent-foreground: 212 77% 12%;
 
-    /* Feedback — luminosidades escolhidas para o texto de contraste passar 4.5:1
-       quando a cor é usada como preenchimento sólido. Âmbar mantém texto ink:
-       branco sobre âmbar nunca atinge contraste em nenhuma luminosidade usável. */
-    --destructive: 0 74% 46%;
+    --destructive: 4 76% 40%;
     --destructive-foreground: 0 0% 100%;
-    --success: 152 62% 30%;
+    --success: 150 60% 30%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 210 73% 10%;
+    --warning: 33 83% 42%;
+    --warning-foreground: 212 77% 12%;
 
-    /* Borders & inputs — hairline ink-warm, papel sobre mesa */
-    --border: 36 18% 86%;
-    --input: 36 16% 82%;
-    --ring: 210 73% 10%;
+    --border: 35 31% 86%;
+    --input: 35 24% 82%;
+    --ring: 30 43% 54%;
 
     /* Radius — papel litúrgico: sm 8px · md 10px · lg 12px */
     --radius: 0.75rem;
@@ -518,7 +523,7 @@
     --motion-distance-md: 16px;
 
     /* Info */
-    --info: 200 98% 39%;
+    --info: 212 45% 20%;
     --info-foreground: 0 0% 98%;
   }
 

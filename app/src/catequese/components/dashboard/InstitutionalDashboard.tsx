@@ -8,6 +8,7 @@ import {
   listCommunities,
 } from "wasp/client/operations";
 import { useActiveWorkspace } from "../../../client/hooks/useActiveWorkspace";
+import { brandColors } from "../../../shared/designTokens";
 import { useUserContext } from "../../../client/hooks/useUserContext";
 import { SkeletonPage } from "../../../client/components/Skeletons";
 import {
@@ -364,17 +365,17 @@ export function InstitutionalDashboard() {
       {
         name: t("funnel_active_journeys"),
         value: overview.sacraments[0]?.value || 0,
-        fill: "#071A2D",
+        fill: brandColors.ink,
       },
       {
         name: t("funnel_completed_milestones"),
         value: overview.sacraments[1]?.value || 0,
-        fill: "#a78bfa",
+        fill: brandColors.gold,
       },
       {
         name: t("funnel_pending"),
         value: overview.sacraments[2]?.value || 0,
-        fill: "#c4b5fd",
+        fill: brandColors.goldDark,
       },
     ];
   }, [overview, t]);

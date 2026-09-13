@@ -177,8 +177,8 @@ export default function ReportsPage() {
       0,
     );
     return [
-      { name: t("present"), value: present, color: "#071A2D" },
-      { name: t("absent"), value: absent, color: "#b91c1c" },
+      { name: t("present"), value: present, color: "#071d36" },
+      { name: t("absent"), value: absent, color: "#b42318" },
     ];
   }, [classReports, t]);
 

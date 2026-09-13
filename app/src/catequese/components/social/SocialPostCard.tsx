@@ -217,7 +217,7 @@ export function SocialPostCard({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 shrink-0 text-[#53667e]"
+              className="h-8 w-8 shrink-0 text-muted-foreground"
               disabled={busy}
             >
               <MoreHorizontal className="h-4 w-4" aria-hidden />
@@ -290,7 +290,7 @@ export function SocialPostCard({
         ) : null}
 
         {visibleBody ? (
-          <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-relaxed text-[#5f7085]">
+          <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-relaxed text-muted-foreground">
             {visibleBody}
           </p>
         ) : null}
@@ -299,7 +299,7 @@ export function SocialPostCard({
           <button
             type="button"
             onClick={() => setExpanded((value) => !value)}
-            className="mt-1 text-[12px] font-semibold text-[#1f6ed4] underline-offset-4 hover:underline"
+            className="mt-1 text-[12px] font-semibold text-brand-gold underline-offset-4 hover:underline"
           >
             {expanded ? t("post.showLess") : t("post.showMore")}
           </button>
@@ -328,7 +328,7 @@ export function SocialPostCard({
         )}
       </div>
 
-      <footer className="mt-3 flex flex-wrap items-center gap-4 border-t border-[#edf0f3] pt-3 text-[11px] text-[#5c7088]">
+      <footer className="mt-3 flex flex-wrap items-center gap-4 border-t border-border pt-3 text-[11px] text-muted-foreground">
         <Button
           variant="ghost"
           size="sm"
@@ -336,7 +336,7 @@ export function SocialPostCard({
           disabled={busy}
           className={cn(
             "h-auto gap-1.5 px-0 text-[11px] hover:bg-transparent hover:text-brand-ink",
-            reaction && "font-bold text-[#1f6ed4]",
+            reaction && "font-bold text-brand-gold",
           )}
         >
           <HandHeart
