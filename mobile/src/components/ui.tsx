@@ -83,14 +83,22 @@ export function Screen({
   );
 }
 
-export function ScreenTitle({ title, subtitle }: { title: string; subtitle?: string }) {
+export function ScreenTitle({
+  title,
+  subtitle,
+  immersive = false,
+}: {
+  title: string;
+  subtitle?: string;
+  immersive?: boolean;
+}) {
   return (
     <View style={{ marginBottom: spacing.md }}>
-      <Text allowFontScaling style={styles.title}>
+      <Text allowFontScaling style={[styles.title, immersive && { color: colors.gold }]}>
         {title}
       </Text>
       {subtitle ? (
-        <Text allowFontScaling style={styles.subtitle}>
+        <Text allowFontScaling style={[styles.subtitle, immersive && { color: colors.onInkMuted }]}>
           {subtitle}
         </Text>
       ) : null}
@@ -128,6 +136,28 @@ export function ProgressBar({ progress, testID }: { progress: number; testID?: s
         }}
       />
     </View>
+  );
+}
+
+export function ImmersiveField({ style, ...props }: TextInputProps) {
+  return (
+    <TextInput
+      placeholderTextColor={colors.onInkMuted}
+      allowFontScaling
+      style={[
+        {
+          color: colors.white,
+          borderWidth: 1,
+          borderColor: colors.immersiveLine,
+          borderRadius: radii.sm,
+          paddingHorizontal: spacing.sm,
+          paddingVertical: 12,
+          minHeight: 44,
+        },
+        style,
+      ]}
+      {...props}
+    />
   );
 }
 

@@ -129,7 +129,9 @@ describe('platform UI', () => {
     );
 
     expect(view.getByTestId('more-screen')).toBeTruthy();
-    expect(view.getByText(/Paróquia São José \(TESTE\) · Paróquia/)).toBeTruthy();
+    expect(view.getByTestId('workspace-p1')).toBeTruthy();
+    expect(view.getByText('Paróquia São José (TESTE)')).toBeTruthy();
+    expect(view.getByText('Paróquia')).toBeTruthy();
     expect(view.getByText('Catequizandos')).toBeTruthy();
     expect(view.getByText('Biblioteca')).toBeTruthy();
     expect(view.getByText('Mensagens')).toBeTruthy();

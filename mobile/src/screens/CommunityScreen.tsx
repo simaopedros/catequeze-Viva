@@ -8,11 +8,10 @@ import {
   Pressable,
   Share,
   Text,
-  TextInput,
   View,
   type ViewToken,
 } from 'react-native';
-import { EmptyState, LoadingState } from '../components/ui';
+import { EmptyState, ImmersiveField, LoadingState } from '../components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { SocialAccess, SocialComment, SocialPost } from '../api/types';
 import { ShortVideo } from '../components/ShortVideo';
@@ -277,21 +276,12 @@ export function CommunityScreen({
             </Text>
           ))}
           <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
-            <TextInput
+            <ImmersiveField
               testID="comment-input"
               value={draft}
               onChangeText={setDraft}
               placeholder="Escreva um comentário"
-              placeholderTextColor={colors.onInkMuted}
-              style={{
-                flex: 1,
-                color: colors.white,
-                borderWidth: 1,
-                borderColor: colors.immersiveLine,
-                borderRadius: radii.sm,
-                paddingHorizontal: 12,
-                minHeight: 44,
-              }}
+              style={{ flex: 1 }}
             />
             <Pressable
               testID="comment-send"

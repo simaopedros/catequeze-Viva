@@ -30,6 +30,9 @@ export function ThreadScreen({
       </View>
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Conversa indisponível" body={error} /> : null}
+      {!loading && !error && messages.length === 0 ? (
+        <EmptyState title="Ainda sem mensagens" body="Escreva a primeira palavra desta conversa." />
+      ) : null}
       <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16 }} keyboardShouldPersistTaps="handled">
         {messages.map((message: any) => {
           const sender = message.sender || message.author || message;

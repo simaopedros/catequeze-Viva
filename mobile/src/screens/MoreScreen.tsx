@@ -1,9 +1,9 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { BrandButton, IconTile, Screen, ScreenTitle, SectionHeader } from '../components/ui';
+import { Text, View } from 'react-native';
+import { BrandButton, IconTile, MenuRow, Screen, ScreenTitle, SectionHeader } from '../components/ui';
 import type { Workspace } from '../api/types';
 import { workspaceTypeLabel } from '../lib/payload';
-import { colors, fonts, spacing } from '../theme';
+import { colors, spacing } from '../theme';
 import { getMoreSections, ioniconForKey, type MoreNavContext } from './moreModules';
 
 export function MoreScreen({
@@ -44,30 +44,20 @@ export function MoreScreen({
           </View>
         </View>
       ))}
-      <Text style={{ color: colors.ink, fontFamily: fonts.serif, fontSize: 20, marginBottom: 8 }}>
-        Espaço de trabalho
-      </Text>
+      <SectionHeader title="Espaço de trabalho" />
       {workspaces.length === 0 ? (
-        <Text style={{ color: colors.muted }}>Nenhum espaço ligado a esta conta.</Text>
+        <Text style={{ color: colors.muted, marginBottom: spacing.md }}>Nenhum espaço ligado a esta conta.</Text>
       ) : (
-        workspaces.map((workspace) => (
-          <Pressable
+        workspaces.map((workspace, index) => (
+          <MenuRow
             key={workspace.id}
             testID={`workspace-${workspace.id}`}
+            label={workspace.name}
+            hint={workspace.type ? workspaceTypeLabel(workspace.type) : undefined}
             onPress={() => onSelectWorkspace(workspace.id)}
-            style={{ minHeight: 44, justifyContent: 'center' }}
-          >
-            <Text
-              style={{
-                color: workspace.id === workspaceId ? colors.goldDark : colors.inkSoft,
-                fontFamily: workspace.id === workspaceId ? fonts.sansBold : fonts.sans,
-                paddingVertical: 6,
-              }}
-            >
-              {workspace.name}
-              {workspace.type ? ` · ${workspaceTypeLabel(workspace.type)}` : ''}
-            </Text>
-          </Pressable>
+            badge={workspace.id === workspaceId ? 'Actual' : undefined}
+            last={index === workspaces.length - 1}
+          />
         ))
       )}
       <BrandButton variant="danger" label="Sair" onPress={onLogout} testID="logout-button" />

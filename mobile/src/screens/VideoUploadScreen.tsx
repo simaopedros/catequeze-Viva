@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
-import { BrandButton, ErrorText, ProgressBar, Screen } from '../components/ui';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { BrandButton, ErrorText, ImmersiveField, ProgressBar, Screen, ScreenTitle } from '../components/ui';
 import { colors, fonts, radii, spacing } from '../theme';
 
 export function VideoUploadScreen({
@@ -29,12 +29,11 @@ export function VideoUploadScreen({
 
   return (
     <Screen testID="upload-screen" black>
-      <Text style={{ color: colors.gold, fontFamily: fonts.serif, fontSize: 28, marginBottom: spacing.md }}>
-        Testemunho
-      </Text>
-      <Text style={{ color: colors.onInkMuted, marginBottom: spacing.lg }}>
-        Câmara ou galeria. O + da Comunidade abre aqui, não o compositor de texto.
-      </Text>
+      <ScreenTitle
+        immersive
+        title="Testemunho"
+        subtitle="Câmara ou galeria. O + da Comunidade abre aqui, não o compositor de texto."
+      />
       <View style={{ flexDirection: 'row', gap: 12, marginBottom: spacing.lg }}>
         <Pressable
           testID="upload-camera"
@@ -69,22 +68,13 @@ export function VideoUploadScreen({
           <Text style={{ color: colors.white, fontFamily: fonts.sansSemi }}>Galeria</Text>
         </Pressable>
       </View>
-      <TextInput
+      <ImmersiveField
         testID="upload-caption"
         value={caption}
         onChangeText={setCaption}
         placeholder="Uma frase sobre o testemunho"
-        placeholderTextColor={colors.onInkMuted}
-        style={{
-          color: colors.white,
-          borderWidth: 1,
-          borderColor: colors.immersiveLine,
-          borderRadius: radii.sm,
-          padding: spacing.sm,
-          minHeight: 80,
-          marginBottom: spacing.md,
-        }}
         multiline
+        style={{ minHeight: 80, marginBottom: spacing.md }}
       />
       <Pressable testID="upload-consent" onPress={() => setConsent((value) => !value)} style={{ marginBottom: spacing.md }}>
         <Text style={{ color: consent ? colors.gold : colors.onInkMuted }}>
