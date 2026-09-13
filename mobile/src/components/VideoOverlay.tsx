@@ -30,7 +30,7 @@ export function VideoOverlay({
   const handle = post.author.handle || post.author.socialHandle;
   const gold = colors.rhemaGold;
   return (
-    <View pointerEvents="box-none" style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }} testID={`overlay-${post.id}`}>
+    <View pointerEvents="box-none" style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, pointerEvents: 'box-none' }} testID={`overlay-${post.id}`}>
       <View
         pointerEvents="box-none"
         style={{
@@ -39,6 +39,7 @@ export function VideoOverlay({
           bottom: 88,
           alignItems: 'center',
           gap: 14,
+          pointerEvents: 'box-none',
         }}
       >
         {REACTIONS.map((item) => {

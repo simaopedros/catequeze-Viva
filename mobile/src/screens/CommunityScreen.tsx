@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -110,18 +110,16 @@ export function CommunityScreen({
     }
   }, [activeId]);
 
-  const onViewableItemsChanged = useCallback(
-    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-      const next = viewableItems.find((item) => item.isViewable)?.item as SocialPost | undefined;
-      if (next?.id && next.id !== activeIdRef.current) {
-        setActiveId(next.id);
-        const index = posts.findIndex((item) => item.id === next.id);
-        if (index >= 0) setActiveIndex(index);
-      }
-    },
-    [posts],
-  );
-
+  const postsRef = useRef(posts);
+  postsRef.current = posts;
+  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    const next = viewableItems.find((item) => item.isViewable)?.item as SocialPost | undefined;
+    if (next?.id && next.id !== activeIdRef.current) {
+      setActiveId(next.id);
+      const index = postsRef.current.findIndex((item) => item.id === next.id);
+      if (index >= 0) setActiveIndex(index);
+    }
+  }).current;
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 70 }).current;
 
   return (
@@ -218,6 +216,7 @@ export function CommunityScreen({
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
+          pointerEvents: 'box-none',
         }}
       >
         <Pressable
