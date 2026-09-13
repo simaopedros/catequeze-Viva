@@ -157,7 +157,7 @@ export default function CalendarPage() {
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [eventDate, setEventDate] = useState("");
-  const [color, setColor] = useState(DEFAULT_COLOR);
+  const [color, setColor] = useState<string>(DEFAULT_COLOR);
   const [eventType, setEventType] = useState("liturgical");
 
   useEffect(() => {
