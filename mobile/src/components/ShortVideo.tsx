@@ -18,23 +18,31 @@ function WebVideo({ uri, active, cover, poster, testID }: Props) {
     if (active) void el.play().catch(() => undefined);
     else el.pause();
   }, [active, uri]);
-  return createElement('video', {
-    ref,
-    src: uri,
-    poster: poster || undefined,
-    muted: true,
-    loop: true,
-    playsInline: true,
-    autoPlay: active,
-    'data-testid': testID || 'short-video',
-    style: {
-      position: 'absolute',
-      width: '100%',
-      height: '100%',
-      objectFit: cover === false ? 'contain' : 'cover',
-      backgroundColor: '#000',
-    },
-  });
+  return (
+    <View style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }} testID={testID || 'short-video'}>
+      {poster ? (
+        <Image source={{ uri: poster }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+      ) : null}
+      {createElement('video', {
+        ref,
+        src: uri,
+        poster: poster || undefined,
+        muted: true,
+        loop: true,
+        playsInline: true,
+        autoPlay: active,
+        style: {
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: cover === false ? 'contain' : 'cover',
+          backgroundColor: 'transparent',
+        },
+      })}
+    </View>
+  );
 }
 
 function NativeVideo({ uri, active, cover, testID }: Props) {

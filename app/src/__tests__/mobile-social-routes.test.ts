@@ -95,5 +95,6 @@ describe('social media delivery', () => {
     expect(setupSource).toContain("prependMiddleware(app as any, '/api/social', applyLocalMobileCors)");
     expect(mediaSource).toContain('Cross-Origin-Resource-Policy');
     expect(mediaSource).toContain('cross-origin');
+    expect(mediaSource).toContain('Cross-Origin-Embedder-Policy');
   });
 });

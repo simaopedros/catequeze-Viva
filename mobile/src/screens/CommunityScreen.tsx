@@ -179,14 +179,16 @@ export function CommunityScreen({
           const shouldLoad = Math.abs(index - activeIndex) <= 1;
           const active = item.id === activeId;
           return (
-            <View style={{ height: pageHeight, backgroundColor: '#000' }} testID={`rhema-page-${item.id}`}>
-              {shouldLoad && uri ? (
-                <ShortVideo uri={uri} active={active} poster={poster} />
-              ) : poster ? (
-                <View style={{ flex: 1, backgroundColor: '#000' }} />
-              ) : (
-                <View style={{ flex: 1, backgroundColor: '#111' }} />
-              )}
+            <View style={{ height: pageHeight, width: '100%', backgroundColor: '#000', overflow: 'hidden' }} testID={`rhema-page-${item.id}`}>
+              <View style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}>
+                {shouldLoad && uri ? (
+                  <ShortVideo uri={uri} active={active} poster={poster} />
+                ) : poster ? (
+                  <View style={{ flex: 1, backgroundColor: '#000' }} />
+                ) : (
+                  <View style={{ flex: 1, backgroundColor: '#111' }} />
+                )}
+              </View>
               <VideoOverlay
                 post={item}
                 following={followingIds.includes(item.author.id)}
@@ -214,18 +216,17 @@ export function CommunityScreen({
           right: 8,
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'space-between',
           pointerEvents: 'box-none',
         }}
       >
         <Pressable
           testID="community-search"
           onPress={onSearch}
-          style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}
+          style={{ width: 40, height: 44, alignItems: 'center', justifyContent: 'center' }}
         >
           <Ionicons name="search-outline" size={22} color="#fff" />
         </Pressable>
-        <View testID="feed-tabs" style={{ flexDirection: 'row', gap: 18 }}>
+        <View testID="feed-tabs" style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', gap: 16 }}>
           {RHEMA_TABS.map((item) => {
             const on = tab === item.id;
             return (
@@ -247,21 +248,27 @@ export function CommunityScreen({
           })}
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Pressable testID="compose-text" onPress={onCompose} style={{ marginRight: 4, justifyContent: 'center' }}>
-            <Text style={{ color: colors.rhemaGold, fontFamily: fonts.sansSemi, fontSize: 12 }}>Publicação</Text>
+          <Pressable
+            testID="compose-text"
+            onPress={onCompose}
+            accessibilityLabel="Publicação"
+            style={{ alignItems: 'center', marginRight: 2, paddingHorizontal: 4 }}
+          >
+            <Ionicons name="create-outline" size={20} color={colors.rhemaGold} />
+            <Text style={{ color: colors.rhemaGold, fontFamily: fonts.sansSemi, fontSize: 9 }}>Publicação</Text>
           </Pressable>
           <Pressable
             testID="compose-open"
             onPress={onUpload || onCompose}
             accessibilityLabel="Carregar vídeo"
-            style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 40, height: 44, alignItems: 'center', justifyContent: 'center' }}
           >
             <Ionicons name="add" size={28} color={colors.rhemaGold} />
           </Pressable>
           <Pressable
             testID="community-profile"
             onPress={onOpenProfile}
-            style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 40, height: 44, alignItems: 'center', justifyContent: 'center' }}
           >
             <Ionicons name="person-circle-outline" size={24} color="#fff" />
           </Pressable>

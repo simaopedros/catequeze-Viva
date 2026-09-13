@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Tabs, usePathname } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { useAuth, workspaceNavContext } from '../../../src/auth/AuthContext';
 import { getMobileBottomTabKeys } from '../../../src/screens/bottomTabs';
 import { colors, fonts } from '../../../src/theme';
@@ -9,25 +9,28 @@ export default function TabsLayout() {
   const nav = workspaceNavContext(bootstrap, workspaceId);
   const keys = getMobileBottomTabKeys(nav.role, nav.isAdmin);
   const show = (key: string) => keys.includes(key);
-  const pathname = usePathname();
-  const immersive = /(^|\/)community\/?$/.test(pathname || '');
 
   return (
     <Tabs
-      screenOptions={{
-        headerStyle: { backgroundColor: immersive ? '#000' : colors.paper },
-        headerTintColor: immersive ? '#D4AF37' : colors.ink,
-        headerTitleStyle: { fontFamily: fonts.serif },
-        tabBarActiveTintColor: immersive ? '#D4AF37' : colors.goldDark,
-        tabBarInactiveTintColor: immersive ? '#8a8a8a' : colors.muted,
-        tabBarLabelStyle: { fontFamily: fonts.sansMedium, fontSize: 11 },
-        tabBarStyle: immersive
-          ? { backgroundColor: '#000000', borderTopColor: '#1a1a1a', minHeight: 52 }
-          : {
-              backgroundColor: colors.paper,
-              borderTopColor: colors.line,
-              minHeight: 56,
-            },
+      screenOptions={({ navigation }) => {
+        const state = navigation.getState();
+        const current = state?.routes?.[state.index]?.name;
+        const immersive = current === 'community';
+        return {
+          headerStyle: { backgroundColor: immersive ? '#000' : colors.paper },
+          headerTintColor: immersive ? '#D4AF37' : colors.ink,
+          headerTitleStyle: { fontFamily: fonts.serif },
+          tabBarActiveTintColor: immersive ? '#D4AF37' : colors.goldDark,
+          tabBarInactiveTintColor: immersive ? '#8a8a8a' : colors.muted,
+          tabBarLabelStyle: { fontFamily: fonts.sansMedium, fontSize: 11 },
+          tabBarStyle: immersive
+            ? { backgroundColor: '#000000', borderTopColor: '#1a1a1a', minHeight: 52 }
+            : {
+                backgroundColor: colors.paper,
+                borderTopColor: colors.line,
+                minHeight: 56,
+              },
+        };
       }}
     >
       <Tabs.Screen
@@ -44,6 +47,13 @@ export default function TabsLayout() {
           headerShown: false,
           href: show('community') ? undefined : null,
           tabBarIcon: ({ color, size }) => <Ionicons name="people-outline" color={color} size={size} />,
+          tabBarActiveTintColor: '#D4AF37',
+          tabBarInactiveTintColor: '#8a8a8a',
+          tabBarStyle: {
+            backgroundColor: '#000000',
+            borderTopColor: '#1a1a1a',
+            minHeight: 52,
+          },
         }}
       />
       <Tabs.Screen
