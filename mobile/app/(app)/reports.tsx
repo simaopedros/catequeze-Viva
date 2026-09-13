@@ -1,16 +1,19 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { useAuth } from '../../src/auth/AuthContext';
+import { Alert, Pressable, Text } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
+import { useAuth, workspaceNavContext } from '../../src/auth/AuthContext';
 import { useAsync } from '../../src/hooks/useAsync';
 import { asItems } from '../../src/lib/payload';
-import { Card } from '../../src/components/ui';
+import { canManageCoordinator } from '../../src/lib/roleAccess';
+import { BrandButton, Card } from '../../src/components/ui';
 import { DetailScreen } from '../../src/screens/DetailScreen';
 import { colors } from '../../src/theme';
 
 export default function ReportsRoute() {
-  const { api, workspaceId } = useAuth();
+  const { api, workspaceId, bootstrap } = useAuth();
   const router = useRouter();
+  const nav = workspaceNavContext(bootstrap, workspaceId);
   const { data, loading, error } = useAsync(
     () => api.reports(workspaceId || undefined),
     [workspaceId],
@@ -28,10 +31,27 @@ export default function ReportsRoute() {
     <DetailScreen
       testID="reports-screen"
       title="Relatórios"
-      subtitle="Visão de presença deste espaço. Exportações e análises longas ficam na web."
+      subtitle="Visão de presença deste espaço."
       loading={loading}
       error={error}
     >
+      {canManageCoordinator(nav.role, nav.isAdmin) || nav.role === 'PASTORAL_VIEWER' ? (
+        <BrandButton
+          label="Exportar CSV"
+          onPress={async () => {
+            try {
+              const rows = await api.exportReports(workspaceId || undefined);
+              const list = Array.isArray(rows) ? rows : rows?.items || [];
+              const csv = ['id,name,enrollmentCount', ...list.map((row: any) => `${row.id},${row.name},${row.enrollmentCount}`)].join('\n');
+              await Clipboard.setStringAsync(csv);
+              Alert.alert('Exportado', 'CSV copiado para a área de transferência.');
+            } catch (err) {
+              Alert.alert('Exportação falhou', err instanceof Error ? err.message : '');
+            }
+          }}
+          testID="reports-export"
+        />
+      ) : null}
       {facts.map((row) => (
         <Card key={row.label}>
           <Text style={{ color: colors.muted }}>{row.label}</Text>

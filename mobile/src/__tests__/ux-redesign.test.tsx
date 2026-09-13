@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import { canMarkAttendance } from '../lib/roleAccess';
+import { canManagePastoral, canMarkAttendance } from '../lib/roleAccess';
 import { getMobileBottomTabKeys } from '../screens/bottomTabs';
 import { getMoreSections } from '../screens/moreModules';
 import { HomeScreen } from '../screens/HomeScreen';
@@ -18,6 +18,8 @@ describe('UX redesign role IA', () => {
     expect(getMobileBottomTabKeys('GUARDIAN')).toEqual(['dashboard', 'community', 'calendar', 'messages']);
     expect(canMarkAttendance('GUARDIAN')).toBe(false);
     expect(canMarkAttendance('LEAD_CATECHIST')).toBe(true);
+    expect(canManagePastoral('GUARDIAN')).toBe(false);
+    expect(canManagePastoral('LEAD_CATECHIST')).toBe(true);
 
     const guardianMais = getMoreSections({ role: 'GUARDIAN' })
       .flatMap((section) => section.items.map((item) => item.id));

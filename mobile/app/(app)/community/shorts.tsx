@@ -8,27 +8,22 @@ export default function ShortsRoute() {
   const { api } = useAuth();
   const router = useRouter();
   const feed = useAsync(() => api.socialFeed({ sort: 'recent', videoFormat: 'SHORT', limit: 20 }), []);
-  const topics = useAsync(() => api.socialTopics(), []);
   const access = useAsync(() => api.socialAccess(), []);
 
   return (
     <CommunityScreen
       posts={feed.data?.items ?? []}
-      topics={topics.data ?? []}
       access={access.data}
-      tab="shorts"
+      tab="recent"
       loading={feed.loading}
       error={feed.error}
-      showShorts
-      onChangeTab={(next) => {
-        if (next === 'shorts') return;
-        router.replace('/(app)/(tabs)/community');
-      }}
-      onChangeTopic={() => undefined}
+      onChangeTab={() => router.replace('/(app)/(tabs)/community')}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
       onOpenPost={(slug) => router.push(`/(app)/community/p/${slug}`)}
-      onOpenTopic={(slug) => router.push(`/(app)/community/t/${slug}`)}
       onCompose={() => router.push('/(app)/community/compose')}
+      onSearch={() => router.push('/(app)/community/search')}
+      onOpenTopics={() => router.push('/(app)/community/topics')}
+      onOpenMembers={() => router.push('/(app)/community/members')}
       onRefresh={() => void feed.reload()}
       onReact={async (postId, type) => {
         await api.toggleReaction(postId, type);

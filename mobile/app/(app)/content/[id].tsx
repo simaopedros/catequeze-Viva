@@ -1,18 +1,22 @@
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { Text } from 'react-native';
-import { useAuth } from '../../../src/auth/AuthContext';
+import { useAuth, workspaceNavContext } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
 import { personName, statusLabel } from '../../../src/lib/payload';
-import { Card } from '../../../src/components/ui';
+import { canManagePastoral } from '../../../src/lib/roleAccess';
+import { appRoutes } from '../../../src/navigation/routes';
+import { BrandButton, Card } from '../../../src/components/ui';
 import { DetailScreen } from '../../../src/screens/DetailScreen';
 import { colors } from '../../../src/theme';
 
 export default function ContentDetailRoute() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { api } = useAuth();
+  const { api, bootstrap, workspaceId } = useAuth();
+  const router = useRouter();
   const { data, loading, error } = useAsync(() => api.contentDetails(String(id)), [id]);
   const activities = data?.activities || [];
+  const nav = workspaceNavContext(bootstrap, workspaceId);
 
   return (
     <DetailScreen
@@ -26,6 +30,13 @@ export default function ContentDetailRoute() {
         { label: 'Actividades', value: activities.length ? String(activities.length) : null },
       ]}
     >
+      {canManagePastoral(nav.role, nav.isAdmin) ? (
+        <BrandButton
+          label="Editar"
+          onPress={() => router.push(appRoutes.form('content', { id: String(id), title: data?.title }))}
+          testID="content-edit"
+        />
+      ) : null}
       {data?.summary || data?.description ? (
         <Card>
           <Text style={{ color: colors.muted }}>{data.summary || data.description}</Text>

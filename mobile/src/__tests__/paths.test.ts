@@ -37,5 +37,9 @@ describe('mobile path contract', () => {
     expect(MOBILE_PATHS.journeyTemplates).toBe('/mobile/journey-templates');
     expect(MOBILE_PATHS.parishes).toBe('/mobile/parishes');
     expect(MOBILE_PATHS.consents).toBe('/mobile/consents');
+    expect(MOBILE_PATHS.createMeeting).toBe('/mobile/meetings');
+    expect(MOBILE_PATHS.createClass).toBe('/mobile/classes');
+    expect(MOBILE_PATHS.documentVerify('d1')).toBe('/mobile/documents/d1/verify');
+    expect(MOBILE_PATHS.exportReports).toBe('/mobile/reports/export');
   });
 });

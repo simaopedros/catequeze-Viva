@@ -1,11 +1,16 @@
+import { useRouter } from 'expo-router';
 import React from 'react';
-import { useAuth } from '../../src/auth/AuthContext';
+import { useAuth, workspaceNavContext } from '../../src/auth/AuthContext';
 import { useAsync } from '../../src/hooks/useAsync';
 import { asItems, personName, roleLabel } from '../../src/lib/payload';
+import { canManagePastoral } from '../../src/lib/roleAccess';
+import { appRoutes } from '../../src/navigation/routes';
 import { CatalogScreen } from '../../src/screens/CatalogScreen';
 
 export default function TeamRoute() {
-  const { api, workspaceId } = useAuth();
+  const { api, workspaceId, bootstrap } = useAuth();
+  const router = useRouter();
+  const nav = workspaceNavContext(bootstrap, workspaceId);
   const { data, loading, error } = useAsync(
     () => api.team(workspaceId || undefined),
     [workspaceId],
@@ -26,6 +31,10 @@ export default function TeamRoute() {
       error={error}
       emptyTitle="Sem equipe"
       emptyBody="Não há membros visíveis neste espaço, ou o seu perfil não vê esta área."
+      canWrite={canManagePastoral(nav.role, nav.isAdmin)}
+      createLabel="Convidar"
+      onCreate={() => router.push(appRoutes.form('team-invite'))}
+      onOpen={(id) => router.push(appRoutes.form('membership-role', { id }))}
     />
   );
 }

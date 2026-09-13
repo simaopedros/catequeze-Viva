@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { BrandButton, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, CrudBar, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import { formatDate } from '../lib/payload';
 import { colors, fonts } from '../theme';
 
@@ -9,13 +9,19 @@ export function MeetingScreen({
   loading,
   error,
   onAttendance,
+  onEdit,
+  onDelete,
   canMarkAttendance = true,
+  canWrite,
 }: {
   data: any;
   loading?: boolean;
   error?: string | null;
   onAttendance: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
   canMarkAttendance?: boolean;
+  canWrite?: boolean;
 }) {
   if (loading) {
     return (
@@ -35,6 +41,7 @@ export function MeetingScreen({
   return (
     <Screen testID="meeting-screen">
       <ScreenTitle title={data.title || data.theme || 'Encontro'} subtitle={data.class?.name || ''} />
+      <CrudBar canWrite={canWrite} onEdit={onEdit} onDelete={onDelete} editLabel="Editar" deleteLabel="Apagar" />
       <Text style={{ color: colors.muted, marginBottom: 16, fontFamily: fonts.sans }}>
         {formatDate(data.startsAt || data.date) || ''}
       </Text>

@@ -8,10 +8,8 @@ import { communityPublishNotice, FEED_TABS } from '../lib/social';
 
 const base = {
   posts: [] as React.ComponentProps<typeof CommunityScreen>['posts'],
-  topics: [] as React.ComponentProps<typeof CommunityScreen>['topics'],
   tab: 'recent' as const,
   onChangeTab: jest.fn(),
-  onChangeTopic: jest.fn(),
   onOpenAuthor: jest.fn(),
   onCompose: jest.fn(),
 };
@@ -47,23 +45,31 @@ describe('Community hub', () => {
     expect(gated.getByText(/Assine para publicar/)).toBeTruthy();
   });
 
-  it('mostra as abas da Comunidade e esconde Shorts sem vídeo', () => {
+  it('mostra o chrome Circle: lupa, 4 segmentos, Espaços e FAB', () => {
     const onChangeTab = jest.fn();
+    const onSearch = jest.fn();
+    const onOpenTopics = jest.fn();
     const view = render(
       <CommunityScreen
         {...base}
-        topics={[{ slug: 'oracao', name: 'Oração' }]}
         onChangeTab={onChangeTab}
+        onSearch={onSearch}
+        onOpenTopics={onOpenTopics}
       />,
     );
 
     expect(view.getByText('Ainda não há publicações')).toBeTruthy();
     expect(view.getByText(/Toque em Publicar/)).toBeTruthy();
+    expect(view.getByTestId('community-search')).toBeTruthy();
+    expect(view.getByTestId('community-espacos')).toBeTruthy();
+    expect(view.getByTestId('community-members')).toBeTruthy();
+    expect(view.getByTestId('compose-open')).toBeTruthy();
     expect(view.getByTestId('feed-tab-foryou')).toBeTruthy();
     expect(view.getByTestId('feed-tab-recent')).toBeTruthy();
     expect(view.getByTestId('feed-tab-trending')).toBeTruthy();
     expect(view.getByTestId('feed-tab-following')).toBeTruthy();
     expect(view.queryByTestId('feed-tab-shorts')).toBeNull();
+    expect(view.queryByText('Todos')).toBeNull();
     expect(FEED_TABS.map((tab) => tab.label)).toEqual([
       'Para você',
       'Shorts',
@@ -77,9 +83,10 @@ describe('Community hub', () => {
 
     fireEvent.press(view.getByTestId('feed-tab-trending'));
     expect(onChangeTab).toHaveBeenCalledWith('trending');
-
-    const withShorts = render(<CommunityScreen {...base} showShorts />);
-    expect(withShorts.getByTestId('feed-tab-shorts')).toBeTruthy();
+    fireEvent.press(view.getByTestId('community-search'));
+    expect(onSearch).toHaveBeenCalled();
+    fireEvent.press(view.getByTestId('community-espacos'));
+    expect(onOpenTopics).toHaveBeenCalled();
   });
 
   it('mostra as postagens no próprio feed', () => {

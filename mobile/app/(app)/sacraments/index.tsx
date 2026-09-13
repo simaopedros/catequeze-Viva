@@ -1,13 +1,16 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { useAuth } from '../../../src/auth/AuthContext';
+import { useAuth, workspaceNavContext } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
 import { asItems, personName } from '../../../src/lib/payload';
+import { canManagePastoral } from '../../../src/lib/roleAccess';
+import { appRoutes } from '../../../src/navigation/routes';
 import { CatalogScreen } from '../../../src/screens/CatalogScreen';
 
 export default function SacramentsRoute() {
-  const { api, workspaceId } = useAuth();
+  const { api, workspaceId, bootstrap } = useAuth();
   const router = useRouter();
+  const nav = workspaceNavContext(bootstrap, workspaceId);
   const { data, loading, error } = useAsync(
     () => api.sacraments(workspaceId || undefined),
     [workspaceId],
@@ -28,6 +31,9 @@ export default function SacramentsRoute() {
       error={error}
       emptyTitle="Sem jornadas"
       emptyBody="Ainda não há jornadas sacramentais neste espaço."
+      canWrite={canManagePastoral(nav.role, nav.isAdmin)}
+      createLabel="Nova jornada"
+      onCreate={() => router.push(appRoutes.form('sacrament'))}
       onOpen={(id) => router.push(`/(app)/sacraments/${id}`)}
     />
   );

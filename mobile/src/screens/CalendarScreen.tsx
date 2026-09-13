@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmptyState, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
+import { CrudBar, EmptyState, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
 import { formatDate } from '../lib/payload';
 
 export type CalendarItem = {
@@ -15,15 +15,22 @@ export function CalendarScreen({
   loading,
   error,
   onOpenMeeting,
+  onCreate,
+  onDeleteEvent,
+  canWrite,
 }: {
   items: CalendarItem[];
   loading?: boolean;
   error?: string | null;
   onOpenMeeting?: (id: string) => void;
+  onCreate?: () => void;
+  onDeleteEvent?: (id: string) => void;
+  canWrite?: boolean;
 }) {
   return (
     <Screen testID="calendar-screen">
       <ScreenTitle title="Calendário" subtitle="Encontros da turma e eventos litúrgicos deste espaço." />
+      <CrudBar canWrite={canWrite} onCreate={onCreate} createLabel="Novo evento" />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Não foi possível carregar" body={error} /> : null}
       {!loading && !error && items.length === 0 ? (
@@ -40,7 +47,13 @@ export function CalendarScreen({
           hint={[item.kind === 'meeting' ? 'Encontro' : 'Evento litúrgico', item.subtitle, formatDate(item.date)]
             .filter(Boolean)
             .join(' · ')}
-          onPress={item.kind === 'meeting' && onOpenMeeting ? () => onOpenMeeting(item.id) : undefined}
+          onPress={
+            item.kind === 'meeting' && onOpenMeeting
+              ? () => onOpenMeeting(item.id)
+              : item.kind === 'event' && onDeleteEvent && canWrite
+                ? () => onDeleteEvent(item.id)
+                : undefined
+          }
         />
       ))}
     </Screen>

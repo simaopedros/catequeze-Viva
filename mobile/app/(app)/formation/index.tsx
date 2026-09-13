@@ -1,13 +1,16 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { useAuth } from '../../../src/auth/AuthContext';
+import { useAuth, workspaceNavContext } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
 import { asItems, personName, statusLabel } from '../../../src/lib/payload';
+import { canManageCoordinator } from '../../../src/lib/roleAccess';
+import { appRoutes } from '../../../src/navigation/routes';
 import { CatalogScreen } from '../../../src/screens/CatalogScreen';
 
 export default function FormationRoute() {
-  const { api, workspaceId } = useAuth();
+  const { api, workspaceId, bootstrap } = useAuth();
   const router = useRouter();
+  const nav = workspaceNavContext(bootstrap, workspaceId);
   const { data, loading, error } = useAsync(
     () => api.formation(workspaceId || undefined),
     [workspaceId],
@@ -30,6 +33,9 @@ export default function FormationRoute() {
       error={error}
       emptyTitle="Sem formação"
       emptyBody="Ainda não há percursos de formação neste espaço."
+      canWrite={canManageCoordinator(nav.role, nav.isAdmin)}
+      createLabel="Novo percurso"
+      onCreate={() => router.push(appRoutes.form('formation'))}
       onOpen={(id) => router.push(`/(app)/formation/${id}`)}
     />
   );

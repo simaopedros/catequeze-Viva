@@ -45,6 +45,7 @@ describe('usability map', () => {
       appRoutes.journeyTemplates,
       appRoutes.parishes,
       appRoutes.consents,
+      appRoutes.form('meeting', { classId: 'class-1' }),
     ];
 
     expect(signedOut).toHaveLength(3);

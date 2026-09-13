@@ -63,6 +63,7 @@ export default function AppLayout() {
       <Stack.Screen name="parishes" options={{ title: 'Paróquias' }} />
       <Stack.Screen name="consents" options={{ title: 'Consentimentos' }} />
       <Stack.Screen name="ai" options={{ title: 'Assistência editorial' }} />
+      <Stack.Screen name="form/[kind]" options={{ title: 'Formulário' }} />
     </Stack>
   );
 }

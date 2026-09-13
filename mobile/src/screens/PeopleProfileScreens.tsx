@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { EmptyState, HeroHeader, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, EmptyState, HeroHeader, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
 import { formatDate, personName, statusLabel } from '../lib/payload';
 import { attendanceTone, colors, fonts, spacing, type AttendanceStatusId } from '../theme';
 
@@ -38,12 +38,18 @@ export function CatechumenProfileScreen({
   error,
   onOpenClass,
   onOpenFamily,
+  onEdit,
+  onDelete,
+  canWrite,
 }: {
   data: any;
   loading?: boolean;
   error?: string | null;
   onOpenClass?: (id: string) => void;
   onOpenFamily?: (id: string) => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  canWrite?: boolean;
 }) {
   const records = data?.attendanceRecords || data?.attendance || [];
   return (
@@ -57,6 +63,14 @@ export function CatechumenProfileScreen({
             title={personName(data, 'Catequizando')}
             subtitle={data?.enrollments?.[0]?.class?.name || data?.household?.name}
           />
+          {canWrite ? (
+            <>
+              {onEdit ? <BrandButton label="Editar" onPress={onEdit} testID="catechumen-edit" /> : null}
+              {onDelete ? (
+                <BrandButton variant="danger" label="Apagar" onPress={onDelete} testID="catechumen-delete" />
+              ) : null}
+            </>
+          ) : null}
           <PersonRow
             name={personName(data, 'Catequizando')}
             photoUrl={data?.photoUrl}
@@ -95,15 +109,20 @@ export function FamilyProfileScreen({
   loading,
   error,
   onOpenCatechumen,
+  onEdit,
+  canWrite,
 }: {
   data: any;
   loading?: boolean;
   error?: string | null;
   onOpenCatechumen?: (id: string) => void;
+  onEdit?: () => void;
+  canWrite?: boolean;
 }) {
   return (
     <Screen testID="family-detail-screen">
       <ScreenTitle title={personName(data, 'Família')} subtitle={data?.parish?.name || data?.community?.name} />
+      {canWrite && onEdit ? <BrandButton label="Editar família" onPress={onEdit} testID="family-edit" /> : null}
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Não encontrado" body={error} /> : null}
       {(data?.guardians || []).map((row: any) => (

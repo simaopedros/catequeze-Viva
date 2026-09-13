@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Linking, Text } from 'react-native';
-import { EmptyState, LoadingState, PersonRow, Screen, ScreenTitle, SearchField } from '../components/ui';
+import { BrandButton, EmptyState, LoadingState, PersonRow, Screen, ScreenTitle, SearchField } from '../components/ui';
 import { colors, fonts } from '../theme';
 
 function asDocuments(payload: any) {
@@ -23,11 +23,17 @@ export function DocumentsScreen({
   loading,
   error,
   apiBase,
+  onUpload,
+  onVerify,
+  canWrite,
 }: {
   payload: any;
   loading?: boolean;
   error?: string | null;
   apiBase: string;
+  onUpload?: () => void;
+  onVerify?: (id: string) => void;
+  canWrite?: boolean;
 }) {
   const [query, setQuery] = useState('');
   const items = asDocuments(payload);
@@ -43,6 +49,9 @@ export function DocumentsScreen({
   return (
     <Screen testID="documents-screen">
       <ScreenTitle title="Documentos" subtitle="Recentes, pastas e tipo de ficheiro." />
+      {canWrite && onUpload ? (
+        <BrandButton label="Enviar documento" onPress={onUpload} testID="document-upload" />
+      ) : null}
       <SearchField value={query} onChangeText={setQuery} placeholder="Pesquisar documentos" />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Documentos indisponíveis" body={error} /> : null}
@@ -59,7 +68,10 @@ export function DocumentsScreen({
               name={doc.title || doc.name || 'Documento'}
               hint={doc.folder?.name || doc.kind || doc.mimeType || ''}
               chip={typeIcon(doc.kind, doc.mimeType)}
-              onPress={() => Linking.openURL(`${apiBase.replace(/\/$/, '')}/mobile/documents/${doc.id}`)}
+              onPress={() => {
+                if (canWrite && onVerify && !doc.verifiedAt) onVerify(doc.id);
+                else Linking.openURL(`${apiBase.replace(/\/$/, '')}/mobile/documents/${doc.id}`);
+              }}
             />
           ))}
         </>

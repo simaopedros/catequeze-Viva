@@ -44,11 +44,8 @@ describe('auth and community UI', () => {
             author: { id: 'u', handle: 'joao', displayName: 'João', avatarUrl: null },
           },
         ]}
-        topics={[{ slug: 'liturgia', name: 'Liturgia' }]}
-        access={{ authenticated: true, canPublish: true }}
         tab="recent"
         onChangeTab={jest.fn()}
-        onChangeTopic={jest.fn()}
         onOpenAuthor={jest.fn()}
         onCompose={onCompose}
       />,

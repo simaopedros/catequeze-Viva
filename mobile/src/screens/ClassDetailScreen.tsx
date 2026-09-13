@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { EmptyState, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, CrudBar, EmptyState, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
 import { asItems, formatDate, personName, statusLabel } from '../lib/payload';
 import { colors, fonts, spacing } from '../theme';
 
@@ -10,12 +10,22 @@ export function ClassDetailScreen({
   error,
   onOpenMeeting,
   onOpenCatechumen,
+  onEdit,
+  onArchive,
+  onCreateMeeting,
+  onEnroll,
+  canWrite,
 }: {
   data: any;
   loading?: boolean;
   error?: string | null;
   onOpenMeeting: (id: string) => void;
   onOpenCatechumen?: (id: string) => void;
+  onEdit?: () => void;
+  onArchive?: () => void;
+  onCreateMeeting?: () => void;
+  onEnroll?: () => void;
+  canWrite?: boolean;
 }) {
   const meetings = asItems(data?.meetings).length
     ? asItems(data?.meetings)
@@ -32,6 +42,18 @@ export function ClassDetailScreen({
           .filter((value, index, all) => all.indexOf(value) === index)
           .join(' · ')}
       />
+      <CrudBar
+        canWrite={canWrite}
+        onEdit={onEdit}
+        onDelete={onArchive}
+        onCreate={onCreateMeeting}
+        createLabel="Novo encontro"
+        editLabel="Editar turma"
+        deleteLabel="Arquivar"
+      />
+      {canWrite && onEnroll ? (
+        <BrandButton variant="ghost" label="Inscrever catequizando" onPress={onEnroll} testID="class-enroll" />
+      ) : null}
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Turma indisponível" body={error} /> : null}
       {summary ? (

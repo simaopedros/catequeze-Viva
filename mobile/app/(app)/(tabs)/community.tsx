@@ -10,17 +10,14 @@ export default function CommunityRoute() {
   const { api } = useAuth();
   const router = useRouter();
   const [tab, setTab] = useState<FeedTabId>('foryou');
-  const [topicSlug, setTopicSlug] = useState<string | null>(null);
   const [items, setItems] = useState<SocialPost[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const query = useMemo(() => feedQueryForTab(tab), [tab]);
   const feed = useAsync(
-    () => api.socialFeed({ ...query, topicSlug, cursor: null, limit: 20 }),
-    [query.sort, query.following, query.videoFormat, topicSlug],
+    () => api.socialFeed({ ...query, cursor: null, limit: 20 }),
+    [query.sort, query.following, query.videoFormat],
   );
-  const shortsProbe = useAsync(() => api.socialFeed({ videoFormat: 'SHORT', limit: 1 }), []);
-  const topics = useAsync(() => api.socialTopics(), []);
   const access = useAsync(() => api.socialAccess(), []);
 
   useEffect(() => {
@@ -38,21 +35,19 @@ export default function CommunityRoute() {
   return (
     <CommunityScreen
       posts={items}
-      topics={topics.data ?? []}
       access={access.data}
       tab={tab}
-      topicSlug={topicSlug}
       loading={feed.loading}
       refreshing={refreshing}
       error={feed.error}
       hasMore={Boolean(cursor)}
-      showShorts={Boolean(shortsProbe.data?.items.length)}
       onChangeTab={setTab}
-      onChangeTopic={setTopicSlug}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
       onOpenPost={(slug) => router.push(`/(app)/community/p/${slug}`)}
-      onOpenTopic={(slug) => router.push(`/(app)/community/t/${slug}`)}
       onCompose={() => router.push('/(app)/community/compose')}
+      onSearch={() => router.push('/(app)/community/search')}
+      onOpenTopics={() => router.push('/(app)/community/topics')}
+      onOpenMembers={() => router.push('/(app)/community/members')}
       onRefresh={async () => {
         setRefreshing(true);
         try {
@@ -63,7 +58,7 @@ export default function CommunityRoute() {
       }}
       onLoadMore={async () => {
         if (!cursor) return;
-        const page = await api.socialFeed({ ...query, topicSlug, cursor, limit: 20 });
+        const page = await api.socialFeed({ ...query, cursor, limit: 20 });
         setItems((current) => [...current, ...page.items]);
         setCursor(page.nextCursor);
       }}

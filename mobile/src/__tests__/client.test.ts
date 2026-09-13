@@ -114,6 +114,11 @@ describe('mobile HTTP client', () => {
     await client.catechismSearch('trindade');
     await client.team('ws-1');
     await client.billing();
+    await client.createMeeting({ classId: 'c1', title: 'Encontro', date: '2026-09-20' });
+    await client.createClass({ name: 'Turma nova' });
+    await client.createCatechumen({ firstName: 'Ana', lastName: 'Silva' });
+    await client.verifyDocument('d1');
+    await client.exportReports('ws-1');
 
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialAccess);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialPosts);
@@ -136,5 +141,10 @@ describe('mobile HTTP client', () => {
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.content + '?workspaceId=ws-1&search=p%C3%A1scoa&take=50');
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.announcementAck('a1'));
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.billing);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.createMeeting);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.createClass);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.createCatechumen);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.documentVerify('d1'));
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.exportReports);
   });
 });

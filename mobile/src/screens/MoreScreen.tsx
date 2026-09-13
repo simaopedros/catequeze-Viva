@@ -1,30 +1,26 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { BrandButton, IconTile, Screen, ScreenTitle } from '../components/ui';
-import type { SocialProfile, Workspace } from '../api/types';
+import type { Workspace } from '../api/types';
 import { workspaceTypeLabel } from '../lib/payload';
 import { colors, fonts, spacing } from '../theme';
-import { getMoreSections, type MoreNavContext } from './moreModules';
+import { getMoreSections, ioniconForKey, type MoreNavContext } from './moreModules';
 
 export function MoreScreen({
   name,
   workspaces,
   workspaceId,
-  profile,
   navContext,
   onSelectWorkspace,
   onOpenHref,
-  onOpenProfile,
   onLogout,
 }: {
   name: string;
   workspaces: Workspace[];
   workspaceId: string | null;
-  profile?: SocialProfile | null;
   navContext?: MoreNavContext;
   onSelectWorkspace: (id: string) => void;
   onOpenHref: (href: string) => void;
-  onOpenProfile: () => void;
   onLogout: () => void;
 }) {
   const sections = getMoreSections(navContext);
@@ -46,24 +42,22 @@ export function MoreScreen({
           >
             {section.title}
           </Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
             {section.items.map((item) => (
               <IconTile
                 key={item.id}
                 testID={`more-${item.id}`}
                 label={item.label}
-                hint={item.live ? undefined : 'Só na web'}
-                icon={item.icon}
+                icon={ioniconForKey(item.iconKey)}
                 onPress={() => onOpenHref(item.href)}
               />
             ))}
           </View>
         </View>
       ))}
-      {profile?.handle ? (
-        <BrandButton variant="ghost" label={`Ver perfil @${profile.handle}`} onPress={onOpenProfile} />
-      ) : null}
-      <Text style={{ color: colors.ink, fontFamily: fonts.serif, fontSize: 20, marginBottom: 8 }}>Espaço de trabalho</Text>
+      <Text style={{ color: colors.ink, fontFamily: fonts.serif, fontSize: 20, marginBottom: 8 }}>
+        Espaço de trabalho
+      </Text>
       {workspaces.length === 0 ? (
         <Text style={{ color: colors.muted }}>Nenhum espaço ligado a esta conta.</Text>
       ) : (

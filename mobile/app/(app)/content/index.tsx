@@ -1,13 +1,16 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { useAuth } from '../../../src/auth/AuthContext';
+import { useAuth, workspaceNavContext } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
 import { asItems, personName, statusLabel } from '../../../src/lib/payload';
+import { canManagePastoral } from '../../../src/lib/roleAccess';
+import { appRoutes } from '../../../src/navigation/routes';
 import { CatalogScreen } from '../../../src/screens/CatalogScreen';
 
 export default function ContentLibraryRoute() {
-  const { api, workspaceId } = useAuth();
+  const { api, workspaceId, bootstrap } = useAuth();
   const router = useRouter();
+  const nav = workspaceNavContext(bootstrap, workspaceId);
   const { data, loading, error } = useAsync(
     () => api.content(workspaceId || undefined),
     [workspaceId],
@@ -30,6 +33,9 @@ export default function ContentLibraryRoute() {
       error={error}
       emptyTitle="Biblioteca vazia"
       emptyBody="Ainda não há conteúdos publicados neste espaço."
+      canWrite={canManagePastoral(nav.role, nav.isAdmin)}
+      createLabel="Novo conteúdo"
+      onCreate={() => router.push(appRoutes.form('content'))}
       onOpen={(id) => router.push(`/(app)/content/${id}`)}
     />
   );

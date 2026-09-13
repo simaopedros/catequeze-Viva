@@ -17,7 +17,7 @@ export function TopicsDirectoryScreen({
 }) {
   return (
     <Screen testID="topics-screen">
-      <ScreenTitle title="Tópicos" subtitle="As áreas temáticas da Comunidade — toque para abrir o feed." />
+      <ScreenTitle title="Espaços" subtitle="Salas temáticas da Comunidade — toque para abrir o feed." />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Tópicos indisponíveis" body={error} /> : null}
       {!loading && topics.length === 0 ? (

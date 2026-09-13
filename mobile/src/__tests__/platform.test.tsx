@@ -74,6 +74,13 @@ describe('platform catalogue', () => {
     );
     expect(ids).not.toContain('calendar');
     expect(ids).not.toContain('ai');
+    expect(MORE_SECTIONS.map((section) => section.id)).toEqual([
+      'operation',
+      'people',
+      'content',
+      'management',
+      'settings',
+    ]);
   });
 
   it('hides personal-workspace and guardian-only destinations', () => {
@@ -117,7 +124,6 @@ describe('platform UI', () => {
         workspaceId="p1"
         onSelectWorkspace={jest.fn()}
         onOpenHref={onOpenHref}
-        onOpenProfile={jest.fn()}
         onLogout={jest.fn()}
       />,
     );
@@ -127,6 +133,12 @@ describe('platform UI', () => {
     expect(view.getByText('Catequizandos')).toBeTruthy();
     expect(view.getByText('Biblioteca')).toBeTruthy();
     expect(view.getByText('Mensagens')).toBeTruthy();
+    expect(view.getByText('Operação')).toBeTruthy();
+    expect(view.getByText('Pessoas')).toBeTruthy();
+    expect(view.getByText('Conteúdo')).toBeTruthy();
+    expect(view.getByText('Gestão')).toBeTruthy();
+    expect(view.getByText('Definições')).toBeTruthy();
+    expect(view.queryByText(/Ver perfil @/)).toBeNull();
     fireEvent.press(view.getByTestId('more-library'));
     expect(onOpenHref).toHaveBeenCalledWith(appRoutes.content);
   });

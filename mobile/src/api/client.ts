@@ -424,6 +424,137 @@ export function createMobileClient(options: MobileClientOptions) {
     consents() {
       return request<any>(MOBILE_PATHS.consents);
     },
+    createClass(body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.createClass, { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateClass(id: string, body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.updateClass(id), { method: 'POST', body: JSON.stringify({ ...body, id }) });
+    },
+    archiveClass(id: string) {
+      return request<any>(MOBILE_PATHS.archiveClass(id), { method: 'POST', body: JSON.stringify({ id }) });
+    },
+    enrollCatechumen(classId: string, catechumenProfileId: string) {
+      return request<any>(MOBILE_PATHS.enrollCatechumen(classId), {
+        method: 'POST',
+        body: JSON.stringify({ classId, catechumenProfileId }),
+      });
+    },
+    createMeeting(body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.createMeeting, { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateMeeting(id: string, body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.updateMeeting(id), { method: 'POST', body: JSON.stringify({ ...body, id }) });
+    },
+    deleteMeeting(id: string) {
+      return request<any>(MOBILE_PATHS.deleteMeeting(id), { method: 'POST', body: JSON.stringify({ id }) });
+    },
+    createCalendarEvent(body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.createCalendarEvent, { method: 'POST', body: JSON.stringify(body) });
+    },
+    deleteCalendarEvent(id: string) {
+      return request<any>(MOBILE_PATHS.deleteCalendarEvent(id), { method: 'POST', body: JSON.stringify({ id }) });
+    },
+    createConversation(body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.createConversation, { method: 'POST', body: JSON.stringify(body) });
+    },
+    createAnnouncement(body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.createAnnouncement, { method: 'POST', body: JSON.stringify(body) });
+    },
+    publishAnnouncement(id: string) {
+      return request<any>(MOBILE_PATHS.publishAnnouncement(id), { method: 'POST', body: JSON.stringify({ id }) });
+    },
+    createGroup(body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.createGroup, { method: 'POST', body: JSON.stringify(body) });
+    },
+    joinGroup(groupId: string) {
+      return request<any>(MOBILE_PATHS.joinGroup(groupId), { method: 'POST', body: JSON.stringify({ groupId }) });
+    },
+    createCatechumen(body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.createCatechumen, { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateCatechumen(id: string, body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.updateCatechumen(id), { method: 'POST', body: JSON.stringify({ ...body, id }) });
+    },
+    deleteCatechumen(id: string) {
+      return request<any>(MOBILE_PATHS.deleteCatechumen(id), { method: 'POST', body: JSON.stringify({ id }) });
+    },
+    createHousehold(body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.createHousehold, { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateHousehold(id: string, body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.updateHousehold(id), { method: 'POST', body: JSON.stringify({ ...body, id }) });
+    },
+    inviteUser(body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.teamInvite, { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateMembershipRole(membershipId: string, role: string, communityId?: string) {
+      return request<any>(MOBILE_PATHS.teamRole(membershipId), {
+        method: 'POST',
+        body: JSON.stringify({ membershipId, role, communityId }),
+      });
+    },
+    createFamilyInvite(body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.createFamilyInvite, { method: 'POST', body: JSON.stringify(body) });
+    },
+    verifyDocument(id: string) {
+      return request<any>(MOBILE_PATHS.documentVerify(id), { method: 'POST', body: JSON.stringify({ id }) });
+    },
+    uploadDocument(file: { uri: string; name?: string; type?: string }, fields: Record<string, string>) {
+      const form = new FormData();
+      form.append('file', file as any);
+      for (const [key, value] of Object.entries(fields)) {
+        if (value) form.append(key, value);
+      }
+      return request<any>(MOBILE_PATHS.documentUpload, { method: 'POST', body: form });
+    },
+    createContent(body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.createContent, { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateContent(id: string, body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.updateContent(id), { method: 'POST', body: JSON.stringify({ ...body, id }) });
+    },
+    createSacrament(body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.createSacrament, { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateSacrament(id: string, body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.updateSacrament(id), { method: 'POST', body: JSON.stringify({ ...body, id }) });
+    },
+    updateMilestone(milestoneId: string, body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.updateMilestone(milestoneId), {
+        method: 'POST',
+        body: JSON.stringify({ ...body, milestoneId }),
+      });
+    },
+    createFormation(body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.createFormation, { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateFormation(id: string, body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.updateFormation(id), { method: 'POST', body: JSON.stringify({ ...body, id }) });
+    },
+    deleteFormation(id: string, workspaceId?: string) {
+      return request<any>(MOBILE_PATHS.deleteFormation(id), {
+        method: 'POST',
+        body: JSON.stringify({ id, workspaceId }),
+      });
+    },
+    createParish(body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.createParish, { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateParish(id: string, body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.updateParish(id), { method: 'POST', body: JSON.stringify({ ...body, id }) });
+    },
+    deleteParish(id: string, confirmation = 'DELETAR') {
+      return request<any>(MOBILE_PATHS.deleteParish(id), {
+        method: 'POST',
+        body: JSON.stringify({ id, confirmation }),
+      });
+    },
+    exportReports(workspaceId?: string) {
+      return request<any>(MOBILE_PATHS.exportReports, {
+        method: 'POST',
+        body: JSON.stringify({ workspaceId }),
+      });
+    },
   };
 }
 

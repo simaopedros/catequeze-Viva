@@ -63,6 +63,14 @@ export const appRoutes = {
   parishes: '/(app)/parishes',
   consents: '/(app)/consents',
   aiHub: '/(app)/ai',
+  form: (kind: string, query?: Record<string, string | undefined>) => {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(query || {})) {
+      if (value) params.set(key, value);
+    }
+    const encoded = params.toString();
+    return `/(app)/form/${encodeURIComponent(kind)}${encoded ? `?${encoded}` : ''}`;
+  },
 } as const;
 
 export function resolveAuthHref(status: 'booting' | 'guest' | 'needs2fa' | 'ready') {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { EmptyState, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
+import { CrudBar, EmptyState, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
 import { formatTime } from '../lib/payload';
 
 function asConversations(payload: any) {
@@ -15,16 +15,21 @@ export function MessagesScreen({
   loading,
   error,
   onOpen,
+  onCreate,
+  canWrite,
 }: {
   payload: any;
   loading?: boolean;
   error?: string | null;
   onOpen: (id: string) => void;
+  onCreate?: () => void;
+  canWrite?: boolean;
 }) {
   const items = asConversations(payload);
   return (
     <Screen testID="messages-screen">
       <ScreenTitle title="Mensagens" subtitle="Toque numa conversa para abrir o fio." />
+      <CrudBar canWrite={canWrite} onCreate={onCreate} createLabel="Nova conversa" />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Mensagens indisponíveis" body={error} /> : null}
       {items.length === 0 && !loading ? (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, Card, CrudBar, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import { colors } from '../theme';
 
 export function AnnouncementsScreen({
@@ -8,17 +8,22 @@ export function AnnouncementsScreen({
   loading,
   error,
   onAck,
+  onCreate,
+  canWrite,
   busyId,
 }: {
   items: any[];
   loading?: boolean;
   error?: string | null;
   onAck: (id: string) => void;
+  onCreate?: () => void;
+  canWrite?: boolean;
   busyId?: string | null;
 }) {
   return (
     <Screen testID="announcements-screen">
       <ScreenTitle title="Comunicados" subtitle="Avisos da paróquia, diocese e comunidade." />
+      <CrudBar canWrite={canWrite} onCreate={onCreate} createLabel="Novo comunicado" />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Comunicados indisponíveis" body={error} /> : null}
       {!loading && items.length === 0 ? (

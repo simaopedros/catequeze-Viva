@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmptyState, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
+import { CrudBar, EmptyState, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
 
 type ClassItem = {
   id: string;
@@ -23,16 +23,21 @@ export function ClassesScreen({
   loading,
   error,
   onOpen,
+  onCreate,
+  canWrite,
 }: {
   payload: any;
   loading?: boolean;
   error?: string | null;
   onOpen: (id: string) => void;
+  onCreate?: () => void;
+  canWrite?: boolean;
 }) {
   const items = asList(payload);
   return (
     <Screen testID="classes-screen">
       <ScreenTitle title="Turmas" subtitle="Etapa, comunidade e a próxima agenda." />
+      <CrudBar canWrite={canWrite} onCreate={onCreate} createLabel="Nova turma" />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Turmas indisponíveis" body={error} /> : null}
       {!loading && items.length === 0 ? (

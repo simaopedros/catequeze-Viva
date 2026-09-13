@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -551,17 +552,52 @@ export function IconTile({
   return (
     <Pressable accessibilityRole="button" testID={testID} onPress={onPress} style={styles.tile}>
       <View style={styles.tileIcon}>
-        <Text style={styles.tileGlyph}>{icon || label.slice(0, 1)}</Text>
+        <Ionicons name={(icon as any) || 'ellipse-outline'} size={20} color={colors.cream} />
       </View>
-      <Text allowFontScaling style={styles.tileLabel} numberOfLines={2}>
+      <Text
+        allowFontScaling
+        style={styles.tileLabel}
+        numberOfLines={2}
+        adjustsFontSizeToFit
+        minimumFontScale={0.8}
+      >
         {label}
       </Text>
       {hint ? (
-        <Text allowFontScaling style={styles.caption} numberOfLines={2}>
+        <Text allowFontScaling style={styles.caption} numberOfLines={1}>
           {hint}
         </Text>
       ) : null}
     </Pressable>
+  );
+}
+
+export function CrudBar({
+  onCreate,
+  onEdit,
+  onDelete,
+  createLabel = 'Criar',
+  editLabel = 'Editar',
+  deleteLabel = 'Arquivar',
+  canWrite,
+}: {
+  onCreate?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  createLabel?: string;
+  editLabel?: string;
+  deleteLabel?: string;
+  canWrite?: boolean;
+}) {
+  if (!canWrite) return null;
+  return (
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: spacing.md }}>
+      {onCreate ? <BrandButton label={createLabel} onPress={onCreate} testID="crud-create" /> : null}
+      {onEdit ? <BrandButton variant="ghost" label={editLabel} onPress={onEdit} testID="crud-edit" /> : null}
+      {onDelete ? (
+        <BrandButton variant="danger" label={deleteLabel} onPress={onDelete} testID="crud-delete" />
+      ) : null}
+    </View>
   );
 }
 
@@ -858,7 +894,7 @@ const styles = StyleSheet.create({
   },
   shortcutLabel: { fontFamily: fonts.sansSemi, fontSize: 15, color: colors.ink },
   tile: {
-    width: '31%',
+    width: '48%',
     minHeight: 96,
     marginBottom: spacing.sm,
     padding: spacing.sm,
@@ -866,16 +902,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.canvas,
   },
   tileIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: colors.ink,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
   },
   tileGlyph: { color: colors.cream, fontFamily: fonts.serif, fontSize: 16 },
-  tileLabel: { fontFamily: fonts.sansSemi, fontSize: 13, color: colors.ink },
+  tileLabel: { fontFamily: fonts.sansSemi, fontSize: 14, color: colors.ink, minHeight: 36 },
   search: {
     backgroundColor: colors.canvas,
     borderRadius: radii.pill,
