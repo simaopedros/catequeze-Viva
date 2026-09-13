@@ -67,5 +67,7 @@ describe('mobile pastoral CRUD API wiring', () => {
     expect(crudSource).toContain("from '../operations/parishOperations'");
     expect(crudSource).toContain('assertTwoFactorSessionVerified');
     expect(crudSource).toContain('UserTwoFactor:');
+    expect(crudSource).toContain('enrollCatechumen({ classId, catechumenProfileId }');
+    expect(crudSource).toContain('updateMembershipRole({ membershipId, role, communityId }');
   });
 });

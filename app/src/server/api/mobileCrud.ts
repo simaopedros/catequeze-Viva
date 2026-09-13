@@ -74,6 +74,11 @@ function mergeArgs(req: Request): Record<string, unknown> {
   return args;
 }
 
+function strArg(args: Record<string, unknown>, key: string, fallback = ''): string {
+  const value = args[key];
+  return typeof value === 'string' && value.trim() ? value : fallback;
+}
+
 async function invoke(
   req: Request,
   res: Response,
@@ -97,8 +102,9 @@ export async function mobileArchiveClass(req: Request, res: Response, context: a
 export async function mobileEnrollCatechumen(req: Request, res: Response, context: any) {
   const opCtx = await requireSession(context);
   const args = mergeArgs(req);
-  if (!args.classId && req.params?.id) args.classId = req.params.id;
-  return res.json(await enrollCatechumen(args, opCtx));
+  const classId = strArg(args, 'classId', typeof req.params?.id === 'string' ? req.params.id : '');
+  const catechumenProfileId = strArg(args, 'catechumenProfileId');
+  return res.json(await enrollCatechumen({ classId, catechumenProfileId }, opCtx));
 }
 
 export async function mobileCreateMeeting(req: Request, res: Response, context: any) {
@@ -135,8 +141,8 @@ export async function mobileCreateGroup(req: Request, res: Response, context: an
 export async function mobileJoinGroup(req: Request, res: Response, context: any) {
   const opCtx = await requireSession(context);
   const args = mergeArgs(req);
-  if (!args.groupId && req.params?.id) args.groupId = req.params.id;
-  return res.json(await joinPastoralGroup(args as { groupId: string }, opCtx));
+  const groupId = strArg(args, 'groupId', typeof req.params?.id === 'string' ? req.params.id : '');
+  return res.json(await joinPastoralGroup({ groupId }, opCtx));
 }
 
 export async function mobileCreateCatechumen(req: Request, res: Response, context: any) {
@@ -165,8 +171,12 @@ export async function mobileCreateFamilyInvite(req: Request, res: Response, cont
 export async function mobileUpdateMembershipRole(req: Request, res: Response, context: any) {
   const opCtx = await requireSession(context);
   const args = mergeArgs(req);
-  if (!args.membershipId && req.params?.id) args.membershipId = req.params.id;
-  return res.json(await updateMembershipRole(args, opCtx));
+  const membershipId = strArg(args, 'membershipId', typeof req.params?.id === 'string' ? req.params.id : '');
+  const role = strArg(args, 'role');
+  const communityRaw = args.communityId;
+  const communityId =
+    typeof communityRaw === 'string' ? communityRaw : communityRaw === null ? null : undefined;
+  return res.json(await updateMembershipRole({ membershipId, role, communityId }, opCtx));
 }
 
 export async function mobileVerifyDocument(req: Request, res: Response, context: any) {
