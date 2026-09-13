@@ -47,4 +47,4 @@ docker compose -f docker-compose.yml up -d --force-recreate caddy
 
 O `scripts/deploy.sh` recusa deploy se o Caddyfile ativo não contiver `handle /api/*`.
 
-Ver também: `docs/PROVISIONING.md`, `docs/HOMOLOG.md`, `docs/BACKUP.md`
+Ver também: `docs/PROVISIONING.md`, `docs/HOMOLOG.md`, `docs/BACKUP.md`, `docs/CLOUDFLARE_MIGRATION.md`
