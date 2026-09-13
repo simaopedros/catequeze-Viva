@@ -17,14 +17,14 @@ export default function TabsLayout() {
         const current = state?.routes?.[state.index]?.name;
         const immersive = current === 'community';
         return {
-          headerStyle: { backgroundColor: immersive ? '#000' : colors.paper },
-          headerTintColor: immersive ? '#D4AF37' : colors.ink,
+          headerStyle: { backgroundColor: immersive ? colors.immersive : colors.paper },
+          headerTintColor: immersive ? colors.gold : colors.ink,
           headerTitleStyle: { fontFamily: fonts.serif },
-          tabBarActiveTintColor: immersive ? '#D4AF37' : colors.goldDark,
-          tabBarInactiveTintColor: immersive ? '#8a8a8a' : colors.muted,
+          tabBarActiveTintColor: immersive ? colors.gold : colors.goldDark,
+          tabBarInactiveTintColor: immersive ? colors.muted : colors.muted,
           tabBarLabelStyle: { fontFamily: fonts.sansMedium, fontSize: 11 },
           tabBarStyle: immersive
-            ? { backgroundColor: '#000000', borderTopColor: '#1a1a1a', minHeight: 52 }
+            ? { backgroundColor: colors.immersive, borderTopColor: colors.immersiveLine, minHeight: 52 }
             : {
                 backgroundColor: colors.paper,
                 borderTopColor: colors.line,
@@ -47,11 +47,11 @@ export default function TabsLayout() {
           headerShown: false,
           href: show('community') ? undefined : null,
           tabBarIcon: ({ color, size }) => <Ionicons name="people-outline" color={color} size={size} />,
-          tabBarActiveTintColor: '#D4AF37',
-          tabBarInactiveTintColor: '#8a8a8a',
+          tabBarActiveTintColor: colors.gold,
+          tabBarInactiveTintColor: colors.muted,
           tabBarStyle: {
-            backgroundColor: '#000000',
-            borderTopColor: '#1a1a1a',
+            backgroundColor: colors.immersive,
+            borderTopColor: colors.immersiveLine,
             minHeight: 52,
           },
         }}

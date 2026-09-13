@@ -60,7 +60,7 @@ function NativeVideo({ uri, active, cover, testID }: Props) {
       player={player}
       nativeControls={false}
       contentFit={cover === false ? 'contain' : 'cover'}
-      style={{ position: 'absolute', width: '100%', height: '100%', backgroundColor: '#000' }}
+      style={{ position: 'absolute', width: '100%', height: '100%', backgroundColor: colors.immersive }}
       testID={testID || 'short-video'}
     />
   );
@@ -69,7 +69,7 @@ function NativeVideo({ uri, active, cover, testID }: Props) {
 export function ShortVideo(props: Props) {
   if (!props.uri) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.rhemaBlack }} testID={props.testID || 'short-video'}>
+      <View style={{ flex: 1, backgroundColor: colors.immersive }} testID={props.testID || 'short-video'}>
         {props.poster ? (
           <Image source={{ uri: props.poster }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
         ) : null}
@@ -82,7 +82,7 @@ export function ShortVideo(props: Props) {
     return <NativeVideo {...props} />;
   } catch {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.rhemaBlack }} testID={props.testID || 'short-video'}>
+      <View style={{ flex: 1, backgroundColor: colors.immersive }} testID={props.testID || 'short-video'}>
         {props.poster ? (
           <Image source={{ uri: props.poster }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
         ) : null}

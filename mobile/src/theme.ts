@@ -1,13 +1,15 @@
 import { Platform } from 'react-native';
 
-/** Brand stays ink / gold; cream is an accent, not the page. */
+/**
+ * Expo tokens — mirrored from `app/src/shared/designTokens.ts`.
+ * Brand stays ink / gold; cream is an accent, not the page.
+ * Immersive (Rhema player) may be black; gold accents use `gold` / `goldDark`.
+ */
 export const colors = {
   ink: '#071d36',
   inkSoft: '#123152',
   gold: '#bd8b58',
   goldDark: '#8d6238',
-  rhemaGold: '#D4AF37',
-  rhemaBlack: '#000000',
   cream: '#f6efe4',
   paper: '#fffdf8',
   canvas: '#f4efe6',
@@ -16,6 +18,12 @@ export const colors = {
   danger: '#b42318',
   success: '#1f7a4d',
   white: '#ffffff',
+  onInk: '#e8eef5',
+  onInkMuted: '#c9d6e4',
+  immersive: '#000000',
+  immersiveElevated: '#111111',
+  immersiveLine: '#1a1a1a',
+  immersiveScrim: 'rgba(0,0,0,0.45)',
   bubbleMine: '#071d36',
   bubbleTheirs: '#f3eadc',
   present: '#1f7a4d',
@@ -37,6 +45,16 @@ export const radii = {
   md: 16,
   lg: 22,
   pill: 999,
+} as const;
+
+export const shadows = {
+  card: {
+    shadowColor: '#071d36',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
 } as const;
 
 export const hitSlop = { top: 8, bottom: 8, left: 8, right: 8 } as const;

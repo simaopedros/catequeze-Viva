@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { BrandButton, IconTile, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, IconTile, Screen, ScreenTitle, SectionHeader } from '../components/ui';
 import type { Workspace } from '../api/types';
 import { workspaceTypeLabel } from '../lib/payload';
 import { colors, fonts, spacing } from '../theme';
@@ -30,18 +30,7 @@ export function MoreScreen({
       <ScreenTitle title="Mais" subtitle={name} />
       {sections.map((section) => (
         <View key={section.id} style={{ marginBottom: spacing.md }}>
-          <Text
-            style={{
-              color: colors.ink,
-              fontFamily: fonts.sansBold,
-              fontSize: 13,
-              letterSpacing: 0.4,
-              textTransform: 'uppercase',
-              marginBottom: 10,
-            }}
-          >
-            {section.title}
-          </Text>
+          <SectionHeader title={section.title} />
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
             {section.items.map((item) => (
               <IconTile

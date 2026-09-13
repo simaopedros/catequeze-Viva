@@ -12,6 +12,7 @@ import {
   View,
   type ViewToken,
 } from 'react-native';
+import { EmptyState, LoadingState } from '../components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { SocialAccess, SocialComment, SocialPost } from '../api/types';
 import { ShortVideo } from '../components/ShortVideo';
@@ -24,7 +25,7 @@ import {
   resolveMediaUrl,
   type FeedTabId,
 } from '../lib/social';
-import { colors, fonts } from '../theme';
+import { colors, fonts, radii, spacing } from '../theme';
 
 type Props = {
   posts: SocialPost[];
@@ -123,7 +124,7 @@ export function CommunityScreen({
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 70 }).current;
 
   return (
-    <View testID="community-screen" style={{ flex: 1, backgroundColor: colors.rhemaBlack }}>
+    <View testID="community-screen" style={{ flex: 1, backgroundColor: colors.immersive }}>
       <FlatList
         testID="rhema-feed"
         data={posts}
@@ -139,39 +140,20 @@ export function CommunityScreen({
         viewabilityConfig={viewabilityConfig}
         getItemLayout={(_, index) => ({ length: pageHeight, offset: pageHeight * index, index })}
         ListEmptyComponent={
-          loading ? (
-            <View style={{ height: pageHeight, alignItems: 'center', justifyContent: 'center' }}>
-              <ActivityIndicator color={colors.rhemaGold} />
-            </View>
-          ) : (
-            <View
-              style={{ height: pageHeight, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 }}
-            >
-              <Text style={{ color: '#fff', fontFamily: fonts.serif, fontSize: 26, textAlign: 'center' }}>
-                Grava o primeiro testemunho
-              </Text>
-              {error ? (
-                <Text style={{ color: 'rgba(255,255,255,0.7)', marginTop: 8, textAlign: 'center' }}>{error}</Text>
-              ) : (
-                <Text style={{ color: 'rgba(255,255,255,0.7)', marginTop: 8, textAlign: 'center' }}>
-                  Um vídeo curto para a Comunidade.
-                </Text>
-              )}
-              <Pressable
-                testID="empty-record-cta"
-                onPress={onUpload || onCompose}
-                style={{
-                  marginTop: 20,
-                  backgroundColor: colors.rhemaGold,
-                  paddingHorizontal: 20,
-                  paddingVertical: 12,
-                  borderRadius: 999,
-                }}
-              >
-                <Text style={{ color: colors.rhemaBlack, fontFamily: fonts.sansBold }}>Gravar</Text>
-              </Pressable>
-            </View>
-          )
+          <View style={{ height: pageHeight, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 }}>
+            {loading ? (
+              <LoadingState immersive />
+            ) : (
+              <EmptyState
+                immersive
+                title="Grava o primeiro testemunho"
+                body={error || 'Um vídeo curto para a Comunidade.'}
+                actionLabel="Gravar"
+                onAction={onUpload || onCompose}
+                actionTestID="empty-record-cta"
+              />
+            )}
+          </View>
         }
         renderItem={({ item, index }) => {
           const uri = videoUri(item);
@@ -179,14 +161,14 @@ export function CommunityScreen({
           const shouldLoad = Math.abs(index - activeIndex) <= 1;
           const active = item.id === activeId;
           return (
-            <View style={{ height: pageHeight, width: '100%', backgroundColor: '#000', overflow: 'hidden' }} testID={`rhema-page-${item.id}`}>
+            <View style={{ height: pageHeight, width: '100%', backgroundColor: colors.immersive, overflow: 'hidden' }} testID={`rhema-page-${item.id}`}>
               <View style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}>
                 {shouldLoad && uri ? (
                   <ShortVideo uri={uri} active={active} poster={poster} />
                 ) : poster ? (
-                  <View style={{ flex: 1, backgroundColor: '#000' }} />
+                  <View style={{ flex: 1, backgroundColor: colors.immersive }} />
                 ) : (
-                  <View style={{ flex: 1, backgroundColor: '#111' }} />
+                  <View style={{ flex: 1, backgroundColor: colors.immersiveElevated }} />
                 )}
               </View>
               <VideoOverlay
@@ -224,7 +206,7 @@ export function CommunityScreen({
           onPress={onSearch}
           style={{ width: 40, height: 44, alignItems: 'center', justifyContent: 'center' }}
         >
-          <Ionicons name="search-outline" size={22} color="#fff" />
+          <Ionicons name="search-outline" size={22} color={colors.white} />
         </Pressable>
         <View testID="feed-tabs" style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', gap: 16 }}>
           {RHEMA_TABS.map((item) => {
@@ -233,12 +215,12 @@ export function CommunityScreen({
               <Pressable key={item.id} testID={`feed-tab-${item.id}`} onPress={() => onChangeTab(item.id)}>
                 <Text
                   style={{
-                    color: on ? colors.rhemaGold : 'rgba(255,255,255,0.78)',
+                    color: on ? colors.gold : colors.onInkMuted,
                     fontFamily: fonts.sansSemi,
                     fontSize: 16,
                     paddingBottom: 4,
                     borderBottomWidth: on ? 2 : 0,
-                    borderBottomColor: colors.rhemaGold,
+                    borderBottomColor: colors.gold,
                   }}
                 >
                   {item.label}
@@ -254,8 +236,8 @@ export function CommunityScreen({
             accessibilityLabel="Publicação"
             style={{ alignItems: 'center', marginRight: 2, paddingHorizontal: 4 }}
           >
-            <Ionicons name="create-outline" size={20} color={colors.rhemaGold} />
-            <Text style={{ color: colors.rhemaGold, fontFamily: fonts.sansSemi, fontSize: 9 }}>Publicação</Text>
+            <Ionicons name="create-outline" size={20} color={colors.gold} />
+            <Text style={{ color: colors.gold, fontFamily: fonts.sansSemi, fontSize: 9 }}>Publicação</Text>
           </Pressable>
           <Pressable
             testID="compose-open"
@@ -263,34 +245,34 @@ export function CommunityScreen({
             accessibilityLabel="Carregar vídeo"
             style={{ width: 40, height: 44, alignItems: 'center', justifyContent: 'center' }}
           >
-            <Ionicons name="add" size={28} color={colors.rhemaGold} />
+            <Ionicons name="add" size={28} color={colors.gold} />
           </Pressable>
           <Pressable
             testID="community-profile"
             onPress={onOpenProfile}
             style={{ width: 40, height: 44, alignItems: 'center', justifyContent: 'center' }}
           >
-            <Ionicons name="person-circle-outline" size={24} color="#fff" />
+            <Ionicons name="person-circle-outline" size={24} color={colors.white} />
           </Pressable>
         </View>
       </View>
 
       <Modal visible={Boolean(drawerPostId)} animationType="slide" transparent onRequestClose={() => setDrawerPostId(null)}>
-        <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.45)' }} onPress={() => setDrawerPostId(null)} />
+        <Pressable style={{ flex: 1, backgroundColor: colors.immersiveScrim }} onPress={() => setDrawerPostId(null)} />
         <View
           testID="comments-drawer"
           style={{
-            backgroundColor: '#111',
-            paddingHorizontal: 16,
-            paddingTop: 16,
+            backgroundColor: colors.immersiveElevated,
+            paddingHorizontal: spacing.md,
+            paddingTop: spacing.md,
             paddingBottom: 24 + insets.bottom,
             maxHeight: '55%',
           }}
         >
-          <Text style={{ color: '#fff', fontFamily: fonts.sansBold, fontSize: 16, marginBottom: 12 }}>Comentários</Text>
-          {commentsBusy ? <ActivityIndicator color={colors.rhemaGold} /> : null}
+          <Text style={{ color: colors.white, fontFamily: fonts.sansBold, fontSize: 16, marginBottom: 12 }}>Comentários</Text>
+          {commentsBusy ? <ActivityIndicator color={colors.gold} /> : null}
           {comments.map((item) => (
-            <Text key={item.id} style={{ color: 'rgba(255,255,255,0.9)', marginBottom: 8 }}>
+            <Text key={item.id} style={{ color: colors.onInk, marginBottom: 8 }}>
               {item.author.displayName}: {item.body}
             </Text>
           ))}
@@ -300,13 +282,13 @@ export function CommunityScreen({
               value={draft}
               onChangeText={setDraft}
               placeholder="Escreva um comentário"
-              placeholderTextColor="rgba(255,255,255,0.45)"
+              placeholderTextColor={colors.onInkMuted}
               style={{
                 flex: 1,
-                color: '#fff',
+                color: colors.white,
                 borderWidth: 1,
-                borderColor: '#333',
-                borderRadius: 12,
+                borderColor: colors.immersiveLine,
+                borderRadius: radii.sm,
                 paddingHorizontal: 12,
                 minHeight: 44,
               }}
@@ -319,13 +301,13 @@ export function CommunityScreen({
                 setDraft('');
               }}
               style={{
-                backgroundColor: colors.rhemaGold,
-                borderRadius: 12,
+                backgroundColor: colors.gold,
+                borderRadius: radii.sm,
                 paddingHorizontal: 14,
                 justifyContent: 'center',
               }}
             >
-              <Text style={{ color: '#000', fontFamily: fonts.sansBold }}>Enviar</Text>
+              <Text style={{ color: colors.ink, fontFamily: fonts.sansBold }}>Enviar</Text>
             </Pressable>
           </View>
         </View>

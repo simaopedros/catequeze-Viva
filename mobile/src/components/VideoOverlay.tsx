@@ -28,7 +28,7 @@ export function VideoOverlay({
   onFollow?: () => void;
 }) {
   const handle = post.author.handle || post.author.socialHandle;
-  const gold = colors.rhemaGold;
+  const gold = colors.gold;
   return (
     <View
       testID={`overlay-${post.id}`}
@@ -54,27 +54,27 @@ export function VideoOverlay({
               onPress={() => onReact?.(item.type)}
               style={{ alignItems: 'center' }}
             >
-              <Ionicons name={iconName} size={28} color={on ? gold : '#fff'} />
-              <Text style={{ color: on ? gold : '#fff', fontFamily: fonts.sansSemi, fontSize: 11, marginTop: 2 }}>
+              <Ionicons name={iconName} size={28} color={on ? gold : colors.white} />
+              <Text style={{ color: on ? gold : colors.white, fontFamily: fonts.sansSemi, fontSize: 11, marginTop: 2 }}>
                 {item.label}
               </Text>
             </Pressable>
           );
         })}
         <Pressable testID="overlay-comments" onPress={onComments} style={{ alignItems: 'center' }}>
-          <Ionicons name="chatbubble-ellipses-outline" size={28} color="#fff" />
-          <Text style={{ color: '#fff', fontFamily: fonts.sansSemi, fontSize: 11, marginTop: 2 }}>
+          <Ionicons name="chatbubble-ellipses-outline" size={28} color={colors.white} />
+          <Text style={{ color: colors.white, fontFamily: fonts.sansSemi, fontSize: 11, marginTop: 2 }}>
             {post.commentCount || 0}
           </Text>
         </Pressable>
         <Pressable testID="overlay-share" onPress={onShare} style={{ alignItems: 'center' }}>
-          <Ionicons name="arrow-redo-outline" size={28} color="#fff" />
-          <Text style={{ color: '#fff', fontFamily: fonts.sansSemi, fontSize: 11, marginTop: 2 }}>Partilhar</Text>
+          <Ionicons name="arrow-redo-outline" size={28} color={colors.white} />
+          <Text style={{ color: colors.white, fontFamily: fonts.sansSemi, fontSize: 11, marginTop: 2 }}>Partilhar</Text>
         </Pressable>
         {!post.isOwn && onFollow ? (
           <Pressable testID="overlay-follow" onPress={onFollow} style={{ alignItems: 'center' }}>
-            <Ionicons name={following ? 'checkmark-circle' : 'person-add-outline'} size={28} color={following ? gold : '#fff'} />
-            <Text style={{ color: following ? gold : '#fff', fontFamily: fonts.sansSemi, fontSize: 11, marginTop: 2 }}>
+            <Ionicons name={following ? 'checkmark-circle' : 'person-add-outline'} size={28} color={following ? gold : colors.white} />
+            <Text style={{ color: following ? gold : colors.white, fontFamily: fonts.sansSemi, fontSize: 11, marginTop: 2 }}>
               {following ? 'A seguir' : 'Seguir'}
             </Text>
           </Pressable>
@@ -85,12 +85,12 @@ export function VideoOverlay({
           testID={`overlay-author-${post.id}`}
           onPress={() => handle && onOpenAuthor?.(handle)}
         >
-          <Text style={{ color: '#fff', fontFamily: fonts.sansBold, fontSize: 16 }}>
+          <Text style={{ color: colors.white, fontFamily: fonts.sansBold, fontSize: 16 }}>
             @{handle || post.author.displayName}
           </Text>
         </Pressable>
         {post.body ? (
-          <Text style={{ color: 'rgba(255,255,255,0.92)', fontFamily: fonts.sans, fontSize: 14, marginTop: 6 }} numberOfLines={3}>
+          <Text style={{ color: colors.onInk, fontFamily: fonts.sans, fontSize: 14, marginTop: 6 }} numberOfLines={3}>
             {post.body}
           </Text>
         ) : null}

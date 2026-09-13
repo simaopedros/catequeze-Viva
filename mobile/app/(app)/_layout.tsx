@@ -16,12 +16,12 @@ export default function AppLayout() {
         name="community/upload"
         options={{
           title: 'Testemunho',
-          headerStyle: { backgroundColor: '#000' },
-          headerTintColor: '#D4AF37',
-          contentStyle: { backgroundColor: '#000' },
+          headerStyle: { backgroundColor: colors.immersive },
+          headerTintColor: colors.gold,
+          contentStyle: { backgroundColor: colors.immersive },
         }}
       />
-      <Stack.Screen name="community/watch/[id]" options={{ title: 'Vídeo', headerShown: false, contentStyle: { backgroundColor: '#000' } }} />
+      <Stack.Screen name="community/watch/[id]" options={{ title: 'Vídeo', headerShown: false, contentStyle: { backgroundColor: colors.immersive } }} />
       <Stack.Screen name="community/search" options={{ title: 'Pesquisar' }} />
       <Stack.Screen name="community/members" options={{ title: 'Membros' }} />
       <Stack.Screen name="community/topics" options={{ title: 'Tópicos' }} />

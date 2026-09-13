@@ -20,18 +20,18 @@ export function LongVideoPlayerScreen({
   }, [uri]);
 
   return (
-    <View testID="long-player" style={{ flex: 1, backgroundColor: colors.rhemaBlack, justifyContent: 'center' }}>
-      <View style={{ width: '100%', height: landscape ? '100%' : width * (9 / 16), backgroundColor: '#000' }}>
+    <View testID="long-player" style={{ flex: 1, backgroundColor: colors.immersive, justifyContent: 'center' }}>
+      <View style={{ width: '100%', height: landscape ? '100%' : width * (9 / 16), backgroundColor: colors.immersive }}>
         <ShortVideo uri={uri} active cover={false} testID="long-video" />
       </View>
       {title ? (
-        <Text style={{ color: '#fff', fontFamily: fonts.sansSemi, padding: 16 }} numberOfLines={2}>
+        <Text style={{ color: colors.white, fontFamily: fonts.sansSemi, padding: 16 }} numberOfLines={2}>
           {title}
         </Text>
       ) : null}
       {onBack ? (
         <Pressable testID="long-player-back" onPress={onBack} style={{ position: 'absolute', top: 48, left: 16 }}>
-          <Text style={{ color: colors.rhemaGold, fontFamily: fonts.sansBold }}>Fechar</Text>
+          <Text style={{ color: colors.gold, fontFamily: fonts.sansBold }}>Fechar</Text>
         </Pressable>
       ) : null}
     </View>

@@ -47,7 +47,7 @@ export function Screen({
   onRefresh?: () => void;
   onEndReached?: () => void;
 }) {
-  const background = black ? colors.rhemaBlack : ink ? colors.ink : colors.paper;
+  const background = black ? colors.immersive : ink ? colors.ink : colors.paper;
   const content = (
     <ScrollView
       testID={footer ? undefined : testID}
@@ -94,6 +94,39 @@ export function ScreenTitle({ title, subtitle }: { title: string; subtitle?: str
           {subtitle}
         </Text>
       ) : null}
+    </View>
+  );
+}
+
+export function SectionHeader({ title }: { title: string }) {
+  return (
+    <Text
+      allowFontScaling
+      style={{
+        color: colors.ink,
+        fontFamily: fonts.sansBold,
+        fontSize: 13,
+        letterSpacing: 0.4,
+        textTransform: 'uppercase',
+        marginBottom: 10,
+      }}
+    >
+      {title}
+    </Text>
+  );
+}
+
+export function ProgressBar({ progress, testID }: { progress: number; testID?: string }) {
+  return (
+    <View testID={testID} style={{ height: 6, backgroundColor: colors.immersiveLine, borderRadius: radii.pill, marginBottom: 12 }}>
+      <View
+        style={{
+          width: `${Math.round(Math.max(0, Math.min(1, progress)) * 100)}%`,
+          height: 6,
+          backgroundColor: colors.gold,
+          borderRadius: radii.pill,
+        }}
+      />
     </View>
   );
 }
@@ -176,11 +209,17 @@ export function ErrorText({ message }: { message?: string | null }) {
   );
 }
 
-export function LoadingState({ label = 'Carregando…' }: { label?: string }) {
+export function LoadingState({
+  label = 'Carregando…',
+  immersive = false,
+}: {
+  label?: string;
+  immersive?: boolean;
+}) {
   return (
     <View style={styles.loading} testID="loading-state">
       <ActivityIndicator color={colors.gold} />
-      <Text allowFontScaling style={styles.subtitle}>
+      <Text allowFontScaling style={[styles.subtitle, immersive && { color: colors.onInkMuted }]}>
         {label}
       </Text>
     </View>
@@ -193,23 +232,27 @@ export function EmptyState({
   actionLabel,
   onAction,
   testID,
+  actionTestID,
+  immersive = false,
 }: {
   title: string;
   body: string;
   actionLabel?: string;
   onAction?: () => void;
   testID?: string;
+  actionTestID?: string;
+  immersive?: boolean;
 }) {
   return (
     <View style={styles.empty} testID={testID}>
-      <Text allowFontScaling style={styles.emptyTitle}>
+      <Text allowFontScaling style={[styles.emptyTitle, immersive && { color: colors.white }]}>
         {title}
       </Text>
-      <Text allowFontScaling style={styles.subtitle}>
+      <Text allowFontScaling style={[styles.subtitle, immersive && { color: colors.onInkMuted }]}>
         {body}
       </Text>
       {actionLabel && onAction ? (
-        <BrandButton label={actionLabel} onPress={onAction} />
+        <BrandButton testID={actionTestID} label={actionLabel} onPress={onAction} />
       ) : null}
     </View>
   );
@@ -868,7 +911,7 @@ const styles = StyleSheet.create({
   },
   heroKicker: { color: colors.gold, fontFamily: fonts.sansSemi, fontSize: 12, letterSpacing: 0.6 },
   heroTitle: { fontFamily: fonts.serifBold, fontSize: 26, lineHeight: 32, color: colors.cream, marginTop: 8 },
-  heroSubtitle: { color: '#c9d6e4', fontFamily: fonts.sans, fontSize: 15, marginTop: 8, lineHeight: 22 },
+  heroSubtitle: { color: colors.onInkMuted, fontFamily: fonts.sans, fontSize: 15, marginTop: 8, lineHeight: 22 },
   heroAction: { color: colors.gold, fontFamily: fonts.sansBold, marginTop: 14, fontSize: 15 },
   bubbleWrap: { marginBottom: spacing.sm, maxWidth: '86%' },
   bubble: { borderRadius: 18, paddingHorizontal: 14, paddingVertical: 10 },
