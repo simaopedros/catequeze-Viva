@@ -8,6 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { type DailyStatsProps } from "../../../analytics/stats";
 import { brandColors } from "../../../shared/designTokens";
 
 const REVENUE_COLOR = brandColors.gold;

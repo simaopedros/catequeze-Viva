@@ -3,6 +3,7 @@
  */
 import { useTranslation } from "react-i18next";
 import { BarChart3, Calendar, PieChart } from "lucide-react";
+import { EmptyState } from "../../../client/components/EmptyState";
 import { brandColors } from "../../../shared/designTokens";
 import {
   BarChart,
