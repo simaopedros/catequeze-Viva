@@ -55,6 +55,8 @@ function sendMediaBuffer(
   res.setHeader("Content-Type", contentType);
   res.setHeader("Cache-Control", cacheControl);
   res.setHeader("Accept-Ranges", "bytes");
+  // Expo web / Metro on another origin needs to display these <video> assets.
+  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
 
   const size = buffer.length;
   const rangeHeader =

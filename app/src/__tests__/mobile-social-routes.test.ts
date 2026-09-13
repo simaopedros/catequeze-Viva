@@ -84,3 +84,16 @@ describe('mobile social + bible API wiring', () => {
     expect(mobileSocialSource).toContain('userTwoFactor');
   });
 });
+
+describe('social media delivery', () => {
+  it('allows Expo web on another origin to play stored videos', () => {
+    const setupSource = readFileSync(resolve(__dirname, '../server/setup.ts'), 'utf8');
+    const mediaSource = readFileSync(
+      resolve(__dirname, '../server/api/socialMedia.ts'),
+      'utf8',
+    );
+    expect(setupSource).toContain("prependMiddleware(app as any, '/api/social', applyLocalMobileCors)");
+    expect(mediaSource).toContain('Cross-Origin-Resource-Policy');
+    expect(mediaSource).toContain('cross-origin');
+  });
+});
