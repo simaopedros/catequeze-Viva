@@ -4,6 +4,7 @@
     "slug": "catequis",
     "scheme": "catequis",
     "version": "1.0.0",
+    "runtimeVersion": "exposdk:57.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "icon": "./assets/icon.png",

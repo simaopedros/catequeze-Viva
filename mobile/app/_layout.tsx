@@ -13,12 +13,14 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { AuthProvider, useAuth } from '../src/auth/AuthContext';
 import { colors, fonts } from '../src/theme';
 
-void SplashScreen.preventAutoHideAsync();
+void SplashScreen.preventAutoHideAsync().catch(() => undefined);
+/** Expo Go stays on native splash (#071d36) until JS hides it. Never wait on fonts. */
+void SplashScreen.hideAsync().catch(() => undefined);
 
 function Gate({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
@@ -49,7 +51,7 @@ function Gate({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
-  const [loaded, fontError] = useFonts({
+  useFonts({
     SourceSerif4_400Regular,
     SourceSerif4_600SemiBold,
     SourceSerif4_700Bold,
@@ -58,22 +60,10 @@ export default function RootLayout() {
     Inter_600SemiBold,
     Inter_700Bold,
   });
-  const [timedOut, setTimedOut] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setTimedOut(true), 6000);
-    return () => clearTimeout(timer);
+    void SplashScreen.hideAsync().catch(() => undefined);
   }, []);
-
-  const ready = loaded || Boolean(fontError) || timedOut;
-
-  useEffect(() => {
-    if (ready) void SplashScreen.hideAsync();
-  }, [ready]);
-
-  if (!ready) {
-    return <View style={{ flex: 1, backgroundColor: colors.paper }} />;
-  }
 
   return (
     <AuthProvider>
