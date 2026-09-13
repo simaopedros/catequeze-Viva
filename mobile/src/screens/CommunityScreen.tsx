@@ -1,36 +1,32 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { PostCard } from '../components/PostCard';
-import { BrandButton, EmptyState, LoadingState, Screen } from '../components/ui';
-import type { SocialAccess, SocialPost, SocialReportReason } from '../api/types';
-import { communityPublishNotice, FEED_TABS, type FeedTabId } from '../lib/social';
-import { colors, fonts, spacing } from '../theme';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Modal,
+  Pressable,
+  Share,
+  Text,
+  TextInput,
+  View,
+  type ViewToken,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { SocialAccess, SocialComment, SocialPost } from '../api/types';
+import { ShortVideo } from '../components/ShortVideo';
+import { VideoOverlay } from '../components/VideoOverlay';
+import {
+  RHEMA_TABS,
+  isLongVideo,
+  playableVideo,
+  publicPostUrl,
+  resolveMediaUrl,
+  type FeedTabId,
+} from '../lib/social';
+import { colors, fonts } from '../theme';
 
-const CIRCLE_TABS = FEED_TABS.filter((item) => item.id !== 'shorts');
-
-export function CommunityScreen({
-  posts,
-  access,
-  tab,
-  loading,
-  refreshing,
-  error,
-  hasMore,
-  onChangeTab,
-  onOpenAuthor,
-  onOpenPost,
-  onCompose,
-  onSearch,
-  onOpenTopics,
-  onOpenMembers,
-  onReact,
-  onComment,
-  onDelete,
-  onReport,
-  onRefresh,
-  onLoadMore,
-}: {
+type Props = {
   posts: SocialPost[];
   access?: SocialAccess | null;
   tab: FeedTabId;
@@ -38,142 +34,301 @@ export function CommunityScreen({
   refreshing?: boolean;
   error?: string | null;
   hasMore?: boolean;
+  followingIds?: string[];
+  comments?: SocialComment[];
+  commentsBusy?: boolean;
   onChangeTab: (tab: FeedTabId) => void;
   onOpenAuthor: (handle: string) => void;
   onOpenPost?: (slug: string) => void;
   onCompose: () => void;
+  onUpload?: () => void;
   onSearch?: () => void;
+  onOpenProfile?: () => void;
   onOpenTopics?: () => void;
   onOpenMembers?: () => void;
   onReact?: (postId: string, type: 'AMEM' | 'REZO' | 'ALELUIA') => void;
   onComment?: (postId: string, body: string) => void;
-  onDelete?: (postId: string) => void;
-  onReport?: (postId: string, reason: SocialReportReason) => void;
+  onLoadComments?: (postId: string) => void;
+  onFollow?: (authorId: string) => void;
+  onWatch?: (postId: string) => void;
+  onOpenLong?: (post: SocialPost) => void;
   onRefresh?: () => void;
   onLoadMore?: () => void;
-}) {
-  const notice = communityPublishNotice(access);
+};
+
+function videoUri(post: SocialPost) {
+  const video = playableVideo(post);
+  return resolveMediaUrl(video?.videoUrl || video?.embedUrl || null);
+}
+
+export function CommunityScreen({
+  posts,
+  tab,
+  loading,
+  error,
+  hasMore,
+  followingIds = [],
+  comments = [],
+  commentsBusy,
+  onChangeTab,
+  onOpenAuthor,
+  onCompose,
+  onUpload,
+  onSearch,
+  onOpenProfile,
+  onReact,
+  onComment,
+  onLoadComments,
+  onFollow,
+  onWatch,
+  onOpenLong,
+  onLoadMore,
+}: Props) {
+  const insets = useSafeAreaInsets();
+  const pageHeight = Dimensions.get('window').height;
+  const [activeId, setActiveId] = useState<string | null>(posts[0]?.id ?? null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [drawerPostId, setDrawerPostId] = useState<string | null>(null);
+  const [draft, setDraft] = useState('');
+  const startedAt = useRef<Record<string, number>>({});
+  const activeIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!activeId && posts[0]) setActiveId(posts[0].id);
+  }, [posts, activeId]);
+
+  useEffect(() => {
+    const previous = activeIdRef.current;
+    if (previous && previous !== activeId) {
+      onWatch?.(previous);
+    }
+    if (activeId) {
+      activeIdRef.current = activeId;
+      startedAt.current[activeId] = Date.now();
+      const post = posts.find((item) => item.id === activeId);
+      if (post && isLongVideo(post)) onOpenLong?.(post);
+    }
+  }, [activeId]);
+
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      const next = viewableItems.find((item) => item.isViewable)?.item as SocialPost | undefined;
+      if (next?.id && next.id !== activeIdRef.current) {
+        setActiveId(next.id);
+        const index = posts.findIndex((item) => item.id === next.id);
+        if (index >= 0) setActiveIndex(index);
+      }
+    },
+    [posts],
+  );
+
+  const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 70 }).current;
 
   return (
-    <View style={{ flex: 1 }}>
-      <Screen
-        testID="community-screen"
-        refreshing={refreshing}
-        onRefresh={onRefresh}
+    <View testID="community-screen" style={{ flex: 1, backgroundColor: colors.rhemaBlack }}>
+      <FlatList
+        testID="rhema-feed"
+        data={posts}
+        keyExtractor={(item) => item.id}
+        pagingEnabled
+        snapToInterval={pageHeight}
+        decelerationRate="fast"
+        disableIntervalMomentum
+        showsVerticalScrollIndicator={false}
         onEndReached={hasMore ? onLoadMore : undefined}
-      >
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: spacing.sm,
-          }}
-        >
-          <Text style={{ fontFamily: fonts.serif, fontSize: 28, color: colors.ink }}>Comunidade</Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Pesquisar"
-            testID="community-search"
-            onPress={onSearch}
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 22,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: colors.canvas,
-            }}
-          >
-            <Ionicons name="search-outline" size={22} color={colors.ink} />
-          </Pressable>
-        </View>
-        {notice ? (
-          <Text
-            testID="community-notice"
-            style={{ color: colors.goldDark, fontFamily: fonts.sansMedium, marginBottom: spacing.md }}
-          >
-            {notice}
-          </Text>
-        ) : null}
-        <View style={{ flexDirection: 'row', gap: 16, marginBottom: spacing.md }}>
-          <Pressable testID="community-espacos" onPress={onOpenTopics}>
-            <Text style={{ color: colors.goldDark, fontFamily: fonts.sansBold }}>Espaços</Text>
-          </Pressable>
-          <Pressable testID="community-members" onPress={onOpenMembers}>
-            <Text style={{ color: colors.goldDark, fontFamily: fonts.sansBold }}>Membros</Text>
-          </Pressable>
-        </View>
-        <View testID="feed-tabs" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: spacing.md }}>
-          {CIRCLE_TABS.map((item) => {
-            const on = tab === item.id;
-            return (
+        onEndReachedThreshold={0.6}
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={viewabilityConfig}
+        getItemLayout={(_, index) => ({ length: pageHeight, offset: pageHeight * index, index })}
+        ListEmptyComponent={
+          loading ? (
+            <View style={{ height: pageHeight, alignItems: 'center', justifyContent: 'center' }}>
+              <ActivityIndicator color={colors.rhemaGold} />
+            </View>
+          ) : (
+            <View
+              style={{ height: pageHeight, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 }}
+            >
+              <Text style={{ color: '#fff', fontFamily: fonts.serif, fontSize: 26, textAlign: 'center' }}>
+                Grava o primeiro testemunho
+              </Text>
+              {error ? (
+                <Text style={{ color: 'rgba(255,255,255,0.7)', marginTop: 8, textAlign: 'center' }}>{error}</Text>
+              ) : (
+                <Text style={{ color: 'rgba(255,255,255,0.7)', marginTop: 8, textAlign: 'center' }}>
+                  Um vídeo curto para a Comunidade.
+                </Text>
+              )}
               <Pressable
-                key={item.id}
-                testID={`feed-tab-${item.id}`}
-                onPress={() => onChangeTab(item.id)}
+                testID="empty-record-cta"
+                onPress={onUpload || onCompose}
                 style={{
-                  minHeight: 36,
-                  paddingHorizontal: 12,
+                  marginTop: 20,
+                  backgroundColor: colors.rhemaGold,
+                  paddingHorizontal: 20,
+                  paddingVertical: 12,
                   borderRadius: 999,
-                  backgroundColor: on ? colors.ink : colors.canvas,
-                  justifyContent: 'center',
                 }}
               >
-                <Text style={{ color: on ? colors.white : colors.ink, fontFamily: fonts.sansSemi, fontSize: 13 }}>
+                <Text style={{ color: colors.rhemaBlack, fontFamily: fonts.sansBold }}>Gravar</Text>
+              </Pressable>
+            </View>
+          )
+        }
+        renderItem={({ item, index }) => {
+          const uri = videoUri(item);
+          const poster = resolveMediaUrl(playableVideo(item)?.thumbnailUrl || null);
+          const shouldLoad = Math.abs(index - activeIndex) <= 1;
+          const active = item.id === activeId;
+          return (
+            <View style={{ height: pageHeight, backgroundColor: '#000' }} testID={`rhema-page-${item.id}`}>
+              {shouldLoad && uri ? (
+                <ShortVideo uri={uri} active={active} poster={poster} />
+              ) : poster ? (
+                <View style={{ flex: 1, backgroundColor: '#000' }} />
+              ) : (
+                <View style={{ flex: 1, backgroundColor: '#111' }} />
+              )}
+              <VideoOverlay
+                post={item}
+                following={followingIds.includes(item.author.id)}
+                onOpenAuthor={onOpenAuthor}
+                onReact={(type) => onReact?.(item.id, type)}
+                onComments={() => {
+                  setDrawerPostId(item.id);
+                  onLoadComments?.(item.id);
+                }}
+                onShare={() => {
+                  void Share.share({ message: publicPostUrl(item.slug), url: publicPostUrl(item.slug) });
+                }}
+                onFollow={item.isOwn ? undefined : () => onFollow?.(item.author.id)}
+              />
+            </View>
+          );
+        }}
+      />
+
+      <View
+        pointerEvents="box-none"
+        style={{
+          position: 'absolute',
+          top: insets.top + 4,
+          left: 8,
+          right: 8,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Pressable
+          testID="community-search"
+          onPress={onSearch}
+          style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Ionicons name="search-outline" size={22} color="#fff" />
+        </Pressable>
+        <View testID="feed-tabs" style={{ flexDirection: 'row', gap: 18 }}>
+          {RHEMA_TABS.map((item) => {
+            const on = tab === item.id;
+            return (
+              <Pressable key={item.id} testID={`feed-tab-${item.id}`} onPress={() => onChangeTab(item.id)}>
+                <Text
+                  style={{
+                    color: on ? colors.rhemaGold : 'rgba(255,255,255,0.78)',
+                    fontFamily: fonts.sansSemi,
+                    fontSize: 16,
+                    paddingBottom: 4,
+                    borderBottomWidth: on ? 2 : 0,
+                    borderBottomColor: colors.rhemaGold,
+                  }}
+                >
                   {item.label}
                 </Text>
               </Pressable>
             );
           })}
         </View>
-        {loading && posts.length === 0 ? <LoadingState /> : null}
-        {error ? <EmptyState title="Feed indisponível" body={error} /> : null}
-        {!loading && posts.length === 0 ? (
-          <EmptyState
-            title="Ainda não há publicações"
-            body="Toque em Publicar para a primeira partilha."
-            actionLabel="Publicar"
-            onAction={onCompose}
-          />
-        ) : (
-          posts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              onOpenAuthor={onOpenAuthor}
-              onOpenPost={onOpenPost}
-              onReact={onReact ? (type) => onReact(post.id, type) : undefined}
-              onComment={onComment ? (body) => onComment(post.id, body) : undefined}
-              onDelete={onDelete}
-              onReport={onReport ? (reason) => onReport(post.id, reason) : undefined}
-            />
-          ))
-        )}
-        {hasMore && onLoadMore && posts.length > 0 ? (
-          <BrandButton variant="ghost" label="Carregar mais" onPress={onLoadMore} testID="feed-load-more" />
-        ) : null}
-      </Screen>
+        <View style={{ flexDirection: 'row' }}>
+          <Pressable
+            testID="compose-open"
+            onPress={onUpload || onCompose}
+            accessibilityLabel="Carregar vídeo"
+            style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Ionicons name="add" size={28} color={colors.rhemaGold} />
+          </Pressable>
+          <Pressable
+            testID="community-profile"
+            onPress={onOpenProfile}
+            style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Ionicons name="person-circle-outline" size={24} color="#fff" />
+          </Pressable>
+        </View>
+      </View>
       <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Publicar"
-        testID="compose-open"
+        testID="compose-text"
         onPress={onCompose}
-        style={{
-          position: 'absolute',
-          right: 20,
-          bottom: 24,
-          width: 56,
-          height: 56,
-          borderRadius: 28,
-          backgroundColor: colors.gold,
-          alignItems: 'center',
-          justifyContent: 'center',
-          elevation: 4,
-        }}
+        style={{ position: 'absolute', left: 16, bottom: 18 + insets.bottom }}
       >
-        <Ionicons name="create-outline" size={26} color={colors.ink} />
+        <Text style={{ color: colors.rhemaGold, fontFamily: fonts.sansSemi }}>Publicação</Text>
       </Pressable>
+
+      <Modal visible={Boolean(drawerPostId)} animationType="slide" transparent onRequestClose={() => setDrawerPostId(null)}>
+        <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.45)' }} onPress={() => setDrawerPostId(null)} />
+        <View
+          testID="comments-drawer"
+          style={{
+            backgroundColor: '#111',
+            paddingHorizontal: 16,
+            paddingTop: 16,
+            paddingBottom: 24 + insets.bottom,
+            maxHeight: '55%',
+          }}
+        >
+          <Text style={{ color: '#fff', fontFamily: fonts.sansBold, fontSize: 16, marginBottom: 12 }}>Comentários</Text>
+          {commentsBusy ? <ActivityIndicator color={colors.rhemaGold} /> : null}
+          {comments.map((item) => (
+            <Text key={item.id} style={{ color: 'rgba(255,255,255,0.9)', marginBottom: 8 }}>
+              {item.author.displayName}: {item.body}
+            </Text>
+          ))}
+          <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
+            <TextInput
+              testID="comment-input"
+              value={draft}
+              onChangeText={setDraft}
+              placeholder="Escreva um comentário"
+              placeholderTextColor="rgba(255,255,255,0.45)"
+              style={{
+                flex: 1,
+                color: '#fff',
+                borderWidth: 1,
+                borderColor: '#333',
+                borderRadius: 12,
+                paddingHorizontal: 12,
+                minHeight: 44,
+              }}
+            />
+            <Pressable
+              testID="comment-send"
+              onPress={() => {
+                if (!drawerPostId || !draft.trim()) return;
+                onComment?.(drawerPostId, draft.trim());
+                setDraft('');
+              }}
+              style={{
+                backgroundColor: colors.rhemaGold,
+                borderRadius: 12,
+                paddingHorizontal: 14,
+                justifyContent: 'center',
+              }}
+            >
+              <Text style={{ color: '#000', fontFamily: fonts.sansBold }}>Enviar</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }

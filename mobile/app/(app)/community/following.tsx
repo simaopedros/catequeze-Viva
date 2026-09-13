@@ -7,7 +7,7 @@ import { CommunityScreen } from '../../../src/screens/CommunityScreen';
 export default function FollowingFeedRoute() {
   const { api } = useAuth();
   const router = useRouter();
-  const feed = useAsync(() => api.socialFeed({ sort: 'recent', following: true, limit: 20 }), []);
+  const feed = useAsync(() => api.socialFeed({ sort: 'recent', following: true, videoFormat: 'SHORT', limit: 20 }), []);
   const access = useAsync(() => api.socialAccess(), []);
 
   return (
@@ -25,6 +25,7 @@ export default function FollowingFeedRoute() {
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
       onOpenPost={(slug) => router.push(`/(app)/community/p/${slug}`)}
       onCompose={() => router.push('/(app)/community/compose')}
+      onUpload={() => router.push('/(app)/community/upload')}
       onSearch={() => router.push('/(app)/community/search')}
       onOpenTopics={() => router.push('/(app)/community/topics')}
       onOpenMembers={() => router.push('/(app)/community/members')}
@@ -36,13 +37,6 @@ export default function FollowingFeedRoute() {
       onComment={async (postId, body) => {
         await api.createComment(postId, body);
         await feed.reload();
-      }}
-      onDelete={async (postId) => {
-        await api.deletePost(postId);
-        await feed.reload();
-      }}
-      onReport={async (postId, reason) => {
-        await api.reportSocial({ targetType: 'POST', targetId: postId, reason });
       }}
     />
   );

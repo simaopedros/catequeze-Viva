@@ -2203,6 +2203,20 @@ api mobileSocialDeletePost {
   entities: [SocialPost, SocialMedia, UserTwoFactor]
 }
 
+api mobileSocialWatch {
+  fn: import { mobileSocialWatch } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/watch"),
+  entities: [SocialPost, SocialVideoWatch, User, UserTwoFactor]
+}
+
+api mobileSocialFollowState {
+  fn: import { mobileSocialFollowState } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/follow-state"),
+  entities: [SocialFollow, User, UserTwoFactor]
+}
+
 api mobileBibleBooks {
   fn: import { mobileBibleBooks } from "@src/server/api/mobileSocial",
   auth: true,

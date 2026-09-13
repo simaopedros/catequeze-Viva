@@ -15,6 +15,7 @@ import {
   getSocialTopics,
   getSocialPublishAccess,
   getSocialCommunityPulse,
+  recordSocialWatch,
 } from '../operations/socialOperations';
 import { createSocialVideoUpload } from '../operations/socialMediaOperations';
 import { uploadSocialImage, uploadSocialVideo } from './socialMedia';
@@ -29,6 +30,7 @@ import {
   listSocialConnections,
   searchSocial,
   toggleSocialFollow,
+  getSocialFollowState,
 } from '../operations/socialDiscoveryOperations';
 import { reportSocialContent } from '../operations/socialModerationOperations';
 import { previewSocialShare } from '../operations/socialShareResolve';
@@ -294,4 +296,30 @@ export async function mobileSocialDeletePost(req: Request, res: Response, contex
   return res.json(
     await deleteSocialPost({ postId: String(req.params.id || req.body?.postId || '') }, opCtx),
   );
+}
+
+export async function mobileSocialWatch(req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  const completionRaw = req.body?.completionRate;
+  return res.json(
+    await recordSocialWatch(
+      {
+        postId: String(req.body?.postId || req.params.id || ''),
+        watchSeconds: optionalInt(req.body?.watchSeconds, 1),
+        completionRate:
+          completionRaw == null || completionRaw === '' ? null : Number(completionRaw),
+      },
+      opCtx,
+    ),
+  );
+}
+
+export async function mobileSocialFollowState(req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  const raw = optionalString(req.query.authorIds) || optionalString(req.body?.authorIds) || '';
+  const authorIds = raw
+    .split(',')
+    .map((id) => id.trim())
+    .filter(Boolean);
+  return res.json(await getSocialFollowState({ authorIds }, opCtx));
 }

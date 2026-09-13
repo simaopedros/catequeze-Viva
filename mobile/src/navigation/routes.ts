@@ -12,6 +12,8 @@ export const appRoutes = {
   messages: '/(app)/messages',
   more: '/(app)/(tabs)/more',
   compose: '/(app)/community/compose',
+  upload: '/(app)/community/upload',
+  watch: (id: string) => `/(app)/community/watch/${encodeURIComponent(id)}`,
   search: '/(app)/community/search',
   members: '/(app)/community/members',
   topics: '/(app)/community/topics',

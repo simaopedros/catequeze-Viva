@@ -21,6 +21,7 @@ export default function ShortsRoute() {
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
       onOpenPost={(slug) => router.push(`/(app)/community/p/${slug}`)}
       onCompose={() => router.push('/(app)/community/compose')}
+      onUpload={() => router.push('/(app)/community/upload')}
       onSearch={() => router.push('/(app)/community/search')}
       onOpenTopics={() => router.push('/(app)/community/topics')}
       onOpenMembers={() => router.push('/(app)/community/members')}
@@ -32,13 +33,6 @@ export default function ShortsRoute() {
       onComment={async (postId, body) => {
         await api.createComment(postId, body);
         await feed.reload();
-      }}
-      onDelete={async (postId) => {
-        await api.deletePost(postId);
-        await feed.reload();
-      }}
-      onReport={async (postId, reason) => {
-        await api.reportSocial({ targetType: 'POST', targetId: postId, reason });
       }}
     />
   );

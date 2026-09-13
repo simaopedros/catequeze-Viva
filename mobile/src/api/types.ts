@@ -69,6 +69,10 @@ export type SocialMediaItem = {
   kind?: 'IMAGE' | 'VIDEO' | string;
   url?: string | null;
   thumbnailUrl?: string | null;
+  videoUrl?: string | null;
+  embedUrl?: string | null;
+  durationSeconds?: number | null;
+  status?: string;
 };
 
 export type SocialPost = {

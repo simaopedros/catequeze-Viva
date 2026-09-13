@@ -37,8 +37,16 @@ export default function TabsLayout() {
         name="community"
         options={{
           title: 'Comunidade',
+          headerShown: false,
           href: show('community') ? undefined : null,
           tabBarIcon: ({ color, size }) => <Ionicons name="people-outline" color={color} size={size} />,
+          tabBarActiveTintColor: '#D4AF37',
+          tabBarInactiveTintColor: '#8a8a8a',
+          tabBarStyle: {
+            backgroundColor: '#000000',
+            borderTopColor: '#1a1a1a',
+            minHeight: 52,
+          },
         }}
       />
       <Tabs.Screen

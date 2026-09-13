@@ -21,14 +21,58 @@ export const FEED_TABS = [
   { id: 'following', label: 'A seguir' },
 ] as const;
 
+export const RHEMA_TABS = [
+  { id: 'following', label: 'Seguindo' },
+  { id: 'foryou', label: 'Para você' },
+] as const;
+
 export type FeedTabId = (typeof FEED_TABS)[number]['id'];
+
+export const SHORT_VIDEO_MAX_SECONDS = 180;
 
 export function feedQueryForTab(tab: FeedTabId) {
   if (tab === 'shorts') return { sort: 'recent' as const, videoFormat: 'SHORT' as const, following: false };
-  if (tab === 'following') return { sort: 'recent' as const, following: true, videoFormat: null };
-  if (tab === 'trending') return { sort: 'trending' as const, following: false, videoFormat: null };
-  if (tab === 'recent') return { sort: 'recent' as const, following: false, videoFormat: null };
-  return { sort: 'foryou' as const, following: false, videoFormat: null };
+  if (tab === 'following') return { sort: 'recent' as const, following: true, videoFormat: 'SHORT' as const };
+  if (tab === 'trending') return { sort: 'trending' as const, following: false, videoFormat: 'SHORT' as const };
+  if (tab === 'recent') return { sort: 'recent' as const, following: false, videoFormat: 'SHORT' as const };
+  return { sort: 'foryou' as const, following: false, videoFormat: 'SHORT' as const };
+}
+
+export function resolveMediaUrl(path?: string | null) {
+  if (!path) return null;
+  if (/^https?:\/\//i.test(path) || path.startsWith('file:')) return path;
+  const base = (process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/$/, '');
+  return `${base}${path.startsWith('/') ? path : `/${path}`}`;
+}
+
+export function playableVideo(post: {
+  media?: {
+    kind?: string;
+    videoUrl?: string | null;
+    embedUrl?: string | null;
+    thumbnailUrl?: string | null;
+    durationSeconds?: number | null;
+  }[];
+}) {
+  return (post.media || []).find(
+    (item) => item.kind === 'VIDEO' && Boolean(item.embedUrl || item.videoUrl),
+  );
+}
+
+export function videoDuration(post: {
+  media?: { kind?: string; durationSeconds?: number | null }[];
+}) {
+  const videos = (post.media || []).filter((item) => item.kind === 'VIDEO');
+  if (videos.length === 0) return 0;
+  return Math.max(...videos.map((item) => item.durationSeconds ?? 0));
+}
+
+export function isLongVideo(post: {
+  videoFormat?: 'SHORT' | 'LONG' | null;
+  media?: { kind?: string; durationSeconds?: number | null }[];
+}) {
+  if (post.videoFormat === 'LONG') return true;
+  return videoDuration(post) > SHORT_VIDEO_MAX_SECONDS;
 }
 
 export function communityPublishNotice(access?: Partial<SocialAccess> | null): string | null {

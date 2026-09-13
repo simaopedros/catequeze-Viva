@@ -6,6 +6,8 @@ export const colors = {
   inkSoft: '#123152',
   gold: '#bd8b58',
   goldDark: '#8d6238',
+  rhemaGold: '#D4AF37',
+  rhemaBlack: '#000000',
   cream: '#f6efe4',
   paper: '#fffdf8',
   canvas: '#f4efe6',

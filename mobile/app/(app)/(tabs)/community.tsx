@@ -2,7 +2,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
-import type { SocialPost } from '../../../src/api/types';
+import type { SocialComment, SocialPost } from '../../../src/api/types';
 import { feedQueryForTab, type FeedTabId } from '../../../src/lib/social';
 import { CommunityScreen } from '../../../src/screens/CommunityScreen';
 
@@ -12,19 +12,24 @@ export default function CommunityRoute() {
   const [tab, setTab] = useState<FeedTabId>('foryou');
   const [items, setItems] = useState<SocialPost[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
+  const [followingIds, setFollowingIds] = useState<string[]>([]);
+  const [comments, setComments] = useState<SocialComment[]>([]);
+  const [commentsBusy, setCommentsBusy] = useState(false);
   const query = useMemo(() => feedQueryForTab(tab), [tab]);
   const feed = useAsync(
     () => api.socialFeed({ ...query, cursor: null, limit: 20 }),
     [query.sort, query.following, query.videoFormat],
   );
-  const access = useAsync(() => api.socialAccess(), []);
+  const me = useAsync(() => api.mySocialProfile().catch(() => null), []);
 
   useEffect(() => {
     if (!feed.data) return;
     setItems(feed.data.items);
     setCursor(feed.data.nextCursor);
-  }, [feed.data]);
+    const authorIds = [...new Set(feed.data.items.map((item) => item.author.id))];
+    if (authorIds.length === 0) return;
+    void api.socialFollowState(authorIds).then((state) => setFollowingIds(state.following || []));
+  }, [api, feed.data]);
 
   useFocusEffect(
     useCallback(() => {
@@ -35,26 +40,23 @@ export default function CommunityRoute() {
   return (
     <CommunityScreen
       posts={items}
-      access={access.data}
       tab={tab}
       loading={feed.loading}
-      refreshing={refreshing}
       error={feed.error}
       hasMore={Boolean(cursor)}
+      followingIds={followingIds}
+      comments={comments}
+      commentsBusy={commentsBusy}
       onChangeTab={setTab}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
       onOpenPost={(slug) => router.push(`/(app)/community/p/${slug}`)}
       onCompose={() => router.push('/(app)/community/compose')}
+      onUpload={() => router.push('/(app)/community/upload')}
       onSearch={() => router.push('/(app)/community/search')}
-      onOpenTopics={() => router.push('/(app)/community/topics')}
-      onOpenMembers={() => router.push('/(app)/community/members')}
-      onRefresh={async () => {
-        setRefreshing(true);
-        try {
-          await feed.reload();
-        } finally {
-          setRefreshing(false);
-        }
+      onOpenProfile={() => {
+        const handle = me.data?.handle || me.data?.socialHandle;
+        if (handle) router.push(`/(app)/community/${handle}`);
+        else router.push('/(app)/community/edit');
       }}
       onLoadMore={async () => {
         if (!cursor) return;
@@ -66,17 +68,30 @@ export default function CommunityRoute() {
         await api.toggleReaction(postId, type);
         await feed.reload();
       }}
+      onLoadComments={async (postId) => {
+        setCommentsBusy(true);
+        try {
+          const payload = await api.socialComments(postId);
+          setComments(payload.items || []);
+        } finally {
+          setCommentsBusy(false);
+        }
+      }}
       onComment={async (postId, body) => {
         await api.createComment(postId, body);
-        await feed.reload();
+        const payload = await api.socialComments(postId);
+        setComments(payload.items || []);
       }}
-      onDelete={async (postId) => {
-        await api.deletePost(postId);
-        await feed.reload();
+      onFollow={async (authorId) => {
+        await api.toggleFollow(authorId);
+        const authorIds = [...new Set(items.map((item) => item.author.id))];
+        const state = await api.socialFollowState(authorIds);
+        setFollowingIds(state.following || []);
       }}
-      onReport={async (postId, reason) => {
-        await api.reportSocial({ targetType: 'POST', targetId: postId, reason });
+      onWatch={(postId) => {
+        void api.recordSocialWatch(postId, 1).catch(() => undefined);
       }}
+      onOpenLong={(post) => router.push(`/(app)/community/watch/${post.slug || post.id}`)}
     />
   );
 }

@@ -1,141 +1,134 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import { CommunityScreen } from '../screens/CommunityScreen';
-import { COMMUNITY_AREAS } from '../screens/communityAreas';
+import { VideoUploadScreen } from '../screens/VideoUploadScreen';
+import { isLongVideo, playableVideo, RHEMA_TABS, feedQueryForTab } from '../lib/social';
 import { openCommunityArea } from '../screens/communityNavigation';
 import { appRoutes } from '../navigation/routes';
-import { communityPublishNotice, FEED_TABS } from '../lib/social';
+import type { SocialPost } from '../api/types';
+
+const shortPost: SocialPost = {
+  id: 'p1',
+  slug: 'testemunho-crisma',
+  body: 'A Crisma mudou a minha vida.',
+  videoFormat: 'SHORT',
+  viewerReaction: null,
+  commentCount: 2,
+  author: { id: 'u1', handle: 'coord_saojose', displayName: 'Coordenador São José', avatarUrl: null },
+  media: [
+    {
+      id: 'm1',
+      kind: 'VIDEO',
+      videoUrl: '/api/social/media/m1',
+      durationSeconds: 12,
+    },
+  ],
+};
 
 const base = {
-  posts: [] as React.ComponentProps<typeof CommunityScreen>['posts'],
-  tab: 'recent' as const,
+  posts: [] as SocialPost[],
+  tab: 'foryou' as const,
   onChangeTab: jest.fn(),
   onOpenAuthor: jest.fn(),
   onCompose: jest.fn(),
+  onUpload: jest.fn(),
 };
 
-describe('Community hub', () => {
-  it('usa os avisos de quota e assinatura do site', () => {
-    expect(communityPublishNotice({ authenticated: true, canPublish: true })).toBeNull();
-    expect(communityPublishNotice({ authenticated: true, canPublish: false, reason: 'subscription' })).toBe(
-      'Assine para publicar. Ler e compartilhar a Comunidade é livre.',
-    );
-    expect(communityPublishNotice({ authenticated: true, canPublish: false, reason: 'quota' })).toBe(
-      'Você já publicou tudo o que o seu plano permite hoje. Tente novamente amanhã.',
-    );
-    expect(communityPublishNotice({ authenticated: true, canPublish: false, banned: true })).toBe(
-      'Conta suspensa na Comunidade. Fale com o suporte para rever a suspensão.',
-    );
-    expect(communityPublishNotice({ authenticated: true, canPublish: true, quotaLeft: 1 })).toBe(
-      '1 publicação restante hoje',
-    );
-
-    const allowed = render(
-      <CommunityScreen {...base} access={{ authenticated: true, canPublish: true }} />,
-    );
-    expect(allowed.queryByTestId('community-notice')).toBeNull();
-    expect(allowed.queryByText(/Publicar pede assinatura/)).toBeNull();
-
-    const gated = render(
-      <CommunityScreen
-        {...base}
-        access={{ authenticated: true, canPublish: false, reason: 'subscription' }}
-      />,
-    );
-    expect(gated.getByText(/Assine para publicar/)).toBeTruthy();
-  });
-
-  it('mostra o chrome Circle: lupa, 4 segmentos, Espaços e FAB', () => {
+describe('Rhema community feed', () => {
+  it('mostra Seguindo e Para você, e o + abre o upload', () => {
+    const onUpload = jest.fn();
+    const onCompose = jest.fn();
     const onChangeTab = jest.fn();
-    const onSearch = jest.fn();
-    const onOpenTopics = jest.fn();
     const view = render(
-      <CommunityScreen
-        {...base}
-        onChangeTab={onChangeTab}
-        onSearch={onSearch}
-        onOpenTopics={onOpenTopics}
-      />,
+      <CommunityScreen {...base} onChangeTab={onChangeTab} onUpload={onUpload} onCompose={onCompose} />,
     );
 
-    expect(view.getByText('Ainda não há publicações')).toBeTruthy();
-    expect(view.getByText(/Toque em Publicar/)).toBeTruthy();
+    expect(view.getByText('Grava o primeiro testemunho')).toBeTruthy();
+    expect(view.getByTestId('empty-record-cta')).toBeTruthy();
     expect(view.getByTestId('community-search')).toBeTruthy();
-    expect(view.getByTestId('community-espacos')).toBeTruthy();
-    expect(view.getByTestId('community-members')).toBeTruthy();
-    expect(view.getByTestId('compose-open')).toBeTruthy();
-    expect(view.getByTestId('feed-tab-foryou')).toBeTruthy();
-    expect(view.getByTestId('feed-tab-recent')).toBeTruthy();
-    expect(view.getByTestId('feed-tab-trending')).toBeTruthy();
+    expect(view.getByTestId('community-profile')).toBeTruthy();
     expect(view.getByTestId('feed-tab-following')).toBeTruthy();
+    expect(view.getByTestId('feed-tab-foryou')).toBeTruthy();
+    expect(view.queryByTestId('feed-tab-recent')).toBeNull();
     expect(view.queryByTestId('feed-tab-shorts')).toBeNull();
-    expect(view.queryByText('Todos')).toBeNull();
-    expect(FEED_TABS.map((tab) => tab.label)).toEqual([
-      'Para você',
-      'Shorts',
-      'Recentes',
-      'Em alta',
-      'A seguir',
-    ]);
-    for (const area of COMMUNITY_AREAS.filter((item) => item.id !== 'feed')) {
-      expect(view.queryByTestId(`area-${area.id}`)).toBeNull();
-    }
+    expect(RHEMA_TABS.map((tab) => tab.label)).toEqual(['Seguindo', 'Para você']);
+    expect(feedQueryForTab('following')).toEqual({ sort: 'recent', following: true, videoFormat: 'SHORT' });
+    expect(feedQueryForTab('foryou')).toEqual({ sort: 'foryou', following: false, videoFormat: 'SHORT' });
 
-    fireEvent.press(view.getByTestId('feed-tab-trending'));
-    expect(onChangeTab).toHaveBeenCalledWith('trending');
-    fireEvent.press(view.getByTestId('community-search'));
-    expect(onSearch).toHaveBeenCalled();
-    fireEvent.press(view.getByTestId('community-espacos'));
-    expect(onOpenTopics).toHaveBeenCalled();
+    fireEvent.press(view.getByTestId('compose-open'));
+    expect(onUpload).toHaveBeenCalled();
+    expect(onCompose).not.toHaveBeenCalled();
+    fireEvent.press(view.getByTestId('compose-text'));
+    expect(onCompose).toHaveBeenCalled();
+    fireEvent.press(view.getByTestId('feed-tab-following'));
+    expect(onChangeTab).toHaveBeenCalledWith('following');
   });
 
-  it('mostra as postagens no próprio feed', () => {
+  it('mostra overlay Amém/Rezo/Aleluia, comentários, partilhar e seguir', () => {
+    const onReact = jest.fn();
+    const onFollow = jest.fn();
+    const onLoadComments = jest.fn();
     const view = render(
       <CommunityScreen
         {...base}
-        posts={[
-          {
-            id: 'p1',
-            slug: 'paz-e-bem',
-            body: 'Paz e bem, irmãos. A catequese começou.',
-            author: { id: 'u1', handle: 'coord_saojose', displayName: 'Coordenador São José', avatarUrl: null },
-          },
-        ]}
-        onOpenPost={jest.fn()}
+        posts={[shortPost]}
+        onReact={onReact}
+        onFollow={onFollow}
+        onLoadComments={onLoadComments}
       />,
     );
 
-    expect(view.getByText('Paz e bem, irmãos. A catequese começou.')).toBeTruthy();
-    expect(view.getByTestId('post-p1')).toBeTruthy();
-    expect(view.getByTestId('open-post-p1')).toBeTruthy();
+    expect(view.getByTestId('rhema-feed')).toBeTruthy();
+    expect(view.getByTestId('overlay-amem')).toBeTruthy();
+    expect(view.getByTestId('overlay-rezo')).toBeTruthy();
+    expect(view.getByTestId('overlay-aleluia')).toBeTruthy();
+    fireEvent.press(view.getByTestId('overlay-amem'));
+    expect(onReact).toHaveBeenCalledWith('p1', 'AMEM');
+    fireEvent.press(view.getByTestId('overlay-follow'));
+    expect(onFollow).toHaveBeenCalledWith('u1');
+    fireEvent.press(view.getByTestId('overlay-comments'));
+    expect(onLoadComments).toHaveBeenCalledWith('p1');
+    expect(view.getByTestId('comments-drawer')).toBeTruthy();
   });
 
-  it('abre as rotas de cada área', () => {
+  it('trata vídeo LONG ou >180s como player longo', () => {
+    expect(isLongVideo({ videoFormat: 'LONG' })).toBe(true);
+    expect(isLongVideo({ videoFormat: 'SHORT', media: [{ kind: 'VIDEO', durationSeconds: 12 }] })).toBe(false);
+    expect(isLongVideo({ media: [{ kind: 'VIDEO', durationSeconds: 181 }] })).toBe(true);
+    expect(playableVideo(shortPost)?.videoUrl).toBe('/api/social/media/m1');
+  });
+
+  it('abre upload e watch nas rotas da Comunidade', () => {
     const pushes: string[] = [];
     const router = { push: (href: string) => pushes.push(href) };
-
-    openCommunityArea(router, 'members');
-    openCommunityArea(router, 'topics');
-    openCommunityArea(router, 'shorts');
-    openCommunityArea(router, 'following');
-    openCommunityArea(router, 'search');
     openCommunityArea(router, 'compose');
-    openCommunityArea(router, 'edit');
-    openCommunityArea(router, 'blocked');
-    openCommunityArea(router, 'notifications');
-    openCommunityArea(router, 'me', 'coord_saojose');
+    expect(pushes).toContain(appRoutes.compose);
+    expect(appRoutes.upload).toBe('/(app)/community/upload');
+    expect(appRoutes.watch('paz')).toBe('/(app)/community/watch/paz');
+  });
+});
 
-    expect(pushes).toEqual([
-      appRoutes.members,
-      appRoutes.topics,
-      appRoutes.shorts,
-      appRoutes.followingFeed,
-      appRoutes.search,
-      appRoutes.compose,
-      appRoutes.editProfile,
-      appRoutes.blocked,
-      appRoutes.notifications,
-      appRoutes.profile('coord_saojose'),
-    ]);
+describe('Video upload', () => {
+  it('pede câmara, galeria e progresso', () => {
+    const onPickCamera = jest.fn();
+    const onPickGallery = jest.fn();
+    const onPublish = jest.fn();
+    const view = render(
+      <VideoUploadScreen
+        canPublish
+        progress={0.4}
+        onPickCamera={onPickCamera}
+        onPickGallery={onPickGallery}
+        onPublish={onPublish}
+      />,
+    );
+    fireEvent.press(view.getByTestId('upload-camera'));
+    fireEvent.press(view.getByTestId('upload-gallery'));
+    expect(onPickCamera).toHaveBeenCalled();
+    expect(onPickGallery).toHaveBeenCalled();
+    expect(view.getByTestId('upload-progress')).toBeTruthy();
+    fireEvent.press(view.getByTestId('upload-consent'));
+    fireEvent.press(view.getByTestId('upload-publish'));
+    expect(onPublish).toHaveBeenCalled();
   });
 });

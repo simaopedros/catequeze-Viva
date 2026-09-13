@@ -322,6 +322,17 @@ export function createMobileClient(options: MobileClientOptions) {
         body: JSON.stringify(body),
       });
     },
+    recordSocialWatch(postId: string, watchSeconds = 1, completionRate?: number | null) {
+      return request<{ created: boolean }>(MOBILE_PATHS.socialWatch, {
+        method: 'POST',
+        body: JSON.stringify({ postId, watchSeconds, completionRate: completionRate ?? null }),
+      });
+    },
+    socialFollowState(authorIds: string[]) {
+      return request<{ following: string[] }>(
+        withQuery(MOBILE_PATHS.socialFollowState, { authorIds: authorIds.join(',') }),
+      );
+    },
     bibleBooks(locale = 'pt-BR') {
       return request<BibleBook[]>(withQuery(MOBILE_PATHS.bibleBooks, { locale }));
     },

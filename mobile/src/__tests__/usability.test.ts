@@ -9,6 +9,7 @@ describe('usability map', () => {
       appRoutes.home,
       appRoutes.community,
       appRoutes.compose,
+      appRoutes.upload,
       appRoutes.search,
       appRoutes.members,
       appRoutes.topics,

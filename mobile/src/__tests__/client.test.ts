@@ -97,6 +97,8 @@ describe('mobile HTTP client', () => {
     await client.socialConnections({ handle: 'ana', kind: 'followers' });
     await client.socialBlocks();
     await client.reportSocial({ targetType: 'POST', targetId: 'post-1', reason: 'OTHER' });
+    await client.recordSocialWatch('post-1', 4, 0.8);
+    await client.socialFollowState(['user-2']);
     await client.bibleBooks();
     await client.bibleBook('gn');
     await client.bibleChapter('gn', 1);
@@ -134,6 +136,8 @@ describe('mobile HTTP client', () => {
     );
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialBlocks);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialReport);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialWatch);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialFollowState + '?authorIds=user-2');
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.attendance);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.meetingAttendance('m1'));
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.familyInvites + '?workspaceId=ws-1');
