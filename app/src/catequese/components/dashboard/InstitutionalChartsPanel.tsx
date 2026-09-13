@@ -58,14 +58,14 @@ export function InstitutionalChartsPanel({
             <Line
               type="monotone"
               dataKey={enrollmentsKey}
-              stroke="#123152"
+              stroke={brandColors.inkSoft}
               strokeWidth={2}
               dot={false}
             />
             <Line
               type="monotone"
               dataKey={dropoutsKey}
-              stroke="#b42318"
+              stroke={brandColors.danger}
               strokeWidth={2}
               dot={false}
             />
@@ -94,7 +94,7 @@ export function InstitutionalChartsPanel({
             <Line
               type="monotone"
               dataKey={attendanceKey}
-              stroke="#071d36"
+              stroke={brandColors.ink}
               strokeWidth={2}
               dot={false}
             />

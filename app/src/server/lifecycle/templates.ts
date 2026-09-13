@@ -1,3 +1,5 @@
+import { brandColors } from "../../shared/designTokens";
+
 export function escapeHtml(unsafe: string): string {
   return unsafe
     .replace(/&/g, "&amp;")
@@ -26,18 +28,18 @@ export function renderLifecycleEmailHtml(args: {
 
   return `<!DOCTYPE html>
 <html>
-<body style="margin:0;background:#f8fafc;padding:24px">
-  <div style="font-family:Inter,system-ui,sans-serif;max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;padding:32px;line-height:1.55">
-    <p style="margin:0 0 16px;letter-spacing:0.14em;font-size:11px;color:#64748b;text-transform:uppercase">Catequese Viva</p>
-    <h1 style="margin:0 0 16px;color:#071d36;font-size:22px;font-weight:600">${heading}</h1>
-    <p style="margin:0 0 24px;color:#334155;font-size:16px">${body}</p>
+<body style="margin:0;background:${brandColors.canvas};padding:24px">
+  <div style="font-family:Inter,system-ui,sans-serif;max-width:560px;margin:0 auto;background:${brandColors.paper};border:1px solid ${brandColors.line};padding:32px;line-height:1.55">
+    <p style="margin:0 0 16px;letter-spacing:0.14em;font-size:11px;color:${brandColors.muted};text-transform:uppercase">Catequese Viva</p>
+    <h1 style="margin:0 0 16px;color:${brandColors.ink};font-size:22px;font-weight:600">${heading}</h1>
+    <p style="margin:0 0 24px;color:${brandColors.inkSoft};font-size:16px">${body}</p>
     <p style="margin:0 0 28px">
-      <a href="${ctaUrl}" style="display:inline-block;background:#071d36;color:#ffffff;padding:12px 20px;text-decoration:none;border-radius:4px;font-size:15px">${ctaLabel}</a>
+      <a href="${ctaUrl}" style="display:inline-block;background:${brandColors.gold};color:${brandColors.ink};padding:12px 20px;text-decoration:none;border-radius:10px;font-size:15px">${ctaLabel}</a>
     </p>
-    <hr style="border:none;border-top:1px solid #e2e8f0;margin:0 0 16px"/>
-    <p style="margin:0;color:#94a3b8;font-size:12px">
+    <hr style="border:none;border-top:1px solid ${brandColors.line};margin:0 0 16px"/>
+    <p style="margin:0;color:${brandColors.muted};font-size:12px">
       ${footerReason}<br/>
-      <a href="${unsubscribeUrl}" style="color:#64748b">${unsubscribeLabel}</a>
+      <a href="${unsubscribeUrl}" style="color:${brandColors.muted}">${unsubscribeLabel}</a>
     </p>
   </div>
 </body>
@@ -57,11 +59,11 @@ export function renderUnsubscribePageHtml(args: {
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>${title}</title>
 </head>
-<body style="margin:0;background:#f8fafc;padding:48px 16px;font-family:Inter,system-ui,sans-serif">
-  <div style="max-width:480px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;padding:32px">
-    <p style="margin:0 0 12px;letter-spacing:0.14em;font-size:11px;color:#64748b;text-transform:uppercase">Catequese Viva</p>
-    <h1 style="margin:0 0 12px;color:#071d36;font-size:22px">${title}</h1>
-    <p style="margin:0;color:#334155;line-height:1.6">${body}</p>
+<body style="margin:0;background:${brandColors.canvas};padding:48px 16px;font-family:Inter,system-ui,sans-serif">
+  <div style="max-width:480px;margin:0 auto;background:${brandColors.paper};border:1px solid ${brandColors.line};padding:32px">
+    <p style="margin:0 0 12px;letter-spacing:0.14em;font-size:11px;color:${brandColors.muted};text-transform:uppercase">Catequese Viva</p>
+    <h1 style="margin:0 0 12px;color:${brandColors.ink};font-size:22px">${title}</h1>
+    <p style="margin:0;color:${brandColors.inkSoft};line-height:1.6">${body}</p>
   </div>
 </body>
 </html>`;

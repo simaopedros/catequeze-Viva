@@ -27,6 +27,7 @@ import {
 } from "wasp/client/operations";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
+import { brandColors } from "../../shared/designTokens";
 
 const ReportsChartsPanel = lazy(() =>
   import("./ReportsChartsPanel").then((m) => ({
@@ -177,8 +178,8 @@ export default function ReportsPage() {
       0,
     );
     return [
-      { name: t("present"), value: present, color: "#071d36" },
-      { name: t("absent"), value: absent, color: "#b42318" },
+      { name: t("present"), value: present, color: brandColors.ink },
+      { name: t("absent"), value: absent, color: brandColors.danger },
     ];
   }, [classReports, t]);
 

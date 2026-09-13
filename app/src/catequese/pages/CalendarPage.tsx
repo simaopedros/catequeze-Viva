@@ -49,13 +49,14 @@ import { toast } from "../../client/hooks/use-toast";
 import { OriginBadge } from "../components/OriginBadge";
 import { findCalendarConflicts } from "../../shared/resourceInheritance";
 import { PastoralCompanion } from "../components/social/PastoralCompanion";
+import { brandColors } from "../../shared/designTokens";
 import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from "../../client/components/ui/alert";
 
-const DEFAULT_COLOR = "#071d36"; // brand ink — charts/ICS only
+const DEFAULT_COLOR = brandColors.ink;
 
 const FAMILY_ROLES = new Set(["GUARDIAN", "CATECHUMEN"]);
 
@@ -173,7 +174,7 @@ export default function CalendarPage() {
           ...m,
           name: m.title || t("meeting_default"),
           type: "class",
-          color: "#1f7a4d",
+          color: brandColors.success,
           className:
             filteredClasses.find((c: any) => c.id === m.classId)?.name || "",
           classId: m.classId,
