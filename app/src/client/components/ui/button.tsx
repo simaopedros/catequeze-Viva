@@ -11,7 +11,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-brand-ink text-white shadow-elevation-xs hover:bg-brand-midnight hover:shadow-elevation-sm active:shadow-none",
+          "bg-brand-gold text-brand-ink shadow-elevation-xs hover:bg-brand-gold-muted hover:text-white hover:shadow-elevation-sm active:shadow-none",
         destructive:
           "bg-destructive text-destructive-foreground shadow-elevation-xs hover:bg-destructive/90 hover:shadow-elevation-sm active:shadow-none",
         outline:
@@ -21,7 +21,7 @@ const buttonVariants = cva(
         ghost: "text-brand-ink hover:bg-brand-paper hover:text-brand-ink",
         link: "text-brand-ink underline-offset-4 hover:underline",
         brand:
-          "bg-brand-ink text-white shadow-elevation-xs hover:bg-brand-midnight hover:shadow-elevation-sm active:shadow-none",
+          "bg-brand-gold text-brand-ink shadow-elevation-xs hover:bg-brand-gold-muted hover:text-white hover:shadow-elevation-sm active:shadow-none",
         subtle:
           "bg-brand-paper font-medium text-brand-ink hover:bg-brand-light-gold/25",
       },

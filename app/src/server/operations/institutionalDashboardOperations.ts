@@ -13,6 +13,7 @@ import {
 } from '../auth/helpers';
 import { assertTwoFactorSessionVerified } from './twoFactorOperations';
 import { resolveWorkspaceAccess } from './sharedScope';
+import { brandColors } from '../../shared/designTokens';
 import { formatServerDate, getPeriodLabel, resolveUserLocale } from '../i18n/serverLocale';
 
 /** Upper bound of classes scanned per alert query (alerts are counts, not lists). */
@@ -545,20 +546,20 @@ export const getInstitutionalTrends = async (args: ScopeArgs, context: any): Pro
     enrollments: {
       labels,
       datasets: [
-        { label: 'Matriculados', data: enrollmentData, color: '#2563eb' },
-        { label: 'Evasões', data: dropoutData, color: '#ef4444' },
+        { label: 'Matriculados', data: enrollmentData, color: brandColors.inkSoft },
+        { label: 'Evasões', data: dropoutData, color: brandColors.danger },
       ],
     },
     attendance: {
       labels,
       datasets: [
-        { label: 'Presença %', data: attendanceData, color: '#22c55e' },
+        { label: 'Presença %', data: attendanceData, color: brandColors.success },
       ],
     },
     sacramental: {
       labels,
       datasets: [
-        { label: 'Marcos concluídos', data: milestoneData, color: '#a855f7' },
+        { label: 'Marcos concluídos', data: milestoneData, color: brandColors.gold },
       ],
     },
   };

@@ -23,6 +23,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { brandColors } from "../../../shared/designTokens";
 
 const Dashboard = ({ user }: { user: AuthUser }) => {
   const { t } = useTranslation("admin");
@@ -106,7 +107,7 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
         </div>
 
         {chartData.length > 0 && (
-          <div className="rounded-sm border border-border/70 bg-white p-5">
+          <div className="rounded-sm border border-border/70 bg-brand-paper p-5">
             <div className="mb-3 space-y-1.5">
               <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {t("pages.dashboard.growth_title")}
@@ -116,7 +117,7 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
             <div className="h-[260px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={brandColors.line} />
                   <XAxis dataKey="label" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} />
                   <Tooltip />
@@ -124,16 +125,16 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
                     type="monotone"
                     dataKey="users"
                     name={t("pages.dashboard.users")}
-                    stroke="#071A2D"
-                    fill="#071A2D"
+                    stroke={brandColors.ink}
+                    fill={brandColors.ink}
                     fillOpacity={0.12}
                   />
                   <Area
                     type="monotone"
                     dataKey="parishes"
                     name={t("pages.dashboard.active_parishes")}
-                    stroke="#D39A2B"
-                    fill="#D39A2B"
+                    stroke={brandColors.gold}
+                    fill={brandColors.gold}
                     fillOpacity={0.18}
                   />
                 </AreaChart>
@@ -143,7 +144,7 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
         )}
 
         {alerts.length > 0 && (
-          <div className="rounded-sm border border-border/70 bg-white p-5">
+          <div className="rounded-sm border border-border/70 bg-brand-paper p-5">
             <div className="mb-3 space-y-1.5">
               <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 <AlertTriangle className="h-3.5 w-3.5 text-brand-gold" />

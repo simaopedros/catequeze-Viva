@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrandButton, ErrorText, Field, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, ErrorText, Field, HeroHeader, Screen } from '../components/ui';
 
 export function TwoFactorScreen({
   onSubmit,
@@ -16,9 +16,10 @@ export function TwoFactorScreen({
 
   return (
     <Screen testID="two-factor-screen">
-      <ScreenTitle
-        title="Verificação em dois passos"
-        subtitle="Introduza o código de 6 dígitos da aplicação autenticadora."
+      <HeroHeader
+        kicker="Conta"
+        title="Um código, e entra"
+        subtitle="Os 6 dígitos do autenticador. Letras grandes, um campo só."
       />
       <ErrorText message={error} />
       <Field
@@ -31,7 +32,7 @@ export function TwoFactorScreen({
       />
       <BrandButton
         testID="totp-submit"
-        label={busy ? 'A verificar…' : 'Continuar'}
+        label={busy ? 'Verificando…' : 'Continuar'}
         disabled={busy || token.length < 6}
         onPress={() => onSubmit(token)}
       />

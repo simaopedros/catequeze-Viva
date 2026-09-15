@@ -8,9 +8,12 @@ export const appRoutes = {
   home: '/(app)/(tabs)',
   community: '/(app)/(tabs)/community',
   classes: '/(app)/(tabs)/classes',
-  messages: '/(app)/(tabs)/messages',
+  calendarTab: '/(app)/(tabs)/calendar',
+  messages: '/(app)/messages',
   more: '/(app)/(tabs)/more',
   compose: '/(app)/community/compose',
+  upload: '/(app)/community/upload',
+  watch: (id: string) => `/(app)/community/watch/${encodeURIComponent(id)}`,
   search: '/(app)/community/search',
   members: '/(app)/community/members',
   topics: '/(app)/community/topics',
@@ -33,6 +36,43 @@ export const appRoutes = {
   documents: '/(app)/documents',
   myProfile: '/(app)/profile',
   notifications: '/(app)/notifications',
+  catechumens: '/(app)/catechumens',
+  catechumen: (id: string) => `/(app)/catechumens/${id}`,
+  families: '/(app)/families',
+  family: (id: string) => `/(app)/families/${id}`,
+  team: '/(app)/team',
+  parishCommunities: '/(app)/communities',
+  content: '/(app)/content',
+  contentItem: (id: string) => `/(app)/content/${id}`,
+  calendar: '/(app)/(tabs)/calendar',
+  announcements: '/(app)/announcements',
+  formation: '/(app)/formation',
+  formationTrack: (id: string) => `/(app)/formation/${id}`,
+  sacraments: '/(app)/sacraments',
+  sacrament: (id: string) => `/(app)/sacraments/${id}`,
+  catechism: '/(app)/catechism',
+  directory: '/(app)/directory',
+  reports: '/(app)/reports',
+  birthdays: '/(app)/birthdays',
+  officialLibrary: '/(app)/official-library',
+  groups: '/(app)/groups',
+  group: (id: string) => `/(app)/groups/${id}`,
+  billing: '/(app)/billing',
+  settings: '/(app)/settings',
+  catecheticalYears: '/(app)/years',
+  familyInvites: '/(app)/family-invites',
+  journeyTemplates: '/(app)/journey-templates',
+  parishes: '/(app)/parishes',
+  consents: '/(app)/consents',
+  aiHub: '/(app)/ai',
+  form: (kind: string, query?: Record<string, string | undefined>) => {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(query || {})) {
+      if (value) params.set(key, value);
+    }
+    const encoded = params.toString();
+    return `/(app)/form/${encodeURIComponent(kind)}${encoded ? `?${encoded}` : ''}`;
+  },
 } as const;
 
 export function resolveAuthHref(status: 'booting' | 'guest' | 'needs2fa' | 'ready') {

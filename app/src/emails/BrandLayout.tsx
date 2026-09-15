@@ -1,4 +1,5 @@
 import React from "react";
+import { brandColors } from "../shared/designTokens";
 
 type BrandLayoutProps = {
   heading: string;
@@ -20,7 +21,7 @@ export function BrandLayout({
 }: BrandLayoutProps) {
   return (
     <html lang="pt-BR">
-      <body style={{ margin: 0, background: "#f8fafc", padding: "24px" }}>
+      <body style={{ margin: 0, background: brandColors.canvas, padding: "24px" }}>
         {preview ? (
           <div style={{ display: "none", maxHeight: 0, overflow: "hidden" }}>
             {preview}
@@ -31,8 +32,8 @@ export function BrandLayout({
             fontFamily: "Inter,system-ui,sans-serif",
             maxWidth: "560px",
             margin: "0 auto",
-            background: "#ffffff",
-            border: "1px solid #e2e8f0",
+            background: brandColors.paper,
+            border: `1px solid ${brandColors.line}`,
             padding: "32px",
             lineHeight: 1.55,
           }}
@@ -42,7 +43,7 @@ export function BrandLayout({
               margin: "0 0 16px",
               letterSpacing: "0.14em",
               fontSize: "11px",
-              color: "#64748b",
+              color: brandColors.muted,
               textTransform: "uppercase",
             }}
           >
@@ -51,14 +52,14 @@ export function BrandLayout({
           <h1
             style={{
               margin: "0 0 16px",
-              color: "#071A2D",
+              color: brandColors.ink,
               fontSize: "22px",
               fontWeight: 600,
             }}
           >
             {heading}
           </h1>
-          <div style={{ margin: "0 0 24px", color: "#334155", fontSize: "16px" }}>
+          <div style={{ margin: "0 0 24px", color: brandColors.inkSoft, fontSize: "16px" }}>
             {children}
           </div>
           {ctaLabel && ctaUrl ? (
@@ -67,11 +68,11 @@ export function BrandLayout({
                 href={ctaUrl}
                 style={{
                   display: "inline-block",
-                  background: "#071A2D",
-                  color: "#ffffff",
+                  background: brandColors.gold,
+                  color: brandColors.ink,
                   padding: "12px 20px",
                   textDecoration: "none",
-                  borderRadius: "4px",
+                  borderRadius: "10px",
                   fontSize: "15px",
                 }}
               >
@@ -82,11 +83,11 @@ export function BrandLayout({
           <hr
             style={{
               border: "none",
-              borderTop: "1px solid #e2e8f0",
+              borderTop: `1px solid ${brandColors.line}`,
               margin: "0 0 16px",
             }}
           />
-          <p style={{ margin: 0, color: "#94a3b8", fontSize: "12px" }}>{footer}</p>
+          <p style={{ margin: 0, color: brandColors.muted, fontSize: "12px" }}>{footer}</p>
         </div>
       </body>
     </html>

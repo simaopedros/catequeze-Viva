@@ -17,6 +17,7 @@ import {
   Cell,
   Legend,
 } from "recharts";
+import { brandColors } from "../../shared/designTokens";
 import { AppPanel } from "../../client/components/brand/AppChrome";
 
 type ChartRow = Record<string, string | number | undefined>;
@@ -52,7 +53,7 @@ export function ReportsChartsPanel({
               data={chartData}
               margin={{ top: 5, right: 30, left: 0, bottom: 60 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <CartesianGrid strokeDasharray="3 3" stroke={brandColors.line} />
               <XAxis
                 dataKey="name"
                 angle={-35}
@@ -68,8 +69,8 @@ export function ReportsChartsPanel({
                   return (item?.fullName as string) || label;
                 }}
               />
-              <Bar dataKey={presentKey} fill="#071A2D" radius={[4, 4, 0, 0]} />
-              <Bar dataKey={absentKey} fill="#D39A2B" radius={[4, 4, 0, 0]} />
+              <Bar dataKey={presentKey} fill={brandColors.ink} radius={[4, 4, 0, 0]} />
+              <Bar dataKey={absentKey} fill={brandColors.gold} radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         )}

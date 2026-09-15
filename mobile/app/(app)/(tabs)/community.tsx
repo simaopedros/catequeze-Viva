@@ -1,20 +1,35 @@
 import { useFocusEffect, useRouter } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
-import { openCommunityArea } from '../../../src/screens/communityNavigation';
+import type { SocialComment, SocialPost } from '../../../src/api/types';
+import { feedQueryForTab, type FeedTabId } from '../../../src/lib/social';
 import { CommunityScreen } from '../../../src/screens/CommunityScreen';
 
 export default function CommunityRoute() {
   const { api } = useAuth();
   const router = useRouter();
-  const [sort, setSort] = useState<'recent' | 'trending' | 'foryou'>('recent');
-  const [topicSlug, setTopicSlug] = useState<string | null>(null);
-  const [following, setFollowing] = useState(false);
-  const feed = useAsync(() => api.socialFeed({ sort, topicSlug, following }), [sort, topicSlug, following]);
-  const topics = useAsync(() => api.socialTopics(), []);
-  const access = useAsync(() => api.socialAccess(), []);
-  const me = useAsync(() => api.mySocialProfile(), []);
+  const [tab, setTab] = useState<FeedTabId>('foryou');
+  const [items, setItems] = useState<SocialPost[]>([]);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [followingIds, setFollowingIds] = useState<string[]>([]);
+  const [comments, setComments] = useState<SocialComment[]>([]);
+  const [commentsBusy, setCommentsBusy] = useState(false);
+  const query = useMemo(() => feedQueryForTab(tab), [tab]);
+  const feed = useAsync(
+    () => api.socialFeed({ ...query, cursor: null, limit: 20 }),
+    [query.sort, query.following, query.videoFormat],
+  );
+  const me = useAsync(() => api.mySocialProfile().catch(() => null), []);
+
+  useEffect(() => {
+    if (!feed.data) return;
+    setItems(feed.data.items);
+    setCursor(feed.data.nextCursor);
+    const authorIds = [...new Set(feed.data.items.map((item) => item.author.id))];
+    if (authorIds.length === 0) return;
+    void api.socialFollowState(authorIds).then((state) => setFollowingIds(state.following || []));
+  }, [api, feed.data]);
 
   useFocusEffect(
     useCallback(() => {
@@ -24,24 +39,59 @@ export default function CommunityRoute() {
 
   return (
     <CommunityScreen
-      posts={feed.data?.items ?? []}
-      topics={topics.data ?? []}
-      access={access.data}
-      sort={sort}
-      topicSlug={topicSlug}
-      following={following}
+      posts={items}
+      tab={tab}
       loading={feed.loading}
       error={feed.error}
-      showHub
-      onOpenArea={(area) => openCommunityArea(router, area, me.data?.handle)}
-      onChangeSort={setSort}
-      onChangeTopic={setTopicSlug}
-      onToggleFollowing={() => setFollowing((value) => !value)}
+      hasMore={Boolean(cursor)}
+      followingIds={followingIds}
+      comments={comments}
+      commentsBusy={commentsBusy}
+      onChangeTab={setTab}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
       onOpenPost={(slug) => router.push(`/(app)/community/p/${slug}`)}
-      onOpenTopic={(slug) => router.push(`/(app)/community/t/${slug}`)}
       onCompose={() => router.push('/(app)/community/compose')}
+      onUpload={() => router.push('/(app)/community/upload')}
       onSearch={() => router.push('/(app)/community/search')}
+      onOpenProfile={() => {
+        const handle = me.data?.handle || me.data?.socialHandle;
+        if (handle) router.push(`/(app)/community/${handle}`);
+        else router.push('/(app)/community/edit');
+      }}
+      onLoadMore={async () => {
+        if (!cursor) return;
+        const page = await api.socialFeed({ ...query, cursor, limit: 20 });
+        setItems((current) => [...current, ...page.items]);
+        setCursor(page.nextCursor);
+      }}
+      onReact={async (postId, type) => {
+        await api.toggleReaction(postId, type);
+        await feed.reload();
+      }}
+      onLoadComments={async (postId) => {
+        setCommentsBusy(true);
+        try {
+          const payload = await api.socialComments(postId);
+          setComments(payload.items || []);
+        } finally {
+          setCommentsBusy(false);
+        }
+      }}
+      onComment={async (postId, body) => {
+        await api.createComment(postId, body);
+        const payload = await api.socialComments(postId);
+        setComments(payload.items || []);
+      }}
+      onFollow={async (authorId) => {
+        await api.toggleFollow(authorId);
+        const authorIds = [...new Set(items.map((item) => item.author.id))];
+        const state = await api.socialFollowState(authorIds);
+        setFollowingIds(state.following || []);
+      }}
+      onWatch={(postId) => {
+        void api.recordSocialWatch(postId, 1).catch(() => undefined);
+      }}
+      onOpenLong={(post) => router.push(`/(app)/community/watch/${post.slug || post.id}`)}
     />
   );
 }

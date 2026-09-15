@@ -5,6 +5,7 @@
 This repository is a Wasp-based workspace with three packages:
 
 - `app/` - primary product code, schema, migrations, and server/client logic
+- `mobile/` - Expo (React Native) app for iOS/Android/web, talking to `/mobile/*`
 - `e2e-tests/` - standalone Playwright suite for local and CI browser tests
 - `blog/` - separate Astro/Starlight site for docs and marketing content
 
@@ -22,6 +23,8 @@ Run commands from the relevant package directory:
 - `cd app && npm run test:unit` - run the fast unit subset
 - `cd app && npm run test:integration` - run integration-focused tests
 - `cd app && npx playwright test` - run the app e2e suite
+- `cd mobile && npm start` / `npx expo start` - Expo app (needs `wasp start` for the API)
+- `cd mobile && npm test` - Jest tests for the mobile client
 - `cd blog && npm run dev` / `npm run build` - develop or verify the blog
 
 ## Coding Style & Naming Conventions

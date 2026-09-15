@@ -1,0 +1,62 @@
+# API Wasp em produção — só o server Node (SPA continua no VPS/Caddy).
+# Deploy: cd app && fly deploy --config fly.toml --remote-only
+# Docs: docs/FLY.md
+#
+# Não uses `wasp deploy fly launch`: isso cria client + Postgres na Fly.
+# Neon e o site React ficam onde já estão.
+
+app = "catechis-api"
+primary_region = "gru"
+
+[build]
+  dockerfile = "deploy/Dockerfile.server"
+  [build.args]
+    DATABASE_URL = "postgresql://build:build@127.0.0.1:5432/dummy"
+    REACT_APP_API_URL = "https://api.catechis.app"
+    REACT_APP_FAMILY_PORTAL_HOST = "familia.catechis.app"
+    REACT_APP_STAFF_PORTAL_HOST = "catechis.app"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3001"
+  RUN_JOBS = "true"
+  WASP_WEB_CLIENT_URL = "https://catechis.app"
+  WASP_SERVER_URL = "https://api.catechis.app"
+  COOKIE_DOMAIN = ".catechis.app"
+  FAMILY_PORTAL_HOST = "familia.catechis.app"
+  STAFF_PORTAL_HOST = "catechis.app"
+  PRICING_CATALOG_SOURCE = "db"
+  SENTRY_ENVIRONMENT = "production"
+  EMAIL_FROM_TRANSACTIONAL = "noreply@catechis.app"
+  EMAIL_FROM_LIFECYCLE = "updates@catechis.app"
+  EMAIL_FROM_PASTORAL = "comunicados@catechis.app"
+  EMAIL_FROM_MARKETING = "hello@catechis.app"
+  SMTP_HOST = "smtp.resend.com"
+  SMTP_PORT = "587"
+  SMTP_USERNAME = "resend"
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = "off"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 250
+    soft_limit = 200
+
+  [[http_service.checks]]
+    grace_period = "45s"
+    interval = "15s"
+    method = "GET"
+    path = "/health"
+    timeout = "5s"
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1
+  processes = ["app"]

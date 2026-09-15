@@ -16,6 +16,7 @@ import { Button } from "../../client/components/ui/button";
 import { formatDate as formatAppDate } from "../../i18n/format";
 import { useLocale } from "../../i18n/useLocale";
 import { ChartSuspenseFallback } from "../../client/components/ChartSuspenseFallback";
+import { brandColors } from "../../shared/designTokens";
 import {
   PASTORAL_PERIOD_ALL,
   filterPastoralByMonth,
@@ -72,14 +73,14 @@ function PastoralAvatar({
         borderRadius: radius,
         overflow: "hidden",
         flexShrink: 0,
-        border: "1px solid #d4d4d8",
-        background: "#f4f4f5",
+        border: `1px solid ${brandColors.line}`,
+        background: brandColors.canvas,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         fontSize: size > 40 ? "16px" : "12px",
         fontWeight: 600,
-        color: "#071A2D",
+        color: brandColors.ink,
       }}
     >
       {photoUrl ? (
@@ -215,8 +216,8 @@ export function PastoralAnalysisInline({
       <div
         className="pastoral-print-content"
         style={{
-          background: "#fff",
-          color: "#111",
+          background: brandColors.paper,
+          color: brandColors.ink,
           fontFamily: "system-ui, sans-serif",
           fontSize: "14px",
           lineHeight: 1.5,
@@ -227,7 +228,7 @@ export function PastoralAnalysisInline({
       >
         <div
           style={{
-            border: "1px solid #d4d4d8",
+            border: `1px solid ${brandColors.line}`,
             borderRadius: "12px",
             padding: "16px",
             marginBottom: "16px",
@@ -253,7 +254,7 @@ export function PastoralAnalysisInline({
                   style={{
                     fontSize: "10px",
                     textTransform: "uppercase",
-                    color: "#6b7280",
+                    color: brandColors.muted,
                     margin: 0,
                   }}
                 >
@@ -269,14 +270,14 @@ export function PastoralAnalysisInline({
                 >
                   {catechumen.name}
                 </h4>
-                <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>
+                <p style={{ fontSize: "12px", color: brandColors.muted, margin: 0 }}>
                   {cls.name}{" "}
                   {catechistsSuffix(cls.catechists, t("catechists"))}
                 </p>
               </div>
             </div>
             <div
-              style={{ textAlign: "right", fontSize: "12px", color: "#6b7280" }}
+              style={{ textAlign: "right", fontSize: "12px", color: brandColors.muted }}
             >
               <p style={{ margin: 0 }}>
                 {t("issuedAt")}: {reportDate}
@@ -298,7 +299,7 @@ export function PastoralAnalysisInline({
             <span
               style={{
                 borderRadius: "999px",
-                background: "#f3f4f6",
+                background: brandColors.canvas,
                 padding: "2px 8px",
               }}
             >
@@ -308,7 +309,7 @@ export function PastoralAnalysisInline({
               <span
                 style={{
                   borderRadius: "999px",
-                  background: "#f3f4f6",
+                  background: brandColors.canvas,
                   padding: "2px 8px",
                 }}
               >
@@ -319,7 +320,7 @@ export function PastoralAnalysisInline({
               <span
                 style={{
                   borderRadius: "999px",
-                  background: "#f3f4f6",
+                  background: brandColors.canvas,
                   padding: "2px 8px",
                 }}
               >
@@ -330,7 +331,7 @@ export function PastoralAnalysisInline({
               <span
                 style={{
                   borderRadius: "999px",
-                  background: "#f3f4f6",
+                  background: brandColors.canvas,
                   padding: "2px 8px",
                 }}
               >
@@ -343,7 +344,7 @@ export function PastoralAnalysisInline({
         {canSeeSensitiveSignals && filtered.alerts.length > 0 && (
           <div
             style={{
-              border: "1px solid #d4d4d8",
+              border: `1px solid ${brandColors.line}`,
               borderRadius: "12px",
               padding: "12px",
               marginBottom: "16px",
@@ -358,10 +359,10 @@ export function PastoralAnalysisInline({
                   alignItems: "center",
                   gap: "8px",
                   borderRadius: "8px",
-                  background: "#fef2f2",
+                  background: brandColors.cream,
                   padding: "8px",
                   fontSize: "12px",
-                  color: "#dc2626",
+                  color: brandColors.danger,
                   marginBottom: i < filtered.alerts.length - 1 ? "4px" : 0,
                 }}
               >
@@ -391,10 +392,10 @@ export function PastoralAnalysisInline({
         >
           <div
             style={{
-              border: "1px solid #d4d4d8",
+              border: `1px solid ${brandColors.line}`,
               borderRadius: "8px",
               padding: "12px",
-              background: "#f9fafb",
+              background: brandColors.cream,
               breakInside: "avoid",
             }}
           >
@@ -402,40 +403,40 @@ export function PastoralAnalysisInline({
               style={{
                 fontSize: "24px",
                 fontWeight: "bold",
-                color: "var(--color-primary, #071A2D)",
+                color: brandColors.ink,
                 margin: 0,
               }}
             >
               {filtered.overallFrequency}%
             </p>
-            <p style={{ color: "#6b7280", margin: "4px 0 0" }}>
+            <p style={{ color: brandColors.muted, margin: "4px 0 0" }}>
               {frequencyLabel}
             </p>
           </div>
           {canSeeSensitiveSignals && filtered.rankingPosition != null && (
             <div
               style={{
-                border: "1px solid #d4d4d8",
+                border: `1px solid ${brandColors.line}`,
                 borderRadius: "8px",
                 padding: "12px",
-                background: "#f9fafb",
+                background: brandColors.cream,
                 breakInside: "avoid",
               }}
             >
               <p style={{ fontSize: "24px", fontWeight: "bold", margin: 0 }}>
                 {filtered.rankingPosition}/{filtered.totalCatechumensInClass}
               </p>
-              <p style={{ color: "#6b7280", margin: "4px 0 0" }}>
+              <p style={{ color: brandColors.muted, margin: "4px 0 0" }}>
                 {t("rankingPosition")}
               </p>
             </div>
           )}
           <div
             style={{
-              border: "1px solid #d4d4d8",
+              border: `1px solid ${brandColors.line}`,
               borderRadius: "8px",
               padding: "12px",
-              background: "#f9fafb",
+              background: brandColors.cream,
               breakInside: "avoid",
             }}
           >
@@ -443,22 +444,22 @@ export function PastoralAnalysisInline({
               style={{
                 fontSize: "24px",
                 fontWeight: "bold",
-                color: "#071A2D",
+                color: brandColors.ink,
                 margin: 0,
               }}
             >
               {filtered.presentCount + filtered.lateCount}
             </p>
-            <p style={{ color: "#6b7280", margin: "4px 0 0" }}>
+            <p style={{ color: brandColors.muted, margin: "4px 0 0" }}>
               {t("present")}
             </p>
           </div>
           <div
             style={{
-              border: "1px solid #d4d4d8",
+              border: `1px solid ${brandColors.line}`,
               borderRadius: "8px",
               padding: "12px",
-              background: "#f9fafb",
+              background: brandColors.cream,
               breakInside: "avoid",
             }}
           >
@@ -466,20 +467,20 @@ export function PastoralAnalysisInline({
               style={{
                 fontSize: "24px",
                 fontWeight: "bold",
-                color: "#dc2626",
+                color: brandColors.danger,
                 margin: 0,
               }}
             >
               {filtered.justifiedCount + filtered.absentCount}
             </p>
-            <p style={{ color: "#6b7280", margin: "4px 0 0" }}>{t("absent")}</p>
+            <p style={{ color: brandColors.muted, margin: "4px 0 0" }}>{t("absent")}</p>
           </div>
         </div>
 
         {chartRows.length > 0 && (
           <div
             style={{
-              border: "1px solid #d4d4d8",
+              border: `1px solid ${brandColors.line}`,
               borderRadius: "12px",
               padding: "16px",
               marginBottom: "16px",
@@ -491,7 +492,7 @@ export function PastoralAnalysisInline({
                 fontSize: "12px",
                 fontWeight: "600",
                 textTransform: "uppercase",
-                color: "#6b7280",
+                color: brandColors.muted,
                 margin: "0 0 12px",
               }}
             >
@@ -511,12 +512,12 @@ export function PastoralAnalysisInline({
                 borderCollapse: "collapse",
                 borderRadius: "8px",
                 overflow: "hidden",
-                border: "1px solid #e5e7eb",
+                border: `1px solid ${brandColors.line}`,
                 marginTop: "12px",
               }}
             >
               <thead>
-                <tr style={{ background: "#f3f4f6" }}>
+                <tr style={{ background: brandColors.canvas }}>
                   <th
                     style={{
                       padding: "8px",
@@ -568,7 +569,7 @@ export function PastoralAnalysisInline({
                 {(data.monthlyPresence || []).map((row: any) => (
                   <tr
                     key={row.month}
-                    style={{ borderTop: "1px solid #e5e7eb" }}
+                    style={{ borderTop: `1px solid ${brandColors.line}` }}
                   >
                     <td style={{ padding: "8px", fontWeight: 500 }}>
                       {row.month}
@@ -577,7 +578,7 @@ export function PastoralAnalysisInline({
                       style={{
                         padding: "8px",
                         textAlign: "center",
-                        color: "#071A2D",
+                        color: brandColors.ink,
                       }}
                     >
                       {row.present}
@@ -586,7 +587,7 @@ export function PastoralAnalysisInline({
                       style={{
                         padding: "8px",
                         textAlign: "center",
-                        color: "#d97706",
+                        color: brandColors.late,
                       }}
                     >
                       {row.late}
@@ -595,7 +596,7 @@ export function PastoralAnalysisInline({
                       style={{
                         padding: "8px",
                         textAlign: "center",
-                        color: "#dc2626",
+                        color: brandColors.danger,
                       }}
                     >
                       {row.absent + row.justified}
@@ -620,7 +621,7 @@ export function PastoralAnalysisInline({
         >
           <div
             style={{
-              border: "1px solid #d4d4d8",
+              border: `1px solid ${brandColors.line}`,
               borderRadius: "12px",
               padding: "16px",
               breakInside: "avoid",
@@ -631,7 +632,7 @@ export function PastoralAnalysisInline({
                 fontSize: "12px",
                 fontWeight: 600,
                 textTransform: "uppercase",
-                color: "#071A2D",
+                color: brandColors.ink,
                 margin: "0 0 12px",
               }}
             >
@@ -646,30 +647,30 @@ export function PastoralAnalysisInline({
                       display: "grid",
                       gridTemplateColumns: "80px 1fr auto",
                       gap: "8px",
-                      borderBottom: "1px solid #e5e7eb",
+                      borderBottom: `1px solid ${brandColors.line}`,
                       padding: "4px 0",
                       fontSize: "12px",
                     }}
                   >
-                    <span style={{ color: "#6b7280" }}>
+                    <span style={{ color: brandColors.muted }}>
                       {formatDate(item.date)}
                     </span>
                     <span>{displayTheme(item)}</span>
-                    <span style={{ fontSize: "10px", color: "#6b7280" }}>
+                    <span style={{ fontSize: "10px", color: brandColors.muted }}>
                       {statusLabels[item.status || ""] || item.status}
                     </span>
                   </div>
                 ))}
               </div>
             ) : (
-              <p style={{ fontSize: "12px", color: "#6b7280" }}>
+              <p style={{ fontSize: "12px", color: brandColors.muted }}>
                 {t("noAttendedThemes")}
               </p>
             )}
           </div>
           <div
             style={{
-              border: "1px solid #d4d4d8",
+              border: `1px solid ${brandColors.line}`,
               borderRadius: "12px",
               padding: "16px",
               breakInside: "avoid",
@@ -680,7 +681,7 @@ export function PastoralAnalysisInline({
                 fontSize: "12px",
                 fontWeight: 600,
                 textTransform: "uppercase",
-                color: "#dc2626",
+                color: brandColors.danger,
                 margin: "0 0 12px",
               }}
             >
@@ -695,12 +696,12 @@ export function PastoralAnalysisInline({
                       display: "grid",
                       gridTemplateColumns: "80px 1fr",
                       gap: "8px",
-                      borderBottom: "1px solid #e5e7eb",
+                      borderBottom: `1px solid ${brandColors.line}`,
                       padding: "4px 0",
                       fontSize: "12px",
                     }}
                   >
-                    <span style={{ color: "#6b7280" }}>
+                    <span style={{ color: brandColors.muted }}>
                       {formatDate(item.date)}
                     </span>
                     <span>{displayTheme(item)}</span>
@@ -708,7 +709,7 @@ export function PastoralAnalysisInline({
                 ))}
               </div>
             ) : (
-              <p style={{ fontSize: "12px", color: "#6b7280" }}>
+              <p style={{ fontSize: "12px", color: brandColors.muted }}>
                 {t("noMissedThemes")}
               </p>
             )}
@@ -718,7 +719,7 @@ export function PastoralAnalysisInline({
         {filtered.meetingTimeline.length > 0 && (
           <div
             style={{
-              border: "1px solid #d4d4d8",
+              border: `1px solid ${brandColors.line}`,
               borderRadius: "12px",
               padding: "16px",
               marginBottom: "16px",
@@ -730,7 +731,7 @@ export function PastoralAnalysisInline({
                 fontSize: "12px",
                 fontWeight: 600,
                 textTransform: "uppercase",
-                color: "#6b7280",
+                color: brandColors.muted,
                 margin: "0 0 12px",
               }}
             >
@@ -743,14 +744,14 @@ export function PastoralAnalysisInline({
                   display: "grid",
                   gridTemplateColumns: "80px 1fr 90px",
                   gap: "8px",
-                  borderBottom: "1px solid #e5e7eb",
+                  borderBottom: `1px solid ${brandColors.line}`,
                   padding: "4px 0",
                   fontSize: "12px",
                 }}
               >
-                <span style={{ color: "#6b7280" }}>{formatDate(m.date)}</span>
+                <span style={{ color: brandColors.muted }}>{formatDate(m.date)}</span>
                 <span>{displayTheme(m)}</span>
-                <span style={{ textAlign: "right", color: "#6b7280" }}>
+                <span style={{ textAlign: "right", color: brandColors.muted }}>
                   {statusLabels[m.status] || m.status}
                 </span>
               </div>
@@ -760,7 +761,7 @@ export function PastoralAnalysisInline({
 
         <div
           style={{
-            border: "1px solid #d4d4d8",
+            border: `1px solid ${brandColors.line}`,
             borderRadius: "12px",
             padding: "16px",
             breakInside: "avoid",
@@ -771,13 +772,13 @@ export function PastoralAnalysisInline({
               fontSize: "12px",
               fontWeight: 600,
               textTransform: "uppercase",
-              color: "#6b7280",
+              color: brandColors.muted,
               margin: "0 0 4px",
             }}
           >
             {t("pastoralNotes")}
           </h4>
-          <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>
+          <p style={{ fontSize: "12px", color: brandColors.muted, margin: 0 }}>
             {enrollment.notes || t("noNotes")}
           </p>
         </div>

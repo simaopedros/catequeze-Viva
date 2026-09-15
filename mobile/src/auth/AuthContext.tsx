@@ -210,3 +210,17 @@ export function unreadCount(bootstrap: BootstrapPayload | null) {
 export function listWorkspaces(bootstrap: BootstrapPayload | null): Workspace[] {
   return bootstrap?.workspaces ?? [];
 }
+
+export function workspaceNavContext(
+  bootstrap: BootstrapPayload | null,
+  workspaceId: string | null,
+): { workspaceType?: string | null; role?: string | null; isAdmin?: boolean } {
+  const ctx = bootstrap?.currentUserContext;
+  const membership = ctx?.memberships?.find((row) => row.parishId === workspaceId);
+  const workspace = bootstrap?.workspaces?.find((row) => row.id === workspaceId);
+  return {
+    isAdmin: Boolean(ctx?.isAdmin),
+    role: membership?.role ?? null,
+    workspaceType: membership?.parishType ?? workspace?.type ?? null,
+  };
+}

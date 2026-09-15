@@ -28,6 +28,12 @@ const REQUIRED_ROUTES = [
   ['mobileSocialConnections', 'GET', '/mobile/social/connections'],
   ['mobileSocialBlocks', 'GET', '/mobile/social/blocks'],
   ['mobileSocialReport', 'POST', '/mobile/social/report'],
+  ['mobileSocialUploadImage', 'POST', '/mobile/social/images'],
+  ['mobileSocialUploadVideo', 'POST', '/mobile/social/videos'],
+  ['mobileSocialCreateVideoUpload', 'POST', '/mobile/social/video-uploads'],
+  ['mobileSocialDeletePost', 'POST', '/mobile/social/posts/:id/delete'],
+  ['mobileSocialWatch', 'POST', '/mobile/social/watch'],
+  ['mobileSocialFollowState', 'GET', '/mobile/social/follow-state'],
   ['mobileBibleBooks', 'GET', '/mobile/bible/books'],
   ['mobileBibleBook', 'GET', '/mobile/bible/books/:id'],
   ['mobileBibleChapter', 'GET', '/mobile/bible/books/:bookId/chapters/:chapter'],
@@ -57,6 +63,12 @@ describe('mobile social + bible API wiring', () => {
     expect(mobileSocialSource).toContain('listSocialConnections');
     expect(mobileSocialSource).toContain('listMySocialBlocks');
     expect(mobileSocialSource).toContain('reportSocialContent');
+    expect(mobileSocialSource).toContain('deleteSocialPost');
+    expect(mobileSocialSource).toContain('recordSocialWatch');
+    expect(mobileSocialSource).toContain('getSocialFollowState');
+    expect(mobileSocialSource).toContain('createSocialVideoUpload');
+    expect(mobileSocialSource).toContain('uploadSocialImage');
+    expect(mobileSocialSource).toContain('uploadSocialVideo');
     expect(mobileSocialSource).toContain(
       "from '../operations/socialProfileOperations'",
     );
@@ -70,5 +82,19 @@ describe('mobile social + bible API wiring', () => {
     expect(mobileSocialSource).not.toContain("from '../operations/socialAuthor'");
     expect(mobileSocialSource).toContain('UserTwoFactor:');
     expect(mobileSocialSource).toContain('userTwoFactor');
+  });
+});
+
+describe('social media delivery', () => {
+  it('allows Expo web on another origin to play stored videos', () => {
+    const setupSource = readFileSync(resolve(__dirname, '../server/setup.ts'), 'utf8');
+    const mediaSource = readFileSync(
+      resolve(__dirname, '../server/api/socialMedia.ts'),
+      'utf8',
+    );
+    expect(setupSource).toContain("prependMiddleware(app as any, '/api/social', applyLocalMobileCors)");
+    expect(mediaSource).toContain('Cross-Origin-Resource-Policy');
+    expect(mediaSource).toContain('cross-origin');
+    expect(mediaSource).toContain('Cross-Origin-Embedder-Policy');
   });
 });

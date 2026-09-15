@@ -12,6 +12,7 @@ describe('auth and community UI', () => {
     );
 
     fireEvent.changeText(view.getByTestId('login-email'), 'coord@paroquia.pt');
+    fireEvent.press(view.getByTestId('login-next'));
     fireEvent.changeText(view.getByTestId('login-password'), 'Teste@123');
     fireEvent.press(view.getByTestId('login-submit'));
 
@@ -43,11 +44,8 @@ describe('auth and community UI', () => {
             author: { id: 'u', handle: 'joao', displayName: 'João', avatarUrl: null },
           },
         ]}
-        topics={[{ slug: 'liturgia', name: 'Liturgia' }]}
-        access={{ authenticated: true, canPublish: true }}
-        sort="recent"
-        onChangeSort={jest.fn()}
-        onChangeTopic={jest.fn()}
+        tab="recent"
+        onChangeTab={jest.fn()}
         onOpenAuthor={jest.fn()}
         onCompose={onCompose}
       />,

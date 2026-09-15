@@ -37,7 +37,7 @@ export function SocialSearch({ className }: { className?: string }) {
           value={term}
           onChange={(event) => setTerm(event.target.value)}
           placeholder={t("search.placeholder")}
-          className="h-10 rounded-[11px] border-[#e1e7ee] pl-9"
+          className="h-10 rounded-[11px] border-border pl-9"
           aria-label={t("search.placeholder")}
         />
       </label>

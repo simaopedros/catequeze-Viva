@@ -71,7 +71,17 @@ describe('mobile HTTP client', () => {
 
     await client.socialAccess();
     await client.socialTopics();
-    await client.createPost({ body: 'Paz', share: { kind: 'VERSE', sourceId: 'gn:1:1' } });
+    await client.createPost({
+      body: 'Paz',
+      mediaIds: ['media-1'],
+      topicSlugs: ['oracao'],
+      mediaConsentAck: true,
+      share: { kind: 'VERSE', sourceId: 'verse-uuid' },
+    });
+    await client.deletePost('post-1');
+    await client.uploadSocialImage({ uri: 'file://foto.jpg', name: 'foto.jpg', type: 'image/jpeg' });
+    await client.createVideoUpload({ title: 'encontro.mp4' });
+    await client.uploadSocialVideo({ uri: 'file://clip.mp4', name: 'clip.mp4', type: 'video/mp4' }, 'media-2');
     await client.socialProfile('ana');
     await client.mySocialProfile();
     await client.updateSocialProfile({ handle: 'ana', bio: 'Catequista' });
@@ -87,12 +97,37 @@ describe('mobile HTTP client', () => {
     await client.socialConnections({ handle: 'ana', kind: 'followers' });
     await client.socialBlocks();
     await client.reportSocial({ targetType: 'POST', targetId: 'post-1', reason: 'OTHER' });
+    await client.recordSocialWatch('post-1', 4, 0.8);
+    await client.socialFollowState(['user-2']);
     await client.bibleBooks();
     await client.bibleBook('gn');
     await client.bibleChapter('gn', 1);
     await client.saveAttendance({ meetingId: 'm1', catechumenProfileId: 'c1', status: 'PRESENT' });
+    await client.meetingAttendance('m1');
+    await client.familyInvites('ws-1');
+    await client.journeyTemplates();
+    await client.parishes();
+    await client.consents();
+    await client.catechumens('ws-1');
+    await client.families('ws-1');
+    await client.content('ws-1', 'páscoa');
+    await client.announcements('ws-1');
+    await client.acknowledgeAnnouncement('a1');
+    await client.catechismSearch('trindade');
+    await client.team('ws-1');
+    await client.billing();
+    await client.createMeeting({ classId: 'c1', title: 'Encontro', date: '2026-09-20' });
+    await client.createClass({ name: 'Turma nova' });
+    await client.createCatechumen({ firstName: 'Ana', lastName: 'Silva' });
+    await client.verifyDocument('d1');
+    await client.exportReports('ws-1');
 
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialAccess);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialPosts);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialDeletePost('post-1'));
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialImages);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialVideoUploads);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialVideos);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialProfile('ana'));
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.bibleChapter('gn', 1) + '?locale=pt-BR');
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialPulse + '?memberLimit=40');
@@ -101,6 +136,19 @@ describe('mobile HTTP client', () => {
     );
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialBlocks);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialReport);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialWatch);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialFollowState + '?authorIds=user-2');
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.attendance);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.meetingAttendance('m1'));
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.familyInvites + '?workspaceId=ws-1');
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.catechumens + '?workspaceId=ws-1&take=50');
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.content + '?workspaceId=ws-1&search=p%C3%A1scoa&take=50');
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.announcementAck('a1'));
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.billing);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.createMeeting);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.createClass);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.createCatechumen);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.documentVerify('d1'));
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.exportReports);
   });
 });

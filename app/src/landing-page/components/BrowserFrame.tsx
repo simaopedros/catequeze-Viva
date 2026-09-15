@@ -20,7 +20,7 @@ export function BrowserFrame({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-sm border border-border/70 bg-white shadow-[0_16px_40px_-20px_rgba(7,26,45,0.28)] ring-1 ring-black/[0.03]",
+        "overflow-hidden rounded-sm border border-border/70 bg-white shadow-[0_16px_40px_-20px_rgba(7,29,54,0.28)] ring-1 ring-black/[0.03]",
         className
       )}
     >

@@ -30,7 +30,7 @@ export function RhemaPreviewCard() {
         className="flex items-start justify-between gap-3 px-4 py-4 text-white sm:px-5"
         style={{
           background:
-            "linear-gradient(90deg, rgba(7,26,45,0.98) 0%, rgba(7,26,45,0.88) 55%, rgba(32,50,70,0.92) 100%)",
+            "linear-gradient(90deg, rgba(7,29,54,0.98) 0%, rgba(7,29,54,0.88) 55%, rgba(18,49,82,0.92) 100%)",
         }}
       >
         <div className="min-w-0">

@@ -36,14 +36,14 @@ export function EditProfileScreen({
       <Field label="O seu @" value={handle} onChangeText={onHandleChange} testID="profile-handle" />
       <Field label="Bio" value={bio} onChangeText={onBioChange} multiline testID="profile-bio" />
       <Field
-        label="Sítio (opcional)"
+        label="Site (opcional)"
         value={websiteUrl}
         onChangeText={onWebsiteChange}
         testID="profile-website"
       />
       <BrandButton
         testID="save-profile"
-        label={busy ? 'A guardar…' : 'Guardar perfil público'}
+        label={busy ? 'Salvando…' : 'Salvar perfil público'}
         disabled={busy}
         onPress={onSave}
       />

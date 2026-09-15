@@ -1,8 +1,9 @@
-import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import React, { useState } from 'react';
+import { Pressable, Share, Text, View } from 'react-native';
+import { BrandButton, EmptyState, LoadingState, PersonRow, Screen, ScreenTitle } from '../components/ui';
+import { ShareCard } from '../components/PostCard';
 import type { BibleBook, BibleChapter } from '../api/types';
-import { colors } from '../theme';
+import { colors, fonts, spacing } from '../theme';
 
 export function BibleBooksScreen({
   books,
@@ -17,16 +18,17 @@ export function BibleBooksScreen({
 }) {
   return (
     <Screen testID="bible-books-screen">
-      <ScreenTitle title="Bíblia" subtitle="Leia e partilhe um versículo na Comunidade." />
+      <ScreenTitle title="Bíblia" subtitle="Leia em voz alta. Toque num livro para o capítulo." />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Bíblia indisponível" body={error} /> : null}
       {books.map((book) => (
-        <Pressable key={book.id} onPress={() => onOpen(book.id)} testID={`bible-book-${book.id}`}>
-          <Card>
-            <Text style={{ color: colors.ink, fontWeight: '700' }}>{book.name}</Text>
-            <Text style={{ color: colors.muted }}>{book.testament || ''}</Text>
-          </Card>
-        </Pressable>
+        <PersonRow
+          key={book.id}
+          testID={`bible-book-${book.id}`}
+          name={book.name}
+          hint={book.testament || ''}
+          onPress={() => onOpen(book.id)}
+        />
       ))}
     </Screen>
   );
@@ -52,13 +54,25 @@ export function BibleBookScreen({
       {chapters.length === 0 && !loading ? (
         <EmptyState title="Sem capítulos" body="Este livro ainda não tem capítulos no cache." />
       ) : (
-        chapters.map((chapter) => (
-          <Pressable key={chapter.id || chapter.number} onPress={() => onOpenChapter(chapter.number)}>
-            <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>Capítulo {chapter.number}</Text>
-            </Card>
-          </Pressable>
-        ))
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {chapters.map((chapter) => (
+            <Pressable
+              key={chapter.id || chapter.number}
+              onPress={() => onOpenChapter(chapter.number)}
+              style={{
+                minWidth: 44,
+                minHeight: 44,
+                borderRadius: 12,
+                backgroundColor: colors.canvas,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingHorizontal: 12,
+              }}
+            >
+              <Text style={{ fontFamily: fonts.sansSemi, color: colors.ink }}>{chapter.number}</Text>
+            </Pressable>
+          ))}
+        </View>
       )}
     </Screen>
   );
@@ -75,28 +89,74 @@ export function BibleChapterScreen({
   loading?: boolean;
   error?: string | null;
   canPublish?: boolean;
-  onShareVerse: (verseNumber: number, text: string) => void;
+  onShareVerse: (verse: { id: string; number: number; text: string }) => void;
 }) {
+  const [selected, setSelected] = useState<{ id: string; number: number; text: string } | null>(null);
+  const title = chapter?.book?.name
+    ? `${chapter.book.name} ${chapter.number}`
+    : `Capítulo ${chapter?.number ?? ''}`;
+
   return (
-    <Screen testID="bible-chapter-screen">
-      <ScreenTitle
-        title={chapter?.book?.name ? `${chapter.book.name} ${chapter.number}` : `Capítulo ${chapter?.number ?? ''}`}
-      />
+    <Screen
+      testID="bible-chapter-screen"
+      ink
+      footer={
+        selected ? (
+          <View>
+            <ShareCard
+              ink
+              kind="Versículo"
+              title={`${chapter?.book?.name || ''} ${chapter?.number}:${selected.number}`}
+              excerpt={selected.text}
+            />
+            <BrandButton
+              label="Partilhar cartão"
+              onPress={() => {
+                const reference = `${chapter?.book?.name || ''} ${chapter?.number}:${selected.number}`;
+                void Share.share({ message: `${reference}\n${selected.text}` });
+              }}
+            />
+            {canPublish && selected.id ? (
+              <BrandButton
+                variant="ghost"
+                ink
+                label="Partilhar na Comunidade"
+                onPress={() => onShareVerse(selected)}
+              />
+            ) : null}
+          </View>
+        ) : null
+      }
+    >
+      <Text style={{ fontFamily: fonts.serif, fontSize: 28, color: colors.cream, marginBottom: 8 }}>{title}</Text>
+      <Text style={{ color: colors.gold, fontFamily: fonts.sansMedium, marginBottom: spacing.md }}>
+        Toque num versículo para o destacar e partilhar.
+      </Text>
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Capítulo indisponível" body={error} /> : null}
-      {(chapter?.verses || []).map((verse) => (
-        <Card key={verse.number}>
-          <Text style={{ color: colors.goldDark, fontWeight: '700' }}>{verse.number}</Text>
-          <Text style={{ color: colors.inkSoft, marginTop: 6, lineHeight: 22 }}>{verse.text}</Text>
-          {canPublish ? (
-            <BrandButton
-              variant="ghost"
-              label="Partilhar na Comunidade"
-              onPress={() => onShareVerse(verse.number, verse.text)}
-            />
-          ) : null}
-        </Card>
-      ))}
+      {(chapter?.verses || []).map((verse) => {
+        const active = selected?.number === verse.number;
+        return (
+          <Pressable
+            key={verse.number}
+            onPress={() => setSelected({ id: verse.id || '', number: verse.number, text: verse.text })}
+            style={{ flexDirection: 'row', gap: 10, marginBottom: 14 }}
+          >
+            <Text style={{ color: colors.gold, fontFamily: fonts.sansBold, width: 28 }}>{verse.number}</Text>
+            <Text
+              style={{
+                flex: 1,
+                fontFamily: fonts.serifRegular,
+                fontSize: 22,
+                lineHeight: 34,
+                color: active ? colors.gold : colors.cream,
+              }}
+            >
+              {verse.text}
+            </Text>
+          </Pressable>
+        );
+      })}
     </Screen>
   );
 }

@@ -1,4 +1,5 @@
 import { APP_TABS } from '../api/paths';
+import { getMobileBottomTabKeys } from '../screens/bottomTabs';
 import { appRoutes, publicRoutes } from '../navigation/routes';
 
 describe('usability map', () => {
@@ -8,6 +9,7 @@ describe('usability map', () => {
       appRoutes.home,
       appRoutes.community,
       appRoutes.compose,
+      appRoutes.upload,
       appRoutes.search,
       appRoutes.members,
       appRoutes.topics,
@@ -29,10 +31,35 @@ describe('usability map', () => {
       appRoutes.documents,
       appRoutes.notifications,
       appRoutes.more,
+      appRoutes.catechumens,
+      appRoutes.families,
+      appRoutes.content,
+      appRoutes.calendar,
+      appRoutes.announcements,
+      appRoutes.formation,
+      appRoutes.sacraments,
+      appRoutes.catechism,
+      appRoutes.reports,
+      appRoutes.billing,
+      appRoutes.settings,
+      appRoutes.familyInvites,
+      appRoutes.journeyTemplates,
+      appRoutes.parishes,
+      appRoutes.consents,
+      appRoutes.form('meeting', { classId: 'class-1' }),
     ];
 
     expect(signedOut).toHaveLength(3);
-    expect(signedIn).toHaveLength(24);
-    expect(APP_TABS).toHaveLength(5);
+    expect(signedIn).toContain(appRoutes.calendar);
+    expect(appRoutes.calendar).toBe('/(app)/(tabs)/calendar');
+    expect(appRoutes.messages).toBe('/(app)/messages');
+    expect(APP_TABS.map((tab) => tab.name)).toEqual(['index', 'community', 'classes', 'calendar', 'more']);
+    expect(getMobileBottomTabKeys('PARISH_COORDINATOR')).toEqual([
+      'dashboard',
+      'community',
+      'classes',
+      'calendar',
+    ]);
+    expect(getMobileBottomTabKeys('GUARDIAN')).toEqual(['dashboard', 'community', 'calendar', 'messages']);
   });
 });

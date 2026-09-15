@@ -10,6 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { brandColors } from "../../../shared/designTokens";
 
 export function MonthlyPresenceBarChart({
   data,
@@ -28,18 +29,18 @@ export function MonthlyPresenceBarChart({
         data={data}
         margin={{ top: 5, right: 12, left: 0, bottom: 20 }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+        <CartesianGrid strokeDasharray="3 3" stroke={brandColors.line} />
         <XAxis dataKey="month" tick={{ fontSize: 10 }} />
         <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
         <Tooltip />
         <Bar
           dataKey="present"
           stackId="a"
-          fill="#071A2D"
+          fill={brandColors.ink}
           name={presentLabel}
         />
-        <Bar dataKey="late" stackId="a" fill="#D39A2B" name={lateLabel} />
-        <Bar dataKey="absent" stackId="a" fill="#b91c1c" name={absentLabel} />
+        <Bar dataKey="late" stackId="a" fill={brandColors.gold} name={lateLabel} />
+        <Bar dataKey="absent" stackId="a" fill={brandColors.danger} name={absentLabel} />
       </BarChart>
     </ResponsiveContainer>
   );

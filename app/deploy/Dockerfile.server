@@ -14,7 +14,8 @@ RUN npm install -g @wasp.sh/wasp-cli@0.22.0 @wasp.sh/wasp-cli-linux-x64-musl@0.2
 WORKDIR /app
 COPY . .
 
-ARG DATABASE_URL
+# Dummy is enough for `wasp build` / prisma generate. Runtime DATABASE_URL is a Fly secret.
+ARG DATABASE_URL=postgresql://build:build@127.0.0.1:5432/dummy
 ENV DATABASE_URL=${DATABASE_URL}
 
 # Client env baked in at vite build time (override per environment in CI)

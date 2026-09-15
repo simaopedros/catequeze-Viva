@@ -3,6 +3,7 @@
  */
 import { useTranslation } from "react-i18next";
 import { ChartCard } from "../../../client/components/ChartCard";
+import { brandColors } from "../../../shared/designTokens";
 import {
   BarChart,
   Bar,
@@ -57,14 +58,14 @@ export function InstitutionalChartsPanel({
             <Line
               type="monotone"
               dataKey={enrollmentsKey}
-              stroke="#2563eb"
+              stroke={brandColors.inkSoft}
               strokeWidth={2}
               dot={false}
             />
             <Line
               type="monotone"
               dataKey={dropoutsKey}
-              stroke="#b91c1c"
+              stroke={brandColors.danger}
               strokeWidth={2}
               dot={false}
             />
@@ -93,7 +94,7 @@ export function InstitutionalChartsPanel({
             <Line
               type="monotone"
               dataKey={attendanceKey}
-              stroke="#071A2D"
+              stroke={brandColors.ink}
               strokeWidth={2}
               dot={false}
             />
@@ -141,7 +142,7 @@ export function InstitutionalChartsPanel({
             <Tooltip />
             <Bar
               dataKey={milestonesKey}
-              fill="#a855f7"
+              fill={brandColors.gold}
               radius={[4, 4, 0, 0]}
             />
           </BarChart>

@@ -4,6 +4,7 @@
 import { useTranslation } from "react-i18next";
 import { BarChart3, Calendar, PieChart } from "lucide-react";
 import { EmptyState } from "../../../client/components/EmptyState";
+import { brandColors } from "../../../shared/designTokens";
 import {
   BarChart,
   Bar,
@@ -21,10 +22,10 @@ import {
 } from "recharts";
 
 const ATTENDANCE_COLORS = {
-  present: "#071A2D",
-  late: "#D39A2B",
-  justified: "#071A2D",
-  absent: "#b91c1c",
+  present: brandColors.ink,
+  late: brandColors.gold,
+  justified: brandColors.inkSoft,
+  absent: brandColors.danger,
 };
 
 export function ClassPastoralCharts({
@@ -46,7 +47,7 @@ export function ClassPastoralCharts({
 
   return (
     <>
-      <div className="rounded-sm border border-border/70 bg-white p-6">
+      <div className="rounded-sm border border-border/70 bg-brand-paper p-6">
         <div className="mb-4 space-y-1.5">
           <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             <BarChart3 className="h-4 w-4" />
@@ -59,7 +60,7 @@ export function ClassPastoralCharts({
             data={meetingsBarData}
             margin={{ top: 5, right: 20, left: 0, bottom: 60 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" stroke={brandColors.line} />
             <XAxis
               dataKey="name"
               angle={-35}
@@ -93,7 +94,7 @@ export function ClassPastoralCharts({
         </ResponsiveContainer>
       </div>
 
-      <div className="rounded-sm border border-border/70 bg-white p-6">
+      <div className="rounded-sm border border-border/70 bg-brand-paper p-6">
         <div className="mb-4 space-y-1.5">
           <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             <BarChart3 className="h-4 w-4" />
@@ -107,7 +108,7 @@ export function ClassPastoralCharts({
               data={monthlyData}
               margin={{ top: 5, right: 20, left: 0, bottom: 20 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <CartesianGrid strokeDasharray="3 3" stroke={brandColors.line} />
               <XAxis dataKey="month" tick={{ fontSize: 11 }} />
               <YAxis
                 yAxisId="left"
@@ -135,7 +136,7 @@ export function ClassPastoralCharts({
               <Bar
                 yAxisId="left"
                 dataKey="meetings"
-                fill="#071A2D"
+                fill={brandColors.ink}
                 name={t("monthlyMeetings")}
                 radius={[4, 4, 0, 0]}
               />
@@ -143,7 +144,7 @@ export function ClassPastoralCharts({
                 yAxisId="right"
                 type="monotone"
                 dataKey="avgAttendance"
-                stroke="#071A2D"
+                stroke={brandColors.gold}
                 name={t("avgAttendanceLine")}
                 strokeWidth={2}
                 dot={{ r: 4 }}
@@ -155,7 +156,7 @@ export function ClassPastoralCharts({
         )}
       </div>
 
-      <div className="rounded-sm border border-border/70 bg-white p-6">
+      <div className="rounded-sm border border-border/70 bg-brand-paper p-6">
         <div className="mb-4 space-y-1.5">
           <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             <PieChart className="h-4 w-4" />

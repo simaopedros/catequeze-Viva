@@ -9,9 +9,10 @@ import {
   YAxis,
 } from "recharts";
 import { type DailyStatsProps } from "../../../analytics/stats";
+import { brandColors } from "../../../shared/designTokens";
 
-const REVENUE_COLOR = "#D39A2B";
-const PROFIT_COLOR = "#071A2D";
+const REVENUE_COLOR = brandColors.gold;
+const PROFIT_COLOR = brandColors.ink;
 
 type Point = { label: string; revenue: number };
 
@@ -87,18 +88,18 @@ const RevenueAndProfitChart = ({ weeklyStats, isLoading }: DailyStatsProps) => {
                 <stop offset="95%" stopColor={REVENUE_COLOR} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" stroke={brandColors.line} />
             <XAxis
               dataKey="label"
               tickLine={false}
               axisLine={false}
-              tick={{ fontSize: 12, fill: "#6b7280" }}
+              tick={{ fontSize: 12, fill: brandColors.muted }}
             />
             <YAxis
               domain={domain}
               tickLine={false}
               axisLine={false}
-              tick={{ fontSize: 12, fill: "#6b7280" }}
+              tick={{ fontSize: 12, fill: brandColors.muted }}
               width={48}
             />
             <Tooltip
@@ -112,7 +113,7 @@ const RevenueAndProfitChart = ({ weeklyStats, isLoading }: DailyStatsProps) => {
               stroke={REVENUE_COLOR}
               strokeWidth={2}
               fill="url(#revenueFill)"
-              dot={{ r: 3, stroke: PROFIT_COLOR, strokeWidth: 1, fill: "#fff" }}
+              dot={{ r: 3, stroke: PROFIT_COLOR, strokeWidth: 1, fill: brandColors.white }}
               activeDot={{ r: 5 }}
               isAnimationActive={false}
             />

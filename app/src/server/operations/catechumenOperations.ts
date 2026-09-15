@@ -239,6 +239,15 @@ export const getCatechumenProfile = async (args: { id: string }, context: any) =
       enrollments: { include: { class: { select: { id: true, name: true, stage: { select: { name: true } } } } } },
       sacramentalJourneys: { include: { template: { select: { id: true, name: true } }, milestones: true } },
       documents: true,
+      attendanceRecords: {
+        orderBy: { createdAt: 'desc' },
+        take: 24,
+        select: {
+          id: true,
+          status: true,
+          meeting: { select: { id: true, date: true, title: true } },
+        },
+      },
     },
   });
 };

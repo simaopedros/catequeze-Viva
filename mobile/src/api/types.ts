@@ -27,8 +27,21 @@ export type Workspace = {
   type?: string;
 };
 
+export type MembershipContext = {
+  parishId: string;
+  parishName?: string;
+  role: string;
+  parishType?: string | null;
+};
+
+export type CurrentUserContext = {
+  userId?: string;
+  isAdmin?: boolean;
+  memberships?: MembershipContext[];
+};
+
 export type BootstrapPayload = {
-  currentUserContext?: unknown;
+  currentUserContext?: CurrentUserContext;
   workspaces?: Workspace[];
   unreadNotifications?: number | { count?: number };
 };
@@ -51,10 +64,22 @@ export type SocialShare = {
   sourceLabel: string | null;
 };
 
+export type SocialMediaItem = {
+  id: string;
+  kind?: 'IMAGE' | 'VIDEO' | string;
+  url?: string | null;
+  thumbnailUrl?: string | null;
+  videoUrl?: string | null;
+  embedUrl?: string | null;
+  durationSeconds?: number | null;
+  status?: string;
+};
+
 export type SocialPost = {
   id: string;
   slug: string;
   kind?: string;
+  status?: string;
   body: string;
   createdAt?: string;
   publishedAt?: string | null;
@@ -62,11 +87,13 @@ export type SocialPost = {
   commentCount?: number;
   shareCount?: number;
   author: SocialAuthor;
+  parish?: { id: string; name: string } | null;
   share?: SocialShare | null;
   topics?: { slug: string; name: string }[];
-  media?: { id: string; kind?: string; url?: string | null }[];
+  media?: SocialMediaItem[];
   isOwn?: boolean;
   viewerReaction?: 'AMEM' | 'REZO' | 'ALELUIA' | null;
+  videoFormat?: 'SHORT' | 'LONG' | null;
 };
 
 export type SocialComment = {
@@ -74,6 +101,8 @@ export type SocialComment = {
   body: string;
   createdAt?: string;
   parentId?: string | null;
+  held?: boolean;
+  status?: string;
   author: SocialAuthor;
   isOwn?: boolean;
 };
@@ -185,4 +214,17 @@ export type BibleChapter = {
   number: number;
   book?: { id: string; name: string };
   verses: BibleVerse[];
+};
+
+export type CatalogItem = {
+  id: string;
+  title: string;
+  subtitle?: string;
+  meta?: string;
+};
+
+export type BillingPayload = {
+  interval: 'month' | 'year' | null;
+  planId: string;
+  status: string | null;
 };

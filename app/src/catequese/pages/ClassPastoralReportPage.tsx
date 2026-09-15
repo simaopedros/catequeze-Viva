@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { formatDate } from "../../i18n/format";
 import { useLocale } from "../../i18n/useLocale";
+import { brandColors } from "../../shared/designTokens";
 
 const ClassPastoralCharts = lazy(() =>
   import("../components/charts/ClassPastoralCharts").then((m) => ({
@@ -29,13 +30,13 @@ const ClassPastoralCharts = lazy(() =>
   })),
 );
 
-const RISK_COLORS = { ALTO: "#b91c1c", MÉDIO: "#D39A2B", BAIXO: "#071A2D" };
+const RISK_COLORS = { ALTO: brandColors.danger, MÉDIO: brandColors.gold, BAIXO: brandColors.ink };
 const STATUS_COLORS: Record<string, string> = {
-  ENROLLED: "#071A2D",
-  DROPPED: "#b91c1c",
-  TRANSFERRED: "#D39A2B",
-  COMPLETED: "#071A2D",
-  MOVED_TO_OTHER_CLASS: "#071A2D",
+  ENROLLED: brandColors.ink,
+  DROPPED: brandColors.danger,
+  TRANSFERRED: brandColors.gold,
+  COMPLETED: brandColors.ink,
+  MOVED_TO_OTHER_CLASS: brandColors.ink,
 };
 
 export default function ClassPastoralReportPage() {
@@ -114,7 +115,7 @@ export default function ClassPastoralReportPage() {
       data?.statusDistribution?.map((s: any) => ({
         name: statusLabel(s.status),
         value: s.count,
-        color: STATUS_COLORS[s.status] || "#94a3b8",
+        color: STATUS_COLORS[s.status] || brandColors.muted,
       })) || [],
     [data],
   );

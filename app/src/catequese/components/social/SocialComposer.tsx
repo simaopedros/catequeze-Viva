@@ -307,7 +307,7 @@ export function SocialComposer({
             (user as { avatarUrl?: string | null } | null | undefined)
               ?.avatarUrl
           }
-          className="bg-[#edf0f3] text-[#637286]"
+          className="bg-muted text-muted-foreground"
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline justify-between gap-2">
@@ -336,7 +336,7 @@ export function SocialComposer({
             }
             rows={3}
             maxLength={MAX_POST_BODY_LENGTH}
-            className="min-h-[62px] min-w-0 resize-none break-words [overflow-wrap:anywhere] rounded-[11px] border-[#dce4ec] px-3.5 py-3 focus-visible:border-[#a8bad0] focus-visible:ring-[#edf3fa]"
+            className="min-h-[62px] min-w-0 resize-none break-words [overflow-wrap:anywhere] rounded-[11px] border-border px-3.5 py-3 focus-visible:border-brand-gold focus-visible:ring-brand-gold/20"
           />
         </div>
       </div>
@@ -409,7 +409,7 @@ export function SocialComposer({
                     "rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
                     active
                       ? "border-brand-ink bg-brand-ink text-white"
-                      : "border-[#e1e7ee] bg-white text-[#51657e] hover:border-[#bdcad7]",
+                      : "border-border bg-white text-muted-foreground hover:border-brand-gold/40",
                   )}
                 >
                   {topic.name}
@@ -461,7 +461,7 @@ export function SocialComposer({
           size="sm"
           onClick={() => imageInput.current?.click()}
           disabled={atMediaLimit}
-          className="gap-2 text-[#51657e]"
+          className="gap-2 text-muted-foreground"
         >
           <ImageIcon className="h-4 w-4" aria-hidden />
           {t("composer.addImage")}

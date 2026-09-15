@@ -53,6 +53,7 @@ export const serverSetup: ServerSetupFn = async ({ app, server }) => {
   // Expo web calls /mobile from :8081. Wasp mounts POST routes before serverSetup,
   // so this middleware must be prepended or OPTIONS never gets CORS headers.
   prependMiddleware(app as any, '/mobile', applyLocalMobileCors);
+  prependMiddleware(app as any, '/api/social', applyLocalMobileCors);
 
   // ── Security headers ────────────────────────────────────────────────
   app.use((_req: any, res: any, next: any) => {

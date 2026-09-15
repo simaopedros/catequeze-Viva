@@ -7,6 +7,7 @@ import {
   type InheritancePolicy,
   type ResourceOwnerType,
 } from "../../shared/resourceInheritance";
+import { brandColors } from "../../shared/designTokens";
 import {
   resolveActorForResource,
   resolveResourceActor,
@@ -157,7 +158,7 @@ export const createLiturgicalEvent = async (
       date: new Date(args.date),
       description: args.description,
       endDate: args.endDate ? new Date(args.endDate) : null,
-      color: args.color || "#6366f1",
+      color: args.color || brandColors.ink,
       type: args.type || defaultType,
       recurring: args.recurring || false,
       recurrenceRule: args.recurrenceRule,
