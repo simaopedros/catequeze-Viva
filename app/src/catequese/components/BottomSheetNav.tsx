@@ -34,7 +34,6 @@ import {
 import { getVisibleNavigation } from "../../shared/navigation";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
-import { planCanAccessCatechesis } from "../../shared/pricing";
 import {
   SheetContent,
   SheetHeader,
@@ -87,13 +86,12 @@ export function BottomSheetNav({ onNavigate }: BottomSheetNavProps) {
   const { t } = useTranslation("navigation");
   const { t: tc } = useTranslation("common");
   const { userRole, isAdmin } = useUserContext();
-  const { workspaceType, workspacePlan } = useActiveWorkspace();
+  const { workspaceType } = useActiveWorkspace();
 
   const { sheetGroups } = getVisibleNavigation({
     role: userRole,
     isAdmin,
     workspaceType,
-    canAccessCatechesis: planCanAccessCatechesis(workspacePlan),
   });
 
   return (

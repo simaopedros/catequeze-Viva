@@ -30,8 +30,6 @@ export type WorkspaceNavContext = {
   isAdmin: boolean;
   /** PERSONAL | PARISH | DIOCESE | COMMUNITY — UX filter only, not AuthZ */
   workspaceType?: string | null;
-  /** When false, hide Catequese Viva destinations (turmas, famílias, …). */
-  canAccessCatechesis?: boolean;
 };
 
 export type VisibleNavGroup = {
@@ -123,28 +121,6 @@ export const PERSONAL_HIDDEN_ICON_KEYS = new Set([
   "formation",
 ]);
 
-/** Catequese Viva module — hidden when the plan cannot access catechesis. */
-export const CATECHESIS_ICON_KEYS = new Set([
-  "classes",
-  "catechumens",
-  "families",
-  "team",
-  "family_portal_invites",
-  "content_library",
-  "official_library",
-  "sacraments",
-  "journey_templates",
-  "documents",
-  "parishes",
-  "communities",
-  "reports",
-  "catechetical_years",
-  "formation",
-  "announcements",
-  "ai_hub",
-  "activities",
-]);
-
 function item(
   partial: Omit<NavItemConfig, "groupId"> & { groupId: NavGroupId },
 ): NavItemConfig {
@@ -164,21 +140,6 @@ export const NAV_GROUPS: NavGroupConfig[] = [
         labelKey: "dashboard",
         iconKey: "dashboard",
         roles: LEARNER_ROLES,
-        groupId: "operation",
-      }),
-      item({
-        to: "/app/grupos",
-        labelKey: "groups",
-        iconKey: "groups",
-        roles: ALL_ROLES,
-        groupId: "operation",
-      }),
-      // Comunidade / Rhema sits with daily pastoral work — not buried in Content.
-      item({
-        to: "/app/comunidade",
-        labelKey: "community",
-        iconKey: "community",
-        roles: ALL_ROLES,
         groupId: "operation",
       }),
       item({
@@ -208,6 +169,27 @@ export const NAV_GROUPS: NavGroupConfig[] = [
         iconKey: "announcements",
         roles: [...CATECHIST_ROLES, "PASTORAL_VIEWER"],
         groupId: "operation",
+      }),
+    ],
+  },
+  {
+    id: "social",
+    labelKey: NAV_GROUP_LABEL_KEYS.social,
+    collapsible: false,
+    items: [
+      item({
+        to: "/app/grupos",
+        labelKey: "groups",
+        iconKey: "groups",
+        roles: ALL_ROLES,
+        groupId: "social",
+      }),
+      item({
+        to: "/app/comunidade",
+        labelKey: "community_short",
+        iconKey: "community",
+        roles: ALL_ROLES,
+        groupId: "social",
       }),
     ],
   },
@@ -509,14 +491,6 @@ export function filterLaunchHidden(items: NavItemConfig[]): NavItemConfig[] {
   );
 }
 
-export function filterByCatechesisAccess(
-  items: NavItemConfig[],
-  canAccessCatechesis?: boolean,
-): NavItemConfig[] {
-  if (canAccessCatechesis !== false) return items;
-  return items.filter((i) => !CATECHESIS_ICON_KEYS.has(i.iconKey));
-}
-
 /**
  * Single source of truth for sidebar, bottom bar, and More sheet visibility.
  */
@@ -525,12 +499,9 @@ export function getVisibleNavigation(
 ): VisibleNavigation {
   const apply = (items: NavItemConfig[]) =>
     filterLaunchHidden(
-      filterByCatechesisAccess(
-        filterByWorkspace(
-          filterByRole(items, ctx.role, ctx.isAdmin),
-          ctx.workspaceType,
-        ),
-        ctx.canAccessCatechesis,
+      filterByWorkspace(
+        filterByRole(items, ctx.role, ctx.isAdmin),
+        ctx.workspaceType,
       ),
     );
 

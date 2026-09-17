@@ -43,7 +43,6 @@ import {
 } from "../shared/navigation";
 import { useQuery, getUnreadMessagesCount } from "wasp/client/operations";
 import { useActiveWorkspace } from "../client/hooks/useActiveWorkspace";
-import { planCanAccessCatechesis } from "../shared/pricing";
 import { usePageVisibility } from "../client/hooks/usePageVisibility";
 import { BrandLockup, BrandMark } from "../client/components/brand/Brand";
 import {
@@ -242,7 +241,7 @@ export function Sidebar() {
     () => new Set(["people"]),
   );
   const { userRole, isAdmin } = useUserContext();
-  const { workspaceType, workspaceId, workspacePlan } = useActiveWorkspace();
+  const { workspaceType, workspaceId } = useActiveWorkspace();
   const isVisible = usePageVisibility();
 
   const { data: unreadMessages } = useQuery(
@@ -262,7 +261,6 @@ export function Sidebar() {
     role: userRole,
     isAdmin,
     workspaceType,
-    canAccessCatechesis: planCanAccessCatechesis(workspacePlan),
   });
 
   const toggleSection = (section: string) => {
