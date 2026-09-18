@@ -260,7 +260,7 @@ describe('getVisibleNavigation SSOT', () => {
     ]);
   });
 
-  it('groups are task-oriented (operation, people, content, management, settings)', () => {
+  it('groups are task-oriented (operation, social, people, content, management, settings)', () => {
     const nav = getVisibleNavigation({
       role: 'PARISH_COORDINATOR',
       isAdmin: false,
@@ -268,6 +268,7 @@ describe('getVisibleNavigation SSOT', () => {
     });
     const ids = nav.groups.map((g) => g.id);
     expect(ids[0]).toBe('operation');
+    expect(ids[1]).toBe('social');
     expect(ids).toContain('people');
     expect(ids).toContain('content');
     expect(ids).toContain('management');
@@ -275,18 +276,23 @@ describe('getVisibleNavigation SSOT', () => {
     expect(nav.groups.find((g) => g.id === 'operation')?.collapsible).toBe(
       false,
     );
+    expect(nav.groups.find((g) => g.id === 'social')?.collapsible).toBe(false);
     expect(nav.groups.find((g) => g.id === 'people')?.collapsible).toBe(true);
   });
 
-  it('places Comunidade in the operation group, not Content', () => {
+  it('places Grupos and Rhema in the social group, not Operation or Content', () => {
     const nav = getVisibleNavigation({
       role: 'LEAD_CATECHIST',
       isAdmin: false,
       workspaceType: 'PARISH',
     });
+    const socialKeys = nav.groups
+      .find((g) => g.id === 'social')
+      ?.items.map((i) => i.iconKey);
+    expect(socialKeys).toEqual(['groups', 'community']);
     expect(
       nav.groups.find((g) => g.id === 'operation')?.items.map((i) => i.iconKey),
-    ).toContain('community');
+    ).not.toContain('community');
     expect(
       nav.groups.find((g) => g.id === 'content')?.items.map((i) => i.iconKey),
     ).not.toContain('community');
@@ -457,7 +463,6 @@ describe('getVisibleNavigation SSOT', () => {
     const nav = getVisibleNavigation({
       role: 'PLATFORM_MEMBER',
       isAdmin: false,
-      canAccessCatechesis: false,
     });
     expect(nav.bottomBar.map((i) => i.iconKey)).toEqual([
       'dashboard',
@@ -469,15 +474,17 @@ describe('getVisibleNavigation SSOT', () => {
     expect(nav.all.map((i) => i.to)).not.toContain('/app/classes');
   });
 
-  it('hides catechesis destinations when the workspace has no entitlement', () => {
+  it('shows catechesis destinations by role, independent of plan', () => {
     const nav = getVisibleNavigation({
       role: 'PERSONAL_OWNER',
       isAdmin: false,
-      workspaceType: 'PERSONAL',
-      canAccessCatechesis: false,
+      workspaceType: 'PARISH',
     });
     expect(nav.all.map((i) => i.to)).toContain('/app/grupos');
-    expect(nav.all.map((i) => i.to)).not.toContain('/app/classes');
-    expect(nav.all.map((i) => i.iconKey)).not.toContain('catechumens');
+    expect(nav.all.map((i) => i.to)).toContain('/app/classes');
+    expect(nav.all.map((i) => i.to)).toContain('/app/catechumens');
+    expect(nav.all.map((i) => i.to)).toContain('/app/families');
+    expect(nav.all.map((i) => i.to)).toContain('/app/sacramental-journeys');
+    expect(nav.all.map((i) => i.to)).toContain('/app/documents');
   });
 });

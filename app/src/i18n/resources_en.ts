@@ -5249,6 +5249,7 @@ export const navigation_en = {
     "peopleSection": "People",
     "contentSection": "Content",
     "operationSection": "Operations",
+    "socialSection": "Community",
     "settingsSection": "Settings",
     "pedagogySection": "Pedagogy & Planning",
     "pastoralSection": "Communication & Management",

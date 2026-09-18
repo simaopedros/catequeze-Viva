@@ -71,6 +71,7 @@ export type PersistenceState =
 /** Navigation group for discovery hierarchy (not AuthZ) */
 export type NavGroupId =
   | "operation"
+  | "social"
   | "people"
   | "content"
   | "management"
@@ -78,6 +79,7 @@ export type NavGroupId =
 
 export const NAV_GROUP_ORDER: NavGroupId[] = [
   "operation",
+  "social",
   "people",
   "content",
   "management",
@@ -87,6 +89,7 @@ export const NAV_GROUP_ORDER: NavGroupId[] = [
 /** i18n keys under navigation namespace */
 export const NAV_GROUP_LABEL_KEYS: Record<NavGroupId, string> = {
   operation: "operationSection",
+  social: "socialSection",
   people: "peopleSection",
   content: "contentSection",
   management: "managementSection",

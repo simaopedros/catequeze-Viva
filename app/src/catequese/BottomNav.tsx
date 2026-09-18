@@ -16,7 +16,6 @@ import {
 import { cn } from "../client/utils";
 import { useUserContext } from "../client/hooks/useUserContext";
 import { useActiveWorkspace } from "../client/hooks/useActiveWorkspace";
-import { planCanAccessCatechesis } from "../shared/pricing";
 import { useUnreadNotificationCount } from "../client/hooks/useUnreadNotificationCount";
 import { getVisibleNavigation } from "../shared/navigation";
 import { BottomSheetNav } from "./components/BottomSheetNav";
@@ -38,7 +37,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 export function BottomNav() {
   const { t } = useTranslation("navigation");
   const { userRole, isAdmin } = useUserContext();
-  const { workspaceType, workspacePlan } = useActiveWorkspace();
+  const { workspaceType } = useActiveWorkspace();
   const [sheetOpen, setSheetOpen] = useState(false);
   const unreadCount = useUnreadNotificationCount();
 
@@ -46,7 +45,6 @@ export function BottomNav() {
     role: userRole,
     isAdmin,
     workspaceType,
-    canAccessCatechesis: planCanAccessCatechesis(workspacePlan),
   });
 
   const visible = bottomBar
