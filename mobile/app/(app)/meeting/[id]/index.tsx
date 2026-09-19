@@ -16,7 +16,7 @@ export default function MeetingRoute() {
 
   useFocusEffect(
     useCallback(() => {
-      if (data) void reload();
+      void reload();
     }, [reload]),
   );
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native-paper';
-import { BrandButton, Card, EmptyState, KeyValue, Row, Screen, ScreenTitle, SkeletonList, Tag } from '../components/ui';
+import { BrandButton, Card, EmptyState, IconAction, KeyValue, Row, Screen, ScreenTitle, SkeletonList, Tag } from '../components/ui';
 import { colors, spacing } from '../theme';
 import { formatDateTime } from '../utils/format';
 
@@ -66,9 +66,9 @@ export function MeetingScreen({
         subtitle={formatDateTime(data.startsAt || data.date)}
         action={status ? <Tag label={status.label} tone={status.tone} /> : undefined}
       />
-      <Row style={{ flexWrap: 'wrap' }}>
-        <BrandButton icon="clipboard-check-outline" label="Marcar presença" onPress={onAttendance} testID="open-attendance" style={{ flex: 1 }} />
-        {onEdit ? <BrandButton variant="ghost" icon="pencil-outline" label="Editar" onPress={onEdit} testID="edit-meeting" style={{ flex: 1 }} /> : null}
+      <Row>
+        <BrandButton icon="clipboard-check-outline" label="Marcar presenças" onPress={onAttendance} testID="open-attendance" style={{ flex: 1 }} />
+        {onEdit ? <IconAction icon="pencil-outline" label="Editar encontro" onPress={onEdit} testID="edit-meeting" /> : null}
       </Row>
       <Card>
         <KeyValue label="Turma" value={data.class?.name} />

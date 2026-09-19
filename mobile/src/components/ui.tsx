@@ -270,10 +270,11 @@ export function ListRow({
     </View>
   );
   if (!onPress) return <View testID={testID}>{body}</View>;
+  // Sem accessibilityRole="button": a linha pode conter botões (evita <button> aninhado na web).
   return (
     <Pressable
       testID={testID}
-      accessibilityRole="button"
+      accessibilityLabel={title}
       onPress={onPress}
       style={({ pressed }) => [pressed && { backgroundColor: colors.paper }]}
     >
@@ -324,7 +325,7 @@ export function FilterChips<T extends string>({
   onChange: (value: T) => void;
 }) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -spacing.md }} contentContainerStyle={[styles.chips, { paddingHorizontal: spacing.md }]}>
       {options.map((option) => {
         const selected = option.value === value;
         return (
@@ -636,6 +637,43 @@ export function PrimaryFab({
   );
 }
 
+export function IconAction({
+  icon,
+  label,
+  onPress,
+  testID,
+  tone = 'tonal',
+}: {
+  icon: IconName;
+  label: string;
+  onPress: () => void;
+  testID?: string;
+  tone?: 'tonal' | 'ink' | 'gold';
+}) {
+  const bg = tone === 'ink' ? colors.ink : tone === 'gold' ? colors.gold : '#F8E7BF';
+  const fg = tone === 'ink' ? colors.white : colors.ink;
+  return (
+    <Pressable
+      testID={testID}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={onPress}
+      style={({ pressed }) => ({
+        width: 48,
+        height: 48,
+        borderRadius: radius.md,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: bg,
+        opacity: pressed ? 0.8 : 1,
+        marginTop: spacing.sm,
+      })}
+    >
+      <Icon name={icon} size={22} color={fg} />
+    </Pressable>
+  );
+}
+
 export function Row({ children, style, gap = spacing.sm }: { children: React.ReactNode; style?: StyleProp<ViewStyle>; gap?: number }) {
   return <View style={[{ flexDirection: 'row', alignItems: 'center', gap }, style]}>{children}</View>;
 }
@@ -698,8 +736,8 @@ const styles = StyleSheet.create({
   tag: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.pill, alignSelf: 'flex-start' },
   chips: { gap: spacing.xs, paddingBottom: spacing.sm },
   chip: { borderColor: colors.line, backgroundColor: colors.surface },
-  button: { borderRadius: radius.md, marginTop: spacing.sm },
-  buttonContent: { paddingVertical: 6 },
+  button: { borderRadius: radius.md, marginTop: spacing.sm, minWidth: 0 },
+  buttonContent: { paddingVertical: 6, paddingHorizontal: 4 },
   buttonLabel: { fontSize: 15, fontWeight: '600' },
   input: { backgroundColor: colors.surface },
   search: { backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, marginBottom: spacing.md },

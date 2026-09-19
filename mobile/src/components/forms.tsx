@@ -150,7 +150,7 @@ export function DateField({
         locale="pt"
         mode="single"
         visible={open}
-        date={date}
+        date={date ?? new Date()}
         onDismiss={() => setOpen(false)}
         onConfirm={({ date: picked }) => {
           setOpen(false);

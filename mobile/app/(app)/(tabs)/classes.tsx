@@ -15,7 +15,7 @@ export default function ClassesRoute() {
 
   useFocusEffect(
     useCallback(() => {
-      if (data) void reload();
+      void reload();
     }, [reload]),
   );
 

@@ -14,7 +14,7 @@ export default function FamilyRoute() {
 
   useFocusEffect(
     useCallback(() => {
-      if (data) void reload();
+      void reload();
     }, [reload]),
   );
 

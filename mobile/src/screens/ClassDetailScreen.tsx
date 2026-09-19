@@ -14,6 +14,7 @@ import {
   ScreenTitle,
   SectionHeader,
   FilterChips,
+  IconAction,
   SkeletonList,
   StatCard,
   Tag,
@@ -107,10 +108,10 @@ export function ClassDetailScreen({
       {error ? <EmptyState icon="cloud-off-outline" title="Turma indisponível" body={error} /> : null}
       {data ? (
         <>
-          <Row style={{ flexWrap: 'wrap', marginBottom: spacing.sm }}>
-            {onOpenAttendance ? <BrandButton icon="clipboard-check-outline" label="Presenças" onPress={onOpenAttendance} testID="open-attendance" style={{ flex: 1 }} /> : null}
-            {onOpenChat ? <BrandButton variant="tonal" icon="message-text-outline" label="Chat" onPress={onOpenChat} testID="open-class-chat" style={{ flex: 1 }} /> : null}
-            {onEdit ? <BrandButton variant="ghost" icon="pencil-outline" label="Editar" onPress={onEdit} testID="edit-class" style={{ flex: 1 }} /> : null}
+          <Row style={{ marginBottom: spacing.sm }}>
+            {onOpenAttendance ? <BrandButton icon="clipboard-check-outline" label="Marcar presenças" onPress={onOpenAttendance} testID="open-attendance" style={{ flex: 1 }} /> : null}
+            {onOpenChat ? <IconAction icon="message-text-outline" label="Chat da turma" onPress={onOpenChat} testID="open-class-chat" /> : null}
+            {onEdit ? <IconAction icon="pencil-outline" label="Editar turma" onPress={onEdit} testID="edit-class" /> : null}
           </Row>
           <FilterChips<Tab>
             value={tab}

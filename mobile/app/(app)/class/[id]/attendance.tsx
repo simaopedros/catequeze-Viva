@@ -17,7 +17,7 @@ export default function ClassAttendanceRoute() {
 
   useFocusEffect(
     useCallback(() => {
-      if (matrix.data) void matrix.reload();
+      void matrix.reload();
     }, [matrix.reload]),
   );
 
