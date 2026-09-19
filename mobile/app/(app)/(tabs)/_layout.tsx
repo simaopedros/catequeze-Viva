@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { APP_TABS } from '../../../src/api/paths';
 import { unreadCount, useAuth } from '../../../src/auth/AuthContext';
 import { colors, fontFamilies } from '../../../src/theme';
@@ -16,6 +17,8 @@ const TAB_ICONS: Record<string, { active: string; inactive: string }> = {
 export default function TabsLayout() {
   const { bootstrap } = useAuth();
   const unread = unreadCount(bootstrap);
+  const insets = useSafeAreaInsets();
+  const tabBarBottom = Math.max(insets.bottom, 8);
 
   return (
     <Tabs
@@ -26,9 +29,9 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: colors.ink,
           borderTopColor: colors.inkSoft,
-          height: 64,
+          height: 56 + tabBarBottom,
           paddingTop: 6,
-          paddingBottom: 8,
+          paddingBottom: tabBarBottom,
         },
         tabBarLabelStyle: { fontFamily: fontFamilies.medium, fontSize: 11 },
       }}

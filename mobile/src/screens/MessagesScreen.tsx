@@ -45,6 +45,8 @@ export function MessagesScreen({
     <Screen
       testID="messages-screen"
       safeTop
+      safeBottom
+      fabInset={Boolean(onNewConversation)}
       refreshing={refreshing}
       onRefresh={onRefresh}
       fab={onNewConversation ? <PrimaryFab icon="message-plus-outline" label="Nova" onPress={onNewConversation} testID="new-conversation" /> : undefined}

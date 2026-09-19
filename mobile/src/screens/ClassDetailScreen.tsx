@@ -118,8 +118,12 @@ export function ClassDetailScreen({
             onChange={setTab}
             options={[
               { value: 'overview', label: 'Resumo', icon: 'view-dashboard-outline' },
-              { value: 'enrollments', label: `Inscritos${data?._count?.enrollments != null ? ` (${data._count.enrollments})` : ''}`, icon: 'account-child-outline' },
-              { value: 'catechists', label: 'Catequistas', icon: 'account-tie-outline' },
+              {
+                value: 'enrollments',
+                label: `Inscritos${data?._count?.enrollments != null ? ` (${data._count.enrollments})` : ''}`,
+                icon: 'account-child-outline',
+              },
+              { value: 'catechists', label: 'Cateq.', icon: 'account-tie-outline' },
               { value: 'meetings', label: 'Encontros', icon: 'calendar-outline' },
             ]}
           />

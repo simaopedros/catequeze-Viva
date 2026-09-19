@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text, TextInput } from 'react-native-paper';
 import { Avatar } from '../components/Avatar';
 import { EmptyState, ErrorText, Icon, SkeletonList } from '../components/ui';
@@ -33,6 +34,7 @@ export function ThreadScreen({
 }) {
   const [content, setContent] = useState('');
   const scrollRef = useRef<ScrollView>(null);
+  const insets = useSafeAreaInsets();
   const messages: any[] = data?.messages || data?.items || [];
 
   useEffect(() => {
@@ -52,7 +54,11 @@ export function ThreadScreen({
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.cream }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: colors.cream }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : insets.top + 56}
+    >
       <View testID="thread-screen" style={{ flex: 1 }}>
         {onOpenInfo ? (
           <Pressable onPress={onOpenInfo} style={{ paddingHorizontal: spacing.md, paddingVertical: spacing.sm, flexDirection: 'row', alignItems: 'center', gap: spacing.xs, borderBottomWidth: 1, borderBottomColor: colors.line, backgroundColor: colors.surface }} testID="thread-info">

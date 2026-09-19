@@ -80,7 +80,7 @@ export function SettingsScreen({
 
   return (
     <Screen testID="settings-screen">
-      <ScreenTitle title="Definições" subtitle={user?.email ?? undefined} />
+      <ScreenTitle compact subtitle={user?.email ?? undefined} />
 
       <SectionHeader title="Perfil" icon="account-outline" />
       <Card>

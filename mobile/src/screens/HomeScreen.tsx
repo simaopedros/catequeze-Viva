@@ -113,7 +113,7 @@ export function HomeScreen({
   const soonBirthdays = (birthdays ?? []).slice(0, 3);
 
   return (
-    <Screen testID="home-screen" safeTop refreshing={refreshing} onRefresh={onRefresh}>
+    <Screen testID="home-screen" safeTop safeBottom refreshing={refreshing} onRefresh={onRefresh}>
       <ScreenTitle
         eyebrow={greeting()}
         title={`Olá, ${firstName}`}

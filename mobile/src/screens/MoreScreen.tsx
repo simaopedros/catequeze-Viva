@@ -72,7 +72,7 @@ export function MoreScreen({
 }) {
   const current = workspaces.find((workspace) => workspace.id === workspaceId);
   return (
-    <Screen testID="more-screen" safeTop>
+    <Screen testID="more-screen" safeTop safeBottom>
       <ScreenTitle title="Mais" subtitle="Conta, paróquia e ferramentas." />
 
       <Card tone="ink">
@@ -94,12 +94,12 @@ export function MoreScreen({
             ) : null}
           </View>
         </Row>
-        <Row style={{ marginTop: spacing.sm }}>
-          {profile?.handle ? <BrandButton variant="gold" icon="account-circle-outline" label="Perfil" onPress={onOpenProfile} style={{ flex: 1 }} /> : null}
+        <View style={{ marginTop: spacing.sm, gap: spacing.sm }}>
+          {profile?.handle ? <BrandButton variant="gold" icon="account-circle-outline" label="Ver perfil público" onPress={onOpenProfile} /> : null}
           {onOpenEditProfile ? (
-            <BrandButton variant="tonal" icon="account-edit-outline" label="Editar perfil" onPress={onOpenEditProfile} testID="open-edit-profile" style={{ flex: 1 }} />
+            <BrandButton variant="tonal" icon="account-edit-outline" label="Editar perfil" onPress={onOpenEditProfile} testID="open-edit-profile" />
           ) : null}
-        </Row>
+        </View>
       </Card>
 
       {pendingInvitations && pendingInvitations.length > 0 && onAcceptInvitation ? (

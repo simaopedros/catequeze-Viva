@@ -54,6 +54,8 @@ export function ClassesScreen({
     <Screen
       testID="classes-screen"
       safeTop
+      safeBottom
+      fabInset={Boolean(onCreate)}
       refreshing={refreshing}
       onRefresh={onRefresh}
       fab={onCreate ? <PrimaryFab icon="plus" label="Nova turma" onPress={onCreate} testID="create-class" /> : undefined}

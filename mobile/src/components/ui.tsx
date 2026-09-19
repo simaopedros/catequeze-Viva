@@ -42,6 +42,8 @@ export function Screen({
   scroll = true,
   fab,
   safeTop,
+  safeBottom,
+  fabInset,
 }: {
   children: React.ReactNode;
   padded?: boolean;
@@ -52,14 +54,28 @@ export function Screen({
   fab?: React.ReactNode;
   /** Telas raiz (tabs) sem header nativo precisam do inset superior. */
   safeTop?: boolean;
+  /** Espaço extra acima da tab bar (telas das tabs). */
+  safeBottom?: boolean;
+  /** Reserva altura para FAB absoluto no fim do scroll. */
+  fabInset?: boolean;
 }) {
   const insets = useSafeAreaInsets();
   const topPad = safeTop ? insets.top + spacing.sm : 0;
+  const bottomPad =
+    (safeBottom ? insets.bottom + 72 : 0) + (fabInset || fab ? 72 : 0) + (padded ? spacing.md : 0);
+  const fabBottom = (safeBottom ? insets.bottom + 72 : spacing.lg) + spacing.sm;
   if (!scroll) {
     return (
-      <View testID={testID} style={[styles.screen, padded && { padding: spacing.md }, { paddingTop: topPad + (padded ? spacing.md : 0) }]}>
+      <View
+        testID={testID}
+        style={[
+          styles.screen,
+          padded && { padding: spacing.md },
+          { paddingTop: topPad + (padded ? spacing.md : 0), paddingBottom: bottomPad },
+        ]}
+      >
         {children}
-        {fab}
+        {fab ? <View style={[styles.fabWrap, { bottom: fabBottom }]}>{fab}</View> : null}
       </View>
     );
   }
@@ -68,7 +84,11 @@ export function Screen({
       <ScrollView
         testID={testID}
         style={styles.screen}
-        contentContainerStyle={[styles.screenContent, padded && { padding: spacing.md }, { paddingTop: topPad + (padded ? spacing.md : 0) }]}
+        contentContainerStyle={[
+          styles.screenContent,
+          padded && { padding: spacing.md },
+          { paddingTop: topPad + (padded ? spacing.md : 0), paddingBottom: bottomPad },
+        ]}
         keyboardShouldPersistTaps="handled"
         refreshControl={
           onRefresh ? (
@@ -78,7 +98,7 @@ export function Screen({
       >
         {children}
       </ScrollView>
-      {fab}
+      {fab ? <View style={[styles.fabWrap, { bottom: fabBottom }]}>{fab}</View> : null}
     </View>
   );
 }
@@ -88,21 +108,27 @@ export function ScreenTitle({
   subtitle,
   eyebrow,
   action,
+  compact,
 }: {
-  title: string;
+  title?: string;
   subtitle?: string;
   eyebrow?: string;
   action?: React.ReactNode;
+  /** Oculta o título grande quando o header nativo já mostra o nome do ecrã. */
+  compact?: boolean;
 }) {
+  if (compact && !subtitle && !eyebrow && !action) return null;
   return (
     <View style={styles.titleRow}>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, minWidth: 0 }}>
         {eyebrow ? <Text style={styles.eyebrow}>{eyebrow}</Text> : null}
-        <Text variant="headlineMedium" style={styles.title}>
-          {title}
-        </Text>
+        {title && !compact ? (
+          <Text variant="headlineMedium" style={styles.title}>
+            {title}
+          </Text>
+        ) : null}
         {subtitle ? (
-          <Text variant="bodyMedium" style={styles.subtitle}>
+          <Text variant={compact && !title ? 'bodyLarge' : 'bodyMedium'} style={styles.subtitle}>
             {subtitle}
           </Text>
         ) : null}
@@ -250,12 +276,12 @@ export function ListRow({
           <Icon name={icon} size={20} color={colors.ink} />
         </View>
       ) : null}
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, minWidth: 0 }}>
         <Text variant="titleSmall" style={styles.rowTitle} numberOfLines={2}>
           {title}
         </Text>
         {subtitle ? (
-          <Text variant="bodySmall" style={styles.rowSubtitle} numberOfLines={2}>
+          <Text variant="bodySmall" style={styles.rowSubtitle} numberOfLines={3}>
             {subtitle}
           </Text>
         ) : null}
@@ -736,9 +762,10 @@ const styles = StyleSheet.create({
   tag: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.pill, alignSelf: 'flex-start' },
   chips: { gap: spacing.xs, paddingBottom: spacing.sm },
   chip: { borderColor: colors.line, backgroundColor: colors.surface },
-  button: { borderRadius: radius.md, marginTop: spacing.sm, minWidth: 0 },
-  buttonContent: { paddingVertical: 6, paddingHorizontal: 4 },
-  buttonLabel: { fontSize: 15, fontWeight: '600' },
+  button: { borderRadius: radius.md, marginTop: spacing.sm, minWidth: 0, flexShrink: 1 },
+  buttonContent: { paddingVertical: 6, paddingHorizontal: 8 },
+  buttonLabel: { fontSize: 14, fontWeight: '600', letterSpacing: 0 },
+  fabWrap: { position: 'absolute', right: spacing.md, left: spacing.md, alignItems: 'flex-end', pointerEvents: 'box-none' },
   input: { backgroundColor: colors.surface },
   search: { backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, marginBottom: spacing.md },
   errorBox: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, backgroundColor: '#FDE7E4', padding: spacing.sm, borderRadius: radius.md, marginBottom: spacing.sm },
@@ -747,6 +774,6 @@ const styles = StyleSheet.create({
   skeleton: { backgroundColor: colors.paper, borderRadius: radius.sm },
   empty: { alignItems: 'center', paddingVertical: spacing.lg },
   emptyIcon: { width: 52, height: 52, borderRadius: 26, backgroundColor: '#F8E7BF', alignItems: 'center', justifyContent: 'center', marginBottom: spacing.sm },
-  fab: { position: 'absolute', right: spacing.md, bottom: spacing.lg, borderRadius: radius.lg },
+  fab: { borderRadius: radius.lg },
   keyValue: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm, paddingVertical: 6 },
 });

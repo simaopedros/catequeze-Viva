@@ -119,6 +119,8 @@ export function CommunityScreen({
     <Screen
       testID="community-screen"
       safeTop={Boolean(showHub)}
+      safeBottom={Boolean(showHub)}
+      fabInset={canPublish}
       refreshing={refreshing}
       onRefresh={onRefresh}
       fab={canPublish ? <PrimaryFab icon="pencil-plus-outline" label="Nova publicação" onPress={onCompose} testID="compose-open" /> : undefined}

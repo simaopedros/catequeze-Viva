@@ -52,7 +52,7 @@ export function ReportsScreen({
 
   return (
     <Screen testID="reports-screen" refreshing={refreshing} onRefresh={onRefresh}>
-      <ScreenTitle title="Relatórios" subtitle="Presença e atividade das turmas da paróquia." />
+      <ScreenTitle compact subtitle="Presença e atividade das turmas da paróquia." />
       {loading && !data ? <SkeletonList rows={3} /> : null}
       {error ? <EmptyState icon="cloud-off-outline" title="Relatórios indisponíveis" body={error} /> : null}
       {data ? (
@@ -106,7 +106,7 @@ export function ReportsScreen({
                   title={row.name}
                   subtitle={
                     row.totalMeetings > 0
-                      ? `${row.totalEnrolled} inscritos · ${row.totalMeetings} encontros · ${row.presentCount} presenças / ${row.absentCount} faltas${row.lastMeetingDate ? ` · último ${formatDate(row.lastMeetingDate)}` : ''}`
+                      ? `${row.totalEnrolled} insc. · ${row.totalMeetings} enc. · ${row.presentCount} pres. · ${row.absentCount} faltas${row.lastMeetingDate ? `\nÚltimo encontro: ${formatDate(row.lastMeetingDate)}` : ''}`
                       : `${row.totalEnrolled} inscritos · sem encontros`
                   }
                   right={<Tag label={row.totalMeetings > 0 ? `${Math.round(row.attendanceRate)}%` : '—'} tone={row.attendanceRate >= 75 ? 'success' : row.attendanceRate >= 50 ? 'warning' : row.totalMeetings > 0 ? 'danger' : 'neutral'} />}
