@@ -42,7 +42,7 @@ const passwordResetFromField = {
   email: 'onboarding@catechis.app',
 };
 
-function toOperationContext(context: any): AuthedContext {
+export function toOperationContext(context: any): AuthedContext {
   return {
     ...context,
     entities: prisma,
@@ -55,7 +55,7 @@ function parseOptionalInt(value: unknown, fallback: number): number {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-function parseOptionalString(value: unknown): string | undefined {
+export function parseOptionalString(value: unknown): string | undefined {
   if (typeof value === 'string') return value;
   if (Array.isArray(value)) {
     const first = value.find((item): item is string => typeof item === 'string');
@@ -64,7 +64,7 @@ function parseOptionalString(value: unknown): string | undefined {
   return undefined;
 }
 
-function parseRequiredString(value: unknown, fieldName: string): string {
+export function parseRequiredString(value: unknown, fieldName: string): string {
   const parsed = parseOptionalString(value);
   if (!parsed) {
     throw new HttpError(400, `Missing or invalid ${fieldName}.`);
@@ -152,7 +152,7 @@ async function buildMobileAuthenticatedResponse(context: AuthedContext) {
   };
 }
 
-async function requireMobileSessionVerification(context: AuthedContext) {
+export async function requireMobileSessionVerification(context: AuthedContext) {
   const opCtx = toOperationContext(context);
   await assertTwoFactorSessionVerified(opCtx);
 }
