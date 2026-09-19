@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Text } from 'react-native-paper';
-import { BrandButton, Card, EmptyState, ErrorText, Icon, PrimaryFab, Row, Screen, ScreenTitle, SkeletonList, Tag, type IconName } from '../components/ui';
+import { BrandButton, Card, EmptyState, ErrorText, Icon, IconAction, PrimaryFab, Row, Screen, ScreenTitle, SkeletonList, Tag, type IconName } from '../components/ui';
 import { colors, spacing } from '../theme';
 import { formatDate, fullName } from '../utils/format';
 
@@ -117,7 +117,7 @@ export function DocumentsScreen({
                 </View>
                 {status ? <Tag label={status.label} tone={status.tone} /> : null}
               </Row>
-              <Row style={{ marginTop: spacing.xs, flexWrap: 'wrap' }}>
+              <Row style={{ marginTop: spacing.xs }}>
                 <BrandButton
                   variant="tonal"
                   icon="open-in-new"
@@ -127,12 +127,12 @@ export function DocumentsScreen({
                   style={{ flex: 1 }}
                 />
                 {canReview && onVerify && status?.tone !== 'success' ? (
-                  <BrandButton variant="ghost" icon="check" label="Verificar" disabled={busyId !== null} onPress={() => void run(doc, onVerify)} style={{ flex: 1 }} />
+                  <IconAction icon="check" label="Verificar" tone="gold" onPress={() => void run(doc, onVerify)} testID={`verify-${doc.id}`} />
                 ) : null}
                 {canReview && onReject && status?.tone !== 'danger' ? (
-                  <BrandButton variant="ghost" icon="close" label="Rejeitar" disabled={busyId !== null} onPress={() => void run(doc, onReject)} style={{ flex: 1 }} />
+                  <IconAction icon="close" label="Rejeitar" onPress={() => void run(doc, onReject)} testID={`reject-${doc.id}`} />
                 ) : null}
-                {onDelete ? <BrandButton variant="text" icon="delete-outline" label="Apagar" disabled={busyId !== null} onPress={() => void run(doc, onDelete)} /> : null}
+                {onDelete ? <IconAction icon="delete-outline" label="Apagar" onPress={() => void run(doc, onDelete)} testID={`delete-${doc.id}`} /> : null}
               </Row>
             </Card>
           );
