@@ -184,8 +184,8 @@ export function createMobileClient(options: MobileClientOptions) {
     catechumenDetails(id: string) {
       return request<any>(MOBILE_PATHS.catechumenDetails(id));
     },
-    families(communityId?: string) {
-      return request<any>(withQuery(MOBILE_PATHS.families, { communityId }));
+    families(query?: { communityId?: string; workspaceId?: string }) {
+      return request<any>(withQuery(MOBILE_PATHS.families, query));
     },
     familyDetails(id: string) {
       return request<any>(MOBILE_PATHS.familyDetails(id));

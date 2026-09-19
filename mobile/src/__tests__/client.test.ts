@@ -172,12 +172,14 @@ describe('mobile HTTP client', () => {
 
     await client.catechumens();
     await client.catechumenDetails('cat-1');
-    await client.families('community-1');
+    await client.families({ communityId: 'community-1', workspaceId: 'ws-1' });
     await client.familyDetails('fam-1');
 
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.catechumens);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.catechumenDetails('cat-1'));
-    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.families + '?communityId=community-1');
+    expect(urls).toContain(
+      'http://localhost:3001' + MOBILE_PATHS.families + '?communityId=community-1&workspaceId=ws-1',
+    );
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.familyDetails('fam-1'));
   });
 

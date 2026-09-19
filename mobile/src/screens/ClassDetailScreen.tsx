@@ -5,9 +5,20 @@ import { colors, spacing } from '../theme';
 
 function attendanceRateLabel(summary: any): string | null {
   const rate = summary?.attendanceRate;
-  if (typeof rate === 'number') return `${Math.round(rate * 100)}% de presença`;
+  // O backend devolve a taxa já em percentagem (0-100).
+  if (typeof rate === 'number') return `${Math.round(rate)}% de presença`;
   if (typeof rate === 'string') return rate;
   return null;
+}
+
+const CATECHIST_ROLE_LABELS: Record<string, string> = {
+  LEAD: 'Principal',
+  ASSISTANT: 'Auxiliar',
+};
+
+function catechistRoleLabel(role: unknown): string {
+  if (typeof role !== 'string' || !role) return '';
+  return CATECHIST_ROLE_LABELS[role] ?? role;
 }
 
 export function ClassDetailScreen({
@@ -69,10 +80,11 @@ export function ClassDetailScreen({
             {catechists.map((entry: any) => {
               const user = entry.user || {};
               const name = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email || 'Catequista';
+              const role = catechistRoleLabel(entry.role);
               return (
                 <Text key={entry.id || user.id || name} style={{ color: colors.inkSoft, marginBottom: 4 }}>
                   {name}
-                  {entry.role ? ` · ${entry.role}` : ''}
+                  {role ? ` · ${role}` : ''}
                 </Text>
               );
             })}
