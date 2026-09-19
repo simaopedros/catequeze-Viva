@@ -2,6 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useAuth } from '../../../../src/auth/AuthContext';
 import { useAsync } from '../../../../src/hooks/useAsync';
+import { usePagedList } from '../../../../src/hooks/usePagedList';
 import { CommunityScreen } from '../../../../src/screens/CommunityScreen';
 
 export default function TopicRoute() {
@@ -10,7 +11,7 @@ export default function TopicRoute() {
   const router = useRouter();
   const [sort, setSort] = useState<'recent' | 'trending' | 'foryou'>('recent');
   const topicSlug = String(slug || '');
-  const feed = useAsync(() => api.socialFeed({ sort, topicSlug }), [sort, topicSlug]);
+  const feed = usePagedList((cursor) => api.socialFeed({ sort, topicSlug, cursor }), [sort, topicSlug]);
   const topics = useAsync(() => api.socialTopics(), []);
   const access = useAsync(() => api.socialAccess(), []);
   const topic = (topics.data ?? []).find((item) => item.slug === topicSlug);
@@ -19,13 +20,18 @@ export default function TopicRoute() {
     <CommunityScreen
       title={topic?.name || 'Tópico'}
       subtitle="Publicações deste tema na Comunidade."
-      posts={feed.data?.items ?? []}
+      posts={feed.items}
       topics={topics.data ?? []}
       access={access.data}
       sort={sort}
       topicSlug={topicSlug}
       loading={feed.loading}
       error={feed.error}
+      refreshing={feed.refreshing}
+      onRefresh={() => void feed.reload()}
+      hasMore={Boolean(feed.nextCursor)}
+      loadingMore={feed.loadingMore}
+      onLoadMore={() => void feed.loadMore()}
       onChangeSort={setSort}
       onChangeTopic={(next) => {
         if (!next) router.replace('/(app)/(tabs)/community');

@@ -31,6 +31,9 @@ export function PostDetailScreen({
   onReport,
   reportMessage,
   actionError,
+  commentsHasMore,
+  commentsLoadingMore,
+  onLoadMoreComments,
 }: {
   post?: SocialPost | null;
   comments: SocialComment[];
@@ -44,6 +47,9 @@ export function PostDetailScreen({
   onReport?: (reason: SocialReportReason) => Promise<void> | void;
   reportMessage?: string | null;
   actionError?: string | null;
+  commentsHasMore?: boolean;
+  commentsLoadingMore?: boolean;
+  onLoadMoreComments?: () => void;
 }) {
   const [body, setBody] = useState('');
   const [reason, setReason] = useState<SocialReportReason>('OTHER');
@@ -105,6 +111,15 @@ export function PostDetailScreen({
           </View>
         ))
       )}
+      {commentsHasMore && onLoadMoreComments ? (
+        <BrandButton
+          variant="ghost"
+          testID="load-more-comments"
+          label={commentsLoadingMore ? 'A carregar…' : 'Carregar mais comentários'}
+          disabled={commentsLoadingMore}
+          onPress={onLoadMoreComments}
+        />
+      ) : null}
       {access && !access.canPublish ? (
         <Text style={{ color: colors.goldDark, marginBottom: spacing.sm }}>
           Comentários pedem a mesma conta com que lê a Comunidade.

@@ -2,22 +2,19 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
-import { ClassDetailScreen } from '../../../src/screens/ClassDetailScreen';
+import { FamilyScreen } from '../../../src/screens/FamilyScreen';
 
-export default function ClassRoute() {
+export default function FamilyRoute() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { api } = useAuth();
   const router = useRouter();
-  const { data, loading, error, reload, refreshing } = useAsync(() => api.classDetails(String(id)), [id]);
+  const { data, loading, error } = useAsync(() => api.familyDetails(String(id)), [id]);
 
   return (
-    <ClassDetailScreen
+    <FamilyScreen
       data={data}
       loading={loading}
       error={error}
-      refreshing={refreshing}
-      onRefresh={() => void reload()}
-      onOpenMeeting={(meetingId) => router.push(`/(app)/meeting/${meetingId}`)}
       onOpenCatechumen={(catechumenId) => router.push(`/(app)/catechumen/${catechumenId}`)}
     />
   );

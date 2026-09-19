@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, Text } from 'react-native';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import { colors } from '../theme';
 
 function asConversations(payload: any) {
@@ -15,6 +15,7 @@ export function MessagesScreen({
   loading,
   error,
   onOpen,
+  onNewConversation,
   refreshing,
   onRefresh,
 }: {
@@ -22,6 +23,7 @@ export function MessagesScreen({
   loading?: boolean;
   error?: string | null;
   onOpen: (id: string) => void;
+  onNewConversation?: () => void;
   refreshing?: boolean;
   onRefresh?: () => void;
 }) {
@@ -29,6 +31,9 @@ export function MessagesScreen({
   return (
     <Screen testID="messages-screen" refreshing={refreshing} onRefresh={onRefresh}>
       <ScreenTitle title="Mensagens" subtitle="Conversas da paróquia e das turmas." />
+      {onNewConversation ? (
+        <BrandButton label="Nova conversa" testID="new-conversation" onPress={onNewConversation} />
+      ) : null}
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Mensagens indisponíveis" body={error} /> : null}
       {items.length === 0 && !loading ? (

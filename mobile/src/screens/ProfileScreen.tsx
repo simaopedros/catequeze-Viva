@@ -19,6 +19,9 @@ export function ProfileScreen({
   onOpenFollowing,
   onEdit,
   actionError,
+  postsHasMore,
+  postsLoadingMore,
+  onLoadMorePosts,
 }: {
   profile?: SocialProfile | null;
   loading?: boolean;
@@ -33,6 +36,9 @@ export function ProfileScreen({
   onOpenFollowing?: () => void;
   onEdit?: () => void;
   actionError?: string | null;
+  postsHasMore?: boolean;
+  postsLoadingMore?: boolean;
+  onLoadMorePosts?: () => void;
 }) {
   const data = profile?.profile ?? profile;
   if (loading) {
@@ -106,6 +112,15 @@ export function ProfileScreen({
           <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
         ))
       )}
+      {postsHasMore && onLoadMorePosts ? (
+        <BrandButton
+          variant="ghost"
+          testID="load-more-posts"
+          label={postsLoadingMore ? 'A carregar…' : 'Carregar mais'}
+          disabled={postsLoadingMore}
+          onPress={onLoadMorePosts}
+        />
+      ) : null}
     </Screen>
   );
 }

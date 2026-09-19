@@ -145,6 +145,18 @@ export function createMobileClient(options: MobileClientOptions) {
     classDetails(id: string) {
       return request<any>(MOBILE_PATHS.classDetails(id));
     },
+    catechumens() {
+      return request<any>(MOBILE_PATHS.catechumens);
+    },
+    catechumenDetails(id: string) {
+      return request<any>(MOBILE_PATHS.catechumenDetails(id));
+    },
+    families(communityId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.families, { communityId }));
+    },
+    familyDetails(id: string) {
+      return request<any>(MOBILE_PATHS.familyDetails(id));
+    },
     meetings(classId?: string) {
       return request<any>(withQuery(MOBILE_PATHS.meetings, { classId }));
     },
@@ -172,6 +184,20 @@ export function createMobileClient(options: MobileClientOptions) {
       return request<any>(MOBILE_PATHS.messages, {
         method: 'POST',
         body: JSON.stringify({ conversationId, content }),
+      });
+    },
+    conversationContacts(workspaceId: string) {
+      return request<any>(withQuery(MOBILE_PATHS.conversationContacts, { workspaceId }));
+    },
+    createConversation(body: {
+      workspaceId: string;
+      participantUserIds: string[];
+      type?: 'DIRECT' | 'GROUP';
+      title?: string;
+    }) {
+      return request<any>(MOBILE_PATHS.conversations, {
+        method: 'POST',
+        body: JSON.stringify(body),
       });
     },
     notifications() {
@@ -249,9 +275,9 @@ export function createMobileClient(options: MobileClientOptions) {
     socialPost(slug: string) {
       return request<SocialPost>(MOBILE_PATHS.socialPost(slug));
     },
-    socialComments(postId: string) {
+    socialComments(postId: string, cursor?: string | null) {
       return request<{ items: SocialComment[]; nextCursor: string | null }>(
-        withQuery(MOBILE_PATHS.socialComments, { postId }),
+        withQuery(MOBILE_PATHS.socialComments, { postId, cursor }),
       );
     },
     createComment(postId: string, body: string) {

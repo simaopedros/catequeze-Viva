@@ -64,6 +64,9 @@ export function CommunityScreen({
   onOpenArea,
   refreshing,
   onRefresh,
+  hasMore,
+  loadingMore,
+  onLoadMore,
 }: {
   posts: SocialPost[];
   topics: SocialTopic[];
@@ -87,6 +90,9 @@ export function CommunityScreen({
   onOpenArea?: (id: CommunityAreaId) => void;
   refreshing?: boolean;
   onRefresh?: () => void;
+  hasMore?: boolean;
+  loadingMore?: boolean;
+  onLoadMore?: () => void;
 }) {
   return (
     <Screen testID="community-screen" refreshing={refreshing} onRefresh={onRefresh}>
@@ -174,6 +180,15 @@ export function CommunityScreen({
           <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
         ))
       )}
+      {hasMore && onLoadMore ? (
+        <BrandButton
+          variant="ghost"
+          testID="load-more"
+          label={loadingMore ? 'A carregar…' : 'Carregar mais'}
+          disabled={loadingMore}
+          onPress={onLoadMore}
+        />
+      ) : null}
     </Screen>
   );
 }

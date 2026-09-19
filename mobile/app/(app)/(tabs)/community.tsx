@@ -2,6 +2,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
+import { usePagedList } from '../../../src/hooks/usePagedList';
 import { openCommunityArea } from '../../../src/screens/communityNavigation';
 import { CommunityScreen } from '../../../src/screens/CommunityScreen';
 
@@ -11,20 +12,24 @@ export default function CommunityRoute() {
   const [sort, setSort] = useState<'recent' | 'trending' | 'foryou'>('recent');
   const [topicSlug, setTopicSlug] = useState<string | null>(null);
   const [following, setFollowing] = useState(false);
-  const feed = useAsync(() => api.socialFeed({ sort, topicSlug, following }), [sort, topicSlug, following]);
+  const feed = usePagedList((cursor) => api.socialFeed({ sort, topicSlug, following, cursor }), [
+    sort,
+    topicSlug,
+    following,
+  ]);
   const topics = useAsync(() => api.socialTopics(), []);
   const access = useAsync(() => api.socialAccess(), []);
   const me = useAsync(() => api.mySocialProfile(), []);
 
   useFocusEffect(
     useCallback(() => {
-      if (feed.data) void feed.reload();
-    }, [feed.data, feed.reload]),
+      if (feed.items.length > 0) void feed.reload();
+    }, [feed.items.length, feed.reload]),
   );
 
   return (
     <CommunityScreen
-      posts={feed.data?.items ?? []}
+      posts={feed.items}
       topics={topics.data ?? []}
       access={access.data}
       sort={sort}
@@ -34,6 +39,9 @@ export default function CommunityRoute() {
       error={feed.error}
       refreshing={feed.refreshing}
       onRefresh={() => void feed.reload()}
+      hasMore={Boolean(feed.nextCursor)}
+      loadingMore={feed.loadingMore}
+      onLoadMore={() => void feed.loadMore()}
       showHub
       onOpenArea={(area) => openCommunityArea(router, area, me.data?.handle)}
       onChangeSort={setSort}

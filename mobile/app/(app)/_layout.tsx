@@ -24,8 +24,11 @@ export default function AppLayout() {
       <Stack.Screen name="community/t/[slug]" options={{ title: 'Tópico' }} />
       <Stack.Screen name="community/[handle]" options={{ title: 'Perfil' }} />
       <Stack.Screen name="class/[id]" options={{ title: 'Turma' }} />
+      <Stack.Screen name="catechumen/[id]" options={{ title: 'Catequizando' }} />
+      <Stack.Screen name="family/[id]" options={{ title: 'Família' }} />
       <Stack.Screen name="meeting/[id]" options={{ title: 'Encontro' }} />
       <Stack.Screen name="meeting/[id]/attendance" options={{ title: 'Presença' }} />
+      <Stack.Screen name="messages/new" options={{ title: 'Nova conversa' }} />
       <Stack.Screen name="messages/[id]" options={{ title: 'Conversa' }} />
       <Stack.Screen name="bible/index" options={{ title: 'Bíblia' }} />
       <Stack.Screen name="bible/[bookId]/index" options={{ title: 'Livro' }} />

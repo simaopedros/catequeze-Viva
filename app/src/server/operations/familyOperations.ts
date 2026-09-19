@@ -237,6 +237,101 @@ export const listHouseholds = async (
   return emptyPage(useCursorPage);
 };
 
+/**
+ * Single household by id with the same role-based visibility rules as
+ * listHouseholds (avoids scanning the whole directory to find one family).
+ */
+export const getHousehold = async (
+  args: { id: string; communityId?: string },
+  context: any,
+): Promise<any> => {
+  if (!context.user) throw new HttpError(401);
+  const id = args.id?.trim();
+  if (!id) throw new HttpError(400, 'id é obrigatório.');
+
+  const household = await context.entities.Household.findUnique({
+    where: { id },
+    include: {
+      guardians: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      },
+      catechumens: { select: { id: true, firstName: true, lastName: true } },
+      community: { select: { id: true, name: true } },
+      _count: { select: { catechumens: true } },
+    },
+  });
+  if (!household) throw new HttpError(404, 'Família não encontrada.');
+  if (args.communityId && household.communityId !== args.communityId) {
+    throw new HttpError(404, 'Família não encontrada.');
+  }
+  if (context.user.isAdmin) return household;
+
+  const notFound = () => new HttpError(403, 'Esta família não pertence à sua paróquia.');
+
+  // Family-only users: only their own household(s).
+  const { rolesAreFamilyOnly, loadActiveRoles } = await import(
+    '../auth/familySurface'
+  );
+  const roles = await loadActiveRoles(context);
+  if (rolesAreFamilyOnly(roles)) {
+    const owns = household.guardians.some((g: any) => g.user?.id === context.user.id);
+    if (owns) return household;
+    throw notFound();
+  }
+
+  if (!household.parishId) throw notFound();
+  const access = await requireWorkspaceAccess(context, household.parishId).catch(() => {
+    throw notFound();
+  });
+
+  if (access.isCoordinatorOrAbove || access.role === 'PASTORAL_VIEWER') {
+    if (access.isScopedCoordinator && access.allowedClassIds !== 'ALL') {
+      const inCommunity = Boolean(access.communityId) && household.communityId === access.communityId;
+      if (!inCommunity) {
+        const enrolled = await context.entities.ClassEnrollment.findFirst({
+          where: {
+            classId: { in: access.allowedClassIds },
+            catechumenProfile: { householdId: household.id },
+          },
+        });
+        if (!enrolled) throw notFound();
+      }
+    }
+    return household;
+  }
+
+  if (access.role === 'GUARDIAN') {
+    const owns = household.guardians.some((g: any) => g.user?.id === context.user.id);
+    if (owns) return household;
+    throw notFound();
+  }
+
+  if (access.isCatechist) {
+    const classIds = access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds;
+    if (classIds.length > 0) {
+      const enrolled = await context.entities.ClassEnrollment.findFirst({
+        where: {
+          classId: { in: classIds },
+          catechumenProfile: { householdId: household.id },
+        },
+      });
+      if (enrolled) return household;
+    }
+    throw notFound();
+  }
+
+  throw notFound();
+};
+
 export const createHousehold = async (
   args: { name: string; address?: string; phone?: string; parishId?: string; communityId?: string },
   context: any

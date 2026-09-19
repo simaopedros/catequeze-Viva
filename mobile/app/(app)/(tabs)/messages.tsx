@@ -20,6 +20,7 @@ export default function MessagesRoute() {
       refreshing={refreshing}
       onRefresh={() => void reload()}
       onOpen={(id) => router.push(`/(app)/messages/${id}`)}
+      onNewConversation={() => router.push('/(app)/messages/new')}
     />
   );
 }

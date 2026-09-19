@@ -2,6 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useAuth } from '../../../../src/auth/AuthContext';
 import { useAsync } from '../../../../src/hooks/useAsync';
+import { usePagedList } from '../../../../src/hooks/usePagedList';
 import { PostDetailScreen } from '../../../../src/screens/PostDetailScreen';
 
 export default function PostRoute() {
@@ -9,9 +10,10 @@ export default function PostRoute() {
   const { api } = useAuth();
   const router = useRouter();
   const post = useAsync(() => api.socialPost(String(slug || '')), [slug]);
-  const comments = useAsync(
-    () => (post.data?.id ? api.socialComments(post.data.id) : Promise.resolve({ items: [], nextCursor: null })),
-    [post.data?.id],
+  const postId = post.data?.id;
+  const comments = usePagedList(
+    (cursor) => (postId ? api.socialComments(postId, cursor) : Promise.resolve({ items: [], nextCursor: null })),
+    [postId],
   );
   const access = useAsync(() => api.socialAccess(), []);
   const [busy, setBusy] = useState(false);
@@ -21,12 +23,15 @@ export default function PostRoute() {
   return (
     <PostDetailScreen
       post={post.data}
-      comments={comments.data?.items ?? []}
+      comments={comments.items}
       access={access.data}
       loading={post.loading}
       error={post.error}
       busy={busy}
       actionError={actionError}
+      commentsHasMore={Boolean(comments.nextCursor)}
+      commentsLoadingMore={comments.loadingMore}
+      onLoadMoreComments={() => void comments.loadMore()}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
       onReact={async (type) => {
         if (!post.data?.id) return;

@@ -2,13 +2,14 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
+import { usePagedList } from '../../../src/hooks/usePagedList';
 import { CommunityScreen } from '../../../src/screens/CommunityScreen';
 
 export default function FollowingFeedRoute() {
   const { api } = useAuth();
   const router = useRouter();
   const [sort, setSort] = useState<'recent' | 'trending' | 'foryou'>('recent');
-  const feed = useAsync(() => api.socialFeed({ sort, following: true }), [sort]);
+  const feed = usePagedList((cursor) => api.socialFeed({ sort, following: true, cursor }), [sort]);
   const topics = useAsync(() => api.socialTopics(), []);
   const access = useAsync(() => api.socialAccess(), []);
 
@@ -16,13 +17,18 @@ export default function FollowingFeedRoute() {
     <CommunityScreen
       title="A seguir"
       subtitle="Só publicações de quem você segue."
-      posts={feed.data?.items ?? []}
+      posts={feed.items}
       topics={topics.data ?? []}
       access={access.data}
       sort={sort}
       following
       loading={feed.loading}
       error={feed.error}
+      refreshing={feed.refreshing}
+      onRefresh={() => void feed.reload()}
+      hasMore={Boolean(feed.nextCursor)}
+      loadingMore={feed.loadingMore}
+      onLoadMore={() => void feed.loadMore()}
       onChangeSort={setSort}
       onChangeTopic={() => undefined}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}

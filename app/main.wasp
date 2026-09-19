@@ -1981,6 +1981,18 @@ api mobileConversations {
   httpRoute: (GET, "/mobile/messages")
 }
 
+api mobileConversationContacts {
+  fn: import { mobileConversationContacts } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/messages/contacts")
+}
+
+api mobileCreateConversation {
+  fn: import { mobileCreateConversation } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (POST, "/mobile/messages/conversations")
+}
+
 api mobileConversationDetails {
   fn: import { mobileConversationDetails } from "@src/server/api/mobile",
   auth: true,

@@ -18,6 +18,8 @@ export const MOBILE_PATHS = {
   attendance: '/mobile/attendance',
   messages: '/mobile/messages',
   messageDetails: (id: string) => `/mobile/messages/${encodeURIComponent(id)}`,
+  conversationContacts: '/mobile/messages/contacts',
+  conversations: '/mobile/messages/conversations',
   notifications: '/mobile/notifications',
   notificationRead: (id: string) => `/mobile/notifications/${encodeURIComponent(id)}/read`,
   notificationsReadAll: '/mobile/notifications/read-all',

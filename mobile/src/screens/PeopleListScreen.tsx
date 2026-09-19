@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, Text } from 'react-native';
 import type { SocialPerson } from '../api/types';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import { colors, spacing } from '../theme';
 
 export function personHandle(person: SocialPerson) {
@@ -18,6 +18,9 @@ export function PeopleListScreen({
   emptyBody,
   onOpenPerson,
   testID,
+  hasMore,
+  loadingMore,
+  onLoadMore,
 }: {
   title: string;
   subtitle: string;
@@ -28,6 +31,9 @@ export function PeopleListScreen({
   emptyBody: string;
   onOpenPerson: (handle: string) => void;
   testID?: string;
+  hasMore?: boolean;
+  loadingMore?: boolean;
+  onLoadMore?: () => void;
 }) {
   return (
     <Screen testID={testID}>
@@ -57,6 +63,15 @@ export function PeopleListScreen({
         );
       })}
       <Text style={{ color: colors.muted, marginTop: spacing.sm }}>{people.length} pessoa(s)</Text>
+      {hasMore && onLoadMore ? (
+        <BrandButton
+          variant="ghost"
+          testID="load-more"
+          label={loadingMore ? 'A carregar…' : 'Carregar mais'}
+          disabled={loadingMore}
+          onPress={onLoadMore}
+        />
+      ) : null}
     </Screen>
   );
 }

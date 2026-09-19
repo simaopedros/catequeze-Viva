@@ -134,4 +134,74 @@ describe('mobile HTTP client', () => {
     expect(access.url).toBe('https://api.catechis.app/mobile/documents/doc-1');
     expect(access.headers).toEqual({ Authorization: 'Bearer session-9' });
   });
+
+  it('creates conversations and lists contacts', async () => {
+    const calls: { url: string; init: RequestInit }[] = [];
+    const client = createMobileClient({
+      getBaseUrl: () => 'http://localhost:3001',
+      getToken: () => 'tok',
+      fetchImpl: async (url, init) => {
+        calls.push({ url: String(url), init: init || {} });
+        return jsonResponse({ id: 'conv-1' });
+      },
+    });
+
+    await client.conversationContacts('ws-1');
+    await client.createConversation({ workspaceId: 'ws-1', participantUserIds: ['user-2'], type: 'DIRECT' });
+
+    expect(calls[0].url).toBe('http://localhost:3001' + MOBILE_PATHS.conversationContacts + '?workspaceId=ws-1');
+    expect(calls[1].url).toBe('http://localhost:3001' + MOBILE_PATHS.conversations);
+    expect(calls[1].init.method).toBe('POST');
+    expect(JSON.parse(String(calls[1].init.body))).toEqual({
+      workspaceId: 'ws-1',
+      participantUserIds: ['user-2'],
+      type: 'DIRECT',
+    });
+  });
+
+  it('covers catechumens and families endpoints', async () => {
+    const urls: string[] = [];
+    const client = createMobileClient({
+      getBaseUrl: () => 'http://localhost:3001',
+      getToken: () => 'tok',
+      fetchImpl: async (url) => {
+        urls.push(String(url));
+        return jsonResponse({ items: [] });
+      },
+    });
+
+    await client.catechumens();
+    await client.catechumenDetails('cat-1');
+    await client.families('community-1');
+    await client.familyDetails('fam-1');
+
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.catechumens);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.catechumenDetails('cat-1'));
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.families + '?communityId=community-1');
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.familyDetails('fam-1'));
+  });
+
+  it('paginates feed and comments with cursors', async () => {
+    const urls: string[] = [];
+    const client = createMobileClient({
+      getBaseUrl: () => 'http://localhost:3001',
+      getToken: () => 'tok',
+      fetchImpl: async (url) => {
+        urls.push(String(url));
+        return jsonResponse({ items: [], nextCursor: null });
+      },
+    });
+
+    await client.socialFeed({ sort: 'recent', cursor: 'cursor-1' });
+    await client.socialComments('post-1', 'cursor-2');
+    await client.socialConnections({ handle: 'ana', kind: 'followers', cursor: 'cursor-3' });
+
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialFeed + '?sort=recent&cursor=cursor-1');
+    expect(urls).toContain(
+      'http://localhost:3001' + MOBILE_PATHS.socialComments + '?postId=post-1&cursor=cursor-2',
+    );
+    expect(urls).toContain(
+      'http://localhost:3001' + MOBILE_PATHS.socialConnections + '?handle=ana&kind=followers&cursor=cursor-3',
+    );
+  });
 });

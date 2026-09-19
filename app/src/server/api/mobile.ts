@@ -14,10 +14,10 @@ import { getUnreadNotificationCount, listNotifications, markAllNotificationsRead
 import { getDashboardStats } from '../operations/dashboardOperations';
 import { listClasses, getClassDetails } from '../operations/classOperations';
 import { listCatechumens, getCatechumenProfile } from '../operations/catechumenOperations';
-import { listHouseholds } from '../operations/familyOperations';
+import { listHouseholds, getHousehold } from '../operations/familyOperations';
 import { listMeetings, getMeeting, saveAttendance } from '../operations/meetingOperations';
 import { listDocuments } from '../operations/documentOperations';
-import { listConversations, getConversation, sendMessage } from '../operations/conversationOperations';
+import { listConversations, getConversation, sendMessage, createConversation, getContactsForConversation } from '../operations/conversationOperations';
 import { verifyTwoFactorLogin, assertTwoFactorSessionVerified } from '../operations/twoFactorOperations';
 import {
   assertNotLocked,
@@ -414,13 +414,15 @@ export async function mobileFamilies(req: Request, res: Response, context: any) 
 export async function mobileFamilyDetails(req: Request, res: Response, context: any) {
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
-  const households = await listHouseholds({ communityId: parseOptionalString(req.query.communityId) }, opCtx);
-  const householdId = parseRequiredString(req.params.id, 'id');
-  const household = households.find((item: any) => item.id === householdId);
-  if (!household) {
-    throw new HttpError(404, 'Família não encontrada.');
-  }
-  return res.json(household);
+  return res.json(
+    await getHousehold(
+      {
+        id: parseRequiredString(req.params.id, 'id'),
+        communityId: parseOptionalString(req.query.communityId),
+      },
+      opCtx,
+    ),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -471,6 +473,38 @@ export async function mobileSendMessageHandler(req: Request, res: Response, cont
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
   return res.json(await sendMessage(req.body ?? {}, opCtx));
+}
+
+export async function mobileConversationContacts(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  return res.json(
+    await getContactsForConversation(
+      { workspaceId: parseRequiredString(req.query.workspaceId, 'workspaceId') },
+      opCtx,
+    ),
+  );
+}
+
+export async function mobileCreateConversation(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const body = req.body ?? {};
+  const participantUserIds = Array.isArray(body.participantUserIds)
+    ? body.participantUserIds.filter((id: unknown): id is string => typeof id === 'string' && id.length > 0)
+    : [];
+  return res.json(
+    await createConversation(
+      {
+        type: body.type === 'GROUP' ? 'GROUP' : 'DIRECT',
+        title: typeof body.title === 'string' && body.title.trim() ? body.title.trim() : undefined,
+        participantUserIds,
+        parishId: parseRequiredString(body.workspaceId ?? body.parishId, 'workspaceId'),
+        communityId: typeof body.communityId === 'string' ? body.communityId : undefined,
+      },
+      opCtx,
+    ),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
