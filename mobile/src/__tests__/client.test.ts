@@ -291,6 +291,50 @@ describe('mobile HTTP client', () => {
     expect(find('POST', MOBILE_PATHS.consents)?.body).toEqual({ type: 'PHOTOS', granted: true });
   });
 
+  it('covers the communication endpoints (Fase C)', async () => {
+    const calls: { url: string; method: string; body: any }[] = [];
+    const client = createMobileClient({
+      getBaseUrl: () => 'http://localhost:3001',
+      getToken: () => 'tok',
+      fetchImpl: async (url, init) => {
+        calls.push({ url: String(url), method: init?.method || 'GET', body: init?.body ? JSON.parse(String(init.body)) : null });
+        return jsonResponse({ success: true });
+      },
+    });
+
+    await client.markConversationRead('c1', 'ws-1');
+    await client.muteConversation('c1', true);
+    await client.removeConversationParticipant('c1', 'u1');
+    await client.deleteSocialPost('p1');
+    await client.deleteSocialComment('k1');
+    await client.registerSocialShare('p1');
+    await client.recordSocialWatch('p1', 12, 0.5);
+    await client.socialFollowState(['a', 'b']);
+    await client.dashboardFocus('ws-1');
+    await client.announcements('ws-1');
+    await client.acknowledgeAnnouncement('an1');
+    await client.birthdays({ days: 30 });
+    await client.toggleBirthdayGift('cat-1', 2026);
+    await client.globalSearch('ana');
+
+    const base = 'http://localhost:3001';
+    const find = (method: string, path: string) => calls.find((call) => call.method === method && call.url === base + path);
+    expect(find('POST', MOBILE_PATHS.conversationRead('c1'))?.body).toEqual({ workspaceId: 'ws-1' });
+    expect(find('POST', MOBILE_PATHS.conversationMute('c1'))?.body).toMatchObject({ mute: true });
+    expect(find('DELETE', MOBILE_PATHS.conversationParticipant('c1', 'u1'))).toBeTruthy();
+    expect(find('DELETE', MOBILE_PATHS.socialPostDelete('p1'))).toBeTruthy();
+    expect(find('DELETE', MOBILE_PATHS.socialCommentDelete('k1'))).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.socialShare)?.body).toEqual({ postId: 'p1' });
+    expect(find('POST', MOBILE_PATHS.socialWatch)?.body).toEqual({ postId: 'p1', watchSeconds: 12, completionRate: 0.5 });
+    expect(find('GET', MOBILE_PATHS.socialFollowState + '?authorIds=a%2Cb')).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.dashboardFocus + '?workspaceId=ws-1&surface=STAFF')).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.announcements + '?workspaceId=ws-1')).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.announcementAck('an1'))).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.birthdays + '?days=30')).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.birthdayGift)?.body).toEqual({ catechumenId: 'cat-1', year: 2026 });
+    expect(find('GET', MOBILE_PATHS.globalSearch + '?q=ana')).toBeTruthy();
+  });
+
   it('paginates feed and comments with cursors', async () => {
     const urls: string[] = [];
     const client = createMobileClient({

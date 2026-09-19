@@ -70,6 +70,22 @@ export const MOBILE_PATHS = {
   familyGuardian: (id: string, guardianId: string) =>
     `/mobile/families/${encodeURIComponent(id)}/guardians/${encodeURIComponent(guardianId)}`,
   consents: '/mobile/consents',
+  // Fase C — comunicação
+  conversationRead: (id: string) => `/mobile/messages/${encodeURIComponent(id)}/read`,
+  conversationMute: (id: string) => `/mobile/messages/${encodeURIComponent(id)}/mute`,
+  conversationParticipant: (id: string, userId: string) =>
+    `/mobile/messages/${encodeURIComponent(id)}/participants/${encodeURIComponent(userId)}`,
+  socialPostDelete: (id: string) => `/mobile/social/posts/${encodeURIComponent(id)}`,
+  socialCommentDelete: (id: string) => `/mobile/social/comments/${encodeURIComponent(id)}`,
+  socialShare: '/mobile/social/share',
+  socialWatch: '/mobile/social/watch',
+  socialFollowState: '/mobile/social/follow-state',
+  dashboardFocus: '/mobile/dashboard/focus',
+  announcements: '/mobile/announcements',
+  announcementAck: (id: string) => `/mobile/announcements/${encodeURIComponent(id)}/ack`,
+  birthdays: '/mobile/birthdays',
+  birthdayGift: '/mobile/birthdays/gift',
+  globalSearch: '/mobile/search',
   bibleBooks: '/mobile/bible/books',
   bibleBook: (id: string) => `/mobile/bible/books/${encodeURIComponent(id)}`,
   bibleChapter: (bookId: string, chapter: number) =>

@@ -53,6 +53,9 @@ export default function AppLayout() {
       <Stack.Screen name="documents" options={{ title: 'Documentos' }} />
       <Stack.Screen name="profile" options={{ title: 'Perfil' }} />
       <Stack.Screen name="notifications" options={{ title: 'Notificações' }} />
+      <Stack.Screen name="search" options={{ title: 'Pesquisar' }} />
+      <Stack.Screen name="announcements" options={{ title: 'Avisos' }} />
+      <Stack.Screen name="birthdays" options={{ title: 'Aniversários' }} />
     </Stack>
   );
 }

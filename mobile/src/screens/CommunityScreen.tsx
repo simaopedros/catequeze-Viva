@@ -83,6 +83,8 @@ export function CommunityScreen({
   hasMore,
   loadingMore,
   onLoadMore,
+  onSharePost,
+  onDeletePost,
 }: {
   posts: SocialPost[];
   topics: SocialTopic[];
@@ -109,6 +111,8 @@ export function CommunityScreen({
   hasMore?: boolean;
   loadingMore?: boolean;
   onLoadMore?: () => void;
+  onSharePost?: (post: SocialPost) => void;
+  onDeletePost?: (post: SocialPost) => void;
 }) {
   const canPublish = !access || access.canPublish;
   return (
@@ -212,7 +216,16 @@ export function CommunityScreen({
       {!loading && posts.length === 0 && !error ? (
         <EmptyState icon="post-outline" title="Ainda não há publicações" body="Quando a Comunidade tiver posts, eles aparecem aqui." />
       ) : (
-        posts.map((post) => <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />)
+        posts.map((post) => (
+          <PostCard
+            key={post.id}
+            post={post}
+            onOpenAuthor={onOpenAuthor}
+            onOpenPost={onOpenPost}
+            onShare={onSharePost ? () => onSharePost(post) : undefined}
+            onDelete={onDeletePost && post.isOwn ? () => onDeletePost(post) : undefined}
+          />
+        ))
       )}
       {hasMore && onLoadMore ? (
         <BrandButton variant="ghost" testID="load-more" label={loadingMore ? 'A carregar…' : 'Carregar mais'} disabled={loadingMore} loading={loadingMore} onPress={onLoadMore} />

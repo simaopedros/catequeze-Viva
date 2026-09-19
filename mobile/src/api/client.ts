@@ -100,6 +100,15 @@ export type FamilyInput = {
   communityId?: string;
 };
 
+export type GlobalSearchResult = {
+  id: string;
+  type: string;
+  module: string;
+  label: string;
+  description?: string;
+  route?: string;
+};
+
 export type GuardianInput = {
   userId?: string;
   firstName?: string;
@@ -351,6 +360,49 @@ export function createMobileClient(options: MobileClientOptions) {
     },
     saveConsent(type: string, granted: boolean) {
       return request<any>(MOBILE_PATHS.consents, { method: 'POST', body: JSON.stringify({ type, granted }) });
+    },
+    // ── Fase C: comunicação ──
+    markConversationRead(id: string, workspaceId?: string) {
+      return request<any>(MOBILE_PATHS.conversationRead(id), { method: 'POST', body: JSON.stringify({ workspaceId }) });
+    },
+    muteConversation(id: string, mute: boolean, workspaceId?: string) {
+      return request<any>(MOBILE_PATHS.conversationMute(id), { method: 'POST', body: JSON.stringify({ mute, workspaceId }) });
+    },
+    removeConversationParticipant(id: string, userId: string, workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.conversationParticipant(id, userId), { workspaceId }), { method: 'DELETE' });
+    },
+    deleteSocialPost(postId: string) {
+      return request<any>(MOBILE_PATHS.socialPostDelete(postId), { method: 'DELETE' });
+    },
+    deleteSocialComment(commentId: string) {
+      return request<any>(MOBILE_PATHS.socialCommentDelete(commentId), { method: 'DELETE' });
+    },
+    registerSocialShare(postId: string) {
+      return request<any>(MOBILE_PATHS.socialShare, { method: 'POST', body: JSON.stringify({ postId }) });
+    },
+    recordSocialWatch(postId: string, watchSeconds?: number, completionRate?: number | null) {
+      return request<any>(MOBILE_PATHS.socialWatch, { method: 'POST', body: JSON.stringify({ postId, watchSeconds, completionRate }) });
+    },
+    socialFollowState(authorIds: string[]) {
+      return request<{ following: string[] }>(withQuery(MOBILE_PATHS.socialFollowState, { authorIds: authorIds.join(',') }));
+    },
+    dashboardFocus(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.dashboardFocus, { workspaceId, surface: 'STAFF' }));
+    },
+    announcements(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.announcements, { workspaceId }));
+    },
+    acknowledgeAnnouncement(id: string) {
+      return request<any>(MOBILE_PATHS.announcementAck(id), { method: 'POST' });
+    },
+    birthdays(query?: { classId?: string; days?: number }) {
+      return request<any>(withQuery(MOBILE_PATHS.birthdays, query));
+    },
+    toggleBirthdayGift(catechumenId: string, year?: number) {
+      return request<any>(MOBILE_PATHS.birthdayGift, { method: 'POST', body: JSON.stringify({ catechumenId, year }) });
+    },
+    globalSearch(q: string, locale?: string) {
+      return request<GlobalSearchResult[]>(withQuery(MOBILE_PATHS.globalSearch, { q, locale }));
     },
     conversations(workspaceId?: string) {
       return request<any>(withQuery(MOBILE_PATHS.messages, { workspaceId }));

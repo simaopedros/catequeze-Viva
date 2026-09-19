@@ -18,6 +18,8 @@ export default function MoreRoute() {
         { id: 'catechumens', label: 'Catequizandos', hint: 'Fichas e presenças', icon: 'account-child-outline', onPress: () => router.push('/(app)/catechumens') },
         { id: 'families', label: 'Famílias', hint: 'Agregados e encarregados', icon: 'home-heart', onPress: () => router.push('/(app)/families') },
         { id: 'documents', label: 'Documentos', hint: 'Certidões e autorizações', icon: 'file-document-outline', onPress: () => router.push('/(app)/documents'), testID: 'open-documents' },
+        { id: 'birthdays', label: 'Aniversários', hint: 'Catequizandos que fazem anos', icon: 'cake-variant-outline', onPress: () => router.push('/(app)/birthdays') },
+        { id: 'announcements', label: 'Avisos pastorais', hint: 'Comunicações da coordenação', icon: 'bullhorn-outline', onPress: () => router.push('/(app)/announcements') },
       ],
     },
     {

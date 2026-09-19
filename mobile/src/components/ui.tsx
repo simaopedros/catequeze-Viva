@@ -167,10 +167,10 @@ export function Card({
   if (!onPress) {
     return <View testID={testID}>{content}</View>;
   }
+  // Sem role "button": o cartão pode conter botões próprios (evita <button> aninhado na web).
   return (
     <Pressable
       testID={testID}
-      accessibilityRole="button"
       onPress={onPress}
       style={({ pressed }) => [pressed && { opacity: 0.85, transform: [{ scale: 0.995 }] }]}
     >

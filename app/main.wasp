@@ -2327,6 +2327,105 @@ api mobileSaveConsent {
   entities: [ConsentRecord, CatechumenProfile, GuardianProfile, User]
 }
 
+// ── Mobile: comunicação (Fase C) ──
+api mobileMarkConversationRead {
+  fn: import { mobileMarkConversationRead } from "@src/server/api/mobileCommunication",
+  auth: true,
+  httpRoute: (POST, "/mobile/messages/:id/read"),
+  entities: [Conversation, ConversationParticipant, Message, Membership, User]
+}
+
+api mobileMuteConversation {
+  fn: import { mobileMuteConversation } from "@src/server/api/mobileCommunication",
+  auth: true,
+  httpRoute: (POST, "/mobile/messages/:id/mute"),
+  entities: [Conversation, ConversationParticipant, Membership, User]
+}
+
+api mobileRemoveConversationParticipant {
+  fn: import { mobileRemoveConversationParticipant } from "@src/server/api/mobileCommunication",
+  auth: true,
+  httpRoute: (DELETE, "/mobile/messages/:id/participants/:userId"),
+  entities: [Conversation, ConversationParticipant, Message, Membership, Notification, User]
+}
+
+api mobileDeleteSocialPost {
+  fn: import { mobileDeleteSocialPost } from "@src/server/api/mobileCommunication",
+  auth: true,
+  httpRoute: (DELETE, "/mobile/social/posts/:id"),
+  entities: [SocialPost, SocialComment, SocialReaction, SocialMedia, SocialPostTopic, User]
+}
+
+api mobileDeleteSocialComment {
+  fn: import { mobileDeleteSocialComment } from "@src/server/api/mobileCommunication",
+  auth: true,
+  httpRoute: (DELETE, "/mobile/social/comments/:id"),
+  entities: [SocialComment, SocialPost, User]
+}
+
+api mobileRegisterSocialShare {
+  fn: import { mobileRegisterSocialShare } from "@src/server/api/mobileCommunication",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/share"),
+  entities: [SocialPost, SocialShare, User]
+}
+
+api mobileRecordSocialWatch {
+  fn: import { mobileRecordSocialWatch } from "@src/server/api/mobileCommunication",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/watch"),
+  entities: [SocialPost, SocialVideoWatch, User]
+}
+
+api mobileSocialFollowState {
+  fn: import { mobileSocialFollowState } from "@src/server/api/mobileCommunication",
+  auth: true,
+  httpRoute: (GET, "/mobile/social/follow-state"),
+  entities: [SocialFollow, User]
+}
+
+api mobileEncounterFocus {
+  fn: import { mobileEncounterFocus } from "@src/server/api/mobileCommunication",
+  auth: true,
+  httpRoute: (GET, "/mobile/dashboard/focus"),
+  entities: [AttendanceRecord, CatechesisClass, CatechumenProfile, ClassCatechist, ClassEnrollment, GuardianProfile, Household, Meeting, Membership, Parish, User]
+}
+
+api mobileAnnouncements {
+  fn: import { mobileAnnouncements } from "@src/server/api/mobileCommunication",
+  auth: true,
+  httpRoute: (GET, "/mobile/announcements"),
+  entities: [PastoralAnnouncement, PastoralAnnouncementAck, Membership, Parish, User]
+}
+
+api mobileAcknowledgeAnnouncement {
+  fn: import { mobileAcknowledgeAnnouncement } from "@src/server/api/mobileCommunication",
+  auth: true,
+  httpRoute: (POST, "/mobile/announcements/:id/ack"),
+  entities: [PastoralAnnouncement, PastoralAnnouncementAck, Membership, User]
+}
+
+api mobileBirthdays {
+  fn: import { mobileBirthdays } from "@src/server/api/mobileCommunication",
+  auth: true,
+  httpRoute: (GET, "/mobile/birthdays"),
+  entities: [AttendanceRecord, CatechesisClass, CatechumenBirthdayGift, CatechumenProfile, ClassCatechist, ClassEnrollment, Meeting, Membership, Parish, User]
+}
+
+api mobileToggleBirthdayGift {
+  fn: import { mobileToggleBirthdayGift } from "@src/server/api/mobileCommunication",
+  auth: true,
+  httpRoute: (POST, "/mobile/birthdays/gift"),
+  entities: [CatechumenBirthdayGift, CatechumenProfile, ClassEnrollment, Membership, User]
+}
+
+api mobileGlobalSearch {
+  fn: import { mobileGlobalSearch } from "@src/server/api/mobileCommunication",
+  auth: true,
+  httpRoute: (GET, "/mobile/search"),
+  entities: [AttendanceRecord, BibleVerse, CatechesisClass, CatechismEntry, CatechumenProfile, ClassCatechist, ClassEnrollment, Community, ContentItem, DirectoryEntry, Document, GuardianProfile, Household, Meeting, Membership, Parish, SacramentalJourney, User]
+}
+
 api mobileSocialFeed {
   fn: import { mobileSocialFeed } from "@src/server/api/mobileSocial",
   auth: true,

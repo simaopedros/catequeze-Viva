@@ -40,6 +40,8 @@ export function ProfileScreen({
   onLoadMorePosts,
   refreshing,
   onRefresh,
+  onSharePost,
+  onDeletePost,
 }: {
   profile?: SocialProfile | null;
   loading?: boolean;
@@ -60,6 +62,8 @@ export function ProfileScreen({
   onLoadMorePosts?: () => void;
   refreshing?: boolean;
   onRefresh?: () => void;
+  onSharePost?: (post: SocialPost) => void;
+  onDeletePost?: (post: SocialPost) => void;
 }) {
   const data: any = profile?.profile ?? profile;
   if (loading && !data) {
@@ -151,7 +155,16 @@ export function ProfileScreen({
       {(posts ?? []).length === 0 ? (
         <EmptyState icon="post-outline" title="Ainda sem publicações" body="Quando este perfil publicar, as mensagens aparecem aqui." />
       ) : (
-        (posts ?? []).map((post) => <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />)
+        (posts ?? []).map((post) => (
+          <PostCard
+            key={post.id}
+            post={post}
+            onOpenAuthor={onOpenAuthor}
+            onOpenPost={onOpenPost}
+            onShare={onSharePost ? () => onSharePost(post) : undefined}
+            onDelete={onDeletePost && post.isOwn ? () => onDeletePost(post) : undefined}
+          />
+        ))
       )}
       {postsHasMore && onLoadMorePosts ? (
         <BrandButton variant="ghost" testID="load-more-posts" label={postsLoadingMore ? 'A carregar…' : 'Carregar mais'} disabled={postsLoadingMore} loading={postsLoadingMore} onPress={onLoadMorePosts} />
