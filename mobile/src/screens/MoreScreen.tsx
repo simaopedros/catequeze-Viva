@@ -50,6 +50,9 @@ export function MoreScreen({
   onOpenEditProfile,
   onLogout,
   version,
+  pendingInvitations,
+  onAcceptInvitation,
+  acceptingId,
 }: {
   name: string;
   email?: string | null;
@@ -63,6 +66,9 @@ export function MoreScreen({
   onOpenEditProfile?: () => void;
   onLogout: () => void;
   version?: string;
+  pendingInvitations?: { id: string; parishName?: string; role?: string }[];
+  onAcceptInvitation?: (membershipId: string) => void;
+  acceptingId?: string | null;
 }) {
   const current = workspaces.find((workspace) => workspace.id === workspaceId);
   return (
@@ -95,6 +101,28 @@ export function MoreScreen({
           ) : null}
         </Row>
       </Card>
+
+      {pendingInvitations && pendingInvitations.length > 0 && onAcceptInvitation ? (
+        <Card tone="gold">
+          <Row style={{ alignItems: 'flex-start' }}>
+            <Icon name="email-open-outline" color={colors.goldDark} />
+            <View style={{ flex: 1 }}>
+              <Text variant="titleSmall" style={{ color: colors.ink }}>
+                {pendingInvitations.length === 1 ? 'Tem um convite pendente' : `Tem ${pendingInvitations.length} convites pendentes`}
+              </Text>
+              {pendingInvitations.map((invitation) => (
+                <Row key={invitation.id} style={{ marginTop: spacing.xs, justifyContent: 'space-between' }}>
+                  <Text variant="bodySmall" style={{ color: colors.goldDark, flex: 1 }}>
+                    {invitation.parishName || 'Paróquia'}
+                    {invitation.role ? ` · ${roleLabel(invitation.role)}` : ''}
+                  </Text>
+                  <BrandButton variant="primary" label={acceptingId === invitation.id ? 'A aceitar…' : 'Aceitar'} disabled={Boolean(acceptingId)} onPress={() => onAcceptInvitation(invitation.id)} style={{ marginTop: 0 }} testID={`accept-${invitation.id}`} />
+                </Row>
+              ))}
+            </View>
+          </Row>
+        </Card>
+      ) : null}
 
       {workspaces.length > 0 ? (
         <>

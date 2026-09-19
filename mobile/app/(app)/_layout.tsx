@@ -71,6 +71,15 @@ export default function AppLayout() {
       <Stack.Screen name="content/[id]/edit" options={{ title: 'Editar conteúdo' }} />
       <Stack.Screen name="calendar/index" options={{ title: 'Calendário' }} />
       <Stack.Screen name="calendar/new" options={{ title: 'Novo evento' }} />
+      <Stack.Screen name="settings" options={{ title: 'Definições' }} />
+      <Stack.Screen name="team/index" options={{ title: 'Equipa' }} />
+      <Stack.Screen name="team/invite" options={{ title: 'Convidar' }} />
+      <Stack.Screen name="reports" options={{ title: 'Relatórios' }} />
+      <Stack.Screen name="sacraments/index" options={{ title: 'Sacramentos' }} />
+      <Stack.Screen name="sacraments/[id]" options={{ title: 'Percurso' }} />
+      <Stack.Screen name="formation" options={{ title: 'Formação' }} />
+      <Stack.Screen name="groups" options={{ title: 'Grupos pastorais' }} />
+      <Stack.Screen name="support" options={{ title: 'Suporte' }} />
       <Stack.Screen name="birthdays" options={{ title: 'Aniversários' }} />
     </Stack>
   );

@@ -1,14 +1,21 @@
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { displayName, listWorkspaces, useAuth } from '../../../src/auth/AuthContext';
+import { displayName, listWorkspaces, useAuth, usePermissions } from '../../../src/auth/AuthContext';
+import { useMutation } from '../../../src/hooks/useMutation';
 import { useAsync } from '../../../src/hooks/useAsync';
 import { MoreScreen, type MoreSection } from '../../../src/screens/MoreScreen';
 
 export default function MoreRoute() {
-  const { api, user, bootstrap, workspaceId, setWorkspaceId, logout } = useAuth();
+  const { api, user, bootstrap, workspaceId, setWorkspaceId, logout, refresh } = useAuth();
+  const permissions = usePermissions();
   const router = useRouter();
   const profile = useAsync(() => api.mySocialProfile(), []);
+  const pendingInvitations = ((bootstrap?.currentUserContext as any)?.pendingInvitations ?? []) as { id: string; parishName?: string; role?: string }[];
+  const accept = useMutation((membershipId: string) => api.acceptInvitation(membershipId), {
+    successMessage: 'Convite aceite. Bem-vindo(a)!',
+    onSuccess: () => refresh().catch(() => undefined),
+  });
 
   const sections: MoreSection[] = [
     {
@@ -34,11 +41,28 @@ export default function MoreRoute() {
         { id: 'community', label: 'Áreas da Comunidade', hint: 'Shorts, tópicos, membros', icon: 'account-group-outline', onPress: () => router.push('/(app)/(tabs)/community'), testID: 'open-community' },
       ],
     },
+    ...(permissions.canManageTeam || permissions.canOperate
+      ? [
+          {
+            title: 'Gestão',
+            icon: 'chart-box-outline' as const,
+            links: [
+              ...(permissions.canManageTeam ? [{ id: 'team', label: 'Equipa e convites', hint: 'Membros, papéis e convites', icon: 'account-group-outline' as const, onPress: () => router.push('/(app)/team') }] : []),
+              { id: 'reports', label: 'Relatórios', hint: 'Presença por turma e exportação', icon: 'chart-arc' as const, onPress: () => router.push('/(app)/reports') },
+              { id: 'sacraments', label: 'Percursos sacramentais', hint: 'Marcos por catequizando', icon: 'cross-outline' as const, onPress: () => router.push('/(app)/sacraments') },
+              { id: 'formation', label: 'Formação de catequistas', hint: 'Percursos formativos', icon: 'school-outline' as const, onPress: () => router.push('/(app)/formation') },
+            ],
+          },
+        ]
+      : []),
     {
       title: 'Conta',
       icon: 'account-cog-outline',
       links: [
+        { id: 'settings', label: 'Definições', hint: 'Perfil, palavra-passe e 2FA', icon: 'cog-outline', onPress: () => router.push('/(app)/settings'), testID: 'open-settings' },
         { id: 'notifications', label: 'Notificações', icon: 'bell-outline', onPress: () => router.push('/(app)/notifications') },
+        { id: 'groups', label: 'Grupos pastorais', icon: 'account-multiple-outline', onPress: () => router.push('/(app)/groups') },
+        { id: 'support', label: 'Suporte', hint: 'Os seus pedidos de ajuda', icon: 'lifebuoy', onPress: () => router.push('/(app)/support') },
       ],
     },
   ];
@@ -59,6 +83,9 @@ export default function MoreRoute() {
         if (profile.data?.handle) router.push(`/(app)/community/${profile.data.handle}`);
       }}
       onLogout={() => logout()}
+      pendingInvitations={pendingInvitations}
+      onAcceptInvitation={(id) => void accept.run(id)}
+      acceptingId={accept.busy ? pendingInvitations[0]?.id ?? null : null}
     />
   );
 }

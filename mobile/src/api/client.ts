@@ -485,6 +485,82 @@ export function createMobileClient(options: MobileClientOptions) {
     publishAnnouncement(id: string) {
       return request<any>(MOBILE_PATHS.announcementPublish(id), { method: 'POST' });
     },
+    // ── Fase E: gestão e conta ──
+    team(workspaceId: string, communityId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.team, { workspaceId, communityId }));
+    },
+    inviteMember(body: { email: string; role: string; workspaceId: string; communityId?: string; classId?: string; classAssignmentRole?: 'LEAD' | 'ASSISTANT'; householdId?: string }) {
+      return request<any>(MOBILE_PATHS.teamInvite, { method: 'POST', body: JSON.stringify(body) });
+    },
+    resendInvite(body: { pendingInvitationId?: string; membershipId?: string }) {
+      return request<any>(MOBILE_PATHS.teamInviteResend, { method: 'POST', body: JSON.stringify(body) });
+    },
+    cancelInvite(body: { pendingInvitationId?: string; membershipId?: string }) {
+      return request<any>(MOBILE_PATHS.teamInviteCancel, { method: 'POST', body: JSON.stringify(body) });
+    },
+    removeMember(membershipId: string) {
+      return request<any>(MOBILE_PATHS.teamMember(membershipId), { method: 'DELETE' });
+    },
+    updateMemberRole(membershipId: string, role: string, communityId?: string | null) {
+      return request<any>(MOBILE_PATHS.teamMemberRole(membershipId), { method: 'PUT', body: JSON.stringify({ role, communityId }) });
+    },
+    setCoordinatorClasses(membershipId: string, classIds: string[]) {
+      return request<any>(MOBILE_PATHS.teamMemberClasses(membershipId), { method: 'PUT', body: JSON.stringify({ classIds }) });
+    },
+    familyInvites(workspaceId: string) {
+      return request<any>(withQuery(MOBILE_PATHS.familyInvites, { workspaceId }));
+    },
+    acceptInvitation(membershipId: string) {
+      return request<any>(MOBILE_PATHS.invitationAccept, { method: 'POST', body: JSON.stringify({ membershipId }) });
+    },
+    reportsOverview(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.reportsOverview, { workspaceId }));
+    },
+    classReport(classId: string) {
+      return request<any>(MOBILE_PATHS.classReport(classId));
+    },
+    updateProfile(body: { firstName?: string; lastName?: string; phone?: string }) {
+      return request<any>(MOBILE_PATHS.profile, { method: 'PUT', body: JSON.stringify(body) });
+    },
+    changePassword(currentPassword: string, newPassword: string) {
+      return request<any>(MOBILE_PATHS.profilePassword, { method: 'POST', body: JSON.stringify({ currentPassword, newPassword }) });
+    },
+    emailPreferences() {
+      return request<any>(MOBILE_PATHS.emailPreferences);
+    },
+    updateEmailPreference(topic: string, optedIn: boolean) {
+      return request<any>(MOBILE_PATHS.emailPreferences, { method: 'POST', body: JSON.stringify({ topic, optedIn }) });
+    },
+    requestDataExport() {
+      return request<any>(MOBILE_PATHS.dataExport, { method: 'POST' });
+    },
+    twoFactorDetails() {
+      return request<any>(MOBILE_PATHS.twoFactor);
+    },
+    twoFactorStart() {
+      return request<{ secret?: string; otpauthUrl?: string; qrCodeDataUrl?: string; [key: string]: unknown }>(MOBILE_PATHS.twoFactorStart, { method: 'POST' });
+    },
+    twoFactorVerifySetup(token: string) {
+      return request<any>(MOBILE_PATHS.twoFactorVerifySetup, { method: 'POST', body: JSON.stringify({ token }) });
+    },
+    twoFactorDisable(token: string) {
+      return request<any>(MOBILE_PATHS.twoFactorDisable, { method: 'POST', body: JSON.stringify({ token }) });
+    },
+    pastoralGroups(query?: { kind?: string; q?: string; city?: string; mine?: boolean }) {
+      return request<any>(withQuery(MOBILE_PATHS.groups, query));
+    },
+    formationTracks(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.formation, { workspaceId }));
+    },
+    sacramentalJourneys(query?: { workspaceId?: string; search?: string; take?: number }) {
+      return request<any>(withQuery(MOBILE_PATHS.sacraments, query));
+    },
+    sacramentalJourney(id: string) {
+      return request<any>(MOBILE_PATHS.sacrament(id));
+    },
+    supportMessages() {
+      return request<any>(MOBILE_PATHS.support);
+    },
     conversations(workspaceId?: string) {
       return request<any>(withQuery(MOBILE_PATHS.messages, { workspaceId }));
     },

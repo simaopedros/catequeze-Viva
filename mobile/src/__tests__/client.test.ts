@@ -394,6 +394,72 @@ describe('mobile HTTP client', () => {
     expect(find('POST', MOBILE_PATHS.announcementPublish('an1'))).toBeTruthy();
   });
 
+  it('covers the management endpoints (Fase E)', async () => {
+    const calls: { url: string; method: string; body: any }[] = [];
+    const client = createMobileClient({
+      getBaseUrl: () => 'http://localhost:3001',
+      getToken: () => 'tok',
+      fetchImpl: async (url, init) => {
+        calls.push({ url: String(url), method: init?.method || 'GET', body: init?.body ? JSON.parse(String(init.body)) : null });
+        return jsonResponse({ success: true });
+      },
+    });
+
+    await client.team('ws-1');
+    await client.inviteMember({ email: 'a@b.pt', role: 'LEAD_CATECHIST', workspaceId: 'ws-1', classId: 'c1', classAssignmentRole: 'ASSISTANT' });
+    await client.resendInvite({ pendingInvitationId: 'inv1' });
+    await client.cancelInvite({ membershipId: 'm1' });
+    await client.removeMember('m1');
+    await client.updateMemberRole('m1', 'ASSISTANT_CATECHIST');
+    await client.setCoordinatorClasses('m1', ['c1', 'c2']);
+    await client.familyInvites('ws-1');
+    await client.acceptInvitation('m9');
+    await client.reportsOverview('ws-1');
+    await client.classReport('c1');
+    await client.updateProfile({ firstName: 'Ana', lastName: 'Silva' });
+    await client.changePassword('old-pass', 'new-pass-123');
+    await client.emailPreferences();
+    await client.updateEmailPreference('LIFECYCLE', false);
+    await client.requestDataExport();
+    await client.twoFactorDetails();
+    await client.twoFactorStart();
+    await client.twoFactorVerifySetup('123456');
+    await client.twoFactorDisable('654321');
+    await client.pastoralGroups({ mine: true });
+    await client.formationTracks('ws-1');
+    await client.sacramentalJourneys({ workspaceId: 'ws-1' });
+    await client.sacramentalJourney('j1');
+    await client.supportMessages();
+
+    const base = 'http://localhost:3001';
+    const find = (method: string, path: string) => calls.find((call) => call.method === method && call.url === base + path);
+    expect(find('GET', MOBILE_PATHS.team + '?workspaceId=ws-1')).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.teamInvite)?.body).toMatchObject({ email: 'a@b.pt', role: 'LEAD_CATECHIST', classAssignmentRole: 'ASSISTANT' });
+    expect(find('POST', MOBILE_PATHS.teamInviteResend)?.body).toEqual({ pendingInvitationId: 'inv1' });
+    expect(find('POST', MOBILE_PATHS.teamInviteCancel)?.body).toEqual({ membershipId: 'm1' });
+    expect(find('DELETE', MOBILE_PATHS.teamMember('m1'))).toBeTruthy();
+    expect(find('PUT', MOBILE_PATHS.teamMemberRole('m1'))?.body).toMatchObject({ role: 'ASSISTANT_CATECHIST' });
+    expect(find('PUT', MOBILE_PATHS.teamMemberClasses('m1'))?.body).toEqual({ classIds: ['c1', 'c2'] });
+    expect(find('GET', MOBILE_PATHS.familyInvites + '?workspaceId=ws-1')).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.invitationAccept)?.body).toEqual({ membershipId: 'm9' });
+    expect(find('GET', MOBILE_PATHS.reportsOverview + '?workspaceId=ws-1')).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.classReport('c1'))).toBeTruthy();
+    expect(find('PUT', MOBILE_PATHS.profile)?.body).toEqual({ firstName: 'Ana', lastName: 'Silva' });
+    expect(find('POST', MOBILE_PATHS.profilePassword)?.body).toEqual({ currentPassword: 'old-pass', newPassword: 'new-pass-123' });
+    expect(find('GET', MOBILE_PATHS.emailPreferences)).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.emailPreferences)?.body).toEqual({ topic: 'LIFECYCLE', optedIn: false });
+    expect(find('POST', MOBILE_PATHS.dataExport)).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.twoFactor)).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.twoFactorStart)).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.twoFactorVerifySetup)?.body).toEqual({ token: '123456' });
+    expect(find('POST', MOBILE_PATHS.twoFactorDisable)?.body).toEqual({ token: '654321' });
+    expect(find('GET', MOBILE_PATHS.groups + '?mine=true')).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.formation + '?workspaceId=ws-1')).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.sacraments + '?workspaceId=ws-1')).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.sacrament('j1'))).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.support)).toBeTruthy();
+  });
+
   it('paginates feed and comments with cursors', async () => {
     const urls: string[] = [];
     const client = createMobileClient({

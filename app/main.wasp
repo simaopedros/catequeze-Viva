@@ -2560,6 +2560,182 @@ api mobileAnnouncementPublish {
   entities: [PastoralAnnouncement, Membership, Notification, User]
 }
 
+// ── Mobile: gestão e conta (Fase E) ──
+api mobileTeam {
+  fn: import { mobileTeam } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (GET, "/mobile/team"),
+  entities: [Membership, PendingInvitation, Parish, Community, CatechesisClass, ClassCatechist, Household, GuardianProfile, Notification, User]
+}
+
+api mobileTeamInvite {
+  fn: import { mobileTeamInvite } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (POST, "/mobile/team/invite"),
+  entities: [Membership, PendingInvitation, Parish, Community, CatechesisClass, ClassCatechist, Household, GuardianProfile, Notification, User]
+}
+
+api mobileTeamResendInvite {
+  fn: import { mobileTeamResendInvite } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (POST, "/mobile/team/invite/resend"),
+  entities: [Membership, PendingInvitation, Parish, Community, CatechesisClass, ClassCatechist, Household, GuardianProfile, Notification, User]
+}
+
+api mobileTeamCancelInvite {
+  fn: import { mobileTeamCancelInvite } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (POST, "/mobile/team/invite/cancel"),
+  entities: [Membership, PendingInvitation, Parish, Community, CatechesisClass, ClassCatechist, Household, GuardianProfile, Notification, User]
+}
+
+api mobileTeamRemoveMember {
+  fn: import { mobileTeamRemoveMember } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (DELETE, "/mobile/team/members/:membershipId"),
+  entities: [Membership, PendingInvitation, Parish, Community, CatechesisClass, ClassCatechist, Household, GuardianProfile, Notification, User]
+}
+
+api mobileTeamUpdateRole {
+  fn: import { mobileTeamUpdateRole } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (PUT, "/mobile/team/members/:membershipId/role"),
+  entities: [Membership, PendingInvitation, Parish, Community, CatechesisClass, ClassCatechist, Household, GuardianProfile, Notification, User]
+}
+
+api mobileTeamSetCoordinatorClasses {
+  fn: import { mobileTeamSetCoordinatorClasses } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (PUT, "/mobile/team/members/:membershipId/classes"),
+  entities: [Membership, PendingInvitation, Parish, Community, CatechesisClass, ClassCatechist, Household, GuardianProfile, Notification, User]
+}
+
+api mobileFamilyInvites {
+  fn: import { mobileFamilyInvites } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (GET, "/mobile/team/family-invites"),
+  entities: [Membership, PendingInvitation, Parish, Community, CatechesisClass, ClassCatechist, Household, GuardianProfile, Notification, User]
+}
+
+api mobileAcceptInvitation {
+  fn: import { mobileAcceptInvitation } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (POST, "/mobile/invitations/accept"),
+  entities: [Membership, PendingInvitation, Parish, Notification, User]
+}
+
+api mobileReportsOverview {
+  fn: import { mobileReportsOverview } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (GET, "/mobile/reports/overview"),
+  entities: [AttendanceRecord, CatechesisClass, CatechumenProfile, ClassCatechist, ClassEnrollment, Community, Meeting, Membership, Parish, ResourceAdoption, OfficialResource, OfficialResourceAdoption, User]
+}
+
+api mobileClassReport {
+  fn: import { mobileClassReport } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (GET, "/mobile/reports/classes/:id"),
+  entities: [AttendanceRecord, CatechesisClass, CatechumenProfile, ClassCatechist, ClassEnrollment, Meeting, Membership, User]
+}
+
+api mobileUpdateProfile {
+  fn: import { mobileUpdateProfile } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (PUT, "/mobile/profile"),
+  entities: [User]
+}
+
+api mobileChangePassword {
+  fn: import { mobileChangePassword } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (POST, "/mobile/profile/password"),
+  entities: [User]
+}
+
+api mobileEmailPreferences {
+  fn: import { mobileEmailPreferences } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (GET, "/mobile/profile/email-preferences"),
+  entities: [User]
+}
+
+api mobileUpdateEmailPreference {
+  fn: import { mobileUpdateEmailPreference } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (POST, "/mobile/profile/email-preferences"),
+  entities: [User]
+}
+
+api mobileRequestDataExport {
+  fn: import { mobileRequestDataExport } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (POST, "/mobile/profile/data-export"),
+  entities: [User, Membership, CatechumenProfile, GuardianProfile]
+}
+
+api mobileTwoFactorStatusDetails {
+  fn: import { mobileTwoFactorStatusDetails } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (GET, "/mobile/profile/two-factor"),
+  entities: [UserTwoFactor, User]
+}
+
+api mobileTwoFactorStart {
+  fn: import { mobileTwoFactorStart } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (POST, "/mobile/profile/two-factor/start"),
+  entities: [UserTwoFactor, User]
+}
+
+api mobileTwoFactorVerifySetup {
+  fn: import { mobileTwoFactorVerifySetup } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (POST, "/mobile/profile/two-factor/verify"),
+  entities: [UserTwoFactor, User]
+}
+
+api mobileTwoFactorDisable {
+  fn: import { mobileTwoFactorDisable } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (POST, "/mobile/profile/two-factor/disable"),
+  entities: [UserTwoFactor, User]
+}
+
+api mobilePastoralGroups {
+  fn: import { mobilePastoralGroups } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (GET, "/mobile/groups"),
+  entities: [PastoralGroup, GroupMembership, PastoralGroupNotice, Membership, User]
+}
+
+api mobileFormationTracks {
+  fn: import { mobileFormationTracks } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (GET, "/mobile/formation"),
+  entities: [FormationTrack, FormationModule, FormationLesson, FormationSession, FormationEnrollment, Membership, Parish, User]
+}
+
+api mobileSacramentalJourneys {
+  fn: import { mobileSacramentalJourneys } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (GET, "/mobile/sacraments"),
+  entities: [SacramentalJourney, SacramentalJourneyTemplate, SacramentalMilestone, SacramentalMilestoneTemplate, CatechumenProfile, CatechesisClass, ClassCatechist, ClassEnrollment, Membership, Parish, User]
+}
+
+api mobileSacramentalJourney {
+  fn: import { mobileSacramentalJourney } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (GET, "/mobile/sacraments/:id"),
+  entities: [SacramentalJourney, SacramentalJourneyTemplate, SacramentalMilestone, SacramentalMilestoneTemplate, CatechumenProfile, GuardianProfile, Membership, User]
+}
+
+api mobileSupportMessages {
+  fn: import { mobileSupportMessages } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (GET, "/mobile/support"),
+  entities: [ContactFormMessage, User]
+}
+
 api mobileSocialFeed {
   fn: import { mobileSocialFeed } from "@src/server/api/mobileSocial",
   auth: true,
