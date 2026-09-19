@@ -32,6 +32,7 @@ describe('PostCard', () => {
     expect(view.getByText('@ana')).toBeTruthy();
     expect(view.getByText('João 3,16')).toBeTruthy();
     expect(view.getByText('Ver mais')).toBeTruthy();
+    expect(view.queryByText('Abrir publicação')).toBeNull();
 
     fireEvent.press(view.getByTestId('post-expand-p1'));
     expect(view.getByText('Ver menos')).toBeTruthy();

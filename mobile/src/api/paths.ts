@@ -135,8 +135,8 @@ export const MOBILE_PATHS = {
 
 export const APP_TABS = [
   { name: 'index', href: '/(app)/(tabs)', label: 'Início', icon: 'home-outline' },
-  { name: 'community', href: '/(app)/(tabs)/community', label: 'Comunidade', icon: 'people-outline' },
+  { name: 'community', href: '/(app)/(tabs)/community', label: 'Comunidade', shortLabel: 'Rede', icon: 'people-outline' },
   { name: 'classes', href: '/(app)/(tabs)/classes', label: 'Turmas', icon: 'school-outline' },
-  { name: 'messages', href: '/(app)/(tabs)/messages', label: 'Mensagens', icon: 'chatbubble-outline' },
+  { name: 'messages', href: '/(app)/(tabs)/messages', label: 'Mensagens', shortLabel: 'Chat', icon: 'chatbubble-outline' },
   { name: 'more', href: '/(app)/(tabs)/more', label: 'Mais', icon: 'ellipsis-horizontal' },
 ] as const;

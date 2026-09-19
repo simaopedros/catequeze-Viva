@@ -9,6 +9,13 @@ describe('mobile path contract', () => {
       'Mensagens',
       'Mais',
     ]);
+    expect(APP_TABS.map((tab) => ('shortLabel' in tab ? tab.shortLabel : tab.label))).toEqual([
+      'Início',
+      'Rede',
+      'Turmas',
+      'Chat',
+      'Mais',
+    ]);
   });
 
   it('matches the Wasp /mobile social and bible routes', () => {

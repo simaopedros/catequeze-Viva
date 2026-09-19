@@ -58,7 +58,7 @@ export function PostCard({
   const hasMenu = Boolean(onShare || onDelete || onReport);
 
   return (
-    <Card>
+    <Card onPress={onOpenPost && post.slug ? () => onOpenPost(post.slug) : undefined}>
       <View style={styles.headerRow}>
         <Pressable
           accessibilityRole="button"
@@ -113,7 +113,14 @@ export function PostCard({
           ))}
         </View>
       ) : null}
-      <Pressable accessibilityRole="button" testID={`open-post-${post.id}`} onPress={() => post.slug && onOpenPost?.(post.slug)} disabled={!onOpenPost} style={styles.footer}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Abrir publicação"
+        testID={`open-post-${post.id}`}
+        onPress={() => post.slug && onOpenPost?.(post.slug)}
+        disabled={!onOpenPost}
+        style={styles.footer}
+      >
         <View style={styles.metaItem}>
           <Icon name="hands-pray" size={16} color={colors.muted} />
           <Text style={styles.meta}>{post.reactionCount ?? 0} reações</Text>
@@ -124,7 +131,6 @@ export function PostCard({
         </View>
         {onOpenPost ? (
           <View style={[styles.metaItem, { marginLeft: 'auto' }]}>
-            <Text style={styles.open}>Abrir publicação</Text>
             <Icon name="chevron-right" size={16} color={colors.goldDark} />
           </View>
         ) : null}
@@ -145,7 +151,6 @@ const styles = StyleSheet.create({
   footer: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.sm, paddingTop: spacing.sm, borderTopWidth: 1, borderTopColor: colors.line },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   meta: { color: colors.muted, fontSize: 13 },
-  open: { color: colors.goldDark, fontWeight: '700', fontSize: 13 },
   share: {
     flexDirection: 'row',
     marginTop: spacing.sm,

@@ -49,7 +49,7 @@ export function MessagesScreen({
       fabInset={Boolean(onNewConversation)}
       refreshing={refreshing}
       onRefresh={onRefresh}
-      fab={onNewConversation ? <PrimaryFab icon="message-plus-outline" label="Nova" onPress={onNewConversation} testID="new-conversation" /> : undefined}
+      fab={onNewConversation ? <PrimaryFab icon="message-plus-outline" label="Nova conversa" onPress={onNewConversation} testID="new-conversation" /> : undefined}
     >
       <ScreenTitle title="Mensagens" subtitle="Conversas da paróquia e das turmas." />
       {loading && items.length === 0 ? <SkeletonList rows={4} /> : null}

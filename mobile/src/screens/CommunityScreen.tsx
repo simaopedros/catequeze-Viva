@@ -11,7 +11,7 @@ import { COMMUNITY_AREAS, type CommunityAreaId } from './communityAreas';
 const SORTS = [
   { id: 'recent', label: 'Recentes', icon: 'clock-outline' },
   { id: 'trending', label: 'Em alta', icon: 'fire' },
-  { id: 'foryou', label: 'Para si', icon: 'star-outline' },
+  { id: 'foryou', label: 'Para você', icon: 'star-outline' },
 ] as const;
 
 const AREA_ICONS: Record<CommunityAreaId, IconName> = {
@@ -35,7 +35,8 @@ function AreaTile({ id, label, hint, onPress }: { id: CommunityAreaId; label: st
       accessibilityRole="button"
       onPress={onPress}
       style={({ pressed }) => ({
-        width: 104,
+        width: 132,
+        flexGrow: 0,
         padding: spacing.sm,
         borderRadius: radius.lg,
         backgroundColor: pressed ? colors.paper : colors.surface,
@@ -47,7 +48,7 @@ function AreaTile({ id, label, hint, onPress }: { id: CommunityAreaId; label: st
       <View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: '#F8E7BF', alignItems: 'center', justifyContent: 'center' }}>
         <Icon name={AREA_ICONS[id]} size={18} color={colors.goldDark} />
       </View>
-      <Text variant="labelLarge" style={{ color: colors.ink }} numberOfLines={1}>
+      <Text variant="labelLarge" style={{ color: colors.ink }} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
         {label}
       </Text>
       <Text variant="bodySmall" style={{ color: colors.muted }} numberOfLines={2}>
@@ -139,7 +140,7 @@ export function CommunityScreen({
 
       {showHub && onOpenArea ? (
         <View testID="community-hub" style={{ marginHorizontal: -spacing.md, marginBottom: spacing.sm }}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.md, gap: spacing.sm, paddingBottom: spacing.sm }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.md, paddingRight: spacing.xl, gap: spacing.sm, paddingBottom: spacing.sm }}>
             {COMMUNITY_AREAS.filter((area) => area.id !== 'feed').map((area) => (
               <AreaTile key={area.id} id={area.id} label={area.label} hint={area.hint} onPress={() => onOpenArea(area.id)} />
             ))}
@@ -194,7 +195,7 @@ export function CommunityScreen({
       </View>
 
       {topics.length > 0 ? (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 14, paddingBottom: spacing.sm, alignItems: 'center' }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 14, paddingBottom: spacing.sm, paddingRight: spacing.lg, alignItems: 'center' }}>
           <Pressable onPress={() => onChangeTopic(null)}>
             <Text variant="labelLarge" style={{ color: !topicSlug ? colors.goldDark : colors.muted }}>
               Todos

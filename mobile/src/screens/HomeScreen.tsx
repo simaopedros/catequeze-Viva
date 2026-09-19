@@ -35,6 +35,19 @@ function greeting(): string {
   return 'Boa noite';
 }
 
+export function focusMeetingStatusLabel(
+  meeting: { status?: string | null; date?: string | null },
+  now: Date = new Date(),
+): string {
+  const status = meeting.status ?? '';
+  if (status === 'IN_PROGRESS') return 'A decorrer';
+  if (status === 'COMPLETED') return 'Concluído';
+  const date = meeting.date ? new Date(meeting.date) : null;
+  const isPast = Boolean(date && !Number.isNaN(date.getTime()) && date.getTime() < now.getTime());
+  if (isPast) return 'Por concluir';
+  return 'Agendado';
+}
+
 export type HomeFocus = {
   meeting?: {
     id: string;
@@ -152,7 +165,7 @@ export function HomeScreen({
       {onSearch ? (
         <Pressable onPress={onSearch} testID="home-search" accessibilityLabel="Pesquisar">
           <View pointerEvents="none">
-            <SearchBar value="" onChangeText={() => undefined} placeholder="Pesquisar catequizandos, turmas, Bíblia…" />
+            <SearchBar value="" onChangeText={() => undefined} placeholder="Pesquisar turmas e pessoas" />
           </View>
         </Pressable>
       ) : null}
@@ -167,7 +180,7 @@ export function HomeScreen({
                 <Text variant="labelMedium" style={{ color: colors.goldLight, letterSpacing: 1 }}>
                   {focus.focusKind === 'in_progress' ? 'A DECORRER' : focus.focusKind === 'today' ? 'HOJE' : focus.focusKind === 'recent' ? 'ÚLTIMO ENCONTRO' : 'PRÓXIMO ENCONTRO'}
                 </Text>
-                {focus.meeting.status ? <Tag label={focus.meeting.status === 'IN_PROGRESS' ? 'A decorrer' : focus.meeting.status === 'COMPLETED' ? 'Concluído' : 'Agendado'} tone="gold" /> : null}
+                <Tag label={focusMeetingStatusLabel(focus.meeting)} tone="gold" />
               </Row>
               <Text variant="titleLarge" style={{ color: colors.white }}>
                 {focus.meeting.title || focus.meeting.theme || 'Encontro'}
@@ -206,20 +219,38 @@ export function HomeScreen({
                       {pendingAnnouncements[0].body}
                     </Text>
                   ) : null}
-                  <Row style={{ marginTop: spacing.xs }}>
+                  <View style={{ marginTop: spacing.xs, gap: spacing.xs }}>
                     {onAcknowledgeAnnouncement ? (
-                      <BrandButton variant="primary" label="Li e compreendi" onPress={() => onAcknowledgeAnnouncement(pendingAnnouncements[0].id)} style={{ marginTop: 0 }} testID="ack-announcement" />
+                      <BrandButton
+                        compact
+                        variant="primary"
+                        label="Entendi"
+                        onPress={() => onAcknowledgeAnnouncement(pendingAnnouncements[0].id)}
+                        style={{ marginTop: 0 }}
+                        testID="ack-announcement"
+                      />
                     ) : null}
                     {onOpenAnnouncements ? (
-                      <BrandButton variant="text" label={pendingAnnouncements.length > 1 ? `+${pendingAnnouncements.length - 1} avisos` : 'Todos os avisos'} onPress={onOpenAnnouncements} style={{ marginTop: 0 }} />
+                      <BrandButton
+                        compact
+                        variant="text"
+                        label={
+                          pendingAnnouncements.length > 1
+                            ? `+${pendingAnnouncements.length - 1} ${pendingAnnouncements.length - 1 === 1 ? 'aviso' : 'avisos'}`
+                            : 'Ver avisos'
+                        }
+                        onPress={onOpenAnnouncements}
+                        style={{ marginTop: 0 }}
+                        testID="open-announcements"
+                      />
                     ) : null}
-                  </Row>
+                  </View>
                 </View>
               </Row>
             </Card>
           ) : null}
 
-          <Row style={{ alignItems: 'stretch' }}>
+          <Row style={{ alignItems: 'flex-start' }}>
             <StatCard label="Turmas" value={stats?.activeClasses ?? '—'} icon="school-outline" onPress={onOpenClasses} testID="stat-classes" />
             <StatCard
               label="Catequizandos"

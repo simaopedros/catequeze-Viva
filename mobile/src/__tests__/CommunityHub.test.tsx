@@ -26,6 +26,9 @@ describe('Community hub', () => {
     expect(view.getByTestId('community-hub')).toBeTruthy();
     expect(view.getByTestId('feed-heading')).toBeTruthy();
     expect(view.getByText('Publicações')).toBeTruthy();
+    expect(view.getByText('Pesquisar')).toBeTruthy();
+    expect(view.getByText('Para você')).toBeTruthy();
+    expect(view.queryByText('Para si')).toBeNull();
     for (const area of COMMUNITY_AREAS.filter((item) => item.id !== 'feed')) {
       expect(view.getByTestId(`area-${area.id}`)).toBeTruthy();
       expect(view.getByText(area.label)).toBeTruthy();

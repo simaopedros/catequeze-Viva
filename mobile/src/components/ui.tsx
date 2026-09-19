@@ -190,15 +190,28 @@ export function Card({
       {children}
     </Surface>
   );
+  const flattened = StyleSheet.flatten(style);
+  const layoutStyle =
+    flattened && typeof flattened === 'object'
+      ? {
+          ...(flattened.flex != null ? { flex: flattened.flex } : null),
+          ...(flattened.minWidth != null ? { minWidth: flattened.minWidth } : null),
+          ...(flattened.alignSelf != null ? { alignSelf: flattened.alignSelf } : null),
+        }
+      : undefined;
   if (!onPress) {
-    return <View testID={testID}>{content}</View>;
+    return (
+      <View testID={testID} style={layoutStyle}>
+        {content}
+      </View>
+    );
   }
   // Sem role "button": o cartão pode conter botões próprios (evita <button> aninhado na web).
   return (
     <Pressable
       testID={testID}
       onPress={onPress}
-      style={({ pressed }) => [pressed && { opacity: 0.85, transform: [{ scale: 0.995 }] }]}
+      style={({ pressed }) => [layoutStyle, pressed && { opacity: 0.85, transform: [{ scale: 0.995 }] }]}
     >
       {content}
     </Pressable>
@@ -222,24 +235,24 @@ export function StatCard({
 }) {
   return (
     <Card style={styles.statCard} onPress={onPress} testID={testID}>
-      <View style={styles.statHeader}>
+      <View style={styles.statInner}>
         {icon ? (
           <View style={styles.statIcon}>
             <Icon name={icon} size={18} color={colors.goldDark} />
           </View>
         ) : null}
-        <Text variant="labelMedium" style={styles.statLabel}>
+        <Text variant="headlineMedium" style={styles.statValue}>
+          {value}
+        </Text>
+        <Text variant="labelMedium" style={styles.statLabel} numberOfLines={1}>
           {label}
         </Text>
+        {hint ? (
+          <Text variant="bodySmall" style={styles.subtitle} numberOfLines={1}>
+            {hint}
+          </Text>
+        ) : null}
       </View>
-      <Text variant="headlineMedium" style={styles.statValue}>
-        {value}
-      </Text>
-      {hint ? (
-        <Text variant="bodySmall" style={styles.subtitle}>
-          {hint}
-        </Text>
-      ) : null}
     </Card>
   );
 }
@@ -281,7 +294,7 @@ export function ListRow({
           {title}
         </Text>
         {subtitle ? (
-          <Text variant="bodySmall" style={styles.rowSubtitle} numberOfLines={3}>
+          <Text variant="bodySmall" style={styles.rowSubtitle} numberOfLines={2}>
             {subtitle}
           </Text>
         ) : null}
@@ -408,6 +421,7 @@ export function BrandButton({
   icon,
   loading,
   style,
+  compact,
 }: {
   label: string;
   onPress: () => void;
@@ -417,6 +431,7 @@ export function BrandButton({
   icon?: IconName;
   loading?: boolean;
   style?: StyleProp<ViewStyle>;
+  compact?: boolean;
 }) {
   const mode =
     variant === 'ghost' ? 'outlined' : variant === 'text' ? 'text' : variant === 'tonal' ? 'contained-tonal' : 'contained';
@@ -438,6 +453,7 @@ export function BrandButton({
       disabled={disabled}
       loading={loading}
       icon={icon}
+      compact={compact}
       buttonColor={buttonColor}
       textColor={textColor}
       style={[styles.button, variant === 'ghost' && { borderColor: colors.line }, style]}
@@ -741,10 +757,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   cardTitle: { color: colors.ink, marginBottom: 4 },
-  statCard: { flex: 1, minWidth: 0 },
-  statHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginBottom: spacing.xs },
+  statCard: { flex: 1, minWidth: 0, alignSelf: 'flex-start' },
+  statInner: { gap: 4 },
   statIcon: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#F8E7BF', alignItems: 'center', justifyContent: 'center' },
-  statLabel: { color: colors.muted, flex: 1 },
+  statLabel: { color: colors.muted },
   statValue: { color: colors.ink },
   row: {
     flexDirection: 'row',
