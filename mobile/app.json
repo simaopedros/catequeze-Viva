@@ -15,21 +15,55 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.catechis.mobile"
+      "bundleIdentifier": "app.catechis.mobile",
+      "associatedDomains": ["applinks:catechis.app"],
+      "infoPlist": {
+        "NSCameraUsageDescription": "A câmara é usada para fotografar e partilhar imagens com a Comunidade.",
+        "NSPhotoLibraryUsageDescription": "A biblioteca de fotos é usada para escolher imagens e vídeos para partilhar com a Comunidade e como foto de perfil."
+      },
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+          }
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#071d36"
       },
-      "package": "app.catechis.mobile"
+      "package": "app.catechis.mobile",
+      "permissions": ["POST_NOTIFICATIONS"],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [{ "scheme": "catequis" }],
+          "category": ["BROWSABLE", "DEFAULT"]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [{ "scheme": "https", "host": "catechis.app", "pathPrefix": "/c" }],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "plugins": [
       "expo-router",
       "expo-secure-store",
       "expo-asset",
       "expo-font",
-      "expo-video"
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "A biblioteca de fotos é usada para escolher imagens e vídeos para partilhar com a Comunidade e como foto de perfil."
+        }
+      ],
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": false

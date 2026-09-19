@@ -9,6 +9,7 @@ import { registerLandingHtmlMeta } from './middleware/landingHtmlMeta';
 import { registerBlogCrawlerHtml } from './middleware/blogCrawlerHtml';
 import { portalRequestContextMiddleware } from './requestPortalContext';
 import { applyLocalMobileCors, prependMiddleware } from './mobileLocalCors';
+import { registerWellKnown } from './wellKnown';
 
 const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
 const TOKEN_QUERY_RE = /([?&](token|key|code|session|access_token)=)[^&#\s]+/gi;
@@ -91,6 +92,9 @@ export const serverSetup: ServerSetupFn = async ({ app, server }) => {
   // Crawler-facing meta for /, /ia, /presenca, /sistema (when SPA index is on this server)
   registerLandingHtmlMeta(app);
   registerBlogCrawlerHtml(app);
+
+  // iOS/Android app-links association files (404 até as env vars estarem definidas)
+  registerWellKnown(app);
 
   // ── Sentry (optional) ───────────────────────────────────────────────
   const sentryDsn = process.env.SENTRY_DSN;

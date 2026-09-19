@@ -192,3 +192,6 @@ jobs:
 
       - name: Unit + UI tests
         run: npm test
+
+      - name: Web export (bundler sanity check)
+        run: npx expo export --platform web --output-dir dist

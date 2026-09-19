@@ -1880,153 +1880,179 @@ action setSocialAuthorBan {
 //#region Catequese Viva - Mobile API
 api mobileAuthLogin {
   fn: import { mobileAuthLogin } from "@src/server/api/mobile",
-  httpRoute: (POST, "/mobile/auth/login")
+  httpRoute: (POST, "/mobile/auth/login"),
+  entities: [User, UserTwoFactor]
 }
 
 api mobileAuthSession {
   fn: import { mobileAuthSession } from "@src/server/api/mobile",
-  httpRoute: (GET, "/mobile/auth/session")
+  httpRoute: (GET, "/mobile/auth/session"),
+  entities: [User, UserTwoFactor]
 }
 
 api mobileAuthLogout {
   fn: import { mobileAuthLogout } from "@src/server/api/mobile",
-  httpRoute: (POST, "/mobile/auth/logout")
+  httpRoute: (POST, "/mobile/auth/logout"),
+  entities: [User]
 }
 
 api mobileAuthTwoFactorStatus {
   fn: import { mobileAuthTwoFactorStatus } from "@src/server/api/mobile",
-  httpRoute: (GET, "/mobile/auth/two-factor/status")
+  httpRoute: (GET, "/mobile/auth/two-factor/status"),
+  entities: [User, UserTwoFactor]
 }
 
 api mobileAuthTwoFactorVerify {
   fn: import { mobileAuthTwoFactorVerify } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (POST, "/mobile/auth/two-factor/verify")
+  httpRoute: (POST, "/mobile/auth/two-factor/verify"),
+  entities: [User, UserTwoFactor]
 }
 
 api mobileAuthPasswordResetRequest {
   fn: import { mobileAuthPasswordResetRequest } from "@src/server/api/mobile",
-  httpRoute: (POST, "/mobile/auth/password-reset/request")
+  httpRoute: (POST, "/mobile/auth/password-reset/request"),
+  entities: [User]
 }
 
 api mobileBootstrap {
   fn: import { mobileBootstrap } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (GET, "/mobile/bootstrap")
+  httpRoute: (GET, "/mobile/bootstrap"),
+  entities: [User, UserTwoFactor, Membership, Parish, PendingInvitation, Notification, CatechesisClass, CatechumenProfile, ClassCatechist, ClassEnrollment, Diocese, TenantBilling]
 }
 
 api mobileDashboard {
   fn: import { mobileDashboard } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (GET, "/mobile/dashboard")
+  httpRoute: (GET, "/mobile/dashboard"),
+  entities: [AttendanceRecord, CatechesisClass, CatechumenProfile, ClassCatechist, ClassEnrollment, ContentItem, GuardianProfile, Meeting, Membership, Parish, SacramentalMilestone, User]
 }
 
 api mobileClasses {
   fn: import { mobileClasses } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (GET, "/mobile/classes")
+  httpRoute: (GET, "/mobile/classes"),
+  entities: [CatechesisClass, CatechumenProfile, ClassCatechist, ClassEnrollment, Community, GuardianProfile, Meeting, Membership, Parish, User]
 }
 
 api mobileClassDetails {
   fn: import { mobileClassDetails } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (GET, "/mobile/classes/:id")
+  httpRoute: (GET, "/mobile/classes/:id"),
+  entities: [CatechesisClass, CatechumenProfile, ClassCatechist, ClassEnrollment, Community, GuardianProfile, Meeting, Membership, Parish, User]
 }
 
 api mobileCatechumens {
   fn: import { mobileCatechumens } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (GET, "/mobile/catechumens")
+  httpRoute: (GET, "/mobile/catechumens"),
+  entities: [CatechumenProfile, ClassEnrollment, GuardianProfile, Membership, Parish, User]
 }
 
 api mobileCatechumenDetails {
   fn: import { mobileCatechumenDetails } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (GET, "/mobile/catechumens/:id")
+  httpRoute: (GET, "/mobile/catechumens/:id"),
+  entities: [CatechumenProfile, ClassEnrollment, GuardianProfile, Membership, Parish, User]
 }
 
 api mobileFamilies {
   fn: import { mobileFamilies } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (GET, "/mobile/families")
+  httpRoute: (GET, "/mobile/families"),
+  entities: [CatechumenProfile, ClassEnrollment, Community, GuardianProfile, Household, Membership, Parish, User]
 }
 
 api mobileFamilyDetails {
   fn: import { mobileFamilyDetails } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (GET, "/mobile/families/:id")
+  httpRoute: (GET, "/mobile/families/:id"),
+  entities: [CatechumenProfile, ClassEnrollment, Community, GuardianProfile, Household, Membership, Parish, User]
 }
 
 api mobileMeetings {
   fn: import { mobileMeetings } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (GET, "/mobile/meetings")
+  httpRoute: (GET, "/mobile/meetings"),
+  entities: [AttendanceRecord, CatechesisClass, CatechumenProfile, ClassEnrollment, ContentItem, GuardianProfile, Meeting, Membership, Parish, User]
 }
 
 api mobileMeetingDetails {
   fn: import { mobileMeetingDetails } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (GET, "/mobile/meetings/:id")
+  httpRoute: (GET, "/mobile/meetings/:id"),
+  entities: [AttendanceRecord, CatechesisClass, CatechumenProfile, ClassEnrollment, ContentItem, GuardianProfile, Meeting, Membership, Parish, User]
 }
 
 api mobileSaveAttendance {
   fn: import { mobileSaveAttendance } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (POST, "/mobile/attendance")
+  httpRoute: (POST, "/mobile/attendance"),
+  entities: [AttendanceRecord, CatechesisClass, CatechumenProfile, ClassEnrollment, ContentItem, GuardianProfile, Meeting, Membership, Parish, User]
 }
 
 api mobileConversations {
   fn: import { mobileConversations } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (GET, "/mobile/messages")
+  httpRoute: (GET, "/mobile/messages"),
+  entities: [CatechesisClass, CatechumenProfile, ClassCatechist, ClassEnrollment, Conversation, ConversationParticipant, GuardianProfile, Household, Membership, Message, Notification, Parish, User]
 }
 
 api mobileConversationContacts {
   fn: import { mobileConversationContacts } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (GET, "/mobile/messages/contacts")
+  httpRoute: (GET, "/mobile/messages/contacts"),
+  entities: [CatechesisClass, CatechumenProfile, ClassCatechist, ClassEnrollment, Conversation, ConversationParticipant, GuardianProfile, Household, Membership, Message, Notification, Parish, User]
 }
 
 api mobileCreateConversation {
   fn: import { mobileCreateConversation } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (POST, "/mobile/messages/conversations")
+  httpRoute: (POST, "/mobile/messages/conversations"),
+  entities: [CatechesisClass, CatechumenProfile, ClassCatechist, ClassEnrollment, Conversation, ConversationParticipant, GuardianProfile, Household, Membership, Message, Notification, Parish, User]
 }
 
 api mobileConversationDetails {
   fn: import { mobileConversationDetails } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (GET, "/mobile/messages/:id")
+  httpRoute: (GET, "/mobile/messages/:id"),
+  entities: [CatechesisClass, CatechumenProfile, ClassCatechist, ClassEnrollment, Conversation, ConversationParticipant, GuardianProfile, Household, Membership, Message, Notification, Parish, User]
 }
 
 api mobileSendMessage {
   fn: import { mobileSendMessageHandler } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (POST, "/mobile/messages")
+  httpRoute: (POST, "/mobile/messages"),
+  entities: [CatechesisClass, CatechumenProfile, ClassCatechist, ClassEnrollment, Conversation, ConversationParticipant, GuardianProfile, Household, Membership, Message, Notification, Parish, User]
 }
 
 api mobileNotifications {
   fn: import { mobileNotifications } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (GET, "/mobile/notifications")
+  httpRoute: (GET, "/mobile/notifications"),
+  entities: [Notification, Membership, Parish, User]
 }
 
 api mobileNotificationMarkRead {
   fn: import { mobileNotificationMarkRead } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (POST, "/mobile/notifications/:id/read")
+  httpRoute: (POST, "/mobile/notifications/:id/read"),
+  entities: [Notification, User]
 }
 
 api mobileMarkAllNotificationsRead {
   fn: import { mobileMarkAllNotificationsRead } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (POST, "/mobile/notifications/read-all")
+  httpRoute: (POST, "/mobile/notifications/read-all"),
+  entities: [Notification, User]
 }
 
 api mobileDocuments {
   fn: import { mobileDocuments } from "@src/server/api/mobile",
   auth: true,
-  httpRoute: (GET, "/mobile/documents")
+  httpRoute: (GET, "/mobile/documents"),
+  entities: [CatechesisClass, CatechumenProfile, ClassEnrollment, Document, GuardianProfile, Membership, Parish, SacramentalJourney, SacramentalMilestone, User]
 }
 
 api mobileServeDocument {
