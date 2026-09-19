@@ -62,7 +62,40 @@ export function withQuery(path: string, query?: Record<string, string | number |
   return encoded ? `${path}?${encoded}` : path;
 }
 
+export type UploadFileInput = { uri: string; name: string; type: string } | Blob;
+
 export function createMobileClient(options: MobileClientOptions) {
+  async function upload<T>(path: string, file: UploadFileInput): Promise<T> {
+    const token = await options.getToken();
+    const baseUrl = options.getBaseUrl().replace(/\/$/, '');
+    const form = new FormData();
+    if (typeof File !== 'undefined' && file instanceof File) {
+      form.append('file', file);
+    } else if (typeof Blob !== 'undefined' && file instanceof Blob) {
+      form.append('file', file, 'upload.jpg');
+    } else {
+      form.append('file', file as unknown as Blob);
+    }
+    const response = await (options.fetchImpl ?? fetch)(`${baseUrl}${path}`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      body: form,
+    });
+    const text = await response.text();
+    let payload: any = null;
+    if (text) {
+      try {
+        payload = JSON.parse(text);
+      } catch {
+        payload = { message: text };
+      }
+    }
+    if (!response.ok) {
+      throw new MobileApiError(response.status, resolveErrorMessage(payload, response.status), payload);
+    }
+    return payload as T;
+  }
+
   async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     const token = await options.getToken();
     const headers: Record<string, string> = {
@@ -236,10 +269,36 @@ export function createMobileClient(options: MobileClientOptions) {
     socialTopics() {
       return request<SocialTopic[]>(MOBILE_PATHS.socialTopics);
     },
-    createPost(body: { body: string; topicSlugs?: string[]; share?: { kind: string; sourceId: string } | null }) {
+    createPost(body: {
+      body: string;
+      topicSlugs?: string[];
+      share?: { kind: string; sourceId: string } | null;
+      mediaIds?: string[];
+    }) {
       return request<SocialPost>(MOBILE_PATHS.socialPosts, {
         method: 'POST',
         body: JSON.stringify(body),
+      });
+    },
+    uploadSocialImage(file: UploadFileInput) {
+      return upload<{ success: boolean; mediaId: string; url: string }>(MOBILE_PATHS.socialImageUpload, file);
+    },
+    uploadSocialVideo(file: UploadFileInput) {
+      return upload<{ success: boolean; mediaId: string; url?: string }>(MOBILE_PATHS.socialVideoUpload, file);
+    },
+    uploadProfileAvatar(file: UploadFileInput) {
+      return upload<{ success: boolean; avatarUrl?: string; url?: string }>(MOBILE_PATHS.profileAvatarUpload, file);
+    },
+    registerPushToken(token: string, platform?: string) {
+      return request<{ success: boolean }>(MOBILE_PATHS.pushToken, {
+        method: 'POST',
+        body: JSON.stringify({ token, platform }),
+      });
+    },
+    unregisterPushToken(token: string) {
+      return request<{ success: boolean }>(MOBILE_PATHS.pushToken, {
+        method: 'DELETE',
+        body: JSON.stringify({ token }),
       });
     },
     socialProfile(handle: string) {

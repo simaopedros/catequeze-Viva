@@ -34,6 +34,7 @@ export function PostDetailScreen({
   commentsHasMore,
   commentsLoadingMore,
   onLoadMoreComments,
+  onSharePost,
 }: {
   post?: SocialPost | null;
   comments: SocialComment[];
@@ -50,6 +51,7 @@ export function PostDetailScreen({
   commentsHasMore?: boolean;
   commentsLoadingMore?: boolean;
   onLoadMoreComments?: () => void;
+  onSharePost?: () => void;
 }) {
   const [body, setBody] = useState('');
   const [reason, setReason] = useState<SocialReportReason>('OTHER');
@@ -73,6 +75,9 @@ export function PostDetailScreen({
     <Screen testID="post-screen">
       <ScreenTitle title="Publicação" subtitle={post.topics?.map((topic) => topic.name).join(' · ') || 'Comunidade'} />
       <PostCard post={post} onOpenAuthor={onOpenAuthor} />
+      {onSharePost ? (
+        <BrandButton variant="ghost" label="Partilhar publicação" testID="share-post" onPress={onSharePost} />
+      ) : null}
       <View style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.md, flexWrap: 'wrap' }}>
         {REACTIONS.map((item) => (
           <Pressable

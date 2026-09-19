@@ -64,7 +64,16 @@ export type SocialPost = {
   author: SocialAuthor;
   share?: SocialShare | null;
   topics?: { slug: string; name: string }[];
-  media?: { id: string; kind?: string; url?: string | null }[];
+  media?: {
+    id: string;
+    kind?: string;
+    url?: string | null;
+    imageUrl?: string | null;
+    videoUrl?: string | null;
+    embedUrl?: string | null;
+    thumbnailUrl?: string | null;
+    altText?: string | null;
+  }[];
   isOwn?: boolean;
   viewerReaction?: 'AMEM' | 'REZO' | 'ALELUIA' | null;
 };

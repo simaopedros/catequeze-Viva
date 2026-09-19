@@ -8,6 +8,11 @@ const mobileSource = readFileSync(resolve(__dirname, '../server/api/mobile.ts'),
 const REQUIRED_ROUTES = [
   ['mobileConversationContacts', 'GET', '/mobile/messages/contacts'],
   ['mobileCreateConversation', 'POST', '/mobile/messages/conversations'],
+  ['mobileSocialImageUpload', 'POST', '/mobile/social/images'],
+  ['mobileSocialVideoUpload', 'POST', '/mobile/social/videos'],
+  ['mobileProfileAvatarUpload', 'POST', '/mobile/profile/avatar'],
+  ['mobileRegisterPushToken', 'POST', '/mobile/push-token'],
+  ['mobileUnregisterPushToken', 'DELETE', '/mobile/push-token'],
 ] as const;
 
 describe('mobile messages API wiring', () => {

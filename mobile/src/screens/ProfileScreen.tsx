@@ -1,6 +1,7 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { BrandButton, EmptyState, ErrorText, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { Avatar } from '../components/Avatar';
 import { PostCard } from '../components/PostCard';
 import type { SocialPost, SocialProfile } from '../api/types';
 import { colors } from '../theme';
@@ -62,6 +63,9 @@ export function ProfileScreen({
 
   return (
     <Screen testID="profile-screen">
+      <View style={{ alignItems: 'center', marginBottom: 12 }}>
+        <Avatar name={data.displayName} url={data.avatarUrl} size={88} testID="profile-avatar" />
+      </View>
       <ScreenTitle title={data.displayName} subtitle={handle ? `@${handle}` : 'Sem handle público'} />
       {data.bio || data.socialBio ? (
         <Text style={{ color: colors.inkSoft, marginBottom: 12 }}>{data.bio || data.socialBio}</Text>

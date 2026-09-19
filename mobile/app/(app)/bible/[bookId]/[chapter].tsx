@@ -1,5 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
+import { Share } from 'react-native';
 import { useAuth } from '../../../../src/auth/AuthContext';
 import { useAsync } from '../../../../src/hooks/useAsync';
 import { BibleChapterScreen } from '../../../../src/screens/BibleScreens';
@@ -26,6 +27,10 @@ export default function BibleChapterRoute() {
           pathname: '/(app)/community/compose',
           params: { kind: 'VERSE', sourceId: `${bookId}:${chapterNumber}:${verseNumber}` },
         });
+      }}
+      onShareVerseOS={(verseNumber, text) => {
+        const reference = `${data?.book?.name || bookId} ${chapterNumber}:${verseNumber}`;
+        void Share.share({ message: `"${text}" — ${reference}` }).catch(() => undefined);
       }}
     />
   );

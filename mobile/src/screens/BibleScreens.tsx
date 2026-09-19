@@ -70,12 +70,14 @@ export function BibleChapterScreen({
   error,
   canPublish,
   onShareVerse,
+  onShareVerseOS,
 }: {
   chapter?: BibleChapter | null;
   loading?: boolean;
   error?: string | null;
   canPublish?: boolean;
   onShareVerse: (verseNumber: number, text: string) => void;
+  onShareVerseOS?: (verseNumber: number, text: string) => void;
 }) {
   return (
     <Screen testID="bible-chapter-screen">
@@ -93,6 +95,14 @@ export function BibleChapterScreen({
               variant="ghost"
               label="Partilhar na Comunidade"
               onPress={() => onShareVerse(verse.number, verse.text)}
+            />
+          ) : null}
+          {onShareVerseOS ? (
+            <BrandButton
+              variant="ghost"
+              label="Partilhar versículo"
+              testID={`share-verse-${verse.number}`}
+              onPress={() => onShareVerseOS(verse.number, verse.text)}
             />
           ) : null}
         </Card>

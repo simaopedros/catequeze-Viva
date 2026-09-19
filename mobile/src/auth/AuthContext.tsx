@@ -57,6 +57,16 @@ export function AuthProvider({
   const [bootstrap, setBootstrap] = useState<BootstrapPayload | null>(null);
   const [workspaceId, setWorkspaceState] = useState<string | null>(null);
   const tokenRef = React.useRef<string | null>(null);
+  const pushTokenRef = React.useRef<string | null>(null);
+
+  const syncPushRegistration = React.useCallback(async (client: MobileClient) => {
+    try {
+      const push = await import('../notifications/push');
+      pushTokenRef.current = await push.registerForPushNotifications(client);
+    } catch {
+      // Push indisponível (web, emulador sem device, testes) — segue sem bloquear.
+    }
+  }, []);
 
   const api = useMemo(() => {
     const getToken = async () => tokenRef.current ?? (store ? store.getSessionId() : null);
@@ -94,6 +104,9 @@ export function AuthProvider({
             setWorkspaceState(nextWorkspace);
             await resolved.setWorkspaceId(nextWorkspace);
           }
+        }
+        if (next.status === 'ready') {
+          void syncPushRegistration(api);
         }
         if (next.status === 'guest') {
           tokenRef.current = null;
@@ -135,6 +148,9 @@ export function AuthProvider({
           setWorkspaceState(nextWorkspace);
           await store.setWorkspaceId(nextWorkspace);
         }
+        if (next.status === 'ready') {
+          void syncPushRegistration(api);
+        }
         return payload;
       },
       async verifyTwoFactor(token) {
@@ -148,6 +164,7 @@ export function AuthProvider({
           setWorkspaceState(nextWorkspace);
           await store.setWorkspaceId(nextWorkspace);
         }
+        void syncPushRegistration(api);
         return payload;
       },
       async requestPasswordReset(email) {
@@ -155,6 +172,15 @@ export function AuthProvider({
       },
       async logout() {
         try {
+          if (pushTokenRef.current) {
+            try {
+              const push = await import('../notifications/push');
+              await push.unregisterFromPushNotifications(api, pushTokenRef.current);
+            } catch {
+              // ignora falhas ao remover o token
+            }
+            pushTokenRef.current = null;
+          }
           await api.logout();
         } finally {
           tokenRef.current = null;

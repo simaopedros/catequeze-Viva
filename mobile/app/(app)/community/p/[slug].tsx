@@ -1,8 +1,10 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { Share } from 'react-native';
 import { useAuth } from '../../../../src/auth/AuthContext';
 import { useAsync } from '../../../../src/hooks/useAsync';
 import { usePagedList } from '../../../../src/hooks/usePagedList';
+import { resolveMediaUrl } from '../../../../src/api/mediaUrl';
 import { PostDetailScreen } from '../../../../src/screens/PostDetailScreen';
 
 export default function PostRoute() {
@@ -32,6 +34,10 @@ export default function PostRoute() {
       commentsHasMore={Boolean(comments.nextCursor)}
       commentsLoadingMore={comments.loadingMore}
       onLoadMoreComments={() => void comments.loadMore()}
+      onSharePost={() => {
+        const url = resolveMediaUrl(`/c/${post.data?.slug || slug}`);
+        if (url) void Share.share({ message: url }).catch(() => undefined);
+      }}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
       onReact={async (type) => {
         if (!post.data?.id) return;

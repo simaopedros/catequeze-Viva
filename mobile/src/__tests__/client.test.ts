@@ -181,6 +181,48 @@ describe('mobile HTTP client', () => {
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.familyDetails('fam-1'));
   });
 
+  it('uploads media as multipart with Bearer token', async () => {
+    const calls: { url: string; init: RequestInit }[] = [];
+    const client = createMobileClient({
+      getBaseUrl: () => 'http://localhost:3001',
+      getToken: () => 'tok',
+      fetchImpl: async (url, init) => {
+        calls.push({ url: String(url), init: init || {} });
+        return jsonResponse({ success: true, mediaId: 'media-1', url: '/api/social/media/media-1' });
+      },
+    });
+
+    const result = await client.uploadSocialImage({ uri: 'file:///tmp/foto.jpg', name: 'foto.jpg', type: 'image/jpeg' });
+
+    expect(result.mediaId).toBe('media-1');
+    expect(calls[0].url).toBe('http://localhost:3001' + MOBILE_PATHS.socialImageUpload);
+    expect(calls[0].init.method).toBe('POST');
+    expect(calls[0].init.headers).toMatchObject({ Authorization: 'Bearer tok' });
+    expect(calls[0].init.body).toBeInstanceOf(FormData);
+    expect(String((calls[0].init.headers as Record<string, string>)['Content-Type'])).toBe('undefined');
+  });
+
+  it('registers and unregisters push tokens', async () => {
+    const calls: { url: string; init: RequestInit }[] = [];
+    const client = createMobileClient({
+      getBaseUrl: () => 'http://localhost:3001',
+      getToken: () => 'tok',
+      fetchImpl: async (url, init) => {
+        calls.push({ url: String(url), init: init || {} });
+        return jsonResponse({ success: true });
+      },
+    });
+
+    await client.registerPushToken('ExponentPushToken[abc]', 'android');
+    await client.unregisterPushToken('ExponentPushToken[abc]');
+
+    expect(calls[0].url).toBe('http://localhost:3001' + MOBILE_PATHS.pushToken);
+    expect(calls[0].init.method).toBe('POST');
+    expect(JSON.parse(String(calls[0].init.body))).toEqual({ token: 'ExponentPushToken[abc]', platform: 'android' });
+    expect(calls[1].url).toBe('http://localhost:3001' + MOBILE_PATHS.pushToken);
+    expect(calls[1].init.method).toBe('DELETE');
+  });
+
   it('paginates feed and comments with cursors', async () => {
     const urls: string[] = [];
     const client = createMobileClient({

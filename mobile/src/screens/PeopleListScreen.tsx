@@ -1,6 +1,7 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import type { SocialPerson } from '../api/types';
+import { Avatar } from '../components/Avatar';
 import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import { colors, spacing } from '../theme';
 
@@ -53,11 +54,16 @@ export function PeopleListScreen({
             disabled={!handle}
           >
             <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>{person.displayName}</Text>
-              <Text style={{ color: colors.goldDark, marginTop: 2 }}>
-                {handle ? `@${handle}` : 'Sem handle público'}
-                {person.followersCount != null ? ` · ${person.followersCount} seguidores` : ''}
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+                <Avatar name={person.displayName} url={person.avatarUrl} size={40} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: colors.ink, fontWeight: '700' }}>{person.displayName}</Text>
+                  <Text style={{ color: colors.goldDark, marginTop: 2 }}>
+                    {handle ? `@${handle}` : 'Sem handle público'}
+                    {person.followersCount != null ? ` · ${person.followersCount} seguidores` : ''}
+                  </Text>
+                </View>
+              </View>
             </Card>
           </Pressable>
         );

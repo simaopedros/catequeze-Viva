@@ -3,7 +3,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { SocialShare } from '../../../src/api/types';
 import { useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
-import { ComposeScreen } from '../../../src/screens/ComposeScreen';
+import { ComposeScreen, type ComposeAttachment } from '../../../src/screens/ComposeScreen';
+import { pickImageFile, pickVideoFile } from '../../../src/screens/pickFile';
 
 export default function ComposeRoute() {
   const { api } = useAuth();
@@ -15,9 +16,28 @@ export default function ComposeRoute() {
   const topics = useAsync(() => api.socialTopics(), []);
   const [preview, setPreview] = useState<SocialShare | null>(null);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [attachments, setAttachments] = useState<ComposeAttachment[]>([]);
+  const [mediaBusy, setMediaBusy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const autoPreviewed = useRef(false);
+
+  const addAttachment = async (kind: 'IMAGE' | 'VIDEO') => {
+    setError(null);
+    try {
+      const file = kind === 'IMAGE' ? await pickImageFile() : await pickVideoFile();
+      if (!file) return;
+      setMediaBusy(true);
+      const result = kind === 'IMAGE' ? await api.uploadSocialImage(file) : await api.uploadSocialVideo(file);
+      if (result?.mediaId) {
+        setAttachments((current) => [...current, { mediaId: result.mediaId, url: result.url ?? null, kind }]);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Não foi possível enviar o ficheiro.');
+    } finally {
+      setMediaBusy(false);
+    }
+  };
 
   useEffect(() => {
     if (autoPreviewed.current || !initialKind || !initialSourceId) return;
@@ -44,6 +64,13 @@ export default function ComposeRoute() {
           current.includes(slug) ? current.filter((item) => item !== slug) : [...current, slug],
         )
       }
+      attachments={attachments}
+      mediaBusy={mediaBusy}
+      onAddImage={() => void addAttachment('IMAGE')}
+      onAddVideo={() => void addAttachment('VIDEO')}
+      onRemoveAttachment={(mediaId) =>
+        setAttachments((current) => current.filter((item) => item.mediaId !== mediaId))
+      }
       onPreviewShare={async (kind, sourceId) => {
         setError(null);
         try {
@@ -52,7 +79,7 @@ export default function ComposeRoute() {
           setError(err instanceof Error ? err.message : 'Partilha inválida.');
         }
       }}
-      onPublish={async (body, share, topicSlugs) => {
+      onPublish={async (body, share, topicSlugs, mediaIds) => {
         setBusy(true);
         setError(null);
         try {
@@ -61,6 +88,7 @@ export default function ComposeRoute() {
             share:
               share || (initialKind && initialSourceId ? { kind: initialKind, sourceId: initialSourceId } : null),
             topicSlugs: topicSlugs && topicSlugs.length > 0 ? topicSlugs : undefined,
+            mediaIds: mediaIds && mediaIds.length > 0 ? mediaIds : undefined,
           });
           router.replace('/(app)/(tabs)/community');
         } catch (err) {

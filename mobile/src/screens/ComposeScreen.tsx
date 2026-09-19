@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 import { BrandButton, ErrorText, Field, Screen, ScreenTitle } from '../components/ui';
 import { ShareCard } from '../components/PostCard';
+import { resolveMediaUrl } from '../api/mediaUrl';
 import type { SocialShare, SocialTopic } from '../api/types';
 import { colors, spacing } from '../theme';
+
+export type ComposeAttachment = { mediaId: string; url?: string | null; kind: 'IMAGE' | 'VIDEO' };
 
 export function ComposeScreen({
   canPublish,
@@ -18,6 +21,11 @@ export function ComposeScreen({
   topics,
   selectedTopics,
   onToggleTopic,
+  attachments,
+  onAddImage,
+  onAddVideo,
+  onRemoveAttachment,
+  mediaBusy,
 }: {
   canPublish: boolean;
   accessLoading?: boolean;
@@ -25,6 +33,7 @@ export function ComposeScreen({
     body: string,
     share?: { kind: string; sourceId: string } | null,
     topicSlugs?: string[],
+    mediaIds?: string[],
   ) => Promise<void> | void;
   onPreviewShare?: (kind: string, sourceId: string) => Promise<void> | void;
   preview?: SocialShare | null;
@@ -35,6 +44,11 @@ export function ComposeScreen({
   topics?: SocialTopic[];
   selectedTopics?: string[];
   onToggleTopic?: (slug: string) => void;
+  attachments?: ComposeAttachment[];
+  onAddImage?: () => void;
+  onAddVideo?: () => void;
+  onRemoveAttachment?: (mediaId: string) => void;
+  mediaBusy?: boolean;
 }) {
   const [body, setBody] = useState('');
   const [kind, setKind] = useState(initialKind || 'VERSE');
@@ -59,6 +73,76 @@ export function ComposeScreen({
         </View>
       ) : null}
       <Field label="Texto" value={body} onChangeText={setBody} multiline testID="compose-body" />
+      {onAddImage ? (
+        <View style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.md, flexWrap: 'wrap' }}>
+          <View style={{ flex: 1, minWidth: 140 }}>
+            <BrandButton
+              variant="ghost"
+              label={mediaBusy ? 'A enviar…' : 'Adicionar imagem'}
+              onPress={onAddImage}
+              disabled={mediaBusy}
+              testID="compose-add-image"
+            />
+          </View>
+          {onAddVideo ? (
+            <View style={{ flex: 1, minWidth: 140 }}>
+              <BrandButton
+                variant="ghost"
+                label={mediaBusy ? 'A enviar…' : 'Adicionar vídeo'}
+                onPress={onAddVideo}
+                disabled={mediaBusy}
+                testID="compose-add-video"
+              />
+            </View>
+          ) : null}
+        </View>
+      ) : null}
+      {attachments && attachments.length > 0 ? (
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: spacing.md }}>
+          {attachments.map((attachment) => {
+            const uri = resolveMediaUrl(attachment.url);
+            return (
+              <View key={attachment.mediaId} style={{ position: 'relative' }}>
+                {uri && attachment.kind === 'IMAGE' ? (
+                  <Image source={{ uri }} style={{ width: 72, height: 72, borderRadius: 10 }} />
+                ) : (
+                  <View
+                    style={{
+                      width: 72,
+                      height: 72,
+                      borderRadius: 10,
+                      backgroundColor: colors.ink,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Text style={{ color: colors.white, fontWeight: '700', fontSize: 12 }}>Vídeo</Text>
+                  </View>
+                )}
+                {onRemoveAttachment ? (
+                  <Pressable
+                    testID={`remove-attachment-${attachment.mediaId}`}
+                    onPress={() => onRemoveAttachment(attachment.mediaId)}
+                    style={{
+                      position: 'absolute',
+                      top: -6,
+                      right: -6,
+                      backgroundColor: colors.danger,
+                      borderRadius: 10,
+                      width: 20,
+                      height: 20,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Text style={{ color: colors.white, fontWeight: '700', fontSize: 12 }}>×</Text>
+                  </Pressable>
+                ) : null}
+              </View>
+            );
+          })}
+        </View>
+      ) : null}
       {topics && topics.length > 0 && onToggleTopic ? (
         <View style={{ marginBottom: spacing.md }}>
           <Text style={{ color: colors.ink, fontWeight: '600', marginBottom: 6 }}>Tópicos</Text>
@@ -110,7 +194,14 @@ export function ComposeScreen({
         testID="compose-submit"
         label={busy ? 'A publicar…' : 'Publicar'}
         disabled={(!canPublish && !accessLoading) || busy || !body.trim()}
-        onPress={() => onPublish(body.trim(), sourceId ? { kind, sourceId } : null, selectedTopics)}
+        onPress={() =>
+          onPublish(
+            body.trim(),
+            sourceId ? { kind, sourceId } : null,
+            selectedTopics,
+            attachments?.map((attachment) => attachment.mediaId),
+          )
+        }
       />
     </Screen>
   );

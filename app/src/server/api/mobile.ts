@@ -26,6 +26,9 @@ import {
 } from '../security/authAttemptGuard';
 import { authenticatedDocumentUpload } from './authenticatedDocumentUpload';
 import { serveDocument } from './documents';
+import { uploadSocialImage, uploadSocialVideo } from './socialMedia';
+import { uploadProfileAvatar } from './profileAvatar';
+import { registerPushToken, unregisterPushToken } from '../push/expoPush';
 
 type AuthedContext = {
   user: any;
@@ -549,6 +552,46 @@ export async function mobileDocuments(req: Request, res: Response, context: any)
 
 export { authenticatedDocumentUpload as mobileDocumentUpload };
 export { serveDocument as mobileServeDocument };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Media uploads (aliases of the web multipart handlers + mobile 2FA gate)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function mobileSocialImageUpload(req: Request, res: Response, context: any) {
+  await requireMobileSessionVerification(context);
+  return uploadSocialImage(req, res, context);
+}
+
+export async function mobileSocialVideoUpload(req: Request, res: Response, context: any) {
+  await requireMobileSessionVerification(context);
+  return uploadSocialVideo(req, res, context);
+}
+
+export async function mobileProfileAvatarUpload(req: Request, res: Response, context: any) {
+  await requireMobileSessionVerification(context);
+  return uploadProfileAvatar(req, res, context);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Push notifications (Expo)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function mobileRegisterPushToken(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const token = parseRequiredString(req.body?.token, 'token');
+  const platform = parseOptionalString(req.body?.platform) ?? null;
+  await registerPushToken(context.user.id, token, platform);
+  return res.json({ success: true });
+}
+
+export async function mobileUnregisterPushToken(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const token = parseRequiredString(req.body?.token, 'token');
+  await unregisterPushToken(context.user.id, token);
+  return res.json({ success: true });
+}
 
 
 

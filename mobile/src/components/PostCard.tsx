@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { SocialPost } from '../api/types';
 import { colors, spacing } from '../theme';
+import { Avatar } from './Avatar';
+import { PostMedia } from './PostMedia';
 import { Card } from './ui';
 
 const LONG_BODY = 280;
@@ -48,9 +50,13 @@ export function PostCard({
         testID={`post-author-${post.id}`}
         onPress={() => handle && onOpenAuthor?.(handle)}
         disabled={!handle}
+        style={styles.authorRow}
       >
-        <Text style={styles.author}>{post.author.displayName}</Text>
-        {handle ? <Text style={styles.handle}>@{handle}</Text> : null}
+        <Avatar name={post.author.displayName} url={post.author.avatarUrl} size={36} />
+        <View style={styles.authorText}>
+          <Text style={styles.author}>{post.author.displayName}</Text>
+          {handle ? <Text style={styles.handle}>@{handle}</Text> : null}
+        </View>
       </Pressable>
       <Pressable
         accessibilityRole="button"
@@ -60,6 +66,7 @@ export function PostCard({
       >
         {post.body ? <Text style={styles.body}>{body}</Text> : null}
       </Pressable>
+      <PostMedia media={post.media} />
       {long ? (
         <Pressable onPress={() => setExpanded((value) => !value)} testID={`post-expand-${post.id}`}>
           <Text style={styles.more}>{expanded ? 'Ver menos' : 'Ver mais'}</Text>
@@ -89,6 +96,8 @@ export function PostCard({
 }
 
 const styles = StyleSheet.create({
+  authorRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  authorText: { flex: 1 },
   author: { color: colors.ink, fontWeight: '700', fontSize: 16 },
   handle: { color: colors.goldDark, marginTop: 2, marginBottom: spacing.sm },
   body: { color: colors.inkSoft, fontSize: 16, lineHeight: 23 },

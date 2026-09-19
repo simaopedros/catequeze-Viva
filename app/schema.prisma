@@ -481,6 +481,7 @@ model User {
   messageReactions        MessageReaction[]
   messageReadReceipts     MessageReadReceipt[]
   notifications           Notification[]
+  mobilePushTokens        MobilePushToken[]
   createdTemplates        MessageTemplate[]           @relation("TemplateCreator")
 
   // OpenSaaS legacy relations
@@ -1583,6 +1584,21 @@ model Notification {
   entityId   String?
 
   @@index([userId, readAt, createdAt])
+}
+
+// Expo push tokens registered by the mobile app (one row per device/install).
+model MobilePushToken {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  token    String  @unique
+  platform String?
+
+  @@index([userId])
 }
 
 // ─── Message Templates ────────────────────────────────────────────────────────

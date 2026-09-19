@@ -2045,6 +2045,44 @@ api mobileDocumentUpload {
   entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish]
 }
 
+api mobileSocialImageUpload {
+  fn: import { mobileSocialImageUpload } from "@src/server/api/mobile",
+  middlewareConfigFn: import { socialImageUploadMiddleware } from "@src/server/api/socialMedia",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/images"),
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese]
+}
+
+api mobileSocialVideoUpload {
+  fn: import { mobileSocialVideoUpload } from "@src/server/api/mobile",
+  middlewareConfigFn: import { socialVideoUploadMiddleware } from "@src/server/api/socialMedia",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/videos"),
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese]
+}
+
+api mobileProfileAvatarUpload {
+  fn: import { mobileProfileAvatarUpload } from "@src/server/api/mobile",
+  middlewareConfigFn: import { profileAvatarUploadMiddleware } from "@src/server/api/profileAvatar",
+  auth: true,
+  httpRoute: (POST, "/mobile/profile/avatar"),
+  entities: [SocialMedia, User]
+}
+
+api mobileRegisterPushToken {
+  fn: import { mobileRegisterPushToken } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (POST, "/mobile/push-token"),
+  entities: [MobilePushToken, User]
+}
+
+api mobileUnregisterPushToken {
+  fn: import { mobileUnregisterPushToken } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (DELETE, "/mobile/push-token"),
+  entities: [MobilePushToken, User]
+}
+
 api mobileSocialFeed {
   fn: import { mobileSocialFeed } from "@src/server/api/mobileSocial",
   auth: true,

@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { HttpError, prisma } from 'wasp/server';
 import { assertCanAccessClass, requireAuth } from '../auth/helpers';
+import { sendPushToUsers } from '../push/expoPush';
 import {
   buildDisplayName,
   canAddParticipantsToConversation,
@@ -1227,6 +1228,16 @@ export const sendMessage = async (
         entityId: message.id,
       })),
     });
+
+    // Best-effort mobile push; nunca falha o envio da mensagem.
+    await sendPushToUsers(
+      participants.map((p: any) => p.userId),
+      {
+        title: senderName,
+        body: preview,
+        data: { link: messageNotificationLink(conversationId, conversation.parishId) },
+      },
+    ).catch(() => undefined);
   }
 
   return message;
