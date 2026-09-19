@@ -178,8 +178,8 @@ export function createMobileClient(options: MobileClientOptions) {
     classDetails(id: string) {
       return request<any>(MOBILE_PATHS.classDetails(id));
     },
-    catechumens() {
-      return request<any>(MOBILE_PATHS.catechumens);
+    catechumens(query?: { workspaceId?: string; search?: string; take?: number }) {
+      return request<any>(withQuery(MOBILE_PATHS.catechumens, { ...query, take: query?.take ?? 100 }));
     },
     catechumenDetails(id: string) {
       return request<any>(MOBILE_PATHS.catechumenDetails(id));

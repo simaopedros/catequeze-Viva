@@ -7,7 +7,7 @@ import { CatechumensListScreen } from '../../../src/screens/CatechumensListScree
 export default function CatechumensRoute() {
   const { api, workspaceId } = useAuth();
   const router = useRouter();
-  const { data, loading, error, reload, refreshing } = useAsync(() => api.catechumens(), [workspaceId]);
+  const { data, loading, error, reload, refreshing } = useAsync(() => api.catechumens({ workspaceId: workspaceId || undefined }), [workspaceId]);
 
   return (
     <CatechumensListScreen
