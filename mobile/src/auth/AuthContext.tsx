@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { resolveMobileApiBaseUrl } from '../api/baseUrl';
 import { createMobileClient, type MobileClient } from '../api/client';
 import type { AuthPayload, BootstrapPayload, MobileUser, Workspace } from '../api/types';
 import { createSessionStore, type SessionStore } from './session';
@@ -73,8 +74,7 @@ export function AuthProvider({
     const getToken = async () => tokenRef.current ?? (store ? store.getSessionId() : null);
     if (apiFactory) return apiFactory(getToken);
     return createMobileClient({
-      getBaseUrl: () =>
-        initialBaseUrl || process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001',
+      getBaseUrl: () => resolveMobileApiBaseUrl(initialBaseUrl),
       getToken,
     });
   }, [apiFactory, initialBaseUrl, store]);
