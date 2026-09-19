@@ -2,6 +2,7 @@ import React from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,10 +17,14 @@ export function Screen({
   children,
   padded = true,
   testID,
+  refreshing,
+  onRefresh,
 }: {
   children: React.ReactNode;
   padded?: boolean;
   testID?: string;
+  refreshing?: boolean;
+  onRefresh?: () => void;
 }) {
   return (
     <ScrollView
@@ -27,6 +32,11 @@ export function Screen({
       style={styles.screen}
       contentContainerStyle={[styles.screenContent, padded && { padding: spacing.lg }]}
       keyboardShouldPersistTaps="handled"
+      refreshControl={
+        onRefresh ? (
+          <RefreshControl refreshing={Boolean(refreshing)} onRefresh={onRefresh} tintColor={colors.gold} />
+        ) : undefined
+      }
     >
       {children}
     </ScrollView>

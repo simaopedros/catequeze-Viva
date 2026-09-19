@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, Text } from 'react-native';
-import { BrandButton, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, EmptyState, ErrorText, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import { PostCard } from '../components/PostCard';
 import type { SocialPost, SocialProfile } from '../api/types';
 import { colors } from '../theme';
@@ -18,6 +18,7 @@ export function ProfileScreen({
   onOpenFollowers,
   onOpenFollowing,
   onEdit,
+  actionError,
 }: {
   profile?: SocialProfile | null;
   loading?: boolean;
@@ -31,6 +32,7 @@ export function ProfileScreen({
   onOpenFollowers?: () => void;
   onOpenFollowing?: () => void;
   onEdit?: () => void;
+  actionError?: string | null;
 }) {
   const data = profile?.profile ?? profile;
   if (loading) {
@@ -78,6 +80,7 @@ export function ProfileScreen({
         </>
       ) : (
         <>
+          <ErrorText message={actionError} />
           <BrandButton
             testID="follow-button"
             label={data.isFollowing ? 'A seguir' : 'Seguir'}

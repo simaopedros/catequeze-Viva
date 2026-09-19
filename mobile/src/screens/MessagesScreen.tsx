@@ -15,15 +15,19 @@ export function MessagesScreen({
   loading,
   error,
   onOpen,
+  refreshing,
+  onRefresh,
 }: {
   payload: any;
   loading?: boolean;
   error?: string | null;
   onOpen: (id: string) => void;
+  refreshing?: boolean;
+  onRefresh?: () => void;
 }) {
   const items = asConversations(payload);
   return (
-    <Screen testID="messages-screen">
+    <Screen testID="messages-screen" refreshing={refreshing} onRefresh={onRefresh}>
       <ScreenTitle title="Mensagens" subtitle="Conversas da paróquia e das turmas." />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Mensagens indisponíveis" body={error} /> : null}

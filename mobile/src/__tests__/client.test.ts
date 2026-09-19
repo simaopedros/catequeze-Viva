@@ -103,4 +103,35 @@ describe('mobile HTTP client', () => {
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialReport);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.attendance);
   });
+
+  it('marks all notifications as read', async () => {
+    const calls: { url: string; init: RequestInit }[] = [];
+    const client = createMobileClient({
+      getBaseUrl: () => 'http://localhost:3001',
+      getToken: () => 'tok',
+      fetchImpl: async (url, init) => {
+        calls.push({ url: String(url), init: init || {} });
+        return jsonResponse({ success: true });
+      },
+    });
+
+    await client.markAllNotificationsRead();
+
+    expect(calls[0].url).toBe('http://localhost:3001' + MOBILE_PATHS.notificationsReadAll);
+    expect(calls[0].init.method).toBe('POST');
+    expect(calls[0].init.headers).toMatchObject({ Authorization: 'Bearer tok' });
+  });
+
+  it('builds authenticated download access for documents', async () => {
+    const client = createMobileClient({
+      getBaseUrl: () => 'https://api.catechis.app/',
+      getToken: async () => 'session-9',
+      fetchImpl: async () => jsonResponse({}),
+    });
+
+    const access = await client.documentFileAccess('doc-1');
+
+    expect(access.url).toBe('https://api.catechis.app/mobile/documents/doc-1');
+    expect(access.headers).toEqual({ Authorization: 'Bearer session-9' });
+  });
 });

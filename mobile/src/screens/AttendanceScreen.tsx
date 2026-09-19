@@ -5,6 +5,17 @@ import { colors } from '../theme';
 
 const STATUSES = ['PRESENT', 'ABSENT', 'LATE', 'EXCUSED'] as const;
 
+const STATUS_LABELS: Record<(typeof STATUSES)[number], string> = {
+  PRESENT: 'Presente',
+  ABSENT: 'Falta',
+  LATE: 'Atrasado',
+  EXCUSED: 'Falta justificada',
+};
+
+function statusLabel(status: string): string {
+  return STATUS_LABELS[status as (typeof STATUSES)[number]] ?? status;
+}
+
 export function AttendanceScreen({
   meeting,
   loading,
@@ -55,11 +66,11 @@ export function AttendanceScreen({
           return (
             <Card key={id}>
               <Text style={{ color: colors.ink, fontWeight: '700' }}>{name}</Text>
-              <Text style={{ color: colors.muted, marginVertical: 8 }}>Estado: {status}</Text>
+              <Text style={{ color: colors.muted, marginVertical: 8 }}>Estado: {statusLabel(status)}</Text>
               {STATUSES.map((item) => (
                 <Pressable key={item} onPress={() => setDraft((current) => ({ ...current, [id]: item }))}>
                   <Text style={{ color: status === item ? colors.goldDark : colors.muted, marginBottom: 4 }}>
-                    {item}
+                    {STATUS_LABELS[item]}
                   </Text>
                 </Pressable>
               ))}

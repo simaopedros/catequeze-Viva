@@ -183,6 +183,17 @@ export function createMobileClient(options: MobileClientOptions) {
     documents() {
       return request<any>(MOBILE_PATHS.documents);
     },
+    async documentFileAccess(id: string): Promise<{ url: string; headers: Record<string, string> }> {
+      const token = await options.getToken();
+      const baseUrl = options.getBaseUrl().replace(/\/$/, '');
+      return {
+        url: `${baseUrl}${MOBILE_PATHS.document(id)}`,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      };
+    },
+    markAllNotificationsRead() {
+      return request<{ success?: boolean }>(MOBILE_PATHS.notificationsReadAll, { method: 'POST' });
+    },
     socialFeed(query?: {
       cursor?: string | null;
       sort?: 'recent' | 'trending' | 'foryou';

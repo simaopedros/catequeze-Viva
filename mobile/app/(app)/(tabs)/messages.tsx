@@ -7,13 +7,18 @@ import { MessagesScreen } from '../../../src/screens/MessagesScreen';
 export default function MessagesRoute() {
   const { api, workspaceId } = useAuth();
   const router = useRouter();
-  const { data, loading, error } = useAsync(() => api.conversations(workspaceId || undefined), [workspaceId]);
+  const { data, loading, error, reload, refreshing } = useAsync(
+    () => api.conversations(workspaceId || undefined),
+    [workspaceId],
+  );
 
   return (
     <MessagesScreen
       payload={data}
       loading={loading}
       error={error}
+      refreshing={refreshing}
+      onRefresh={() => void reload()}
       onOpen={(id) => router.push(`/(app)/messages/${id}`)}
     />
   );

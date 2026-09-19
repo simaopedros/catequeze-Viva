@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Text } from 'react-native';
-import { BrandButton, Card, EmptyState, Field, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, Card, EmptyState, ErrorText, Field, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import { colors } from '../theme';
 
 export function ThreadScreen({
@@ -9,12 +9,14 @@ export function ThreadScreen({
   error,
   onSend,
   busy,
+  sendError,
 }: {
   data: any;
   loading?: boolean;
   error?: string | null;
   onSend: (content: string) => Promise<void> | void;
   busy?: boolean;
+  sendError?: string | null;
 }) {
   const [content, setContent] = useState('');
   const messages = data?.messages || data?.items || [];
@@ -32,13 +34,18 @@ export function ThreadScreen({
           <Text style={{ color: colors.inkSoft, marginTop: 6 }}>{message.content || message.body}</Text>
         </Card>
       ))}
+      <ErrorText message={sendError} />
       <Field label="Mensagem" value={content} onChangeText={setContent} testID="message-input" />
       <BrandButton
         label={busy ? 'A enviar…' : 'Enviar'}
         disabled={busy || !content.trim()}
         onPress={async () => {
-          await onSend(content.trim());
-          setContent('');
+          try {
+            await onSend(content.trim());
+            setContent('');
+          } catch {
+            // o erro é apresentado via sendError; o texto fica no campo
+          }
         }}
       />
     </Screen>

@@ -62,6 +62,8 @@ export function CommunityScreen({
   onToggleFollowing,
   showHub,
   onOpenArea,
+  refreshing,
+  onRefresh,
 }: {
   posts: SocialPost[];
   topics: SocialTopic[];
@@ -83,9 +85,11 @@ export function CommunityScreen({
   subtitle?: string;
   showHub?: boolean;
   onOpenArea?: (id: CommunityAreaId) => void;
+  refreshing?: boolean;
+  onRefresh?: () => void;
 }) {
   return (
-    <Screen testID="community-screen">
+    <Screen testID="community-screen" refreshing={refreshing} onRefresh={onRefresh}>
       <ScreenTitle title={title} subtitle={subtitle} />
       {showHub && onOpenArea ? (
         <View testID="community-hub" style={{ marginBottom: spacing.md }}>

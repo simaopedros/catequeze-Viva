@@ -1,21 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../src/auth/AuthContext';
 import { useAsync } from '../../src/hooks/useAsync';
 import { NotificationsScreen } from '../../src/screens/NotificationsScreen';
 
 export default function NotificationsRoute() {
   const { api } = useAuth();
-  const { data, loading, error, reload } = useAsync(() => api.notifications(), []);
+  const { data, loading, error, reload, refreshing } = useAsync(() => api.notifications(), []);
+  const [busy, setBusy] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const run = async (action: () => Promise<unknown>) => {
+    setBusy(true);
+    setActionError(null);
+    try {
+      await action();
+      await reload();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'A ação falhou. Tente novamente.');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <NotificationsScreen
       payload={data}
       loading={loading}
       error={error}
-      onRead={async (id) => {
-        await api.markNotificationRead(id);
-        await reload();
-      }}
+      busy={busy}
+      actionError={actionError}
+      refreshing={refreshing}
+      onRefresh={() => void reload()}
+      onRead={(id) => void run(() => api.markNotificationRead(id))}
+      onReadAll={() => void run(() => api.markAllNotificationsRead())}
     />
   );
 }

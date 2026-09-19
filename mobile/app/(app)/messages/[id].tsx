@@ -9,6 +9,7 @@ export default function ThreadRoute() {
   const { api } = useAuth();
   const { data, loading, error, reload } = useAsync(() => api.conversation(String(id)), [id]);
   const [busy, setBusy] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
 
   return (
     <ThreadScreen
@@ -16,11 +17,16 @@ export default function ThreadRoute() {
       loading={loading}
       error={error}
       busy={busy}
+      sendError={sendError}
       onSend={async (content) => {
         setBusy(true);
+        setSendError(null);
         try {
           await api.sendMessage(String(id), content);
           await reload();
+        } catch (err) {
+          setSendError(err instanceof Error ? err.message : 'Não foi possível enviar a mensagem.');
+          throw err;
         } finally {
           setBusy(false);
         }

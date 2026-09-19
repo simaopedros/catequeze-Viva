@@ -19,6 +19,20 @@ export default function ProfileRoute() {
     [profileId],
   );
   const [busy, setBusy] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const runAction = async (action: () => Promise<void>) => {
+    setBusy(true);
+    setActionError(null);
+    try {
+      await action();
+      await reload();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'A ação falhou. Tente novamente.');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <ProfileScreen
@@ -27,6 +41,7 @@ export default function ProfileRoute() {
       loading={loading}
       error={error}
       busy={busy}
+      actionError={actionError}
       onOpenPost={(slug) => router.push(`/(app)/community/p/${slug}`)}
       onOpenAuthor={(next) => router.push(`/(app)/community/${next}`)}
       onOpenFollowers={() =>
@@ -36,25 +51,13 @@ export default function ProfileRoute() {
         router.push(`/(app)/community/connections?handle=${encodeURIComponent(profileHandle)}&kind=following`)
       }
       onEdit={() => router.push('/(app)/community/edit')}
-      onFollow={async () => {
+      onFollow={() => {
         if (!profileId) return;
-        setBusy(true);
-        try {
-          await api.toggleFollow(profileId);
-          await reload();
-        } finally {
-          setBusy(false);
-        }
+        void runAction(() => api.toggleFollow(profileId).then(() => undefined));
       }}
-      onBlock={async () => {
+      onBlock={() => {
         if (!profileId) return;
-        setBusy(true);
-        try {
-          await api.toggleBlock(profileId);
-          await reload();
-        } finally {
-          setBusy(false);
-        }
+        void runAction(() => api.toggleBlock(profileId).then(() => undefined));
       }}
     />
   );

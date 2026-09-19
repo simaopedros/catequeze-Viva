@@ -16,6 +16,7 @@ export default function PostRoute() {
   const access = useAsync(() => api.socialAccess(), []);
   const [busy, setBusy] = useState(false);
   const [reportMessage, setReportMessage] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   return (
     <PostDetailScreen
@@ -25,13 +26,17 @@ export default function PostRoute() {
       loading={post.loading}
       error={post.error}
       busy={busy}
+      actionError={actionError}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
       onReact={async (type) => {
         if (!post.data?.id) return;
         setBusy(true);
+        setActionError(null);
         try {
           await api.toggleReaction(post.data.id, type);
           await post.reload();
+        } catch (err) {
+          setActionError(err instanceof Error ? err.message : 'Não foi possível registar a reação.');
         } finally {
           setBusy(false);
         }
@@ -40,9 +45,13 @@ export default function PostRoute() {
       onComment={async (body) => {
         if (!post.data?.id) return;
         setBusy(true);
+        setActionError(null);
         try {
           await api.createComment(post.data.id, body);
           await Promise.all([post.reload(), comments.reload()]);
+        } catch (err) {
+          setActionError(err instanceof Error ? err.message : 'Não foi possível enviar o comentário.');
+          throw err;
         } finally {
           setBusy(false);
         }

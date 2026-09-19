@@ -4,19 +4,28 @@ export function useAsync<T>(loader: () => Promise<T>, deps: unknown[] = []) {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const dataRef = useRef<T | null>(null);
   dataRef.current = data;
 
   const reload = useCallback(async () => {
     const initial = dataRef.current == null;
-    if (initial) setLoading(true);
+    if (initial) {
+      setLoading(true);
+    } else {
+      setRefreshing(true);
+    }
     setError(null);
     try {
       setData(await loader());
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Pedido falhou.');
     } finally {
-      if (initial) setLoading(false);
+      if (initial) {
+        setLoading(false);
+      } else {
+        setRefreshing(false);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
@@ -25,5 +34,5 @@ export function useAsync<T>(loader: () => Promise<T>, deps: unknown[] = []) {
     void reload();
   }, [reload]);
 
-  return { data, error, loading, reload, setData };
+  return { data, error, loading, refreshing, reload, setData };
 }

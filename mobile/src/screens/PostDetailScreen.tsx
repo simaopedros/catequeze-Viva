@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import type { SocialAccess, SocialComment, SocialPost, SocialReportReason } from '../api/types';
 import { PostCard } from '../components/PostCard';
-import { BrandButton, EmptyState, Field, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, EmptyState, ErrorText, Field, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import { colors, spacing } from '../theme';
 
 const REACTIONS = [
@@ -30,6 +30,7 @@ export function PostDetailScreen({
   onComment,
   onReport,
   reportMessage,
+  actionError,
 }: {
   post?: SocialPost | null;
   comments: SocialComment[];
@@ -42,6 +43,7 @@ export function PostDetailScreen({
   onComment: (body: string) => Promise<void> | void;
   onReport?: (reason: SocialReportReason) => Promise<void> | void;
   reportMessage?: string | null;
+  actionError?: string | null;
 }) {
   const [body, setBody] = useState('');
   const [reason, setReason] = useState<SocialReportReason>('OTHER');
@@ -108,14 +110,19 @@ export function PostDetailScreen({
           Comentários pedem a mesma conta com que lê a Comunidade.
         </Text>
       ) : null}
+      <ErrorText message={actionError} />
       <Field label="O seu comentário" value={body} onChangeText={setBody} multiline testID="comment-input" />
       <BrandButton
         testID="comment-submit"
         label={busy ? 'A enviar…' : 'Comentar'}
         disabled={busy || !body.trim()}
         onPress={async () => {
-          await onComment(body.trim());
-          setBody('');
+          try {
+            await onComment(body.trim());
+            setBody('');
+          } catch {
+            // o erro é apresentado via actionError; o rascunho fica no campo
+          }
         }}
       />
       {onReport ? (

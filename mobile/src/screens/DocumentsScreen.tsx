@@ -1,6 +1,6 @@
-import React from 'react';
-import { Linking, Text } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import React, { useState } from 'react';
+import { Text } from 'react-native';
+import { BrandButton, Card, EmptyState, ErrorText, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import { colors } from '../theme';
 
 function asDocuments(payload: any) {
@@ -14,19 +14,27 @@ export function DocumentsScreen({
   payload,
   loading,
   error,
-  apiBase,
+  onOpen,
+  refreshing,
+  onRefresh,
 }: {
   payload: any;
   loading?: boolean;
   error?: string | null;
-  apiBase: string;
+  onOpen: (doc: any) => Promise<void> | void;
+  refreshing?: boolean;
+  onRefresh?: () => void;
 }) {
   const items = asDocuments(payload);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [openError, setOpenError] = useState<string | null>(null);
+
   return (
-    <Screen testID="documents-screen">
+    <Screen testID="documents-screen" refreshing={refreshing} onRefresh={onRefresh}>
       <ScreenTitle title="Documentos" subtitle="Ficheiros da família e da turma." />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Documentos indisponíveis" body={error} /> : null}
+      <ErrorText message={openError} />
       {items.length === 0 && !loading ? (
         <EmptyState title="Pasta vazia" body="Ainda não há documentos para mostrar." />
       ) : (
@@ -36,8 +44,19 @@ export function DocumentsScreen({
             <Text style={{ color: colors.muted, marginTop: 4 }}>{doc.kind || doc.mimeType || ''}</Text>
             <BrandButton
               variant="ghost"
-              label="Abrir"
-              onPress={() => Linking.openURL(`${apiBase.replace(/\/$/, '')}/mobile/documents/${doc.id}`)}
+              label={busyId === doc.id ? 'A abrir…' : 'Abrir'}
+              disabled={busyId !== null}
+              onPress={async () => {
+                setBusyId(doc.id);
+                setOpenError(null);
+                try {
+                  await onOpen(doc);
+                } catch (err) {
+                  setOpenError(err instanceof Error ? err.message : 'Não foi possível abrir o documento.');
+                } finally {
+                  setBusyId(null);
+                }
+              }}
             />
           </Card>
         ))
