@@ -116,20 +116,26 @@ export function ReportsScreen({
               ))}
             </ListCard>
           )}
-          <View style={{ height: spacing.md }} />
-          {ranking.filter((row) => row.totalMeetings > 0).map((row) => (
-            <Card key={`bar-${row.id}`} style={{ paddingVertical: spacing.sm }}>
-              <Row style={{ justifyContent: 'space-between' }}>
-                <Text variant="labelLarge" style={{ color: colors.ink, flex: 1 }} numberOfLines={1}>
-                  {row.name}
-                </Text>
-                <Text variant="labelMedium" style={{ color: colors.muted }}>
-                  {Math.round(row.attendanceRate)}%
-                </Text>
-              </Row>
-              <RateBar value={row.attendanceRate} />
-            </Card>
-          ))}
+          {withMeetings.length > 0 ? (
+            <>
+              <SectionHeader title="Taxa de presença por turma" icon="chart-bar" />
+              <Card>
+                {withMeetings.map((row, index) => (
+                  <View key={`bar-${row.id}`} style={{ marginBottom: index === withMeetings.length - 1 ? 0 : spacing.md }}>
+                    <Row style={{ justifyContent: 'space-between' }}>
+                      <Text variant="labelLarge" style={{ color: colors.ink, flex: 1 }} numberOfLines={1}>
+                        {row.name}
+                      </Text>
+                      <Text variant="labelMedium" style={{ color: colors.muted }}>
+                        {Math.round(row.attendanceRate)}%
+                      </Text>
+                    </Row>
+                    <RateBar value={row.attendanceRate} />
+                  </View>
+                ))}
+              </Card>
+            </>
+          ) : null}
         </>
       ) : null}
     </Screen>
