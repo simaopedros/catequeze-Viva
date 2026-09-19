@@ -2201,6 +2201,13 @@ api mobileSaveAttendanceBatch {
   entities: [AttendanceRecord, CatechesisClass, ClassCatechist, ClassEnrollment, CatechumenProfile, Meeting, Membership, Notification, User]
 }
 
+api mobileMeetingAttendanceSheet {
+  fn: import { mobileMeetingAttendanceSheet } from "@src/server/api/mobileOperations",
+  auth: true,
+  httpRoute: (GET, "/mobile/meetings/:id/sheet"),
+  entities: [AttendanceRecord, CatechesisClass, ClassCatechist, ClassEnrollment, CatechumenProfile, Meeting, Membership, User]
+}
+
 api mobileMeetingAttendance {
   fn: import { mobileMeetingAttendance } from "@src/server/api/mobileOperations",
   auth: true,

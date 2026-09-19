@@ -26,12 +26,24 @@ export default function AppLayout() {
       <Stack.Screen name="community/p/[slug]" options={{ title: 'Publicação' }} />
       <Stack.Screen name="community/t/[slug]" options={{ title: 'Tópico' }} />
       <Stack.Screen name="community/[handle]" options={{ title: 'Perfil' }} />
-      <Stack.Screen name="class/[id]" options={{ title: 'Turma' }} />
+      <Stack.Screen name="class/new" options={{ title: 'Nova turma' }} />
+      <Stack.Screen name="class/[id]/index" options={{ title: 'Turma' }} />
+      <Stack.Screen name="class/[id]/edit" options={{ title: 'Editar turma' }} />
+      <Stack.Screen name="class/[id]/enroll" options={{ title: 'Inscrever' }} />
+      <Stack.Screen name="class/[id]/catechists" options={{ title: 'Catequistas' }} />
+      <Stack.Screen name="class/[id]/attendance" options={{ title: 'Presenças' }} />
       <Stack.Screen name="catechumens/index" options={{ title: 'Catequizandos' }} />
       <Stack.Screen name="families/index" options={{ title: 'Famílias' }} />
-      <Stack.Screen name="catechumen/[id]" options={{ title: 'Catequizando' }} />
-      <Stack.Screen name="family/[id]" options={{ title: 'Família' }} />
-      <Stack.Screen name="meeting/[id]" options={{ title: 'Encontro' }} />
+      <Stack.Screen name="catechumen/new" options={{ title: 'Novo catequizando' }} />
+      <Stack.Screen name="catechumen/[id]/index" options={{ title: 'Catequizando' }} />
+      <Stack.Screen name="catechumen/[id]/edit" options={{ title: 'Editar catequizando' }} />
+      <Stack.Screen name="family/new" options={{ title: 'Nova família' }} />
+      <Stack.Screen name="family/[id]/index" options={{ title: 'Família' }} />
+      <Stack.Screen name="family/[id]/edit" options={{ title: 'Editar família' }} />
+      <Stack.Screen name="family/[id]/guardian" options={{ title: 'Responsável' }} />
+      <Stack.Screen name="meeting/new" options={{ title: 'Novo encontro' }} />
+      <Stack.Screen name="meeting/[id]/index" options={{ title: 'Encontro' }} />
+      <Stack.Screen name="meeting/[id]/edit" options={{ title: 'Editar encontro' }} />
       <Stack.Screen name="meeting/[id]/attendance" options={{ title: 'Presença' }} />
       <Stack.Screen name="messages/new" options={{ title: 'Nova conversa' }} />
       <Stack.Screen name="messages/[id]" options={{ title: 'Conversa' }} />

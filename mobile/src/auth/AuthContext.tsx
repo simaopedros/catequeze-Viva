@@ -3,6 +3,7 @@ import { createMobileClient, type MobileClient } from '../api/client';
 import type { AuthPayload, BootstrapPayload, MobileUser, Workspace } from '../api/types';
 import { createSessionStore, type SessionStore } from './session';
 import { createSecureStorage } from './secureStorage';
+import { permissionsFor, type WorkspacePermissions } from './permissions';
 
 export type AuthStatus = 'booting' | 'guest' | 'needs2fa' | 'ready';
 
@@ -235,4 +236,10 @@ export function unreadCount(bootstrap: BootstrapPayload | null) {
 
 export function listWorkspaces(bootstrap: BootstrapPayload | null): Workspace[] {
   return bootstrap?.workspaces ?? [];
+}
+
+/** Permissões derivadas do papel no workspace atual. */
+export function usePermissions(): WorkspacePermissions {
+  const { bootstrap, workspaceId, user } = useAuth();
+  return React.useMemo(() => permissionsFor(bootstrap, workspaceId, Boolean(user?.isAdmin)), [bootstrap, workspaceId, user?.isAdmin]);
 }

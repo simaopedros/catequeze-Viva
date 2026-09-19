@@ -12,6 +12,13 @@ const MEETING_STATUS: Record<string, { label: string; tone: 'success' | 'warning
   CANCELLED: { label: 'Cancelado', tone: 'danger' },
 };
 
+// Espelha isAllowedMeetingStatusTransition do backend.
+const ALLOWED_TRANSITIONS: Record<string, string[]> = {
+  NOT_STARTED: ['IN_PROGRESS', 'CANCELLED'],
+  SCHEDULED: ['IN_PROGRESS', 'CANCELLED'],
+  IN_PROGRESS: ['COMPLETED', 'CANCELLED'],
+};
+
 export function MeetingScreen({
   data,
   loading,
@@ -90,17 +97,18 @@ export function MeetingScreen({
           </Text>
         </Card>
       ) : null}
-      {onChangeStatus ? (
+      {onChangeStatus && (ALLOWED_TRANSITIONS[String(data.status)] ?? []).length > 0 ? (
         <Card>
           <Text variant="labelMedium" style={{ color: colors.goldDark, marginBottom: spacing.xs }}>
-            ESTADO
+            ATUALIZAR ESTADO
           </Text>
           <Row style={{ flexWrap: 'wrap' }}>
-            {(['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'] as const).map((value) => (
+            {(ALLOWED_TRANSITIONS[String(data.status)] ?? []).map((value) => (
               <BrandButton
                 key={value}
-                variant={data.status === value ? 'primary' : 'ghost'}
-                label={MEETING_STATUS[value].label}
+                variant={value === 'CANCELLED' ? 'ghost' : value === 'COMPLETED' ? 'primary' : 'gold'}
+                icon={value === 'IN_PROGRESS' ? 'play-outline' : value === 'COMPLETED' ? 'check-circle-outline' : 'cancel'}
+                label={value === 'IN_PROGRESS' ? 'Iniciar encontro' : value === 'COMPLETED' ? 'Concluir' : 'Cancelar'}
                 onPress={() => onChangeStatus(value)}
                 style={{ flexGrow: 1, marginTop: 0 }}
                 testID={`status-${value}`}

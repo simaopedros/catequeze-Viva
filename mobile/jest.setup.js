@@ -14,6 +14,16 @@ jest.mock('react-native-safe-area-context', () => {
   };
 });
 
+// Os modais de data/hora dependem de ESM (color) sem transform; nos testes bastam stubs.
+jest.mock('react-native-paper-dates', () => ({
+  DatePickerModal: () => null,
+  TimePickerModal: () => null,
+  DatePickerInput: () => null,
+  registerTranslation: () => undefined,
+  pt: {},
+  en: {},
+}));
+
 // Evita avisos de act() dos ícones a carregar fontes em ambiente de teste.
 jest.mock('expo-font', () => ({
   ...jest.requireActual('expo-font'),

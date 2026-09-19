@@ -64,6 +64,51 @@ export function withQuery(path: string, query?: Record<string, string | number |
 
 export type UploadFileInput = { uri: string; name: string; type: string } | Blob;
 
+export type ClassInput = {
+  name: string;
+  communityId?: string | null;
+  dayOfWeek?: string;
+  startTime?: string;
+  endTime?: string;
+  location?: string;
+  maxCapacity?: number;
+};
+
+export type MeetingInput = {
+  title: string;
+  theme?: string;
+  /** ISO date/time */
+  date: string;
+  notes?: string;
+  contentId?: string | null;
+};
+
+export type CatechumenInput = {
+  firstName: string;
+  lastName: string;
+  email?: string | null;
+  /** YYYY-MM-DD */
+  birthDate?: string | null;
+  householdId?: string | null;
+  photoUrl?: string | null;
+};
+
+export type FamilyInput = {
+  name: string;
+  address?: string;
+  phone?: string;
+  communityId?: string;
+};
+
+export type GuardianInput = {
+  userId?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  relationship?: string;
+  phone?: string;
+};
+
 export function createMobileClient(options: MobileClientOptions) {
   async function upload<T>(path: string, file: UploadFileInput): Promise<T> {
     const token = await options.getToken();
@@ -206,6 +251,106 @@ export function createMobileClient(options: MobileClientOptions) {
         method: 'POST',
         body: JSON.stringify(body),
       });
+    },
+    // ── Fase B: operação da catequese ──
+    createClass(body: ClassInput & { workspaceId?: string }) {
+      return request<any>(MOBILE_PATHS.classes, { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateClass(id: string, body: Partial<ClassInput> & { status?: string }) {
+      return request<any>(MOBILE_PATHS.classDetails(id), { method: 'PUT', body: JSON.stringify(body) });
+    },
+    classAttendanceMatrix(id: string, query?: { fromDate?: string; toDate?: string; take?: number }) {
+      return request<any>(withQuery(MOBILE_PATHS.classAttendanceMatrix(id), query));
+    },
+    classPlan(id: string, query?: { month?: number; year?: number }) {
+      return request<any>(withQuery(MOBILE_PATHS.classPlan(id), query));
+    },
+    classChat(id: string) {
+      return request<{ conversationId: string; created?: boolean }>(MOBILE_PATHS.classChat(id), { method: 'POST' });
+    },
+    enrollCatechumens(classId: string, catechumenProfileIds: string[]) {
+      return request<any>(MOBILE_PATHS.classEnrollments(classId), {
+        method: 'POST',
+        body: JSON.stringify({ catechumenProfileIds }),
+      });
+    },
+    cancelEnrollment(classId: string, enrollmentId: string) {
+      return request<any>(MOBILE_PATHS.classEnrollment(classId, enrollmentId), { method: 'DELETE' });
+    },
+    addClassCatechist(classId: string, userId: string) {
+      return request<any>(MOBILE_PATHS.classCatechists(classId), { method: 'POST', body: JSON.stringify({ userId }) });
+    },
+    removeClassCatechist(classId: string, userId: string) {
+      return request<any>(MOBILE_PATHS.classCatechist(classId, userId), { method: 'DELETE' });
+    },
+    communities(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.communities, { workspaceId }));
+    },
+    catechists(workspaceId: string) {
+      return request<any>(withQuery(MOBILE_PATHS.catechists, { workspaceId }));
+    },
+    createMeeting(body: MeetingInput & { classId: string }) {
+      return request<any>(MOBILE_PATHS.meetings, { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateMeeting(id: string, body: Partial<MeetingInput> & { status?: string }) {
+      return request<any>(MOBILE_PATHS.meetingDetails(id), { method: 'PUT', body: JSON.stringify(body) });
+    },
+    deleteMeeting(id: string) {
+      return request<any>(MOBILE_PATHS.meetingDetails(id), { method: 'DELETE' });
+    },
+    meetingAttendance(id: string) {
+      return request<any>(MOBILE_PATHS.meetingAttendance(id));
+    },
+    meetingSheet(id: string, classId: string) {
+      return request<any>(withQuery(MOBILE_PATHS.meetingSheet(id), { classId }));
+    },
+    justifyAbsenceByMeeting(meetingId: string, catechumenProfileId: string, note: string) {
+      return request<any>(MOBILE_PATHS.meetingJustify(meetingId), {
+        method: 'POST',
+        body: JSON.stringify({ catechumenProfileId, note }),
+      });
+    },
+    justifyAbsence(attendanceId: string, note: string) {
+      return request<any>(MOBILE_PATHS.attendanceJustify, { method: 'POST', body: JSON.stringify({ attendanceId, note }) });
+    },
+    saveAttendanceBatch(meetingId: string, changes: { catechumenProfileId: string; status: string; note?: string | null }[]) {
+      return request<any>(MOBILE_PATHS.attendanceBatch, { method: 'POST', body: JSON.stringify({ meetingId, changes }) });
+    },
+    createCatechumen(body: CatechumenInput & { workspaceId?: string }) {
+      return request<any>(MOBILE_PATHS.catechumens, { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateCatechumen(id: string, body: Partial<CatechumenInput>) {
+      return request<any>(MOBILE_PATHS.catechumenDetails(id), { method: 'PUT', body: JSON.stringify(body) });
+    },
+    deleteCatechumen(id: string) {
+      return request<any>(MOBILE_PATHS.catechumenDetails(id), { method: 'DELETE' });
+    },
+    catechumenAttendanceReport(id: string) {
+      return request<any>(MOBILE_PATHS.catechumenAttendanceReport(id));
+    },
+    catechumenUploadToken(id: string, workspaceId?: string) {
+      return request<any>(MOBILE_PATHS.catechumenUploadToken(id), { method: 'POST', body: JSON.stringify({ workspaceId }) });
+    },
+    createFamily(body: FamilyInput & { workspaceId?: string }) {
+      return request<any>(MOBILE_PATHS.families, { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateFamily(id: string, body: Partial<FamilyInput>) {
+      return request<any>(MOBILE_PATHS.familyDetails(id), { method: 'PUT', body: JSON.stringify(body) });
+    },
+    addGuardian(familyId: string, body: GuardianInput) {
+      return request<any>(MOBILE_PATHS.familyGuardians(familyId), { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateGuardian(familyId: string, guardianId: string, body: Partial<GuardianInput>) {
+      return request<any>(MOBILE_PATHS.familyGuardian(familyId, guardianId), { method: 'PUT', body: JSON.stringify(body) });
+    },
+    removeGuardian(familyId: string, guardianId: string) {
+      return request<any>(MOBILE_PATHS.familyGuardian(familyId, guardianId), { method: 'DELETE' });
+    },
+    consents() {
+      return request<any>(MOBILE_PATHS.consents);
+    },
+    saveConsent(type: string, granted: boolean) {
+      return request<any>(MOBILE_PATHS.consents, { method: 'POST', body: JSON.stringify({ type, granted }) });
     },
     conversations(workspaceId?: string) {
       return request<any>(withQuery(MOBILE_PATHS.messages, { workspaceId }));

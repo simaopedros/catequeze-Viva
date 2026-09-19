@@ -225,6 +225,72 @@ describe('mobile HTTP client', () => {
     expect(calls[1].init.method).toBe('DELETE');
   });
 
+  it('covers the catechesis operation endpoints (Fase B)', async () => {
+    const calls: { url: string; method: string; body: any }[] = [];
+    const client = createMobileClient({
+      getBaseUrl: () => 'http://localhost:3001',
+      getToken: () => 'tok',
+      fetchImpl: async (url, init) => {
+        calls.push({ url: String(url), method: init?.method || 'GET', body: init?.body ? JSON.parse(String(init.body)) : null });
+        return jsonResponse({ id: 'new', success: true });
+      },
+    });
+
+    await client.createClass({ name: 'Turma A', workspaceId: 'ws-1', maxCapacity: 20 });
+    await client.updateClass('c1', { status: 'PAUSED' });
+    await client.enrollCatechumens('c1', ['p1', 'p2']);
+    await client.cancelEnrollment('c1', 'e1');
+    await client.addClassCatechist('c1', 'u1');
+    await client.removeClassCatechist('c1', 'u1');
+    await client.classAttendanceMatrix('c1', { take: 10 });
+    await client.classChat('c1');
+    await client.createMeeting({ classId: 'c1', title: 'Encontro', date: '2026-10-03T10:00:00.000Z' });
+    await client.updateMeeting('m1', { status: 'IN_PROGRESS' });
+    await client.deleteMeeting('m1');
+    await client.meetingSheet('m1', 'c1');
+    await client.saveAttendanceBatch('m1', [{ catechumenProfileId: 'p1', status: 'PRESENT' }]);
+    await client.createCatechumen({ firstName: 'Ana', lastName: 'Silva', workspaceId: 'ws-1' });
+    await client.updateCatechumen('p1', { firstName: 'Ana Maria' });
+    await client.deleteCatechumen('p1');
+    await client.createFamily({ name: 'Família Silva', workspaceId: 'ws-1' });
+    await client.updateFamily('f1', { phone: '911' });
+    await client.addGuardian('f1', { firstName: 'Maria', relationship: 'MOTHER' });
+    await client.updateGuardian('f1', 'g1', { phone: '922' });
+    await client.removeGuardian('f1', 'g1');
+    await client.communities('ws-1');
+    await client.catechists('ws-1');
+    await client.consents();
+    await client.saveConsent('PHOTOS', true);
+
+    const base = 'http://localhost:3001';
+    const find = (method: string, path: string) => calls.find((call) => call.method === method && call.url === base + path);
+    expect(find('POST', MOBILE_PATHS.classes)?.body).toMatchObject({ name: 'Turma A', workspaceId: 'ws-1' });
+    expect(find('PUT', MOBILE_PATHS.classDetails('c1'))?.body).toEqual({ status: 'PAUSED' });
+    expect(find('POST', MOBILE_PATHS.classEnrollments('c1'))?.body).toEqual({ catechumenProfileIds: ['p1', 'p2'] });
+    expect(find('DELETE', MOBILE_PATHS.classEnrollment('c1', 'e1'))).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.classCatechists('c1'))?.body).toEqual({ userId: 'u1' });
+    expect(find('DELETE', MOBILE_PATHS.classCatechist('c1', 'u1'))).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.classAttendanceMatrix('c1') + '?take=10')).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.classChat('c1'))).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.meetings)?.body).toMatchObject({ classId: 'c1', title: 'Encontro' });
+    expect(find('PUT', MOBILE_PATHS.meetingDetails('m1'))?.body).toEqual({ status: 'IN_PROGRESS' });
+    expect(find('DELETE', MOBILE_PATHS.meetingDetails('m1'))).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.meetingSheet('m1') + '?classId=c1')).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.attendanceBatch)?.body).toEqual({ meetingId: 'm1', changes: [{ catechumenProfileId: 'p1', status: 'PRESENT' }] });
+    expect(find('POST', MOBILE_PATHS.catechumens)?.body).toMatchObject({ firstName: 'Ana' });
+    expect(find('PUT', MOBILE_PATHS.catechumenDetails('p1'))?.body).toEqual({ firstName: 'Ana Maria' });
+    expect(find('DELETE', MOBILE_PATHS.catechumenDetails('p1'))).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.families)?.body).toMatchObject({ name: 'Família Silva' });
+    expect(find('PUT', MOBILE_PATHS.familyDetails('f1'))?.body).toEqual({ phone: '911' });
+    expect(find('POST', MOBILE_PATHS.familyGuardians('f1'))?.body).toMatchObject({ firstName: 'Maria' });
+    expect(find('PUT', MOBILE_PATHS.familyGuardian('f1', 'g1'))?.body).toEqual({ phone: '922' });
+    expect(find('DELETE', MOBILE_PATHS.familyGuardian('f1', 'g1'))).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.communities + '?workspaceId=ws-1')).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.catechists + '?workspaceId=ws-1')).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.consents)).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.consents)?.body).toEqual({ type: 'PHOTOS', granted: true });
+  });
+
   it('paginates feed and comments with cursors', async () => {
     const urls: string[] = [];
     const client = createMobileClient({

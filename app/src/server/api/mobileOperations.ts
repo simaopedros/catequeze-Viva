@@ -19,6 +19,7 @@ import {
   deleteMeeting,
   getClassAttendanceMatrix,
   getMeetingAttendance,
+  getMeetingAttendanceSheet,
   justifyAbsence,
   justifyAbsenceByMeeting,
   saveAttendanceBatch,
@@ -196,6 +197,12 @@ export const mobileUpdateMeeting = mobileOp(updateMeeting, (req) => {
 
 export const mobileDeleteMeeting = mobileOp(deleteMeeting, (req) => ({
   id: parseRequiredString(req.params.id, 'id'),
+}));
+
+export const mobileMeetingAttendanceSheet = mobileOp(getMeetingAttendanceSheet, (req) => ({
+  classId: parseRequiredString(req.query.classId, 'classId'),
+  meetingId: parseRequiredString(req.params.id, 'id'),
+  surface: 'mobile',
 }));
 
 export const mobileMeetingAttendance = mobileOp(getMeetingAttendance, (req) => ({

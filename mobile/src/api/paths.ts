@@ -47,6 +47,29 @@ export const MOBILE_PATHS = {
   socialVideoUpload: '/mobile/social/videos',
   profileAvatarUpload: '/mobile/profile/avatar',
   pushToken: '/mobile/push-token',
+  // Fase B — operação da catequese
+  classAttendanceMatrix: (id: string) => `/mobile/classes/${encodeURIComponent(id)}/attendance`,
+  classPlan: (id: string) => `/mobile/classes/${encodeURIComponent(id)}/plan`,
+  classChat: (id: string) => `/mobile/classes/${encodeURIComponent(id)}/chat`,
+  classEnrollments: (id: string) => `/mobile/classes/${encodeURIComponent(id)}/enrollments`,
+  classEnrollment: (id: string, enrollmentId: string) =>
+    `/mobile/classes/${encodeURIComponent(id)}/enrollments/${encodeURIComponent(enrollmentId)}`,
+  classCatechists: (id: string) => `/mobile/classes/${encodeURIComponent(id)}/catechists`,
+  classCatechist: (id: string, userId: string) =>
+    `/mobile/classes/${encodeURIComponent(id)}/catechists/${encodeURIComponent(userId)}`,
+  communities: '/mobile/communities',
+  catechists: '/mobile/catechists',
+  attendanceBatch: '/mobile/attendance/batch',
+  attendanceJustify: '/mobile/attendance/justify',
+  meetingAttendance: (id: string) => `/mobile/meetings/${encodeURIComponent(id)}/attendance`,
+  meetingSheet: (id: string) => `/mobile/meetings/${encodeURIComponent(id)}/sheet`,
+  meetingJustify: (id: string) => `/mobile/meetings/${encodeURIComponent(id)}/justify`,
+  catechumenAttendanceReport: (id: string) => `/mobile/catechumens/${encodeURIComponent(id)}/attendance-report`,
+  catechumenUploadToken: (id: string) => `/mobile/catechumens/${encodeURIComponent(id)}/upload-token`,
+  familyGuardians: (id: string) => `/mobile/families/${encodeURIComponent(id)}/guardians`,
+  familyGuardian: (id: string, guardianId: string) =>
+    `/mobile/families/${encodeURIComponent(id)}/guardians/${encodeURIComponent(guardianId)}`,
+  consents: '/mobile/consents',
   bibleBooks: '/mobile/bible/books',
   bibleBook: (id: string) => `/mobile/bible/books/${encodeURIComponent(id)}`,
   bibleChapter: (bookId: string, chapter: number) =>

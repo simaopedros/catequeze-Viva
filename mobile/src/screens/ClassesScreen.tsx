@@ -20,7 +20,7 @@ function asList(payload: any): ClassItem[] {
 const STATUS_LABEL: Record<string, { label: string; tone: 'success' | 'warning' | 'neutral' | 'info' }> = {
   ACTIVE: { label: 'Ativa', tone: 'success' },
   PAUSED: { label: 'Pausada', tone: 'warning' },
-  COMPLETED: { label: 'Concluída', tone: 'info' },
+  CONCLUDED: { label: 'Concluída', tone: 'info' },
   ARCHIVED: { label: 'Arquivada', tone: 'neutral' },
   DRAFT: { label: 'Rascunho', tone: 'neutral' },
 };

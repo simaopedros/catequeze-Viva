@@ -6,14 +6,14 @@ import { BrandButton, Card, EmptyState, ErrorText, Icon, ListCard, Row, Screen, 
 import { colors, radius, spacing } from '../theme';
 import { formatDateTime, fullName } from '../utils/format';
 
-export const ATTENDANCE_STATUSES = ['PRESENT', 'LATE', 'ABSENT', 'EXCUSED'] as const;
+export const ATTENDANCE_STATUSES = ['PRESENT', 'LATE', 'ABSENT', 'JUSTIFIED'] as const;
 export type AttendanceStatus = (typeof ATTENDANCE_STATUSES)[number];
 
 export const ATTENDANCE_META: Record<AttendanceStatus, { label: string; short: string; icon: IconName; color: string; bg: string }> = {
   PRESENT: { label: 'Presente', short: 'P', icon: 'check', color: colors.success, bg: '#E3F3EA' },
   LATE: { label: 'Atrasado', short: 'A', icon: 'clock-outline', color: colors.warning, bg: '#FBEFD6' },
   ABSENT: { label: 'Falta', short: 'F', icon: 'close', color: colors.danger, bg: '#FDE7E4' },
-  EXCUSED: { label: 'Justificada', short: 'J', icon: 'file-check-outline', color: colors.midnight, bg: '#DDE6F2' },
+  JUSTIFIED: { label: 'Justificada', short: 'J', icon: 'file-check-outline', color: colors.midnight, bg: '#DDE6F2' },
 };
 
 export function statusLabel(status: string): string {
@@ -21,7 +21,7 @@ export function statusLabel(status: string): string {
 }
 
 function rowsOf(meeting: any): any[] {
-  return meeting?.attendance || meeting?.records || meeting?.enrollments || meeting?.catechumens || [];
+  return meeting?.participants || meeting?.attendance || meeting?.records || meeting?.enrollments || meeting?.catechumens || [];
 }
 
 function StatusPicker({ value, onChange, disabled }: { value: AttendanceStatus | null; onChange: (status: AttendanceStatus) => void; disabled?: boolean }) {
@@ -83,7 +83,7 @@ export function AttendanceScreen({
   const currentOf = (row: any): AttendanceStatus | null => (draft[idOf(row)] ?? (row.status as AttendanceStatus | undefined) ?? null);
 
   const counts = useMemo(() => {
-    const result: Record<AttendanceStatus, number> = { PRESENT: 0, LATE: 0, ABSENT: 0, EXCUSED: 0 };
+    const result: Record<AttendanceStatus, number> = { PRESENT: 0, LATE: 0, ABSENT: 0, JUSTIFIED: 0 };
     for (const row of rows) {
       const status = currentOf(row);
       if (status && status in result) result[status] += 1;
