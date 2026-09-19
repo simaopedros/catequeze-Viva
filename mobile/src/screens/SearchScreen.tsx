@@ -1,9 +1,9 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
+import { Pressable } from 'react-native';
 import type { SocialSearch } from '../api/types';
+import { Avatar } from '../components/Avatar';
 import { PostCard } from '../components/PostCard';
-import { Card, EmptyState, Field, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors, spacing } from '../theme';
+import { EmptyState, ListCard, ListRow, Screen, ScreenTitle, SearchBar, SectionHeader, SkeletonList } from '../components/ui';
 
 export function SearchScreen({
   query,
@@ -29,39 +29,37 @@ export function SearchScreen({
   return (
     <Screen testID="search-screen">
       <ScreenTitle title="Pesquisar" subtitle="Encontre catequistas, tópicos e publicações da Comunidade." />
-      <Field label="Pesquisar" value={query} onChangeText={onChangeQuery} testID="search-input" />
-      {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Pesquisa indisponível" body={error} /> : null}
-      {empty ? (
-        <EmptyState title="Nada encontrado" body="Tente um @, um nome ou uma palavra da publicação." />
+      <SearchBar value={query} onChangeText={onChangeQuery} placeholder="Nome, @ ou palavra" testID="search-input" autoFocus />
+      {loading ? <SkeletonList rows={2} /> : null}
+      {error ? <EmptyState icon="cloud-off-outline" title="Pesquisa indisponível" body={error} /> : null}
+      {query.trim().length < 2 && !loading ? (
+        <EmptyState icon="magnify" title="Comece a escrever" body="Pesquise por pessoas, @ ou palavras das publicações." />
       ) : null}
+      {empty ? <EmptyState icon="magnify-close" title="Nada encontrado" body="Tente um @, um nome ou uma palavra da publicação." /> : null}
       {people.length > 0 ? (
         <>
-          <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm }}>Pessoas</Text>
-          {people.map((person) => {
-            const handle = person.socialHandle || person.handle;
-            return (
-              <Pressable
-                key={person.id}
-                testID={`search-person-${person.id}`}
-                onPress={() => handle && onOpenAuthor(handle)}
-              >
-                <Card>
-                  <Text style={{ color: colors.ink, fontWeight: '700' }}>{person.displayName}</Text>
-                  <Text style={{ color: colors.goldDark, marginTop: 2 }}>
-                    {handle ? `@${handle}` : 'Sem handle'} · {person.followersCount ?? 0} seguidores
-                  </Text>
-                </Card>
-              </Pressable>
-            );
-          })}
+          <SectionHeader title="Pessoas" icon="account-outline" />
+          <ListCard>
+            {people.map((person, index) => {
+              const handle = person.socialHandle || person.handle;
+              return (
+                <ListRow
+                  key={person.id}
+                  testID={`search-person-${person.id}`}
+                  left={<Avatar name={person.displayName} url={person.avatarUrl} size={36} />}
+                  title={person.displayName}
+                  subtitle={`${handle ? `@${handle}` : 'Sem handle'} · ${person.followersCount ?? 0} seguidores`}
+                  onPress={handle ? () => onOpenAuthor(handle) : undefined}
+                  last={index === people.length - 1}
+                />
+              );
+            })}
+          </ListCard>
         </>
       ) : null}
       {posts.length > 0 ? (
         <>
-          <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm }}>
-            Publicações
-          </Text>
+          <SectionHeader title="Publicações" icon="post-outline" />
           {posts.map((post) => (
             <Pressable key={post.id} testID={`search-post-${post.id}`} onPress={() => onOpenPost(post.slug)}>
               <PostCard post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />

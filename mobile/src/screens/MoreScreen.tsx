@@ -1,78 +1,151 @@
 import React from 'react';
-import { Text } from 'react-native';
-import { BrandButton, Card, Field, Screen, ScreenTitle } from '../components/ui';
+import { View } from 'react-native';
+import { Text } from 'react-native-paper';
+import { Avatar } from '../components/Avatar';
+import { BrandButton, Card, Icon, ListCard, ListRow, Row, Screen, ScreenTitle, SectionHeader, Tag, type IconName } from '../components/ui';
 import type { SocialProfile, Workspace } from '../api/types';
-import { colors } from '../theme';
+import { colors, spacing } from '../theme';
+
+export type MoreLink = {
+  id: string;
+  label: string;
+  hint?: string;
+  icon: IconName;
+  onPress: () => void;
+  testID?: string;
+};
+
+export type MoreSection = { title: string; icon?: IconName; links: MoreLink[] };
+
+export const ROLE_LABELS: Record<string, string> = {
+  SUPER_ADMIN: 'Administração da plataforma',
+  DIOCESE_ADMIN: 'Administração diocesana',
+  PARISH_COORDINATOR: 'Coordenação paroquial',
+  COMMUNITY_COORDINATOR: 'Coordenação de comunidade',
+  LEAD_CATECHIST: 'Catequista principal',
+  ASSISTANT_CATECHIST: 'Catequista auxiliar',
+  GUARDIAN: 'Encarregado(a) de educação',
+  CATECHUMEN: 'Catequizando',
+  CONTENT_REVIEWER: 'Revisão de conteúdos',
+  PASTORAL_VIEWER: 'Equipa pastoral',
+  PERSONAL_OWNER: 'Espaço pessoal',
+  PLATFORM_MEMBER: 'Membro',
+};
+
+export function roleLabel(role?: string | null): string | undefined {
+  if (!role) return undefined;
+  return ROLE_LABELS[role] ?? role;
+}
 
 export function MoreScreen({
   name,
+  email,
+  avatarUrl,
   workspaces,
   workspaceId,
   profile,
+  sections,
   onSelectWorkspace,
-  onOpenBible,
-  onOpenDocuments,
-  onOpenCommunity,
-  onOpenEditProfile,
   onOpenProfile,
-  onSaveProfile,
+  onOpenEditProfile,
   onLogout,
-  handle,
-  bio,
-  onHandleChange,
-  onBioChange,
+  version,
 }: {
   name: string;
+  email?: string | null;
+  avatarUrl?: string | null;
   workspaces: Workspace[];
   workspaceId: string | null;
   profile?: SocialProfile | null;
+  sections: MoreSection[];
   onSelectWorkspace: (id: string) => void;
-  onOpenBible: () => void;
-  onOpenDocuments: () => void;
-  onOpenCommunity?: () => void;
-  onOpenEditProfile?: () => void;
   onOpenProfile: () => void;
-  onSaveProfile: () => void;
+  onOpenEditProfile?: () => void;
   onLogout: () => void;
-  handle: string;
-  bio: string;
-  onHandleChange: (value: string) => void;
-  onBioChange: (value: string) => void;
+  version?: string;
 }) {
+  const current = workspaces.find((workspace) => workspace.id === workspaceId);
   return (
-    <Screen testID="more-screen">
-      <ScreenTitle title="Mais" subtitle={name} />
-      <BrandButton label="Bíblia" onPress={onOpenBible} testID="open-bible" />
-      <BrandButton variant="ghost" label="Documentos" onPress={onOpenDocuments} />
-      {onOpenCommunity ? (
-        <BrandButton variant="ghost" label="Áreas da Comunidade" onPress={onOpenCommunity} testID="open-community" />
-      ) : null}
-      {profile?.handle ? (
-        <BrandButton variant="ghost" label={`Ver perfil @${profile.handle}`} onPress={onOpenProfile} />
-      ) : null}
-      {onOpenEditProfile ? (
-        <BrandButton variant="ghost" label="Editar perfil público" onPress={onOpenEditProfile} testID="open-edit-profile" />
-      ) : null}
-      <Card>
-        <Text style={{ color: colors.ink, fontWeight: '700', marginBottom: 8 }}>Espaço de trabalho</Text>
-        {workspaces.map((workspace) => (
-          <Text
-            key={workspace.id}
-            onPress={() => onSelectWorkspace(workspace.id)}
-            style={{
-              color: workspace.id === workspaceId ? colors.goldDark : colors.inkSoft,
-              marginBottom: 6,
-              fontWeight: workspace.id === workspaceId ? '700' : '400',
-            }}
-          >
-            {workspace.name}
-          </Text>
-        ))}
+    <Screen testID="more-screen" safeTop>
+      <ScreenTitle title="Mais" subtitle="Conta, paróquia e ferramentas." />
+
+      <Card tone="ink">
+        <Row gap={spacing.md}>
+          <Avatar name={name} url={avatarUrl ?? profile?.avatarUrl} size={56} />
+          <View style={{ flex: 1 }}>
+            <Text variant="titleMedium" style={{ color: colors.white }}>
+              {name}
+            </Text>
+            {email ? (
+              <Text variant="bodySmall" style={{ color: colors.tabInactive }}>
+                {email}
+              </Text>
+            ) : null}
+            {profile?.handle ? (
+              <Text variant="labelMedium" style={{ color: colors.goldLight, marginTop: 2 }}>
+                @{profile.handle}
+              </Text>
+            ) : null}
+          </View>
+        </Row>
+        <Row style={{ marginTop: spacing.sm }}>
+          {profile?.handle ? <BrandButton variant="gold" icon="account-circle-outline" label="Perfil" onPress={onOpenProfile} style={{ flex: 1 }} /> : null}
+          {onOpenEditProfile ? (
+            <BrandButton variant="tonal" icon="account-edit-outline" label="Editar perfil" onPress={onOpenEditProfile} testID="open-edit-profile" style={{ flex: 1 }} />
+          ) : null}
+        </Row>
       </Card>
-      <Field label="O seu @" value={handle} onChangeText={onHandleChange} testID="profile-handle" />
-      <Field label="Bio" value={bio} onChangeText={onBioChange} multiline />
-      <BrandButton label="Guardar perfil público" onPress={onSaveProfile} />
-      <BrandButton variant="danger" label="Terminar sessão" onPress={onLogout} testID="logout-button" />
+
+      {workspaces.length > 0 ? (
+        <>
+          <SectionHeader title="Espaço de trabalho" icon="church" />
+          <ListCard>
+            {workspaces.map((workspace, index) => {
+              const active = workspace.id === workspaceId;
+              return (
+                <ListRow
+                  key={workspace.id}
+                  testID={`workspace-${workspace.id}`}
+                  icon={active ? 'check-circle' : 'circle-outline'}
+                  title={workspace.name}
+                  subtitle={roleLabel((workspace as any).role) || (workspace as any).kind}
+                  right={active ? <Tag label="Atual" tone="gold" /> : undefined}
+                  chevron={false}
+                  onPress={() => onSelectWorkspace(workspace.id)}
+                  last={index === workspaces.length - 1}
+                />
+              );
+            })}
+          </ListCard>
+        </>
+      ) : null}
+
+      {sections.map((section) => (
+        <View key={section.title}>
+          <SectionHeader title={section.title} icon={section.icon} />
+          <ListCard>
+            {section.links.map((link, index) => (
+              <ListRow
+                key={link.id}
+                testID={link.testID}
+                icon={link.icon}
+                title={link.label}
+                subtitle={link.hint}
+                onPress={link.onPress}
+                last={index === section.links.length - 1}
+              />
+            ))}
+          </ListCard>
+        </View>
+      ))}
+
+      <BrandButton variant="danger" icon="logout" label="Terminar sessão" onPress={onLogout} testID="logout-button" />
+      <Row style={{ justifyContent: 'center', marginTop: spacing.md }}>
+        <Icon name="cross" size={14} color={colors.muted} />
+        <Text variant="labelSmall" style={{ color: colors.muted }}>
+          Catequese Viva{current ? ` · ${current.name}` : ''}{version ? ` · v${version}` : ''}
+        </Text>
+      </Row>
     </Screen>
   );
 }

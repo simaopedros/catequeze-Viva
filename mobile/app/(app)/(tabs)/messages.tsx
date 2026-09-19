@@ -5,7 +5,7 @@ import { useAsync } from '../../../src/hooks/useAsync';
 import { MessagesScreen } from '../../../src/screens/MessagesScreen';
 
 export default function MessagesRoute() {
-  const { api, workspaceId } = useAuth();
+  const { api, workspaceId, user } = useAuth();
   const router = useRouter();
   const { data, loading, error, reload, refreshing } = useAsync(
     () => api.conversations(workspaceId || undefined),
@@ -17,6 +17,7 @@ export default function MessagesRoute() {
       payload={data}
       loading={loading}
       error={error}
+      currentUserId={user?.id}
       refreshing={refreshing}
       onRefresh={() => void reload()}
       onOpen={(id) => router.push(`/(app)/messages/${id}`)}

@@ -1,10 +1,24 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { BrandButton, EmptyState, ErrorText, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { Pressable, View } from 'react-native';
+import { Text } from 'react-native-paper';
+import { BrandButton, Card, EmptyState, ErrorText, Icon, Row, Screen, SectionHeader, SkeletonList, Tag } from '../components/ui';
 import { Avatar } from '../components/Avatar';
 import { PostCard } from '../components/PostCard';
 import type { SocialPost, SocialProfile } from '../api/types';
-import { colors } from '../theme';
+import { colors, spacing } from '../theme';
+
+function Counter({ value, label, onPress, testID }: { value: number; label: string; onPress?: () => void; testID?: string }) {
+  return (
+    <Pressable testID={testID} onPress={onPress} disabled={!onPress} style={{ alignItems: 'center', flex: 1 }}>
+      <Text variant="titleLarge" style={{ color: colors.white }}>
+        {value}
+      </Text>
+      <Text variant="labelSmall" style={{ color: colors.tabInactive }}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
 
 export function ProfileScreen({
   profile,
@@ -19,10 +33,13 @@ export function ProfileScreen({
   onOpenFollowers,
   onOpenFollowing,
   onEdit,
+  onReport,
   actionError,
   postsHasMore,
   postsLoadingMore,
   onLoadMorePosts,
+  refreshing,
+  onRefresh,
 }: {
   profile?: SocialProfile | null;
   loading?: boolean;
@@ -36,23 +53,26 @@ export function ProfileScreen({
   onOpenFollowers?: () => void;
   onOpenFollowing?: () => void;
   onEdit?: () => void;
+  onReport?: () => void;
   actionError?: string | null;
   postsHasMore?: boolean;
   postsLoadingMore?: boolean;
   onLoadMorePosts?: () => void;
+  refreshing?: boolean;
+  onRefresh?: () => void;
 }) {
-  const data = profile?.profile ?? profile;
-  if (loading) {
+  const data: any = profile?.profile ?? profile;
+  if (loading && !data) {
     return (
       <Screen>
-        <LoadingState />
+        <SkeletonList rows={3} />
       </Screen>
     );
   }
   if (error || !data) {
     return (
       <Screen>
-        <EmptyState title="Perfil indisponível" body={error || 'Este @ não foi encontrado.'} />
+        <EmptyState icon="account-question-outline" title="Perfil indisponível" body={error || 'Este @ não foi encontrado.'} />
       </Screen>
     );
   }
@@ -60,70 +80,81 @@ export function ProfileScreen({
   const handle = data.handle || data.socialHandle;
   const followers = data.followersCount ?? data.followerCount ?? 0;
   const following = data.followingCount ?? 0;
+  const postCount = data.postsCount ?? data.postCount ?? (posts ?? []).length;
 
   return (
-    <Screen testID="profile-screen">
-      <View style={{ alignItems: 'center', marginBottom: 12 }}>
-        <Avatar name={data.displayName} url={data.avatarUrl} size={88} testID="profile-avatar" />
-      </View>
-      <ScreenTitle title={data.displayName} subtitle={handle ? `@${handle}` : 'Sem handle público'} />
-      {data.bio || data.socialBio ? (
-        <Text style={{ color: colors.inkSoft, marginBottom: 12 }}>{data.bio || data.socialBio}</Text>
-      ) : null}
-      {data.websiteUrl ? (
-        <Text style={{ color: colors.goldDark, marginBottom: 12 }}>{data.websiteUrl}</Text>
-      ) : null}
-      <Pressable testID="open-followers" onPress={onOpenFollowers} disabled={!onOpenFollowers}>
-        <Text style={{ color: colors.muted, marginBottom: 8 }}>
-          <Text style={{ color: colors.ink, fontWeight: '700' }}>{followers}</Text> seguidores
-        </Text>
-      </Pressable>
-      <Pressable testID="open-following" onPress={onOpenFollowing} disabled={!onOpenFollowing}>
-        <Text style={{ color: colors.muted, marginBottom: 16 }}>
-          <Text style={{ color: colors.ink, fontWeight: '700' }}>{following}</Text> a seguir
-        </Text>
-      </Pressable>
+    <Screen testID="profile-screen" refreshing={refreshing} onRefresh={onRefresh}>
+      <Card tone="ink">
+        <View style={{ alignItems: 'center' }}>
+          <View style={{ borderWidth: 3, borderColor: colors.gold, borderRadius: 50, padding: 3 }}>
+            <Avatar name={data.displayName} url={data.avatarUrl} size={88} testID="profile-avatar" />
+          </View>
+          <Text variant="headlineSmall" style={{ color: colors.white, marginTop: spacing.sm }}>
+            {data.displayName}
+          </Text>
+          <Text variant="bodyMedium" style={{ color: colors.goldLight }}>
+            {handle ? `@${handle}` : 'Sem handle público'}
+          </Text>
+          {data.isOwn ? <View style={{ marginTop: 6 }}><Tag label="O seu perfil" tone="gold" icon="account-check-outline" /></View> : null}
+          {data.isBlocked ? <View style={{ marginTop: 6 }}><Tag label="Bloqueado" tone="danger" icon="account-cancel-outline" /></View> : null}
+        </View>
+        {data.bio || data.socialBio ? (
+          <Text variant="bodyMedium" style={{ color: colors.cream, textAlign: 'center', marginTop: spacing.sm, lineHeight: 22 }}>
+            {data.bio || data.socialBio}
+          </Text>
+        ) : null}
+        {data.websiteUrl ? (
+          <Row style={{ justifyContent: 'center', marginTop: spacing.xs }}>
+            <Icon name="link-variant" size={14} color={colors.goldLight} />
+            <Text variant="labelMedium" style={{ color: colors.goldLight }}>
+              {data.websiteUrl}
+            </Text>
+          </Row>
+        ) : null}
+        <Row style={{ marginTop: spacing.md, borderTopWidth: 1, borderTopColor: colors.inkSoft, paddingTop: spacing.sm }}>
+          <Counter value={postCount} label="publicações" />
+          <Counter value={followers} label="seguidores" onPress={onOpenFollowers} testID="open-followers" />
+          <Counter value={following} label="a seguir" onPress={onOpenFollowing} testID="open-following" />
+        </Row>
+      </Card>
+
       {data.isOwn ? (
-        <>
-          <Text style={{ color: colors.muted, marginBottom: 8 }}>Este é o seu perfil público.</Text>
-          {onEdit ? <BrandButton label="Editar perfil" onPress={onEdit} testID="edit-own-profile" /> : null}
-        </>
+        onEdit ? <BrandButton icon="account-edit-outline" label="Editar perfil" onPress={onEdit} testID="edit-own-profile" /> : null
       ) : (
         <>
           <ErrorText message={actionError} />
-          <BrandButton
-            testID="follow-button"
-            label={data.isFollowing ? 'A seguir' : 'Seguir'}
-            onPress={onFollow}
-            disabled={busy || data.isBlocked}
-          />
-          <BrandButton
-            testID="block-button"
-            variant={data.isBlocked ? 'ghost' : 'danger'}
-            label={data.isBlocked ? 'Desbloquear' : 'Bloquear'}
-            onPress={onBlock}
-            disabled={busy}
-          />
+          <Row>
+            <BrandButton
+              testID="follow-button"
+              variant={data.isFollowing ? 'ghost' : 'gold'}
+              icon={data.isFollowing ? 'account-check-outline' : 'account-plus-outline'}
+              label={data.isFollowing ? 'A seguir' : 'Seguir'}
+              onPress={onFollow}
+              disabled={busy || data.isBlocked}
+              style={{ flex: 1 }}
+            />
+            <BrandButton
+              testID="block-button"
+              variant={data.isBlocked ? 'ghost' : 'text'}
+              icon={data.isBlocked ? 'account-check-outline' : 'account-cancel-outline'}
+              label={data.isBlocked ? 'Desbloquear' : 'Bloquear'}
+              onPress={onBlock}
+              disabled={busy}
+              style={{ flex: 1 }}
+            />
+          </Row>
+          {onReport ? <BrandButton variant="text" icon="flag-outline" label="Reportar perfil" onPress={onReport} /> : null}
         </>
       )}
-      <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginTop: 20, marginBottom: 8 }}>
-        Publicações
-      </Text>
+
+      <SectionHeader title="Publicações" icon="post-outline" />
       {(posts ?? []).length === 0 ? (
-        <EmptyState title="Ainda sem publicações" body="Quando este perfil publicar, as mensagens aparecem aqui." />
+        <EmptyState icon="post-outline" title="Ainda sem publicações" body="Quando este perfil publicar, as mensagens aparecem aqui." />
       ) : (
-        (posts ?? []).map((post) => (
-          <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
-        ))
+        (posts ?? []).map((post) => <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />)
       )}
       {postsHasMore && onLoadMorePosts ? (
-        <BrandButton
-          variant="ghost"
-          testID="load-more-posts"
-          label={postsLoadingMore ? 'A carregar…' : 'Carregar mais'}
-          disabled={postsLoadingMore}
-          onPress={onLoadMorePosts}
-        />
+        <BrandButton variant="ghost" testID="load-more-posts" label={postsLoadingMore ? 'A carregar…' : 'Carregar mais'} disabled={postsLoadingMore} loading={postsLoadingMore} onPress={onLoadMorePosts} />
       ) : null}
     </Screen>
   );

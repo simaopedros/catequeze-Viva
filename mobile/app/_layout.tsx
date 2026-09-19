@@ -1,9 +1,23 @@
+import {
+  CormorantGaramond_700Bold,
+} from '@expo-google-fonts/cormorant-garamond';
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  useFonts,
+} from '@expo-google-fonts/inter';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { PaperProvider } from 'react-native-paper';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from '../src/auth/AuthContext';
-import { colors } from '../src/theme';
+import { FeedbackProvider } from '../src/components/Feedback';
+import { colors, fontFamilies, paperTheme } from '../src/theme';
 
 function Gate({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
@@ -34,25 +48,46 @@ function Gate({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    CormorantGaramond_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return <View style={{ flex: 1, backgroundColor: colors.ink }} />;
+  }
+
   return (
-    <AuthProvider>
-      <StatusBar style="light" backgroundColor={colors.ink} />
-      <Gate>
-        <Stack
-          screenOptions={{
-            headerStyle: { backgroundColor: colors.ink },
-            headerTintColor: colors.cream,
-            headerTitleStyle: { fontWeight: '700' },
-            contentStyle: { backgroundColor: colors.cream },
-          }}
-        >
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ title: 'Entrar' }} />
-          <Stack.Screen name="two-factor" options={{ title: '2FA' }} />
-          <Stack.Screen name="forgot-password" options={{ title: 'Recuperar' }} />
-          <Stack.Screen name="(app)" options={{ headerShown: false }} />
-        </Stack>
-      </Gate>
-    </AuthProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <PaperProvider theme={paperTheme}>
+          <FeedbackProvider>
+            <AuthProvider>
+              <StatusBar style="light" backgroundColor={colors.ink} />
+              <Gate>
+                <Stack
+                  screenOptions={{
+                    headerStyle: { backgroundColor: colors.ink },
+                    headerTintColor: colors.cream,
+                    headerTitleStyle: { fontFamily: fontFamilies.semibold, fontSize: 17 },
+                    headerShadowVisible: false,
+                    contentStyle: { backgroundColor: colors.cream },
+                  }}
+                >
+                  <Stack.Screen name="index" options={{ headerShown: false }} />
+                  <Stack.Screen name="login" options={{ headerShown: false }} />
+                  <Stack.Screen name="two-factor" options={{ title: 'Verificação em dois passos' }} />
+                  <Stack.Screen name="forgot-password" options={{ title: 'Recuperar acesso' }} />
+                  <Stack.Screen name="(app)" options={{ headerShown: false }} />
+                </Stack>
+              </Gate>
+            </AuthProvider>
+          </FeedbackProvider>
+        </PaperProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

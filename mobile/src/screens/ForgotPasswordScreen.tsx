@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { BrandButton, ErrorText, Field, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, Card, ErrorText, Field, Icon, Row, Screen } from '../components/ui';
+import { Text } from 'react-native-paper';
+import { colors } from '../theme';
+import { AuthHero } from './LoginScreen';
 
 export function ForgotPasswordScreen({
   onSubmit,
@@ -18,24 +21,24 @@ export function ForgotPasswordScreen({
 
   return (
     <Screen testID="forgot-password-screen">
-      <ScreenTitle
-        title="Recuperar acesso"
-        subtitle="Enviamos um link se o e-mail existir na Catequese Viva."
-      />
+      <AuthHero title="Recuperar acesso" subtitle="Enviamos um link se o e-mail existir na Catequese Viva." />
       <ErrorText message={error} />
       {sent ? (
-        <ScreenTitle title="" subtitle="Se a conta existir, o e-mail já foi enviado." />
+        <Card tone="gold">
+          <Row>
+            <Icon name="email-check-outline" color={colors.goldDark} />
+            <Text variant="bodyMedium" style={{ color: colors.goldDark, flex: 1 }}>
+              Se a conta existir, o e-mail já foi enviado. Verifique também a pasta de spam.
+            </Text>
+          </Row>
+        </Card>
       ) : (
-        <Field label="E-mail" value={email} onChangeText={setEmail} testID="reset-email" />
+        <Field label="E-mail" icon="email-outline" value={email} onChangeText={setEmail} keyboardType="email-address" testID="reset-email" />
       )}
       {!sent ? (
-        <BrandButton
-          label={busy ? 'A enviar…' : 'Enviar link'}
-          disabled={busy || !email}
-          onPress={() => onSubmit(email.trim())}
-        />
+        <BrandButton icon="send-outline" label={busy ? 'A enviar…' : 'Enviar link'} loading={busy} disabled={busy || !email} onPress={() => onSubmit(email.trim())} />
       ) : null}
-      <BrandButton variant="ghost" label="Voltar ao início de sessão" onPress={onBack} />
+      <BrandButton variant="text" label="Voltar ao início de sessão" onPress={onBack} />
     </Screen>
   );
 }

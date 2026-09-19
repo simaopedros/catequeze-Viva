@@ -6,7 +6,7 @@ import { ThreadScreen } from '../../../src/screens/ThreadScreen';
 
 export default function ThreadRoute() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { api } = useAuth();
+  const { api, user } = useAuth();
   const { data, loading, error, reload } = useAsync(() => api.conversation(String(id)), [id]);
   const [busy, setBusy] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
@@ -17,6 +17,7 @@ export default function ThreadRoute() {
       loading={loading}
       error={error}
       busy={busy}
+      currentUserId={user?.id}
       sendError={sendError}
       onSend={async (content) => {
         setBusy(true);

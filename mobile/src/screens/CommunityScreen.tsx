@@ -1,42 +1,58 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
+import { Chip, Text } from 'react-native-paper';
 import { PostCard } from '../components/PostCard';
-import { BrandButton, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, Card, EmptyState, Icon, PrimaryFab, Screen, ScreenTitle, SkeletonList, type IconName } from '../components/ui';
+
 import type { SocialAccess, SocialPost, SocialTopic } from '../api/types';
-import { colors, spacing } from '../theme';
+import { colors, radius, spacing } from '../theme';
 import { COMMUNITY_AREAS, type CommunityAreaId } from './communityAreas';
 
 const SORTS = [
-  { id: 'recent', label: 'Recentes' },
-  { id: 'trending', label: 'Em alta' },
-  { id: 'foryou', label: 'Para si' },
+  { id: 'recent', label: 'Recentes', icon: 'clock-outline' },
+  { id: 'trending', label: 'Em alta', icon: 'fire' },
+  { id: 'foryou', label: 'Para si', icon: 'star-outline' },
 ] as const;
 
-function Chip({
-  label,
-  active,
-  onPress,
-  testID,
-}: {
-  label: string;
-  active?: boolean;
-  onPress: () => void;
-  testID?: string;
-}) {
+const AREA_ICONS: Record<CommunityAreaId, IconName> = {
+  feed: 'view-dashboard-outline',
+  following: 'account-heart-outline',
+  shorts: 'play-box-outline',
+  search: 'magnify',
+  compose: 'pencil-plus-outline',
+  topics: 'pound',
+  members: 'account-group-outline',
+  me: 'account-circle-outline',
+  edit: 'account-edit-outline',
+  blocked: 'account-cancel-outline',
+  notifications: 'bell-outline',
+};
+
+function AreaTile({ id, label, hint, onPress }: { id: CommunityAreaId; label: string; hint: string; onPress: () => void }) {
   return (
     <Pressable
-      testID={testID}
+      testID={`area-${id}`}
+      accessibilityRole="button"
       onPress={onPress}
-      style={{
-        paddingHorizontal: 12,
-        paddingVertical: 7,
-        borderRadius: 999,
-        backgroundColor: active ? colors.ink : colors.paper,
+      style={({ pressed }) => ({
+        width: 104,
+        padding: spacing.sm,
+        borderRadius: radius.lg,
+        backgroundColor: pressed ? colors.paper : colors.surface,
         borderWidth: 1,
         borderColor: colors.line,
-      }}
+        gap: 6,
+      })}
     >
-      <Text style={{ color: active ? colors.white : colors.ink, fontWeight: '700', fontSize: 13 }}>{label}</Text>
+      <View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: '#F8E7BF', alignItems: 'center', justifyContent: 'center' }}>
+        <Icon name={AREA_ICONS[id]} size={18} color={colors.goldDark} />
+      </View>
+      <Text variant="labelLarge" style={{ color: colors.ink }} numberOfLines={1}>
+        {label}
+      </Text>
+      <Text variant="bodySmall" style={{ color: colors.muted }} numberOfLines={2}>
+        {hint}
+      </Text>
     </Pressable>
   );
 }
@@ -94,100 +110,112 @@ export function CommunityScreen({
   loadingMore?: boolean;
   onLoadMore?: () => void;
 }) {
+  const canPublish = !access || access.canPublish;
   return (
-    <Screen testID="community-screen" refreshing={refreshing} onRefresh={onRefresh}>
-      <ScreenTitle title={title} subtitle={subtitle} />
+    <Screen
+      testID="community-screen"
+      safeTop={Boolean(showHub)}
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      fab={canPublish ? <PrimaryFab icon="pencil-plus-outline" label="Nova publicação" onPress={onCompose} testID="compose-open" /> : undefined}
+    >
+      <ScreenTitle
+        title={title}
+        subtitle={subtitle}
+        action={
+          onSearch ? (
+            <Pressable testID="open-search" accessibilityRole="button" onPress={onSearch} style={{ padding: 6 }}>
+              <Icon name="magnify" size={26} color={colors.ink} />
+            </Pressable>
+          ) : undefined
+        }
+      />
+
       {showHub && onOpenArea ? (
-        <View testID="community-hub" style={{ marginBottom: spacing.md }}>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+        <View testID="community-hub" style={{ marginHorizontal: -spacing.md, marginBottom: spacing.sm }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.md, gap: spacing.sm, paddingBottom: spacing.sm }}>
             {COMMUNITY_AREAS.filter((area) => area.id !== 'feed').map((area) => (
-              <Chip
-                key={area.id}
-                label={area.label}
-                testID={`area-${area.id}`}
-                onPress={() => onOpenArea(area.id)}
-              />
+              <AreaTile key={area.id} id={area.id} label={area.label} hint={area.hint} onPress={() => onOpenArea(area.id)} />
             ))}
-          </View>
+          </ScrollView>
         </View>
       ) : null}
-      {!showHub && onSearch ? (
-        <BrandButton variant="ghost" label="Pesquisar pessoas e publicações" onPress={onSearch} testID="open-search" />
-      ) : null}
-      {!showHub && onToggleFollowing ? (
-        <BrandButton
-          variant={following ? 'primary' : 'ghost'}
-          label={following ? 'A ver quem segue' : 'Só quem eu sigo'}
-          onPress={onToggleFollowing}
-          testID="filter-following"
-        />
-      ) : null}
+
       {access && !access.canPublish ? (
-        <Text style={{ color: colors.goldDark, marginBottom: spacing.md }}>
-          {access.reason === 'subscription'
-            ? 'Pode ler e seguir. Para publicar, precisa de uma assinatura activa.'
-            : 'A publicação está limitada nesta conta.'}
-        </Text>
+        <Card tone="gold">
+          <Text variant="bodyMedium" style={{ color: colors.goldDark }}>
+            {access.reason === 'subscription'
+              ? 'Pode ler e seguir. Para publicar, precisa de uma assinatura ativa.'
+              : 'A publicação está limitada nesta conta.'}
+          </Text>
+        </Card>
       ) : null}
-      <View style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.sm, flexWrap: 'wrap' }}>
-        {SORTS.map((item) => (
+
+      <View style={{ flexDirection: 'row', gap: 8, marginTop: spacing.sm, marginBottom: spacing.sm, flexWrap: 'wrap' }}>
+        {SORTS.map((item) => {
+          const active = sort === item.id;
+          return (
+            <Chip
+              key={item.id}
+              testID={`sort-${item.id}`}
+              selected={active}
+              showSelectedCheck={false}
+              icon={item.icon}
+              mode={active ? 'flat' : 'outlined'}
+              onPress={() => onChangeSort(item.id)}
+              style={{ backgroundColor: active ? colors.ink : colors.surface, borderColor: colors.line }}
+              textStyle={{ color: active ? colors.white : colors.ink }}
+              theme={{ colors: { onSurfaceVariant: active ? colors.white : colors.ink } }}
+            >
+              {item.label}
+            </Chip>
+          );
+        })}
+        {onToggleFollowing ? (
           <Chip
-            key={item.id}
-            label={item.label}
-            active={sort === item.id}
-            testID={`sort-${item.id}`}
-            onPress={() => onChangeSort(item.id)}
-          />
-        ))}
-        {showHub && onToggleFollowing ? (
-          <Chip
-            label="Quem sigo"
-            active={following}
             testID="filter-following"
+            selected={Boolean(following)}
+            showSelectedCheck={false}
+            icon="account-heart-outline"
+            mode={following ? 'flat' : 'outlined'}
             onPress={onToggleFollowing}
-          />
+            style={{ backgroundColor: following ? colors.gold : colors.surface, borderColor: colors.line }}
+            textStyle={{ color: colors.ink }}
+          >
+            Quem sigo
+          </Chip>
         ) : null}
       </View>
-      <View style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.md, flexWrap: 'wrap' }}>
-        <Pressable onPress={() => onChangeTopic(null)}>
-          <Text style={{ color: !topicSlug ? colors.goldDark : colors.muted, fontWeight: '700' }}>Todos</Text>
-        </Pressable>
-        {topics.map((topic) => (
-          <Pressable
-            key={topic.slug}
-            onPress={() => (onOpenTopic ? onOpenTopic(topic.slug) : onChangeTopic(topic.slug))}
-            testID={`topic-${topic.slug}`}
-          >
-            <Text style={{ color: topicSlug === topic.slug ? colors.goldDark : colors.muted, fontWeight: '700' }}>
-              {topic.name}
+
+      {topics.length > 0 ? (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 14, paddingBottom: spacing.sm, alignItems: 'center' }}>
+          <Pressable onPress={() => onChangeTopic(null)}>
+            <Text variant="labelLarge" style={{ color: !topicSlug ? colors.goldDark : colors.muted }}>
+              Todos
             </Text>
           </Pressable>
-        ))}
-      </View>
-      <BrandButton label="Nova publicação" onPress={onCompose} testID="compose-open" />
-      <Text
-        testID="feed-heading"
-        style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm, marginTop: 4 }}
-      >
+          {topics.map((topic) => (
+            <Pressable key={topic.slug} onPress={() => (onOpenTopic ? onOpenTopic(topic.slug) : onChangeTopic(topic.slug))} testID={`topic-${topic.slug}`}>
+              <Text variant="labelLarge" style={{ color: topicSlug === topic.slug ? colors.goldDark : colors.muted }}>
+                #{topic.name}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      ) : null}
+
+      <Text testID="feed-heading" variant="titleMedium" style={{ color: colors.ink, marginBottom: spacing.sm, marginTop: 4 }}>
         Publicações
       </Text>
-      {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Feed indisponível" body={error} /> : null}
-      {!loading && posts.length === 0 ? (
-        <EmptyState title="Ainda não há publicações" body="Quando a Comunidade tiver posts, eles aparecem aqui." />
+      {loading && posts.length === 0 ? <SkeletonList rows={3} /> : null}
+      {error ? <EmptyState icon="cloud-off-outline" title="Feed indisponível" body={error} /> : null}
+      {!loading && posts.length === 0 && !error ? (
+        <EmptyState icon="post-outline" title="Ainda não há publicações" body="Quando a Comunidade tiver posts, eles aparecem aqui." />
       ) : (
-        posts.map((post) => (
-          <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
-        ))
+        posts.map((post) => <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />)
       )}
       {hasMore && onLoadMore ? (
-        <BrandButton
-          variant="ghost"
-          testID="load-more"
-          label={loadingMore ? 'A carregar…' : 'Carregar mais'}
-          disabled={loadingMore}
-          onPress={onLoadMore}
-        />
+        <BrandButton variant="ghost" testID="load-more" label={loadingMore ? 'A carregar…' : 'Carregar mais'} disabled={loadingMore} loading={loadingMore} onPress={onLoadMore} />
       ) : null}
     </Screen>
   );

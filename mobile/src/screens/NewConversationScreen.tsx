@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { BrandButton, Card, EmptyState, ErrorText, Field, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import React, { useMemo, useState } from 'react';
+import { View } from 'react-native';
+import { Checkbox, Text } from 'react-native-paper';
+import { Avatar } from '../components/Avatar';
+import { BrandButton, EmptyState, ErrorText, Field, ListCard, ListRow, Screen, ScreenTitle, SearchBar, SkeletonList, Tag } from '../components/ui';
 import { colors, spacing } from '../theme';
 
 type Contact = {
@@ -9,7 +11,18 @@ type Contact = {
   firstName?: string | null;
   lastName?: string | null;
   maskedEmail?: string | null;
+  avatarUrl?: string | null;
   role?: string;
+};
+
+const ROLE_LABEL: Record<string, string> = {
+  PARISH_COORDINATOR: 'Coordenação',
+  COMMUNITY_COORDINATOR: 'Coordenação',
+  LEAD_CATECHIST: 'Catequista',
+  ASSISTANT_CATECHIST: 'Catequista auxiliar',
+  GUARDIAN: 'Encarregado(a)',
+  CATECHUMEN: 'Catequizando',
+  PASTORAL_VIEWER: 'Pastoral',
 };
 
 function asContacts(payload: any): Contact[] {
@@ -20,12 +33,7 @@ function asContacts(payload: any): Contact[] {
 }
 
 function contactName(contact: Contact): string {
-  return (
-    contact.displayName ||
-    [contact.firstName, contact.lastName].filter(Boolean).join(' ') ||
-    contact.maskedEmail ||
-    'Membro'
-  );
+  return contact.displayName || [contact.firstName, contact.lastName].filter(Boolean).join(' ') || contact.maskedEmail || 'Membro';
 }
 
 export function NewConversationScreen({
@@ -46,59 +54,70 @@ export function NewConversationScreen({
   const contacts = asContacts(payload).filter((contact) => !contact.id.startsWith('profile:'));
   const [selected, setSelected] = useState<string[]>([]);
   const [title, setTitle] = useState('');
+  const [query, setQuery] = useState('');
   const isGroup = selected.length > 1;
 
-  const toggle = (id: string) =>
-    setSelected((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]));
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return contacts;
+    return contacts.filter((contact) => contactName(contact).toLowerCase().includes(q));
+  }, [contacts, query]);
+
+  const toggle = (id: string) => setSelected((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]));
 
   return (
     <Screen testID="new-conversation-screen">
       <ScreenTitle title="Nova conversa" subtitle="Escolha uma pessoa — ou várias para criar um grupo." />
-      {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Contactos indisponíveis" body={error} /> : null}
-      <ErrorText message={actionError} />
-      {!loading && contacts.length === 0 ? (
-        <EmptyState title="Sem contactos" body="Não há pessoas disponíveis para conversar neste espaço." />
-      ) : (
-        contacts.map((contact) => {
-          const active = selected.includes(contact.id);
-          return (
-            <Pressable key={contact.id} testID={`contact-${contact.id}`} onPress={() => toggle(contact.id)}>
-              <Card style={active ? { borderColor: colors.goldDark, borderWidth: 2 } : undefined}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                  <View
-                    style={{
-                      width: 22,
-                      height: 22,
-                      borderRadius: 11,
-                      borderWidth: 2,
-                      borderColor: active ? colors.goldDark : colors.line,
-                      backgroundColor: active ? colors.goldDark : 'transparent',
-                    }}
-                  />
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: colors.ink, fontWeight: '700' }}>{contactName(contact)}</Text>
-                    {contact.role ? (
-                      <Text style={{ color: colors.muted, marginTop: 2, fontSize: 12 }}>{contact.role}</Text>
-                    ) : null}
-                  </View>
-                </View>
-              </Card>
-            </Pressable>
-          );
-        })
-      )}
-      {isGroup ? (
-        <Field label="Nome do grupo" value={title} onChangeText={setTitle} testID="group-title" />
+      {contacts.length > 5 ? <SearchBar value={query} onChangeText={setQuery} placeholder="Procurar pessoa" testID="contacts-search" /> : null}
+      {selected.length > 0 ? (
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: spacing.sm }}>
+          {selected.map((id) => {
+            const contact = contacts.find((item) => item.id === id);
+            return contact ? <Tag key={id} label={contactName(contact)} tone="gold" icon="account" /> : null;
+          })}
+        </View>
       ) : null}
-      <View style={{ marginTop: spacing.sm }}>
-        <BrandButton
-          testID="create-conversation"
-          label={busy ? 'A criar…' : isGroup ? 'Criar grupo' : 'Iniciar conversa'}
-          disabled={busy || selected.length === 0 || (isGroup && !title.trim())}
-          onPress={() => onCreate(selected, isGroup ? title.trim() : undefined)}
-        />
-      </View>
+      {loading && contacts.length === 0 ? <SkeletonList rows={4} /> : null}
+      {error ? <EmptyState icon="cloud-off-outline" title="Contactos indisponíveis" body={error} /> : null}
+      <ErrorText message={actionError} />
+      {!loading && contacts.length === 0 && !error ? (
+        <EmptyState icon="account-search-outline" title="Sem contactos" body="Não há pessoas disponíveis para conversar neste espaço." />
+      ) : null}
+      {filtered.length > 0 ? (
+        <ListCard>
+          {filtered.map((contact, index) => {
+            const active = selected.includes(contact.id);
+            const name = contactName(contact);
+            return (
+              <ListRow
+                key={contact.id}
+                testID={`contact-${contact.id}`}
+                left={<Avatar name={name} url={contact.avatarUrl} size={36} />}
+                title={name}
+                subtitle={ROLE_LABEL[String(contact.role)] || contact.role}
+                right={<Checkbox status={active ? 'checked' : 'unchecked'} color={colors.gold} uncheckedColor={colors.line} />}
+                chevron={false}
+                onPress={() => toggle(contact.id)}
+                last={index === filtered.length - 1}
+              />
+            );
+          })}
+        </ListCard>
+      ) : null}
+      {isGroup ? <Field label="Nome do grupo" icon="account-group-outline" value={title} onChangeText={setTitle} testID="group-title" /> : null}
+      <BrandButton
+        testID="create-conversation"
+        icon={isGroup ? 'account-multiple-plus-outline' : 'message-plus-outline'}
+        label={busy ? 'A criar…' : isGroup ? 'Criar grupo' : 'Iniciar conversa'}
+        loading={busy}
+        disabled={busy || selected.length === 0 || (isGroup && !title.trim())}
+        onPress={() => onCreate(selected, isGroup ? title.trim() : undefined)}
+      />
+      {selected.length === 0 ? (
+        <Text variant="bodySmall" style={{ color: colors.muted, textAlign: 'center', marginTop: spacing.xs }}>
+          Selecione pelo menos uma pessoa.
+        </Text>
+      ) : null}
     </Screen>
   );
 }

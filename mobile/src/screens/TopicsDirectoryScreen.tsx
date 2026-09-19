@@ -1,8 +1,6 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
 import type { SocialTopic } from '../api/types';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { EmptyState, ListCard, ListRow, Screen, ScreenTitle, SkeletonList } from '../components/ui';
 
 export function TopicsDirectoryScreen({
   topics,
@@ -18,22 +16,25 @@ export function TopicsDirectoryScreen({
   return (
     <Screen testID="topics-screen">
       <ScreenTitle title="Tópicos" subtitle="As áreas temáticas da Comunidade — toque para abrir o feed." />
-      {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Tópicos indisponíveis" body={error} /> : null}
-      {!loading && topics.length === 0 ? (
-        <EmptyState title="Ainda sem tópicos" body="Quando a Comunidade tiver temas activos, eles aparecem aqui." />
+      {loading && topics.length === 0 ? <SkeletonList rows={4} /> : null}
+      {error ? <EmptyState icon="cloud-off-outline" title="Tópicos indisponíveis" body={error} /> : null}
+      {!loading && topics.length === 0 && !error ? <EmptyState icon="pound" title="Ainda sem tópicos" body="Quando a Comunidade tiver temas ativos, eles aparecem aqui." /> : null}
+      {topics.length > 0 ? (
+        <ListCard>
+          {topics.map((topic, index) => (
+            <ListRow
+              key={topic.slug}
+              testID={`topic-card-${topic.slug}`}
+              icon="pound"
+              title={topic.name}
+              subtitle={`#${topic.slug}`}
+              meta={topic.postCount != null ? `${topic.postCount} publ.` : undefined}
+              onPress={() => onOpenTopic(topic.slug)}
+              last={index === topics.length - 1}
+            />
+          ))}
+        </ListCard>
       ) : null}
-      {topics.map((topic) => (
-        <Pressable key={topic.slug} testID={`topic-card-${topic.slug}`} onPress={() => onOpenTopic(topic.slug)}>
-          <Card>
-            <Text style={{ color: colors.goldDark, fontWeight: '700' }}>#{topic.slug}</Text>
-            <Text style={{ color: colors.ink, fontWeight: '700', marginTop: 4 }}>{topic.name}</Text>
-            {topic.postCount != null ? (
-              <Text style={{ color: colors.muted, marginTop: 4 }}>{topic.postCount} publicações</Text>
-            ) : null}
-          </Card>
-        </Pressable>
-      ))}
     </Screen>
   );
 }

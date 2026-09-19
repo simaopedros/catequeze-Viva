@@ -1,50 +1,56 @@
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Alert } from 'react-native';
+import React from 'react';
 import { displayName, listWorkspaces, useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
-import { MoreScreen } from '../../../src/screens/MoreScreen';
+import { MoreScreen, type MoreSection } from '../../../src/screens/MoreScreen';
 
 export default function MoreRoute() {
   const { api, user, bootstrap, workspaceId, setWorkspaceId, logout } = useAuth();
   const router = useRouter();
   const profile = useAsync(() => api.mySocialProfile(), []);
-  const [handle, setHandle] = useState('');
-  const [bio, setBio] = useState('');
 
-  useEffect(() => {
-    if (profile.data) {
-      setHandle(profile.data.handle || '');
-      setBio(profile.data.bio || '');
-    }
-  }, [profile.data]);
+  const sections: MoreSection[] = [
+    {
+      title: 'Catequese',
+      icon: 'book-open-page-variant-outline',
+      links: [
+        { id: 'catechumens', label: 'Catequizandos', hint: 'Fichas e presenças', icon: 'account-child-outline', onPress: () => router.push('/(app)/catechumens') },
+        { id: 'families', label: 'Famílias', hint: 'Agregados e encarregados', icon: 'home-heart', onPress: () => router.push('/(app)/families') },
+        { id: 'documents', label: 'Documentos', hint: 'Certidões e autorizações', icon: 'file-document-outline', onPress: () => router.push('/(app)/documents'), testID: 'open-documents' },
+      ],
+    },
+    {
+      title: 'Conteúdo',
+      icon: 'bookshelf',
+      links: [
+        { id: 'bible', label: 'Bíblia', hint: 'Leitura e partilha', icon: 'book-cross', onPress: () => router.push('/(app)/bible'), testID: 'open-bible' },
+        { id: 'community', label: 'Áreas da Comunidade', hint: 'Shorts, tópicos, membros', icon: 'account-group-outline', onPress: () => router.push('/(app)/(tabs)/community'), testID: 'open-community' },
+      ],
+    },
+    {
+      title: 'Conta',
+      icon: 'account-cog-outline',
+      links: [
+        { id: 'notifications', label: 'Notificações', icon: 'bell-outline', onPress: () => router.push('/(app)/notifications') },
+      ],
+    },
+  ];
 
   return (
     <MoreScreen
       name={displayName(user)}
+      email={user?.email}
+      avatarUrl={user?.avatarUrl}
       workspaces={listWorkspaces(bootstrap)}
       workspaceId={workspaceId}
       profile={profile.data}
-      handle={handle}
-      bio={bio}
-      onHandleChange={setHandle}
-      onBioChange={setBio}
+      sections={sections}
+      version={Constants.expoConfig?.version}
       onSelectWorkspace={(id) => setWorkspaceId(id)}
-      onOpenBible={() => router.push('/(app)/bible')}
-      onOpenDocuments={() => router.push('/(app)/documents')}
-      onOpenCommunity={() => router.push('/(app)/(tabs)/community')}
       onOpenEditProfile={() => router.push('/(app)/community/edit')}
       onOpenProfile={() => {
         if (profile.data?.handle) router.push(`/(app)/community/${profile.data.handle}`);
-      }}
-      onSaveProfile={async () => {
-        try {
-          await api.updateSocialProfile({ handle, bio });
-          Alert.alert('Perfil actualizado', 'O seu @ público foi guardado.');
-          await profile.reload();
-        } catch (err) {
-          Alert.alert('Não foi possível guardar', err instanceof Error ? err.message : '');
-        }
       }}
       onLogout={() => logout()}
     />

@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router';
-import { colors } from '../../src/theme';
+import { colors, fontFamilies } from '../../src/theme';
 
 export default function AppLayout() {
   return (
@@ -7,6 +7,9 @@ export default function AppLayout() {
       screenOptions={{
         headerStyle: { backgroundColor: colors.ink },
         headerTintColor: colors.cream,
+        headerTitleStyle: { fontFamily: fontFamilies.semibold, fontSize: 17 },
+        headerShadowVisible: false,
+        headerBackTitle: 'Voltar',
         contentStyle: { backgroundColor: colors.cream },
       }}
     >
@@ -24,6 +27,8 @@ export default function AppLayout() {
       <Stack.Screen name="community/t/[slug]" options={{ title: 'Tópico' }} />
       <Stack.Screen name="community/[handle]" options={{ title: 'Perfil' }} />
       <Stack.Screen name="class/[id]" options={{ title: 'Turma' }} />
+      <Stack.Screen name="catechumens/index" options={{ title: 'Catequizandos' }} />
+      <Stack.Screen name="families/index" options={{ title: 'Famílias' }} />
       <Stack.Screen name="catechumen/[id]" options={{ title: 'Catequizando' }} />
       <Stack.Screen name="family/[id]" options={{ title: 'Família' }} />
       <Stack.Screen name="meeting/[id]" options={{ title: 'Encontro' }} />

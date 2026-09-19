@@ -1,40 +1,119 @@
 import React from 'react';
-import { Text } from 'react-native';
-import { BrandButton, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { Text } from 'react-native-paper';
+import { BrandButton, Card, EmptyState, KeyValue, Row, Screen, ScreenTitle, SkeletonList, Tag } from '../components/ui';
+import { colors, spacing } from '../theme';
+import { formatDateTime } from '../utils/format';
+
+const MEETING_STATUS: Record<string, { label: string; tone: 'success' | 'warning' | 'neutral' | 'info' | 'danger' }> = {
+  SCHEDULED: { label: 'Agendado', tone: 'info' },
+  NOT_STARTED: { label: 'Por iniciar', tone: 'neutral' },
+  IN_PROGRESS: { label: 'A decorrer', tone: 'warning' },
+  COMPLETED: { label: 'Concluído', tone: 'success' },
+  CANCELLED: { label: 'Cancelado', tone: 'danger' },
+};
 
 export function MeetingScreen({
   data,
   loading,
   error,
   onAttendance,
+  onEdit,
+  onChangeStatus,
+  onDelete,
+  onOpenClass,
+  onShare,
 }: {
   data: any;
   loading?: boolean;
   error?: string | null;
   onAttendance: () => void;
+  onEdit?: () => void;
+  onChangeStatus?: (status: string) => void;
+  onDelete?: () => void;
+  onOpenClass?: () => void;
+  onShare?: () => void;
 }) {
-  if (loading) {
+  if (loading && !data) {
     return (
       <Screen>
-        <LoadingState />
+        <SkeletonList rows={2} />
       </Screen>
     );
   }
   if (error || !data) {
     return (
-      <Screen>
-        <EmptyState title="Encontro indisponível" body={error || 'Não encontrado.'} />
+      <Screen testID="meeting-screen">
+        <EmptyState icon="cloud-off-outline" title="Encontro indisponível" body={error || 'Não encontrado.'} />
       </Screen>
     );
   }
 
+  const status = data.status ? MEETING_STATUS[data.status] : null;
+  const attendance = data.attendanceSummary || data._count;
+
   return (
     <Screen testID="meeting-screen">
-      <ScreenTitle title={data.title || data.theme || 'Encontro'} subtitle={data.class?.name || ''} />
-      <Text style={{ color: colors.muted, marginBottom: 16 }}>{data.startsAt || data.date || ''}</Text>
-      {data.notes ? <Text style={{ color: colors.inkSoft, marginBottom: 16 }}>{data.notes}</Text> : null}
-      <BrandButton label="Marcar presença" onPress={onAttendance} testID="open-attendance" />
+      <ScreenTitle
+        eyebrow={data.class?.name || 'Encontro'}
+        title={data.title || data.theme || 'Encontro'}
+        subtitle={formatDateTime(data.startsAt || data.date)}
+        action={status ? <Tag label={status.label} tone={status.tone} /> : undefined}
+      />
+      <Row style={{ flexWrap: 'wrap' }}>
+        <BrandButton icon="clipboard-check-outline" label="Marcar presença" onPress={onAttendance} testID="open-attendance" style={{ flex: 1 }} />
+        {onEdit ? <BrandButton variant="ghost" icon="pencil-outline" label="Editar" onPress={onEdit} testID="edit-meeting" style={{ flex: 1 }} /> : null}
+      </Row>
+      <Card>
+        <KeyValue label="Turma" value={data.class?.name} />
+        <KeyValue label="Local" value={data.location || data.class?.location} />
+        <KeyValue label="Duração" value={data.durationMinutes ? `${data.durationMinutes} min` : undefined} />
+        <KeyValue label="Conteúdo" value={data.contentItem?.title || data.content?.title} />
+        {attendance ? <KeyValue label="Presenças registadas" value={attendance.presentCount ?? attendance.attendance} /> : null}
+      </Card>
+      {data.theme && data.title ? (
+        <Card>
+          <Text variant="labelMedium" style={{ color: colors.goldDark, marginBottom: 4 }}>
+            TEMA
+          </Text>
+          <Text variant="bodyLarge" style={{ color: colors.ink }}>
+            {data.theme}
+          </Text>
+        </Card>
+      ) : null}
+      {data.notes || data.description ? (
+        <Card>
+          <Text variant="labelMedium" style={{ color: colors.goldDark, marginBottom: 4 }}>
+            NOTAS
+          </Text>
+          <Text variant="bodyMedium" style={{ color: colors.inkSoft, lineHeight: 22 }}>
+            {data.notes || data.description}
+          </Text>
+        </Card>
+      ) : null}
+      {onChangeStatus ? (
+        <Card>
+          <Text variant="labelMedium" style={{ color: colors.goldDark, marginBottom: spacing.xs }}>
+            ESTADO
+          </Text>
+          <Row style={{ flexWrap: 'wrap' }}>
+            {(['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'] as const).map((value) => (
+              <BrandButton
+                key={value}
+                variant={data.status === value ? 'primary' : 'ghost'}
+                label={MEETING_STATUS[value].label}
+                onPress={() => onChangeStatus(value)}
+                style={{ flexGrow: 1, marginTop: 0 }}
+                testID={`status-${value}`}
+              />
+            ))}
+          </Row>
+        </Card>
+      ) : null}
+      <Row style={{ flexWrap: 'wrap' }}>
+        {onOpenClass ? <BrandButton variant="text" icon="school-outline" label="Ver turma" onPress={onOpenClass} /> : null}
+        {onShare ? <BrandButton variant="text" icon="share-variant-outline" label="Partilhar na Comunidade" onPress={onShare} /> : null}
+        {onDelete ? <BrandButton variant="text" icon="delete-outline" label="Apagar" onPress={onDelete} testID="delete-meeting" /> : null}
+      </Row>
     </Screen>
   );
 }

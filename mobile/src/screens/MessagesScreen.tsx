@@ -1,13 +1,24 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { View } from 'react-native';
+import { Text } from 'react-native-paper';
+import { Avatar, AvatarStack } from '../components/Avatar';
+import { EmptyState, ListCard, ListRow, PrimaryFab, Screen, ScreenTitle, SkeletonList } from '../components/ui';
 import { colors } from '../theme';
+import { formatRelative, fullName } from '../utils/format';
 
 function asConversations(payload: any) {
   if (Array.isArray(payload)) return payload;
   if (Array.isArray(payload?.items)) return payload.items;
   if (Array.isArray(payload?.conversations)) return payload.conversations;
   return [];
+}
+
+export function conversationTitle(item: any, currentUserId?: string | null): string {
+  if (item?.title || item?.name || item?.subject) return item.title || item.name || item.subject;
+  const others = (item?.participants ?? []).filter((p: any) => (p.user?.id ?? p.userId) !== currentUserId);
+  const names = others.map((p: any) => fullName(p.user, '')).filter(Boolean);
+  if (names.length > 0) return names.slice(0, 3).join(', ') + (names.length > 3 ? ` +${names.length - 3}` : '');
+  return item?.type === 'GROUP' ? 'Grupo' : 'Conversa';
 }
 
 export function MessagesScreen({
@@ -18,6 +29,7 @@ export function MessagesScreen({
   onNewConversation,
   refreshing,
   onRefresh,
+  currentUserId,
 }: {
   payload: any;
   loading?: boolean;
@@ -26,32 +38,74 @@ export function MessagesScreen({
   onNewConversation?: () => void;
   refreshing?: boolean;
   onRefresh?: () => void;
+  currentUserId?: string | null;
 }) {
   const items = asConversations(payload);
   return (
-    <Screen testID="messages-screen" refreshing={refreshing} onRefresh={onRefresh}>
+    <Screen
+      testID="messages-screen"
+      safeTop
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      fab={onNewConversation ? <PrimaryFab icon="message-plus-outline" label="Nova" onPress={onNewConversation} testID="new-conversation" /> : undefined}
+    >
       <ScreenTitle title="Mensagens" subtitle="Conversas da paróquia e das turmas." />
-      {onNewConversation ? (
-        <BrandButton label="Nova conversa" testID="new-conversation" onPress={onNewConversation} />
+      {loading && items.length === 0 ? <SkeletonList rows={4} /> : null}
+      {error ? <EmptyState icon="cloud-off-outline" title="Mensagens indisponíveis" body={error} /> : null}
+      {items.length === 0 && !loading && !error ? (
+        <EmptyState
+          icon="message-outline"
+          title="Caixa vazia"
+          body="Quando alguém escrever, a conversa aparece aqui."
+          action={onNewConversation ? 'Começar conversa' : undefined}
+          onAction={onNewConversation}
+        />
       ) : null}
-      {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Mensagens indisponíveis" body={error} /> : null}
-      {items.length === 0 && !loading ? (
-        <EmptyState title="Caixa vazia" body="Quando alguém escrever, a conversa aparece aqui." />
-      ) : (
-        items.map((item: any) => (
-          <Pressable key={item.id} onPress={() => onOpen(item.id)} testID={`conversation-${item.id}`}>
-            <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>
-                {item.title || item.name || item.subject || 'Conversa'}
-              </Text>
-              <Text style={{ color: colors.muted, marginTop: 4 }} numberOfLines={2}>
-                {item.lastMessage?.content || item.preview || ' '}
-              </Text>
-            </Card>
-          </Pressable>
-        ))
-      )}
+      {items.length > 0 ? (
+        <ListCard>
+          {items.map((item: any, index: number) => {
+            const title = conversationTitle(item, currentUserId);
+            const others = (item.participants ?? []).filter((p: any) => (p.user?.id ?? p.userId) !== currentUserId);
+            const unread = item.unreadCount ?? item.unread ?? 0;
+            const preview = item.lastMessage?.content || item.preview || 'Sem mensagens ainda';
+            const when = formatRelative(item.lastMessage?.createdAt || item.updatedAt);
+            return (
+              <ListRow
+                key={item.id}
+                testID={`conversation-${item.id}`}
+                left={
+                  others.length > 1 ? (
+                    <AvatarStack people={others.map((p: any) => ({ name: fullName(p.user), url: p.user?.avatarUrl }))} size={30} max={3} />
+                  ) : (
+                    <Avatar name={title} url={others[0]?.user?.avatarUrl} size={40} />
+                  )
+                }
+                title={title}
+                subtitle={preview}
+                right={
+                  <View style={{ alignItems: 'flex-end', gap: 4 }}>
+                    {when ? (
+                      <Text variant="labelSmall" style={{ color: colors.muted }}>
+                        {when}
+                      </Text>
+                    ) : null}
+                    {unread > 0 ? (
+                      <View style={{ backgroundColor: colors.gold, borderRadius: 10, minWidth: 20, paddingHorizontal: 6, alignItems: 'center' }}>
+                        <Text variant="labelSmall" style={{ color: colors.ink, fontWeight: '700' }}>
+                          {unread}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
+                }
+                chevron={false}
+                onPress={() => onOpen(item.id)}
+                last={index === items.length - 1}
+              />
+            );
+          })}
+        </ListCard>
+      ) : null}
     </Screen>
   );
 }
