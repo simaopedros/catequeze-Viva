@@ -15,6 +15,8 @@ export function BibleBooksScreen({
   onSearch,
   recents,
   onOpenRecent,
+  favoritesCount,
+  onOpenFavorites,
 }: {
   books: BibleBook[];
   loading?: boolean;
@@ -23,6 +25,8 @@ export function BibleBooksScreen({
   onSearch?: () => void;
   recents?: { bookId: string; bookName: string; chapter: number }[];
   onOpenRecent?: (bookId: string, chapter: number) => void;
+  favoritesCount?: number;
+  onOpenFavorites?: () => void;
 }) {
   const [query, setQuery] = useState('');
   const [testament, setTestament] = useState<'ALL' | 'OT' | 'NT'>('ALL');
@@ -48,11 +52,18 @@ export function BibleBooksScreen({
         title="Bíblia"
         subtitle="Leia e partilhe um versículo na Comunidade."
         action={
-          onSearch ? (
-            <Pressable onPress={onSearch} testID="bible-search" style={{ padding: 6 }}>
-              <Icon name="text-search" size={26} color={colors.ink} />
-            </Pressable>
-          ) : undefined
+          <Row gap={2}>
+            {onOpenFavorites ? (
+              <Pressable onPress={onOpenFavorites} testID="bible-favorites" style={{ padding: 6 }} accessibilityLabel="Favoritos">
+                <Icon name={favoritesCount ? 'bookmark' : 'bookmark-outline'} size={24} color={favoritesCount ? colors.goldDark : colors.ink} />
+              </Pressable>
+            ) : null}
+            {onSearch ? (
+              <Pressable onPress={onSearch} testID="bible-search" style={{ padding: 6 }} accessibilityLabel="Pesquisar">
+                <Icon name="text-search" size={26} color={colors.ink} />
+              </Pressable>
+            ) : null}
+          </Row>
         }
       />
       {recents && recents.length > 0 && onOpenRecent ? (
@@ -157,6 +168,7 @@ export function BibleChapterScreen({
   onPrev,
   onNext,
   onCopyVerse,
+  onToggleFavorite,
 }: {
   chapter?: BibleChapter | null;
   loading?: boolean;
@@ -167,6 +179,7 @@ export function BibleChapterScreen({
   onPrev?: () => void;
   onNext?: () => void;
   onCopyVerse?: (verseNumber: number, text: string) => void;
+  onToggleFavorite?: (verseNumber: number, text: string) => void;
 }) {
   const [fontScale, setFontScale] = useState(1);
   const [selected, setSelected] = useState<number | null>(null);
@@ -230,6 +243,7 @@ export function BibleChapterScreen({
               <BrandButton variant="ghost" icon="share-variant-outline" label="Partilhar" testID={`share-verse-${selectedVerse.number}`} onPress={() => onShareVerseOS(selectedVerse.number, selectedVerse.text)} style={{ flex: 1 }} />
             ) : null}
             {onCopyVerse ? <BrandButton variant="text" icon="content-copy" label="Copiar" onPress={() => onCopyVerse(selectedVerse.number, selectedVerse.text)} /> : null}
+            {onToggleFavorite ? <BrandButton variant="text" icon="bookmark-outline" label="Guardar" onPress={() => onToggleFavorite(selectedVerse.number, selectedVerse.text)} testID={`favorite-verse-${selectedVerse.number}`} /> : null}
           </Row>
         </Card>
       ) : verses.length > 0 ? (

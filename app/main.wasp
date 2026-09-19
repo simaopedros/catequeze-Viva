@@ -2426,6 +2426,140 @@ api mobileGlobalSearch {
   entities: [AttendanceRecord, BibleVerse, CatechesisClass, CatechismEntry, CatechumenProfile, ClassCatechist, ClassEnrollment, Community, ContentItem, DirectoryEntry, Document, GuardianProfile, Household, Meeting, Membership, Parish, SacramentalJourney, User]
 }
 
+// ── Mobile: conteúdo e apoio (Fase D) ──
+api mobileBibleSearch {
+  fn: import { mobileBibleSearch } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (GET, "/mobile/bible/search"),
+  entities: [BibleVerse, BibleChapter, BibleBook, User]
+}
+
+api mobileCatechismSearch {
+  fn: import { mobileCatechismSearch } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (GET, "/mobile/catechism/search"),
+  entities: [CatechismEntry, User]
+}
+
+api mobileCatechismCategory {
+  fn: import { mobileCatechismCategory } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (GET, "/mobile/catechism/category/:category"),
+  entities: [CatechismEntry, User]
+}
+
+api mobileCatechismEntry {
+  fn: import { mobileCatechismEntry } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (GET, "/mobile/catechism/entries/:number"),
+  entities: [CatechismEntry, User]
+}
+
+api mobileDirectorySearch {
+  fn: import { mobileDirectorySearch } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (GET, "/mobile/directory/search"),
+  entities: [DirectoryEntry, User]
+}
+
+api mobileDirectoryPart {
+  fn: import { mobileDirectoryPart } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (GET, "/mobile/directory/part/:part"),
+  entities: [DirectoryEntry, User]
+}
+
+api mobileDirectoryEntry {
+  fn: import { mobileDirectoryEntry } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (GET, "/mobile/directory/entries/:number"),
+  entities: [DirectoryEntry, User]
+}
+
+api mobileContentList {
+  fn: import { mobileContentList } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (GET, "/mobile/content"),
+  entities: [Activity, ContentItem, Membership, Parish, User]
+}
+
+api mobileContentCreate {
+  fn: import { mobileContentCreate } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (POST, "/mobile/content"),
+  entities: [ContentItem, Membership, Parish, User]
+}
+
+api mobileContentDetails {
+  fn: import { mobileContentDetails } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (GET, "/mobile/content/:id"),
+  entities: [Activity, ContentItem, Membership, Parish, User]
+}
+
+api mobileContentUpdate {
+  fn: import { mobileContentUpdate } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (PUT, "/mobile/content/:id"),
+  entities: [ContentItem, Membership, Parish, User]
+}
+
+api mobileContentStatus {
+  fn: import { mobileContentStatus } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (POST, "/mobile/content/:id/status"),
+  entities: [ContentItem, Membership, Parish, User]
+}
+
+api mobileCalendarEvents {
+  fn: import { mobileCalendarEvents } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (GET, "/mobile/calendar/events"),
+  entities: [LiturgicalEvent, Membership, Parish, User]
+}
+
+api mobileCalendarCreateEvent {
+  fn: import { mobileCalendarCreateEvent } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (POST, "/mobile/calendar/events"),
+  entities: [LiturgicalEvent, Membership, Parish, User]
+}
+
+api mobileDocumentVerify {
+  fn: import { mobileDocumentVerify } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (POST, "/mobile/documents/:id/verify"),
+  entities: [Document, CatechumenProfile, Membership, Notification, User]
+}
+
+api mobileDocumentReject {
+  fn: import { mobileDocumentReject } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (POST, "/mobile/documents/:id/reject"),
+  entities: [Document, CatechumenProfile, Membership, Notification, User]
+}
+
+api mobileDocumentDelete {
+  fn: import { mobileDocumentDelete } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (DELETE, "/mobile/documents/:id"),
+  entities: [Document, CatechumenProfile, Membership, User]
+}
+
+api mobileAnnouncementCreate {
+  fn: import { mobileAnnouncementCreate } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (POST, "/mobile/announcements"),
+  entities: [PastoralAnnouncement, Membership, Parish, User]
+}
+
+api mobileAnnouncementPublish {
+  fn: import { mobileAnnouncementPublish } from "@src/server/api/mobileContent",
+  auth: true,
+  httpRoute: (POST, "/mobile/announcements/:id/publish"),
+  entities: [PastoralAnnouncement, Membership, Notification, User]
+}
+
 api mobileSocialFeed {
   fn: import { mobileSocialFeed } from "@src/server/api/mobileSocial",
   auth: true,

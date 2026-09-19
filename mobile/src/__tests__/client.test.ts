@@ -335,6 +335,65 @@ describe('mobile HTTP client', () => {
     expect(find('GET', MOBILE_PATHS.globalSearch + '?q=ana')).toBeTruthy();
   });
 
+  it('covers the content endpoints (Fase D)', async () => {
+    const calls: { url: string; method: string; body: any }[] = [];
+    const client = createMobileClient({
+      getBaseUrl: () => 'http://localhost:3001',
+      getToken: () => 'tok',
+      fetchImpl: async (url, init) => {
+        calls.push({ url: String(url), method: init?.method || 'GET', body: init?.body && !(init.body instanceof FormData) ? JSON.parse(String(init.body)) : init?.body ?? null });
+        return jsonResponse({ success: true, items: [], nextCursor: null });
+      },
+    });
+
+    await client.bibleSearch('amor', 20);
+    await client.catechismSearch('batismo');
+    await client.catechismCategory('creed');
+    await client.catechismEntry(27);
+    await client.directorySearch('família');
+    await client.directoryPart('II');
+    await client.directoryEntry(12);
+    await client.contentList({ workspaceId: 'ws-1', status: 'PUBLISHED' });
+    await client.contentDetails('ct1');
+    await client.createContent({ title: 'Plano', workspaceId: 'ws-1' });
+    await client.updateContent('ct1', { theme: 'Advento' });
+    await client.updateContentStatus('ct1', 'IN_REVIEW');
+    await client.calendarEvents('ws-1');
+    await client.createCalendarEvent({ name: 'Festa', date: '2026-12-08T12:00:00.000Z', workspaceId: 'ws-1' });
+    await client.uploadDocument(new Blob(['x'], { type: 'application/pdf' }), { name: 'Batismo', type: 'BAPTISM_CERTIFICATE', catechumenProfileId: 'p1' });
+    await client.verifyDocument('d1');
+    await client.rejectDocument('d1', 'ilegível');
+    await client.deleteDocument('d1');
+    await client.createAnnouncement({ title: 'Aviso', body: 'Texto', audience: 'all', requireAck: true });
+    await client.publishAnnouncement('an1');
+
+    const base = 'http://localhost:3001';
+    const find = (method: string, path: string) => calls.find((call) => call.method === method && call.url === base + path);
+    expect(find('GET', MOBILE_PATHS.bibleSearch + '?q=amor&limit=20')).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.catechismSearch + '?q=batismo')).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.catechismCategory('creed'))).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.catechismEntry(27))).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.directorySearch + '?q=fam%C3%ADlia')).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.directoryPart('II'))).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.directoryEntry(12))).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.content + '?workspaceId=ws-1&status=PUBLISHED')).toBeTruthy();
+    expect(find('GET', MOBILE_PATHS.contentDetails('ct1'))).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.content)?.body).toMatchObject({ title: 'Plano' });
+    expect(find('PUT', MOBILE_PATHS.contentDetails('ct1'))?.body).toEqual({ theme: 'Advento' });
+    expect(find('POST', MOBILE_PATHS.contentStatus('ct1'))?.body).toEqual({ status: 'IN_REVIEW' });
+    expect(find('GET', MOBILE_PATHS.calendarEvents + '?workspaceId=ws-1')).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.calendarEvents)?.body).toMatchObject({ name: 'Festa' });
+    const uploadCall = find('POST', MOBILE_PATHS.documentsUpload);
+    expect(uploadCall?.body).toBeInstanceOf(FormData);
+    expect((uploadCall?.body as FormData).get('type')).toBe('BAPTISM_CERTIFICATE');
+    expect((uploadCall?.body as FormData).get('catechumenProfileId')).toBe('p1');
+    expect(find('POST', MOBILE_PATHS.documentVerify('d1'))).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.documentReject('d1'))?.body).toEqual({ reason: 'ilegível' });
+    expect(find('DELETE', MOBILE_PATHS.document('d1'))).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.announcements)?.body).toMatchObject({ title: 'Aviso', audience: 'all' });
+    expect(find('POST', MOBILE_PATHS.announcementPublish('an1'))).toBeTruthy();
+  });
+
   it('paginates feed and comments with cursors', async () => {
     const urls: string[] = [];
     const client = createMobileClient({

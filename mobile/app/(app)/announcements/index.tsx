@@ -1,14 +1,23 @@
-import React, { useState } from 'react';
-import { useAuth } from '../../src/auth/AuthContext';
-import { useFeedback } from '../../src/components/Feedback';
-import { useAsync } from '../../src/hooks/useAsync';
-import { AnnouncementsScreen } from '../../src/screens/AnnouncementsScreen';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import { useAuth, usePermissions } from '../../../src/auth/AuthContext';
+import { useFeedback } from '../../../src/components/Feedback';
+import { useAsync } from '../../../src/hooks/useAsync';
+import { AnnouncementsScreen } from '../../../src/screens/AnnouncementsScreen';
 
 export default function AnnouncementsRoute() {
   const { api, workspaceId } = useAuth();
+  const permissions = usePermissions();
+  const router = useRouter();
   const { notify } = useFeedback();
   const { data, loading, error, reload, refreshing } = useAsync(() => api.announcements(workspaceId || undefined), [workspaceId]);
   const [busyId, setBusyId] = useState<string | null>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      void reload();
+    }, [reload]),
+  );
 
   return (
     <AnnouncementsScreen
@@ -18,6 +27,7 @@ export default function AnnouncementsRoute() {
       refreshing={refreshing}
       onRefresh={() => void reload()}
       busyId={busyId}
+      onCreate={permissions.canManageTeam ? () => router.push('/(app)/announcements/new') : undefined}
       onAcknowledge={async (id) => {
         setBusyId(id);
         try {

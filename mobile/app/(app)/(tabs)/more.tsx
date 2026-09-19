@@ -26,7 +26,11 @@ export default function MoreRoute() {
       title: 'Conteúdo',
       icon: 'bookshelf',
       links: [
-        { id: 'bible', label: 'Bíblia', hint: 'Leitura e partilha', icon: 'book-cross', onPress: () => router.push('/(app)/bible'), testID: 'open-bible' },
+        { id: 'bible', label: 'Bíblia', hint: 'Leitura, pesquisa e favoritos', icon: 'book-cross', onPress: () => router.push('/(app)/bible'), testID: 'open-bible' },
+        { id: 'catechism', label: 'Catecismo', hint: 'Perguntas e respostas', icon: 'book-outline', onPress: () => router.push('/(app)/catechism') },
+        { id: 'directory', label: 'Diretório para a Catequese', hint: 'Orientações da Igreja', icon: 'book-information-variant', onPress: () => router.push('/(app)/directory') },
+        { id: 'content', label: 'Biblioteca de conteúdos', hint: 'Planos de encontro e materiais', icon: 'book-open-page-variant-outline', onPress: () => router.push('/(app)/content') },
+        { id: 'calendar', label: 'Calendário', hint: 'Eventos e encontros', icon: 'calendar-month-outline', onPress: () => router.push('/(app)/calendar') },
         { id: 'community', label: 'Áreas da Comunidade', hint: 'Shorts, tópicos, membros', icon: 'account-group-outline', onPress: () => router.push('/(app)/(tabs)/community'), testID: 'open-community' },
       ],
     },

@@ -20,6 +20,16 @@ export async function pickImageFile(): Promise<UploadFileInput | null> {
   return toUploadFile(result.assets[0], 'foto.jpg', 'image/jpeg');
 }
 
+/** Documentos (PDF ou imagem) via expo-document-picker. */
+export async function pickDocumentFile(): Promise<UploadFileInput | null> {
+  const DocumentPicker = await import('expo-document-picker');
+  const result = await DocumentPicker.getDocumentAsync({ type: ['application/pdf', 'image/*'], copyToCacheDirectory: true, multiple: false });
+  if (result.canceled || !result.assets?.length) return null;
+  const asset = result.assets[0];
+  if (asset.file) return asset.file as File;
+  return { uri: asset.uri, name: asset.name || `documento-${Date.now()}`, type: asset.mimeType || 'application/octet-stream' };
+}
+
 export async function pickVideoFile(): Promise<UploadFileInput | null> {
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ['videos'],

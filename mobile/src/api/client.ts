@@ -100,6 +100,23 @@ export type FamilyInput = {
   communityId?: string;
 };
 
+export type ContentInput = {
+  title: string;
+  theme?: string;
+  mainContent?: string;
+  pastoralObjective?: string;
+  openingPrayer?: string;
+  closingPrayer?: string;
+  dynamic?: string;
+  materials?: string;
+  activity?: string;
+  familyTask?: string;
+  estimatedTime?: number;
+  biblicalRef?: string;
+  catechismRef?: string;
+  tags?: string;
+};
+
 export type GlobalSearchResult = {
   id: string;
   type: string;
@@ -119,10 +136,13 @@ export type GuardianInput = {
 };
 
 export function createMobileClient(options: MobileClientOptions) {
-  async function upload<T>(path: string, file: UploadFileInput): Promise<T> {
+  async function upload<T>(path: string, file: UploadFileInput, fields?: Record<string, string | undefined>): Promise<T> {
     const token = await options.getToken();
     const baseUrl = options.getBaseUrl().replace(/\/$/, '');
     const form = new FormData();
+    for (const [key, value] of Object.entries(fields ?? {})) {
+      if (value !== undefined && value !== '') form.append(key, value);
+    }
     if (typeof File !== 'undefined' && file instanceof File) {
       form.append('file', file);
     } else if (typeof Blob !== 'undefined' && file instanceof Blob) {
@@ -404,6 +424,67 @@ export function createMobileClient(options: MobileClientOptions) {
     globalSearch(q: string, locale?: string) {
       return request<GlobalSearchResult[]>(withQuery(MOBILE_PATHS.globalSearch, { q, locale }));
     },
+    // ── Fase D: conteúdo e apoio ──
+    bibleSearch(q: string, limit?: number, locale?: string) {
+      return request<any[]>(withQuery(MOBILE_PATHS.bibleSearch, { q, limit, locale }));
+    },
+    catechismSearch(q: string, limit?: number, locale?: string) {
+      return request<any[]>(withQuery(MOBILE_PATHS.catechismSearch, { q, limit, locale }));
+    },
+    catechismCategory(category: string, locale?: string) {
+      return request<any[]>(withQuery(MOBILE_PATHS.catechismCategory(category), { locale }));
+    },
+    catechismEntry(number: number, locale?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.catechismEntry(number), { locale }));
+    },
+    directorySearch(q: string, limit?: number, locale?: string) {
+      return request<any[]>(withQuery(MOBILE_PATHS.directorySearch, { q, limit, locale }));
+    },
+    directoryPart(part: string, locale?: string) {
+      return request<any[]>(withQuery(MOBILE_PATHS.directoryPart(part), { locale }));
+    },
+    directoryEntry(number: number, locale?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.directoryEntry(number), { locale }));
+    },
+    contentList(query?: { workspaceId?: string; search?: string; status?: string; cursor?: string | null; take?: number }) {
+      return request<{ items: any[]; nextCursor: string | null }>(withQuery(MOBILE_PATHS.content, query));
+    },
+    contentDetails(id: string) {
+      return request<any>(MOBILE_PATHS.contentDetails(id));
+    },
+    createContent(body: ContentInput & { workspaceId?: string }) {
+      return request<any>(MOBILE_PATHS.content, { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateContent(id: string, body: Partial<ContentInput>) {
+      return request<any>(MOBILE_PATHS.contentDetails(id), { method: 'PUT', body: JSON.stringify(body) });
+    },
+    updateContentStatus(id: string, status: string) {
+      return request<any>(MOBILE_PATHS.contentStatus(id), { method: 'POST', body: JSON.stringify({ status }) });
+    },
+    calendarEvents(workspaceId?: string) {
+      return request<any[]>(withQuery(MOBILE_PATHS.calendarEvents, { workspaceId }));
+    },
+    createCalendarEvent(body: { name: string; date: string; endDate?: string; description?: string; type?: string; color?: string; workspaceId?: string }) {
+      return request<any>(MOBILE_PATHS.calendarEvents, { method: 'POST', body: JSON.stringify(body) });
+    },
+    uploadDocument(file: UploadFileInput, fields: { name: string; type: string; catechumenProfileId?: string; parishId?: string }) {
+      return upload<any>(MOBILE_PATHS.documentsUpload, file, fields);
+    },
+    verifyDocument(id: string) {
+      return request<any>(MOBILE_PATHS.documentVerify(id), { method: 'POST' });
+    },
+    rejectDocument(id: string, reason?: string) {
+      return request<any>(MOBILE_PATHS.documentReject(id), { method: 'POST', body: JSON.stringify({ reason }) });
+    },
+    deleteDocument(id: string) {
+      return request<any>(MOBILE_PATHS.document(id), { method: 'DELETE' });
+    },
+    createAnnouncement(body: { title: string; body: string; audience?: string; requireAck?: boolean; workspaceId?: string }) {
+      return request<any>(MOBILE_PATHS.announcements, { method: 'POST', body: JSON.stringify(body) });
+    },
+    publishAnnouncement(id: string) {
+      return request<any>(MOBILE_PATHS.announcementPublish(id), { method: 'POST' });
+    },
     conversations(workspaceId?: string) {
       return request<any>(withQuery(MOBILE_PATHS.messages, { workspaceId }));
     },
@@ -436,8 +517,8 @@ export function createMobileClient(options: MobileClientOptions) {
     markNotificationRead(id: string) {
       return request<any>(MOBILE_PATHS.notificationRead(id), { method: 'POST' });
     },
-    documents() {
-      return request<any>(MOBILE_PATHS.documents);
+    documents(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.documents, { workspaceId }));
     },
     async documentFileAccess(id: string): Promise<{ url: string; headers: Record<string, string> }> {
       const token = await options.getToken();

@@ -54,7 +54,23 @@ export default function AppLayout() {
       <Stack.Screen name="profile" options={{ title: 'Perfil' }} />
       <Stack.Screen name="notifications" options={{ title: 'Notificações' }} />
       <Stack.Screen name="search" options={{ title: 'Pesquisar' }} />
-      <Stack.Screen name="announcements" options={{ title: 'Avisos' }} />
+      <Stack.Screen name="announcements/index" options={{ title: 'Avisos' }} />
+      <Stack.Screen name="announcements/new" options={{ title: 'Novo aviso' }} />
+      <Stack.Screen name="documents-upload" options={{ title: 'Carregar documento' }} />
+      <Stack.Screen name="bible/search" options={{ title: 'Pesquisar na Bíblia' }} />
+      <Stack.Screen name="bible/favorites" options={{ title: 'Favoritos' }} />
+      <Stack.Screen name="catechism/index" options={{ title: 'Catecismo' }} />
+      <Stack.Screen name="catechism/search" options={{ title: 'Pesquisar' }} />
+      <Stack.Screen name="catechism/[number]" options={{ title: 'Catecismo' }} />
+      <Stack.Screen name="directory/index" options={{ title: 'Diretório' }} />
+      <Stack.Screen name="directory/search" options={{ title: 'Pesquisar' }} />
+      <Stack.Screen name="directory/[number]" options={{ title: 'Diretório' }} />
+      <Stack.Screen name="content/index" options={{ title: 'Biblioteca' }} />
+      <Stack.Screen name="content/new" options={{ title: 'Novo conteúdo' }} />
+      <Stack.Screen name="content/[id]/index" options={{ title: 'Conteúdo' }} />
+      <Stack.Screen name="content/[id]/edit" options={{ title: 'Editar conteúdo' }} />
+      <Stack.Screen name="calendar/index" options={{ title: 'Calendário' }} />
+      <Stack.Screen name="calendar/new" options={{ title: 'Novo evento' }} />
       <Stack.Screen name="birthdays" options={{ title: 'Aniversários' }} />
     </Stack>
   );

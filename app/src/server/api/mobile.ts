@@ -564,7 +564,7 @@ export async function mobileMarkAllNotificationsRead(_req: Request, res: Respons
 export async function mobileDocuments(req: Request, res: Response, context: any) {
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
-  return res.json(await listDocuments(undefined as void, opCtx));
+  return res.json(await listDocuments({ workspaceId: parseOptionalString(req.query.workspaceId) }, opCtx));
 }
 
 export { authenticatedDocumentUpload as mobileDocumentUpload };
