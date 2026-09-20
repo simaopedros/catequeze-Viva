@@ -18,6 +18,26 @@ describe('auth and community UI', () => {
     expect(onSubmit).toHaveBeenCalledWith('coord@paroquia.pt', 'Teste@123');
   });
 
+  it('prefills the local seed catechist in development', () => {
+    const onSubmit = jest.fn();
+    const view = render(<LoginScreen onSubmit={onSubmit} onForgotPassword={jest.fn()} />);
+
+    expect(view.getByTestId('login-email').props.value).toBe('catequista.lead@catequese.com');
+    expect(view.getByTestId('login-password').props.value).toBe('Teste@123');
+    fireEvent.press(view.getByTestId('login-submit'));
+    expect(onSubmit).toHaveBeenCalledWith('catequista.lead@catequese.com', 'Teste@123');
+  });
+
+  it('trims spaces and lowercases the email before submit', () => {
+    const onSubmit = jest.fn();
+    const view = render(<LoginScreen onSubmit={onSubmit} onForgotPassword={jest.fn()} />);
+
+    fireEvent.changeText(view.getByTestId('login-email'), '  Catequista.Lead@Catequese.com  ');
+    fireEvent.changeText(view.getByTestId('login-password'), '  Teste@123  ');
+    fireEvent.press(view.getByTestId('login-submit'));
+    expect(onSubmit).toHaveBeenCalledWith('catequista.lead@catequese.com', 'Teste@123');
+  });
+
   it('requires six TOTP digits', () => {
     const onSubmit = jest.fn();
     const view = render(<TwoFactorScreen onSubmit={onSubmit} onCancel={jest.fn()} />);

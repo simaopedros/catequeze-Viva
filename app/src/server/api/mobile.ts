@@ -160,6 +160,8 @@ async function requireMobileSessionVerification(context: AuthedContext) {
 
 export async function mobileAuthLogin(req: Request, res: Response, _context: any) {
   const args = req.body ?? {};
+  if (typeof args.email === 'string') args.email = args.email.trim().toLowerCase();
+  if (typeof args.password === 'string') args.password = args.password.trim();
   ensureValidEmail(args);
   ensurePasswordIsPresent(args);
 

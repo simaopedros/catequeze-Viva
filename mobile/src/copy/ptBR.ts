@@ -17,6 +17,7 @@ export const copy = {
   auth: {
     loginTitle: 'Entrar',
     loginSubtitle: 'Use a mesma conta da plataforma web. A sessão fica guardada neste celular.',
+    loginTestHint: 'Ambiente de teste: toque em Entrar com a conta já preenchida. Senha Teste@123 (T maiúsculo).',
     email: 'E-mail',
     emailPlaceholder: 'voce@paroquia.com',
     password: 'Senha',
@@ -25,6 +26,8 @@ export const copy = {
     submitting: 'Entrando…',
     forgot: 'Esqueceu a senha?',
     loginError: 'Não foi possível entrar.',
+    loginInvalid: 'E-mail ou senha incorretos.',
+    loginInvalidDev: 'E-mail ou senha incorretos. Use catequista.lead@catequese.com e senha Teste@123 (T maiúsculo). Esta base local não aceita a conta de produção.',
     twoFactorTitle: 'Verificação em dois passos',
     twoFactorSubtitle: 'Digite o código de 6 dígitos do aplicativo autenticador.',
     code: 'Código',

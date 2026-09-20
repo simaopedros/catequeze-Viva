@@ -1,6 +1,8 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { MobileApiError } from '../src/api/client';
 import { useAuth } from '../src/auth/AuthContext';
+import { copy } from '../src/copy/ptBR';
 import { LoginScreen } from '../src/screens/LoginScreen';
 
 export default function LoginRoute() {
@@ -20,7 +22,11 @@ export default function LoginRoute() {
         try {
           await login(email, password);
         } catch (err) {
-          setError(err instanceof Error ? err.message : 'Não foi possível entrar.');
+          if (err instanceof MobileApiError && err.status === 401) {
+            setError(__DEV__ ? copy.auth.loginInvalidDev : copy.auth.loginInvalid);
+          } else {
+            setError(err instanceof Error ? err.message : copy.auth.loginError);
+          }
         } finally {
           setBusy(false);
         }

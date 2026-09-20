@@ -58,6 +58,19 @@ describe('mobile HTTP client', () => {
     await expect(client.login('x@y.z', 'nope')).rejects.toBeInstanceOf(MobileApiError);
   });
 
+  it('translates Wasp Invalid credentials to Portuguese', async () => {
+    const client = createMobileClient({
+      getBaseUrl: () => 'http://localhost:3001',
+      getToken: () => null,
+      fetchImpl: async () => jsonResponse({ message: 'Invalid credentials', data: {} }, 401),
+    });
+
+    await expect(client.login('x@y.z', 'nope')).rejects.toMatchObject({
+      status: 401,
+      message: 'E-mail ou senha incorretos.',
+    });
+  });
+
   it('covers comunidade, bíblia and pastoral endpoints', async () => {
     const urls: string[] = [];
     const client = createMobileClient({

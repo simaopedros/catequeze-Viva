@@ -40,6 +40,9 @@ export type MobileClientOptions = {
 
 function resolveErrorMessage(payload: any, status: number): string {
   if (typeof payload?.message === 'string' && payload.message.trim()) {
+    if (/^invalid credentials$/i.test(payload.message.trim())) {
+      return 'E-mail ou senha incorretos.';
+    }
     return payload.message;
   }
   if (typeof payload?.error === 'string' && payload.error.trim()) {
