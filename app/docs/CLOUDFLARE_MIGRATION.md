@@ -283,7 +283,7 @@ SMTP (auth Wasp) + Resend (resto):
 SMTP_HOST=smtp.resend.com
 SMTP_PORT=587
 SMTP_USERNAME=resend
-SMTP_PASSWORD=re_...          # igual à API key Resend
+SMTP_PASSWORD=
 RESEND_API_KEY=re_...
 EMAIL_FROM_TRANSACTIONAL=noreply@catechis.app
 EMAIL_FROM_LIFECYCLE=updates@catechis.app
