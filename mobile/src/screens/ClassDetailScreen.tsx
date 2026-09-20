@@ -1,6 +1,7 @@
 import React from 'react';
 import { EmptyState, ErrorState, ListRow, LoadingState, Screen, ScreenTitle, SectionHeader } from '../components/ui';
 import { copy } from '../copy/ptBR';
+import { formatWhen } from '../format';
 
 export function ClassDetailScreen({
   data,
@@ -27,7 +28,7 @@ export function ClassDetailScreen({
           <ListRow
             key={meeting.id}
             title={meeting.title || meeting.theme || copy.meeting.fallback}
-            meta={meeting.startsAt || meeting.date || ''}
+            meta={formatWhen(meeting.startsAt || meeting.date) || meeting.startsAt || meeting.date || ''}
             onPress={() => onOpenMeeting(meeting.id)}
           />
         ))

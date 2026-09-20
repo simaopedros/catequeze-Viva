@@ -43,14 +43,24 @@ export default function ComposeRoute() {
       preview={preview}
       busy={busy}
       error={error}
+      initialKind={shareKind || 'VERSE'}
+      initialSourceId={shareSourceId}
       onOpenBible={() => router.push('/(app)/bible')}
-      onPublish={async (body) => {
+      onPreviewShare={async (kind, sourceId) => {
+        setError(null);
+        try {
+          setPreview(await api.previewShare(kind, sourceId));
+        } catch (err) {
+          setError(err instanceof Error ? err.message : copy.compose.invalidShare);
+        }
+      }}
+      onPublish={async (body, share) => {
         setBusy(true);
         setError(null);
         try {
           await api.createPost({
             body,
-            share: shareKind && shareSourceId ? { kind: shareKind, sourceId: shareSourceId } : null,
+            share: share ?? (shareKind && shareSourceId ? { kind: shareKind, sourceId: shareSourceId } : null),
           });
           void hapticSuccess();
           toast.show(copy.compose.published);

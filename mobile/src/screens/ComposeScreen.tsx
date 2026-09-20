@@ -8,10 +8,13 @@ export function ComposeScreen({
   canPublish,
   accessLoading,
   onPublish,
+  onPreviewShare,
   preview,
   busy,
   error,
   onOpenBible,
+  initialKind = 'VERSE',
+  initialSourceId = '',
 }: {
   canPublish: boolean;
   accessLoading?: boolean;
@@ -21,8 +24,12 @@ export function ComposeScreen({
   busy?: boolean;
   error?: string | null;
   onOpenBible?: () => void;
+  initialKind?: string;
+  initialSourceId?: string;
 }) {
   const [body, setBody] = useState('');
+  const [kind, setKind] = useState(initialKind);
+  const [sourceId, setSourceId] = useState(initialSourceId);
 
   return (
     <Screen testID="compose-screen">
@@ -42,6 +49,21 @@ export function ComposeScreen({
         multiline
         testID="compose-body"
       />
+      <Field label={copy.compose.shareKind} value={kind} onChangeText={setKind} testID="compose-share-kind" />
+      <Field
+        label={copy.compose.shareId}
+        value={sourceId}
+        onChangeText={setSourceId}
+        testID="compose-share-id"
+      />
+      {onPreviewShare ? (
+        <BrandButton
+          variant="ghost"
+          label={copy.compose.previewShare}
+          onPress={() => sourceId.trim() && onPreviewShare(kind.trim() || 'VERSE', sourceId.trim())}
+          testID="compose-preview"
+        />
+      ) : null}
       {preview ? (
         <ShareCard kind={preview.kind} title={preview.title} subtitle={preview.subtitle} excerpt={preview.excerpt} />
       ) : onOpenBible ? (
@@ -51,7 +73,9 @@ export function ComposeScreen({
         testID="compose-submit"
         label={busy ? copy.compose.publishing : copy.compose.publish}
         disabled={(!canPublish && !accessLoading) || busy || !body.trim()}
-        onPress={() => onPublish(body.trim(), null)}
+        onPress={() =>
+          onPublish(body.trim(), sourceId.trim() ? { kind: kind.trim() || 'VERSE', sourceId: sourceId.trim() } : null)
+        }
       />
     </Screen>
   );

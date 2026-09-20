@@ -169,7 +169,7 @@ export function Screen({
       <ScrollView
         testID={testID}
         style={styles.screen}
-        contentContainerStyle={[styles.screenContent, padded && { padding: spacing.lg }]}
+        contentContainerStyle={[styles.screenContent, padded && { padding: spacing.md }]}
         keyboardShouldPersistTaps="handled"
         refreshControl={
           onRefresh ? (
@@ -188,10 +188,10 @@ export function Screen({
   );
 }
 
-export function ScreenTitle({ title, subtitle }: { title: string; subtitle?: string }) {
+export function ScreenTitle({ title, subtitle, hero }: { title: string; subtitle?: string; hero?: boolean }) {
   return (
     <View style={{ marginBottom: spacing.md }}>
-      <AppText variant="display" display weight="bold">
+      <AppText variant={hero ? 'display' : 'title'} display={hero} weight="bold">
         {title}
       </AppText>
       {subtitle ? (
@@ -337,7 +337,7 @@ export function Chip({
       accessibilityHint={hint}
       style={[styles.chip, active ? styles.chipActive : styles.chipIdle]}
     >
-      <AppText variant="caption" weight="bold" color={active ? 'ink' : 'inkSoft'}>
+      <AppText variant="caption" weight="bold" color={active ? 'inverse' : 'ink'}>
         {label}
       </AppText>
     </PressableScale>
@@ -351,6 +351,7 @@ export function ListRow({
   testID,
   accessory = true,
   selected,
+  icon,
 }: {
   title: string;
   meta?: string;
@@ -358,14 +359,18 @@ export function ListRow({
   testID?: string;
   accessory?: boolean;
   selected?: boolean;
+  icon?: keyof typeof Ionicons.glyphMap;
 }) {
   const content = (
     <Card style={styles.listRowCard}>
       <View style={styles.listRowInner}>
+        {icon ? <Ionicons name={icon} size={20} color={colors.gold} /> : null}
         <View style={styles.flex}>
-          <AppText variant="titleSm">{title}</AppText>
+          <AppText variant="body" weight="bold">
+            {title}
+          </AppText>
           {meta ? (
-            <AppText variant="caption" color="secondary" style={{ marginTop: spacing.xxs }} numberOfLines={2}>
+            <AppText variant="caption" color="secondary" style={{ marginTop: 2 }} numberOfLines={2}>
               {meta}
             </AppText>
           ) : null}
@@ -394,16 +399,22 @@ export function SectionHeader({ title, style, testID }: { title: string; style?:
   );
 }
 
-export function StatCard({ label, value }: { label: string; value: string | number }) {
-  return (
+export function StatCard({ label, value, onPress }: { label: string; value: string | number; onPress?: () => void }) {
+  const card = (
     <Card style={styles.flex}>
       <AppText variant="caption" color="secondary">
         {label}
       </AppText>
-      <AppText variant="display" display weight="bold" style={{ marginTop: spacing.xxs }}>
+      <AppText variant="title" weight="bold" style={{ marginTop: spacing.xxs }}>
         {value}
       </AppText>
     </Card>
+  );
+  if (!onPress) return card;
+  return (
+    <PressableScale onPress={onPress} style={styles.flex}>
+      {card}
+    </PressableScale>
   );
 }
 
@@ -483,16 +494,16 @@ const styles = StyleSheet.create({
   screenContent: { paddingBottom: spacing.xxl, flexGrow: 1 },
   card: {
     backgroundColor: colors.elevated,
-    borderRadius: radius.sm,
+    borderRadius: 16,
     padding: spacing.md,
     borderWidth: 1,
     borderColor: colors.stroke,
     marginBottom: spacing.md,
     shadowColor: colors.ink,
-    shadowOpacity: 0.05,
-    shadowRadius: 1,
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
     shadowOffset: { width: 0, height: 1 },
-    elevation: 1,
+    elevation: 2,
   },
   button: {
     borderRadius: radius.lg,
@@ -529,9 +540,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: 'center',
   },
-  chipActive: { backgroundColor: colors.goldSoft, borderColor: colors.gold },
+  chipActive: { backgroundColor: colors.ink, borderColor: colors.ink },
   chipIdle: { backgroundColor: colors.elevated, borderColor: colors.stroke },
-  listRowCard: { marginBottom: spacing.sm },
+  listRowCard: { marginBottom: spacing.sm, paddingVertical: spacing.sm },
   listRowInner: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   banner: {
     backgroundColor: colors.goldSoft,

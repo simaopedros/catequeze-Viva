@@ -2,15 +2,12 @@ import React from 'react';
 import { View } from 'react-native';
 import { PostCard } from '../components/PostCard';
 import {
-  AppText,
   Banner,
   BrandButton,
-  Card,
   Chip,
   EmptyState,
   ErrorState,
   LoadingState,
-  PressableScale,
   Screen,
   ScreenTitle,
   SectionHeader,
@@ -76,47 +73,16 @@ export function CommunityScreen({
   return (
     <Screen testID="community-screen" onRefresh={onRefresh} refreshing={refreshing}>
       <ScreenTitle title={title} subtitle={subtitle} />
-      {showHub && onOpenArea ? (
-        <View testID="community-hub" style={{ marginBottom: spacing.md }}>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
-            {COMMUNITY_AREAS.filter((area) => area.id !== 'feed').map((area) => (
-              <PressableScale
-                key={area.id}
-                testID={`area-${area.id}`}
-                onPress={() => onOpenArea(area.id)}
-                accessibilityHint={area.hint}
-                style={{ width: '48%' }}
-              >
-                <Card style={{ marginBottom: 0 }}>
-                  <AppText variant="caption" weight="bold">
-                    {area.label}
-                  </AppText>
-                  <AppText variant="micro" color="secondary" style={{ marginTop: 2 }}>
-                    {area.hint}
-                  </AppText>
-                </Card>
-              </PressableScale>
-            ))}
-          </View>
-        </View>
-      ) : null}
-      {!showHub && onSearch ? (
+      <BrandButton label={copy.community.compose} onPress={onCompose} testID="compose-open" />
+      {onSearch ? (
         <BrandButton variant="ghost" label={copy.community.searchPeople} onPress={onSearch} testID="open-search" />
-      ) : null}
-      {!showHub && onToggleFollowing ? (
-        <BrandButton
-          variant={following ? 'primary' : 'ghost'}
-          label={following ? copy.community.followingOn : copy.community.followingOff}
-          onPress={onToggleFollowing}
-          testID="filter-following"
-        />
       ) : null}
       {access && !access.canPublish ? (
         <Banner>
           {access.reason === 'subscription' ? copy.community.subscribeBanner : copy.community.limitedBanner}
         </Banner>
       ) : null}
-      <View style={{ flexDirection: 'row', gap: spacing.xs, marginBottom: spacing.sm, flexWrap: 'wrap' }}>
+      <View style={{ flexDirection: 'row', gap: spacing.xs, marginTop: spacing.sm, marginBottom: spacing.sm, flexWrap: 'wrap' }}>
         {SORTS.map((item) => (
           <Chip
             key={item.id}
@@ -126,7 +92,7 @@ export function CommunityScreen({
             onPress={() => onChangeSort(item.id)}
           />
         ))}
-        {showHub && onToggleFollowing ? (
+        {onToggleFollowing ? (
           <Chip
             label={copy.community.followingChip}
             active={following}
@@ -147,7 +113,6 @@ export function CommunityScreen({
           />
         ))}
       </View>
-      <BrandButton label={copy.community.compose} onPress={onCompose} testID="compose-open" />
       <SectionHeader title={copy.community.posts} testID="feed-heading" />
       {loading ? <LoadingState /> : null}
       {error ? <ErrorState title={copy.community.errorTitle} body={error} /> : null}
@@ -158,6 +123,22 @@ export function CommunityScreen({
           <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
         ))
       )}
+      {showHub && onOpenArea ? (
+        <View testID="community-hub" style={{ marginTop: spacing.md }}>
+          <SectionHeader title={copy.community.shortcuts} />
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+            {COMMUNITY_AREAS.filter((area) => area.id !== 'feed').map((area) => (
+              <Chip
+                key={area.id}
+                label={area.label}
+                hint={area.hint}
+                testID={`area-${area.id}`}
+                onPress={() => onOpenArea(area.id)}
+              />
+            ))}
+          </View>
+        </View>
+      ) : null}
     </Screen>
   );
 }

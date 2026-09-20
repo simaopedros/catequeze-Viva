@@ -61,6 +61,8 @@ describe('Community hub', () => {
 
     expect(view.getByText('Paz e bem, irmãos. A catequese começou.')).toBeTruthy();
     expect(view.getByTestId('post-p1')).toBeTruthy();
+    expect(view.getByTestId('feed-heading')).toBeTruthy();
+    expect(view.getByTestId('community-hub')).toBeTruthy();
   });
 
   it('abre as rotas de cada área', () => {

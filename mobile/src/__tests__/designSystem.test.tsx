@@ -19,7 +19,7 @@ function styleOf(view: ReturnType<typeof render>, testID: string) {
 }
 
 describe('design system primitives', () => {
-  it('keeps selected chips in the gold family instead of navy', () => {
+  it('uses ink for selected chips so they stay readable on paper', () => {
     const view = render(
       <>
         <Chip label="Recentes" active onPress={() => undefined} testID="chip-on" />
@@ -29,9 +29,7 @@ describe('design system primitives', () => {
 
     const active = styleOf(view, 'chip-on');
     const idle = styleOf(view, 'chip-off');
-    expect(active.backgroundColor).toBe(colors.goldSoft);
-    expect(active.borderColor).toBe(colors.gold);
-    expect(active.backgroundColor).not.toBe(colors.ink);
+    expect(active.backgroundColor).toBe(colors.ink);
     expect(idle.backgroundColor).toBe(colors.elevated);
   });
 
@@ -55,13 +53,18 @@ describe('copy catalog', () => {
 });
 
 describe('More screen', () => {
-  it('does not duplicate profile editing fields', () => {
+  it('keeps bible, profile editing and workspace on the same screen', () => {
     const view = render(
       <MoreScreen
         name="Ana"
         workspaces={[{ id: 'w1', name: 'Paróquia São José' } as any]}
         workspaceId="w1"
         profile={{ handle: 'ana' } as any}
+        handle="ana"
+        bio="Catequista"
+        onHandleChange={jest.fn()}
+        onBioChange={jest.fn()}
+        onSaveProfile={jest.fn()}
         onSelectWorkspace={jest.fn()}
         onOpenBible={jest.fn()}
         onOpenDocuments={jest.fn()}
@@ -71,7 +74,9 @@ describe('More screen', () => {
       />,
     );
 
-    expect(view.queryByTestId('profile-handle')).toBeNull();
+    expect(view.getByTestId('open-bible')).toBeTruthy();
+    expect(view.getByTestId('profile-handle')).toBeTruthy();
+    expect(view.getByTestId('save-profile-more')).toBeTruthy();
     expect(view.getByTestId('open-edit-profile')).toBeTruthy();
     expect(view.getByText('Espaço de trabalho')).toBeTruthy();
   });

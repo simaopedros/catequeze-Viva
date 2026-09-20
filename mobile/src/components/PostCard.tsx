@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
     padding: spacing.sm,
     borderRadius: radius.sm,
-    backgroundColor: colors.paper,
+    backgroundColor: colors.surfaceSubtle,
     borderWidth: 1,
     borderColor: colors.stroke,
   },

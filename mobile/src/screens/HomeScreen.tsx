@@ -1,12 +1,15 @@
 import React from 'react';
 import { View } from 'react-native';
 import { copy } from '../copy/ptBR';
+import { formatWhen } from '../format';
 import {
+  AppText,
   BrandButton,
+  Card,
   EmptyState,
   ErrorState,
-  ListRow,
   LoadingState,
+  PressableScale,
   Screen,
   ScreenTitle,
   SectionHeader,
@@ -31,6 +34,7 @@ export function HomeScreen({
   onOpenMeeting,
   onOpenCommunity,
   onOpenNotifications,
+  onOpenClasses,
   unread,
   onRefresh,
   refreshing,
@@ -49,38 +53,44 @@ export function HomeScreen({
   onOpenMeeting: (id: string) => void;
   onOpenCommunity: () => void;
   onOpenNotifications: () => void;
+  onOpenClasses?: () => void;
   unread?: number;
   onRefresh?: () => void;
   refreshing?: boolean;
 }) {
   const upcoming = meetings ?? stats?.upcomingMeetings ?? stats?.todayMeetings ?? [];
+  const attendance =
+    typeof stats?.avgAttendance === 'number' ? `${Math.round(stats.avgAttendance)}%` : '—';
 
   return (
     <Screen testID="home-screen" onRefresh={onRefresh} refreshing={refreshing}>
-      <ScreenTitle title={copy.home.hello(name)} subtitle={copy.home.subtitle} />
+      <ScreenTitle hero title={copy.home.hello(name)} subtitle={copy.home.subtitle} />
       {loading ? <LoadingState /> : null}
       {error ? <ErrorState title={copy.home.errorTitle} body={error} /> : null}
       <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.xs }}>
-        <StatCard label={copy.home.classes} value={stats?.activeClasses ?? '—'} />
+        <StatCard label={copy.home.classes} value={stats?.activeClasses ?? '—'} onPress={onOpenClasses} />
         <StatCard label={copy.home.catechumens} value={stats?.activeCatechumens ?? '—'} />
+        <StatCard label={copy.home.attendance} value={attendance} />
       </View>
-      <ListRow
-        title={unread ? copy.home.notificationsUnread(unread) : copy.home.notifications}
+      <BrandButton
+        label={unread ? copy.home.notificationsUnread(unread) : copy.home.notifications}
         onPress={onOpenNotifications}
       />
-      <BrandButton variant="soft" label={copy.home.goCommunity} onPress={onOpenCommunity} />
+      <BrandButton variant="ghost" label={copy.home.goCommunity} onPress={onOpenCommunity} />
       <SectionHeader title={copy.home.upcoming} />
       {upcoming.length === 0 && !loading ? (
         <EmptyState title={copy.home.emptyTitle} body={copy.home.emptyBody} />
       ) : (
         upcoming.slice(0, 5).map((meeting) => (
-          <ListRow
-            key={meeting.id}
-            testID={`meeting-${meeting.id}`}
-            title={meeting.title || meeting.theme || copy.home.meetingFallback}
-            meta={`${meeting.class?.name || copy.home.classFallback}${meeting.startsAt ? ` · ${meeting.startsAt}` : ''}`}
-            onPress={() => onOpenMeeting(meeting.id)}
-          />
+          <PressableScale key={meeting.id} testID={`meeting-${meeting.id}`} onPress={() => onOpenMeeting(meeting.id)}>
+            <Card>
+              <AppText variant="titleSm">{meeting.title || meeting.theme || copy.home.meetingFallback}</AppText>
+              <AppText variant="caption" color="secondary" style={{ marginTop: 4 }}>
+                {meeting.class?.name || copy.home.classFallback}
+                {meeting.startsAt ? ` · ${formatWhen(meeting.startsAt)}` : ''}
+              </AppText>
+            </Card>
+          </PressableScale>
         ))
       )}
     </Screen>

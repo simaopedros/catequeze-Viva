@@ -1,4 +1,5 @@
 import { APP_TABS } from '../api/paths';
+import { formatWhen } from '../format';
 import { appRoutes, publicRoutes } from '../navigation/routes';
 
 describe('usability map', () => {
@@ -34,5 +35,11 @@ describe('usability map', () => {
     expect(signedOut).toHaveLength(3);
     expect(signedIn).toHaveLength(24);
     expect(APP_TABS).toHaveLength(5);
+  });
+
+  it('formats meeting timestamps in pt-BR instead of raw ISO', () => {
+    expect(formatWhen('2026-09-20T19:00:00.000Z')).toMatch(/\d/);
+    expect(formatWhen('2026-09-20T19:00:00.000Z')).not.toContain('T19:00');
+    expect(formatWhen('')).toBe('');
   });
 });
