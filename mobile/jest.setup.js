@@ -5,6 +5,14 @@ jest.mock('expo-haptics', () => ({
   NotificationFeedbackType: { Success: 'success', Warning: 'warning', Error: 'error' },
 }));
 
+jest.mock('expo-web-browser', () => ({
+  openBrowserAsync: jest.fn(() => Promise.resolve({ type: 'dismiss' })),
+}));
+
+jest.mock('expo-document-picker', () => ({
+  getDocumentAsync: jest.fn(),
+}));
+
 jest.mock('expo-font', () => ({
   useFonts: () => [true, null],
   isLoaded: () => true,
@@ -17,12 +25,12 @@ jest.mock('expo-splash-screen', () => ({
   hideAsync: jest.fn(() => Promise.resolve()),
 }));
 
-jest.mock('@expo-google-fonts/inter', () => ({
+jest.mock('@expo-google-fonts/figtree', () => ({
   useFonts: () => [true],
-  Inter_400Regular: 'Inter_400Regular',
-  Inter_500Medium: 'Inter_500Medium',
-  Inter_600SemiBold: 'Inter_600SemiBold',
-  Inter_700Bold: 'Inter_700Bold',
+  Figtree_400Regular: 'Figtree_400Regular',
+  Figtree_500Medium: 'Figtree_500Medium',
+  Figtree_600SemiBold: 'Figtree_600SemiBold',
+  Figtree_700Bold: 'Figtree_700Bold',
 }));
 
 jest.mock('@expo-google-fonts/cormorant-garamond', () => ({

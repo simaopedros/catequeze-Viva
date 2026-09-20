@@ -30,7 +30,7 @@ export function BibleBooksScreen({
   refreshing?: boolean;
 }) {
   return (
-    <Screen testID="bible-books-screen" onRefresh={onRefresh} refreshing={refreshing}>
+    <Screen testID="bible-books-screen" tone="paper" onRefresh={onRefresh} refreshing={refreshing}>
       <ScreenTitle title={copy.bible.title} subtitle={copy.bible.subtitle} />
       {loading ? <LoadingState /> : null}
       {error ? <ErrorState title={copy.bible.errorBible} body={error} /> : null}
@@ -60,7 +60,7 @@ export function BibleBookScreen({
 }) {
   const chapters = book?.chapters ?? [];
   return (
-    <Screen testID="bible-book-screen">
+    <Screen testID="bible-book-screen" tone="paper">
       <ScreenTitle title={book?.name || copy.bible.book} />
       {loading ? <LoadingState /> : null}
       {error ? <ErrorState title={copy.bible.errorBook} body={error} /> : null}
@@ -93,7 +93,7 @@ export function BibleChapterScreen({
   onShareVerse: (verseNumber: number, text: string) => void;
 }) {
   return (
-    <Screen testID="bible-chapter-screen">
+    <Screen testID="bible-chapter-screen" tone="paper">
       <ScreenTitle
         title={
           chapter?.book?.name

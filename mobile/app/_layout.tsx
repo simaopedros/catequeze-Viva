@@ -7,32 +7,36 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider, useAuth } from '../src/auth/AuthContext';
 import { copy } from '../src/copy/ptBR';
 import { ToastProvider } from '../src/feedback/Toast';
+import { needsOnboarding } from '../src/navigation/navContext';
 import { colors, navigationChrome } from '../src/theme';
 import { BrandFontsProvider, useBrandFontsLoaded } from '../src/theme/fonts';
 
 void SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
 function Gate({ children }: { children: React.ReactNode }) {
-  const { status } = useAuth();
+  const { status, bootstrap } = useAuth();
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
     if (status === 'booting') return;
-    const inPublic = segments[0] === 'login' || segments[0] === 'two-factor' || segments[0] === 'forgot-password';
+    const first = String(segments[0] || '');
+    const inPublic = first === 'login' || first === 'two-factor' || first === 'forgot-password' || first === 'signup';
     if (status === 'guest' && !inPublic) {
       router.replace('/login');
-    } else if (status === 'needs2fa' && segments[0] !== 'two-factor') {
+    } else if (status === 'needs2fa' && first !== 'two-factor') {
       router.replace('/two-factor');
+    } else if (status === 'ready' && needsOnboarding(bootstrap) && first !== 'onboarding') {
+      router.replace('/onboarding');
     } else if (status === 'ready' && inPublic) {
       router.replace('/(app)/(tabs)');
     }
-  }, [router, segments, status]);
+  }, [bootstrap, router, segments, status]);
 
   if (status === 'booting') {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.paper }}>
-        <ActivityIndicator color={colors.gold} />
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.canvas }}>
+        <ActivityIndicator color={colors.ink} />
       </View>
     );
   }
@@ -51,7 +55,7 @@ function RootNavigation() {
 
   if (!fontsLoaded) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.paper, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ flex: 1, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator color={colors.gold} />
       </View>
     );
@@ -64,9 +68,11 @@ function RootNavigation() {
         <Gate>
           <Stack screenOptions={navigationChrome}>
             <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="login" options={{ title: copy.auth.loginTitle }} />
+            <Stack.Screen name="login" options={{ title: copy.auth.loginTitle, headerShown: false }} />
+            <Stack.Screen name="signup" options={{ title: copy.signup.title, headerShown: false }} />
             <Stack.Screen name="two-factor" options={{ title: copy.auth.twoFactorTitle }} />
             <Stack.Screen name="forgot-password" options={{ title: copy.auth.recoverTitle }} />
+            <Stack.Screen name="onboarding" options={{ title: copy.onboarding.title }} />
             <Stack.Screen name="(app)" options={{ headerShown: false }} />
           </Stack>
         </Gate>
@@ -77,7 +83,7 @@ function RootNavigation() {
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.paper }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.canvas }}>
       <BrandFontsProvider>
         <RootNavigation />
       </BrandFontsProvider>

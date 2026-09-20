@@ -1,11 +1,12 @@
 import { APP_TABS, MOBILE_PATHS } from '../api/paths';
 
 describe('mobile path contract', () => {
-  it('keeps the five pastoral tabs', () => {
+  it('keeps the pastoral tabs including Agenda', () => {
     expect(APP_TABS.map((tab) => tab.label)).toEqual([
       'Início',
       'Comunidade',
       'Turmas',
+      'Agenda',
       'Mensagens',
       'Mais',
     ]);
@@ -23,6 +24,9 @@ describe('mobile path contract', () => {
     expect(MOBILE_PATHS.socialReact).toBe('/mobile/social/react');
     expect(MOBILE_PATHS.socialSearch).toBe('/mobile/social/search');
     expect(MOBILE_PATHS.bibleBooks).toBe('/mobile/bible/books');
-    expect(MOBILE_PATHS.bibleChapter('jo', 3)).toBe('/mobile/bible/books/jo/chapters/3');
+    expect(MOBILE_PATHS.catechumens).toBe('/mobile/catechumens');
+    expect(MOBILE_PATHS.calendar).toBe('/mobile/calendar');
+    expect(MOBILE_PATHS.groups).toBe('/mobile/groups');
+    expect(MOBILE_PATHS.webBridge).toBe('/mobile/auth/web-bridge');
   });
 });

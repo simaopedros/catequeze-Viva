@@ -72,7 +72,8 @@ export function createMobileClient(options: MobileClientOptions) {
       Accept: 'application/json',
       ...(init.headers as Record<string, string> | undefined),
     };
-    if (init.body && !headers['Content-Type']) {
+    const isForm = typeof FormData !== 'undefined' && init.body instanceof FormData;
+    if (init.body && !headers['Content-Type'] && !isForm) {
       headers['Content-Type'] = 'application/json';
     }
     if (token) {
@@ -118,6 +119,18 @@ export function createMobileClient(options: MobileClientOptions) {
         body: JSON.stringify({ email, password }),
       });
     },
+    signup(body: { email: string; password: string; firstName?: string; lastName?: string }) {
+      return request<{ success?: boolean }>(MOBILE_PATHS.signup, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    createWebBridge(path: string) {
+      return request<{ url: string }>(MOBILE_PATHS.webBridge, {
+        method: 'POST',
+        body: JSON.stringify({ path }),
+      });
+    },
     session() {
       return request<AuthPayload>(MOBILE_PATHS.session);
     },
@@ -126,6 +139,24 @@ export function createMobileClient(options: MobileClientOptions) {
     },
     verifyTwoFactor(token: string) {
       return request<AuthPayload>(MOBILE_PATHS.twoFactorVerify, {
+        method: 'POST',
+        body: JSON.stringify({ token }),
+      });
+    },
+    twoFactorStatus() {
+      return request<any>(MOBILE_PATHS.twoFactorStatus);
+    },
+    startTwoFactorSetup() {
+      return request<{ secret?: string; uri?: string }>(MOBILE_PATHS.twoFactorSetupStart, { method: 'POST' });
+    },
+    confirmTwoFactorSetup(token: string) {
+      return request<{ success?: boolean }>(MOBILE_PATHS.twoFactorSetupVerify, {
+        method: 'POST',
+        body: JSON.stringify({ token }),
+      });
+    },
+    disableTwoFactor(token: string) {
+      return request<{ success?: boolean }>(MOBILE_PATHS.twoFactorDisable, {
         method: 'POST',
         body: JSON.stringify({ token }),
       });
@@ -177,6 +208,16 @@ export function createMobileClient(options: MobileClientOptions) {
         body: JSON.stringify({ conversationId, content }),
       });
     },
+    createConversation(body: {
+      type: 'DIRECT' | 'GROUP' | 'CLASS_CHAT' | 'ANNOUNCEMENT';
+      title?: string;
+      participantUserIds: string[];
+      parishId?: string;
+      classId?: string;
+      communityId?: string;
+    }) {
+      return request<any>(MOBILE_PATHS.conversations, { method: 'POST', body: JSON.stringify(body) });
+    },
     notifications() {
       return request<any>(MOBILE_PATHS.notifications);
     },
@@ -185,6 +226,144 @@ export function createMobileClient(options: MobileClientOptions) {
     },
     documents() {
       return request<any>(MOBILE_PATHS.documents);
+    },
+    markAllNotificationsRead() {
+      return request<any>(MOBILE_PATHS.notificationsReadAll, { method: 'POST' });
+    },
+    catechumens(workspaceId?: string, search?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.catechumens, { workspaceId, search }));
+    },
+    catechumenDetails(id: string) {
+      return request<any>(MOBILE_PATHS.catechumenDetails(id));
+    },
+    createCatechumen(body: { firstName: string; lastName: string; email?: string; birthDate?: string }) {
+      return request<any>(MOBILE_PATHS.catechumens, { method: 'POST', body: JSON.stringify(body) });
+    },
+    updateCatechumen(id: string, body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.catechumenDetails(id), { method: 'POST', body: JSON.stringify(body) });
+    },
+    families(workspaceId?: string, search?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.families, { workspaceId, search }));
+    },
+    familyDetails(id: string, workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.familyDetails(id), { workspaceId }));
+    },
+    createFamily(body: { name: string; parishId?: string; phone?: string; address?: string }) {
+      return request<any>(MOBILE_PATHS.families, { method: 'POST', body: JSON.stringify(body) });
+    },
+    calendar(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.calendar, { workspaceId }));
+    },
+    createCalendarEvent(body: { name: string; date: string; description?: string; workspaceId?: string }) {
+      return request<any>(MOBILE_PATHS.calendar, { method: 'POST', body: JSON.stringify(body) });
+    },
+    announcements(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.announcements, { workspaceId }));
+    },
+    acknowledgeAnnouncement(id: string) {
+      return request<any>(MOBILE_PATHS.announcementAck(id), { method: 'POST' });
+    },
+    createAnnouncement(body: { title: string; body: string; workspaceId?: string; audience?: string }) {
+      return request<any>(MOBILE_PATHS.announcements, { method: 'POST', body: JSON.stringify(body) });
+    },
+    groups(query?: { q?: string; mine?: boolean }) {
+      return request<any>(withQuery(MOBILE_PATHS.groups, query));
+    },
+    groupDetails(id: string) {
+      return request<any>(MOBILE_PATHS.groupDetails(id));
+    },
+    joinGroup(id: string) {
+      return request<any>(MOBILE_PATHS.groupJoin(id), { method: 'POST' });
+    },
+    leaveGroup(id: string) {
+      return request<any>(MOBILE_PATHS.groupLeave(id), { method: 'POST' });
+    },
+    postGroupNotice(id: string, body: string) {
+      return request<any>(MOBILE_PATHS.groupNotices(id), { method: 'POST', body: JSON.stringify({ body }) });
+    },
+    team(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.team, { workspaceId }));
+    },
+    invite(body: { email: string; parishId: string; role: string; householdId?: string }) {
+      return request<any>(MOBILE_PATHS.teamInvite, { method: 'POST', body: JSON.stringify(body) });
+    },
+    familyInvites(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.familyInvites, { workspaceId }));
+    },
+    contentLibrary(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.contentLibrary, { workspaceId }));
+    },
+    officialLibrary(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.officialLibrary, { workspaceId }));
+    },
+    catechism(query?: { category?: string; q?: string }) {
+      return request<any>(withQuery(MOBILE_PATHS.catechism, query));
+    },
+    catechismEntry(number: number) {
+      return request<any>(MOBILE_PATHS.catechismEntry(number));
+    },
+    directory(query?: { part?: string; q?: string }) {
+      return request<any>(withQuery(MOBILE_PATHS.directory, query));
+    },
+    directoryEntry(number: number) {
+      return request<any>(MOBILE_PATHS.directoryEntry(number));
+    },
+    journeys(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.journeys, { workspaceId }));
+    },
+    journeyTemplates() {
+      return request<any>(MOBILE_PATHS.journeyTemplates);
+    },
+    parishes() {
+      return request<any>(MOBILE_PATHS.parishes);
+    },
+    communities(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.communities, { workspaceId }));
+    },
+    reports(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.reports, { workspaceId }));
+    },
+    catecheticalYears() {
+      return request<any>(MOBILE_PATHS.catecheticalYears);
+    },
+    formation(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.formation, { workspaceId }));
+    },
+    birthdays() {
+      return request<any>(MOBILE_PATHS.birthdays);
+    },
+    updateProfile(body: { firstName?: string; lastName?: string; phone?: string }) {
+      return request<any>(MOBILE_PATHS.settingsProfile, { method: 'POST', body: JSON.stringify(body) });
+    },
+    changePassword(body: { currentPassword: string; newPassword: string }) {
+      return request<any>(MOBILE_PATHS.settingsPassword, { method: 'POST', body: JSON.stringify(body) });
+    },
+    emailPrefs() {
+      return request<any>(MOBILE_PATHS.emailPrefs);
+    },
+    updateEmailPref(topic: string, optedIn: boolean) {
+      return request<any>(MOBILE_PATHS.emailPrefs, { method: 'POST', body: JSON.stringify({ topic, optedIn }) });
+    },
+    consents() {
+      return request<any>(MOBILE_PATHS.consents);
+    },
+    saveConsent(type: string, granted: boolean) {
+      return request<any>(MOBILE_PATHS.consents, { method: 'POST', body: JSON.stringify({ type, granted }) });
+    },
+    completeCoordinatorOnboarding(body: Record<string, unknown>) {
+      return request<any>(MOBILE_PATHS.onboardingCoordinator, { method: 'POST', body: JSON.stringify(body) });
+    },
+    completeMemberOnboarding(body: { intent: string; city?: string; state?: string }) {
+      return request<any>(MOBILE_PATHS.onboardingMember, { method: 'POST', body: JSON.stringify(body) });
+    },
+    uploadDocument(file: { uri: string; name: string; type: string }, fields: { name: string; type: string; catechumenProfileId?: string; parishId?: string }) {
+      const form = new FormData();
+      form.append('file', { uri: file.uri, name: file.name, type: file.type } as any);
+      form.append('name', fields.name);
+      form.append('type', fields.type);
+      if (fields.catechumenProfileId) form.append('catechumenProfileId', fields.catechumenProfileId);
+      if (fields.parishId) form.append('parishId', fields.parishId);
+      return request<any>(MOBILE_PATHS.documentUpload, { method: 'POST', body: form });
     },
     socialFeed(query?: {
       cursor?: string | null;

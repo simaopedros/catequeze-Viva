@@ -103,6 +103,12 @@ describe('mobile HTTP client', () => {
     await client.bibleBooks();
     await client.bibleBook('gn');
     await client.bibleChapter('gn', 1);
+    await client.catechumens('ws-1');
+    await client.families('ws-1');
+    await client.calendar('ws-1');
+    await client.createWebBridge('/app/billing');
+    await client.markAllNotificationsRead();
+    await client.createConversation({ type: 'DIRECT', participantUserIds: ['u2'], parishId: 'ws-1' });
     await client.saveAttendance({ meetingId: 'm1', catechumenProfileId: 'c1', status: 'PRESENT' });
 
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialAccess);
@@ -115,5 +121,31 @@ describe('mobile HTTP client', () => {
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialBlocks);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialReport);
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.attendance);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.catechumens + '?workspaceId=ws-1');
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.families + '?workspaceId=ws-1');
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.calendar + '?workspaceId=ws-1');
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.webBridge);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.notificationsReadAll);
+    expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.conversations);
+  });
+
+  it('does not force JSON content-type on document uploads', async () => {
+    const headers: Record<string, string>[] = [];
+    const client = createMobileClient({
+      getBaseUrl: () => 'http://localhost:3001',
+      getToken: () => 'tok',
+      fetchImpl: async (_url, init) => {
+        headers.push((init?.headers || {}) as Record<string, string>);
+        return jsonResponse({ ok: true });
+      },
+    });
+
+    await client.uploadDocument(
+      { uri: 'file://doc.pdf', name: 'doc.pdf', type: 'application/pdf' },
+      { name: 'doc.pdf', type: 'OTHER' },
+    );
+
+    expect(headers[0]['Content-Type']).toBeUndefined();
+    expect(headers[0].Authorization).toBe('Bearer tok');
   });
 });

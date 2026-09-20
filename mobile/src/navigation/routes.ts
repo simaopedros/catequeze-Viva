@@ -2,14 +2,17 @@ export const publicRoutes = {
   login: '/login',
   twoFactor: '/two-factor',
   forgotPassword: '/forgot-password',
+  signup: '/signup',
 } as const;
 
 export const appRoutes = {
   home: '/(app)/(tabs)',
   community: '/(app)/(tabs)/community',
   classes: '/(app)/(tabs)/classes',
+  calendar: '/(app)/(tabs)/calendar',
   messages: '/(app)/(tabs)/messages',
   more: '/(app)/(tabs)/more',
+  groups: '/(app)/groups',
   compose: '/(app)/community/compose',
   search: '/(app)/community/search',
   members: '/(app)/community/members',
@@ -33,6 +36,12 @@ export const appRoutes = {
   documents: '/(app)/documents',
   myProfile: '/(app)/profile',
   notifications: '/(app)/notifications',
+  catechumens: '/(app)/people/catechumens',
+  families: '/(app)/people/families',
+  settings: '/(app)/settings',
+  onboarding: '/onboarding',
+  birthdays: '/(app)/birthdays',
+  announcements: '/(app)/announcements',
 } as const;
 
 export function resolveAuthHref(status: 'booting' | 'guest' | 'needs2fa' | 'ready') {

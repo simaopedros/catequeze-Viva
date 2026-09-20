@@ -4,7 +4,7 @@ import { useAsync } from '../../src/hooks/useAsync';
 import { NotificationsScreen } from '../../src/screens/NotificationsScreen';
 
 export default function NotificationsRoute() {
-  const { api } = useAuth();
+  const { api, refresh } = useAuth();
   const { data, loading, error, reload, refreshing } = useAsync(() => api.notifications(), []);
 
   return (
@@ -17,6 +17,12 @@ export default function NotificationsRoute() {
       onRead={async (id) => {
         await api.markNotificationRead(id);
         await reload();
+        await refresh();
+      }}
+      onReadAll={async () => {
+        await api.markAllNotificationsRead();
+        await reload();
+        await refresh();
       }}
     />
   );

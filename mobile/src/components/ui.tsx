@@ -27,6 +27,7 @@ import { useBrandFontsLoaded } from '../theme/fonts';
 const colorMap = {
   ink: colors.ink,
   inkSoft: colors.inkSoft,
+  inkMuted: colors.inkMuted,
   secondary: colors.textSecondary,
   gold: colors.gold,
   goldMuted: colors.goldMuted,
@@ -34,6 +35,7 @@ const colorMap = {
   success: colors.success,
   paper: colors.paper,
   inverse: colors.white,
+  canvas: colors.canvas,
 } as const;
 
 const familyMap = {
@@ -65,7 +67,12 @@ export function AppText({
 }) {
   const fontsLoaded = useBrandFontsLoaded();
   const preset = type[variant === 'display' ? 'display' : variant];
-  const familyKey = display || variant === 'display' ? (weight === 'bold' ? 'displayBold' : 'display') : (weight ?? (preset.fontWeight === '700' ? 'bold' : 'regular'));
+  const familyKey =
+    display || variant === 'display'
+      ? weight === 'bold'
+        ? 'displayBold'
+        : 'display'
+      : (weight ?? (preset.fontWeight === '700' ? 'bold' : 'regular'));
   return (
     <Text
       {...rest}
@@ -75,7 +82,14 @@ export function AppText({
           fontSize: preset.fontSize,
           lineHeight: preset.lineHeight,
           letterSpacing: preset.letterSpacing,
-          fontWeight: weight === 'bold' ? '700' : weight === 'semibold' ? '600' : weight === 'medium' ? '500' : preset.fontWeight,
+          fontWeight:
+            weight === 'bold'
+              ? '700'
+              : weight === 'semibold'
+                ? '600'
+                : weight === 'medium'
+                  ? '500'
+                  : preset.fontWeight,
           fontFamily: fontsLoaded ? familyMap[familyKey] : undefined,
         },
         style,
@@ -157,18 +171,21 @@ export function Screen({
   testID,
   onRefresh,
   refreshing,
+  tone = 'canvas',
 }: {
   children: React.ReactNode;
   padded?: boolean;
   testID?: string;
   onRefresh?: () => void;
   refreshing?: boolean;
+  tone?: 'canvas' | 'paper' | 'ink';
 }) {
+  const backgroundColor = tone === 'paper' ? colors.paper : tone === 'ink' ? colors.ink : colors.canvas;
   return (
-    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView style={[styles.flex, { backgroundColor }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView
         testID={testID}
-        style={styles.screen}
+        style={[styles.screen, { backgroundColor }]}
         contentContainerStyle={[styles.screenContent, padded && { padding: spacing.md }]}
         keyboardShouldPersistTaps="handled"
         refreshControl={
@@ -176,7 +193,7 @@ export function Screen({
             <RefreshControl
               refreshing={Boolean(refreshing)}
               onRefresh={onRefresh}
-              tintColor={colors.gold}
+              tintColor={tone === 'ink' ? colors.gold : colors.ink}
               colors={[colors.gold]}
             />
           ) : undefined
@@ -203,8 +220,43 @@ export function ScreenTitle({ title, subtitle, hero }: { title: string; subtitle
   );
 }
 
+export function HeroBlock({
+  kicker,
+  title,
+  subtitle,
+  children,
+}: {
+  kicker?: string;
+  title: string;
+  subtitle?: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <View style={styles.hero} testID="hero-block">
+      {kicker ? (
+        <AppText variant="overline" color="gold" style={{ marginBottom: spacing.xs }}>
+          {kicker}
+        </AppText>
+      ) : null}
+      <AppText variant="display" display color="inverse">
+        {title}
+      </AppText>
+      {subtitle ? (
+        <AppText variant="bodySm" color="inkMuted" style={{ marginTop: spacing.xs }}>
+          {subtitle}
+        </AppText>
+      ) : null}
+      {children}
+    </View>
+  );
+}
+
 export function Card({ children, style }: { children: React.ReactNode; style?: ViewStyle }) {
   return <View style={[styles.card, style]}>{children}</View>;
+}
+
+export function ReaderFrame({ children }: { children: React.ReactNode }) {
+  return <View style={styles.reader}>{children}</View>;
 }
 
 export function BrandButton({
@@ -217,9 +269,11 @@ export function BrandButton({
   label: string;
   onPress: () => void;
   disabled?: boolean;
-  variant?: 'primary' | 'ghost' | 'danger' | 'soft';
+  variant?: 'primary' | 'ghost' | 'danger' | 'soft' | 'ink';
   testID?: string;
 }) {
+  const textColor =
+    variant === 'danger' || variant === 'ink' ? 'inverse' : variant === 'primary' ? 'ink' : 'ink';
   return (
     <PressableScale
       testID={testID}
@@ -232,15 +286,11 @@ export function BrandButton({
         variant === 'ghost' && styles.buttonGhost,
         variant === 'danger' && styles.buttonDanger,
         variant === 'soft' && styles.buttonSoft,
+        variant === 'ink' && styles.buttonInk,
         disabled && styles.buttonDisabled,
       ]}
     >
-      <AppText
-        variant="body"
-        weight="bold"
-        color={variant === 'danger' ? 'inverse' : 'ink'}
-        style={{ textAlign: 'center' }}
-      >
+      <AppText variant="body" weight="bold" color={textColor} style={{ textAlign: 'center' }}>
         {label}
       </AppText>
     </PressableScale>
@@ -290,7 +340,7 @@ export function ErrorText({ message }: { message?: string | null }) {
 export function LoadingState({ label = copy.common.loading }: { label?: string }) {
   return (
     <View style={styles.loading} testID="loading-state">
-      <ActivityIndicator color={colors.gold} />
+      <ActivityIndicator color={colors.ink} />
       <AppText variant="bodySm" color="secondary">
         {label}
       </AppText>
@@ -298,9 +348,17 @@ export function LoadingState({ label = copy.common.loading }: { label?: string }
   );
 }
 
-export function EmptyState({ title, body, icon = 'leaf-outline' }: { title: string; body: string; icon?: keyof typeof Ionicons.glyphMap }) {
+export function EmptyState({
+  title,
+  body,
+  icon = 'leaf-outline',
+}: {
+  title: string;
+  body: string;
+  icon?: keyof typeof Ionicons.glyphMap;
+}) {
   return (
-    <Card>
+    <View style={styles.empty}>
       <Ionicons name={icon} size={22} color={colors.goldMuted} />
       <AppText variant="titleSm" style={{ marginTop: spacing.xs, marginBottom: spacing.xxs }}>
         {title}
@@ -308,7 +366,7 @@ export function EmptyState({ title, body, icon = 'leaf-outline' }: { title: stri
       <AppText variant="bodySm" color="secondary">
         {body}
       </AppText>
-    </Card>
+    </View>
   );
 }
 
@@ -362,38 +420,62 @@ export function ListRow({
   icon?: keyof typeof Ionicons.glyphMap;
 }) {
   const content = (
-    <Card style={styles.listRowCard}>
-      <View style={styles.listRowInner}>
-        {icon ? <Ionicons name={icon} size={20} color={colors.gold} /> : null}
-        <View style={styles.flex}>
-          <AppText variant="body" weight="bold">
-            {title}
+    <View style={styles.listRowInner}>
+      {icon ? <Ionicons name={icon} size={20} color={colors.ink} /> : null}
+      <View style={styles.flex}>
+        <AppText variant="body" weight="semibold">
+          {title}
+        </AppText>
+        {meta ? (
+          <AppText variant="caption" color="secondary" style={{ marginTop: 2 }} numberOfLines={2}>
+            {meta}
           </AppText>
-          {meta ? (
-            <AppText variant="caption" color="secondary" style={{ marginTop: 2 }} numberOfLines={2}>
-              {meta}
-            </AppText>
-          ) : null}
-        </View>
-        {selected ? (
-          <Ionicons name="checkmark-circle" size={20} color={colors.gold} />
-        ) : accessory && onPress ? (
-          <Ionicons name="chevron-forward" size={18} color={colors.goldMuted} />
         ) : null}
       </View>
-    </Card>
+      {selected ? (
+        <Ionicons name="checkmark-circle" size={20} color={colors.gold} />
+      ) : accessory && onPress ? (
+        <Ionicons name="chevron-forward" size={18} color={colors.inkMuted} />
+      ) : null}
+    </View>
   );
-  if (!onPress) return content;
+  if (!onPress) return <View style={styles.listRow}>{content}</View>;
   return (
-    <PressableScale testID={testID} onPress={onPress}>
+    <PressableScale testID={testID} onPress={onPress} style={styles.listRow}>
       {content}
     </PressableScale>
   );
 }
 
+export function GroupedList({
+  header,
+  children,
+  footer,
+}: {
+  header?: string;
+  children: React.ReactNode;
+  footer?: string;
+}) {
+  return (
+    <View style={{ marginBottom: spacing.md }}>
+      {header ? (
+        <AppText variant="overline" color="secondary" style={styles.groupHeader}>
+          {header}
+        </AppText>
+      ) : null}
+      <View style={styles.group}>{children}</View>
+      {footer ? (
+        <AppText variant="caption" color="secondary" style={{ marginTop: spacing.xs, paddingHorizontal: spacing.xs }}>
+          {footer}
+        </AppText>
+      ) : null}
+    </View>
+  );
+}
+
 export function SectionHeader({ title, style, testID }: { title: string; style?: StyleProp<TextStyle>; testID?: string }) {
   return (
-    <AppText variant="titleSm" testID={testID} style={[{ marginBottom: spacing.sm, marginTop: spacing.xs }, style]}>
+    <AppText variant="overline" color="secondary" testID={testID} style={[{ marginBottom: spacing.sm, marginTop: spacing.md }, style]}>
       {title}
     </AppText>
   );
@@ -401,14 +483,14 @@ export function SectionHeader({ title, style, testID }: { title: string; style?:
 
 export function StatCard({ label, value, onPress }: { label: string; value: string | number; onPress?: () => void }) {
   const card = (
-    <Card style={styles.flex}>
+    <View style={styles.stat}>
       <AppText variant="caption" color="secondary">
         {label}
       </AppText>
       <AppText variant="title" weight="bold" style={{ marginTop: spacing.xxs }}>
         {value}
       </AppText>
-    </Card>
+    </View>
   );
   if (!onPress) return card;
   return (
@@ -442,6 +524,24 @@ export function TextButton({
       <AppText variant="caption" weight="bold" color="goldMuted">
         {label}
       </AppText>
+    </PressableScale>
+  );
+}
+
+export function Fab({
+  onPress,
+  icon = 'add',
+  testID,
+  label,
+}: {
+  onPress: () => void;
+  icon?: keyof typeof Ionicons.glyphMap;
+  testID?: string;
+  label?: string;
+}) {
+  return (
+    <PressableScale testID={testID} onPress={onPress} style={styles.fab} accessibilityLabel={label}>
+      <Ionicons name={icon} size={24} color={colors.ink} />
     </PressableScale>
   );
 }
@@ -490,23 +590,30 @@ export function ConfirmSheet({
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  screen: { flex: 1, backgroundColor: colors.paper },
+  screen: { flex: 1, backgroundColor: colors.canvas },
   screenContent: { paddingBottom: spacing.xxl, flexGrow: 1 },
+  hero: {
+    backgroundColor: colors.ink,
+    borderRadius: radius.xl,
+    padding: spacing.lg,
+    marginBottom: spacing.md,
+  },
   card: {
     backgroundColor: colors.elevated,
-    borderRadius: 16,
+    borderRadius: radius.md,
     padding: spacing.md,
     borderWidth: 1,
     borderColor: colors.stroke,
+    marginBottom: spacing.sm,
+  },
+  reader: {
+    backgroundColor: colors.paper,
+    borderRadius: radius.md,
+    padding: spacing.md,
     marginBottom: spacing.md,
-    shadowColor: colors.ink,
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 2,
   },
   button: {
-    borderRadius: radius.lg,
+    borderRadius: radius.md,
     paddingVertical: 14,
     minHeight: touch.min,
     alignItems: 'center',
@@ -514,6 +621,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   buttonPrimary: { backgroundColor: colors.gold },
+  buttonInk: { backgroundColor: colors.ink },
   buttonGhost: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.stroke },
   buttonDanger: { backgroundColor: colors.danger },
   buttonSoft: { backgroundColor: colors.goldSoft, borderWidth: 1, borderColor: colors.gold },
@@ -522,7 +630,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderColor: colors.stroke,
     borderWidth: 1,
-    borderRadius: radius.lg,
+    borderRadius: radius.md,
     paddingHorizontal: 14,
     paddingVertical: 12,
     minHeight: touch.min,
@@ -532,6 +640,14 @@ const styles = StyleSheet.create({
   inputError: { borderColor: colors.danger },
   inputMultiline: { minHeight: 96, textAlignVertical: 'top' },
   loading: { alignItems: 'center', padding: spacing.xl, gap: spacing.xs },
+  empty: {
+    backgroundColor: colors.white,
+    borderRadius: radius.md,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.stroke,
+    marginBottom: spacing.md,
+  },
   chip: {
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
@@ -542,8 +658,35 @@ const styles = StyleSheet.create({
   },
   chipActive: { backgroundColor: colors.ink, borderColor: colors.ink },
   chipIdle: { backgroundColor: colors.elevated, borderColor: colors.stroke },
-  listRowCard: { marginBottom: spacing.sm, paddingVertical: spacing.sm },
+  listRow: {
+    backgroundColor: colors.white,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 12,
+    minHeight: touch.min,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.stroke,
+  },
   listRowInner: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  group: {
+    backgroundColor: colors.white,
+    borderRadius: radius.md,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.stroke,
+  },
+  groupHeader: {
+    marginBottom: spacing.xs,
+    marginLeft: spacing.xs,
+    textTransform: 'uppercase',
+  },
+  stat: {
+    flex: 1,
+    backgroundColor: colors.white,
+    borderRadius: radius.md,
+    padding: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.stroke,
+  },
   banner: {
     backgroundColor: colors.goldSoft,
     borderColor: colors.gold,
@@ -552,6 +695,24 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
     marginBottom: spacing.md,
   },
+  fab: {
+    position: 'absolute',
+    right: spacing.md,
+    bottom: spacing.lg,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.gold,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...{
+      shadowColor: colors.ink,
+      shadowOpacity: 0.18,
+      shadowRadius: 8,
+      shadowOffset: { width: 0, height: 4 },
+      elevation: 4,
+    },
+  },
   modalBackdrop: {
     flex: 1,
     backgroundColor: colors.inkOverlay,
@@ -559,8 +720,8 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
   },
   modalCard: {
-    backgroundColor: colors.paper,
-    borderRadius: radius.md,
+    backgroundColor: colors.white,
+    borderRadius: radius.lg,
     padding: spacing.lg,
     borderWidth: 1,
     borderColor: colors.stroke,

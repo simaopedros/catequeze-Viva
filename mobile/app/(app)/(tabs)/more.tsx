@@ -1,61 +1,34 @@
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { displayName, listWorkspaces, useAuth } from '../../../src/auth/AuthContext';
-import { copy } from '../../../src/copy/ptBR';
-import { useToast } from '../../../src/feedback/Toast';
-import { useAsync } from '../../../src/hooks/useAsync';
+import { isWebDestination, NATIVE_ROUTE_BY_ICON, WEB_PATH_BY_ICON } from '../../../src/navigation/destinations';
+import { visibleNavForSession } from '../../../src/navigation/navContext';
+import { openWebDestination } from '../../../src/lib/openWeb';
 import { MoreScreen } from '../../../src/screens/MoreScreen';
 
 export default function MoreRoute() {
   const { api, user, bootstrap, workspaceId, setWorkspaceId, logout } = useAuth();
   const router = useRouter();
-  const toast = useToast();
-  const profile = useAsync(() => api.mySocialProfile(), []);
-  const [handle, setHandle] = useState('');
-  const [bio, setBio] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (profile.data) {
-      setHandle(profile.data.handle || '');
-      setBio(profile.data.bio || '');
-    }
-  }, [profile.data]);
+  const nav = visibleNavForSession(bootstrap, workspaceId, listWorkspaces(bootstrap));
 
   return (
     <MoreScreen
       name={displayName(user)}
       workspaces={listWorkspaces(bootstrap)}
       workspaceId={workspaceId}
-      profile={profile.data}
-      handle={handle}
-      bio={bio}
-      onHandleChange={setHandle}
-      onBioChange={setBio}
-      saving={saving}
-      error={error}
+      groups={nav.sheetGroups}
       onSelectWorkspace={(id) => setWorkspaceId(id)}
-      onOpenBible={() => router.push('/(app)/bible')}
-      onOpenDocuments={() => router.push('/(app)/documents')}
-      onOpenNotifications={() => router.push('/(app)/notifications')}
-      onOpenCommunity={() => router.push('/(app)/(tabs)/community')}
-      onOpenEditProfile={() => router.push('/(app)/community/edit')}
-      onOpenProfile={() => {
-        if (profile.data?.handle) router.push(`/(app)/community/${profile.data.handle}`);
-      }}
-      onSaveProfile={async () => {
-        setSaving(true);
-        setError(null);
-        try {
-          await api.updateSocialProfile({ handle, bio });
-          toast.show(copy.editProfile.saved);
-          await profile.reload();
-        } catch (err) {
-          setError(err instanceof Error ? err.message : copy.editProfile.error);
-        } finally {
-          setSaving(false);
+      onOpenItem={(iconKey) => {
+        if (iconKey === 'birthdays') {
+          router.push('/(app)/birthdays');
+          return;
         }
+        if (isWebDestination(iconKey)) {
+          void openWebDestination(api, WEB_PATH_BY_ICON[iconKey] || '/app');
+          return;
+        }
+        const href = NATIVE_ROUTE_BY_ICON[iconKey];
+        if (href) router.push(href as any);
       }}
       onLogout={() => logout()}
     />

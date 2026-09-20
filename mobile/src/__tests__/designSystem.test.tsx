@@ -53,32 +53,41 @@ describe('copy catalog', () => {
 });
 
 describe('More screen', () => {
-  it('keeps bible, profile editing and workspace on the same screen', () => {
+  it('lists grouped destinations instead of burying the product in profile fields', () => {
+    const onOpenItem = jest.fn();
     const view = render(
       <MoreScreen
         name="Ana"
         workspaces={[{ id: 'w1', name: 'Paróquia São José' } as any]}
         workspaceId="w1"
-        profile={{ handle: 'ana' } as any}
-        handle="ana"
-        bio="Catequista"
-        onHandleChange={jest.fn()}
-        onBioChange={jest.fn()}
-        onSaveProfile={jest.fn()}
+        groups={[
+          {
+            id: 'content',
+            labelKey: 'content',
+            collapsible: true,
+            items: [
+              {
+                to: '/app/bible',
+                labelKey: 'bible',
+                iconKey: 'bible',
+                roles: [],
+                groupId: 'content',
+              },
+            ],
+          },
+        ]}
         onSelectWorkspace={jest.fn()}
-        onOpenBible={jest.fn()}
-        onOpenDocuments={jest.fn()}
-        onOpenEditProfile={jest.fn()}
-        onOpenProfile={jest.fn()}
+        onOpenItem={onOpenItem}
         onLogout={jest.fn()}
       />,
     );
 
-    expect(view.getByTestId('open-bible')).toBeTruthy();
-    expect(view.getByTestId('profile-handle')).toBeTruthy();
-    expect(view.getByTestId('save-profile-more')).toBeTruthy();
-    expect(view.getByTestId('open-edit-profile')).toBeTruthy();
+    expect(view.getByTestId('more-bible')).toBeTruthy();
+    expect(view.getByTestId('more-birthdays')).toBeTruthy();
+    expect(view.getByText('Bíblia')).toBeTruthy();
     expect(view.getByText('Espaço de trabalho')).toBeTruthy();
+    fireEvent.press(view.getByTestId('more-bible'));
+    expect(onOpenItem).toHaveBeenCalledWith('bible');
   });
 });
 

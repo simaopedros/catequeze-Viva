@@ -27,7 +27,7 @@ import {
 import { authenticatedDocumentUpload } from './authenticatedDocumentUpload';
 import { serveDocument } from './documents';
 
-type AuthedContext = {
+export type AuthedContext = {
   user: any;
   req?: Request;
   res?: Response;
@@ -39,20 +39,20 @@ const passwordResetFromField = {
   email: 'onboarding@catechis.app',
 };
 
-function toOperationContext(context: any): AuthedContext {
+export function toOperationContext(context: any): AuthedContext {
   return {
     ...context,
     entities: prisma,
   };
 }
 
-function parseOptionalInt(value: unknown, fallback: number): number {
+export function parseOptionalInt(value: unknown, fallback: number): number {
   if (typeof value !== 'string' && typeof value !== 'number') return fallback;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-function parseOptionalString(value: unknown): string | undefined {
+export function parseOptionalString(value: unknown): string | undefined {
   if (typeof value === 'string') return value;
   if (Array.isArray(value)) {
     const first = value.find((item): item is string => typeof item === 'string');
@@ -61,7 +61,7 @@ function parseOptionalString(value: unknown): string | undefined {
   return undefined;
 }
 
-function parseRequiredString(value: unknown, fieldName: string): string {
+export function parseRequiredString(value: unknown, fieldName: string): string {
   const parsed = parseOptionalString(value);
   if (!parsed) {
     throw new HttpError(400, `Missing or invalid ${fieldName}.`);
@@ -149,7 +149,7 @@ async function buildMobileAuthenticatedResponse(context: AuthedContext) {
   };
 }
 
-async function requireMobileSessionVerification(context: AuthedContext) {
+export async function requireMobileSessionVerification(context: AuthedContext) {
   const opCtx = toOperationContext(context);
   await assertTwoFactorSessionVerified(opCtx);
 }
@@ -398,7 +398,16 @@ export async function mobileClassDetails(req: Request, res: Response, context: a
 export async function mobileCatechumens(req: Request, res: Response, context: any) {
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
-  return res.json(await listCatechumens(undefined as void, opCtx));
+  return res.json(
+    await listCatechumens(
+      {
+        workspaceId: parseOptionalString(req.query.workspaceId),
+        search: parseOptionalString(req.query.search),
+        take: parseOptionalInt(req.query.take, 50),
+      },
+      opCtx,
+    ),
+  );
 }
 
 export async function mobileCatechumenDetails(req: Request, res: Response, context: any) {
@@ -410,15 +419,40 @@ export async function mobileCatechumenDetails(req: Request, res: Response, conte
 export async function mobileFamilies(req: Request, res: Response, context: any) {
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
-  return res.json(await listHouseholds({ communityId: parseOptionalString(req.query.communityId) }, opCtx));
+  const workspaceId = parseOptionalString(req.query.workspaceId);
+  return res.json(
+    await listHouseholds(
+      {
+        communityId: parseOptionalString(req.query.communityId),
+        workspaceId,
+        parishId: workspaceId,
+        search: parseOptionalString(req.query.search),
+      },
+      opCtx,
+    ),
+  );
+}
+
+function householdRows(payload: any): any[] {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.items)) return payload.items;
+  return [];
 }
 
 export async function mobileFamilyDetails(req: Request, res: Response, context: any) {
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
-  const households = await listHouseholds({ communityId: parseOptionalString(req.query.communityId) }, opCtx);
+  const workspaceId = parseOptionalString(req.query.workspaceId);
+  const households = await listHouseholds(
+    {
+      communityId: parseOptionalString(req.query.communityId),
+      workspaceId,
+      parishId: workspaceId,
+    },
+    opCtx,
+  );
   const householdId = parseRequiredString(req.params.id, 'id');
-  const household = households.find((item: any) => item.id === householdId);
+  const household = householdRows(households).find((item: any) => item.id === householdId);
   if (!household) {
     throw new HttpError(404, 'Família não encontrada.');
   }

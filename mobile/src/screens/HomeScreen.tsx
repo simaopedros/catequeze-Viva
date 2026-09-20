@@ -4,18 +4,16 @@ import { copy } from '../copy/ptBR';
 import { formatWhen } from '../format';
 import {
   AppText,
-  BrandButton,
-  Card,
   EmptyState,
   ErrorState,
+  HeroBlock,
   LoadingState,
   PressableScale,
   Screen,
-  ScreenTitle,
   SectionHeader,
-  StatCard,
+  TextButton,
 } from '../components/ui';
-import { spacing } from '../theme';
+import { colors, radius, spacing } from '../theme';
 
 type Meeting = {
   id: string;
@@ -35,6 +33,9 @@ export function HomeScreen({
   onOpenCommunity,
   onOpenNotifications,
   onOpenClasses,
+  onOpenAnnouncements,
+  onOpenBirthdays,
+  onOpenCalendar,
   unread,
   onRefresh,
   refreshing,
@@ -54,45 +55,108 @@ export function HomeScreen({
   onOpenCommunity: () => void;
   onOpenNotifications: () => void;
   onOpenClasses?: () => void;
+  onOpenAnnouncements?: () => void;
+  onOpenBirthdays?: () => void;
+  onOpenCalendar?: () => void;
   unread?: number;
   onRefresh?: () => void;
   refreshing?: boolean;
 }) {
   const upcoming = meetings ?? stats?.upcomingMeetings ?? stats?.todayMeetings ?? [];
+  const next = upcoming[0];
+  const rest = upcoming.slice(1, 6);
   const attendance =
     typeof stats?.avgAttendance === 'number' ? `${Math.round(stats.avgAttendance)}%` : '—';
 
   return (
     <Screen testID="home-screen" onRefresh={onRefresh} refreshing={refreshing}>
-      <ScreenTitle hero title={copy.home.hello(name)} subtitle={copy.home.subtitle} />
+      <HeroBlock kicker={copy.home.kicker} title={copy.home.hello(name)} subtitle={copy.home.today}>
+        <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md }}>
+          <PressableScale onPress={onOpenClasses} style={{ flex: 1 }}>
+            <AppText variant="caption" color="inkMuted">
+              {copy.home.classes}
+            </AppText>
+            <AppText variant="title" color="inverse">
+              {stats?.activeClasses ?? '—'}
+            </AppText>
+          </PressableScale>
+          <View style={{ flex: 1 }}>
+            <AppText variant="caption" color="inkMuted">
+              {copy.home.catechumens}
+            </AppText>
+            <AppText variant="title" color="inverse">
+              {stats?.activeCatechumens ?? '—'}
+            </AppText>
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="caption" color="inkMuted">
+              {copy.home.attendance}
+            </AppText>
+            <AppText variant="title" color="inverse">
+              {attendance}
+            </AppText>
+          </View>
+        </View>
+      </HeroBlock>
       {loading ? <LoadingState /> : null}
       {error ? <ErrorState title={copy.home.errorTitle} body={error} /> : null}
-      <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.xs }}>
-        <StatCard label={copy.home.classes} value={stats?.activeClasses ?? '—'} onPress={onOpenClasses} />
-        <StatCard label={copy.home.catechumens} value={stats?.activeCatechumens ?? '—'} />
-        <StatCard label={copy.home.attendance} value={attendance} />
-      </View>
-      <BrandButton
+      <TextButton
         label={unread ? copy.home.notificationsUnread(unread) : copy.home.notifications}
         onPress={onOpenNotifications}
       />
-      <BrandButton variant="ghost" label={copy.home.goCommunity} onPress={onOpenCommunity} />
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 8 }}>
+        {onOpenAnnouncements ? (
+          <TextButton testID="home-announcements" label={copy.home.announcements} onPress={onOpenAnnouncements} />
+        ) : null}
+        {onOpenCalendar ? <TextButton testID="home-calendar" label={copy.home.calendar} onPress={onOpenCalendar} /> : null}
+        {onOpenBirthdays ? (
+          <TextButton testID="home-birthdays" label={copy.home.birthdays} onPress={onOpenBirthdays} />
+        ) : null}
+      </View>
+      {next ? (
+        <PressableScale testID={`meeting-${next.id}`} onPress={() => onOpenMeeting(next.id)}>
+          <View
+            style={{
+              backgroundColor: colors.white,
+              borderRadius: radius.lg,
+              padding: spacing.md,
+              borderWidth: 1,
+              borderColor: colors.stroke,
+              marginBottom: spacing.md,
+            }}
+          >
+            <AppText variant="overline" color="goldMuted">
+              {copy.home.nextMeeting}
+            </AppText>
+            <AppText variant="titleSm" style={{ marginTop: spacing.xxs }}>
+              {next.title || next.theme || copy.home.meetingFallback}
+            </AppText>
+            <AppText variant="caption" color="secondary" style={{ marginTop: 4 }}>
+              {next.class?.name || copy.home.classFallback}
+              {next.startsAt ? ` · ${formatWhen(next.startsAt)}` : ''}
+            </AppText>
+          </View>
+        </PressableScale>
+      ) : null}
       <SectionHeader title={copy.home.upcoming} />
       {upcoming.length === 0 && !loading ? (
         <EmptyState title={copy.home.emptyTitle} body={copy.home.emptyBody} />
       ) : (
-        upcoming.slice(0, 5).map((meeting) => (
+        rest.map((meeting) => (
           <PressableScale key={meeting.id} testID={`meeting-${meeting.id}`} onPress={() => onOpenMeeting(meeting.id)}>
-            <Card>
-              <AppText variant="titleSm">{meeting.title || meeting.theme || copy.home.meetingFallback}</AppText>
-              <AppText variant="caption" color="secondary" style={{ marginTop: 4 }}>
+            <View style={{ paddingVertical: spacing.sm }}>
+              <AppText variant="body" weight="semibold">
+                {meeting.title || meeting.theme || copy.home.meetingFallback}
+              </AppText>
+              <AppText variant="caption" color="secondary">
                 {meeting.class?.name || copy.home.classFallback}
                 {meeting.startsAt ? ` · ${formatWhen(meeting.startsAt)}` : ''}
               </AppText>
-            </Card>
+            </View>
           </PressableScale>
         ))
       )}
+      <TextButton label={copy.home.goCommunity} onPress={onOpenCommunity} />
     </Screen>
   );
 }

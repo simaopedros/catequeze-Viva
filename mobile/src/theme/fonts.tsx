@@ -3,11 +3,11 @@ import {
   CormorantGaramond_700Bold,
 } from '@expo-google-fonts/cormorant-garamond';
 import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-} from '@expo-google-fonts/inter';
+  Figtree_400Regular,
+  Figtree_500Medium,
+  Figtree_600SemiBold,
+  Figtree_700Bold,
+} from '@expo-google-fonts/figtree';
 import { useFonts } from 'expo-font';
 import React, { createContext, useContext } from 'react';
 
@@ -19,10 +19,10 @@ export function useBrandFontsLoaded() {
 
 export function BrandFontsProvider({ children }: { children: React.ReactNode }) {
   const [loaded] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
+    Figtree_400Regular,
+    Figtree_500Medium,
+    Figtree_600SemiBold,
+    Figtree_700Bold,
     CormorantGaramond_600SemiBold,
     CormorantGaramond_700Bold,
   });

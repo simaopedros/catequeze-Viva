@@ -28,6 +28,36 @@ export default function AppLayout() {
       <Stack.Screen name="documents" options={{ title: copy.documents.title }} />
       <Stack.Screen name="profile" options={{ title: 'Perfil' }} />
       <Stack.Screen name="notifications" options={{ title: copy.notifications.title }} />
+      <Stack.Screen name="messages/new" options={{ title: copy.messages.new }} />
+      <Stack.Screen name="announcements/index" options={{ title: copy.announcements.title }} />
+      <Stack.Screen name="announcements/new" options={{ title: copy.announcements.title }} />
+      <Stack.Screen name="announcements/[id]" options={{ title: copy.announcements.title }} />
+      <Stack.Screen name="groups/index" options={{ title: copy.groups.title }} />
+      <Stack.Screen name="groups/[id]" options={{ title: copy.groups.title }} />
+      <Stack.Screen name="birthdays" options={{ title: copy.birthdays.title }} />
+      <Stack.Screen name="people/catechumens/index" options={{ title: copy.people.catechumensTitle }} />
+      <Stack.Screen name="people/catechumens/new" options={{ title: copy.people.newCatechumen }} />
+      <Stack.Screen name="people/catechumens/[id]" options={{ title: copy.people.catechumensTitle }} />
+      <Stack.Screen name="people/families/index" options={{ title: copy.people.familiesTitle }} />
+      <Stack.Screen name="people/families/new" options={{ title: copy.people.newFamily }} />
+      <Stack.Screen name="people/families/[id]" options={{ title: copy.people.familiesTitle }} />
+      <Stack.Screen name="people/team" options={{ title: copy.people.teamTitle }} />
+      <Stack.Screen name="people/invites" options={{ title: copy.people.invitesTitle }} />
+      <Stack.Screen name="content/library" options={{ title: 'Biblioteca' }} />
+      <Stack.Screen name="content/official" options={{ title: 'Pasta oficial' }} />
+      <Stack.Screen name="content/catechism/index" options={{ title: 'Catecismo' }} />
+      <Stack.Screen name="content/catechism/[number]" options={{ title: 'Catecismo' }} />
+      <Stack.Screen name="content/directory/index" options={{ title: 'Diretório' }} />
+      <Stack.Screen name="content/directory/[number]" options={{ title: 'Diretório' }} />
+      <Stack.Screen name="content/journeys" options={{ title: 'Sacramentos' }} />
+      <Stack.Screen name="content/journey-templates" options={{ title: 'Modelos de jornada' }} />
+      <Stack.Screen name="manage/parishes" options={{ title: 'Paróquias' }} />
+      <Stack.Screen name="manage/communities" options={{ title: 'Comunidades' }} />
+      <Stack.Screen name="manage/reports" options={{ title: 'Relatórios' }} />
+      <Stack.Screen name="manage/years" options={{ title: 'Anos catequéticos' }} />
+      <Stack.Screen name="manage/formation" options={{ title: 'Formação' }} />
+      <Stack.Screen name="settings/index" options={{ title: copy.settings.title }} />
+      <Stack.Screen name="settings/consents" options={{ title: copy.settings.consents }} />
     </Stack>
   );
 }

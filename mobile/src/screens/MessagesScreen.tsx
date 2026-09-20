@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmptyState, ErrorState, ListRow, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, EmptyState, ErrorState, ListRow, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import { copy } from '../copy/ptBR';
 
 function asConversations(payload: any) {
@@ -14,6 +14,7 @@ export function MessagesScreen({
   loading,
   error,
   onOpen,
+  onCreate,
   onRefresh,
   refreshing,
 }: {
@@ -21,6 +22,7 @@ export function MessagesScreen({
   loading?: boolean;
   error?: string | null;
   onOpen: (id: string) => void;
+  onCreate?: () => void;
   onRefresh?: () => void;
   refreshing?: boolean;
 }) {
@@ -28,6 +30,7 @@ export function MessagesScreen({
   return (
     <Screen testID="messages-screen" onRefresh={onRefresh} refreshing={refreshing}>
       <ScreenTitle title={copy.messages.title} subtitle={copy.messages.subtitle} />
+      {onCreate ? <BrandButton label={copy.messages.new} onPress={onCreate} /> : null}
       {loading ? <LoadingState /> : null}
       {error ? <ErrorState title={copy.messages.errorTitle} body={error} /> : null}
       {items.length === 0 && !loading ? (

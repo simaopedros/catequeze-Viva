@@ -9,6 +9,7 @@ import {
   filterByWorkspace,
   filterLaunchHidden,
   getVisibleNavigation,
+  getBottomNavKeysForRole,
   ALL_NAV_ITEMS,
   BOTTOM_NAV_KEYS,
   PERSONAL_HIDDEN_ICON_KEYS,
@@ -486,5 +487,62 @@ describe('getVisibleNavigation SSOT', () => {
     expect(nav.all.map((i) => i.to)).toContain('/app/families');
     expect(nav.all.map((i) => i.to)).toContain('/app/sacramental-journeys');
     expect(nav.all.map((i) => i.to)).toContain('/app/documents');
+  });
+});
+
+describe('mobile navigation contract', () => {
+  it('exposes the same icon keys the Expo app copies', () => {
+    expect(ALL_NAV_ITEMS.map((item) => item.iconKey)).toEqual([
+      'dashboard',
+      'classes',
+      'calendar',
+      'messages',
+      'announcements',
+      'groups',
+      'community',
+      'catechumens',
+      'families',
+      'team',
+      'family_portal_invites',
+      'content_library',
+      'official_library',
+      ...(AI_FEATURES_ENABLED ? ['ai_hub'] : []),
+      'bible',
+      'catechism',
+      'directory',
+      'sacraments',
+      'journey_templates',
+      'documents',
+      'parishes',
+      'communities',
+      'reports',
+      'catechetical_years',
+      'formation',
+      'settings',
+      'billing',
+      'consents',
+      'admin',
+    ]);
+  });
+
+  it('uses the same 4-tab role map as Expo', () => {
+    expect(getBottomNavKeysForRole('LEAD_CATECHIST', false)).toEqual([
+      'dashboard',
+      'community',
+      'classes',
+      'calendar',
+    ]);
+    expect(getBottomNavKeysForRole('GUARDIAN', false)).toEqual([
+      'dashboard',
+      'community',
+      'calendar',
+      'messages',
+    ]);
+    expect(getBottomNavKeysForRole('PLATFORM_MEMBER', false)).toEqual([
+      'dashboard',
+      'groups',
+      'bible',
+      'calendar',
+    ]);
   });
 });

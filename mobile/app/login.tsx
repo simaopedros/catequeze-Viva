@@ -16,6 +16,7 @@ export default function LoginRoute() {
       busy={busy}
       error={error}
       onForgotPassword={() => router.push('/forgot-password')}
+      onSignup={() => router.push('/signup')}
       onSubmit={async (email, password) => {
         setBusy(true);
         setError(null);

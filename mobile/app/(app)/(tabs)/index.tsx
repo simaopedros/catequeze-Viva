@@ -21,6 +21,9 @@ export default function HomeRoute() {
       onOpenCommunity={() => router.push('/(app)/(tabs)/community')}
       onOpenNotifications={() => router.push('/(app)/notifications')}
       onOpenClasses={() => router.push('/(app)/(tabs)/classes')}
+      onOpenAnnouncements={() => router.push('/(app)/announcements')}
+      onOpenBirthdays={() => router.push('/(app)/birthdays')}
+      onOpenCalendar={() => router.push('/(app)/(tabs)/calendar')}
       onOpenMeeting={(id) => router.push(`/(app)/meeting/${id}`)}
     />
   );

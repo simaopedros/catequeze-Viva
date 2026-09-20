@@ -165,6 +165,11 @@ route EmailVerificationRoute { path: "/email-verification", to: EmailVerificatio
 page EmailVerificationPage {
   component: import { EmailVerificationPage } from "@src/auth/email-and-pass/EmailVerificationPage",
 }
+
+route MobileBridgeRoute { path: "/mobile-bridge", to: MobileBridgePage }
+page MobileBridgePage {
+  component: import { MobileBridgePage } from "@src/auth/MobileBridgePage"
+}
 //#endregion
 
 //#region Family Portal Routes
@@ -2185,6 +2190,298 @@ api mobileBibleChapter {
   auth: true,
   httpRoute: (GET, "/mobile/bible/books/:bookId/chapters/:chapter"),
   entities: [BibleBook, BibleChapter, BibleVerse]
+}
+
+api mobileCreateCatechumen {
+  fn: import { mobileCreateCatechumen } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/catechumens")
+}
+
+api mobileUpdateCatechumen {
+  fn: import { mobileUpdateCatechumen } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/catechumens/:id")
+}
+
+api mobileDeleteCatechumen {
+  fn: import { mobileDeleteCatechumen } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (DELETE, "/mobile/catechumens/:id")
+}
+
+api mobileCreateFamily {
+  fn: import { mobileCreateFamily } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/families")
+}
+
+api mobileUpdateFamily {
+  fn: import { mobileUpdateFamily } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/families/:id")
+}
+
+api mobileCalendar {
+  fn: import { mobileCalendar } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/calendar")
+}
+
+api mobileCreateCalendarEvent {
+  fn: import { mobileCreateCalendarEvent } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/calendar")
+}
+
+api mobileDeleteCalendarEvent {
+  fn: import { mobileDeleteCalendarEvent } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (DELETE, "/mobile/calendar/:id")
+}
+
+api mobileAnnouncements {
+  fn: import { mobileAnnouncements } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/announcements")
+}
+
+api mobileCreateAnnouncement {
+  fn: import { mobileCreateAnnouncement } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/announcements")
+}
+
+api mobileAcknowledgeAnnouncement {
+  fn: import { mobileAcknowledgeAnnouncement } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/announcements/:id/acknowledge")
+}
+
+api mobileGroups {
+  fn: import { mobileGroups } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/groups")
+}
+
+api mobileGroupDetails {
+  fn: import { mobileGroupDetails } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/groups/:id")
+}
+
+api mobileJoinGroup {
+  fn: import { mobileJoinGroup } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/groups/:id/join")
+}
+
+api mobileLeaveGroup {
+  fn: import { mobileLeaveGroup } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/groups/:id/leave")
+}
+
+api mobileGroupNotice {
+  fn: import { mobileGroupNotice } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/groups/:id/notices")
+}
+
+api mobileTeam {
+  fn: import { mobileTeam } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/team")
+}
+
+api mobileInvite {
+  fn: import { mobileInvite } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/team/invite")
+}
+
+api mobileFamilyInvites {
+  fn: import { mobileFamilyInvites } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/family-invites")
+}
+
+api mobileContentLibrary {
+  fn: import { mobileContentLibrary } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/content-library")
+}
+
+api mobileOfficialLibrary {
+  fn: import { mobileOfficialLibrary } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/official-library")
+}
+
+api mobileCatechism {
+  fn: import { mobileCatechism } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/catechism")
+}
+
+api mobileCatechismEntry {
+  fn: import { mobileCatechismEntry } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/catechism/:number")
+}
+
+api mobileDirectory {
+  fn: import { mobileDirectory } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/directory")
+}
+
+api mobileDirectoryEntry {
+  fn: import { mobileDirectoryEntry } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/directory/:number")
+}
+
+api mobileJourneys {
+  fn: import { mobileJourneys } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/journeys")
+}
+
+api mobileJourneyTemplates {
+  fn: import { mobileJourneyTemplates } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/journey-templates")
+}
+
+api mobileParishes {
+  fn: import { mobileParishes } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/parishes")
+}
+
+api mobileCommunitiesList {
+  fn: import { mobileCommunities } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/communities")
+}
+
+api mobileCreateCommunity {
+  fn: import { mobileCreateCommunity } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/communities")
+}
+
+api mobileReports {
+  fn: import { mobileReports } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/reports")
+}
+
+api mobileCatecheticalYears {
+  fn: import { mobileCatecheticalYears } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/catechetical-years")
+}
+
+api mobileFormation {
+  fn: import { mobileFormation } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/formation")
+}
+
+api mobileBirthdays {
+  fn: import { mobileBirthdays } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/birthdays")
+}
+
+api mobileSettingsProfile {
+  fn: import { mobileSettingsProfile } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/settings/profile")
+}
+
+api mobileChangePassword {
+  fn: import { mobileChangePassword } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/settings/password")
+}
+
+api mobileEmailPrefs {
+  fn: import { mobileEmailPrefs } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/settings/email-prefs")
+}
+
+api mobileUpdateEmailPrefs {
+  fn: import { mobileUpdateEmailPrefs } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/settings/email-prefs")
+}
+
+api mobileConsents {
+  fn: import { mobileConsents } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (GET, "/mobile/consents")
+}
+
+api mobileSaveConsent {
+  fn: import { mobileSaveConsent } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/consents")
+}
+
+api mobileOnboardingCoordinator {
+  fn: import { mobileOnboardingCoordinator } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/onboarding/coordinator")
+}
+
+api mobileOnboardingMember {
+  fn: import { mobileOnboardingMember } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/onboarding/member")
+}
+
+api mobileCreateWebBridge {
+  fn: import { mobileCreateWebBridge } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/auth/web-bridge")
+}
+
+api mobileConsumeWebBridge {
+  fn: import { mobileConsumeWebBridge } from "@src/server/api/mobileCatalog",
+  httpRoute: (GET, "/mobile/auth/web-bridge/consume")
+}
+
+api mobileAuthSignup {
+  fn: import { mobileAuthSignup } from "@src/server/api/mobileCatalog",
+  httpRoute: (POST, "/mobile/auth/signup")
+}
+
+api mobileCreateConversation {
+  fn: import { mobileCreateConversation } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/conversations")
+}
+
+api mobileTwoFactorSetupStart {
+  fn: import { mobileTwoFactorSetupStart } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/settings/2fa/start")
+}
+
+api mobileTwoFactorSetupVerify {
+  fn: import { mobileTwoFactorSetupVerify } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/settings/2fa/verify")
+}
+
+api mobileTwoFactorDisable {
+  fn: import { mobileTwoFactorDisable } from "@src/server/api/mobileCatalog",
+  auth: true,
+  httpRoute: (POST, "/mobile/settings/2fa/disable")
 }
 //#endregion
 

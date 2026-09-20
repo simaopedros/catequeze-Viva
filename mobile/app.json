@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFF7E7"
+        "backgroundColor": "#071A2D"
       },
       "package": "app.catechis.mobile"
     },
@@ -26,12 +26,13 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#FFF7E7",
+          "backgroundColor": "#071A2D",
           "image": "./assets/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain"
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": false

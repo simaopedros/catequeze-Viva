@@ -3,14 +3,15 @@ import { View } from 'react-native';
 import { PostCard } from '../components/PostCard';
 import {
   Banner,
-  BrandButton,
   Chip,
   EmptyState,
   ErrorState,
+  Fab,
   LoadingState,
   Screen,
   ScreenTitle,
   SectionHeader,
+  TextButton,
 } from '../components/ui';
 import type { SocialAccess, SocialPost, SocialTopic } from '../api/types';
 import { copy } from '../copy/ptBR';
@@ -71,74 +72,76 @@ export function CommunityScreen({
   refreshing?: boolean;
 }) {
   return (
-    <Screen testID="community-screen" onRefresh={onRefresh} refreshing={refreshing}>
-      <ScreenTitle title={title} subtitle={subtitle} />
-      <BrandButton label={copy.community.compose} onPress={onCompose} testID="compose-open" />
-      {onSearch ? (
-        <BrandButton variant="ghost" label={copy.community.searchPeople} onPress={onSearch} testID="open-search" />
-      ) : null}
-      {access && !access.canPublish ? (
-        <Banner>
-          {access.reason === 'subscription' ? copy.community.subscribeBanner : copy.community.limitedBanner}
-        </Banner>
-      ) : null}
-      <View style={{ flexDirection: 'row', gap: spacing.xs, marginTop: spacing.sm, marginBottom: spacing.sm, flexWrap: 'wrap' }}>
-        {SORTS.map((item) => (
-          <Chip
-            key={item.id}
-            label={item.label}
-            active={sort === item.id}
-            testID={`sort-${item.id}`}
-            onPress={() => onChangeSort(item.id)}
-          />
-        ))}
-        {onToggleFollowing ? (
-          <Chip
-            label={copy.community.followingChip}
-            active={following}
-            testID="filter-following"
-            onPress={onToggleFollowing}
-          />
+    <View style={{ flex: 1 }}>
+      <Screen testID="community-screen" onRefresh={onRefresh} refreshing={refreshing}>
+        <ScreenTitle title={title} subtitle={subtitle} />
+        {onSearch ? (
+          <TextButton label={copy.community.searchPeople} onPress={onSearch} testID="open-search" />
         ) : null}
-      </View>
-      <View style={{ flexDirection: 'row', gap: spacing.xs, marginBottom: spacing.md, flexWrap: 'wrap' }}>
-        <Chip label={copy.common.all} active={!topicSlug} onPress={() => onChangeTopic(null)} />
-        {topics.map((topic) => (
-          <Chip
-            key={topic.slug}
-            label={topic.name}
-            active={topicSlug === topic.slug}
-            testID={`topic-${topic.slug}`}
-            onPress={() => (onOpenTopic ? onOpenTopic(topic.slug) : onChangeTopic(topic.slug))}
-          />
-        ))}
-      </View>
-      <SectionHeader title={copy.community.posts} testID="feed-heading" />
-      {loading ? <LoadingState /> : null}
-      {error ? <ErrorState title={copy.community.errorTitle} body={error} /> : null}
-      {!loading && posts.length === 0 ? (
-        <EmptyState title={copy.community.emptyTitle} body={copy.community.emptyBody} />
-      ) : (
-        posts.map((post) => (
-          <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
-        ))
-      )}
-      {showHub && onOpenArea ? (
-        <View testID="community-hub" style={{ marginTop: spacing.md }}>
-          <SectionHeader title={copy.community.shortcuts} />
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
-            {COMMUNITY_AREAS.filter((area) => area.id !== 'feed').map((area) => (
-              <Chip
-                key={area.id}
-                label={area.label}
-                hint={area.hint}
-                testID={`area-${area.id}`}
-                onPress={() => onOpenArea(area.id)}
-              />
-            ))}
-          </View>
+        {access && !access.canPublish ? (
+          <Banner>
+            {access.reason === 'subscription' ? copy.community.subscribeBanner : copy.community.limitedBanner}
+          </Banner>
+        ) : null}
+        <View style={{ flexDirection: 'row', gap: spacing.xs, marginTop: spacing.sm, marginBottom: spacing.sm, flexWrap: 'wrap' }}>
+          {SORTS.map((item) => (
+            <Chip
+              key={item.id}
+              label={item.label}
+              active={sort === item.id}
+              testID={`sort-${item.id}`}
+              onPress={() => onChangeSort(item.id)}
+            />
+          ))}
+          {onToggleFollowing ? (
+            <Chip
+              label={copy.community.followingChip}
+              active={following}
+              testID="filter-following"
+              onPress={onToggleFollowing}
+            />
+          ) : null}
         </View>
-      ) : null}
-    </Screen>
+        <View style={{ flexDirection: 'row', gap: spacing.xs, marginBottom: spacing.md, flexWrap: 'wrap' }}>
+          <Chip label={copy.common.all} active={!topicSlug} onPress={() => onChangeTopic(null)} />
+          {topics.map((topic) => (
+            <Chip
+              key={topic.slug}
+              label={topic.name}
+              active={topicSlug === topic.slug}
+              testID={`topic-${topic.slug}`}
+              onPress={() => (onOpenTopic ? onOpenTopic(topic.slug) : onChangeTopic(topic.slug))}
+            />
+          ))}
+        </View>
+        <SectionHeader title={copy.community.posts} testID="feed-heading" />
+        {loading ? <LoadingState /> : null}
+        {error ? <ErrorState title={copy.community.errorTitle} body={error} /> : null}
+        {!loading && posts.length === 0 ? (
+          <EmptyState title={copy.community.emptyTitle} body={copy.community.emptyBody} />
+        ) : (
+          posts.map((post) => (
+            <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
+          ))
+        )}
+        {showHub && onOpenArea ? (
+          <View testID="community-hub" style={{ marginTop: spacing.md }}>
+            <SectionHeader title={copy.community.shortcuts} />
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+              {COMMUNITY_AREAS.filter((area) => area.id !== 'feed').map((area) => (
+                <Chip
+                  key={area.id}
+                  label={area.label}
+                  hint={area.hint}
+                  testID={`area-${area.id}`}
+                  onPress={() => onOpenArea(area.id)}
+                />
+              ))}
+            </View>
+          </View>
+        ) : null}
+      </Screen>
+      <Fab testID="compose-open" onPress={onCompose} label={copy.community.compose} />
+    </View>
   );
 }

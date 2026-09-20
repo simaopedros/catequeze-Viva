@@ -4,7 +4,12 @@ import { appRoutes, publicRoutes } from '../navigation/routes';
 
 describe('usability map', () => {
   it('covers the signed-out and signed-in journeys the product asked for', () => {
-    const signedOut = [publicRoutes.login, publicRoutes.twoFactor, publicRoutes.forgotPassword];
+    const signedOut = [
+      publicRoutes.login,
+      publicRoutes.twoFactor,
+      publicRoutes.forgotPassword,
+      publicRoutes.signup,
+    ];
     const signedIn = [
       appRoutes.home,
       appRoutes.community,
@@ -30,11 +35,17 @@ describe('usability map', () => {
       appRoutes.documents,
       appRoutes.notifications,
       appRoutes.more,
+      appRoutes.calendar,
+      appRoutes.groups,
+      appRoutes.catechumens,
+      appRoutes.families,
+      appRoutes.settings,
+      appRoutes.onboarding,
     ];
 
-    expect(signedOut).toHaveLength(3);
-    expect(signedIn).toHaveLength(24);
-    expect(APP_TABS).toHaveLength(5);
+    expect(signedOut).toHaveLength(4);
+    expect(signedIn).toHaveLength(30);
+    expect(APP_TABS).toHaveLength(6);
   });
 
   it('formats meeting timestamps in pt-BR instead of raw ISO', () => {

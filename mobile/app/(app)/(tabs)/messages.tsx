@@ -17,6 +17,7 @@ export default function MessagesRoute() {
       onRefresh={() => void reload()}
       refreshing={refreshing}
       onOpen={(id) => router.push(`/(app)/messages/${id}`)}
+      onCreate={() => router.push('/(app)/messages/new')}
     />
   );
 }
