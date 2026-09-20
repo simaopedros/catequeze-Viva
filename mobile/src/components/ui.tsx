@@ -185,20 +185,20 @@ export function Card({
         : tone === 'paper'
           ? { backgroundColor: colors.paper }
           : null;
-  const content = (
-    <Surface mode="flat" elevation={0} style={[styles.card, toneStyle, style]}>
-      {children}
-    </Surface>
-  );
   const flattened = StyleSheet.flatten(style);
   const layoutStyle =
     flattened && typeof flattened === 'object'
       ? {
-          ...(flattened.flex != null ? { flex: flattened.flex } : null),
+          ...(flattened.flex != null ? { flex: flattened.flex, width: '100%' as const } : null),
           ...(flattened.minWidth != null ? { minWidth: flattened.minWidth } : null),
           ...(flattened.alignSelf != null ? { alignSelf: flattened.alignSelf } : null),
         }
       : undefined;
+  const content = (
+    <Surface mode="flat" elevation={0} style={[styles.card, toneStyle, style, layoutStyle?.flex != null ? { width: '100%', flexGrow: 1 } : null]}>
+      {children}
+    </Surface>
+  );
   if (!onPress) {
     return (
       <View testID={testID} style={layoutStyle}>
@@ -238,12 +238,15 @@ export function StatCard({
       <View style={styles.statInner}>
         {icon ? (
           <View style={styles.statIcon}>
-            <Icon name={icon} size={18} color={colors.goldDark} />
+            <Icon name={icon} size={20} color={colors.goldDark} />
           </View>
         ) : null}
-        <Text variant="headlineMedium" style={styles.statValue}>
-          {value}
-        </Text>
+        <View style={styles.statValueRow}>
+          <Text variant="headlineMedium" style={styles.statValue} numberOfLines={1}>
+            {value}
+          </Text>
+          {onPress ? <Icon name="chevron-right" size={22} color={colors.tabInactive} /> : null}
+        </View>
         <Text variant="labelMedium" style={styles.statLabel} numberOfLines={1}>
           {label}
         </Text>
@@ -260,6 +263,7 @@ export function StatCard({
 export function ListRow({
   title,
   subtitle,
+  kicker,
   meta,
   icon,
   left,
@@ -271,6 +275,7 @@ export function ListRow({
 }: {
   title: string;
   subtitle?: string | null;
+  kicker?: string | null;
   meta?: string | null;
   icon?: IconName;
   left?: React.ReactNode;
@@ -290,6 +295,11 @@ export function ListRow({
         </View>
       ) : null}
       <View style={{ flex: 1, minWidth: 0 }}>
+        {kicker ? (
+          <Text variant="labelSmall" style={styles.rowKicker} numberOfLines={1}>
+            {kicker}
+          </Text>
+        ) : null}
         <Text variant="titleSmall" style={styles.rowTitle} numberOfLines={2}>
           {title}
         </Text>
@@ -757,11 +767,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   cardTitle: { color: colors.ink, marginBottom: 4 },
-  statCard: { flex: 1, minWidth: 0, alignSelf: 'flex-start' },
-  statInner: { gap: 4 },
-  statIcon: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#F8E7BF', alignItems: 'center', justifyContent: 'center' },
+  statCard: { flex: 1, minWidth: 0 },
+  statInner: { gap: 8, minHeight: 108, justifyContent: 'space-between' },
+  statIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#F8E7BF', alignItems: 'center', justifyContent: 'center' },
+  statValueRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.xs, minWidth: 0 },
   statLabel: { color: colors.muted },
-  statValue: { color: colors.ink },
+  statValue: { color: colors.ink, flexShrink: 1 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -772,14 +783,15 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.line,
   },
   rowIcon: { width: 38, height: 38, borderRadius: 12, backgroundColor: colors.paper, alignItems: 'center', justifyContent: 'center' },
+  rowKicker: { color: colors.goldDark, marginBottom: 2 },
   rowTitle: { color: colors.ink },
   rowSubtitle: { color: colors.muted, marginTop: 2 },
   rowMeta: { color: colors.muted },
   tag: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.pill, alignSelf: 'flex-start' },
   chips: { gap: spacing.xs, paddingBottom: spacing.sm },
-  chip: { borderColor: colors.line, backgroundColor: colors.surface },
+  chip: { borderColor: colors.line, backgroundColor: colors.surface, flexShrink: 0 },
   button: { borderRadius: radius.md, marginTop: spacing.sm, minWidth: 0, flexShrink: 1 },
-  buttonContent: { paddingVertical: 6, paddingHorizontal: 8 },
+  buttonContent: { paddingVertical: 8, paddingHorizontal: 10 },
   buttonLabel: { fontSize: 14, fontWeight: '600', letterSpacing: 0 },
   fabWrap: { position: 'absolute', right: spacing.md, left: spacing.md, alignItems: 'flex-end', pointerEvents: 'box-none' },
   input: { backgroundColor: colors.surface },

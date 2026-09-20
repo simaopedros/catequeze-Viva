@@ -135,6 +135,9 @@ describe('Fase E screens', () => {
       />,
     );
     expect(view.getByText('Plano · Setembro 2026')).toBeTruthy();
+    expect(view.getByTestId('class-community')).toBeTruthy();
+    expect(view.getByText('Comunidade')).toBeTruthy();
+    expect(view.getAllByText('São José').length).toBeGreaterThan(0);
     fireEvent.press(view.getByTestId('plan-meeting-m1'));
     expect(onOpenMeeting).toHaveBeenCalledWith('m1');
   });

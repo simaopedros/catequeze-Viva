@@ -6,7 +6,7 @@ import {
   BrandButton,
   Card,
   EmptyState,
-  KeyValue,
+  Icon,
   ListCard,
   ListRow,
   Row,
@@ -132,7 +132,7 @@ export function ClassDetailScreen({
       {data ? (
         <>
           <Row style={{ marginBottom: spacing.sm }}>
-            {onOpenAttendance ? <BrandButton icon="clipboard-check-outline" label="Marcar presenças" onPress={onOpenAttendance} testID="open-attendance" style={{ flex: 1 }} /> : null}
+            {onOpenAttendance ? <BrandButton icon="calendar-check-outline" label="Marcar presenças" onPress={onOpenAttendance} testID="open-attendance" style={{ flex: 1 }} /> : null}
             {onOpenChat ? <IconAction icon="message-text-outline" label="Chat da turma" onPress={onOpenChat} testID="open-class-chat" /> : null}
             {onEdit ? <IconAction icon="pencil-outline" label="Editar turma" onPress={onEdit} testID="edit-class" /> : null}
           </Row>
@@ -155,24 +155,36 @@ export function ClassDetailScreen({
             <>
               <Row style={{ alignItems: 'stretch' }}>
                 <StatCard label="Encontros" value={summary?.totalMeetings ?? data?._count?.meetings ?? meetings.length} icon="calendar-outline" />
-                <StatCard label="Presença" value={rate != null ? `${rate}%` : '—'} icon="chart-arc" />
+                <StatCard label="Presença" value={rate != null ? `${rate}%` : '—'} icon="account-group-outline" />
               </Row>
               <Row style={{ alignItems: 'stretch' }}>
                 <StatCard label="Presenças" value={summary?.presentCount ?? 0} icon="check-circle-outline" />
                 <StatCard label="Faltas" value={summary?.absentCount ?? 0} icon="close-circle-outline" />
               </Row>
-              <Card>
-                <KeyValue label="Comunidade" value={data?.community?.name} />
-                <KeyValue label="Ano" value={data?.year} />
-                <KeyValue label="Horário" value={data?.schedule || data?.meetingDay} />
-                <KeyValue label="Local" value={data?.location} />
-                <KeyValue label="Capacidade" value={data?.capacity} />
-                {data?.description ? (
-                  <Text variant="bodyMedium" style={{ color: colors.muted, marginTop: spacing.xs }}>
-                    {data.description}
-                  </Text>
-                ) : null}
-              </Card>
+              {data?.community?.name || data?.year || data?.schedule || data?.meetingDay || data?.location || data?.capacity ? (
+                <ListCard>
+                  {data?.community?.name ? (
+                    <ListRow
+                      testID="class-community"
+                      icon="church"
+                      kicker="Comunidade"
+                      title={data.community.name}
+                      chevron={false}
+                      right={<Icon name="chevron-right" size={20} color={colors.tabInactive} />}
+                      last={!data?.year && !data?.schedule && !data?.meetingDay && !data?.location && !data?.capacity && !data?.description}
+                    />
+                  ) : null}
+                  {data?.year ? <ListRow icon="calendar-blank-outline" kicker="Ano" title={String(data.year)} chevron={false} last={!data?.schedule && !data?.meetingDay && !data?.location && !data?.capacity && !data?.description} /> : null}
+                  {data?.schedule || data?.meetingDay ? (
+                    <ListRow icon="clock-outline" kicker="Horário" title={String(data?.schedule || data?.meetingDay)} chevron={false} last={!data?.location && !data?.capacity && !data?.description} />
+                  ) : null}
+                  {data?.location ? <ListRow icon="map-marker-outline" kicker="Local" title={String(data.location)} chevron={false} last={!data?.capacity && !data?.description} /> : null}
+                  {data?.capacity ? <ListRow icon="account-group-outline" kicker="Capacidade" title={String(data.capacity)} chevron={false} last={!data?.description} /> : null}
+                  {data?.description ? (
+                    <ListRow icon="text-long" title={data.description} chevron={false} last />
+                  ) : null}
+                </ListCard>
+              ) : null}
               <SectionHeader title={plan ? `Plano · ${planMonthLabel(plan)}` : 'Plano do mês'} icon="calendar-month-outline" />
               {Array.isArray(plan?.weeks) && plan.weeks.length > 0 ? (
                 plan.weeks.map((week: any, weekIndex: number) => (

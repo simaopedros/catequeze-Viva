@@ -17,7 +17,7 @@ import {
   StatCard,
   Tag,
 } from '../components/ui';
-import { colors, spacing } from '../theme';
+import { colors, radius, spacing } from '../theme';
 import { formatDate, formatDateTime } from '../utils/format';
 
 type Meeting = {
@@ -127,41 +127,45 @@ export function HomeScreen({
 
   return (
     <Screen testID="home-screen" safeTop safeBottom refreshing={refreshing} onRefresh={onRefresh}>
-      <ScreenTitle
-        eyebrow={greeting()}
-        title={`Olá, ${firstName}`}
-        subtitle="O essencial da catequese, no bolso."
-        action={
-          <Pressable
-            accessibilityRole="button"
-            onPress={onOpenNotifications}
-            testID="home-notifications"
-            style={{ position: 'relative', padding: 6 }}
-          >
-            <Icon name="bell-outline" size={26} color={colors.ink} />
-            {unread ? (
-              <View
-                style={{
-                  position: 'absolute',
-                  top: 2,
-                  right: 2,
-                  minWidth: 18,
-                  height: 18,
-                  paddingHorizontal: 4,
-                  borderRadius: 9,
-                  backgroundColor: colors.gold,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Text variant="labelSmall" style={{ color: colors.ink, fontWeight: '700' }}>
-                  {unread > 99 ? '99+' : unread}
-                </Text>
-              </View>
-            ) : null}
-          </Pressable>
-        }
-      />
+      <View style={{ position: 'relative' }}>
+        <View pointerEvents="none" style={{ position: 'absolute', right: -48, top: -36, width: 168, height: 168, borderRadius: 84, backgroundColor: '#F4E4C0', opacity: 0.7 }} />
+        <View pointerEvents="none" style={{ position: 'absolute', right: 28, top: 28, width: 92, height: 92, borderRadius: 46, backgroundColor: '#F8E7BF', opacity: 0.55 }} />
+        <ScreenTitle
+          eyebrow={greeting()}
+          title={`Olá, ${firstName}`}
+          subtitle="O essencial da catequese, no bolso."
+          action={
+            <Pressable
+              accessibilityRole="button"
+              onPress={onOpenNotifications}
+              testID="home-notifications"
+              style={{ position: 'relative', padding: 6 }}
+            >
+              <Icon name="bell-outline" size={26} color={colors.ink} />
+              {unread ? (
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: 2,
+                    right: 2,
+                    minWidth: 18,
+                    height: 18,
+                    paddingHorizontal: 4,
+                    borderRadius: 9,
+                    backgroundColor: colors.gold,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Text variant="labelSmall" style={{ color: colors.ink, fontWeight: '700' }}>
+                    {unread > 99 ? '99+' : unread}
+                  </Text>
+                </View>
+              ) : null}
+            </Pressable>
+          }
+        />
+      </View>
       {onSearch ? (
         <Pressable onPress={onSearch} testID="home-search" accessibilityLabel="Pesquisar">
           <View pointerEvents="none">
@@ -175,39 +179,79 @@ export function HomeScreen({
       ) : (
         <>
           {focus?.meeting ? (
-            <Card tone="ink" onPress={() => onOpenMeeting(focus.meeting!.id)} testID="focus-meeting">
+            <Card tone="ink" onPress={() => onOpenMeeting(focus.meeting!.id)} testID="focus-meeting" style={{ overflow: 'hidden' }}>
+              <View pointerEvents="none" style={{ position: 'absolute', right: -8, bottom: -18, opacity: 0.16 }}>
+                <Icon name="church" size={128} color={colors.goldLight} />
+              </View>
               <Row style={{ justifyContent: 'space-between', marginBottom: spacing.xs }}>
                 <Text variant="labelMedium" style={{ color: colors.goldLight, letterSpacing: 1 }}>
                   {focus.focusKind === 'in_progress' ? 'A DECORRER' : focus.focusKind === 'today' ? 'HOJE' : focus.focusKind === 'recent' ? 'ÚLTIMO ENCONTRO' : 'PRÓXIMO ENCONTRO'}
                 </Text>
                 <Tag label={focusMeetingStatusLabel(focus.meeting)} tone="gold" />
               </Row>
-              <Text variant="titleLarge" style={{ color: colors.white }}>
+              <Text variant="titleLarge" style={{ color: colors.white, marginRight: 72 }}>
                 {focus.meeting.title || focus.meeting.theme || 'Encontro'}
               </Text>
-              <Text variant="bodyMedium" style={{ color: colors.tabInactive, marginTop: 2 }}>
-                {[focus.meeting.class?.name, formatDateTime(focus.meeting.date), focus.meeting.locationHint].filter(Boolean).join(' · ')}
-              </Text>
-              {focus.attendanceSummary ? (
-                <Text variant="bodySmall" style={{ color: colors.goldLight, marginTop: spacing.xs }}>
-                  Presenças: {focus.attendanceSummary.registered}/{focus.attendanceSummary.totalActive}
-                  {focus.preparation?.contentTitle ? ` · Conteúdo: ${focus.preparation.contentTitle}` : ''}
-                </Text>
-              ) : null}
+              <View style={{ marginTop: spacing.sm, gap: 6, marginRight: 56 }}>
+                <Row gap={spacing.xs} style={{ alignItems: 'flex-start' }}>
+                  <Icon name="calendar-outline" size={14} color={colors.tabInactive} />
+                  <Text variant="bodySmall" style={{ color: colors.tabInactive, flex: 1 }}>
+                    {[focus.meeting.class?.name, formatDateTime(focus.meeting.date)].filter(Boolean).join(' · ')}
+                  </Text>
+                </Row>
+                {focus.meeting.locationHint ? (
+                  <Row gap={spacing.xs} style={{ alignItems: 'flex-start' }}>
+                    <Icon name="map-marker-outline" size={14} color={colors.tabInactive} />
+                    <Text variant="bodySmall" style={{ color: colors.tabInactive, flex: 1 }}>
+                      {focus.meeting.locationHint}
+                    </Text>
+                  </Row>
+                ) : null}
+                {focus.attendanceSummary ? (
+                  <Row gap={spacing.xs} style={{ alignItems: 'center' }}>
+                    <Icon name="account-group-outline" size={14} color={colors.goldLight} />
+                    <Text variant="bodySmall" style={{ color: colors.goldLight, flex: 1 }}>
+                      Presenças: {focus.attendanceSummary.registered}/{focus.attendanceSummary.totalActive}
+                      {focus.preparation?.contentTitle ? ` · Conteúdo: ${focus.preparation.contentTitle}` : ''}
+                    </Text>
+                  </Row>
+                ) : null}
+              </View>
               {onOpenAttendance ? (
-                <BrandButton
-                  variant="gold"
-                  icon="clipboard-check-outline"
-                  label="Marcar presenças"
-                  onPress={() => onOpenAttendance(focus.meeting!.id, focus.meeting!.class?.id)}
+                <Pressable
                   testID="focus-attendance"
-                />
+                  accessibilityRole="button"
+                  accessibilityLabel="Marcar presenças"
+                  onPress={() => onOpenAttendance(focus.meeting!.id, focus.meeting!.class?.id)}
+                  style={({ pressed }) => ({
+                    marginTop: spacing.md,
+                    backgroundColor: colors.gold,
+                    borderRadius: radius.md,
+                    minHeight: 48,
+                    paddingHorizontal: spacing.md,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    opacity: pressed ? 0.88 : 1,
+                  })}
+                >
+                  <Row gap={spacing.sm}>
+                    <Icon name="clipboard-check-outline" size={18} color={colors.ink} />
+                    <Text variant="labelLarge" style={{ color: colors.ink, fontWeight: '600' }}>
+                      Marcar presenças
+                    </Text>
+                  </Row>
+                  <Icon name="chevron-right" size={20} color={colors.ink} />
+                </Pressable>
               ) : null}
             </Card>
           ) : null}
 
           {pendingAnnouncements.length > 0 ? (
-            <Card tone="gold">
+            <Card tone="gold" style={{ overflow: 'hidden' }}>
+              <View pointerEvents="none" style={{ position: 'absolute', right: -12, bottom: -20, opacity: 0.28 }}>
+                <View style={{ width: 88, height: 88, borderRadius: 44, backgroundColor: colors.gold, opacity: 0.25 }} />
+              </View>
               <Row style={{ alignItems: 'flex-start' }}>
                 <Icon name="bullhorn-outline" color={colors.goldDark} />
                 <View style={{ flex: 1 }}>
@@ -219,7 +263,7 @@ export function HomeScreen({
                       {pendingAnnouncements[0].body}
                     </Text>
                   ) : null}
-                  <View style={{ marginTop: spacing.xs, gap: spacing.xs }}>
+                  <View style={{ marginTop: spacing.sm, gap: spacing.xs }}>
                     {onAcknowledgeAnnouncement ? (
                       <BrandButton
                         compact
@@ -231,18 +275,21 @@ export function HomeScreen({
                       />
                     ) : null}
                     {onOpenAnnouncements ? (
-                      <BrandButton
-                        compact
-                        variant="text"
-                        label={
-                          pendingAnnouncements.length > 1
-                            ? `+${pendingAnnouncements.length - 1} ${pendingAnnouncements.length - 1 === 1 ? 'aviso' : 'avisos'}`
-                            : 'Ver avisos'
-                        }
+                      <Pressable
                         onPress={onOpenAnnouncements}
-                        style={{ marginTop: 0 }}
                         testID="open-announcements"
-                      />
+                        accessibilityRole="button"
+                        style={{ alignSelf: 'center', paddingVertical: 4 }}
+                      >
+                        <Row gap={2}>
+                          <Text variant="labelLarge" style={{ color: colors.ink, fontWeight: '600' }}>
+                            {pendingAnnouncements.length > 1
+                              ? `+${pendingAnnouncements.length - 1} ${pendingAnnouncements.length - 1 === 1 ? 'aviso' : 'avisos'}`
+                              : 'Ver avisos'}
+                          </Text>
+                          <Icon name="chevron-right" size={16} color={colors.ink} />
+                        </Row>
+                      </Pressable>
                     ) : null}
                   </View>
                 </View>
@@ -250,7 +297,7 @@ export function HomeScreen({
             </Card>
           ) : null}
 
-          <Row style={{ alignItems: 'flex-start' }}>
+          <Row style={{ alignItems: 'stretch' }}>
             <StatCard label="Turmas" value={stats?.activeClasses ?? '—'} icon="school-outline" onPress={onOpenClasses} testID="stat-classes" />
             <StatCard
               label="Catequizandos"

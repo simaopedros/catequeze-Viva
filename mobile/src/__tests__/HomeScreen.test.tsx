@@ -30,6 +30,7 @@ describe('HomeScreen layout', () => {
         onOpenNotifications={jest.fn()}
         onOpenClasses={jest.fn()}
         onSearch={jest.fn()}
+        onOpenAttendance={jest.fn()}
         onAcknowledgeAnnouncement={onAcknowledge}
         onOpenAnnouncements={onOpenAnnouncements}
         announcements={[
@@ -58,6 +59,7 @@ describe('HomeScreen layout', () => {
     expect(view.getByText('Entendi')).toBeTruthy();
     expect(view.getByText('+1 aviso')).toBeTruthy();
     expect(view.getByText('Por concluir')).toBeTruthy();
+    expect(view.getByText('Marcar presenças')).toBeTruthy();
     expect(view.queryByText('Agendado')).toBeNull();
     expect(view.getByText('Sem mais encontros à vista')).toBeTruthy();
 
