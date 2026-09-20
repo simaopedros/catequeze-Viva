@@ -372,7 +372,7 @@ export async function mobileCreateWebBridge(req: Request, res: Response, context
   return res.json({ url: `${webBase}/mobile-bridge?token=${token}` });
 }
 
-export async function mobileConsumeWebBridge(req: Request, res: Response) {
+export async function mobileConsumeWebBridge(req: Request, res: Response, _context?: any) {
   pruneBridgeTokens();
   const token = parseRequiredString(req.query.token, 'token');
   const record = webBridgeTokens.get(token);
@@ -381,7 +381,7 @@ export async function mobileConsumeWebBridge(req: Request, res: Response) {
   return res.json({ sessionId: record.sessionId, next: record.next });
 }
 
-export async function mobileAuthSignup(req: Request, res: Response) {
+export async function mobileAuthSignup(req: Request, res: Response, _context?: any) {
   const email = String(req.body?.email || '').trim().toLowerCase();
   const password = String(req.body?.password || '');
   if (!email || !password) throw new HttpError(400, 'E-mail e senha são obrigatórios.');
