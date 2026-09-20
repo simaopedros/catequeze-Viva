@@ -7,7 +7,7 @@ import { HomeScreen } from '../../../src/screens/HomeScreen';
 export default function HomeRoute() {
   const { api, user, bootstrap, workspaceId } = useAuth();
   const router = useRouter();
-  const { data, loading, error } = useAsync(() => api.dashboard(workspaceId || undefined), [workspaceId]);
+  const { data, loading, error, reload, refreshing } = useAsync(() => api.dashboard(workspaceId || undefined), [workspaceId]);
 
   return (
     <HomeScreen
@@ -16,6 +16,8 @@ export default function HomeRoute() {
       loading={loading}
       error={error}
       unread={unreadCount(bootstrap)}
+      onRefresh={() => void reload()}
+      refreshing={refreshing}
       onOpenCommunity={() => router.push('/(app)/(tabs)/community')}
       onOpenNotifications={() => router.push('/(app)/notifications')}
       onOpenMeeting={(id) => router.push(`/(app)/meeting/${id}`)}

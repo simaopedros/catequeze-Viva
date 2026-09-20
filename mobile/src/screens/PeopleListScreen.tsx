@@ -1,8 +1,7 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
 import type { SocialPerson } from '../api/types';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors, spacing } from '../theme';
+import { AppText, EmptyState, ErrorState, ListRow, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { copy } from '../copy/ptBR';
 
 export function personHandle(person: SocialPerson) {
   return person.socialHandle || person.handle || null;
@@ -18,6 +17,8 @@ export function PeopleListScreen({
   emptyBody,
   onOpenPerson,
   testID,
+  onRefresh,
+  refreshing,
 }: {
   title: string;
   subtitle: string;
@@ -28,35 +29,34 @@ export function PeopleListScreen({
   emptyBody: string;
   onOpenPerson: (handle: string) => void;
   testID?: string;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }) {
   return (
-    <Screen testID={testID}>
+    <Screen testID={testID} onRefresh={onRefresh} refreshing={refreshing}>
       <ScreenTitle title={title} subtitle={subtitle} />
       {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Lista indisponível" body={error} /> : null}
-      {!loading && !error && people.length === 0 ? (
-        <EmptyState title={emptyTitle} body={emptyBody} />
-      ) : null}
+      {error ? <ErrorState title={copy.people.errorTitle} body={error} /> : null}
+      {!loading && !error && people.length === 0 ? <EmptyState title={emptyTitle} body={emptyBody} /> : null}
       {people.map((person) => {
         const handle = personHandle(person);
         return (
-          <Pressable
+          <ListRow
             key={person.id}
             testID={`person-${person.id}`}
+            title={person.displayName}
+            meta={
+              handle
+                ? `@${handle}${person.followersCount != null ? ` · ${person.followersCount} seguidores` : ''}`
+                : copy.profile.noHandle
+            }
             onPress={() => handle && onOpenPerson(handle)}
-            disabled={!handle}
-          >
-            <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>{person.displayName}</Text>
-              <Text style={{ color: colors.goldDark, marginTop: 2 }}>
-                {handle ? `@${handle}` : 'Sem handle público'}
-                {person.followersCount != null ? ` · ${person.followersCount} seguidores` : ''}
-              </Text>
-            </Card>
-          </Pressable>
+          />
         );
       })}
-      <Text style={{ color: colors.muted, marginTop: spacing.sm }}>{people.length} pessoa(s)</Text>
+      <AppText variant="caption" color="secondary">
+        {copy.common.peopleCount(people.length)}
+      </AppText>
     </Screen>
   );
 }

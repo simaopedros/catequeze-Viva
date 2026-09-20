@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { BrandButton, ErrorText, Field, Screen, ScreenTitle } from '../components/ui';
+import { copy } from '../copy/ptBR';
 import { ShareCard } from '../components/PostCard';
+import { Banner, BrandButton, ErrorText, Field, Screen, ScreenTitle } from '../components/ui';
 import type { SocialShare } from '../api/types';
 
 export function ComposeScreen({
   canPublish,
   accessLoading,
   onPublish,
-  onPreviewShare,
   preview,
   busy,
   error,
+  onOpenBible,
 }: {
   canPublish: boolean;
   accessLoading?: boolean;
@@ -19,47 +20,38 @@ export function ComposeScreen({
   preview?: SocialShare | null;
   busy?: boolean;
   error?: string | null;
+  onOpenBible?: () => void;
 }) {
   const [body, setBody] = useState('');
-  const [kind, setKind] = useState('VERSE');
-  const [sourceId, setSourceId] = useState('');
 
   return (
     <Screen testID="compose-screen">
       <ScreenTitle
-        title="Nova publicação"
+        title={copy.compose.title}
         subtitle={
-          accessLoading
-            ? 'A verificar se a sua conta pode publicar…'
-            : canPublish
-              ? 'Partilhe um momento ou um versículo com a Comunidade.'
-              : 'A publicação exige assinatura.'
+          accessLoading ? copy.compose.checking : canPublish ? copy.compose.canPublish : copy.compose.needsSub
         }
       />
       <ErrorText message={error} />
-      <Field label="Texto" value={body} onChangeText={setBody} multiline testID="compose-body" />
-      <Field label="Tipo de partilha (opcional)" value={kind} onChangeText={setKind} />
+      {!canPublish && !accessLoading ? <Banner>{copy.compose.needsSub}</Banner> : null}
       <Field
-        label="ID da fonte (ex. bookId:chapter:verse)"
-        value={sourceId}
-        onChangeText={setSourceId}
-        testID="compose-share-id"
+        label={copy.compose.body}
+        placeholder={copy.compose.bodyPlaceholder}
+        value={body}
+        onChangeText={setBody}
+        multiline
+        testID="compose-body"
       />
-      {onPreviewShare ? (
-        <BrandButton
-          variant="ghost"
-          label="Pré-visualizar partilha"
-          onPress={() => sourceId && onPreviewShare(kind, sourceId)}
-        />
-      ) : null}
       {preview ? (
         <ShareCard kind={preview.kind} title={preview.title} subtitle={preview.subtitle} excerpt={preview.excerpt} />
+      ) : onOpenBible ? (
+        <BrandButton variant="ghost" label={copy.compose.includeVerse} onPress={onOpenBible} testID="compose-open-bible" />
       ) : null}
       <BrandButton
         testID="compose-submit"
-        label={busy ? 'A publicar…' : 'Publicar'}
+        label={busy ? copy.compose.publishing : copy.compose.publish}
         disabled={(!canPublish && !accessLoading) || busy || !body.trim()}
-        onPress={() => onPublish(body.trim(), sourceId ? { kind, sourceId } : null)}
+        onPress={() => onPublish(body.trim(), null)}
       />
     </Screen>
   );

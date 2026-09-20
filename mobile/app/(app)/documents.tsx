@@ -5,13 +5,15 @@ import { DocumentsScreen } from '../../src/screens/DocumentsScreen';
 
 export default function DocumentsRoute() {
   const { api } = useAuth();
-  const { data, loading, error } = useAsync(() => api.documents(), []);
+  const { data, loading, error, reload, refreshing } = useAsync(() => api.documents(), []);
 
   return (
     <DocumentsScreen
       payload={data}
       loading={loading}
       error={error}
+      onRefresh={() => void reload()}
+      refreshing={refreshing}
       apiBase={process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001'}
     />
   );

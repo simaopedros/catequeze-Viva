@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useAuth } from '../../../src/auth/AuthContext';
+import { copy } from '../../../src/copy/ptBR';
 import { useAsync } from '../../../src/hooks/useAsync';
 import { CommunityScreen } from '../../../src/screens/CommunityScreen';
 
@@ -14,8 +15,8 @@ export default function FollowingFeedRoute() {
 
   return (
     <CommunityScreen
-      title="A seguir"
-      subtitle="Só publicações de quem você segue."
+      title={copy.community.followingTitle}
+      subtitle={copy.community.followingSubtitle}
       posts={feed.data?.items ?? []}
       topics={topics.data ?? []}
       access={access.data}
@@ -23,6 +24,8 @@ export default function FollowingFeedRoute() {
       following
       loading={feed.loading}
       error={feed.error}
+      onRefresh={() => void feed.reload()}
+      refreshing={feed.refreshing}
       onChangeSort={setSort}
       onChangeTopic={() => undefined}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}

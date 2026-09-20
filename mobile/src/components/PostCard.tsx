@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import type { SocialPost } from '../api/types';
-import { colors, spacing } from '../theme';
-import { Card } from './ui';
+import { copy } from '../copy/ptBR';
+import { colors, radius, spacing } from '../theme';
+import { AppText, Card, PressableScale, TextButton } from './ui';
 
 const LONG_BODY = 280;
 
@@ -19,10 +20,22 @@ export function ShareCard({
 }) {
   return (
     <View style={styles.share} testID="share-card">
-      {kind ? <Text style={styles.shareKind}>{kind}</Text> : null}
-      <Text style={styles.shareTitle}>{title}</Text>
-      {subtitle ? <Text style={styles.shareSubtitle}>{subtitle}</Text> : null}
-      {excerpt ? <Text style={styles.shareExcerpt}>{excerpt}</Text> : null}
+      {kind ? (
+        <AppText variant="overline" color="goldMuted" style={{ marginBottom: spacing.xxs }}>
+          {kind}
+        </AppText>
+      ) : null}
+      <AppText variant="titleSm">{title}</AppText>
+      {subtitle ? (
+        <AppText variant="caption" color="secondary" style={{ marginTop: spacing.xxs }}>
+          {subtitle}
+        </AppText>
+      ) : null}
+      {excerpt ? (
+        <AppText variant="bodySm" color="inkSoft" style={{ marginTop: spacing.xs }}>
+          {excerpt}
+        </AppText>
+      ) : null}
     </View>
   );
 }
@@ -43,27 +56,39 @@ export function PostCard({
 
   return (
     <Card>
-      <Pressable
+      <PressableScale
         accessibilityRole="button"
         testID={`post-author-${post.id}`}
         onPress={() => handle && onOpenAuthor?.(handle)}
         disabled={!handle}
+        haptic={Boolean(handle)}
       >
-        <Text style={styles.author}>{post.author.displayName}</Text>
-        {handle ? <Text style={styles.handle}>@{handle}</Text> : null}
-      </Pressable>
-      <Pressable
+        <AppText variant="titleSm">{post.author.displayName}</AppText>
+        {handle ? (
+          <AppText variant="caption" color="goldMuted" style={{ marginTop: 2, marginBottom: spacing.xs }}>
+            @{handle}
+          </AppText>
+        ) : null}
+      </PressableScale>
+      <PressableScale
         accessibilityRole="button"
         testID={`post-${post.id}`}
         onPress={() => post.slug && onOpenPost?.(post.slug)}
         disabled={!onOpenPost}
+        haptic={Boolean(onOpenPost)}
       >
-        {post.body ? <Text style={styles.body}>{body}</Text> : null}
-      </Pressable>
+        {post.body ? (
+          <AppText variant="body" color="inkSoft">
+            {body}
+          </AppText>
+        ) : null}
+      </PressableScale>
       {long ? (
-        <Pressable onPress={() => setExpanded((value) => !value)} testID={`post-expand-${post.id}`}>
-          <Text style={styles.more}>{expanded ? 'Ver menos' : 'Ver mais'}</Text>
-        </Pressable>
+        <TextButton
+          testID={`post-expand-${post.id}`}
+          label={expanded ? copy.post.less : copy.post.more}
+          onPress={() => setExpanded((value) => !value)}
+        />
       ) : null}
       {post.share ? (
         <ShareCard
@@ -73,38 +98,33 @@ export function PostCard({
           excerpt={post.share.excerpt}
         />
       ) : null}
-      <Pressable
+      <PressableScale
         accessibilityRole="button"
         testID={`open-post-${post.id}`}
         onPress={() => post.slug && onOpenPost?.(post.slug)}
         disabled={!onOpenPost}
+        haptic={Boolean(onOpenPost)}
       >
-        <Text style={styles.meta}>
-          {post.reactionCount ?? 0} reações · {post.commentCount ?? 0} comentários
-        </Text>
-        {onOpenPost ? <Text style={styles.open}>Abrir publicação</Text> : null}
-      </Pressable>
+        <AppText variant="caption" color="secondary" style={{ marginTop: spacing.xs }}>
+          {copy.post.meta(post.reactionCount ?? 0, post.commentCount ?? 0)}
+        </AppText>
+        {onOpenPost ? (
+          <AppText variant="caption" weight="bold" color="goldMuted" style={{ marginTop: spacing.xs }}>
+            {copy.post.open}
+          </AppText>
+        ) : null}
+      </PressableScale>
     </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  author: { color: colors.ink, fontWeight: '700', fontSize: 16 },
-  handle: { color: colors.goldDark, marginTop: 2, marginBottom: spacing.sm },
-  body: { color: colors.inkSoft, fontSize: 16, lineHeight: 23 },
-  more: { color: colors.goldDark, fontWeight: '700', marginTop: 8 },
-  meta: { color: colors.muted, marginTop: spacing.sm, fontSize: 13 },
-  open: { color: colors.goldDark, fontWeight: '700', marginTop: 8 },
   share: {
-    marginTop: spacing.sm,
+    marginTop: spacing.xs,
     padding: spacing.sm,
-    borderRadius: 12,
-    backgroundColor: colors.cream,
+    borderRadius: radius.sm,
+    backgroundColor: colors.paper,
     borderWidth: 1,
-    borderColor: colors.line,
+    borderColor: colors.stroke,
   },
-  shareKind: { color: colors.goldDark, fontWeight: '700', fontSize: 12, marginBottom: 4 },
-  shareTitle: { color: colors.ink, fontWeight: '700' },
-  shareSubtitle: { color: colors.muted, marginTop: 2 },
-  shareExcerpt: { color: colors.inkSoft, marginTop: 6, lineHeight: 20 },
 });

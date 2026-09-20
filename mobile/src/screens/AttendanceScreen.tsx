@@ -1,9 +1,18 @@
 import React, { useMemo, useState } from 'react';
-import { Pressable, Text } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
-
-const STATUSES = ['PRESENT', 'ABSENT', 'LATE', 'EXCUSED'] as const;
+import { View } from 'react-native';
+import {
+  AppText,
+  BrandButton,
+  Card,
+  Chip,
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  Screen,
+  ScreenTitle,
+} from '../components/ui';
+import { ATTENDANCE_STATUSES, copy, type AttendanceStatus } from '../copy/ptBR';
+import { spacing } from '../theme';
 
 export function AttendanceScreen({
   meeting,
@@ -19,13 +28,7 @@ export function AttendanceScreen({
   busy?: boolean;
 }) {
   const rows = useMemo(() => {
-    return (
-      meeting?.attendance ||
-      meeting?.records ||
-      meeting?.enrollments ||
-      meeting?.catechumens ||
-      []
-    );
+    return meeting?.attendance || meeting?.records || meeting?.enrollments || meeting?.catechumens || [];
   }, [meeting]);
   const [draft, setDraft] = useState<Record<string, string>>({});
 
@@ -39,10 +42,10 @@ export function AttendanceScreen({
 
   return (
     <Screen testID="attendance-screen">
-      <ScreenTitle title="Presença" subtitle="Toque no estado e grave cada catequizando." />
-      {error ? <EmptyState title="Não foi possível carregar" body={error} /> : null}
+      <ScreenTitle title={copy.attendance.title} subtitle={copy.attendance.subtitle} />
+      {error ? <ErrorState title={copy.attendance.errorTitle} body={error} /> : null}
       {rows.length === 0 ? (
-        <EmptyState title="Sem lista" body="Este encontro ainda não tem catequizandos para marcar." />
+        <EmptyState title={copy.attendance.emptyTitle} body={copy.attendance.emptyBody} />
       ) : (
         rows.map((row: any) => {
           const id = row.catechumenProfileId || row.id;
@@ -50,20 +53,30 @@ export function AttendanceScreen({
             row.displayName ||
             row.name ||
             [row.firstName, row.lastName].filter(Boolean).join(' ') ||
-            'Catequizando';
-          const status = draft[id] || row.status || 'PRESENT';
+            copy.attendance.catechumen;
+          const status = (draft[id] || row.status || 'PRESENT') as AttendanceStatus;
           return (
             <Card key={id}>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>{name}</Text>
-              <Text style={{ color: colors.muted, marginVertical: 8 }}>Estado: {status}</Text>
-              {STATUSES.map((item) => (
-                <Pressable key={item} onPress={() => setDraft((current) => ({ ...current, [id]: item }))}>
-                  <Text style={{ color: status === item ? colors.goldDark : colors.muted, marginBottom: 4 }}>
-                    {item}
-                  </Text>
-                </Pressable>
-              ))}
-              <BrandButton label={busy ? 'A gravar…' : 'Gravar'} disabled={busy} onPress={() => onSave(id, status)} />
+              <AppText variant="titleSm">{name}</AppText>
+              <AppText variant="caption" color="secondary" style={{ marginVertical: spacing.xs }}>
+                {copy.attendance.status}: {copy.attendance.statuses[status] ?? status}
+              </AppText>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginBottom: spacing.sm }}>
+                {ATTENDANCE_STATUSES.map((item) => (
+                  <Chip
+                    key={item}
+                    label={copy.attendance.statuses[item]}
+                    active={status === item}
+                    onPress={() => setDraft((current) => ({ ...current, [id]: item }))}
+                  />
+                ))}
+              </View>
+              <BrandButton
+                variant="soft"
+                label={busy ? copy.attendance.saving : copy.attendance.save}
+                disabled={busy}
+                onPress={() => onSave(id, status)}
+              />
             </Card>
           );
         })

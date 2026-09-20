@@ -7,13 +7,15 @@ import { BibleBooksScreen } from '../../../src/screens/BibleScreens';
 export default function BibleRoute() {
   const { api } = useAuth();
   const router = useRouter();
-  const { data, loading, error } = useAsync(() => api.bibleBooks(), []);
+  const { data, loading, error, reload, refreshing } = useAsync(() => api.bibleBooks(), []);
 
   return (
     <BibleBooksScreen
       books={data ?? []}
       loading={loading}
       error={error}
+      onRefresh={() => void reload()}
+      refreshing={refreshing}
       onOpen={(bookId) => router.push(`/(app)/bible/${bookId}`)}
     />
   );

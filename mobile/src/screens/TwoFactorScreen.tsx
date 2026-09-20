@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { copy } from '../copy/ptBR';
 import { BrandButton, ErrorText, Field, Screen, ScreenTitle } from '../components/ui';
 
 export function TwoFactorScreen({
@@ -16,26 +17,24 @@ export function TwoFactorScreen({
 
   return (
     <Screen testID="two-factor-screen">
-      <ScreenTitle
-        title="Verificação em dois passos"
-        subtitle="Introduza o código de 6 dígitos da aplicação autenticadora."
-      />
+      <ScreenTitle title={copy.auth.twoFactorTitle} subtitle={copy.auth.twoFactorSubtitle} />
       <ErrorText message={error} />
       <Field
-        label="Código"
+        label={copy.auth.code}
         value={token}
         onChangeText={setToken}
         keyboardType="number-pad"
         maxLength={6}
+        placeholder="000000"
         testID="totp-input"
       />
       <BrandButton
         testID="totp-submit"
-        label={busy ? 'A verificar…' : 'Continuar'}
+        label={busy ? copy.auth.verifying : copy.auth.continue}
         disabled={busy || token.length < 6}
         onPress={() => onSubmit(token)}
       />
-      <BrandButton variant="ghost" label="Sair" onPress={onCancel} />
+      <BrandButton variant="ghost" label={copy.auth.leave} onPress={onCancel} />
     </Screen>
   );
 }

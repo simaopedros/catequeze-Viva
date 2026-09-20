@@ -1,9 +1,18 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
 import type { SocialSearch } from '../api/types';
 import { PostCard } from '../components/PostCard';
-import { Card, EmptyState, Field, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors, spacing } from '../theme';
+import {
+  AppText,
+  EmptyState,
+  ErrorState,
+  Field,
+  ListRow,
+  LoadingState,
+  Screen,
+  ScreenTitle,
+  SectionHeader,
+} from '../components/ui';
+import { copy } from '../copy/ptBR';
 
 export function SearchScreen({
   query,
@@ -25,47 +34,49 @@ export function SearchScreen({
   const people = results?.people ?? [];
   const posts = results?.posts ?? [];
   const empty = query.trim().length >= 2 && !loading && people.length === 0 && posts.length === 0;
+  const helper = query.trim().length > 0 && query.trim().length < 2 ? copy.search.hint : undefined;
 
   return (
     <Screen testID="search-screen">
-      <ScreenTitle title="Pesquisar" subtitle="Encontre catequistas, tópicos e publicações da Comunidade." />
-      <Field label="Pesquisar" value={query} onChangeText={onChangeQuery} testID="search-input" />
-      {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Pesquisa indisponível" body={error} /> : null}
-      {empty ? (
-        <EmptyState title="Nada encontrado" body="Tente um @, um nome ou uma palavra da publicação." />
+      <ScreenTitle title={copy.search.title} subtitle={copy.search.subtitle} />
+      <Field
+        label={copy.search.label}
+        placeholder={copy.search.placeholder}
+        helper={helper}
+        value={query}
+        onChangeText={onChangeQuery}
+        testID="search-input"
+      />
+      {query.trim().length < 2 && !loading ? (
+        <AppText variant="caption" color="secondary">
+          {copy.search.hint}
+        </AppText>
       ) : null}
+      {loading ? <LoadingState /> : null}
+      {error ? <ErrorState title={copy.search.errorTitle} body={error} /> : null}
+      {empty ? <EmptyState title={copy.search.emptyTitle} body={copy.search.emptyBody} /> : null}
       {people.length > 0 ? (
         <>
-          <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm }}>Pessoas</Text>
+          <SectionHeader title={copy.search.people} />
           {people.map((person) => {
             const handle = person.socialHandle || person.handle;
             return (
-              <Pressable
+              <ListRow
                 key={person.id}
                 testID={`search-person-${person.id}`}
+                title={person.displayName}
+                meta={handle ? `@${handle} · ${person.followersCount ?? 0} seguidores` : copy.profile.noHandle}
                 onPress={() => handle && onOpenAuthor(handle)}
-              >
-                <Card>
-                  <Text style={{ color: colors.ink, fontWeight: '700' }}>{person.displayName}</Text>
-                  <Text style={{ color: colors.goldDark, marginTop: 2 }}>
-                    {handle ? `@${handle}` : 'Sem handle'} · {person.followersCount ?? 0} seguidores
-                  </Text>
-                </Card>
-              </Pressable>
+              />
             );
           })}
         </>
       ) : null}
       {posts.length > 0 ? (
         <>
-          <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm }}>
-            Publicações
-          </Text>
+          <SectionHeader title={copy.search.posts} />
           {posts.map((post) => (
-            <Pressable key={post.id} testID={`search-post-${post.id}`} onPress={() => onOpenPost(post.slug)}>
-              <PostCard post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
-            </Pressable>
+            <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
           ))}
         </>
       ) : null}

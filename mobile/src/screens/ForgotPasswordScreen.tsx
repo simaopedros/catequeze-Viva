@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { BrandButton, ErrorText, Field, Screen, ScreenTitle } from '../components/ui';
+import { copy } from '../copy/ptBR';
+import { Banner, BrandButton, ErrorText, Field, Screen, ScreenTitle } from '../components/ui';
 
 export function ForgotPasswordScreen({
   onSubmit,
@@ -18,24 +19,27 @@ export function ForgotPasswordScreen({
 
   return (
     <Screen testID="forgot-password-screen">
-      <ScreenTitle
-        title="Recuperar acesso"
-        subtitle="Enviamos um link se o e-mail existir na Catequese Viva."
-      />
+      <ScreenTitle title={copy.auth.recoverTitle} subtitle={copy.auth.recoverSubtitle} />
       <ErrorText message={error} />
       {sent ? (
-        <ScreenTitle title="" subtitle="Se a conta existir, o e-mail já foi enviado." />
+        <Banner>{copy.auth.recoverSent}</Banner>
       ) : (
-        <Field label="E-mail" value={email} onChangeText={setEmail} testID="reset-email" />
+        <Field
+          label={copy.auth.email}
+          placeholder={copy.auth.emailPlaceholder}
+          value={email}
+          onChangeText={setEmail}
+          testID="reset-email"
+        />
       )}
       {!sent ? (
         <BrandButton
-          label={busy ? 'A enviar…' : 'Enviar link'}
+          label={busy ? copy.common.sending : copy.auth.sendLink}
           disabled={busy || !email}
           onPress={() => onSubmit(email.trim())}
         />
       ) : null}
-      <BrandButton variant="ghost" label="Voltar ao início de sessão" onPress={onBack} />
+      <BrandButton variant="ghost" label={copy.auth.backToLogin} onPress={onBack} />
     </Screen>
   );
 }

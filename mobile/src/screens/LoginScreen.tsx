@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Text } from 'react-native';
-import { BrandButton, ErrorText, Field, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { copy } from '../copy/ptBR';
+import { AppText, BrandButton, ErrorText, Field, Screen, ScreenTitle } from '../components/ui';
 
 export function LoginScreen({
   onSubmit,
@@ -19,11 +18,14 @@ export function LoginScreen({
 
   return (
     <Screen testID="login-screen">
-      <Text style={{ color: colors.goldDark, fontWeight: '700', marginBottom: 8 }}>CATEQUESE VIVA</Text>
-      <ScreenTitle title="Entrar" subtitle="Use a mesma conta da plataforma web. A sessão fica guardada neste telemóvel." />
+      <AppText variant="overline" color="goldMuted" style={{ marginBottom: 8 }}>
+        {copy.brand.toUpperCase()}
+      </AppText>
+      <ScreenTitle title={copy.auth.loginTitle} subtitle={copy.auth.loginSubtitle} />
       <ErrorText message={error} />
       <Field
-        label="E-mail"
+        label={copy.auth.email}
+        placeholder={copy.auth.emailPlaceholder}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -31,7 +33,8 @@ export function LoginScreen({
         testID="login-email"
       />
       <Field
-        label="Palavra-passe"
+        label={copy.auth.password}
+        placeholder={copy.auth.passwordPlaceholder}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -40,11 +43,11 @@ export function LoginScreen({
       />
       <BrandButton
         testID="login-submit"
-        label={busy ? 'A entrar…' : 'Entrar'}
+        label={busy ? copy.auth.submitting : copy.auth.submit}
         disabled={busy || !email || !password}
         onPress={() => onSubmit(email.trim(), password)}
       />
-      <BrandButton variant="ghost" label="Esqueci a palavra-passe" onPress={onForgotPassword} />
+      <BrandButton variant="ghost" label={copy.auth.forgot} onPress={onForgotPassword} />
     </Screen>
   );
 }

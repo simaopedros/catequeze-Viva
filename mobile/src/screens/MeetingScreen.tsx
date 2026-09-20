@@ -1,7 +1,6 @@
 import React from 'react';
-import { Text } from 'react-native';
-import { BrandButton, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { AppText, BrandButton, EmptyState, ErrorState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { copy } from '../copy/ptBR';
 
 export function MeetingScreen({
   data,
@@ -24,17 +23,23 @@ export function MeetingScreen({
   if (error || !data) {
     return (
       <Screen>
-        <EmptyState title="Encontro indisponível" body={error || 'Não encontrado.'} />
+        <ErrorState title={copy.meeting.errorTitle} body={error || copy.meeting.notFound} />
       </Screen>
     );
   }
 
   return (
     <Screen testID="meeting-screen">
-      <ScreenTitle title={data.title || data.theme || 'Encontro'} subtitle={data.class?.name || ''} />
-      <Text style={{ color: colors.muted, marginBottom: 16 }}>{data.startsAt || data.date || ''}</Text>
-      {data.notes ? <Text style={{ color: colors.inkSoft, marginBottom: 16 }}>{data.notes}</Text> : null}
-      <BrandButton label="Marcar presença" onPress={onAttendance} testID="open-attendance" />
+      <ScreenTitle title={data.title || data.theme || copy.meeting.fallback} subtitle={data.class?.name || ''} />
+      <AppText variant="bodySm" color="secondary" style={{ marginBottom: 16 }}>
+        {data.startsAt || data.date || ''}
+      </AppText>
+      {data.notes ? (
+        <AppText variant="body" color="inkSoft" style={{ marginBottom: 16 }}>
+          {data.notes}
+        </AppText>
+      ) : null}
+      <BrandButton label={copy.meeting.markAttendance} onPress={onAttendance} testID="open-attendance" />
     </Screen>
   );
 }

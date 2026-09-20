@@ -32,6 +32,8 @@ export default function CommunityRoute() {
       following={following}
       loading={feed.loading}
       error={feed.error}
+      onRefresh={() => void feed.reload()}
+      refreshing={feed.refreshing}
       showHub
       onOpenArea={(area) => openCommunityArea(router, area, me.data?.handle)}
       onChangeSort={setSort}

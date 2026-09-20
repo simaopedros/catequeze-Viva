@@ -1,38 +1,39 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
 import type { SocialTopic } from '../api/types';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { EmptyState, ErrorState, ListRow, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { copy } from '../copy/ptBR';
 
 export function TopicsDirectoryScreen({
   topics,
   loading,
   error,
   onOpenTopic,
+  onRefresh,
+  refreshing,
 }: {
   topics: SocialTopic[];
   loading?: boolean;
   error?: string | null;
   onOpenTopic: (slug: string) => void;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }) {
   return (
-    <Screen testID="topics-screen">
-      <ScreenTitle title="Tópicos" subtitle="As áreas temáticas da Comunidade — toque para abrir o feed." />
+    <Screen testID="topics-screen" onRefresh={onRefresh} refreshing={refreshing}>
+      <ScreenTitle title={copy.topics.title} subtitle={copy.topics.subtitle} />
       {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Tópicos indisponíveis" body={error} /> : null}
+      {error ? <ErrorState title={copy.topics.errorTitle} body={error} /> : null}
       {!loading && topics.length === 0 ? (
-        <EmptyState title="Ainda sem tópicos" body="Quando a Comunidade tiver temas activos, eles aparecem aqui." />
+        <EmptyState title={copy.topics.emptyTitle} body={copy.topics.emptyBody} />
       ) : null}
       {topics.map((topic) => (
-        <Pressable key={topic.slug} testID={`topic-card-${topic.slug}`} onPress={() => onOpenTopic(topic.slug)}>
-          <Card>
-            <Text style={{ color: colors.goldDark, fontWeight: '700' }}>#{topic.slug}</Text>
-            <Text style={{ color: colors.ink, fontWeight: '700', marginTop: 4 }}>{topic.name}</Text>
-            {topic.postCount != null ? (
-              <Text style={{ color: colors.muted, marginTop: 4 }}>{topic.postCount} publicações</Text>
-            ) : null}
-          </Card>
-        </Pressable>
+        <ListRow
+          key={topic.slug}
+          testID={`topic-card-${topic.slug}`}
+          title={topic.name}
+          meta={`#${topic.slug}${topic.postCount != null ? ` · ${copy.topics.posts(topic.postCount)}` : ''}`}
+          onPress={() => onOpenTopic(topic.slug)}
+        />
       ))}
     </Screen>
   );

@@ -1,8 +1,7 @@
-import React from 'react';
-import { Text } from 'react-native';
-import { BrandButton, Card, Field, Screen, ScreenTitle } from '../components/ui';
+import React, { useState } from 'react';
 import type { SocialProfile, Workspace } from '../api/types';
-import { colors } from '../theme';
+import { BrandButton, ConfirmSheet, ListRow, Screen, ScreenTitle, SectionHeader } from '../components/ui';
+import { copy } from '../copy/ptBR';
 
 export function MoreScreen({
   name,
@@ -15,12 +14,7 @@ export function MoreScreen({
   onOpenCommunity,
   onOpenEditProfile,
   onOpenProfile,
-  onSaveProfile,
   onLogout,
-  handle,
-  bio,
-  onHandleChange,
-  onBioChange,
 }: {
   name: string;
   workspaces: Workspace[];
@@ -32,47 +26,51 @@ export function MoreScreen({
   onOpenCommunity?: () => void;
   onOpenEditProfile?: () => void;
   onOpenProfile: () => void;
-  onSaveProfile: () => void;
   onLogout: () => void;
-  handle: string;
-  bio: string;
-  onHandleChange: (value: string) => void;
-  onBioChange: (value: string) => void;
 }) {
+  const [confirmLogout, setConfirmLogout] = useState(false);
+
   return (
     <Screen testID="more-screen">
-      <ScreenTitle title="Mais" subtitle={name} />
-      <BrandButton label="Bíblia" onPress={onOpenBible} testID="open-bible" />
-      <BrandButton variant="ghost" label="Documentos" onPress={onOpenDocuments} />
+      <ScreenTitle title={copy.more.title} subtitle={name} />
+      <ListRow title={copy.more.bible} onPress={onOpenBible} testID="open-bible" />
+      <ListRow title={copy.more.documents} onPress={onOpenDocuments} />
       {onOpenCommunity ? (
-        <BrandButton variant="ghost" label="Áreas da Comunidade" onPress={onOpenCommunity} testID="open-community" />
+        <ListRow title={copy.more.communityAreas} onPress={onOpenCommunity} testID="open-community" />
       ) : null}
       {profile?.handle ? (
-        <BrandButton variant="ghost" label={`Ver perfil @${profile.handle}`} onPress={onOpenProfile} />
+        <ListRow title={copy.more.viewProfile(profile.handle)} onPress={onOpenProfile} />
       ) : null}
       {onOpenEditProfile ? (
-        <BrandButton variant="ghost" label="Editar perfil público" onPress={onOpenEditProfile} testID="open-edit-profile" />
+        <ListRow title={copy.more.editProfile} onPress={onOpenEditProfile} testID="open-edit-profile" />
       ) : null}
-      <Card>
-        <Text style={{ color: colors.ink, fontWeight: '700', marginBottom: 8 }}>Espaço de trabalho</Text>
-        {workspaces.map((workspace) => (
-          <Text
-            key={workspace.id}
-            onPress={() => onSelectWorkspace(workspace.id)}
-            style={{
-              color: workspace.id === workspaceId ? colors.goldDark : colors.inkSoft,
-              marginBottom: 6,
-              fontWeight: workspace.id === workspaceId ? '700' : '400',
-            }}
-          >
-            {workspace.name}
-          </Text>
-        ))}
-      </Card>
-      <Field label="O seu @" value={handle} onChangeText={onHandleChange} testID="profile-handle" />
-      <Field label="Bio" value={bio} onChangeText={onBioChange} multiline />
-      <BrandButton label="Guardar perfil público" onPress={onSaveProfile} />
-      <BrandButton variant="danger" label="Terminar sessão" onPress={onLogout} testID="logout-button" />
+      <SectionHeader title={copy.more.workspace} />
+      {workspaces.map((workspace) => (
+        <ListRow
+          key={workspace.id}
+          title={workspace.name}
+          selected={workspace.id === workspaceId}
+          onPress={() => onSelectWorkspace(workspace.id)}
+        />
+      ))}
+      <BrandButton
+        variant="danger"
+        label={copy.more.logout}
+        onPress={() => setConfirmLogout(true)}
+        testID="logout-button"
+      />
+      <ConfirmSheet
+        visible={confirmLogout}
+        title={copy.more.logoutTitle}
+        body={copy.more.logoutBody}
+        confirmLabel={copy.more.logout}
+        danger
+        onCancel={() => setConfirmLogout(false)}
+        onConfirm={() => {
+          setConfirmLogout(false);
+          onLogout();
+        }}
+      />
     </Screen>
   );
 }

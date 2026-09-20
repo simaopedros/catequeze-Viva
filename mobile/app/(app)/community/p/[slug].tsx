@@ -1,6 +1,8 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useAuth } from '../../../../src/auth/AuthContext';
+import { copy } from '../../../../src/copy/ptBR';
+import { useToast } from '../../../../src/feedback/Toast';
 import { useAsync } from '../../../../src/hooks/useAsync';
 import { PostDetailScreen } from '../../../../src/screens/PostDetailScreen';
 
@@ -8,6 +10,7 @@ export default function PostRoute() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const { api } = useAuth();
   const router = useRouter();
+  const toast = useToast();
   const post = useAsync(() => api.socialPost(String(slug || '')), [slug]);
   const comments = useAsync(
     () => (post.data?.id ? api.socialComments(post.data.id) : Promise.resolve({ items: [], nextCursor: null })),
@@ -53,9 +56,10 @@ export default function PostRoute() {
         setReportMessage(null);
         try {
           await api.reportSocial({ targetType: 'POST', targetId: post.data.id, reason });
-          setReportMessage('Denúncia enviada. Obrigado.');
+          setReportMessage(copy.post.reportSent);
+          toast.show(copy.post.reportSent);
         } catch (err) {
-          setReportMessage(err instanceof Error ? err.message : 'Não foi possível denunciar.');
+          setReportMessage(err instanceof Error ? err.message : copy.post.reportError);
         } finally {
           setBusy(false);
         }

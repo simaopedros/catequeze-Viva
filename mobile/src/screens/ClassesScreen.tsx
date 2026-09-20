@@ -1,7 +1,6 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { EmptyState, ErrorState, ListRow, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { copy } from '../copy/ptBR';
 
 type ClassItem = {
   id: string;
@@ -22,30 +21,33 @@ export function ClassesScreen({
   loading,
   error,
   onOpen,
+  onRefresh,
+  refreshing,
 }: {
   payload: any;
   loading?: boolean;
   error?: string | null;
   onOpen: (id: string) => void;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }) {
   const items = asList(payload);
   return (
-    <Screen testID="classes-screen">
-      <ScreenTitle title="Turmas" subtitle="Encontros, catequizandos e presença." />
+    <Screen testID="classes-screen" onRefresh={onRefresh} refreshing={refreshing}>
+      <ScreenTitle title={copy.classes.title} subtitle={copy.classes.subtitle} />
       {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Turmas indisponíveis" body={error} /> : null}
+      {error ? <ErrorState title={copy.classes.errorTitle} body={error} /> : null}
       {!loading && items.length === 0 ? (
-        <EmptyState title="Sem turmas" body="Quando pertencer a uma turma, ela aparece aqui." />
+        <EmptyState title={copy.classes.emptyTitle} body={copy.classes.emptyBody} />
       ) : (
         items.map((item) => (
-          <Pressable key={item.id} onPress={() => onOpen(item.id)} testID={`class-${item.id}`}>
-            <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 17 }}>{item.name || 'Turma'}</Text>
-              <Text style={{ color: colors.muted, marginTop: 4 }}>
-                {item.community?.name || 'Comunidade'} {item.year ? `· ${item.year}` : ''}
-              </Text>
-            </Card>
-          </Pressable>
+          <ListRow
+            key={item.id}
+            testID={`class-${item.id}`}
+            title={item.name || copy.classes.fallback}
+            meta={`${item.community?.name || copy.classes.community}${item.year ? ` · ${item.year}` : ''}`}
+            onPress={() => onOpen(item.id)}
+          />
         ))
       )}
     </Screen>

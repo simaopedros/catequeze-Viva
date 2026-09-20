@@ -1,4 +1,5 @@
 import React from 'react';
+import { copy } from '../copy/ptBR';
 import { BrandButton, ErrorText, Field, Screen, ScreenTitle } from '../components/ui';
 
 export function EditProfileScreen({
@@ -28,30 +29,40 @@ export function EditProfileScreen({
 }) {
   return (
     <Screen testID="edit-profile-screen">
-      <ScreenTitle
-        title="Editar perfil"
-        subtitle="O @ e a bio aparecem no seu cartão público da Comunidade."
-      />
+      <ScreenTitle title={copy.editProfile.title} subtitle={copy.editProfile.subtitle} />
       <ErrorText message={error} />
-      <Field label="O seu @" value={handle} onChangeText={onHandleChange} testID="profile-handle" />
-      <Field label="Bio" value={bio} onChangeText={onBioChange} multiline testID="profile-bio" />
       <Field
-        label="Sítio (opcional)"
+        label={copy.editProfile.handle}
+        placeholder={copy.editProfile.handlePlaceholder}
+        value={handle}
+        onChangeText={onHandleChange}
+        testID="profile-handle"
+      />
+      <Field
+        label={copy.editProfile.bio}
+        placeholder={copy.editProfile.bioPlaceholder}
+        value={bio}
+        onChangeText={onBioChange}
+        multiline
+        testID="profile-bio"
+      />
+      <Field
+        label={copy.editProfile.website}
         value={websiteUrl}
         onChangeText={onWebsiteChange}
         testID="profile-website"
       />
       <BrandButton
         testID="save-profile"
-        label={busy ? 'A guardar…' : 'Guardar perfil público'}
+        label={busy ? copy.common.saving : copy.editProfile.save}
         disabled={busy}
         onPress={onSave}
       />
       {onOpenProfile ? (
-        <BrandButton variant="ghost" label="Ver o meu perfil" onPress={onOpenProfile} testID="open-my-profile" />
+        <BrandButton variant="ghost" label={copy.editProfile.viewProfile} onPress={onOpenProfile} testID="open-my-profile" />
       ) : null}
       {onOpenBlocked ? (
-        <BrandButton variant="ghost" label="Contas bloqueadas" onPress={onOpenBlocked} testID="open-blocked" />
+        <BrandButton variant="ghost" label={copy.editProfile.blocked} onPress={onOpenBlocked} testID="open-blocked" />
       ) : null}
     </Screen>
   );

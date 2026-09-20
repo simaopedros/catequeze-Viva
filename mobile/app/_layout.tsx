@@ -1,9 +1,16 @@
+import * as SplashScreen from 'expo-splash-screen';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider, useAuth } from '../src/auth/AuthContext';
-import { colors } from '../src/theme';
+import { copy } from '../src/copy/ptBR';
+import { ToastProvider } from '../src/feedback/Toast';
+import { colors, navigationChrome } from '../src/theme';
+import { BrandFontsProvider, useBrandFontsLoaded } from '../src/theme/fonts';
+
+void SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
 function Gate({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
@@ -24,7 +31,7 @@ function Gate({ children }: { children: React.ReactNode }) {
 
   if (status === 'booting') {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.cream }}>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.paper }}>
         <ActivityIndicator color={colors.gold} />
       </View>
     );
@@ -33,26 +40,47 @@ function Gate({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-export default function RootLayout() {
+function RootNavigation() {
+  const fontsLoaded = useBrandFontsLoaded();
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      void SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, backgroundColor: colors.paper, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator color={colors.gold} />
+      </View>
+    );
+  }
+
   return (
     <AuthProvider>
-      <StatusBar style="light" backgroundColor={colors.ink} />
-      <Gate>
-        <Stack
-          screenOptions={{
-            headerStyle: { backgroundColor: colors.ink },
-            headerTintColor: colors.cream,
-            headerTitleStyle: { fontWeight: '700' },
-            contentStyle: { backgroundColor: colors.cream },
-          }}
-        >
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ title: 'Entrar' }} />
-          <Stack.Screen name="two-factor" options={{ title: '2FA' }} />
-          <Stack.Screen name="forgot-password" options={{ title: 'Recuperar' }} />
-          <Stack.Screen name="(app)" options={{ headerShown: false }} />
-        </Stack>
-      </Gate>
+      <ToastProvider>
+        <StatusBar style="dark" backgroundColor={colors.paper} />
+        <Gate>
+          <Stack screenOptions={navigationChrome}>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="login" options={{ title: copy.auth.loginTitle }} />
+            <Stack.Screen name="two-factor" options={{ title: copy.auth.twoFactorTitle }} />
+            <Stack.Screen name="forgot-password" options={{ title: copy.auth.recoverTitle }} />
+            <Stack.Screen name="(app)" options={{ headerShown: false }} />
+          </Stack>
+        </Gate>
+      </ToastProvider>
     </AuthProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.paper }}>
+      <BrandFontsProvider>
+        <RootNavigation />
+      </BrandFontsProvider>
+    </GestureHandlerRootView>
   );
 }

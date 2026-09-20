@@ -1,7 +1,18 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors, spacing } from '../theme';
+import { View } from 'react-native';
+import { copy } from '../copy/ptBR';
+import {
+  BrandButton,
+  EmptyState,
+  ErrorState,
+  ListRow,
+  LoadingState,
+  Screen,
+  ScreenTitle,
+  SectionHeader,
+  StatCard,
+} from '../components/ui';
+import { spacing } from '../theme';
 
 type Meeting = {
   id: string;
@@ -21,6 +32,8 @@ export function HomeScreen({
   onOpenCommunity,
   onOpenNotifications,
   unread,
+  onRefresh,
+  refreshing,
 }: {
   name: string;
   stats?: {
@@ -37,45 +50,37 @@ export function HomeScreen({
   onOpenCommunity: () => void;
   onOpenNotifications: () => void;
   unread?: number;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }) {
   const upcoming = meetings ?? stats?.upcomingMeetings ?? stats?.todayMeetings ?? [];
 
   return (
-    <Screen testID="home-screen">
-      <ScreenTitle title={`Olá, ${name}`} subtitle="O essencial da catequese, no bolso." />
+    <Screen testID="home-screen" onRefresh={onRefresh} refreshing={refreshing}>
+      <ScreenTitle title={copy.home.hello(name)} subtitle={copy.home.subtitle} />
       {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Não foi possível carregar o início" body={error} /> : null}
-      <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-        <Card style={{ flex: 1 }}>
-          <Text style={{ color: colors.muted }}>Turmas</Text>
-          <Text style={{ color: colors.ink, fontSize: 28, fontWeight: '700' }}>{stats?.activeClasses ?? '—'}</Text>
-        </Card>
-        <Card style={{ flex: 1 }}>
-          <Text style={{ color: colors.muted }}>Catequizandos</Text>
-          <Text style={{ color: colors.ink, fontSize: 28, fontWeight: '700' }}>
-            {stats?.activeCatechumens ?? '—'}
-          </Text>
-        </Card>
+      {error ? <ErrorState title={copy.home.errorTitle} body={error} /> : null}
+      <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.xs }}>
+        <StatCard label={copy.home.classes} value={stats?.activeClasses ?? '—'} />
+        <StatCard label={copy.home.catechumens} value={stats?.activeCatechumens ?? '—'} />
       </View>
-      <BrandButton label={`Notificações${unread ? ` (${unread})` : ''}`} onPress={onOpenNotifications} />
-      <BrandButton variant="ghost" label="Ir à Comunidade" onPress={onOpenCommunity} />
-      <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginVertical: spacing.sm }}>
-        Próximos encontros
-      </Text>
+      <ListRow
+        title={unread ? copy.home.notificationsUnread(unread) : copy.home.notifications}
+        onPress={onOpenNotifications}
+      />
+      <BrandButton variant="soft" label={copy.home.goCommunity} onPress={onOpenCommunity} />
+      <SectionHeader title={copy.home.upcoming} />
       {upcoming.length === 0 && !loading ? (
-        <EmptyState title="Sem encontros à vista" body="Quando houver um encontro marcado, aparece aqui." />
+        <EmptyState title={copy.home.emptyTitle} body={copy.home.emptyBody} />
       ) : (
         upcoming.slice(0, 5).map((meeting) => (
-          <Pressable key={meeting.id} onPress={() => onOpenMeeting(meeting.id)} testID={`meeting-${meeting.id}`}>
-            <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>
-                {meeting.title || meeting.theme || 'Encontro'}
-              </Text>
-              <Text style={{ color: colors.muted, marginTop: 4 }}>
-                {meeting.class?.name || 'Turma'} {meeting.startsAt ? `· ${meeting.startsAt}` : ''}
-              </Text>
-            </Card>
-          </Pressable>
+          <ListRow
+            key={meeting.id}
+            testID={`meeting-${meeting.id}`}
+            title={meeting.title || meeting.theme || copy.home.meetingFallback}
+            meta={`${meeting.class?.name || copy.home.classFallback}${meeting.startsAt ? ` · ${meeting.startsAt}` : ''}`}
+            onPress={() => onOpenMeeting(meeting.id)}
+          />
         ))
       )}
     </Screen>

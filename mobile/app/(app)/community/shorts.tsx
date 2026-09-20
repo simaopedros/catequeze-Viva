@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useAuth } from '../../../src/auth/AuthContext';
+import { copy } from '../../../src/copy/ptBR';
 import { useAsync } from '../../../src/hooks/useAsync';
 import { CommunityScreen } from '../../../src/screens/CommunityScreen';
 
@@ -14,14 +15,16 @@ export default function ShortsRoute() {
 
   return (
     <CommunityScreen
-      title="Shorts"
-      subtitle="Vídeos curtos da Comunidade — o Rhema no telemóvel."
+      title={copy.community.shortsTitle}
+      subtitle={copy.community.shortsSubtitle}
       posts={feed.data?.items ?? []}
       topics={topics.data ?? []}
       access={access.data}
       sort={sort}
       loading={feed.loading}
       error={feed.error}
+      onRefresh={() => void feed.reload()}
+      refreshing={feed.refreshing}
       onChangeSort={setSort}
       onChangeTopic={() => undefined}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}

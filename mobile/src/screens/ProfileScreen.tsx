@@ -1,9 +1,19 @@
-import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { BrandButton, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import React, { useState } from 'react';
 import { PostCard } from '../components/PostCard';
+import {
+  AppText,
+  BrandButton,
+  ConfirmSheet,
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  PressableScale,
+  Screen,
+  ScreenTitle,
+  SectionHeader,
+} from '../components/ui';
 import type { SocialPost, SocialProfile } from '../api/types';
-import { colors } from '../theme';
+import { copy } from '../copy/ptBR';
 
 export function ProfileScreen({
   profile,
@@ -32,6 +42,7 @@ export function ProfileScreen({
   onOpenFollowing?: () => void;
   onEdit?: () => void;
 }) {
+  const [confirmBlock, setConfirmBlock] = useState(false);
   const data = profile?.profile ?? profile;
   if (loading) {
     return (
@@ -43,7 +54,7 @@ export function ProfileScreen({
   if (error || !data) {
     return (
       <Screen>
-        <EmptyState title="Perfil indisponível" body={error || 'Este @ não foi encontrado.'} />
+        <ErrorState title={copy.profile.errorTitle} body={error || copy.profile.notFound} />
       </Screen>
     );
   }
@@ -51,58 +62,84 @@ export function ProfileScreen({
   const handle = data.handle || data.socialHandle;
   const followers = data.followersCount ?? data.followerCount ?? 0;
   const following = data.followingCount ?? 0;
+  const displayHandle = handle ? `@${handle}` : copy.profile.noHandle;
 
   return (
     <Screen testID="profile-screen">
-      <ScreenTitle title={data.displayName} subtitle={handle ? `@${handle}` : 'Sem handle público'} />
+      <ScreenTitle title={data.displayName} subtitle={displayHandle} />
       {data.bio || data.socialBio ? (
-        <Text style={{ color: colors.inkSoft, marginBottom: 12 }}>{data.bio || data.socialBio}</Text>
+        <AppText variant="bodySm" color="inkSoft" style={{ marginBottom: 12 }}>
+          {data.bio || data.socialBio}
+        </AppText>
       ) : null}
       {data.websiteUrl ? (
-        <Text style={{ color: colors.goldDark, marginBottom: 12 }}>{data.websiteUrl}</Text>
+        <AppText variant="caption" color="goldMuted" style={{ marginBottom: 12 }}>
+          {data.websiteUrl}
+        </AppText>
       ) : null}
-      <Pressable testID="open-followers" onPress={onOpenFollowers} disabled={!onOpenFollowers}>
-        <Text style={{ color: colors.muted, marginBottom: 8 }}>
-          <Text style={{ color: colors.ink, fontWeight: '700' }}>{followers}</Text> seguidores
-        </Text>
-      </Pressable>
-      <Pressable testID="open-following" onPress={onOpenFollowing} disabled={!onOpenFollowing}>
-        <Text style={{ color: colors.muted, marginBottom: 16 }}>
-          <Text style={{ color: colors.ink, fontWeight: '700' }}>{following}</Text> a seguir
-        </Text>
-      </Pressable>
+      <PressableScale testID="open-followers" onPress={onOpenFollowers} disabled={!onOpenFollowers}>
+        <AppText variant="bodySm" color="secondary" style={{ marginBottom: 8 }}>
+          <AppText variant="bodySm" weight="bold">
+            {followers}
+          </AppText>{' '}
+          seguidores
+        </AppText>
+      </PressableScale>
+      <PressableScale testID="open-following" onPress={onOpenFollowing} disabled={!onOpenFollowing}>
+        <AppText variant="bodySm" color="secondary" style={{ marginBottom: 16 }}>
+          <AppText variant="bodySm" weight="bold">
+            {following}
+          </AppText>{' '}
+          seguindo
+        </AppText>
+      </PressableScale>
       {data.isOwn ? (
         <>
-          <Text style={{ color: colors.muted, marginBottom: 8 }}>Este é o seu perfil público.</Text>
-          {onEdit ? <BrandButton label="Editar perfil" onPress={onEdit} testID="edit-own-profile" /> : null}
+          <AppText variant="bodySm" color="secondary" style={{ marginBottom: 8 }}>
+            {copy.profile.ownHint}
+          </AppText>
+          {onEdit ? <BrandButton label={copy.profile.edit} onPress={onEdit} testID="edit-own-profile" /> : null}
         </>
       ) : (
         <>
           <BrandButton
             testID="follow-button"
-            label={data.isFollowing ? 'A seguir' : 'Seguir'}
+            label={data.isFollowing ? copy.profile.followingState : copy.profile.follow}
             onPress={onFollow}
             disabled={busy || data.isBlocked}
           />
           <BrandButton
             testID="block-button"
             variant={data.isBlocked ? 'ghost' : 'danger'}
-            label={data.isBlocked ? 'Desbloquear' : 'Bloquear'}
-            onPress={onBlock}
+            label={data.isBlocked ? copy.profile.unblock : copy.profile.block}
+            onPress={() => {
+              if (data.isBlocked) onBlock();
+              else setConfirmBlock(true);
+            }}
             disabled={busy}
           />
         </>
       )}
-      <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginTop: 20, marginBottom: 8 }}>
-        Publicações
-      </Text>
+      <SectionHeader title={copy.profile.posts} style={{ marginTop: 20 }} />
       {(posts ?? []).length === 0 ? (
-        <EmptyState title="Ainda sem publicações" body="Quando este perfil publicar, as mensagens aparecem aqui." />
+        <EmptyState title={copy.profile.emptyPostsTitle} body={copy.profile.emptyPostsBody} />
       ) : (
         (posts ?? []).map((post) => (
           <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
         ))
       )}
+      <ConfirmSheet
+        visible={confirmBlock}
+        title={copy.profile.blockConfirmTitle}
+        body={copy.profile.blockConfirmBody(displayHandle)}
+        confirmLabel={copy.profile.block}
+        danger
+        onCancel={() => setConfirmBlock(false)}
+        onConfirm={() => {
+          setConfirmBlock(false);
+          onBlock();
+        }}
+      />
     </Screen>
   );
 }

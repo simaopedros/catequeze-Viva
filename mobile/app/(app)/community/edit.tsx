@@ -1,12 +1,16 @@
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../src/auth/AuthContext';
+import { copy } from '../../../src/copy/ptBR';
+import { useToast } from '../../../src/feedback/Toast';
+import { hapticSuccess } from '../../../src/feedback/haptics';
 import { useAsync } from '../../../src/hooks/useAsync';
 import { EditProfileScreen } from '../../../src/screens/EditProfileScreen';
 
 export default function EditProfileRoute() {
   const { api } = useAuth();
   const router = useRouter();
+  const toast = useToast();
   const profile = useAsync(() => api.mySocialProfile(), []);
   const [handle, setHandle] = useState('');
   const [bio, setBio] = useState('');
@@ -41,9 +45,11 @@ export default function EditProfileRoute() {
         try {
           const next = await api.updateSocialProfile({ handle, bio, websiteUrl: websiteUrl || null });
           const nextHandle = next.handle || handle;
+          void hapticSuccess();
+          toast.show(copy.editProfile.saved);
           if (nextHandle) router.replace(`/(app)/community/${nextHandle}`);
         } catch (err) {
-          setError(err instanceof Error ? err.message : 'Não foi possível guardar.');
+          setError(err instanceof Error ? err.message : copy.editProfile.error);
         } finally {
           setBusy(false);
         }

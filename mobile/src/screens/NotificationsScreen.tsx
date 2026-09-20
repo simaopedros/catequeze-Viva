@@ -1,7 +1,6 @@
 import React from 'react';
-import { Text } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { AppText, Card, EmptyState, ErrorState, LoadingState, Screen, ScreenTitle, TextButton } from '../components/ui';
+import { copy } from '../copy/ptBR';
 
 function asNotifications(payload: any) {
   if (Array.isArray(payload)) return payload;
@@ -14,27 +13,33 @@ export function NotificationsScreen({
   loading,
   error,
   onRead,
+  onRefresh,
+  refreshing,
 }: {
   payload: any;
   loading?: boolean;
   error?: string | null;
   onRead: (id: string) => void;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }) {
   const items = asNotifications(payload);
   return (
-    <Screen testID="notifications-screen">
-      <ScreenTitle title="Notificações" />
+    <Screen testID="notifications-screen" onRefresh={onRefresh} refreshing={refreshing}>
+      <ScreenTitle title={copy.notifications.title} />
       {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Caixa indisponível" body={error} /> : null}
+      {error ? <ErrorState title={copy.notifications.errorTitle} body={error} /> : null}
       {items.length === 0 && !loading ? (
-        <EmptyState title="Tudo em dia" body="Não há notificações por ler." />
+        <EmptyState title={copy.notifications.emptyTitle} body={copy.notifications.emptyBody} icon="notifications-outline" />
       ) : (
         items.map((item: any) => (
           <Card key={item.id}>
-            <Text style={{ color: colors.ink, fontWeight: '700' }}>{item.title || 'Aviso'}</Text>
-            <Text style={{ color: colors.muted, marginTop: 4 }}>{item.body || item.message || ''}</Text>
+            <AppText variant="titleSm">{item.title || copy.notifications.fallback}</AppText>
+            <AppText variant="bodySm" color="secondary" style={{ marginTop: 4 }}>
+              {item.body || item.message || ''}
+            </AppText>
             {!item.readAt ? (
-              <BrandButton variant="ghost" label="Marcar como lida" onPress={() => onRead(item.id)} />
+              <TextButton label={copy.notifications.markRead} onPress={() => onRead(item.id)} />
             ) : null}
           </Card>
         ))

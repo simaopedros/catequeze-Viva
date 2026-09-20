@@ -1,7 +1,6 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { EmptyState, ErrorState, ListRow, LoadingState, Screen, ScreenTitle, SectionHeader } from '../components/ui';
+import { copy } from '../copy/ptBR';
 
 export function ClassDetailScreen({
   data,
@@ -17,20 +16,20 @@ export function ClassDetailScreen({
   const meetings = data?.meetings || data?.upcomingMeetings || [];
   return (
     <Screen testID="class-detail-screen">
-      <ScreenTitle title={data?.name || 'Turma'} subtitle={data?.community?.name || data?.description || ''} />
+      <ScreenTitle title={data?.name || copy.classes.fallback} subtitle={data?.community?.name || data?.description || ''} />
       {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Turma indisponível" body={error} /> : null}
-      <Text style={{ color: colors.ink, fontWeight: '700', marginBottom: 8 }}>Encontros</Text>
+      {error ? <ErrorState title={copy.classes.classError} body={error} /> : null}
+      <SectionHeader title={copy.classes.meetings} />
       {meetings.length === 0 && !loading ? (
-        <EmptyState title="Sem encontros" body="Esta turma ainda não tem encontros listados." />
+        <EmptyState title={copy.classes.emptyMeetingsTitle} body={copy.classes.emptyMeetingsBody} />
       ) : (
         meetings.map((meeting: any) => (
-          <Pressable key={meeting.id} onPress={() => onOpenMeeting(meeting.id)}>
-            <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>{meeting.title || meeting.theme || 'Encontro'}</Text>
-              <Text style={{ color: colors.muted }}>{meeting.startsAt || meeting.date || ''}</Text>
-            </Card>
-          </Pressable>
+          <ListRow
+            key={meeting.id}
+            title={meeting.title || meeting.theme || copy.meeting.fallback}
+            meta={meeting.startsAt || meeting.date || ''}
+            onPress={() => onOpenMeeting(meeting.id)}
+          />
         ))
       )}
     </Screen>

@@ -1,32 +1,47 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import type { BibleBook, BibleChapter } from '../api/types';
-import { colors } from '../theme';
+import {
+  AppText,
+  Card,
+  EmptyState,
+  ErrorState,
+  ListRow,
+  LoadingState,
+  Screen,
+  ScreenTitle,
+  TextButton,
+} from '../components/ui';
+import { copy } from '../copy/ptBR';
+import { spacing } from '../theme';
 
 export function BibleBooksScreen({
   books,
   loading,
   error,
   onOpen,
+  onRefresh,
+  refreshing,
 }: {
   books: BibleBook[];
   loading?: boolean;
   error?: string | null;
   onOpen: (id: string) => void;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }) {
   return (
-    <Screen testID="bible-books-screen">
-      <ScreenTitle title="Bíblia" subtitle="Leia e partilhe um versículo na Comunidade." />
+    <Screen testID="bible-books-screen" onRefresh={onRefresh} refreshing={refreshing}>
+      <ScreenTitle title={copy.bible.title} subtitle={copy.bible.subtitle} />
       {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Bíblia indisponível" body={error} /> : null}
+      {error ? <ErrorState title={copy.bible.errorBible} body={error} /> : null}
       {books.map((book) => (
-        <Pressable key={book.id} onPress={() => onOpen(book.id)} testID={`bible-book-${book.id}`}>
-          <Card>
-            <Text style={{ color: colors.ink, fontWeight: '700' }}>{book.name}</Text>
-            <Text style={{ color: colors.muted }}>{book.testament || ''}</Text>
-          </Card>
-        </Pressable>
+        <ListRow
+          key={book.id}
+          testID={`bible-book-${book.id}`}
+          title={book.name}
+          meta={book.testament || ''}
+          onPress={() => onOpen(book.id)}
+        />
       ))}
     </Screen>
   );
@@ -46,18 +61,18 @@ export function BibleBookScreen({
   const chapters = book?.chapters ?? [];
   return (
     <Screen testID="bible-book-screen">
-      <ScreenTitle title={book?.name || 'Livro'} />
+      <ScreenTitle title={book?.name || copy.bible.book} />
       {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Livro indisponível" body={error} /> : null}
+      {error ? <ErrorState title={copy.bible.errorBook} body={error} /> : null}
       {chapters.length === 0 && !loading ? (
-        <EmptyState title="Sem capítulos" body="Este livro ainda não tem capítulos no cache." />
+        <EmptyState title={copy.bible.emptyChaptersTitle} body={copy.bible.emptyChaptersBody} />
       ) : (
         chapters.map((chapter) => (
-          <Pressable key={chapter.id || chapter.number} onPress={() => onOpenChapter(chapter.number)}>
-            <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>Capítulo {chapter.number}</Text>
-            </Card>
-          </Pressable>
+          <ListRow
+            key={chapter.id || chapter.number}
+            title={copy.bible.chapter(chapter.number)}
+            onPress={() => onOpenChapter(chapter.number)}
+          />
         ))
       )}
     </Screen>
@@ -80,20 +95,24 @@ export function BibleChapterScreen({
   return (
     <Screen testID="bible-chapter-screen">
       <ScreenTitle
-        title={chapter?.book?.name ? `${chapter.book.name} ${chapter.number}` : `Capítulo ${chapter?.number ?? ''}`}
+        title={
+          chapter?.book?.name
+            ? `${chapter.book.name} ${chapter.number}`
+            : copy.bible.chapter(chapter?.number ?? 0)
+        }
       />
       {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Capítulo indisponível" body={error} /> : null}
+      {error ? <ErrorState title={copy.bible.errorChapter} body={error} /> : null}
       {(chapter?.verses || []).map((verse) => (
         <Card key={verse.number}>
-          <Text style={{ color: colors.goldDark, fontWeight: '700' }}>{verse.number}</Text>
-          <Text style={{ color: colors.inkSoft, marginTop: 6, lineHeight: 22 }}>{verse.text}</Text>
+          <AppText variant="overline" color="goldMuted">
+            {verse.number}
+          </AppText>
+          <AppText variant="body" color="inkSoft" style={{ marginTop: spacing.xs }}>
+            {verse.text}
+          </AppText>
           {canPublish ? (
-            <BrandButton
-              variant="ghost"
-              label="Partilhar na Comunidade"
-              onPress={() => onShareVerse(verse.number, verse.text)}
-            />
+            <TextButton label={copy.bible.share} onPress={() => onShareVerse(verse.number, verse.text)} />
           ) : null}
         </Card>
       ))}

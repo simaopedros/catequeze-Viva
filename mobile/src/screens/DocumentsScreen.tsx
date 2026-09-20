@@ -1,7 +1,7 @@
 import React from 'react';
-import { Linking, Text } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { Linking } from 'react-native';
+import { AppText, Card, EmptyState, ErrorState, LoadingState, Screen, ScreenTitle, TextButton } from '../components/ui';
+import { copy } from '../copy/ptBR';
 
 function asDocuments(payload: any) {
   if (Array.isArray(payload)) return payload;
@@ -15,28 +15,33 @@ export function DocumentsScreen({
   loading,
   error,
   apiBase,
+  onRefresh,
+  refreshing,
 }: {
   payload: any;
   loading?: boolean;
   error?: string | null;
   apiBase: string;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }) {
   const items = asDocuments(payload);
   return (
-    <Screen testID="documents-screen">
-      <ScreenTitle title="Documentos" subtitle="Ficheiros da família e da turma." />
+    <Screen testID="documents-screen" onRefresh={onRefresh} refreshing={refreshing}>
+      <ScreenTitle title={copy.documents.title} subtitle={copy.documents.subtitle} />
       {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Documentos indisponíveis" body={error} /> : null}
+      {error ? <ErrorState title={copy.documents.errorTitle} body={error} /> : null}
       {items.length === 0 && !loading ? (
-        <EmptyState title="Pasta vazia" body="Ainda não há documentos para mostrar." />
+        <EmptyState title={copy.documents.emptyTitle} body={copy.documents.emptyBody} icon="folder-open-outline" />
       ) : (
         items.map((doc: any) => (
           <Card key={doc.id}>
-            <Text style={{ color: colors.ink, fontWeight: '700' }}>{doc.title || doc.name || 'Documento'}</Text>
-            <Text style={{ color: colors.muted, marginTop: 4 }}>{doc.kind || doc.mimeType || ''}</Text>
-            <BrandButton
-              variant="ghost"
-              label="Abrir"
+            <AppText variant="titleSm">{doc.title || doc.name || copy.documents.fallback}</AppText>
+            <AppText variant="caption" color="secondary" style={{ marginTop: 4 }}>
+              {doc.kind || doc.mimeType || ''}
+            </AppText>
+            <TextButton
+              label={copy.common.open}
               onPress={() => Linking.openURL(`${apiBase.replace(/\/$/, '')}/mobile/documents/${doc.id}`)}
             />
           </Card>

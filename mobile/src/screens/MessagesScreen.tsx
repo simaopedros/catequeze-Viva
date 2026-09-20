@@ -1,7 +1,6 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { EmptyState, ErrorState, ListRow, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { copy } from '../copy/ptBR';
 
 function asConversations(payload: any) {
   if (Array.isArray(payload)) return payload;
@@ -15,32 +14,33 @@ export function MessagesScreen({
   loading,
   error,
   onOpen,
+  onRefresh,
+  refreshing,
 }: {
   payload: any;
   loading?: boolean;
   error?: string | null;
   onOpen: (id: string) => void;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }) {
   const items = asConversations(payload);
   return (
-    <Screen testID="messages-screen">
-      <ScreenTitle title="Mensagens" subtitle="Conversas da paróquia e das turmas." />
+    <Screen testID="messages-screen" onRefresh={onRefresh} refreshing={refreshing}>
+      <ScreenTitle title={copy.messages.title} subtitle={copy.messages.subtitle} />
       {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Mensagens indisponíveis" body={error} /> : null}
+      {error ? <ErrorState title={copy.messages.errorTitle} body={error} /> : null}
       {items.length === 0 && !loading ? (
-        <EmptyState title="Caixa vazia" body="Quando alguém escrever, a conversa aparece aqui." />
+        <EmptyState title={copy.messages.emptyTitle} body={copy.messages.emptyBody} icon="chatbubble-ellipses-outline" />
       ) : (
         items.map((item: any) => (
-          <Pressable key={item.id} onPress={() => onOpen(item.id)} testID={`conversation-${item.id}`}>
-            <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>
-                {item.title || item.name || item.subject || 'Conversa'}
-              </Text>
-              <Text style={{ color: colors.muted, marginTop: 4 }} numberOfLines={2}>
-                {item.lastMessage?.content || item.preview || ' '}
-              </Text>
-            </Card>
-          </Pressable>
+          <ListRow
+            key={item.id}
+            testID={`conversation-${item.id}`}
+            title={item.title || item.name || item.subject || copy.messages.fallback}
+            meta={item.lastMessage?.content || item.preview || ' '}
+            onPress={() => onOpen(item.id)}
+          />
         ))
       )}
     </Screen>
