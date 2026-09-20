@@ -60,7 +60,7 @@ function RootNavigation() {
   return (
     <AuthProvider>
       <ToastProvider>
-        <StatusBar style="dark" backgroundColor={colors.paper} />
+        <StatusBar style="dark" />
         <Gate>
           <Stack screenOptions={navigationChrome}>
             <Stack.Screen name="index" options={{ headerShown: false }} />
