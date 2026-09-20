@@ -35,11 +35,11 @@ describe('signup screen', () => {
     fireEvent.changeText(view.getByTestId('signup-first'), 'Ana');
     fireEvent.changeText(view.getByTestId('signup-last'), 'Silva');
     fireEvent.changeText(view.getByTestId('signup-email'), ' Ana@paroquia.pt ');
-    fireEvent.changeText(view.getByTestId('signup-password'), 'Teste@123');
+    fireEvent.changeText(view.getByTestId('signup-password'), 'abc');
     fireEvent.press(view.getByTestId('signup-submit'));
     expect(onSubmit).toHaveBeenCalledWith({
       email: 'ana@paroquia.pt',
-      password: 'Teste@123',
+      password: 'abc',
       firstName: 'Ana',
       lastName: 'Silva',
     });
