@@ -33,6 +33,10 @@ export const appRoutes = {
   documents: '/(app)/documents',
   myProfile: '/(app)/profile',
   notifications: '/(app)/notifications',
+  settings: '/(app)/settings',
+  support: '/(app)/support',
+  formation: '/(app)/formation',
+  groups: '/(app)/groups',
 } as const;
 
 export function resolveAuthHref(status: 'booting' | 'guest' | 'needs2fa' | 'ready') {

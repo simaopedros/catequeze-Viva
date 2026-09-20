@@ -430,6 +430,11 @@ describe('mobile HTTP client', () => {
     await client.sacramentalJourneys({ workspaceId: 'ws-1' });
     await client.sacramentalJourney('j1');
     await client.supportMessages();
+    await client.joinPastoralGroup('g1');
+    await client.leavePastoralGroup('g1');
+    await client.enrollInFormationTrack('t1', 'ws-1');
+    await client.unenrollFromFormationTrack('t1');
+    await client.submitSupportMessage({ name: 'Ana', email: 'ana@p.pt', message: 'Ajuda' });
 
     const base = 'http://localhost:3001';
     const find = (method: string, path: string) => calls.find((call) => call.method === method && call.url === base + path);
@@ -458,6 +463,11 @@ describe('mobile HTTP client', () => {
     expect(find('GET', MOBILE_PATHS.sacraments + '?workspaceId=ws-1')).toBeTruthy();
     expect(find('GET', MOBILE_PATHS.sacrament('j1'))).toBeTruthy();
     expect(find('GET', MOBILE_PATHS.support)).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.groupJoin('g1'))).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.groupLeave('g1'))).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.formationEnroll('t1'))?.body).toEqual({ workspaceId: 'ws-1' });
+    expect(find('POST', MOBILE_PATHS.formationUnenroll('t1'))).toBeTruthy();
+    expect(find('POST', MOBILE_PATHS.support)?.body).toEqual({ name: 'Ana', email: 'ana@p.pt', message: 'Ajuda' });
   });
 
   it('paginates feed and comments with cursors', async () => {

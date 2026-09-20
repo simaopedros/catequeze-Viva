@@ -2736,6 +2736,41 @@ api mobileSupportMessages {
   entities: [ContactFormMessage, User]
 }
 
+api mobileJoinPastoralGroup {
+  fn: import { mobileJoinPastoralGroup } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (POST, "/mobile/groups/:id/join"),
+  entities: [PastoralGroup, GroupMembership, User]
+}
+
+api mobileLeavePastoralGroup {
+  fn: import { mobileLeavePastoralGroup } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (POST, "/mobile/groups/:id/leave"),
+  entities: [PastoralGroup, GroupMembership, User]
+}
+
+api mobileEnrollInFormationTrack {
+  fn: import { mobileEnrollInFormationTrack } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (POST, "/mobile/formation/:id/enroll"),
+  entities: [FormationTrack, FormationEnrollment, Membership, Parish, User]
+}
+
+api mobileUnenrollFromFormationTrack {
+  fn: import { mobileUnenrollFromFormationTrack } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (POST, "/mobile/formation/:id/unenroll"),
+  entities: [FormationTrack, FormationEnrollment, Membership, Parish, User]
+}
+
+api mobileSubmitSupport {
+  fn: import { mobileSubmitSupport } from "@src/server/api/mobileManagement",
+  auth: true,
+  httpRoute: (POST, "/mobile/support"),
+  entities: [ContactFormMessage, User]
+}
+
 api mobileSocialFeed {
   fn: import { mobileSocialFeed } from "@src/server/api/mobileSocial",
   auth: true,

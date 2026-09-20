@@ -10,23 +10,41 @@ import {
 } from '@expo-google-fonts/inter';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from '../src/auth/AuthContext';
 import { FeedbackProvider } from '../src/components/Feedback';
+import { resolveDeepLinkHref } from '../src/navigation/deepLinks';
 import { colors, fontFamilies, paperTheme } from '../src/theme';
+
+function isPublicSegment(segment: string | undefined) {
+  return segment === 'login' || segment === 'two-factor' || segment === 'forgot-password';
+}
 
 function Gate({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const pendingHref = useRef<string | null>(null);
+
+  const inPublic = isPublicSegment(segments[0]);
+
+  const openHref = useCallback(
+    (href: string) => {
+      if (status !== 'ready' || inPublic) {
+        pendingHref.current = href;
+        return;
+      }
+      router.push(href as never);
+    },
+    [inPublic, router, status],
+  );
 
   useEffect(() => {
     if (status === 'booting') return;
-    const inPublic = segments[0] === 'login' || segments[0] === 'two-factor' || segments[0] === 'forgot-password';
     if (status === 'guest' && !inPublic) {
       router.replace('/login');
     } else if (status === 'needs2fa' && segments[0] !== 'two-factor') {
@@ -34,7 +52,46 @@ function Gate({ children }: { children: React.ReactNode }) {
     } else if (status === 'ready' && inPublic) {
       router.replace('/(app)/(tabs)');
     }
-  }, [router, segments, status]);
+  }, [inPublic, router, segments, status]);
+
+  useEffect(() => {
+    if (status !== 'ready' || inPublic || !pendingHref.current) return;
+    const href = pendingHref.current;
+    pendingHref.current = null;
+    router.push(href as never);
+  }, [inPublic, router, status]);
+
+  useEffect(() => {
+    let linkingSub: { remove: () => void } | undefined;
+    let pushUnsub: (() => void) | undefined;
+    let cancelled = false;
+
+    void import('expo-linking').then((Linking) => {
+      if (cancelled) return;
+      void Linking.getInitialURL().then((url) => {
+        const href = resolveDeepLinkHref(url);
+        if (href) openHref(href);
+      });
+      linkingSub = Linking.addEventListener('url', (event) => {
+        const href = resolveDeepLinkHref(event.url);
+        if (href) openHref(href);
+      });
+    });
+
+    void import('../src/notifications/push').then((push) => {
+      if (cancelled) return;
+      pushUnsub = push.subscribeToNotificationOpens((link) => {
+        const href = resolveDeepLinkHref(link);
+        if (href) openHref(href);
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      linkingSub?.remove();
+      pushUnsub?.();
+    };
+  }, [openHref]);
 
   if (status === 'booting') {
     return (

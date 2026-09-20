@@ -10,8 +10,17 @@ export default function SettingsRoute() {
   const { notify } = useFeedback();
   const prefs = useAsync(() => api.emailPreferences().catch(() => null), []);
   const twoFactor = useAsync(() => api.twoFactorDetails().catch(() => null), []);
+  const consents = useAsync(async () => {
+    const rows = await api.consents().catch(() => []);
+    const map: Record<string, boolean> = {};
+    (Array.isArray(rows) ? rows : []).forEach((row: { type?: string; granted?: boolean }) => {
+      if (row?.type) map[row.type] = Boolean(row.granted);
+    });
+    return map;
+  }, []);
   const [setup, setSetup] = useState<{ secret?: string; otpauthUrl?: string } | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [consentError, setConsentError] = useState<string | null>(null);
   const [changingPassword, setChangingPassword] = useState(false);
 
   const saveProfile = useMutation((values: { firstName: string; lastName: string; phone?: string }) => api.updateProfile(values), {
@@ -76,6 +85,19 @@ export default function SettingsRoute() {
       twoFactorError={startTwoFactor.error ?? verifyTwoFactor.error ?? disableTwoFactor.error}
       onRequestDataExport={() => void dataExport.run()}
       exporting={dataExport.busy}
+      consents={consents.data ?? {}}
+      consentError={consentError}
+      onToggleConsent={async (type, granted) => {
+        setConsentError(null);
+        try {
+          await api.saveConsent(type, granted);
+          await consents.reload();
+        } catch (err) {
+          const message = err instanceof Error ? err.message : 'Não foi possível guardar o consentimento.';
+          setConsentError(message);
+          notify(message, 'error');
+        }
+      }}
     />
   );
 }

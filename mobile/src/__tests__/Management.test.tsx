@@ -1,8 +1,10 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { reportsToCsv } from '../screens/ReportsScreen';
 import { InviteMemberScreen } from '../screens/TeamScreens';
 import { SettingsScreen } from '../screens/SettingsScreen';
+import { FormationScreen, GroupsScreen, SupportScreen } from '../screens/SecondaryScreens';
+import { ClassDetailScreen } from '../screens/ClassDetailScreen';
 
 describe('Fase E screens', () => {
   it('exporta o ranking em CSV com cabeçalho e separador ;', () => {
@@ -44,5 +46,96 @@ describe('Fase E screens', () => {
     await Promise.resolve();
     expect(onChangePassword).toHaveBeenCalledWith('antiga123', 'novaPass123');
     expect(view.getByText('Inativa')).toBeTruthy();
+  });
+
+  it('alterna consentimentos LGPD nas definições', () => {
+    const onToggleConsent = jest.fn();
+    const view = render(
+      <SettingsScreen
+        user={{ firstName: 'Ana', lastName: 'Silva', email: 'ana@p.pt' }}
+        onSaveProfile={jest.fn()}
+        onChangePassword={jest.fn()}
+        consents={{ IMAGE_USAGE: false }}
+        onToggleConsent={onToggleConsent}
+      />,
+    );
+    fireEvent.press(view.getByTestId('consent-IMAGE_USAGE'));
+    expect(onToggleConsent).toHaveBeenCalledWith('IMAGE_USAGE', true);
+  });
+
+  it('inscreve e cancela formação, entra e sai de grupos, e envia pedido de suporte', async () => {
+    const onEnroll = jest.fn();
+    const onUnenroll = jest.fn();
+    const onJoin = jest.fn();
+    const onLeave = jest.fn();
+    const onSubmit = jest.fn().mockResolvedValue(true);
+
+    const formation = render(
+      <FormationScreen
+        items={[
+          { id: 't1', name: 'Iniciação', kind: 'INITIAL', active: true },
+          { id: 't2', name: 'Contínua', kind: 'CONTINUING', myEnrollment: { status: 'ENROLLED' } },
+        ]}
+        onEnroll={onEnroll}
+        onUnenroll={onUnenroll}
+      />,
+    );
+    fireEvent.press(formation.getByTestId('enroll-track-t1'));
+    fireEvent.press(formation.getByTestId('unenroll-track-t2'));
+    expect(onEnroll).toHaveBeenCalledWith('t1');
+    expect(onUnenroll).toHaveBeenCalledWith('t2');
+    formation.unmount();
+
+    const groups = render(
+      <GroupsScreen
+        items={[
+          { id: 'g1', name: 'Jovens', visibility: 'PUBLIC', memberCount: 4 },
+          { id: 'g2', name: 'Liturgia', visibility: 'PUBLIC', myStatus: 'ACTIVE', memberCount: 8 },
+        ]}
+        onJoin={onJoin}
+        onLeave={onLeave}
+      />,
+    );
+    fireEvent.press(groups.getByTestId('join-group-g1'));
+    fireEvent.press(groups.getByTestId('leave-group-g2'));
+    expect(onJoin).toHaveBeenCalledWith('g1');
+    expect(onLeave).toHaveBeenCalledWith('g2');
+    groups.unmount();
+
+    const support = render(
+      <SupportScreen items={[]} defaultName="Ana Silva" defaultEmail="ana@p.pt" onSubmit={onSubmit} />,
+    );
+    fireEvent.changeText(support.getByTestId('support-message'), 'Preciso de ajuda com o login.');
+    fireEvent.press(support.getByTestId('support-submit'));
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        name: 'Ana Silva',
+        email: 'ana@p.pt',
+        message: 'Preciso de ajuda com o login.',
+      }),
+    );
+  });
+
+  it('mostra o plano mensal da turma e abre o encontro', () => {
+    const onOpenMeeting = jest.fn();
+    const view = render(
+      <ClassDetailScreen
+        data={{ name: 'Crisma 2026', status: 'ACTIVE', community: { name: 'São José' } }}
+        plan={{
+          month: 8,
+          year: 2026,
+          weeks: [
+            {
+              weekStart: '2026-09-01T00:00:00.000Z',
+              meetings: [{ id: 'm1', title: 'Encontro 1', date: '2026-09-06T16:00:00.000Z', status: 'SCHEDULED' }],
+            },
+          ],
+        }}
+        onOpenMeeting={onOpenMeeting}
+      />,
+    );
+    expect(view.getByText('Plano · Setembro 2026')).toBeTruthy();
+    fireEvent.press(view.getByTestId('plan-meeting-m1'));
+    expect(onOpenMeeting).toHaveBeenCalledWith('m1');
   });
 });

@@ -31,6 +31,11 @@ const REQUIRED_ROUTES = [
   ['mobileSacramentalJourneys', 'GET', '/mobile/sacraments'],
   ['mobileSacramentalJourney', 'GET', '/mobile/sacraments/:id'],
   ['mobileSupportMessages', 'GET', '/mobile/support'],
+  ['mobileJoinPastoralGroup', 'POST', '/mobile/groups/:id/join'],
+  ['mobileLeavePastoralGroup', 'POST', '/mobile/groups/:id/leave'],
+  ['mobileEnrollInFormationTrack', 'POST', '/mobile/formation/:id/enroll'],
+  ['mobileUnenrollFromFormationTrack', 'POST', '/mobile/formation/:id/unenroll'],
+  ['mobileSubmitSupport', 'POST', '/mobile/support'],
 ] as const;
 
 const REUSED_OPERATIONS = [
@@ -55,10 +60,15 @@ const REUSED_OPERATIONS = [
   'verifyTwoFactorSetup',
   'disableTwoFactor',
   'listPastoralGroups',
+  'joinPastoralGroup',
+  'leavePastoralGroup',
   'listFormationTracks',
+  'enrollInFormationTrack',
+  'unenrollFromFormationTrack',
   'listSacramentalJourneys',
   'getSacramentalJourney',
   'getMySupportMessages',
+  'submitContactMessage',
 ];
 
 describe('mobile management API wiring (Fase E)', () => {

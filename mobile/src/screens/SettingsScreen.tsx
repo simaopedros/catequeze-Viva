@@ -5,6 +5,13 @@ import { SwitchField } from '../components/forms';
 import { BrandButton, Card, ErrorText, Field, Icon, Row, Screen, ScreenTitle, SectionHeader, SkeletonList, Tag } from '../components/ui';
 import { colors, fontFamilies, spacing } from '../theme';
 
+const CONSENT_TYPES = [
+  { key: 'IMAGE_USAGE', label: 'Uso de imagem', hint: 'Autorizo o uso de fotos e vídeos em atividades da catequese.' },
+  { key: 'COMMUNICATION', label: 'Comunicação', hint: 'Autorizo receber comunicados por e-mail e notificações.' },
+  { key: 'DOCUMENTS', label: 'Documentos', hint: 'Autorizo o armazenamento de documentos e certidões.' },
+  { key: 'SENSITIVE_DATA', label: 'Dados sensíveis', hint: 'Autorizo o tratamento de dados sensíveis conforme a LGPD.' },
+] as const;
+
 const EMAIL_TOPICS: Record<string, { label: string; hint: string }> = {
   LIFECYCLE: { label: 'Conta e segurança', hint: 'Alertas de início de sessão e alterações importantes.' },
   PRODUCT_UPDATES: { label: 'Novidades da plataforma', hint: 'Funcionalidades e dicas de uso.' },
@@ -31,6 +38,9 @@ export function SettingsScreen({
   onRequestDataExport,
   exporting,
   loading,
+  consents,
+  onToggleConsent,
+  consentError,
 }: {
   user: { firstName?: string | null; lastName?: string | null; phone?: string | null; email?: string | null } | null;
   onSaveProfile: (values: { firstName: string; lastName: string; phone?: string }) => Promise<void> | void;
@@ -51,6 +61,9 @@ export function SettingsScreen({
   onRequestDataExport?: () => void;
   exporting?: boolean;
   loading?: boolean;
+  consents?: Record<string, boolean> | null;
+  onToggleConsent?: (type: string, granted: boolean) => void;
+  consentError?: string | null;
 }) {
   const [firstName, setFirstName] = useState(user?.firstName ?? '');
   const [lastName, setLastName] = useState(user?.lastName ?? '');
@@ -168,6 +181,23 @@ export function SettingsScreen({
           <SectionHeader title="E-mails" icon="email-outline" />
           {Object.entries(EMAIL_TOPICS).map(([topic, meta]) => (
             <SwitchField key={topic} label={meta.label} hint={meta.hint} value={Boolean(emailPreferences[topic])} onChange={(value) => onTogglePreference(topic, value)} testID={`pref-${topic}`} />
+          ))}
+        </>
+      ) : null}
+
+      {consents && onToggleConsent ? (
+        <>
+          <SectionHeader title="Consentimentos" icon="shield-check-outline" />
+          <ErrorText message={consentError} />
+          {CONSENT_TYPES.map((item) => (
+            <SwitchField
+              key={item.key}
+              label={item.label}
+              hint={item.hint}
+              value={Boolean(consents[item.key])}
+              onChange={(value) => onToggleConsent(item.key, value)}
+              testID={`consent-${item.key}`}
+            />
           ))}
         </>
       ) : null}

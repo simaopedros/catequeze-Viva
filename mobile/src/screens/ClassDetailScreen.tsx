@@ -20,7 +20,7 @@ import {
   Tag,
 } from '../components/ui';
 import { colors, spacing } from '../theme';
-import { formatDateTime, fullName } from '../utils/format';
+import { formatDate, formatDateTime, fullName } from '../utils/format';
 
 function attendanceRate(summary: any): number | null {
   const rate = summary?.attendanceRate;
@@ -57,8 +57,30 @@ export function catechistRoleLabel(role: unknown): string {
 
 type Tab = 'overview' | 'enrollments' | 'catechists' | 'meetings';
 
+const MONTH_LABELS = [
+  'Janeiro',
+  'Fevereiro',
+  'Março',
+  'Abril',
+  'Maio',
+  'Junho',
+  'Julho',
+  'Agosto',
+  'Setembro',
+  'Outubro',
+  'Novembro',
+  'Dezembro',
+];
+
+function planMonthLabel(plan: any): string {
+  const month = typeof plan?.month === 'number' ? plan.month : new Date().getMonth();
+  const year = typeof plan?.year === 'number' ? plan.year : new Date().getFullYear();
+  return `${MONTH_LABELS[month] ?? ''} ${year}`.trim();
+}
+
 export function ClassDetailScreen({
   data,
+  plan,
   loading,
   error,
   onOpenMeeting,
@@ -74,6 +96,7 @@ export function ClassDetailScreen({
   onRefresh,
 }: {
   data: any;
+  plan?: any;
   loading?: boolean;
   error?: string | null;
   onOpenMeeting: (id: string) => void;
@@ -150,6 +173,33 @@ export function ClassDetailScreen({
                   </Text>
                 ) : null}
               </Card>
+              <SectionHeader title={plan ? `Plano · ${planMonthLabel(plan)}` : 'Plano do mês'} icon="calendar-month-outline" />
+              {Array.isArray(plan?.weeks) && plan.weeks.length > 0 ? (
+                plan.weeks.map((week: any, weekIndex: number) => (
+                  <Card key={week.weekStart || weekIndex} testID={`plan-week-${weekIndex}`}>
+                    <Text variant="labelMedium" style={{ color: colors.goldDark, marginBottom: spacing.xs }}>
+                      Semana de {formatDate(week.weekStart)}
+                    </Text>
+                    {(week.meetings ?? []).map((meeting: any) => {
+                      const meetingStatus = meeting.status ? MEETING_STATUS[meeting.status] : null;
+                      return (
+                        <ListRow
+                          key={meeting.id}
+                          testID={`plan-meeting-${meeting.id}`}
+                          icon="calendar-outline"
+                          title={meeting.title || 'Encontro'}
+                          subtitle={formatDateTime(meeting.date)}
+                          right={meetingStatus ? <Tag label={meetingStatus.label} tone={meetingStatus.tone} /> : undefined}
+                          onPress={() => onOpenMeeting(meeting.id)}
+                          last
+                        />
+                      );
+                    })}
+                  </Card>
+                ))
+              ) : (
+                <EmptyState icon="calendar-blank-outline" title="Sem plano neste mês" body="Os encontros deste mês aparecem aqui quando forem marcados." />
+              )}
             </>
           ) : null}
 

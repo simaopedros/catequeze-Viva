@@ -549,8 +549,26 @@ export function createMobileClient(options: MobileClientOptions) {
     pastoralGroups(query?: { kind?: string; q?: string; city?: string; mine?: boolean }) {
       return request<any>(withQuery(MOBILE_PATHS.groups, query));
     },
+    joinPastoralGroup(groupId: string) {
+      return request<any>(MOBILE_PATHS.groupJoin(groupId), { method: 'POST' });
+    },
+    leavePastoralGroup(groupId: string) {
+      return request<any>(MOBILE_PATHS.groupLeave(groupId), { method: 'POST' });
+    },
     formationTracks(workspaceId?: string) {
       return request<any>(withQuery(MOBILE_PATHS.formation, { workspaceId }));
+    },
+    enrollInFormationTrack(trackId: string, workspaceId?: string) {
+      return request<any>(MOBILE_PATHS.formationEnroll(trackId), {
+        method: 'POST',
+        body: JSON.stringify(workspaceId ? { workspaceId } : {}),
+      });
+    },
+    unenrollFromFormationTrack(trackId: string, workspaceId?: string) {
+      return request<any>(MOBILE_PATHS.formationUnenroll(trackId), {
+        method: 'POST',
+        body: JSON.stringify(workspaceId ? { workspaceId } : {}),
+      });
     },
     sacramentalJourneys(query?: { workspaceId?: string; search?: string; take?: number }) {
       return request<any>(withQuery(MOBILE_PATHS.sacraments, query));
@@ -560,6 +578,9 @@ export function createMobileClient(options: MobileClientOptions) {
     },
     supportMessages() {
       return request<any>(MOBILE_PATHS.support);
+    },
+    submitSupportMessage(body: { name: string; email: string; message: string }) {
+      return request<any>(MOBILE_PATHS.support, { method: 'POST', body: JSON.stringify(body) });
     },
     conversations(workspaceId?: string) {
       return request<any>(withQuery(MOBILE_PATHS.messages, { workspaceId }));

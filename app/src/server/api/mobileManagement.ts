@@ -17,10 +17,10 @@ import { getClassPastoralReport } from '../operations/pastoralReportOperations';
 import { changePassword, requestDataExport, updateUserProfile } from '../operations/userOperations';
 import { getMyEmailPreferences, updateMyEmailPreferences } from '../operations/emailPreferenceOperations';
 import { disableTwoFactor, getTwoFactorStatus, startTwoFactorSetup, verifyTwoFactorSetup } from '../operations/twoFactorOperations';
-import { listPastoralGroups } from '../operations/pastoralGroupOperations';
-import { listFormationTracks } from '../operations/formationOperations';
+import { listPastoralGroups, joinPastoralGroup, leavePastoralGroup } from '../operations/pastoralGroupOperations';
+import { enrollInFormationTrack, listFormationTracks, unenrollFromFormationTrack } from '../operations/formationOperations';
 import { getSacramentalJourney, listSacramentalJourneys } from '../operations/sacramentOperations';
-import { getMySupportMessages } from '../operations/supportOperations';
+import { getMySupportMessages, submitContactMessage } from '../operations/supportOperations';
 import { parseOptionalString, parseRequiredString, requireMobileSessionVerification, toOperationContext } from './mobile';
 
 type Handler = (req: Request, res: Response, context: any) => Promise<Response>;
@@ -193,3 +193,34 @@ export const mobileSacramentalJourney = mobileOp(getSacramentalJourney, (req) =>
 }));
 
 export const mobileSupportMessages = mobileOp(getMySupportMessages, () => undefined as void);
+
+export const mobileJoinPastoralGroup = mobileOp(joinPastoralGroup, (req) => ({
+  groupId: parseRequiredString(req.params.id, 'id'),
+}));
+
+export const mobileLeavePastoralGroup = mobileOp(leavePastoralGroup, (req) => ({
+  groupId: parseRequiredString(req.params.id, 'id'),
+}));
+
+export const mobileEnrollInFormationTrack = mobileOp(enrollInFormationTrack, (req) =>
+  omitUndefined({
+    trackId: parseRequiredString(req.params.id, 'id'),
+    workspaceId: parseOptionalString(body(req).workspaceId),
+  }),
+);
+
+export const mobileUnenrollFromFormationTrack = mobileOp(unenrollFromFormationTrack, (req) =>
+  omitUndefined({
+    trackId: parseRequiredString(req.params.id, 'id'),
+    workspaceId: parseOptionalString(body(req).workspaceId),
+  }),
+);
+
+export const mobileSubmitSupport = mobileOp(submitContactMessage, (req) => {
+  const b = body(req);
+  return {
+    name: parseRequiredString(b.name, 'name'),
+    email: parseRequiredString(b.email, 'email'),
+    message: parseRequiredString(b.message, 'message'),
+  };
+});

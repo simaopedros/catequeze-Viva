@@ -12,6 +12,7 @@ export default function ClassRoute() {
   const permissions = usePermissions();
   const router = useRouter();
   const { data, loading, error, reload, refreshing } = useAsync(() => api.classDetails(String(id)), [id]);
+  const plan = useAsync(() => api.classPlan(String(id)).catch(() => null), [id]);
   const [pendingUnenroll, setPendingUnenroll] = useState<{ enrollmentId: string; name: string } | null>(null);
 
   useFocusEffect(
@@ -35,10 +36,14 @@ export default function ClassRoute() {
     <>
       <ClassDetailScreen
         data={data}
+        plan={plan.data}
         loading={loading}
         error={error}
         refreshing={refreshing}
-        onRefresh={() => void reload()}
+        onRefresh={() => {
+          void reload();
+          void plan.reload();
+        }}
         onOpenMeeting={(meetingId) => router.push(`/(app)/meeting/${meetingId}`)}
         onOpenCatechumen={(catechumenId) => router.push(`/(app)/catechumen/${catechumenId}`)}
         onOpenAttendance={canOperate ? () => router.push(`/(app)/class/${id}/attendance`) : undefined}
