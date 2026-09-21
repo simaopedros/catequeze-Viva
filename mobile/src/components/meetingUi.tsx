@@ -10,12 +10,17 @@ export type MeetingTabKey = 'info' | 'attendance' | 'content';
 export function MeetingSummaryCard({
   className,
   scheduleLabel,
+  variant = 'standalone',
 }: {
   className: string;
   scheduleLabel: string;
+  variant?: 'standalone' | 'embedded';
 }) {
   return (
-    <View style={styles.summaryCard} testID="meeting-summary-card">
+    <View
+      style={[styles.summaryCard, variant === 'embedded' && styles.summaryCardEmbedded]}
+      testID="meeting-summary-card"
+    >
       <LinearGradient colors={['#F7B733', '#FC4A1A']} style={styles.summaryAvatar}>
         <Users size={24} color={colors.white} strokeWidth={2.2} />
       </LinearGradient>
@@ -175,17 +180,24 @@ export function MeetingFooterButton({
   label,
   onPress,
   testID,
+  disabled,
 }: {
   label: string;
   onPress: () => void;
   testID?: string;
+  disabled?: boolean;
 }) {
   return (
     <Pressable
       accessibilityRole="button"
       testID={testID}
       onPress={onPress}
-      style={({ pressed }) => [styles.footerButton, pressed && { opacity: 0.96 }]}
+      disabled={disabled}
+      style={({ pressed }) => [
+        styles.footerButton,
+        disabled && { opacity: 0.5 },
+        pressed && !disabled && { opacity: 0.96 },
+      ]}
     >
       <Text style={styles.footerButtonLabel}>{label}</Text>
     </Pressable>
@@ -205,6 +217,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[4],
     marginBottom: spacing[5],
     ...elevation.card,
+  },
+  summaryCardEmbedded: {
+    borderWidth: 0,
+    marginBottom: spacing[3],
+    shadowOpacity: 0,
+    elevation: 0,
+    borderRadius: 0,
+    paddingTop: spacing[4],
   },
   summaryAvatar: {
     width: 52,

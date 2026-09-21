@@ -1976,10 +1976,22 @@ api mobileMeetingDetails {
   httpRoute: (GET, "/mobile/meetings/:id")
 }
 
+api mobileMeetingAttendanceSheet {
+  fn: import { mobileMeetingAttendanceSheet } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/meetings/:id/attendance-sheet")
+}
+
 api mobileSaveAttendance {
   fn: import { mobileSaveAttendance } from "@src/server/api/mobile",
   auth: true,
   httpRoute: (POST, "/mobile/attendance")
+}
+
+api mobileSaveAttendanceBatch {
+  fn: import { mobileSaveAttendanceBatch } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (POST, "/mobile/attendance/batch")
 }
 
 api mobileConversations {

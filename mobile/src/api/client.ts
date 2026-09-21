@@ -164,6 +164,9 @@ export function createMobileClient(options: MobileClientOptions) {
     meetingDetails(id: string) {
       return request<any>(MOBILE_PATHS.meetingDetails(id));
     },
+    meetingAttendanceSheet(meetingId: string) {
+      return request<any>(MOBILE_PATHS.meetingAttendanceSheet(meetingId));
+    },
     saveAttendance(body: {
       meetingId: string;
       catechumenProfileId: string;
@@ -171,6 +174,15 @@ export function createMobileClient(options: MobileClientOptions) {
       note?: string | null;
     }) {
       return request<any>(MOBILE_PATHS.attendance, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    saveAttendanceBatch(body: {
+      meetingId: string;
+      changes: Array<{ catechumenProfileId: string; status: string; note?: string | null }>;
+    }) {
+      return request<any>(MOBILE_PATHS.attendanceBatch, {
         method: 'POST',
         body: JSON.stringify(body),
       });

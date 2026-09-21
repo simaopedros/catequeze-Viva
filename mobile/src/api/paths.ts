@@ -15,6 +15,9 @@ export const MOBILE_PATHS = {
   familyDetails: (id: string) => `/mobile/families/${encodeURIComponent(id)}`,
   meetings: '/mobile/meetings',
   meetingDetails: (id: string) => `/mobile/meetings/${encodeURIComponent(id)}`,
+  meetingAttendanceSheet: (id: string) =>
+    `/mobile/meetings/${encodeURIComponent(id)}/attendance-sheet`,
+  attendanceBatch: '/mobile/attendance/batch',
   attendance: '/mobile/attendance',
   messages: '/mobile/messages',
   messageDetails: (id: string) => `/mobile/messages/${encodeURIComponent(id)}`,

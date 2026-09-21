@@ -19,6 +19,8 @@ import {
   listMeetings,
   getMeeting,
   saveAttendance,
+  saveAttendanceBatch,
+  getMeetingAttendanceSheet,
   listMeetingsForClasses,
   createMeeting,
 } from '../operations/meetingOperations';
@@ -466,10 +468,37 @@ export async function mobileMeetingDetails(req: Request, res: Response, context:
   return res.json(await getMeeting({ id: parseRequiredString(req.params.id, 'id') }, opCtx));
 }
 
+export async function mobileMeetingAttendanceSheet(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const meetingId = parseRequiredString(req.params.id, 'id');
+  const meeting = await getMeeting({ id: meetingId }, opCtx);
+  const classId = meeting?.class?.id;
+  if (!classId) {
+    throw new HttpError(404, 'Turma do encontro não encontrada.');
+  }
+  return res.json(await getMeetingAttendanceSheet({ classId, meetingId }, opCtx));
+}
+
 export async function mobileSaveAttendance(req: Request, res: Response, context: any) {
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
   return res.json(await saveAttendance(req.body ?? {}, opCtx));
+}
+
+export async function mobileSaveAttendanceBatch(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const body = req.body ?? {};
+  return res.json(
+    await saveAttendanceBatch(
+      {
+        meetingId: parseRequiredString(body.meetingId, 'meetingId'),
+        changes: Array.isArray(body.changes) ? body.changes : [],
+      },
+      opCtx,
+    ),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
