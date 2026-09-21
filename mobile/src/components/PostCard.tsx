@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { SocialPost } from '../api/types';
-import { formatRelative, initials } from '../format';
+import { initials } from '../format';
 import { colors, radius, spacing, type } from '../theme';
 import { Avatar, Card } from './ui';
 
@@ -45,8 +45,6 @@ export function PostCard({
   const long = (post.body || '').length > LONG_BODY;
   const body = !long || expanded ? post.body : `${post.body.slice(0, LONG_BODY).trimEnd()}…`;
   const handle = post.author.handle || post.author.socialHandle;
-  const when = formatRelative(post.publishedAt || post.createdAt);
-  const topic = post.topics?.[0];
   const media = post.media?.find((item) => item.url && !isVideo(item.kind));
 
   return (
@@ -61,11 +59,7 @@ export function PostCard({
         <Avatar name={post.author.displayName || initials(handle || '?')} imageUrl={post.author.avatarUrl} size={40} />
         <View style={{ flex: 1 }}>
           <Text style={styles.author}>{post.author.displayName}</Text>
-          <Text style={styles.handle}>
-            {handle ? `@${handle}` : ''}
-            {handle && when ? ' · ' : ''}
-            {when}
-          </Text>
+          {handle ? <Text style={styles.handle}>@{handle}</Text> : null}
         </View>
       </Pressable>
       <Pressable
@@ -74,11 +68,6 @@ export function PostCard({
         onPress={() => post.slug && onOpenPost?.(post.slug)}
         disabled={!onOpenPost}
       >
-        {topic ? (
-          <View style={styles.topic}>
-            <Text style={styles.topicLabel}>{topic.name}</Text>
-          </View>
-        ) : null}
         {post.body ? <Text style={styles.body}>{body}</Text> : null}
         {long ? (
           <Pressable onPress={() => setExpanded((value) => !value)} testID={`post-expand-${post.id}`}>
@@ -108,15 +97,6 @@ const styles = StyleSheet.create({
   authorRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },
   author: { color: colors.ink, fontFamily: type.bodyBold, fontSize: 16 },
   handle: { color: colors.goldDark, marginTop: 2, fontFamily: type.body, fontSize: 13 },
-  topic: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.cream,
-    borderRadius: radius.pill,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    marginBottom: spacing.sm,
-  },
-  topicLabel: { color: colors.goldDark, fontFamily: type.bodyBold, fontSize: 12 },
   body: { color: colors.inkSoft, fontFamily: type.body, fontSize: 16, lineHeight: 23 },
   more: { color: colors.goldDark, fontFamily: type.bodyBold, marginTop: 8 },
   media: { width: '100%', height: 180, borderRadius: radius.sm, marginTop: spacing.sm, backgroundColor: colors.line },

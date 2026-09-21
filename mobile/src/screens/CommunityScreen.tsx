@@ -77,7 +77,11 @@ export function CommunityScreen({
     <View style={{ flex: 1 }}>
     <Screen testID="community-screen">
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm }}>
-        <Text style={{ flex: 1, color: colors.ink, fontFamily: type.display, fontSize: 32, lineHeight: 36 }}>{title}</Text>
+        {title !== 'Comunidade' ? (
+          <Text style={{ flex: 1, color: colors.ink, fontFamily: type.display, fontSize: 28, lineHeight: 32 }}>{title}</Text>
+        ) : (
+          <View style={{ flex: 1 }} />
+        )}
         {showHub && onSearch ? (
           <Pressable
             accessibilityLabel={area('search').label}
@@ -101,9 +105,6 @@ export function CommunityScreen({
           </Pressable>
         ) : null}
       </View>
-      {subtitle ? (
-        <Text style={{ color: colors.muted, fontFamily: type.body, marginBottom: spacing.sm }}>{subtitle}</Text>
-      ) : null}
       {showHub && onOpenArea ? (
         <View testID="community-hub" style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.md }}>
           {ICON_AREAS.map((item) => (
@@ -129,14 +130,14 @@ export function CommunityScreen({
         </View>
       ) : null}
       {!showHub && onSearch ? (
-        <Pressable onPress={onSearch} testID="open-search" style={{ marginBottom: spacing.sm }}>
-          <Text style={{ color: colors.goldDark, fontFamily: type.bodyBold }}>Pesquisar</Text>
+        <Pressable
+          accessibilityLabel="Pesquisar"
+          onPress={onSearch}
+          testID="open-search"
+          style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.sm }}
+        >
+          <Ionicons name="search-outline" size={22} color={colors.ink} />
         </Pressable>
-      ) : null}
-      {access && !access.canPublish ? (
-        <Text style={{ color: colors.goldDark, fontFamily: type.body, fontSize: 13, marginBottom: spacing.sm }}>
-          {access.reason === 'subscription' ? 'Publicar pede assinatura.' : 'Publicação limitada nesta conta.'}
-        </Text>
       ) : null}
       <ScrollView
         horizontal
@@ -204,7 +205,7 @@ export function CommunityScreen({
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Feed indisponível" body={error} /> : null}
       {!loading && posts.length === 0 ? (
-        <EmptyState title="Ainda não há publicações" body="Quando a Comunidade tiver posts, eles aparecem aqui." />
+        <EmptyState title="Ainda não há publicações" body="" />
       ) : (
         posts.map((post) => (
           <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
