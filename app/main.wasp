@@ -1963,6 +1963,13 @@ api mobileMeetings {
   httpRoute: (GET, "/mobile/meetings")
 }
 
+api mobileCreateMeeting {
+  fn: import { mobileCreateMeeting } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (POST, "/mobile/meetings"),
+  entities: [Meeting, CatechesisClass, Membership, User]
+}
+
 api mobileMeetingDetails {
   fn: import { mobileMeetingDetails } from "@src/server/api/mobile",
   auth: true,

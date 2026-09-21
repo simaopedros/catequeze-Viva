@@ -15,7 +15,13 @@ import { getDashboardStats } from '../operations/dashboardOperations';
 import { listClasses, getClassDetails } from '../operations/classOperations';
 import { listCatechumens, getCatechumenProfile } from '../operations/catechumenOperations';
 import { listHouseholds } from '../operations/familyOperations';
-import { listMeetings, getMeeting, saveAttendance, listMeetingsForClasses } from '../operations/meetingOperations';
+import {
+  listMeetings,
+  getMeeting,
+  saveAttendance,
+  listMeetingsForClasses,
+  createMeeting,
+} from '../operations/meetingOperations';
 import { listDocuments } from '../operations/documentOperations';
 import { listConversations, getConversation, sendMessage } from '../operations/conversationOperations';
 import { listLiturgicalEvents } from '../operations/calendarOperations';
@@ -446,6 +452,12 @@ export async function mobileMeetings(req: Request, res: Response, context: any) 
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
   return res.json(await listMeetings({ classId: parseOptionalString(req.query.classId) ?? '' }, opCtx));
+}
+
+export async function mobileCreateMeeting(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  return res.json(await createMeeting(req.body ?? {}, opCtx));
 }
 
 export async function mobileMeetingDetails(req: Request, res: Response, context: any) {
