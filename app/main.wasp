@@ -2054,6 +2054,13 @@ api mobileSocialTopics {
   entities: [SocialTopic]
 }
 
+api mobileSocialCreateVideoUpload {
+  fn: import { mobileSocialCreateVideoUpload } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/videos"),
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese, SocialPost, PricingPlan, PricingPlanPrice]
+}
+
 api mobileSocialCreatePost {
   fn: import { mobileSocialCreatePost } from "@src/server/api/mobileSocial",
   auth: true,

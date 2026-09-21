@@ -31,7 +31,8 @@
       "expo-font",
       "expo-splash-screen",
       "expo-status-bar",
-      "expo-video"
+      "expo-video",
+      "expo-image-picker"
     ],
     "experiments": {
       "typedRoutes": false

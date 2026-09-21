@@ -10,10 +10,10 @@ describe('ComposeScreen', () => {
 
     for (const kind of POST_KINDS) {
       expect(view.getByTestId(`compose-kind-${kind.id}`)).toBeTruthy();
-      expect(view.getByText(kind.label)).toBeTruthy();
+      expect(view.getByLabelText(kind.label)).toBeTruthy();
     }
 
-    fireEvent.press(view.getByTestId('compose-kind-TEXT'));
     expect(view.getByTestId('compose-body')).toBeTruthy();
+    fireEvent.press(view.getByTestId('compose-kind-IMAGE'));
   });
 });

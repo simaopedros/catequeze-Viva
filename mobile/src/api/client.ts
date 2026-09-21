@@ -107,6 +107,23 @@ export function createMobileClient(options: MobileClientOptions) {
     return payload as T;
   }
 
+  async function uploadForm<T>(path: string, form: FormData): Promise<T> {
+    const token = await options.getToken();
+    const headers: Record<string, string> = { Accept: 'application/json' };
+    if (token) headers.Authorization = `Bearer ${token}`;
+    const baseUrl = options.getBaseUrl().replace(/\/$/, '');
+    const response = await (options.fetchImpl ?? fetch)(`${baseUrl}${path}`, {
+      method: 'POST',
+      headers,
+      body: form,
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new MobileApiError(response.status, resolveErrorMessage(payload, response.status), payload);
+    }
+    return payload as T;
+  }
+
   return {
     request,
     login(email: string, password: string) {
@@ -253,11 +270,45 @@ export function createMobileClient(options: MobileClientOptions) {
     socialTopics() {
       return request<SocialTopic[]>(MOBILE_PATHS.socialTopics);
     },
-    createPost(body: { body: string; topicSlugs?: string[]; share?: { kind: string; sourceId: string } | null }) {
+    createPost(body: {
+      body: string;
+      topicSlugs?: string[];
+      mediaIds?: string[];
+      mediaConsentAck?: boolean;
+      share?: { kind: string; sourceId: string } | null;
+    }) {
       return request<SocialPost>(MOBILE_PATHS.socialPosts, {
         method: 'POST',
         body: JSON.stringify(body),
       });
+    },
+    uploadImage(file: { uri: string; name: string; type: string }) {
+      const form = new FormData();
+      form.append('file', file as unknown as Blob);
+      return uploadForm<{ mediaId: string; url: string }>(MOBILE_PATHS.socialImages, form);
+    },
+    createVideoUpload(durationSeconds?: number) {
+      return request<
+        | { transport: 'server'; mediaId: string }
+        | {
+            transport: 'stream';
+            mediaId: string;
+            libraryId: string;
+            videoId: string;
+            tusEndpoint: string;
+            authorizationSignature: string;
+            authorizationExpire: number;
+          }
+      >(MOBILE_PATHS.socialVideos, {
+        method: 'POST',
+        body: JSON.stringify({ durationSeconds }),
+      });
+    },
+    uploadVideoFile(mediaId: string, file: { uri: string; name: string; type: string }) {
+      const form = new FormData();
+      form.append('mediaId', mediaId);
+      form.append('file', file as unknown as Blob);
+      return uploadForm<{ mediaId: string; url?: string }>(MOBILE_PATHS.socialVideoFile, form);
     },
     socialProfile(handle: string) {
       return request<SocialProfile>(MOBILE_PATHS.socialProfile(handle));

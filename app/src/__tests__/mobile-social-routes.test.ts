@@ -25,6 +25,7 @@ const REQUIRED_ROUTES = [
   ['mobileSocialSharePreview', 'POST', '/mobile/social/share/preview'],
   ['mobileSocialPost', 'GET', '/mobile/social/posts/:slug'],
   ['mobileSocialComments', 'GET', '/mobile/social/comments'],
+  ['mobileSocialCreateVideoUpload', 'POST', '/mobile/social/videos'],
   ['mobileSocialCreateComment', 'POST', '/mobile/social/comments'],
   ['mobileSocialReact', 'POST', '/mobile/social/react'],
   ['mobileSocialSearch', 'GET', '/mobile/social/search'],

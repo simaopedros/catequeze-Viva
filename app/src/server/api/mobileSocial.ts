@@ -29,6 +29,7 @@ import {
 } from '../operations/socialDiscoveryOperations';
 import { reportSocialContent } from '../operations/socialModerationOperations';
 import { previewSocialShare } from '../operations/socialShareResolve';
+import { createSocialVideoUpload } from '../operations/socialMediaOperations';
 import { listBibleBooks, getBibleBook, getBibleChapter } from '../operations/bibleOperations';
 import { assertTwoFactorSessionVerified } from '../operations/twoFactorOperations';
 
@@ -104,6 +105,20 @@ export async function mobileSocialTopics(_req: Request, res: Response, context: 
 export async function mobileSocialCreatePost(req: Request, res: Response, context: any) {
   const opCtx = await requireSession(context);
   return res.json(await createSocialPost(req.body ?? {}, opCtx));
+}
+
+export async function mobileSocialCreateVideoUpload(req: Request, res: Response, context: any) {
+  const opCtx = await requireSession(context);
+  const duration = Number(req.body?.durationSeconds);
+  return res.json(
+    await createSocialVideoUpload(
+      {
+        title: optionalString(req.body?.title),
+        durationSeconds: Number.isFinite(duration) ? duration : undefined,
+      },
+      opCtx,
+    ),
+  );
 }
 
 export async function mobileSocialProfile(req: Request, res: Response, context: any) {
