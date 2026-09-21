@@ -21,6 +21,7 @@ export default function TabsLayout() {
           name={tab.name}
           options={{
             title: tab.label,
+            headerShown: tab.name !== 'index',
             tabBarIcon: ({ color, size }) => <Ionicons name={tab.icon as any} color={color} size={size} />,
           }}
         />

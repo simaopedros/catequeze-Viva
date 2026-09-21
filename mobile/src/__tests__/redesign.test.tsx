@@ -5,6 +5,10 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { PeopleListScreen } from '../screens/PeopleScreens';
 import { ShortsScreen } from '../screens/ShortsScreen';
 
+jest.mock('react-native-safe-area-context', () => ({
+  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+}));
+
 jest.mock('expo-video', () => ({
   useVideoPlayer: () => ({ play: jest.fn(), pause: jest.fn(), loop: false }),
   VideoView: () => null,

@@ -1,18 +1,15 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
-  Card,
-  EmptyState,
   EncounterCard,
   ErrorState,
   LoadingState,
   MetricTile,
   Screen,
-  ScreenTitle,
-  SectionHeader,
 } from '../components/ui';
 import { formatRelative, formatWhen } from '../format';
-import { colors, type } from '../theme';
+import { colors, spacing, type } from '../theme';
 
 type Meeting = {
   id: string;
@@ -56,14 +53,23 @@ export function HomeScreen({
   onOpenCalendar: () => void;
   onRefresh?: () => void;
 }) {
+  const insets = useSafeAreaInsets();
   const today = stats?.todayMeetings ?? [];
   const focus = today[0];
   const upcoming = (meetings ?? stats?.upcomingMeetings ?? []).filter((item) => item.id !== focus?.id).slice(0, 5);
   const when = focus?.startsAt || focus?.date;
 
   return (
-    <Screen testID="home-screen" refreshing={loading} onRefresh={onRefresh}>
-      <ScreenTitle title={`Olá, ${name}`} subtitle={workspace || 'O essencial da catequese, no bolso.'} />
+    <Screen
+      testID="home-screen"
+      refreshing={loading}
+      onRefresh={onRefresh}
+      contentStyle={{ paddingTop: insets.top + 8, paddingHorizontal: spacing.md, paddingBottom: spacing.lg }}
+    >
+      <Text style={{ color: colors.ink, fontFamily: type.bodyBold, fontSize: 16, marginBottom: spacing.sm }} numberOfLines={1}>
+        {name}
+        {workspace ? <Text style={{ color: colors.muted, fontFamily: type.body }}>{` · ${workspace}`}</Text> : null}
+      </Text>
       {loading && !stats ? <LoadingState /> : null}
       {error ? <ErrorState title="Não foi possível carregar o início" body={error} /> : null}
       {focus ? (
@@ -76,7 +82,7 @@ export function HomeScreen({
           onPress={() => onOpenMeeting(focus.id)}
         />
       ) : !loading ? (
-        <EmptyState title="Sem encontro hoje" body="Quando houver um encontro marcado para hoje, a chamada fica aqui." />
+        <Text style={{ color: colors.muted, fontFamily: type.body, marginBottom: spacing.sm }}>Sem encontro hoje</Text>
       ) : null}
       <View style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
         <MetricTile label="Turmas" value={stats?.activeClasses ?? '—'} onPress={onOpenClasses} testID="metric-classes" />
@@ -88,20 +94,23 @@ export function HomeScreen({
         />
         <MetricTile label="Presença" value={stats?.avgAttendance != null ? `${stats.avgAttendance}%` : '—'} />
       </View>
-      <SectionHeader title="Próximos encontros" />
+      <Text style={{ color: colors.ink, fontFamily: type.bodyBold, marginTop: 4, marginBottom: 6 }}>Próximos</Text>
       {upcoming.length === 0 && !loading ? (
-        <EmptyState title="Agenda livre" body="Os próximos encontros aparecem nesta linha do tempo." />
+        <Text style={{ color: colors.muted, fontFamily: type.body }}>Agenda livre</Text>
       ) : (
         upcoming.map((meeting) => (
-          <Pressable key={meeting.id} onPress={() => onOpenMeeting(meeting.id)} testID={`meeting-${meeting.id}`}>
-            <Card>
-              <Text style={{ color: colors.ink, fontFamily: type.bodyBold }}>
-                {meeting.title || meeting.theme || 'Encontro'}
-              </Text>
-              <Text style={{ color: colors.muted, marginTop: 4, fontFamily: type.body }}>
-                {meeting.class?.name || 'Turma'} · {formatRelative(meeting.startsAt || meeting.date)}
-              </Text>
-            </Card>
+          <Pressable
+            key={meeting.id}
+            onPress={() => onOpenMeeting(meeting.id)}
+            testID={`meeting-${meeting.id}`}
+            style={{ paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.line }}
+          >
+            <Text style={{ color: colors.ink, fontFamily: type.bodyBold }} numberOfLines={1}>
+              {meeting.title || meeting.theme || 'Encontro'}
+            </Text>
+            <Text style={{ color: colors.muted, marginTop: 2, fontFamily: type.body }} numberOfLines={1}>
+              {meeting.class?.name || 'Turma'} · {formatRelative(meeting.startsAt || meeting.date)}
+            </Text>
           </Pressable>
         ))
       )}
