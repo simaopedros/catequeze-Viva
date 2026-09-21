@@ -4,6 +4,7 @@ export type MeetingMaterialRow = {
   id: string;
   label: string;
   kind: MeetingMaterialKind;
+  subtitle?: string;
 };
 
 function classifyMaterialLine(line: string): MeetingMaterialKind {
@@ -34,10 +35,11 @@ export function buildMaterialRows(meeting: {
 }): MeetingMaterialRow[] {
   const rows = parseMaterialLines(meeting.content?.materials);
   const ref = meeting.content?.biblicalRef?.trim();
-  if (ref && !rows.some((r) => r.label.includes(ref))) {
+  if (ref && !rows.some((r) => r.kind === 'bible')) {
     rows.push({
       id: 'biblical-ref',
-      label: ref.startsWith('Passagem') ? ref : `Passagem bíblica: ${ref}`,
+      label: 'Passagem bíblica',
+      subtitle: ref,
       kind: 'bible',
     });
   }
@@ -55,15 +57,13 @@ export function formatMeetingSchedule(
   const duration = typeof durationMinutes === 'number' && durationMinutes > 0 ? durationMinutes : 90;
   const end = new Date(start.getTime() + duration * 60 * 1000);
 
-  const day = start.toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
+  const monthRaw = start.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '').trim();
+  const month = monthRaw.charAt(0).toUpperCase() + monthRaw.slice(1);
+  const day = String(start.getDate()).padStart(2, '0');
+  const year = start.getFullYear();
   const fmt = (d: Date) =>
     d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
-  const dayLabel = day.replace(/\./g, '').replace(/\sde\s/gi, ' ');
-  return `${dayLabel} • ${fmt(start)} - ${fmt(end)}`;
+  return `${day} ${month} ${year} • ${fmt(start)} - ${fmt(end)}`;
 }
 
 export function meetingThemeLabel(meeting: {

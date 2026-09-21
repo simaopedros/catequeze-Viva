@@ -30,5 +30,7 @@ describe('MeetingScreen', () => {
     expect(view.getByTestId('open-attendance')).toHaveTextContent('Ver presenças');
     expect(view.getByText('Resumo do encontro')).toBeTruthy();
     expect(view.getByText('Materiais')).toBeTruthy();
+    expect(view.getByTestId('meeting-materials-group')).toBeTruthy();
+    expect(view.getByText('Passagem bíblica')).toBeTruthy();
   });
 });

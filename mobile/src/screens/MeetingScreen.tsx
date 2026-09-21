@@ -3,14 +3,15 @@ import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-n
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   MeetingBodyText,
-  MeetingMaterialRowItem,
+  MeetingFooterButton,
+  MeetingMaterialsGroup,
   MeetingSectionTitle,
   MeetingSummaryCard,
   MeetingTabBar,
   MeetingThemeHeading,
   type MeetingTabKey,
 } from '../components/meetingUi';
-import { EmptyState, LoadingState, PrimaryButton } from '../components/ui';
+import { EmptyState, LoadingState } from '../components/ui';
 import {
   buildMaterialRows,
   formatMeetingSchedule,
@@ -64,7 +65,6 @@ export function MeetingScreen({
     );
   }
 
-  const className = data.class?.name || 'Turma';
   const registered = data.attendanceSummary?.registered ?? 0;
   const totalActive = data.attendanceSummary?.totalActive ?? 0;
 
@@ -74,29 +74,28 @@ export function MeetingScreen({
         style={{ flex: 1 }}
         contentContainerStyle={{
           paddingHorizontal: horizontal,
-          paddingTop: spacing[4],
-          paddingBottom: spacing[4],
+          paddingTop: spacing[2],
+          paddingBottom: spacing[6],
         }}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <MeetingSummaryCard className={className} scheduleLabel={scheduleLabel} />
+        <MeetingSummaryCard className={data.class?.name || 'Turma'} scheduleLabel={scheduleLabel} />
         <MeetingThemeHeading label={themeLabel} />
-        <MeetingTabBar active={tab} onChange={setTab} />
+        <MeetingTabBar active={tab} onChange={setTab} horizontalInset={horizontal} />
 
         {tab === 'info' ? (
           <View testID="meeting-tab-panel-info">
             <MeetingSectionTitle>Resumo do encontro</MeetingSectionTitle>
-            {summary ? (
-              <MeetingBodyText>{summary}</MeetingBodyText>
-            ) : (
-              <MeetingBodyText>Sem resumo publicado para este encontro.</MeetingBodyText>
-            )}
+            <MeetingBodyText>
+              {summary || 'Reflexão e partilha sobre o tema deste encontro.'}
+            </MeetingBodyText>
 
             <MeetingSectionTitle>Materiais</MeetingSectionTitle>
             {materials.length === 0 ? (
               <Text style={styles.muted}>Nenhum material listado.</Text>
             ) : (
-              materials.map((row) => <MeetingMaterialRowItem key={row.id} row={row} />)
+              <MeetingMaterialsGroup rows={materials} />
             )}
           </View>
         ) : null}
@@ -109,7 +108,9 @@ export function MeetingScreen({
                 {`Chamada registada: ${registered} de ${totalActive} catequizandos ativos.`}
               </MeetingBodyText>
             ) : (
-              <MeetingBodyText>Abra a lista de presenças para marcar ou rever a chamada deste encontro.</MeetingBodyText>
+              <MeetingBodyText>
+                Abra a lista de presenças para marcar ou rever a chamada deste encontro.
+              </MeetingBodyText>
             )}
             {data.myAttendance?.status ? (
               <Text style={styles.muted}>Seu registo: {data.myAttendance.status}</Text>
@@ -146,11 +147,7 @@ export function MeetingScreen({
 
       {canTakeAttendance ? (
         <View style={[styles.footer, { paddingHorizontal: horizontal }]}>
-          <PrimaryButton
-            label="Ver presenças"
-            onPress={onAttendance}
-            testID="open-attendance"
-          />
+          <MeetingFooterButton label="Ver presenças" onPress={onAttendance} testID="open-attendance" />
         </View>
       ) : null}
     </SafeAreaView>
@@ -160,17 +157,15 @@ export function MeetingScreen({
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: colors.canvas,
+    backgroundColor: colors.surface,
   },
   footer: {
-    paddingTop: spacing[3],
+    paddingTop: spacing[2],
     paddingBottom: spacing[4],
-    backgroundColor: colors.canvas,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
+    backgroundColor: colors.surface,
   },
   muted: {
-    fontSize: 14,
+    fontSize: 15,
     color: colors.text.muted,
     marginBottom: spacing[4],
   },

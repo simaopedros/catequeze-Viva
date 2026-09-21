@@ -27,7 +27,10 @@ export default function AppLayout() {
       <Stack.Screen name="community/[handle]" options={{ title: 'Perfil' }} />
       <Stack.Screen name="class/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="class-meetings" options={{ title: 'Encontros' }} />
-      <Stack.Screen name="meeting/[id]/index" options={{ title: 'Encontro' }} />
+      <Stack.Screen
+        name="meeting/[id]/index"
+        options={{ title: 'Encontro', contentStyle: { backgroundColor: colors.surface } }}
+      />
       <Stack.Screen name="meeting/[id]/attendance" options={{ title: 'Presença' }} />
       <Stack.Screen name="messages/[id]" options={{ title: 'Conversa' }} />
       <Stack.Screen name="bible/index" options={{ title: 'Bíblia' }} />

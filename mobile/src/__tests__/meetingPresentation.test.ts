@@ -24,7 +24,9 @@ describe('meetingPresentation', () => {
     const rows = buildMaterialRows({
       content: { materials: 'Apresentação.pdf', biblicalRef: 'Jo 14,16-17' },
     });
-    expect(rows.some((r) => r.kind === 'bible')).toBe(true);
+    const bible = rows.find((r) => r.kind === 'bible');
+    expect(bible?.label).toBe('Passagem bíblica');
+    expect(bible?.subtitle).toBe('Jo 14,16-17');
   });
 
   it('prefixes theme label', () => {
