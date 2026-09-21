@@ -32,8 +32,8 @@ export function DocumentsScreen({
       ) : (
         items.map((doc: any) => (
           <Card key={doc.id}>
-            <Text style={{ color: colors.ink, fontWeight: '700' }}>{doc.title || doc.name || 'Documento'}</Text>
-            <Text style={{ color: colors.muted, marginTop: 4 }}>{doc.kind || doc.mimeType || ''}</Text>
+            <Text style={{ color: colors.text.primary, fontWeight: '700' }}>{doc.title || doc.name || 'Documento'}</Text>
+            <Text style={{ color: colors.text.muted, marginTop: 4 }}>{doc.kind || doc.mimeType || ''}</Text>
             <BrandButton
               variant="ghost"
               label="Abrir"

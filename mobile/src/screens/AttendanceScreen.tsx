@@ -1,33 +1,52 @@
 import React, { useMemo, useState } from 'react';
-import { Pressable, Text } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { Alert, Text, View } from 'react-native';
+import {
+  Avatar,
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  PresenceSelector,
+  PrimaryButton,
+  Screen,
+  ScreenTitle,
+} from '../components/ui';
+import { spacing, type AttendanceStatusKey } from '../theme';
 
-const STATUSES = ['PRESENT', 'ABSENT', 'LATE', 'EXCUSED'] as const;
+const API_TO_UI: Record<string, AttendanceStatusKey> = {
+  PRESENT: 'PRESENT',
+  ABSENT: 'ABSENT',
+  LATE: 'LATE',
+  EXCUSED: 'EXCUSED',
+};
+
+function normalizeStatus(raw?: string): AttendanceStatusKey {
+  if (!raw) return 'PRESENT';
+  const key = raw.toUpperCase();
+  return API_TO_UI[key] ?? 'PRESENT';
+}
 
 export function AttendanceScreen({
   meeting,
   loading,
   error,
-  onSave,
-  busy,
+  onMark,
+  onMarkAllPresent,
+  markingId,
+  markingAll,
 }: {
   meeting: any;
   loading?: boolean;
   error?: string | null;
-  onSave: (catechumenProfileId: string, status: string) => Promise<void> | void;
-  busy?: boolean;
+  onMark: (catechumenProfileId: string, status: AttendanceStatusKey) => Promise<void>;
+  onMarkAllPresent?: () => Promise<void>;
+  markingId?: string | null;
+  markingAll?: boolean;
 }) {
   const rows = useMemo(() => {
-    return (
-      meeting?.attendance ||
-      meeting?.records ||
-      meeting?.enrollments ||
-      meeting?.catechumens ||
-      []
-    );
+    return meeting?.attendance || meeting?.records || meeting?.enrollments || meeting?.catechumens || [];
   }, [meeting]);
-  const [draft, setDraft] = useState<Record<string, string>>({});
+
+  const [localStatus, setLocalStatus] = useState<Record<string, AttendanceStatusKey>>({});
 
   if (loading) {
     return (
@@ -37,12 +56,23 @@ export function AttendanceScreen({
     );
   }
 
+  const meetingTitle = meeting?.title || meeting?.theme || 'Chamada';
+
   return (
     <Screen testID="attendance-screen">
-      <ScreenTitle title="Presença" subtitle="Toque no estado e grave cada catequizando." />
-      {error ? <EmptyState title="Não foi possível carregar" body={error} /> : null}
+      <ScreenTitle title="Presença" subtitle="Chamada" />
+      <Text style={{ fontSize: 20, fontWeight: '700', color: '#17212B', marginBottom: spacing[2] }}>{meetingTitle}</Text>
+      {rows.length > 0 && onMarkAllPresent ? (
+        <PrimaryButton
+          label={markingAll ? 'Marcando…' : 'Marcar todos presentes'}
+          onPress={onMarkAllPresent}
+          disabled={markingAll}
+          variant="secondary"
+        />
+      ) : null}
+      {error ? <ErrorState title="Não foi possível carregar" /> : null}
       {rows.length === 0 ? (
-        <EmptyState title="Sem lista" body="Este encontro ainda não tem catequizandos para marcar." />
+        <EmptyState title="Sem lista" />
       ) : (
         rows.map((row: any) => {
           const id = row.catechumenProfileId || row.id;
@@ -51,20 +81,31 @@ export function AttendanceScreen({
             row.name ||
             [row.firstName, row.lastName].filter(Boolean).join(' ') ||
             'Catequizando';
-          const status = draft[id] || row.status || 'PRESENT';
+          const serverStatus = normalizeStatus(row.status);
+          const status = localStatus[id] ?? serverStatus;
+          const busy = markingId === id;
+
           return (
-            <Card key={id}>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>{name}</Text>
-              <Text style={{ color: colors.muted, marginVertical: 8 }}>Estado: {status}</Text>
-              {STATUSES.map((item) => (
-                <Pressable key={item} onPress={() => setDraft((current) => ({ ...current, [id]: item }))}>
-                  <Text style={{ color: status === item ? colors.goldDark : colors.muted, marginBottom: 4 }}>
-                    {item}
-                  </Text>
-                </Pressable>
-              ))}
-              <BrandButton label={busy ? 'A gravar…' : 'Gravar'} disabled={busy} onPress={() => onSave(id, status)} />
-            </Card>
+            <View key={id} style={{ marginBottom: 12 }} testID={`attendance.student.${id}`}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 4 }}>
+                <Avatar name={name} size={40} />
+                <Text style={{ fontSize: 16, fontWeight: '700', color: '#17212B', flex: 1 }}>{name}</Text>
+              </View>
+              <PresenceSelector
+                value={status}
+                disabled={busy || markingAll}
+                onChange={async (next) => {
+                  const previous = status;
+                  setLocalStatus((current) => ({ ...current, [id]: next }));
+                  try {
+                    await onMark(id, next);
+                  } catch {
+                    setLocalStatus((current) => ({ ...current, [id]: previous }));
+                    Alert.alert('Presença', 'Não foi possível gravar.');
+                  }
+                }}
+              />
+            </View>
           );
         })
       )}

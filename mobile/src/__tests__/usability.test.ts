@@ -29,10 +29,21 @@ describe('usability map', () => {
       appRoutes.documents,
       appRoutes.notifications,
       appRoutes.more,
+      appRoutes.calendar,
+      appRoutes.announcements,
+      appRoutes.announcement('ann-1'),
+      appRoutes.journeys,
+      appRoutes.journey('journey-1'),
+      appRoutes.catechism,
+      appRoutes.catechismEntry(1),
+      appRoutes.catechumens,
+      appRoutes.catechumen('cat-1'),
+      appRoutes.families,
+      appRoutes.family('fam-1'),
     ];
 
     expect(signedOut).toHaveLength(3);
-    expect(signedIn).toHaveLength(24);
+    expect(signedIn).toHaveLength(35);
     expect(APP_TABS).toHaveLength(5);
   });
 });

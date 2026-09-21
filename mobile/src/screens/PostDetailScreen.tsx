@@ -76,35 +76,35 @@ export function PostDetailScreen({
               paddingHorizontal: 12,
               paddingVertical: 8,
               borderRadius: 999,
-              backgroundColor: post.viewerReaction === item.id ? colors.ink : colors.paper,
+              backgroundColor: post.viewerReaction === item.id ? colors.text.primary : colors.surface,
               borderWidth: 1,
-              borderColor: colors.line,
+              borderColor: colors.border,
             }}
           >
-            <Text style={{ color: post.viewerReaction === item.id ? colors.white : colors.ink, fontWeight: '600' }}>
+            <Text style={{ color: post.viewerReaction === item.id ? colors.white : colors.text.primary, fontWeight: '600' }}>
               {item.label}
             </Text>
           </Pressable>
         ))}
       </View>
-      <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm }}>Comentários</Text>
+      <Text style={{ color: colors.text.primary, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm }}>Comentários</Text>
       {comments.length === 0 ? (
         <EmptyState title="Ainda sem comentários" body="Seja o primeiro a responder com um Amém ou uma palavra." />
       ) : (
         comments.map((comment) => (
           <View key={comment.id} testID={`comment-${comment.id}`} style={{ marginBottom: spacing.md }}>
-            <Text style={{ color: colors.ink, fontWeight: '700' }}>{comment.author.displayName}</Text>
+            <Text style={{ color: colors.text.primary, fontWeight: '700' }}>{comment.author.displayName}</Text>
             {comment.author.handle || comment.author.socialHandle ? (
-              <Text style={{ color: colors.goldDark, marginBottom: 4 }}>
+              <Text style={{ color: colors.accent[700], marginBottom: 4 }}>
                 @{comment.author.handle || comment.author.socialHandle}
               </Text>
             ) : null}
-            <Text style={{ color: colors.inkSoft, lineHeight: 22 }}>{comment.body}</Text>
+            <Text style={{ color: colors.primary[700], lineHeight: 22 }}>{comment.body}</Text>
           </View>
         ))
       )}
       {access && !access.canPublish ? (
-        <Text style={{ color: colors.goldDark, marginBottom: spacing.sm }}>
+        <Text style={{ color: colors.accent[700], marginBottom: spacing.sm }}>
           Comentários pedem a mesma conta com que lê a Comunidade.
         </Text>
       ) : null}
@@ -120,7 +120,7 @@ export function PostDetailScreen({
       />
       {onReport ? (
         <View style={{ marginTop: spacing.lg }}>
-          <Text style={{ color: colors.ink, fontWeight: '700', marginBottom: spacing.sm }}>Denunciar</Text>
+          <Text style={{ color: colors.text.primary, fontWeight: '700', marginBottom: spacing.sm }}>Denunciar</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: spacing.sm }}>
             {REPORT_REASONS.map((item) => (
               <Pressable
@@ -131,12 +131,12 @@ export function PostDetailScreen({
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                   borderRadius: 999,
-                  backgroundColor: reason === item.id ? colors.ink : colors.paper,
+                  backgroundColor: reason === item.id ? colors.text.primary : colors.surface,
                   borderWidth: 1,
-                  borderColor: colors.line,
+                  borderColor: colors.border,
                 }}
               >
-                <Text style={{ color: reason === item.id ? colors.white : colors.ink, fontWeight: '600' }}>
+                <Text style={{ color: reason === item.id ? colors.white : colors.text.primary, fontWeight: '600' }}>
                   {item.label}
                 </Text>
               </Pressable>

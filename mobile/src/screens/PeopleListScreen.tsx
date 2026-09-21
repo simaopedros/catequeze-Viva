@@ -47,8 +47,8 @@ export function PeopleListScreen({
             disabled={!handle}
           >
             <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>{person.displayName}</Text>
-              <Text style={{ color: colors.goldDark, marginTop: 2 }}>
+              <Text style={{ color: colors.text.primary, fontWeight: '700' }}>{person.displayName}</Text>
+              <Text style={{ color: colors.accent[700], marginTop: 2 }}>
                 {handle ? `@${handle}` : 'Sem handle público'}
                 {person.followersCount != null ? ` · ${person.followersCount} seguidores` : ''}
               </Text>
@@ -56,7 +56,7 @@ export function PeopleListScreen({
           </Pressable>
         );
       })}
-      <Text style={{ color: colors.muted, marginTop: spacing.sm }}>{people.length} pessoa(s)</Text>
+      <Text style={{ color: colors.text.muted, marginTop: spacing.sm }}>{people.length} pessoa(s)</Text>
     </Screen>
   );
 }

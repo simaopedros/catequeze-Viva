@@ -45,12 +45,23 @@ export const MOBILE_PATHS = {
   bibleBook: (id: string) => `/mobile/bible/books/${encodeURIComponent(id)}`,
   bibleChapter: (bookId: string, chapter: number) =>
     `/mobile/bible/books/${encodeURIComponent(bookId)}/chapters/${chapter}`,
+  calendar: '/mobile/calendar',
+  announcements: '/mobile/announcements',
+  announcementDetails: (id: string) => `/mobile/announcements/${encodeURIComponent(id)}`,
+  acknowledgeAnnouncement: (id: string) => `/mobile/announcements/${encodeURIComponent(id)}/acknowledge`,
+  journeys: '/mobile/journeys',
+  journeyDetails: (id: string) => `/mobile/journeys/${encodeURIComponent(id)}`,
+  journeyMilestone: (id: string) => `/mobile/journeys/milestones/${encodeURIComponent(id)}`,
+  catechismSearch: '/mobile/catechism/search',
+  catechismCategory: (category: string) =>
+    `/mobile/catechism/categories/${encodeURIComponent(category)}`,
+  catechismEntry: (number: number) => `/mobile/catechism/entries/${number}`,
 } as const;
 
 export const APP_TABS = [
-  { name: 'index', href: '/(app)/(tabs)', label: 'Início', icon: 'home-outline' },
-  { name: 'community', href: '/(app)/(tabs)/community', label: 'Comunidade', icon: 'people-outline' },
-  { name: 'classes', href: '/(app)/(tabs)/classes', label: 'Turmas', icon: 'school-outline' },
-  { name: 'messages', href: '/(app)/(tabs)/messages', label: 'Mensagens', icon: 'chatbubble-outline' },
-  { name: 'more', href: '/(app)/(tabs)/more', label: 'Mais', icon: 'ellipsis-horizontal' },
+  { name: 'index', href: '/(app)/(tabs)', label: 'Início', icon: 'home' },
+  { name: 'community', href: '/(app)/(tabs)/community', label: 'Comunidade', icon: 'users' },
+  { name: 'classes', href: '/(app)/(tabs)/classes', label: 'Turmas', icon: 'book-open' },
+  { name: 'messages', href: '/(app)/(tabs)/messages', label: 'Mensagens', icon: 'message-circle' },
+  { name: 'more', href: '/(app)/(tabs)/more', label: 'Mais', icon: 'menu' },
 ] as const;

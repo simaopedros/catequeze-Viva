@@ -20,15 +20,15 @@ export function ClassDetailScreen({
       <ScreenTitle title={data?.name || 'Turma'} subtitle={data?.community?.name || data?.description || ''} />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Turma indisponível" body={error} /> : null}
-      <Text style={{ color: colors.ink, fontWeight: '700', marginBottom: 8 }}>Encontros</Text>
+      <Text style={{ color: colors.text.primary, fontWeight: '700', marginBottom: 8 }}>Encontros</Text>
       {meetings.length === 0 && !loading ? (
         <EmptyState title="Sem encontros" body="Esta turma ainda não tem encontros listados." />
       ) : (
         meetings.map((meeting: any) => (
           <Pressable key={meeting.id} onPress={() => onOpenMeeting(meeting.id)}>
             <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>{meeting.title || meeting.theme || 'Encontro'}</Text>
-              <Text style={{ color: colors.muted }}>{meeting.startsAt || meeting.date || ''}</Text>
+              <Text style={{ color: colors.text.primary, fontWeight: '700' }}>{meeting.title || meeting.theme || 'Encontro'}</Text>
+              <Text style={{ color: colors.text.muted }}>{meeting.startsAt || meeting.date || ''}</Text>
             </Card>
           </Pressable>
         ))

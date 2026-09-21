@@ -23,8 +23,8 @@ export function BibleBooksScreen({
       {books.map((book) => (
         <Pressable key={book.id} onPress={() => onOpen(book.id)} testID={`bible-book-${book.id}`}>
           <Card>
-            <Text style={{ color: colors.ink, fontWeight: '700' }}>{book.name}</Text>
-            <Text style={{ color: colors.muted }}>{book.testament || ''}</Text>
+            <Text style={{ color: colors.text.primary, fontWeight: '700' }}>{book.name}</Text>
+            <Text style={{ color: colors.text.muted }}>{book.testament || ''}</Text>
           </Card>
         </Pressable>
       ))}
@@ -55,7 +55,7 @@ export function BibleBookScreen({
         chapters.map((chapter) => (
           <Pressable key={chapter.id || chapter.number} onPress={() => onOpenChapter(chapter.number)}>
             <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>Capítulo {chapter.number}</Text>
+              <Text style={{ color: colors.text.primary, fontWeight: '700' }}>Capítulo {chapter.number}</Text>
             </Card>
           </Pressable>
         ))
@@ -86,8 +86,8 @@ export function BibleChapterScreen({
       {error ? <EmptyState title="Capítulo indisponível" body={error} /> : null}
       {(chapter?.verses || []).map((verse) => (
         <Card key={verse.number}>
-          <Text style={{ color: colors.goldDark, fontWeight: '700' }}>{verse.number}</Text>
-          <Text style={{ color: colors.inkSoft, marginTop: 6, lineHeight: 22 }}>{verse.text}</Text>
+          <Text style={{ color: colors.accent[700], fontWeight: '700' }}>{verse.number}</Text>
+          <Text style={{ color: colors.primary[700], marginTop: 6, lineHeight: 22 }}>{verse.text}</Text>
           {canPublish ? (
             <BrandButton
               variant="ghost"

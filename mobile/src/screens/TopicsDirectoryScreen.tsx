@@ -26,10 +26,10 @@ export function TopicsDirectoryScreen({
       {topics.map((topic) => (
         <Pressable key={topic.slug} testID={`topic-card-${topic.slug}`} onPress={() => onOpenTopic(topic.slug)}>
           <Card>
-            <Text style={{ color: colors.goldDark, fontWeight: '700' }}>#{topic.slug}</Text>
-            <Text style={{ color: colors.ink, fontWeight: '700', marginTop: 4 }}>{topic.name}</Text>
+            <Text style={{ color: colors.accent[700], fontWeight: '700' }}>#{topic.slug}</Text>
+            <Text style={{ color: colors.text.primary, fontWeight: '700', marginTop: 4 }}>{topic.name}</Text>
             {topic.postCount != null ? (
-              <Text style={{ color: colors.muted, marginTop: 4 }}>{topic.postCount} publicações</Text>
+              <Text style={{ color: colors.text.muted, marginTop: 4 }}>{topic.postCount} publicações</Text>
             ) : null}
           </Card>
         </Pressable>

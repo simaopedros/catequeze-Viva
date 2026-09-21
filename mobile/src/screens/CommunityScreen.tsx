@@ -1,9 +1,10 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { Plus } from 'lucide-react-native';
 import { PostCard } from '../components/PostCard';
-import { BrandButton, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { EmptyState, FilterChip, LoadingState, PrimaryButton, Screen, ScreenTitle } from '../components/ui';
 import type { SocialAccess, SocialPost, SocialTopic } from '../api/types';
-import { colors, spacing } from '../theme';
+import { colors, elevation, spacing } from '../theme';
 import { COMMUNITY_AREAS, type CommunityAreaId } from './communityAreas';
 
 const SORTS = [
@@ -11,35 +12,6 @@ const SORTS = [
   { id: 'trending', label: 'Em alta' },
   { id: 'foryou', label: 'Para si' },
 ] as const;
-
-function Chip({
-  label,
-  active,
-  onPress,
-  testID,
-}: {
-  label: string;
-  active?: boolean;
-  onPress: () => void;
-  testID?: string;
-}) {
-  return (
-    <Pressable
-      testID={testID}
-      onPress={onPress}
-      style={{
-        paddingHorizontal: 12,
-        paddingVertical: 7,
-        borderRadius: 999,
-        backgroundColor: active ? colors.ink : colors.paper,
-        borderWidth: 1,
-        borderColor: colors.line,
-      }}
-    >
-      <Text style={{ color: active ? colors.white : colors.ink, fontWeight: '700', fontSize: 13 }}>{label}</Text>
-    </Pressable>
-  );
-}
 
 export function CommunityScreen({
   title = 'Comunidade',
@@ -85,13 +57,14 @@ export function CommunityScreen({
   onOpenArea?: (id: CommunityAreaId) => void;
 }) {
   return (
-    <Screen testID="community-screen">
+    <View style={{ flex: 1 }}>
+    <Screen testID="community-screen" variant="feed">
       <ScreenTitle title={title} subtitle={subtitle} />
       {showHub && onOpenArea ? (
         <View testID="community-hub" style={{ marginBottom: spacing.md }}>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {COMMUNITY_AREAS.filter((area) => area.id !== 'feed').map((area) => (
-              <Chip
+              <FilterChip
                 key={area.id}
                 label={area.label}
                 testID={`area-${area.id}`}
@@ -102,18 +75,10 @@ export function CommunityScreen({
         </View>
       ) : null}
       {!showHub && onSearch ? (
-        <BrandButton variant="ghost" label="Pesquisar pessoas e publicações" onPress={onSearch} testID="open-search" />
-      ) : null}
-      {!showHub && onToggleFollowing ? (
-        <BrandButton
-          variant={following ? 'primary' : 'ghost'}
-          label={following ? 'A ver quem segue' : 'Só quem eu sigo'}
-          onPress={onToggleFollowing}
-          testID="filter-following"
-        />
+        <PrimaryButton variant="ghost" label="Pesquisar" onPress={onSearch} testID="open-search" />
       ) : null}
       {access && !access.canPublish ? (
-        <Text style={{ color: colors.goldDark, marginBottom: spacing.md }}>
+        <Text style={{ color: colors.accent[700], marginBottom: spacing.md }}>
           {access.reason === 'subscription'
             ? 'Pode ler e seguir. Para publicar, precisa de uma assinatura activa.'
             : 'A publicação está limitada nesta conta.'}
@@ -121,17 +86,20 @@ export function CommunityScreen({
       ) : null}
       <View style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.sm, flexWrap: 'wrap' }}>
         {SORTS.map((item) => (
-          <Chip
+          <FilterChip
             key={item.id}
             label={item.label}
-            active={sort === item.id}
+            active={sort === item.id && !following}
             testID={`sort-${item.id}`}
-            onPress={() => onChangeSort(item.id)}
+            onPress={() => {
+              onChangeSort(item.id);
+              if (following && onToggleFollowing) onToggleFollowing();
+            }}
           />
         ))}
-        {showHub && onToggleFollowing ? (
-          <Chip
-            label="Quem sigo"
+        {onToggleFollowing ? (
+          <FilterChip
+            label="Seguindo"
             active={following}
             testID="filter-following"
             onPress={onToggleFollowing}
@@ -140,7 +108,7 @@ export function CommunityScreen({
       </View>
       <View style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.md, flexWrap: 'wrap' }}>
         <Pressable onPress={() => onChangeTopic(null)}>
-          <Text style={{ color: !topicSlug ? colors.goldDark : colors.muted, fontWeight: '700' }}>Todos</Text>
+          <Text style={{ color: !topicSlug ? colors.accent[700] : colors.text.muted, fontWeight: '700' }}>Todos</Text>
         </Pressable>
         {topics.map((topic) => (
           <Pressable
@@ -148,19 +116,12 @@ export function CommunityScreen({
             onPress={() => (onOpenTopic ? onOpenTopic(topic.slug) : onChangeTopic(topic.slug))}
             testID={`topic-${topic.slug}`}
           >
-            <Text style={{ color: topicSlug === topic.slug ? colors.goldDark : colors.muted, fontWeight: '700' }}>
+            <Text style={{ color: topicSlug === topic.slug ? colors.accent[700] : colors.text.muted, fontWeight: '700' }}>
               {topic.name}
             </Text>
           </Pressable>
         ))}
       </View>
-      <BrandButton label="Nova publicação" onPress={onCompose} testID="compose-open" />
-      <Text
-        testID="feed-heading"
-        style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm, marginTop: 4 }}
-      >
-        Publicações
-      </Text>
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Feed indisponível" body={error} /> : null}
       {!loading && posts.length === 0 ? (
@@ -171,5 +132,24 @@ export function CommunityScreen({
         ))
       )}
     </Screen>
+    <Pressable
+      testID="compose-open"
+      onPress={onCompose}
+      style={{
+        position: 'absolute',
+        right: 20,
+        bottom: 24,
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        backgroundColor: colors.accent[500],
+        alignItems: 'center',
+        justifyContent: 'center',
+        ...elevation.card,
+      }}
+    >
+      <Plus color={colors.text.primary} size={24} />
+    </Pressable>
+    </View>
   );
 }

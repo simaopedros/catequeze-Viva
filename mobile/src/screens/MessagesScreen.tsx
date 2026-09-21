@@ -33,10 +33,10 @@ export function MessagesScreen({
         items.map((item: any) => (
           <Pressable key={item.id} onPress={() => onOpen(item.id)} testID={`conversation-${item.id}`}>
             <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>
+              <Text style={{ color: colors.text.primary, fontWeight: '700' }}>
                 {item.title || item.name || item.subject || 'Conversa'}
               </Text>
-              <Text style={{ color: colors.muted, marginTop: 4 }} numberOfLines={2}>
+              <Text style={{ color: colors.text.muted, marginTop: 4 }} numberOfLines={2}>
                 {item.lastMessage?.content || item.preview || ' '}
               </Text>
             </Card>

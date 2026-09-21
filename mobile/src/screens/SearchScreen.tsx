@@ -37,7 +37,7 @@ export function SearchScreen({
       ) : null}
       {people.length > 0 ? (
         <>
-          <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm }}>Pessoas</Text>
+          <Text style={{ color: colors.text.primary, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm }}>Pessoas</Text>
           {people.map((person) => {
             const handle = person.socialHandle || person.handle;
             return (
@@ -47,8 +47,8 @@ export function SearchScreen({
                 onPress={() => handle && onOpenAuthor(handle)}
               >
                 <Card>
-                  <Text style={{ color: colors.ink, fontWeight: '700' }}>{person.displayName}</Text>
-                  <Text style={{ color: colors.goldDark, marginTop: 2 }}>
+                  <Text style={{ color: colors.text.primary, fontWeight: '700' }}>{person.displayName}</Text>
+                  <Text style={{ color: colors.accent[700], marginTop: 2 }}>
                     {handle ? `@${handle}` : 'Sem handle'} · {person.followersCount ?? 0} seguidores
                   </Text>
                 </Card>
@@ -59,7 +59,7 @@ export function SearchScreen({
       ) : null}
       {posts.length > 0 ? (
         <>
-          <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm }}>
+          <Text style={{ color: colors.text.primary, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm }}>
             Publicações
           </Text>
           {posts.map((post) => (

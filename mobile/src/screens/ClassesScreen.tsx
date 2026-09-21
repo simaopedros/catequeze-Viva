@@ -40,8 +40,8 @@ export function ClassesScreen({
         items.map((item) => (
           <Pressable key={item.id} onPress={() => onOpen(item.id)} testID={`class-${item.id}`}>
             <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 17 }}>{item.name || 'Turma'}</Text>
-              <Text style={{ color: colors.muted, marginTop: 4 }}>
+              <Text style={{ color: colors.text.primary, fontWeight: '700', fontSize: 17 }}>{item.name || 'Turma'}</Text>
+              <Text style={{ color: colors.text.muted, marginTop: 4 }}>
                 {item.community?.name || 'Comunidade'} {item.year ? `· ${item.year}` : ''}
               </Text>
             </Card>

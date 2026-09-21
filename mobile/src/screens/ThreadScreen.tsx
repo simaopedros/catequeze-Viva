@@ -26,10 +26,10 @@ export function ThreadScreen({
       {error ? <EmptyState title="Conversa indisponível" body={error} /> : null}
       {messages.map((message: any) => (
         <Card key={message.id}>
-          <Text style={{ color: colors.goldDark, fontWeight: '700' }}>
+          <Text style={{ color: colors.accent[700], fontWeight: '700' }}>
             {message.author?.displayName || message.senderName || 'Membro'}
           </Text>
-          <Text style={{ color: colors.inkSoft, marginTop: 6 }}>{message.content || message.body}</Text>
+          <Text style={{ color: colors.primary[700], marginTop: 6 }}>{message.content || message.body}</Text>
         </Card>
       ))}
       <Field label="Mensagem" value={content} onChangeText={setContent} testID="message-input" />

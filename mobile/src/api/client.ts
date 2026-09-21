@@ -292,6 +292,53 @@ export function createMobileClient(options: MobileClientOptions) {
     bibleChapter(bookId: string, chapter: number, locale = 'pt-BR') {
       return request<BibleChapter>(withQuery(MOBILE_PATHS.bibleChapter(bookId, chapter), { locale }));
     },
+    catechumens() {
+      return request<any>(MOBILE_PATHS.catechumens);
+    },
+    catechumenDetails(id: string) {
+      return request<any>(MOBILE_PATHS.catechumenDetails(id));
+    },
+    families() {
+      return request<any>(MOBILE_PATHS.families);
+    },
+    familyDetails(id: string) {
+      return request<any>(MOBILE_PATHS.familyDetails(id));
+    },
+    calendar(workspaceId?: string, from?: string, to?: string) {
+      return request<{ items: any[] }>(
+        withQuery(MOBILE_PATHS.calendar, { workspaceId, from, to }),
+      );
+    },
+    announcements(workspaceId?: string) {
+      return request<any[]>(withQuery(MOBILE_PATHS.announcements, { workspaceId }));
+    },
+    announcementDetails(id: string, workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.announcementDetails(id), { workspaceId }));
+    },
+    acknowledgeAnnouncement(id: string) {
+      return request<{ ok: boolean }>(MOBILE_PATHS.acknowledgeAnnouncement(id), { method: 'POST' });
+    },
+    journeys(workspaceId?: string) {
+      return request<any[]>(withQuery(MOBILE_PATHS.journeys, { workspaceId }));
+    },
+    journeyDetails(id: string) {
+      return request<any>(MOBILE_PATHS.journeyDetails(id));
+    },
+    updateJourneyMilestone(milestoneId: string, status: string) {
+      return request<any>(MOBILE_PATHS.journeyMilestone(milestoneId), {
+        method: 'POST',
+        body: JSON.stringify({ status }),
+      });
+    },
+    searchCatechism(q: string, limit = 20) {
+      return request<{ results: any[] }>(withQuery(MOBILE_PATHS.catechismSearch, { q, limit }));
+    },
+    catechismCategory(category: string) {
+      return request<{ results: any[] }>(MOBILE_PATHS.catechismCategory(category));
+    },
+    catechismEntry(number: number) {
+      return request<any>(MOBILE_PATHS.catechismEntry(number));
+    },
   };
 }
 

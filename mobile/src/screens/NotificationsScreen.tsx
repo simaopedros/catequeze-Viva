@@ -31,8 +31,8 @@ export function NotificationsScreen({
       ) : (
         items.map((item: any) => (
           <Card key={item.id}>
-            <Text style={{ color: colors.ink, fontWeight: '700' }}>{item.title || 'Aviso'}</Text>
-            <Text style={{ color: colors.muted, marginTop: 4 }}>{item.body || item.message || ''}</Text>
+            <Text style={{ color: colors.text.primary, fontWeight: '700' }}>{item.title || 'Aviso'}</Text>
+            <Text style={{ color: colors.text.muted, marginTop: 4 }}>{item.body || item.message || ''}</Text>
             {!item.readAt ? (
               <BrandButton variant="ghost" label="Marcar como lida" onPress={() => onRead(item.id)} />
             ) : null}

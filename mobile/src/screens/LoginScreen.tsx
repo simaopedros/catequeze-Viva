@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Text } from 'react-native';
-import { BrandButton, ErrorText, Field, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { Pressable, Text, View } from 'react-native';
+import { BrandMark, ErrorText, Field, PasswordInput, PrimaryButton, Screen } from '../components/ui';
+import { colors, typography } from '../theme';
 
 export function LoginScreen({
   onSubmit,
@@ -18,9 +18,12 @@ export function LoginScreen({
   const [password, setPassword] = useState('');
 
   return (
-    <Screen testID="login-screen">
-      <Text style={{ color: colors.goldDark, fontWeight: '700', marginBottom: 8 }}>CATEQUESE VIVA</Text>
-      <ScreenTitle title="Entrar" subtitle="Use a mesma conta da plataforma web. A sessão fica guardada neste telemóvel." />
+    <Screen testID="login-screen" variant="form">
+      <BrandMark />
+      <Text style={{ ...typography.headingXl, color: colors.text.primary, textAlign: 'center' }}>Entrar</Text>
+      <Text style={{ ...typography.bodyMd, color: colors.text.muted, textAlign: 'center', marginBottom: 24 }}>
+        Use a mesma conta da plataforma web.
+      </Text>
       <ErrorText message={error} />
       <Field
         label="E-mail"
@@ -30,21 +33,23 @@ export function LoginScreen({
         autoComplete="email"
         testID="login-email"
       />
-      <Field
-        label="Palavra-passe"
+      <PasswordInput
+        label="Senha"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
         autoComplete="password"
         testID="login-password"
       />
-      <BrandButton
+      <Pressable onPress={onForgotPassword} style={{ alignSelf: 'flex-end', marginBottom: 8, minHeight: 44, justifyContent: 'center' }}>
+        <Text style={{ color: colors.primary[700], fontWeight: '600' }}>Esqueci a senha</Text>
+      </Pressable>
+      <PrimaryButton
         testID="login-submit"
-        label={busy ? 'A entrar…' : 'Entrar'}
+        label={busy ? 'Entrando…' : 'Entrar'}
+        loading={busy}
         disabled={busy || !email || !password}
         onPress={() => onSubmit(email.trim(), password)}
       />
-      <BrandButton variant="ghost" label="Esqueci a palavra-passe" onPress={onForgotPassword} />
     </Screen>
   );
 }
