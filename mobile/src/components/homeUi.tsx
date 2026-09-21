@@ -119,6 +119,47 @@ const STAT_CONFIG: { key: string; label: string; icon: LucideIcon; tint: string;
   { key: 'sacraments', label: 'Sacramentos', icon: Sparkles, tint: '#A65E00', bg: '#FFF8E8' },
 ];
 
+const STAT_TILE_HEIGHT = 108;
+const STAT_GAP = 6;
+
+function HomeStatTile({
+  label,
+  value,
+  icon: Icon,
+  tint,
+  bg,
+  onPress,
+}: {
+  label: string;
+  value: string | number;
+  icon: LucideIcon;
+  tint: string;
+  bg: string;
+  onPress?: () => void;
+}) {
+  const body = (
+    <View style={styles.statTile}>
+      <View style={[styles.statIconCircle, { backgroundColor: bg }]}>
+        <Icon size={17} color={tint} />
+      </View>
+      <View style={styles.statLabelSlot}>
+        <Text style={styles.statLabel} numberOfLines={2}>
+          {label}
+        </Text>
+      </View>
+      <Text style={styles.statValue} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
+        {value}
+      </Text>
+    </View>
+  );
+  if (!onPress) return body;
+  return (
+    <Pressable onPress={onPress} style={{ width: '100%' }}>
+      {body}
+    </Pressable>
+  );
+}
+
 export function HomeStatsRow({
   values,
   onPressClasses,
@@ -130,60 +171,56 @@ export function HomeStatsRow({
 }) {
   const { width: screenWidth } = useWindowDimensions();
   const horizontalPad = contentHorizontalPadding(screenWidth);
-  const gap = spacing[2];
-  const tileWidth = Math.floor((screenWidth - horizontalPad * 2 - gap * 3) / 4);
-  const useScroll = tileWidth < 78;
-  const cardWidth = useScroll ? 84 : tileWidth;
+  const contentWidth = screenWidth - horizontalPad * 2;
+  const tileWidth = (contentWidth - STAT_GAP * 3) / 4;
+  const needsScroll = tileWidth < 72;
+  const scrollTileWidth = 80;
 
   const handlers: Record<string, (() => void) | undefined> = {
     classes: onPressClasses,
     catechumens: onPressCatechumens,
   };
 
-  const tiles = STAT_CONFIG.map((item) => {
-    const Icon = item.icon;
+  const renderTile = (item: (typeof STAT_CONFIG)[number], widthStyle: { width: number } | { flex: number }) => {
     const value = values[item.key as keyof typeof values];
     const onPress = handlers[item.key];
     const tile = (
-      <View style={[styles.statTile, { width: cardWidth }]}>
-        <View style={[styles.statIconCircle, { backgroundColor: item.bg }]}>
-          <Icon size={16} color={item.tint} />
-        </View>
-        <Text style={styles.statLabel} numberOfLines={2}>
-          {item.label}
-        </Text>
-        <Text style={styles.statValue} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>
-          {value}
-        </Text>
+      <HomeStatTile
+        label={item.label}
+        value={value}
+        icon={item.icon}
+        tint={item.tint}
+        bg={item.bg}
+        onPress={onPress}
+      />
+    );
+    return (
+      <View key={item.key} style={[styles.statTileSlot, widthStyle]}>
+        {tile}
       </View>
     );
-    if (!onPress) {
-      return (
-        <View key={item.key} style={{ width: cardWidth }}>
-          {tile}
-        </View>
-      );
-    }
-    return (
-      <Pressable key={item.key} onPress={onPress} style={{ width: cardWidth }}>
-        {tile}
-      </Pressable>
-    );
-  });
+  };
 
   return (
     <View testID="home-stats-row" style={styles.statsSection}>
       <Text style={styles.sectionTitle}>Hoje</Text>
-      {useScroll ? (
+      {needsScroll ? (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[styles.statsScroll, { gap, paddingRight: horizontalPad }]}
+          style={{ marginHorizontal: -horizontalPad }}
+          contentContainerStyle={{
+            gap: STAT_GAP,
+            paddingHorizontal: horizontalPad,
+            paddingBottom: spacing[1],
+          }}
         >
-          {tiles}
+          {STAT_CONFIG.map((item) => renderTile(item, { width: scrollTileWidth }))}
         </ScrollView>
       ) : (
-        <View style={[styles.statsRow, { gap }]}>{tiles}</View>
+        <View style={[styles.statsRow, { gap: STAT_GAP }]}>
+          {STAT_CONFIG.map((item) => renderTile(item, { flex: 1 }))}
+        </View>
       )}
     </View>
   );
@@ -354,43 +391,52 @@ const styles = StyleSheet.create({
   },
   sectionLink: { ...typography.labelLg, color: colors.primary[700] },
   statsSection: { marginBottom: spacing[4] },
-  statsScroll: { paddingBottom: spacing[1] },
   statsRow: {
     flexDirection: 'row',
     alignItems: 'stretch',
   },
+  statTileSlot: {
+    minWidth: 0,
+  },
   statTile: {
+    height: STAT_TILE_HEIGHT,
     backgroundColor: colors.surface,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
-    paddingVertical: spacing[3],
-    paddingHorizontal: spacing[1],
+    paddingTop: spacing[2],
+    paddingBottom: spacing[2],
+    paddingHorizontal: 4,
     alignItems: 'center',
-    minHeight: 96,
+    justifyContent: 'space-between',
     ...elevation.card,
   },
   statIconCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing[1],
+  },
+  statLabelSlot: {
+    height: 28,
+    justifyContent: 'center',
+    width: '100%',
+    paddingHorizontal: 2,
   },
   statLabel: {
     fontSize: 10,
-    lineHeight: 13,
+    lineHeight: 12,
     color: colors.text.muted,
     fontWeight: '600',
     textAlign: 'center',
   },
   statValue: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '700',
     color: colors.text.primary,
-    marginTop: spacing[1],
     textAlign: 'center',
+    width: '100%',
   },
   alertsCard: { paddingVertical: spacing[1], marginBottom: spacing[5] },
   alertRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[3], paddingVertical: spacing[3], paddingHorizontal: spacing[2] },
