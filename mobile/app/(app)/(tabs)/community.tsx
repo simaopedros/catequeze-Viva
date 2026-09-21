@@ -4,6 +4,7 @@ import { displayName, useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
 import type { CommunityFeedScope } from '../../../src/components/communityUi';
 import { openCommunityArea } from '../../../src/screens/communityNavigation';
+import { DEFAULT_COMPOSE_MEDIA_LIMITS } from '../../../src/social/constants';
 import { CommunityScreen } from '../../../src/screens/CommunityScreen';
 
 export default function CommunityRoute() {
@@ -41,11 +42,25 @@ export default function CommunityRoute() {
       onOpenArea={(area) => openCommunityArea(router, area, me.data?.handle)}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
       onOpenPost={(slug) => router.push(`/(app)/community/p/${slug}`)}
-      onPublishPost={async (body) => {
+      composeMedia={{
+        limits: {
+          maxMediaPerPost:
+            access.data?.limits?.maxMediaPerPost ?? DEFAULT_COMPOSE_MEDIA_LIMITS.maxMediaPerPost,
+          maxVideoSeconds:
+            access.data?.limits?.maxVideoSeconds ?? DEFAULT_COMPOSE_MEDIA_LIMITS.maxVideoSeconds,
+        },
+        uploadAuth: api.getUploadAuth(),
+        requestVideoUpload: (opts) => api.createSocialVideoUpload(opts),
+      }}
+      onPublishPost={async (payload) => {
         setComposeBusy(true);
         setComposeError(null);
         try {
-          await api.createPost({ body });
+          await api.createPost({
+            body: payload.body,
+            mediaIds: payload.mediaIds.length ? payload.mediaIds : undefined,
+            mediaConsentAck: payload.mediaConsentAck,
+          });
           await feed.reload();
         } catch (err) {
           setComposeError(err instanceof Error ? err.message : 'Não foi possível publicar.');
@@ -54,7 +69,6 @@ export default function CommunityRoute() {
           setComposeBusy(false);
         }
       }}
-      onComposeMedia={() => router.push('/(app)/community/compose')}
       onOpenLink={() => router.push('/(app)/community/search')}
     />
   );

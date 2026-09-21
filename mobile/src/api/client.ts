@@ -16,6 +16,7 @@ import type {
   SocialSearch,
   SocialShare,
   SocialTopic,
+  SocialVideoUploadTicket,
 } from './types';
 
 export class MobileApiError extends Error {
@@ -199,11 +200,35 @@ export function createMobileClient(options: MobileClientOptions) {
     socialTopics() {
       return request<SocialTopic[]>(MOBILE_PATHS.socialTopics);
     },
-    createPost(body: { body: string; topicSlugs?: string[]; share?: { kind: string; sourceId: string } | null }) {
+    createPost(body: {
+      body: string;
+      topicSlugs?: string[];
+      share?: { kind: string; sourceId: string } | null;
+      mediaIds?: string[];
+      mediaConsentAck?: boolean;
+    }) {
       return request<SocialPost>(MOBILE_PATHS.socialPosts, {
         method: 'POST',
         body: JSON.stringify(body),
       });
+    },
+    createSocialVideoUpload(body: { title?: string; durationSeconds?: number }) {
+      return request<SocialVideoUploadTicket>(MOBILE_PATHS.socialVideoUpload, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    getSocialMediaStatus(mediaIds: string[]) {
+      return request<{ id: string; status: string; kind?: string }[]>(MOBILE_PATHS.socialMediaStatus, {
+        method: 'POST',
+        body: JSON.stringify({ mediaIds }),
+      });
+    },
+    getUploadAuth() {
+      return {
+        getBaseUrl: options.getBaseUrl,
+        getToken: options.getToken,
+      };
     },
     socialProfile(handle: string) {
       return request<SocialProfile>(MOBILE_PATHS.socialProfile(handle));

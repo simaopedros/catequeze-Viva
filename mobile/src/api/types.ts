@@ -103,6 +103,33 @@ export type SocialAccess = {
   reason?: string | null;
   banned?: boolean;
   quotaLeft?: number | null;
+  limits?: {
+    maxPostsPerDay?: number | null;
+    maxMediaPerPost: number;
+    maxVideoSeconds: number;
+  };
+};
+
+export type SocialVideoUploadTicket =
+  | {
+      transport: 'stream';
+      mediaId: string;
+      libraryId: string;
+      videoId: string;
+      tusEndpoint: string;
+      authorizationSignature: string;
+      authorizationExpire: number;
+      embedUrl: string;
+    }
+  | {
+      transport: 'server';
+      mediaId: string;
+    };
+
+export type CommunityComposePayload = {
+  body: string;
+  mediaIds: string[];
+  mediaConsentAck: boolean;
 };
 
 export type SocialTopic = {

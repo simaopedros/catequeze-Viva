@@ -8,7 +8,8 @@ import {
   CommunityScreenHeader,
 } from '../components/communityUi';
 import { EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import type { SocialAccess, SocialPost, SocialTopic } from '../api/types';
+import type { CommunityComposePayload, SocialAccess, SocialPost, SocialTopic } from '../api/types';
+import type { InlineComposeMediaConfig } from '../components/InlineCommunityComposer';
 import { colors, spacing } from '../theme';
 import type { CommunityAreaId } from './communityAreas';
 
@@ -32,7 +33,7 @@ export function CommunityScreen({
   onPublishPost,
   composeBusy,
   composeError,
-  onComposeMedia,
+  composeMedia,
   onOpenLink,
   feedScope,
   onChangeFeedScope,
@@ -57,10 +58,10 @@ export function CommunityScreen({
   onOpenPost?: (slug: string) => void;
   onOpenTopic?: (slug: string) => void;
   onCompose?: () => void;
-  onPublishPost?: (body: string) => Promise<void>;
+  onPublishPost?: (payload: CommunityComposePayload) => Promise<void>;
   composeBusy?: boolean;
   composeError?: string | null;
-  onComposeMedia?: (kind: 'image' | 'video') => void;
+  composeMedia?: InlineComposeMediaConfig;
   onSearch?: () => void;
   following?: boolean;
   onToggleFollowing?: () => void;
@@ -100,7 +101,7 @@ export function CommunityScreen({
               busy={composeBusy}
               error={composeError}
               onPublish={onPublishPost}
-              onComposeMedia={onComposeMedia}
+              composeMedia={composeMedia}
               expanded={composerExpanded}
               onExpandedChange={setComposerExpanded}
             />

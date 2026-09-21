@@ -40,7 +40,11 @@ describe('Community feed', () => {
     expect(view.getByTestId('compose-input')).toBeTruthy();
     fireEvent.changeText(view.getByTestId('compose-input'), 'Nova mensagem pastoral');
     fireEvent.press(view.getByTestId('compose-publish'));
-    expect(onPublishPost).toHaveBeenCalledWith('Nova mensagem pastoral');
+    expect(onPublishPost).toHaveBeenCalledWith({
+      body: 'Nova mensagem pastoral',
+      mediaIds: [],
+      mediaConsentAck: false,
+    });
     fireEvent.press(view.getByTestId('community-link-action'));
     expect(onOpenLink).toHaveBeenCalled();
   });
