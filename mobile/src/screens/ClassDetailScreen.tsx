@@ -73,21 +73,26 @@ export function ClassDetailScreen({
     { key: 'families', onPress: onOpenFamilies },
   ] as const;
 
+  const visibleActions = actions.filter((action) => Boolean(action.onPress));
+
   return (
     <Screen testID="class-detail-screen">
       <ClassSummaryCard name={name} enrollmentCount={enrollment} />
 
+      <Text style={{ color: colors.text.muted, fontSize: 13, marginBottom: spacing[3] }}>
+        Encontros e presença: use os atalhos abaixo. «Encontros» permite criar sessões; «Presença» abre a chamada.
+      </Text>
+
       <View testID="class-actions" style={{ marginBottom: spacing[4] }}>
-        {actions.map((action) => {
+        {visibleActions.map((action) => {
           const meta = CLASS_DETAIL_ACTIONS[action.key];
-          if (!action.onPress) return null;
           return (
             <ClassActionButton
               key={action.key}
               testID={`class-action-${action.key}`}
               label={meta.label}
               icon={meta.icon}
-              onPress={action.onPress}
+              onPress={action.onPress!}
             />
           );
         })}

@@ -34,7 +34,7 @@ export function MeetingScreen({
       <ScreenTitle title={data.title || data.theme || 'Encontro'} subtitle={data.class?.name || ''} />
       <Text style={{ color: colors.text.muted, marginBottom: 16 }}>{data.startsAt || data.date || ''}</Text>
       {data.notes ? <Text style={{ color: colors.primary[700], marginBottom: 16 }}>{data.notes}</Text> : null}
-      <BrandButton label="Marcar presença" onPress={onAttendance} testID="open-attendance" />
+      <BrandButton label="Fazer a chamada" onPress={onAttendance} testID="open-attendance" />
     </Screen>
   );
 }

@@ -50,7 +50,7 @@ export function MoreScreen({
   onLogout: () => void;
 }) {
   const resources = [
-    { key: 'calendar', title: 'Agenda', help: 'Mês e encontros' },
+    { key: 'calendar', title: 'Agenda', help: 'Calendário litúrgico e encontros' },
     { key: 'announcements', title: 'Comunicados', help: 'Avisos da paróquia' },
     { key: 'journeys', title: 'Jornadas', help: 'Marcos sacramentais' },
     { key: 'bible', title: 'Bíblia', help: 'Ler e partilhar', testID: 'open-bible' },
@@ -70,6 +70,10 @@ export function MoreScreen({
           <Text style={{ fontSize: 15, color: colors.text.muted, marginTop: 4 }}>{name}</Text>
         </View>
       </View>
+
+      <Text style={{ fontSize: 13, color: colors.text.muted, marginBottom: spacing[4] }}>
+        Para criar encontros e marcar presenças: Turmas → turma → Encontros ou Presença.
+      </Text>
 
       {profile?.handle ? (
         <MenuIconRow title={`Ver perfil @${profile.handle}`} icon={User} onPress={onOpenProfile} />

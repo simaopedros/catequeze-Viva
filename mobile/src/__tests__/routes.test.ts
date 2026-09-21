@@ -23,6 +23,7 @@ describe('navigation gate', () => {
       '/(app)/community/connections?handle=ana&kind=followers',
     );
     expect(appRoutes.attendance('meet-1')).toBe('/(app)/meeting/meet-1/attendance');
+    expect(appRoutes.classMeetings('turma-3a')).toBe('/(app)/class/turma-3a/meetings');
     expect(appRoutes.bibleChapter('gn', 1)).toBe('/(app)/bible/gn/1');
   });
 });

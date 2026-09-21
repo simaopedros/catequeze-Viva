@@ -25,7 +25,8 @@ export default function AppLayout() {
       <Stack.Screen name="community/p/[slug]" options={{ title: 'Publicação' }} />
       <Stack.Screen name="community/t/[slug]" options={{ title: 'Tópico' }} />
       <Stack.Screen name="community/[handle]" options={{ title: 'Perfil' }} />
-      <Stack.Screen name="class/[id]" options={{ title: 'Turma' }} />
+      <Stack.Screen name="class/[id]/index" options={{ title: 'Turma' }} />
+      <Stack.Screen name="class/[id]/meetings" options={{ title: 'Encontros' }} />
       <Stack.Screen name="meeting/[id]/index" options={{ title: 'Encontro' }} />
       <Stack.Screen name="meeting/[id]/attendance" options={{ title: 'Presença' }} />
       <Stack.Screen name="messages/[id]" options={{ title: 'Conversa' }} />

@@ -149,6 +149,18 @@ export function createMobileClient(options: MobileClientOptions) {
     meetings(classId?: string) {
       return request<any>(withQuery(MOBILE_PATHS.meetings, { classId }));
     },
+    createMeeting(body: {
+      classId: string;
+      title: string;
+      theme?: string;
+      date: string;
+      notes?: string;
+    }) {
+      return request<any>(MOBILE_PATHS.meetings, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
     meetingDetails(id: string) {
       return request<any>(MOBILE_PATHS.meetingDetails(id));
     },
