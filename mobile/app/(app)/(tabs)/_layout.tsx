@@ -10,9 +10,9 @@ export default function TabsLayout() {
         headerStyle: { backgroundColor: colors.cream },
         headerTintColor: colors.ink,
         headerShadowVisible: false,
-        tabBarActiveTintColor: colors.goldDark,
+        tabBarActiveTintColor: colors.ink,
         tabBarInactiveTintColor: colors.muted,
-        tabBarStyle: { backgroundColor: colors.paper, borderTopColor: colors.line },
+        tabBarStyle: { backgroundColor: colors.paper, borderTopColor: colors.line, borderTopWidth: 1 },
       }}
     >
       {APP_TABS.map((tab) => (

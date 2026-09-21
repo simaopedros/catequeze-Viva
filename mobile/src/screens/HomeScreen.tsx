@@ -2,8 +2,8 @@ import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EncounterCard, ErrorState, LoadingState, MetricTile, Screen } from '../components/ui';
-import { formatDay, formatRelative, formatWhen, personName } from '../format';
-import { colors, radius, spacing, type } from '../theme';
+import { formatWhen, personName } from '../format';
+import { colors, spacing, type } from '../theme';
 
 type Meeting = {
   id: string;
@@ -17,6 +17,71 @@ type Meeting = {
 type ClassRow = { id: string; name?: string; enrollmentCount?: number };
 type Birthday = { id: string; firstName?: string; lastName?: string; birthDate?: string };
 type Alert = { type?: string; message?: string };
+
+function clock(value?: string) {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+  return new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(date);
+}
+
+function dayMark(value?: string) {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+  return String(date.getDate()).padStart(2, '0');
+}
+
+function Index({ children }: { children: string }) {
+  return (
+    <Text
+      style={{
+        marginTop: 28,
+        marginBottom: 4,
+        color: colors.ink,
+        fontFamily: type.bodyBold,
+        fontSize: 11,
+        letterSpacing: 1.8,
+      }}
+    >
+      {children.toUpperCase()}
+    </Text>
+  );
+}
+
+function Slot({
+  mark,
+  title,
+  detail,
+  onPress,
+  testID,
+}: {
+  mark: string;
+  title: string;
+  detail?: string;
+  onPress?: () => void;
+  testID?: string;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      testID={testID}
+      style={{ flexDirection: 'row', alignItems: 'baseline', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colors.line }}
+    >
+      <Text style={{ width: 56, color: colors.ink, fontFamily: type.bodyBold, fontSize: 13 }}>{mark}</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={{ color: colors.ink, fontFamily: type.body, fontSize: 16 }} numberOfLines={1}>
+          {title}
+        </Text>
+        {detail ? (
+          <Text style={{ color: colors.muted, fontFamily: type.body, fontSize: 13, marginTop: 2 }} numberOfLines={1}>
+            {detail}
+          </Text>
+        ) : null}
+      </View>
+    </Pressable>
+  );
+}
 
 export function HomeScreen({
   name,
@@ -61,6 +126,10 @@ export function HomeScreen({
   onRefresh?: () => void;
 }) {
   const insets = useSafeAreaInsets();
+  const now = new Date();
+  const day = new Intl.DateTimeFormat('pt-BR', { day: '2-digit' }).format(now);
+  const weekday = new Intl.DateTimeFormat('pt-BR', { weekday: 'long' }).format(now);
+  const month = new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(now);
   const today = stats?.todayMeetings ?? [];
   const focus = today[0];
   const upcoming = (meetings ?? stats?.upcomingMeetings ?? []).filter((item) => item.id !== focus?.id).slice(0, 4);
@@ -76,16 +145,25 @@ export function HomeScreen({
       onRefresh={onRefresh}
       contentStyle={{ paddingTop: insets.top + 10, paddingHorizontal: spacing.md, paddingBottom: spacing.lg }}
     >
-      <Text style={{ color: colors.ink, fontFamily: type.display, fontSize: 30, lineHeight: 34 }} numberOfLines={1}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+        <Text style={{ color: colors.ink, fontFamily: type.bodyBold, fontSize: 72, lineHeight: 72, letterSpacing: -3 }}>{day}</Text>
+        <View style={{ alignItems: 'flex-end', paddingBottom: 8 }}>
+          <Text style={{ color: colors.ink, fontFamily: type.bodyBold, fontSize: 12, letterSpacing: 1.6 }}>
+            {weekday.toUpperCase()}
+          </Text>
+          <Text style={{ color: colors.muted, fontFamily: type.bodyMedium, fontSize: 12, letterSpacing: 1.6, marginTop: 2 }}>
+            {month.toUpperCase()}
+          </Text>
+        </View>
+      </View>
+      <Text style={{ color: colors.ink, fontFamily: type.bodyBold, fontSize: 15, marginTop: 12 }} numberOfLines={1}>
         {name}
       </Text>
       {workspace ? (
-        <Text style={{ color: colors.muted, fontFamily: type.body, marginTop: 2, marginBottom: spacing.sm }} numberOfLines={1}>
+        <Text style={{ color: colors.muted, fontFamily: type.body, fontSize: 13, marginTop: 2 }} numberOfLines={1}>
           {workspace}
         </Text>
-      ) : (
-        <View style={{ height: spacing.sm }} />
-      )}
+      ) : null}
       {loading && !stats ? <LoadingState /> : null}
       {error ? <ErrorState title="Não foi possível carregar o início" body={error} /> : null}
       {focus ? (
@@ -100,89 +178,66 @@ export function HomeScreen({
       ) : !loading ? (
         <Text style={{ color: colors.muted, fontFamily: type.body, marginBottom: spacing.md }}>Sem encontro hoje.</Text>
       ) : null}
-      <View style={{ flexDirection: 'row', gap: 12, marginBottom: spacing.md }}>
-        <MetricTile label="Turmas" value={stats?.activeClasses ?? '—'} onPress={onOpenClasses} testID="metric-classes" />
-        <MetricTile
-          label="Catequizandos"
-          value={stats?.activeCatechumens ?? '—'}
-          onPress={onOpenCatechumens}
-          testID="metric-catechumens"
-        />
-        <MetricTile label="Presença" value={stats?.avgAttendance != null ? `${stats.avgAttendance}%` : '—'} />
-        <MetricTile
-          label="Sacramentos"
-          value={stats?.pendingSacraments ?? '—'}
-          onPress={onOpenJourneys}
-          testID="metric-sacraments"
-        />
-      </View>
+      <Index>Hoje</Index>
+      <MetricTile label="Turmas" value={stats?.activeClasses ?? '—'} onPress={onOpenClasses} testID="metric-classes" />
+      <MetricTile
+        label="Catequizandos"
+        value={stats?.activeCatechumens ?? '—'}
+        onPress={onOpenCatechumens}
+        testID="metric-catechumens"
+      />
+      <MetricTile label="Presença" value={stats?.avgAttendance != null ? `${stats.avgAttendance}%` : '—'} />
+      <MetricTile
+        label="Sacramentos"
+        value={stats?.pendingSacraments ?? '—'}
+        onPress={onOpenJourneys}
+        testID="metric-sacraments"
+      />
       {alerts.map((alert) => (
-        <View
-          key={alert.message}
-          style={{
-            backgroundColor: colors.cream,
-            borderRadius: radius.md,
-            borderWidth: 1,
-            borderColor: colors.line,
-            padding: spacing.sm,
-            marginBottom: 8,
-          }}
-        >
-          <Text style={{ color: colors.inkSoft, fontFamily: type.body, lineHeight: 20 }}>{alert.message}</Text>
+        <View key={alert.message} style={{ borderLeftWidth: 4, borderLeftColor: colors.gold, paddingLeft: 12, paddingVertical: 10 }}>
+          <Text style={{ color: colors.ink, fontFamily: type.body, lineHeight: 20 }}>{alert.message}</Text>
         </View>
       ))}
       {classes.length ? (
         <>
-          <Text style={{ color: colors.ink, fontFamily: type.bodyBold, marginTop: 4, marginBottom: 6 }}>Turmas</Text>
+          <Index>Turmas</Index>
           {classes.map((item) => (
-            <Pressable
+            <Slot
               key={item.id}
-              onPress={() => (onOpenClass ? onOpenClass(item.id) : onOpenClasses())}
               testID={`class-${item.id}`}
-              style={{ paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.line }}
-            >
-              <Text style={{ color: colors.ink, fontFamily: type.bodyBold }} numberOfLines={1}>
-                {item.name || 'Turma'}
-              </Text>
-              <Text style={{ color: colors.muted, fontFamily: type.body, marginTop: 2 }}>
-                {item.enrollmentCount ?? 0} catequizandos
-              </Text>
-            </Pressable>
+              mark={String(item.enrollmentCount ?? 0).padStart(2, '0')}
+              title={item.name || 'Turma'}
+              detail="catequizandos"
+              onPress={() => (onOpenClass ? onOpenClass(item.id) : onOpenClasses())}
+            />
           ))}
         </>
       ) : null}
       {birthdays.length ? (
         <>
-          <Text style={{ color: colors.ink, fontFamily: type.bodyBold, marginTop: 4, marginBottom: 6 }}>Aniversários</Text>
+          <Index>Aniversários</Index>
           {birthdays.map((person) => (
-            <Text key={person.id} style={{ color: colors.inkSoft, fontFamily: type.body, marginBottom: 4 }}>
-              {personName(person)} · {formatDay(person.birthDate)}
-            </Text>
+            <Slot key={person.id} mark={dayMark(person.birthDate)} title={personName(person)} />
           ))}
         </>
       ) : null}
-      <Text style={{ color: colors.ink, fontFamily: type.bodyBold, marginTop: spacing.sm, marginBottom: 6 }}>Próximos</Text>
+      <Index>Próximos</Index>
       {upcoming.length === 0 && !loading ? (
         <Text style={{ color: colors.muted, fontFamily: type.body }}>Agenda livre esta semana.</Text>
       ) : (
         upcoming.map((meeting) => (
-          <Pressable
+          <Slot
             key={meeting.id}
-            onPress={() => onOpenMeeting(meeting.id)}
             testID={`meeting-${meeting.id}`}
-            style={{ paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.line }}
-          >
-            <Text style={{ color: colors.ink, fontFamily: type.bodyBold }} numberOfLines={1}>
-              {meeting.title || meeting.theme || 'Encontro'}
-            </Text>
-            <Text style={{ color: colors.muted, fontFamily: type.body, marginTop: 2 }} numberOfLines={1}>
-              {meeting.class?.name || 'Turma'} · {formatRelative(meeting.startsAt || meeting.date)}
-            </Text>
-          </Pressable>
+            mark={clock(meeting.startsAt || meeting.date)}
+            title={meeting.title || meeting.theme || 'Encontro'}
+            detail={meeting.class?.name || 'Turma'}
+            onPress={() => onOpenMeeting(meeting.id)}
+          />
         ))
       )}
-      <Pressable onPress={onOpenCalendar} testID="open-calendar" style={{ paddingVertical: 8 }}>
-        <Text style={{ color: colors.ink, fontFamily: type.bodyBold }}>Ver a agenda</Text>
+      <Pressable onPress={onOpenCalendar} testID="open-calendar" style={{ paddingVertical: 16 }}>
+        <Text style={{ color: colors.ink, fontFamily: type.bodyBold, letterSpacing: 1.2 }}>AGENDA</Text>
       </Pressable>
     </Screen>
   );

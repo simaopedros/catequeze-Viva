@@ -37,11 +37,12 @@ export function SearchScreen({
         autoCapitalize="none"
         autoFocus
         style={{
-          backgroundColor: colors.paper,
-          borderRadius: 999,
-          borderWidth: 1,
+          backgroundColor: 'transparent',
+          borderRadius: 0,
+          borderWidth: 0,
+          borderBottomWidth: 1,
           borderColor: colors.line,
-          paddingHorizontal: 18,
+          paddingHorizontal: 0,
           minHeight: 48,
           color: colors.ink,
           fontFamily: type.body,

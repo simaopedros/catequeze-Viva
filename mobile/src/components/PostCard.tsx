@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { SocialPost } from '../api/types';
 import { initials } from '../format';
-import { colors, radius, spacing, type } from '../theme';
+import { colors, spacing, type } from '../theme';
 import { Avatar, Card } from './ui';
 
 const LONG_BODY = 280;
@@ -96,20 +96,21 @@ export function PostCard({
 const styles = StyleSheet.create({
   authorRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },
   author: { color: colors.ink, fontFamily: type.bodyBold, fontSize: 16 },
-  handle: { color: colors.goldDark, marginTop: 2, fontFamily: type.body, fontSize: 13 },
+  handle: { color: colors.muted, marginTop: 2, fontFamily: type.body, fontSize: 13 },
   body: { color: colors.inkSoft, fontFamily: type.body, fontSize: 16, lineHeight: 23 },
-  more: { color: colors.goldDark, fontFamily: type.bodyBold, marginTop: 8 },
-  media: { width: '100%', height: 180, borderRadius: radius.sm, marginTop: spacing.sm, backgroundColor: colors.line },
+  more: { color: colors.ink, fontFamily: type.bodyBold, marginTop: 8 },
+  media: { width: '100%', height: 180, borderRadius: 0, marginTop: spacing.sm, backgroundColor: colors.ink },
   meta: { color: colors.muted, marginTop: spacing.sm, fontSize: 13, fontFamily: type.body },
   share: {
     marginTop: spacing.sm,
-    padding: spacing.sm,
-    borderRadius: 12,
-    backgroundColor: colors.cream,
-    borderWidth: 1,
-    borderColor: colors.line,
+    paddingVertical: spacing.sm,
+    paddingLeft: 12,
+    borderRadius: 0,
+    backgroundColor: 'transparent',
+    borderLeftWidth: 4,
+    borderLeftColor: colors.gold,
   },
-  shareKind: { color: colors.goldDark, fontFamily: type.bodyBold, fontSize: 12, marginBottom: 4 },
+  shareKind: { color: colors.ink, fontFamily: type.bodyBold, fontSize: 11, letterSpacing: 1.2, marginBottom: 4 },
   shareTitle: { color: colors.ink, fontFamily: type.bodyBold },
   shareSubtitle: { color: colors.muted, marginTop: 2, fontFamily: type.body },
   shareExcerpt: { color: colors.inkSoft, marginTop: 6, lineHeight: 20, fontFamily: type.body },

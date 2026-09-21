@@ -196,7 +196,7 @@ export function Avatar({ name, size = 40, imageUrl }: { name: string; size?: num
       <Image
         source={{ uri: imageUrl }}
         accessibilityIgnoresInvertColors
-        style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.line }}
+        style={{ width: size, height: size, backgroundColor: colors.ink }}
       />
     );
   }
@@ -205,13 +205,12 @@ export function Avatar({ name, size = 40, imageUrl }: { name: string; size?: num
       style={{
         width: size,
         height: size,
-        borderRadius: size / 2,
         backgroundColor: colors.ink,
         alignItems: 'center',
         justifyContent: 'center',
       }}
     >
-      <Text style={{ color: colors.goldLight, fontFamily: type.bodyBold, fontSize: size * 0.34 }}>{initials(name)}</Text>
+      <Text style={{ color: colors.paper, fontFamily: type.bodyBold, fontSize: size * 0.34 }}>{initials(name)}</Text>
     </View>
   );
 }
@@ -228,7 +227,7 @@ export function MetricTile({
   testID?: string;
 }) {
   return (
-    <Pressable onPress={onPress} testID={testID} style={{ flex: 1 }} disabled={!onPress}>
+    <Pressable onPress={onPress} testID={testID} style={styles.metric} disabled={!onPress}>
       <Text style={styles.metricValue}>{value}</Text>
       <Text style={styles.metricLabel}>{label}</Text>
     </Pressable>
@@ -253,9 +252,11 @@ export function EncounterCard({
   return (
     <Pressable onPress={onPress} testID={testID} disabled={!onPress && !onAction}>
       <View style={styles.hero}>
-        <Text style={styles.heroKicker}>Encontro de hoje</Text>
-        <Text style={styles.heroTitle}>{title}</Text>
-        <Text style={styles.heroMeta}>{meta}</Text>
+        <View style={styles.heroBar} />
+        <View style={styles.heroCopy}>
+          <Text style={styles.heroMeta}>{meta}</Text>
+          <Text style={styles.heroTitle}>{title}</Text>
+        </View>
         {actionLabel && onAction ? (
           <Pressable onPress={onAction} style={styles.heroAction} testID="encounter-action">
             <Text style={styles.heroActionLabel}>{actionLabel}</Text>
@@ -300,7 +301,7 @@ export function ChatBubble({
   return (
     <View style={[styles.bubble, mine ? styles.bubbleMine : styles.bubbleTheirs]}>
       {!mine ? <Text style={styles.bubbleAuthor}>{author}</Text> : null}
-      <Text style={[styles.bubbleBody, mine && { color: colors.ink }]}>{body}</Text>
+      <Text style={[styles.bubbleBody, mine && { color: colors.paper }]}>{body}</Text>
     </View>
   );
 }
@@ -358,22 +359,33 @@ export function HubTile({
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.cream },
+  screen: { flex: 1, backgroundColor: colors.paper },
   screenContent: { padding: spacing.lg, paddingBottom: 48 },
-  title: { color: colors.ink, fontSize: 22, fontFamily: type.bodyBold, lineHeight: 28 },
-  subtitle: { color: colors.muted, fontSize: 15, marginTop: 4, lineHeight: 22, fontFamily: type.body },
+  title: { color: colors.ink, fontSize: 40, fontFamily: type.bodyBold, lineHeight: 42, letterSpacing: -1 },
+  subtitle: {
+    color: colors.muted,
+    fontSize: 12,
+    marginTop: 8,
+    lineHeight: 16,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    fontFamily: type.bodyMedium,
+  },
   section: {
     color: colors.ink,
     fontFamily: type.bodyBold,
-    fontSize: 18,
-    marginTop: spacing.md,
+    fontSize: 11,
+    letterSpacing: 1.6,
+    textTransform: 'uppercase',
+    marginTop: spacing.lg,
     marginBottom: spacing.sm,
   },
   card: {
-    backgroundColor: colors.paper,
-    borderRadius: radius.sm,
-    padding: spacing.md,
-    borderWidth: 1,
+    backgroundColor: 'transparent',
+    borderRadius: 0,
+    paddingVertical: spacing.md,
+    paddingHorizontal: 0,
+    borderBottomWidth: 1,
     borderColor: colors.line,
   },
   cardTitle: { color: colors.ink, fontSize: 18, fontFamily: type.bodyBold, marginBottom: 6 },
@@ -391,13 +403,14 @@ const styles = StyleSheet.create({
   buttonDanger: { backgroundColor: colors.danger },
   buttonDisabled: { opacity: 0.5 },
   buttonLabel: { fontFamily: type.bodyBold, fontSize: 16 },
-  fieldLabel: { color: colors.ink, fontFamily: type.bodyMedium, marginBottom: 6 },
+  fieldLabel: { color: colors.ink, fontFamily: type.bodyBold, marginBottom: 6, fontSize: 11, letterSpacing: 1.4 },
   input: {
-    backgroundColor: colors.white,
+    backgroundColor: 'transparent',
     borderColor: colors.line,
-    borderWidth: 1,
-    borderRadius: radius.sm,
-    paddingHorizontal: 14,
+    borderWidth: 0,
+    borderBottomWidth: 1,
+    borderRadius: 0,
+    paddingHorizontal: 0,
     paddingVertical: 12,
     color: colors.ink,
     fontSize: 16,
@@ -406,36 +419,51 @@ const styles = StyleSheet.create({
   },
   error: { color: colors.danger, marginBottom: spacing.sm, fontFamily: type.body },
   loading: { alignItems: 'center', padding: spacing.xl, gap: 10 },
-  metricLabel: { color: colors.muted, fontFamily: type.body, fontSize: 13 },
-  metricValue: { color: colors.ink, fontFamily: type.bodyBold, fontSize: 22 },
+  metric: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 16,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.line,
+  },
+  metricLabel: {
+    color: colors.ink,
+    fontFamily: type.bodyMedium,
+    fontSize: 13,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    flex: 1,
+  },
+  metricValue: { color: colors.ink, fontFamily: type.bodyBold, fontSize: 28, width: 72, letterSpacing: -0.5 },
   hero: {
     backgroundColor: colors.ink,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    marginBottom: spacing.md,
+    borderRadius: 0,
+    marginHorizontal: -16,
+    marginBottom: spacing.lg,
   },
-  heroKicker: { color: colors.inkMuted, fontFamily: type.body, fontSize: 13 },
-  heroTitle: { color: colors.cream, fontFamily: type.display, fontSize: 30, marginTop: 6 },
-  heroMeta: { color: colors.inkMuted, fontFamily: type.body, marginTop: 6, lineHeight: 20 },
+  heroBar: { height: 8, backgroundColor: colors.gold },
+  heroCopy: { paddingHorizontal: 16, paddingTop: 20, paddingBottom: 20 },
+  heroTitle: { color: colors.paper, fontFamily: type.bodyBold, fontSize: 36, lineHeight: 38, letterSpacing: -0.8, marginTop: 8 },
+  heroMeta: { color: colors.inkMuted, fontFamily: type.bodyMedium, fontSize: 12, letterSpacing: 0.8, textTransform: 'uppercase' },
   heroAction: {
-    marginTop: spacing.md,
     backgroundColor: colors.gold,
-    borderRadius: radius.sm,
-    minHeight: 48,
+    borderRadius: 0,
+    minHeight: 52,
     alignItems: 'center',
     justifyContent: 'center',
   },
   heroActionLabel: { color: colors.ink, fontFamily: type.bodyBold, fontSize: 16 },
   person: {
     flexDirection: 'row',
-    gap: spacing.sm,
+    gap: spacing.md,
     alignItems: 'center',
-    backgroundColor: colors.paper,
-    borderRadius: radius.md,
-    borderWidth: 1,
+    backgroundColor: 'transparent',
+    borderRadius: 0,
+    borderBottomWidth: 1,
     borderColor: colors.line,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
+    paddingVertical: 12,
+    marginBottom: 0,
   },
   personName: { color: colors.ink, fontFamily: type.bodyBold, fontSize: 16 },
   bubble: {
@@ -444,9 +472,9 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginBottom: spacing.sm,
   },
-  bubbleMine: { alignSelf: 'flex-end', backgroundColor: colors.goldLight },
-  bubbleTheirs: { alignSelf: 'flex-start', backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.line },
-  bubbleAuthor: { color: colors.goldDark, fontFamily: type.bodyBold, marginBottom: 4, fontSize: 12 },
+  bubbleMine: { alignSelf: 'flex-end', backgroundColor: colors.ink },
+  bubbleTheirs: { alignSelf: 'flex-start', backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.line },
+  bubbleAuthor: { color: colors.muted, fontFamily: type.bodyBold, marginBottom: 4, fontSize: 12 },
   bubbleBody: { color: colors.inkSoft, fontFamily: type.body, fontSize: 16, lineHeight: 22 },
   statusRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: spacing.sm },
   statusChip: {
@@ -461,9 +489,9 @@ const styles = StyleSheet.create({
   statusChipActive: { backgroundColor: colors.gold, borderColor: colors.gold },
   statusLabel: { color: colors.muted, fontFamily: type.bodyMedium, fontSize: 13 },
   hubTile: {
-    width: '47%',
-    paddingVertical: spacing.sm,
-    minHeight: 64,
+    width: '100%',
+    paddingVertical: 12,
+    minHeight: 52,
     borderBottomWidth: 1,
     borderBottomColor: colors.line,
   },

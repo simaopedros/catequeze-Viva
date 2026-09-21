@@ -137,8 +137,8 @@ export function CommunityScreen({
                 color: sort === item.id ? colors.ink : colors.muted,
                 fontFamily: type.bodyBold,
                 fontSize: 15,
-                borderBottomWidth: sort === item.id ? 2 : 0,
-                borderBottomColor: colors.ink,
+                borderBottomWidth: sort === item.id ? 3 : 0,
+                borderBottomColor: colors.gold,
                 paddingBottom: 4,
               }}
             >
@@ -153,8 +153,8 @@ export function CommunityScreen({
                 color: following ? colors.ink : colors.muted,
                 fontFamily: type.bodyBold,
                 fontSize: 15,
-                borderBottomWidth: following ? 2 : 0,
-                borderBottomColor: colors.ink,
+                borderBottomWidth: following ? 3 : 0,
+                borderBottomColor: colors.gold,
                 paddingBottom: 4,
               }}
             >
@@ -208,17 +208,17 @@ export function CommunityScreen({
       onPress={onCompose}
       style={{
         position: 'absolute',
-        right: 20,
-        bottom: 20,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        backgroundColor: colors.gold,
+        right: 16,
+        bottom: 16,
+        width: 52,
+        height: 52,
+        borderRadius: 0,
+        backgroundColor: colors.ink,
         alignItems: 'center',
         justifyContent: 'center',
       }}
     >
-      <Ionicons name="add" size={30} color={colors.ink} />
+      <Ionicons name="add" size={28} color={colors.gold} />
     </Pressable>
     </View>
   );

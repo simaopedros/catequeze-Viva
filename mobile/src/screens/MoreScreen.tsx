@@ -73,7 +73,7 @@ export function MoreScreen({
           <Pressable key={workspace.id} onPress={() => onSelectWorkspace(workspace.id)} style={{ minHeight: 44, justifyContent: 'center' }}>
             <Text
               style={{
-                color: workspace.id === workspaceId ? colors.goldDark : colors.inkSoft,
+                color: colors.ink,
                 fontFamily: workspace.id === workspaceId ? type.bodyBold : type.body,
               }}
             >

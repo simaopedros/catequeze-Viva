@@ -65,14 +65,14 @@ export function CalendarScreen({
           onPress={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))}
           style={{ minHeight: 44, justifyContent: 'center' }}
         >
-          <Text style={{ color: colors.goldDark, fontFamily: type.bodyBold }}>Mês anterior</Text>
+          <Text style={{ color: colors.ink, fontFamily: type.bodyBold }}>Mês anterior</Text>
         </Pressable>
         <Text style={{ color: colors.ink, fontFamily: type.bodyBold }}>{label}</Text>
         <Pressable
           onPress={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))}
           style={{ minHeight: 44, justifyContent: 'center' }}
         >
-          <Text style={{ color: colors.goldDark, fontFamily: type.bodyBold }}>Próximo</Text>
+          <Text style={{ color: colors.ink, fontFamily: type.bodyBold }}>Próximo</Text>
         </Pressable>
       </View>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -89,7 +89,7 @@ export function CalendarScreen({
                 aspectRatio: 1,
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderRadius: 999,
+                borderRadius: 0,
                 backgroundColor: active ? colors.ink : 'transparent',
               }}
             >
@@ -97,7 +97,7 @@ export function CalendarScreen({
                 {day.getDate()}
               </Text>
               {marked ? (
-                <View style={{ width: 5, height: 5, borderRadius: 3, backgroundColor: active ? colors.gold : colors.goldDark }} />
+                <View style={{ width: 12, height: 2, marginTop: 4, backgroundColor: active ? colors.gold : colors.ink }} />
               ) : null}
             </Pressable>
           );
@@ -111,7 +111,7 @@ export function CalendarScreen({
         dayItems.map((item) => (
           <Pressable key={`${item.kind}-${item.id}`} onPress={() => item.kind === 'meeting' && onOpenMeeting(item.id)}>
             <Card>
-              <Text style={{ color: colors.goldDark, fontFamily: type.bodyBold, fontSize: 12 }}>
+              <Text style={{ color: colors.ink, fontFamily: type.bodyBold, fontSize: 11, letterSpacing: 1.2 }}>
                 {item.kind === 'meeting' ? 'Encontro' : 'Liturgia'}
               </Text>
               <Text style={{ color: colors.ink, fontFamily: type.bodyBold, marginTop: 4 }}>{item.title}</Text>

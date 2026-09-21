@@ -57,12 +57,11 @@ export function AttendanceScreen({
             <View
               key={id}
               style={{
-                backgroundColor: colors.paper,
-                borderRadius: 16,
-                borderWidth: 1,
+                backgroundColor: 'transparent',
+                borderRadius: 0,
+                borderBottomWidth: 1,
                 borderColor: colors.line,
-                padding: 16,
-                marginTop: 12,
+                paddingVertical: 16,
               }}
             >
               <Text style={{ color: colors.ink, fontFamily: type.bodyBold, fontSize: 16 }}>{name}</Text>

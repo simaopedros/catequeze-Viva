@@ -51,10 +51,10 @@ export function ThreadScreen({
           placeholder="Mensagem"
           placeholderTextColor={colors.muted}
           style={{
-            borderWidth: 1,
             borderColor: colors.line,
-            borderRadius: 12,
-            paddingHorizontal: 14,
+            borderRadius: 0,
+            borderBottomWidth: 1,
+            paddingHorizontal: 0,
             minHeight: 48,
             color: colors.ink,
             fontFamily: type.body,

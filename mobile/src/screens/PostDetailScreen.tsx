@@ -75,7 +75,7 @@ export function PostDetailScreen({
             style={{
               paddingHorizontal: 12,
               paddingVertical: 8,
-              borderRadius: 999,
+              borderRadius: 0,
               backgroundColor: post.viewerReaction === item.id ? colors.ink : colors.paper,
               borderWidth: 1,
               borderColor: colors.line,
@@ -95,7 +95,7 @@ export function PostDetailScreen({
           <View key={comment.id} testID={`comment-${comment.id}`} style={{ marginBottom: spacing.md }}>
             <Text style={{ color: colors.ink, fontWeight: '700' }}>{comment.author.displayName}</Text>
             {comment.author.handle || comment.author.socialHandle ? (
-              <Text style={{ color: colors.goldDark, marginBottom: 4 }}>
+              <Text style={{ color: colors.muted, marginBottom: 4 }}>
                 @{comment.author.handle || comment.author.socialHandle}
               </Text>
             ) : null}
@@ -104,7 +104,7 @@ export function PostDetailScreen({
         ))
       )}
       {access && !access.canPublish ? (
-        <Text style={{ color: colors.goldDark, marginBottom: spacing.sm }}>
+        <Text style={{ color: colors.muted, marginBottom: spacing.sm }}>
           Comentários pedem a mesma conta com que lê a Comunidade.
         </Text>
       ) : null}
@@ -130,7 +130,7 @@ export function PostDetailScreen({
                 style={{
                   paddingHorizontal: 12,
                   paddingVertical: 8,
-                  borderRadius: 999,
+                  borderRadius: 0,
                   backgroundColor: reason === item.id ? colors.ink : colors.paper,
                   borderWidth: 1,
                   borderColor: colors.line,

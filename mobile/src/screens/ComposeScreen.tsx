@@ -4,7 +4,7 @@ import { Image, Pressable, Text, TextInput, View } from 'react-native';
 import { ErrorText, Screen } from '../components/ui';
 import { ShareCard } from '../components/PostCard';
 import type { SocialShare } from '../api/types';
-import { colors, radius, spacing, type } from '../theme';
+import { colors, spacing, type } from '../theme';
 
 export const POST_KINDS = [
   { id: 'IMAGE', label: 'Imagem', icon: 'image-outline' },
@@ -88,18 +88,9 @@ export function ComposeScreen({
   return (
     <View style={{ flex: 1 }}>
       <Screen testID="compose-screen" contentStyle={{ paddingTop: 8 }}>
-        <Text style={{ color: colors.ink, fontFamily: type.display, fontSize: 34, lineHeight: 38, marginBottom: spacing.md }}>
-          Publicar
-        </Text>
-        <View
-          style={{
-            backgroundColor: colors.paper,
-            borderRadius: radius.lg,
-            borderWidth: 1,
-            borderColor: colors.line,
-            padding: spacing.lg,
-          }}
-        >
+        <Text style={{ color: colors.ink, fontFamily: type.bodyBold, fontSize: 11, letterSpacing: 1.8 }}>PUBLICAR</Text>
+        <View style={{ height: 8, backgroundColor: colors.gold, marginTop: 12, marginBottom: spacing.md, marginHorizontal: -24 }} />
+        <View>
           <TextInput
             value={body}
             onChangeText={setBody}
@@ -115,10 +106,10 @@ export function ComposeScreen({
               {media.map((item) => (
                 <View key={item.mediaId}>
                   {item.kind === 'IMAGE' ? (
-                    <Image source={{ uri: item.url }} style={{ width: 92, height: 92, borderRadius: 12 }} />
+                    <Image source={{ uri: item.url }} style={{ width: 92, height: 92 }} />
                   ) : (
-                    <View style={{ width: 92, height: 92, borderRadius: 12, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}>
-                      <Ionicons name="play" size={22} color={colors.goldLight} />
+                    <View style={{ width: 92, height: 92, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}>
+                      <Ionicons name="play" size={22} color={colors.paper} />
                     </View>
                   )}
                 </View>
@@ -141,9 +132,12 @@ export function ComposeScreen({
                     setShareKind((current) => (current === item.id ? null : item.id));
                     setHits([]);
                   }}
-                  style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 6 }}
+                  style={{
+                    paddingVertical: 8,
+                    borderBottomWidth: active ? 3 : 0,
+                    borderBottomColor: colors.gold,
+                  }}
                 >
-                  <Ionicons name={item.icon as any} size={18} color={colors.ink} />
                   <Text style={{ color: active ? colors.ink : colors.muted, fontFamily: active ? type.bodyBold : type.body, fontSize: 15 }}>
                     {item.label}
                   </Text>
@@ -170,9 +164,10 @@ export function ComposeScreen({
             }}
             style={{
               marginTop: spacing.md,
-              backgroundColor: colors.paper,
-              borderRadius: radius.sm,
-              borderWidth: 1,
+              backgroundColor: 'transparent',
+              borderRadius: 0,
+              borderWidth: 0,
+              borderBottomWidth: 1,
               borderColor: colors.line,
               minHeight: 44,
               paddingHorizontal: 16,
@@ -190,7 +185,7 @@ export function ComposeScreen({
             }}
             style={{ paddingVertical: 10 }}
           >
-            <Text style={{ color: sourceId === hit.id ? colors.goldDark : colors.ink, fontFamily: type.bodyBold }}>{hit.title}</Text>
+            <Text style={{ color: colors.ink, fontFamily: sourceId === hit.id ? type.bodyBold : type.body }}>{hit.title}</Text>
           </Pressable>
         ))}
         {media.length ? (
@@ -211,7 +206,7 @@ export function ComposeScreen({
         ) : null}
         {picking ? <Text style={{ color: colors.muted, marginTop: spacing.sm, fontFamily: type.body }}>A enviar…</Text> : null}
       </Screen>
-      <View style={{ paddingHorizontal: spacing.lg, paddingBottom: spacing.lg, backgroundColor: colors.cream }}>
+      <View style={{ paddingHorizontal: spacing.lg, paddingBottom: spacing.lg, backgroundColor: colors.paper }}>
         <Pressable
           testID="compose-submit"
           disabled={blocked || busy || picking || !ready || (media.length > 0 && !consent)}
@@ -224,7 +219,7 @@ export function ComposeScreen({
           }
           style={{
             backgroundColor: colors.gold,
-            borderRadius: radius.md,
+            borderRadius: 0,
             minHeight: 52,
             alignItems: 'center',
             justifyContent: 'center',
