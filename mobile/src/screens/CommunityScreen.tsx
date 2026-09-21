@@ -1,9 +1,9 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { PostCard } from '../components/PostCard';
-import { BrandButton, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, EmptyState, HubTile, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import type { SocialAccess, SocialPost, SocialTopic } from '../api/types';
-import { colors, spacing } from '../theme';
+import { colors, radius, spacing, type } from '../theme';
 import { COMMUNITY_AREAS, type CommunityAreaId } from './communityAreas';
 
 const SORTS = [
@@ -11,6 +11,13 @@ const SORTS = [
   { id: 'trending', label: 'Em alta' },
   { id: 'foryou', label: 'Para si' },
 ] as const;
+
+const GRID_AREAS = ['shorts', 'following', 'topics', 'members'] as const;
+const ACCOUNT_AREAS = ['me', 'edit', 'blocked', 'notifications'] as const;
+
+function area(id: CommunityAreaId) {
+  return COMMUNITY_AREAS.find((item) => item.id === id)!;
+}
 
 function Chip({
   label,
@@ -28,15 +35,15 @@ function Chip({
       testID={testID}
       onPress={onPress}
       style={{
-        paddingHorizontal: 12,
-        paddingVertical: 7,
-        borderRadius: 999,
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        borderRadius: radius.pill,
         backgroundColor: active ? colors.ink : colors.paper,
         borderWidth: 1,
-        borderColor: colors.line,
+        borderColor: active ? colors.ink : colors.line,
       }}
     >
-      <Text style={{ color: active ? colors.white : colors.ink, fontWeight: '700', fontSize: 13 }}>{label}</Text>
+      <Text style={{ color: active ? colors.white : colors.ink, fontFamily: type.bodyBold, fontSize: 13 }}>{label}</Text>
     </Pressable>
   );
 }
@@ -92,19 +99,41 @@ export function CommunityScreen({
     <Screen testID="community-screen">
       <ScreenTitle title={title} subtitle={subtitle} />
       {showHub && onOpenArea ? (
-        <View testID="community-hub" style={{ marginBottom: spacing.md }}>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-            {COMMUNITY_AREAS.filter((area) => area.id !== 'feed').map((area) => (
-              <Chip
-                key={area.id}
-                label={area.label}
-                testID={`area-${area.id}`}
-                onPress={() => onOpenArea(area.id)}
-              />
+        <View testID="community-hub" style={{ marginBottom: spacing.md, gap: spacing.sm }}>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flex: 1 }}>
+              <BrandButton label={area('compose').label} onPress={onCompose} testID="area-compose" />
+            </View>
+            {onSearch ? (
+              <View style={{ flex: 1 }}>
+                <BrandButton variant="ghost" label={area('search').label} onPress={onSearch} testID="area-search" />
+              </View>
+            ) : null}
+          </View>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+            {GRID_AREAS.map((id) => {
+              const item = area(id);
+              return (
+                <HubTile
+                  key={id}
+                  label={item.label}
+                  hint={item.hint}
+                  testID={`area-${id}`}
+                  onPress={() => onOpenArea(id)}
+                />
+              );
+            })}
+          </View>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 14, paddingVertical: 4 }}>
+            {ACCOUNT_AREAS.map((id) => (
+              <Pressable key={id} testID={`area-${id}`} onPress={() => onOpenArea(id)}>
+                <Text style={{ color: colors.muted, fontFamily: type.bodyMedium, fontSize: 13 }}>{area(id).label}</Text>
+              </Pressable>
             ))}
           </View>
         </View>
       ) : null}
+      {!showHub ? <BrandButton label="Nova publicação" onPress={onCompose} testID="compose-open" /> : null}
       {!showHub && onSearch ? (
         <BrandButton variant="ghost" label="Pesquisar pessoas e publicações" onPress={onSearch} testID="open-search" />
       ) : null}
@@ -117,13 +146,28 @@ export function CommunityScreen({
         />
       ) : null}
       {access && !access.canPublish ? (
-        <Text style={{ color: colors.goldDark, marginBottom: spacing.md }}>
-          {access.reason === 'subscription'
-            ? 'Pode ler e seguir. Para publicar, precisa de uma assinatura activa.'
-            : 'A publicação está limitada nesta conta.'}
-        </Text>
+        <View
+          style={{
+            backgroundColor: colors.cream,
+            borderRadius: radius.md,
+            borderWidth: 1,
+            borderColor: colors.line,
+            padding: spacing.md,
+            marginBottom: spacing.md,
+          }}
+        >
+          <Text style={{ color: colors.goldDark, fontFamily: type.bodyMedium, lineHeight: 20 }}>
+            {access.reason === 'subscription'
+              ? 'Pode ler e seguir. Para publicar, precisa de uma assinatura activa.'
+              : 'A publicação está limitada nesta conta.'}
+          </Text>
+        </View>
       ) : null}
-      <View style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.sm, flexWrap: 'wrap' }}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ gap: 8, paddingBottom: spacing.sm }}
+      >
         {SORTS.map((item) => (
           <Chip
             key={item.id}
@@ -134,37 +178,25 @@ export function CommunityScreen({
           />
         ))}
         {showHub && onToggleFollowing ? (
-          <Chip
-            label="Quem sigo"
-            active={following}
-            testID="filter-following"
-            onPress={onToggleFollowing}
-          />
+          <Chip label="Quem sigo" active={following} testID="filter-following" onPress={onToggleFollowing} />
         ) : null}
-      </View>
-      <View style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.md, flexWrap: 'wrap' }}>
-        <Pressable onPress={() => onChangeTopic(null)}>
-          <Text style={{ color: !topicSlug ? colors.goldDark : colors.muted, fontWeight: '700' }}>Todos</Text>
-        </Pressable>
-        {topics.map((topic) => (
-          <Pressable
-            key={topic.slug}
-            onPress={() => (onOpenTopic ? onOpenTopic(topic.slug) : onChangeTopic(topic.slug))}
-            testID={`topic-${topic.slug}`}
-          >
-            <Text style={{ color: topicSlug === topic.slug ? colors.goldDark : colors.muted, fontWeight: '700' }}>
-              {topic.name}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
-      <BrandButton label="Nova publicação" onPress={onCompose} testID="compose-open" />
-      <Text
-        testID="feed-heading"
-        style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm, marginTop: 4 }}
+      </ScrollView>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ gap: 8, paddingBottom: spacing.md }}
       >
-        Publicações
-      </Text>
+        <Chip label="Todos" active={!topicSlug} onPress={() => onChangeTopic(null)} />
+        {topics.map((topic) => (
+          <Chip
+            key={topic.slug}
+            label={topic.name}
+            active={topicSlug === topic.slug}
+            testID={`topic-${topic.slug}`}
+            onPress={() => (onOpenTopic ? onOpenTopic(topic.slug) : onChangeTopic(topic.slug))}
+          />
+        ))}
+      </ScrollView>
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Feed indisponível" body={error} /> : null}
       {!loading && posts.length === 0 ? (

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { SocialPost } from '../api/types';
-import { colors, spacing } from '../theme';
-import { Card } from './ui';
+import { formatRelative, initials } from '../format';
+import { colors, radius, spacing, type } from '../theme';
+import { Avatar, Card } from './ui';
 
 const LONG_BODY = 280;
 
@@ -27,6 +28,10 @@ export function ShareCard({
   );
 }
 
+function isVideo(kind?: string | null) {
+  return (kind || '').toLowerCase().includes('video');
+}
+
 export function PostCard({
   post,
   onOpenAuthor,
@@ -40,6 +45,9 @@ export function PostCard({
   const long = (post.body || '').length > LONG_BODY;
   const body = !long || expanded ? post.body : `${post.body.slice(0, LONG_BODY).trimEnd()}…`;
   const handle = post.author.handle || post.author.socialHandle;
+  const when = formatRelative(post.publishedAt || post.createdAt);
+  const topic = post.topics?.[0];
+  const media = post.media?.find((item) => item.url && !isVideo(item.kind));
 
   return (
     <Card>
@@ -48,9 +56,17 @@ export function PostCard({
         testID={`post-author-${post.id}`}
         onPress={() => handle && onOpenAuthor?.(handle)}
         disabled={!handle}
+        style={styles.authorRow}
       >
-        <Text style={styles.author}>{post.author.displayName}</Text>
-        {handle ? <Text style={styles.handle}>@{handle}</Text> : null}
+        <Avatar name={post.author.displayName || initials(handle || '?')} imageUrl={post.author.avatarUrl} size={40} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.author}>{post.author.displayName}</Text>
+          <Text style={styles.handle}>
+            {handle ? `@${handle}` : ''}
+            {handle && when ? ' · ' : ''}
+            {when}
+          </Text>
+        </View>
       </Pressable>
       <Pressable
         accessibilityRole="button"
@@ -58,43 +74,53 @@ export function PostCard({
         onPress={() => post.slug && onOpenPost?.(post.slug)}
         disabled={!onOpenPost}
       >
+        {topic ? (
+          <View style={styles.topic}>
+            <Text style={styles.topicLabel}>{topic.name}</Text>
+          </View>
+        ) : null}
         {post.body ? <Text style={styles.body}>{body}</Text> : null}
-      </Pressable>
-      {long ? (
-        <Pressable onPress={() => setExpanded((value) => !value)} testID={`post-expand-${post.id}`}>
-          <Text style={styles.more}>{expanded ? 'Ver menos' : 'Ver mais'}</Text>
-        </Pressable>
-      ) : null}
-      {post.share ? (
-        <ShareCard
-          kind={post.share.sourceLabel || post.share.kind}
-          title={post.share.title}
-          subtitle={post.share.subtitle}
-          excerpt={post.share.excerpt}
-        />
-      ) : null}
-      <Pressable
-        accessibilityRole="button"
-        testID={`open-post-${post.id}`}
-        onPress={() => post.slug && onOpenPost?.(post.slug)}
-        disabled={!onOpenPost}
-      >
+        {long ? (
+          <Pressable onPress={() => setExpanded((value) => !value)} testID={`post-expand-${post.id}`}>
+            <Text style={styles.more}>{expanded ? 'Ver menos' : 'Ver mais'}</Text>
+          </Pressable>
+        ) : null}
+        {media?.url ? (
+          <Image source={{ uri: media.url }} style={styles.media} resizeMode="cover" accessibilityIgnoresInvertColors />
+        ) : null}
+        {post.share ? (
+          <ShareCard
+            kind={post.share.sourceLabel || post.share.kind}
+            title={post.share.title}
+            subtitle={post.share.subtitle}
+            excerpt={post.share.excerpt}
+          />
+        ) : null}
         <Text style={styles.meta}>
           {post.reactionCount ?? 0} reações · {post.commentCount ?? 0} comentários
         </Text>
-        {onOpenPost ? <Text style={styles.open}>Abrir publicação</Text> : null}
       </Pressable>
     </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  author: { color: colors.ink, fontWeight: '700', fontSize: 16 },
-  handle: { color: colors.goldDark, marginTop: 2, marginBottom: spacing.sm },
-  body: { color: colors.inkSoft, fontSize: 16, lineHeight: 23 },
-  more: { color: colors.goldDark, fontWeight: '700', marginTop: 8 },
-  meta: { color: colors.muted, marginTop: spacing.sm, fontSize: 13 },
-  open: { color: colors.goldDark, fontWeight: '700', marginTop: 8 },
+  authorRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },
+  author: { color: colors.ink, fontFamily: type.bodyBold, fontSize: 16 },
+  handle: { color: colors.goldDark, marginTop: 2, fontFamily: type.body, fontSize: 13 },
+  topic: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.cream,
+    borderRadius: radius.pill,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginBottom: spacing.sm,
+  },
+  topicLabel: { color: colors.goldDark, fontFamily: type.bodyBold, fontSize: 12 },
+  body: { color: colors.inkSoft, fontFamily: type.body, fontSize: 16, lineHeight: 23 },
+  more: { color: colors.goldDark, fontFamily: type.bodyBold, marginTop: 8 },
+  media: { width: '100%', height: 180, borderRadius: radius.sm, marginTop: spacing.sm, backgroundColor: colors.line },
+  meta: { color: colors.muted, marginTop: spacing.sm, fontSize: 13, fontFamily: type.body },
   share: {
     marginTop: spacing.sm,
     padding: spacing.sm,
@@ -103,8 +129,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.line,
   },
-  shareKind: { color: colors.goldDark, fontWeight: '700', fontSize: 12, marginBottom: 4 },
-  shareTitle: { color: colors.ink, fontWeight: '700' },
-  shareSubtitle: { color: colors.muted, marginTop: 2 },
-  shareExcerpt: { color: colors.inkSoft, marginTop: 6, lineHeight: 20 },
+  shareKind: { color: colors.goldDark, fontFamily: type.bodyBold, fontSize: 12, marginBottom: 4 },
+  shareTitle: { color: colors.ink, fontFamily: type.bodyBold },
+  shareSubtitle: { color: colors.muted, marginTop: 2, fontFamily: type.body },
+  shareExcerpt: { color: colors.inkSoft, marginTop: 6, lineHeight: 20, fontFamily: type.body },
 });
