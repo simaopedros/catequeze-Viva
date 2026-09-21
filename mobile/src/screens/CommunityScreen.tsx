@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
+import { InlineCommunityComposer } from '../components/InlineCommunityComposer';
 import { PostCard } from '../components/PostCard';
 import {
-  CommunityComposeCard,
   CommunityFeedScope,
   CommunityScopeFilters,
   CommunityScreenHeader,
@@ -29,6 +29,10 @@ export function CommunityScreen({
   onOpenAuthor,
   onOpenPost,
   onCompose,
+  onPublishPost,
+  composeBusy,
+  composeError,
+  onComposeMedia,
   onOpenLink,
   feedScope,
   onChangeFeedScope,
@@ -52,7 +56,11 @@ export function CommunityScreen({
   onOpenAuthor: (handle: string) => void;
   onOpenPost?: (slug: string) => void;
   onOpenTopic?: (slug: string) => void;
-  onCompose: () => void;
+  onCompose?: () => void;
+  onPublishPost?: (body: string) => Promise<void>;
+  composeBusy?: boolean;
+  composeError?: string | null;
+  onComposeMedia?: (kind: 'image' | 'video') => void;
   onSearch?: () => void;
   following?: boolean;
   onToggleFollowing?: () => void;
@@ -66,26 +74,39 @@ export function CommunityScreen({
 }) {
   const visiblePosts = useMemo(() => filterByScope(posts, feedScope), [posts, feedScope]);
   const canPublish = access?.canPublish !== false;
+  const [composerExpanded, setComposerExpanded] = useState(false);
+
+  const useInlineComposer = variant === 'main' && Boolean(onPublishPost);
 
   return (
-    <Screen testID="community-screen" variant="feed" safeAreaEdges={variant === 'main' ? ['top', 'left', 'right'] : ['left', 'right']}>
-      {variant === 'main' ? <CommunityScreenHeader onLinkPress={onOpenLink} /> : null}
-      {variant === 'nested' && title ? <ScreenTitle title={title} subtitle={subtitle} /> : null}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
+    >
+      <View style={{ flex: 1 }}>
+        <Screen testID="community-screen" variant="feed" safeAreaEdges={variant === 'main' ? ['top', 'left', 'right'] : ['left', 'right']}>
+          {variant === 'main' ? <CommunityScreenHeader onLinkPress={onOpenLink} /> : null}
+          {variant === 'nested' && title ? <ScreenTitle title={title} subtitle={subtitle} /> : null}
 
-      {showHub && onOpenArea ? <View testID="community-hub" style={{ display: 'none' }} /> : null}
+          {showHub && onOpenArea ? <View testID="community-hub" style={{ display: 'none' }} /> : null}
 
-      {variant === 'main' ? <CommunityScopeFilters value={feedScope} onChange={onChangeFeedScope} /> : null}
+          {variant === 'main' ? <CommunityScopeFilters value={feedScope} onChange={onChangeFeedScope} /> : null}
 
-      {variant === 'main' ? (
-      <CommunityComposeCard
-        userName={viewerName}
-        avatarUrl={viewerAvatarUrl}
-        onCompose={onCompose}
-        disabled={!canPublish}
-      />
-      ) : null}
+          {useInlineComposer && onPublishPost ? (
+            <InlineCommunityComposer
+              userName={viewerName}
+              disabled={!canPublish}
+              busy={composeBusy}
+              error={composeError}
+              onPublish={onPublishPost}
+              onComposeMedia={onComposeMedia}
+              expanded={composerExpanded}
+              onExpandedChange={setComposerExpanded}
+            />
+          ) : null}
 
-      {access && !access.canPublish ? (
+          {access && !access.canPublish ? (
         <Text style={{ color: colors.accent[700], marginBottom: spacing.md }}>
           {access.reason === 'subscription'
             ? 'Pode ler e seguir. Para publicar, precisa de uma assinatura activa.'
@@ -102,6 +123,8 @@ export function CommunityScreen({
           <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
         ))
       )}
-    </Screen>
+        </Screen>
+      </View>
+    </KeyboardAvoidingView>
   );
 }

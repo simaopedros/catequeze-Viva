@@ -32,7 +32,7 @@ describe('auth and community UI', () => {
   });
 
   it('renders the feed and the compose affordance when publishing is allowed', () => {
-    const onCompose = jest.fn();
+    const onPublishPost = jest.fn().mockResolvedValue(undefined);
     const view = render(
       <CommunityScreen
         posts={[
@@ -47,13 +47,14 @@ describe('auth and community UI', () => {
         feedScope="all"
         onChangeFeedScope={jest.fn()}
         onOpenAuthor={jest.fn()}
-        onCompose={onCompose}
+        onPublishPost={onPublishPost}
       />,
     );
 
     expect(view.getByTestId('community-screen')).toBeTruthy();
     expect(view.getByText('Paz e bem')).toBeTruthy();
-    fireEvent.press(view.getByTestId('compose-action-text'));
-    expect(onCompose).toHaveBeenCalled();
+    expect(view.getByTestId('community-compose-card')).toBeTruthy();
+    fireEvent.press(view.getByTestId('compose-open-field'));
+    expect(view.getByTestId('compose-input')).toBeTruthy();
   });
 });

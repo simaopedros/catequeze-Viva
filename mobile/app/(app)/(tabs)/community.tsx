@@ -13,6 +13,8 @@ export default function CommunityRoute() {
   const [topicSlug] = useState<string | null>(null);
   const [following] = useState(false);
   const [feedScope, setFeedScope] = useState<CommunityFeedScope>('all');
+  const [composeBusy, setComposeBusy] = useState(false);
+  const [composeError, setComposeError] = useState<string | null>(null);
   const feed = useAsync(() => api.socialFeed({ sort, topicSlug, following }), [sort, topicSlug, following]);
   const access = useAsync(() => api.socialAccess(), []);
   const me = useAsync(() => api.mySocialProfile(), []);
@@ -33,11 +35,26 @@ export default function CommunityRoute() {
       viewerAvatarUrl={me.data?.avatarUrl ?? user?.avatarUrl}
       loading={feed.loading}
       error={feed.error}
+      composeBusy={composeBusy}
+      composeError={composeError}
       showHub
       onOpenArea={(area) => openCommunityArea(router, area, me.data?.handle)}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
       onOpenPost={(slug) => router.push(`/(app)/community/p/${slug}`)}
-      onCompose={() => router.push('/(app)/community/compose')}
+      onPublishPost={async (body) => {
+        setComposeBusy(true);
+        setComposeError(null);
+        try {
+          await api.createPost({ body });
+          await feed.reload();
+        } catch (err) {
+          setComposeError(err instanceof Error ? err.message : 'Não foi possível publicar.');
+          throw err;
+        } finally {
+          setComposeBusy(false);
+        }
+      }}
+      onComposeMedia={() => router.push('/(app)/community/compose')}
       onOpenLink={() => router.push('/(app)/community/search')}
     />
   );

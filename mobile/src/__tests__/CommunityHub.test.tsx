@@ -6,7 +6,7 @@ import { appRoutes } from '../navigation/routes';
 
 describe('Community feed', () => {
   it('renderiza filtros, composer e feed no layout da Comunidade', () => {
-    const onCompose = jest.fn();
+    const onPublishPost = jest.fn().mockResolvedValue(undefined);
     const onOpenLink = jest.fn();
     const view = render(
       <CommunityScreen
@@ -20,11 +20,12 @@ describe('Community feed', () => {
             createdAt: new Date().toISOString(),
           },
         ]}
+        access={{ authenticated: true, canPublish: true }}
         feedScope="all"
         onChangeFeedScope={jest.fn()}
         onOpenAuthor={jest.fn()}
         onOpenPost={jest.fn()}
-        onCompose={onCompose}
+        onPublishPost={onPublishPost}
         onOpenLink={onOpenLink}
       />,
     );
@@ -35,8 +36,11 @@ describe('Community feed', () => {
     expect(view.getByText('Paz e bem, irmãos. A catequese começou.')).toBeTruthy();
     expect(view.getByTestId('post-p1')).toBeTruthy();
 
-    fireEvent.press(view.getByTestId('compose-action-text'));
-    expect(onCompose).toHaveBeenCalled();
+    fireEvent.press(view.getByTestId('compose-open-field'));
+    expect(view.getByTestId('compose-input')).toBeTruthy();
+    fireEvent.changeText(view.getByTestId('compose-input'), 'Nova mensagem pastoral');
+    fireEvent.press(view.getByTestId('compose-publish'));
+    expect(onPublishPost).toHaveBeenCalledWith('Nova mensagem pastoral');
     fireEvent.press(view.getByTestId('community-link-action'));
     expect(onOpenLink).toHaveBeenCalled();
   });
