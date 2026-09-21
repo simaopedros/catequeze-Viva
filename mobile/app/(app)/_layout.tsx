@@ -13,7 +13,7 @@ export default function AppLayout() {
       }}
     >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="community/compose" options={{ title: 'Publicar' }} />
+      <Stack.Screen name="community/compose" options={{ title: '' }} />
       <Stack.Screen name="community/search" options={{ title: 'Pesquisar' }} />
       <Stack.Screen name="community/members" options={{ title: 'Membros' }} />
       <Stack.Screen name="community/topics" options={{ title: 'Tópicos' }} />

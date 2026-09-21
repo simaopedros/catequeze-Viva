@@ -29,6 +29,7 @@ export default function ComposeRoute() {
           setError(err instanceof Error ? err.message : 'Partilha inválida.');
         }
       }}
+      initialSourceId={params.sourceId ? String(params.sourceId) : ''}
       onPublish={async (body, share) => {
         setBusy(true);
         setError(null);
