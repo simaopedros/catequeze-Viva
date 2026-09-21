@@ -11,8 +11,8 @@ import {
 } from 'lucide-react-native';
 import type { LucideIcon } from 'lucide-react-native';
 import React from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { colors, elevation, radius, spacing, typography } from '../theme';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { colors, contentHorizontalPadding, elevation, radius, spacing, typography } from '../theme';
 import { Avatar, Card, PrimaryButton } from './ui';
 
 export function HomeTopBar({
@@ -128,46 +128,63 @@ export function HomeStatsRow({
   onPressClasses?: () => void;
   onPressCatechumens?: () => void;
 }) {
+  const { width: screenWidth } = useWindowDimensions();
+  const horizontalPad = contentHorizontalPadding(screenWidth);
+  const gap = spacing[2];
+  const tileWidth = Math.floor((screenWidth - horizontalPad * 2 - gap * 3) / 4);
+  const useScroll = tileWidth < 78;
+  const cardWidth = useScroll ? 84 : tileWidth;
+
   const handlers: Record<string, (() => void) | undefined> = {
     classes: onPressClasses,
     catechumens: onPressCatechumens,
   };
 
+  const tiles = STAT_CONFIG.map((item) => {
+    const Icon = item.icon;
+    const value = values[item.key as keyof typeof values];
+    const onPress = handlers[item.key];
+    const tile = (
+      <View style={[styles.statTile, { width: cardWidth }]}>
+        <View style={[styles.statIconCircle, { backgroundColor: item.bg }]}>
+          <Icon size={16} color={item.tint} />
+        </View>
+        <Text style={styles.statLabel} numberOfLines={2}>
+          {item.label}
+        </Text>
+        <Text style={styles.statValue} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>
+          {value}
+        </Text>
+      </View>
+    );
+    if (!onPress) {
+      return (
+        <View key={item.key} style={{ width: cardWidth }}>
+          {tile}
+        </View>
+      );
+    }
+    return (
+      <Pressable key={item.key} onPress={onPress} style={{ width: cardWidth }}>
+        {tile}
+      </Pressable>
+    );
+  });
+
   return (
     <View testID="home-stats-row" style={styles.statsSection}>
       <Text style={styles.sectionTitle}>Hoje</Text>
-      <View style={styles.statsRow}>
-        {STAT_CONFIG.map((item) => {
-          const Icon = item.icon;
-          const value = values[item.key as keyof typeof values];
-          const onPress = handlers[item.key];
-          const tile = (
-            <View style={styles.statTile}>
-              <View style={[styles.statIconCircle, { backgroundColor: item.bg }]}>
-                <Icon size={16} color={item.tint} />
-              </View>
-              <Text style={styles.statLabel} numberOfLines={2}>
-                {item.label}
-              </Text>
-              <Text style={styles.statValue} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>
-                {value}
-              </Text>
-            </View>
-          );
-          if (!onPress) {
-            return (
-              <View key={item.key} style={styles.statTileWrap}>
-                {tile}
-              </View>
-            );
-          }
-          return (
-            <Pressable key={item.key} onPress={onPress} style={styles.statTileWrap}>
-              {tile}
-            </Pressable>
-          );
-        })}
-      </View>
+      {useScroll ? (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={[styles.statsScroll, { gap, paddingRight: horizontalPad }]}
+        >
+          {tiles}
+        </ScrollView>
+      ) : (
+        <View style={[styles.statsRow, { gap }]}>{tiles}</View>
+      )}
     </View>
   );
 }
@@ -337,17 +354,12 @@ const styles = StyleSheet.create({
   },
   sectionLink: { ...typography.labelLg, color: colors.primary[700] },
   statsSection: { marginBottom: spacing[4] },
+  statsScroll: { paddingBottom: spacing[1] },
   statsRow: {
     flexDirection: 'row',
     alignItems: 'stretch',
-    gap: spacing[2],
-  },
-  statTileWrap: {
-    flex: 1,
-    minWidth: 0,
   },
   statTile: {
-    flex: 1,
     backgroundColor: colors.surface,
     borderRadius: radius.md,
     borderWidth: 1,
@@ -355,7 +367,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[3],
     paddingHorizontal: spacing[1],
     alignItems: 'center',
-    minHeight: 100,
+    minHeight: 96,
     ...elevation.card,
   },
   statIconCircle: {

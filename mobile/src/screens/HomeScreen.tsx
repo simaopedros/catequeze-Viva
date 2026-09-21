@@ -83,7 +83,7 @@ export function HomeScreen({
   ].slice(0, 4);
 
   return (
-    <Screen testID="home-screen" onRefresh={onRefresh} refreshing={refreshing}>
+    <Screen testID="home-screen" onRefresh={onRefresh} refreshing={refreshing} safeAreaEdges={['top', 'left', 'right']}>
       <HomeTopBar
         day={today.getDate()}
         weekday={weekday}

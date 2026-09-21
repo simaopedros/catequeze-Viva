@@ -33,6 +33,7 @@ export function Screen({
   refreshing,
   onRefresh,
   variant = 'default',
+  safeAreaEdges = ['left', 'right'],
 }: {
   children: React.ReactNode;
   padded?: boolean;
@@ -41,25 +42,31 @@ export function Screen({
   refreshing?: boolean;
   onRefresh?: () => void;
   variant?: 'default' | 'fullBleed' | 'form' | 'feed';
+  /** Include `top` when the screen has no stack/tab header (e.g. Início). */
+  safeAreaEdges?: ('top' | 'bottom' | 'left' | 'right')[];
 }) {
   const { width } = useWindowDimensions();
   const horizontal = variant === 'fullBleed' ? 0 : contentHorizontalPadding(width);
+  const insetTop = safeAreaEdges.includes('top');
   const contentStyle = [
     styles.screenContent,
-    padded && { paddingHorizontal: horizontal, paddingTop: spacing[4] },
+    padded && {
+      paddingHorizontal: horizontal,
+      paddingTop: insetTop ? spacing[2] : spacing[4],
+    },
     variant === 'form' && { paddingBottom: spacing[12] },
   ];
 
   if (!scroll) {
     return (
-      <SafeAreaView testID={testID} style={styles.screen} edges={['left', 'right']}>
+      <SafeAreaView testID={testID} style={styles.screen} edges={safeAreaEdges}>
         <View style={[{ flex: 1 }, contentStyle]}>{children}</View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView testID={testID} style={styles.screen} edges={['left', 'right']}>
+    <SafeAreaView testID={testID} style={styles.screen} edges={safeAreaEdges}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={contentStyle}
