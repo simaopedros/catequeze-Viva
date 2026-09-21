@@ -1,5 +1,7 @@
+import { BookOpen, Church, GraduationCap, Sparkles } from 'lucide-react-native';
 import React from 'react';
 import { Text, View } from 'react-native';
+import { AlertStrip, StatTile } from '../components/pastoralUi';
 import {
   EmptyState,
   ErrorState,
@@ -8,7 +10,6 @@ import {
   MeetingHighlightCard,
   Screen,
   SectionHeader,
-  StatCard,
 } from '../components/ui';
 import { colors, spacing } from '../theme';
 
@@ -62,30 +63,34 @@ export function HomeScreen({
   const today = new Date();
   const todayMeeting = stats?.todayMeetings?.[0];
   const upcoming = stats?.upcomingMeetings ?? [];
-  const alerts = (stats?.recentAlerts ?? []).slice(0, 2);
+  const alerts = (stats?.recentAlerts ?? []).slice(0, 4);
   const classes = (stats?.myClasses ?? []).slice(0, 4);
   const birthdays = (stats?.aniversariantes ?? []).slice(0, 4);
 
+  const weekday = today.toLocaleDateString('pt-BR', { weekday: 'long' });
+  const month = today.toLocaleDateString('pt-BR', { month: 'long' });
+
   return (
     <Screen testID="home-screen" onRefresh={onRefresh} refreshing={refreshing}>
-      <View style={{ marginBottom: spacing[4] }}>
-        <Text style={{ fontSize: 32, fontWeight: '700', color: colors.text.primary }}>{today.getDate()}</Text>
-        <Text style={{ fontSize: 13, fontWeight: '600', color: colors.text.muted, textTransform: 'uppercase' }}>
-          {today.toLocaleDateString('pt-BR', { weekday: 'long' })}
-        </Text>
-        <Text style={{ fontSize: 15, color: colors.text.muted }}>
-          {today.toLocaleDateString('pt-BR', { month: 'long' })}
-        </Text>
+      <View style={styles.dateHeader}>
+        <View>
+          <Text style={styles.dateDay}>{today.getDate()}</Text>
+          <Text style={styles.dateWeekday}>{weekday}</Text>
+          <Text style={styles.dateMonth}>{month}</Text>
+        </View>
+        <View style={styles.greeting}>
+          <Text style={styles.greetingName}>{name}</Text>
+          {workspaceName ? <Text style={styles.greetingWorkspace}>{workspaceName}</Text> : null}
+        </View>
       </View>
-
-      <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text.primary }}>{name}</Text>
-      {workspaceName ? <Text style={{ fontSize: 13, color: colors.text.muted, marginBottom: spacing[4] }}>{workspaceName}</Text> : null}
 
       {loading ? <LoadingState /> : null}
       {error ? <ErrorState title="Não foi possível carregar o início" onRetry={onRefresh} /> : null}
 
       {!loading && !error ? (
         <>
+          <AlertStrip items={alerts} />
+
           <MeetingHighlightCard
             empty={!todayMeeting}
             className={todayMeeting?.class?.name}
@@ -96,33 +101,30 @@ export function HomeScreen({
           />
 
           <SectionHeader title="Hoje" />
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3] }}>
-            <View style={{ width: '47%' }}>
-              <StatCard label="Turmas" value={stats?.activeClasses ?? '—'} onPress={onOpenClasses} />
+          <View style={styles.statGrid}>
+            <View style={styles.statCell}>
+              <StatTile label="Turmas" value={stats?.activeClasses ?? '—'} icon={GraduationCap} onPress={onOpenClasses} />
             </View>
-            <View style={{ width: '47%' }}>
-              <StatCard label="Catequizandos" value={stats?.activeCatechumens ?? '—'} onPress={onOpenCatechumens} />
+            <View style={styles.statCell}>
+              <StatTile
+                label="Catequizandos"
+                value={stats?.activeCatechumens ?? '—'}
+                icon={BookOpen}
+                onPress={onOpenCatechumens}
+              />
             </View>
-            <View style={{ width: '47%' }}>
-              <StatCard label="Presença" value={stats?.avgAttendance != null ? `${stats.avgAttendance}%` : '—'} disabled />
+            <View style={styles.statCell}>
+              <StatTile
+                label="Presença"
+                value={stats?.avgAttendance != null ? `${stats.avgAttendance}%` : '—'}
+                icon={Church}
+                disabled
+              />
             </View>
-            <View style={{ width: '47%' }}>
-              <StatCard label="Sacramentos" value={stats?.pendingSacraments ?? '—'} />
+            <View style={styles.statCell}>
+              <StatTile label="Sacramentos" value={stats?.pendingSacraments ?? '—'} icon={Sparkles} />
             </View>
           </View>
-
-          {alerts.length > 0 ? (
-            <>
-              <SectionHeader title="Alertas" />
-              {alerts.map((alert, index) => (
-                <ListRow
-                  key={`alert-${index}`}
-                  title={alert.type || 'Alerta'}
-                  subtitle={alert.message}
-                />
-              ))}
-            </>
-          ) : null}
 
           <SectionHeader title="Turmas" />
           {classes.length === 0 ? (
@@ -143,7 +145,12 @@ export function HomeScreen({
             <Text style={{ color: colors.text.muted, marginBottom: spacing[4] }}>Ninguém esta semana.</Text>
           ) : (
             birthdays.map((person, index) => (
-              <ListRow key={person.id ?? `b-${index}`} title={person.name || 'Aniversariante'} subtitle={`dia ${person.day}`} avatarName={person.name} />
+              <ListRow
+                key={person.id ?? `b-${index}`}
+                title={person.name || 'Aniversariante'}
+                subtitle={`dia ${person.day}`}
+                avatarName={person.name}
+              />
             ))
           )}
 
@@ -165,3 +172,26 @@ export function HomeScreen({
     </Screen>
   );
 }
+
+const styles = {
+  dateHeader: {
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+    alignItems: 'flex-start' as const,
+    marginBottom: spacing[4],
+    gap: spacing[4],
+  },
+  dateDay: { fontSize: 40, fontWeight: '700' as const, color: colors.text.primary, lineHeight: 44 },
+  dateWeekday: {
+    fontSize: 13,
+    fontWeight: '600' as const,
+    color: colors.text.muted,
+    textTransform: 'capitalize' as const,
+  },
+  dateMonth: { fontSize: 15, color: colors.text.muted, textTransform: 'capitalize' as const },
+  greeting: { flex: 1, alignItems: 'flex-end' as const, paddingTop: 4 },
+  greetingName: { fontSize: 17, fontWeight: '700' as const, color: colors.text.primary, textAlign: 'right' as const },
+  greetingWorkspace: { fontSize: 13, color: colors.text.muted, marginTop: 4, textAlign: 'right' as const },
+  statGrid: { flexDirection: 'row' as const, flexWrap: 'wrap' as const, gap: spacing[3], marginBottom: spacing[2] },
+  statCell: { width: '47%' as const },
+};

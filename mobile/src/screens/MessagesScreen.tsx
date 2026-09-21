@@ -1,7 +1,6 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { ConversationRow } from '../components/pastoralUi';
+import { EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
 
 function asConversations(payload: any) {
   if (Array.isArray(payload)) return payload;
@@ -31,16 +30,16 @@ export function MessagesScreen({
         <EmptyState title="Caixa vazia" body="Quando alguém escrever, a conversa aparece aqui." />
       ) : (
         items.map((item: any) => (
-          <Pressable key={item.id} onPress={() => onOpen(item.id)} testID={`conversation-${item.id}`}>
-            <Card>
-              <Text style={{ color: colors.text.primary, fontWeight: '700' }}>
-                {item.title || item.name || item.subject || 'Conversa'}
-              </Text>
-              <Text style={{ color: colors.text.muted, marginTop: 4 }} numberOfLines={2}>
-                {item.lastMessage?.content || item.preview || ' '}
-              </Text>
-            </Card>
-          </Pressable>
+          <ConversationRow
+            key={item.id}
+            testID={`conversation-${item.id}`}
+            title={item.title || item.name || item.subject || 'Conversa'}
+            preview={item.lastMessage?.content || item.preview}
+            time={item.lastMessageAt || item.updatedAt}
+            unread={item.unreadCount}
+            avatarName={item.title || item.name}
+            onPress={() => onOpen(item.id)}
+          />
         ))
       )}
     </Screen>

@@ -1,15 +1,31 @@
+import {
+  Bell,
+  BookMarked,
+  BookOpen,
+  Calendar,
+  FileText,
+  Flag,
+  Map,
+  User,
+  Users,
+} from 'lucide-react-native';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { ListRow, PrimaryButton, Screen, ScreenTitle } from '../components/ui';
+import { MenuIconRow } from '../components/pastoralUi';
+import { Avatar, PrimaryButton, Screen } from '../components/ui';
 import type { SocialProfile, Workspace } from '../api/types';
 import { colors, spacing } from '../theme';
 
-type MenuItem = {
-  key: string;
-  title: string;
-  help: string;
-  onPress: () => void;
-  testID?: string;
+const RESOURCE_ICONS: Record<string, typeof Calendar> = {
+  calendar: Calendar,
+  announcements: Bell,
+  journeys: Flag,
+  bible: BookOpen,
+  catechism: BookMarked,
+  documents: FileText,
+  catechumens: Users,
+  families: Users,
+  notifications: Map,
 };
 
 export function MoreScreen({
@@ -33,45 +49,60 @@ export function MoreScreen({
   onOpenProfile: () => void;
   onLogout: () => void;
 }) {
-  const resources: MenuItem[] = [
-    { key: 'calendar', title: 'Agenda', help: 'Mês e encontros', onPress: () => onOpenMenu('calendar') },
-    { key: 'announcements', title: 'Comunicados', help: 'Avisos da paróquia', onPress: () => onOpenMenu('announcements') },
-    { key: 'journeys', title: 'Jornadas', help: 'Marcos sacramentais', onPress: () => onOpenMenu('journeys') },
-    { key: 'bible', title: 'Bíblia', help: 'Ler e partilhar', onPress: () => onOpenMenu('bible'), testID: 'open-bible' },
-    { key: 'catechism', title: 'Catecismo', help: 'Seis partes', onPress: () => onOpenMenu('catechism') },
-    { key: 'documents', title: 'Documentos', help: 'Arquivos da turma', onPress: () => onOpenMenu('documents') },
-    { key: 'catechumens', title: 'Catequizandos', help: 'Consulta rápida', onPress: () => onOpenMenu('catechumens') },
-    { key: 'families', title: 'Famílias', help: 'Agregados', onPress: () => onOpenMenu('families') },
-    { key: 'notifications', title: 'Notificações', help: 'O que mudou', onPress: () => onOpenMenu('notifications') },
+  const resources = [
+    { key: 'calendar', title: 'Agenda', help: 'Mês e encontros' },
+    { key: 'announcements', title: 'Comunicados', help: 'Avisos da paróquia' },
+    { key: 'journeys', title: 'Jornadas', help: 'Marcos sacramentais' },
+    { key: 'bible', title: 'Bíblia', help: 'Ler e partilhar', testID: 'open-bible' },
+    { key: 'catechism', title: 'Catecismo', help: 'Seis partes' },
+    { key: 'documents', title: 'Documentos', help: 'Arquivos da turma' },
+    { key: 'catechumens', title: 'Catequizandos', help: 'Consulta rápida' },
+    { key: 'families', title: 'Famílias', help: 'Agregados' },
+    { key: 'notifications', title: 'Notificações', help: 'O que mudou' },
   ];
 
   return (
     <Screen testID="more-screen">
-      <ScreenTitle title="Mais" subtitle={name} />
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing[4], marginBottom: spacing[4] }}>
+        <Avatar name={name} size={56} />
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text.primary }}>Mais</Text>
+          <Text style={{ fontSize: 15, color: colors.text.muted, marginTop: 4 }}>{name}</Text>
+        </View>
+      </View>
 
       {profile?.handle ? (
-        <ListRow title={`Ver perfil @${profile.handle}`} onPress={onOpenProfile} />
+        <MenuIconRow title={`Ver perfil @${profile.handle}`} icon={User} onPress={onOpenProfile} />
       ) : null}
       {onOpenEditProfile ? (
-        <ListRow title="Editar perfil público" onPress={onOpenEditProfile} testID="open-edit-profile" />
+        <MenuIconRow title="Editar perfil público" icon={User} onPress={onOpenEditProfile} testID="open-edit-profile" />
       ) : null}
 
-      <Text style={{ fontWeight: '700', fontSize: 16, color: colors.text.primary, marginTop: spacing[4], marginBottom: spacing[2] }}>
-        Recursos
-      </Text>
+      <Text style={styles.sectionLabel}>Recursos</Text>
       {resources.map((item) => (
-        <ListRow key={item.key} title={item.title} subtitle={item.help} onPress={item.onPress} testID={item.testID} />
+        <MenuIconRow
+          key={item.key}
+          title={item.title}
+          help={item.help}
+          icon={RESOURCE_ICONS[item.key] || FileText}
+          onPress={() => onOpenMenu(item.key)}
+          testID={item.testID}
+        />
       ))}
 
-      <Text style={{ fontWeight: '700', fontSize: 16, color: colors.text.primary, marginTop: spacing[6], marginBottom: spacing[2] }}>
-        Espaço de trabalho
-      </Text>
+      <Text style={styles.sectionLabel}>Espaço de trabalho</Text>
       {workspaces.map((workspace) => {
         const active = workspace.id === workspaceId;
         return (
-          <Pressable key={workspace.id} onPress={() => onSelectWorkspace(workspace.id)} style={{ minHeight: 48, justifyContent: 'center' }}>
+          <Pressable
+            key={workspace.id}
+            onPress={() => onSelectWorkspace(workspace.id)}
+            style={{ minHeight: 48, justifyContent: 'center', paddingVertical: spacing[2] }}
+          >
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={{ fontSize: 15, color: colors.text.primary, fontWeight: active ? '700' : '400' }}>{workspace.name}</Text>
+              <Text style={{ fontSize: 15, color: colors.text.primary, fontWeight: active ? '700' : '400' }}>
+                {workspace.name}
+              </Text>
               {active ? <Text style={{ color: colors.primary[800], fontWeight: '700' }}>✓</Text> : null}
             </View>
           </Pressable>
@@ -84,3 +115,13 @@ export function MoreScreen({
     </Screen>
   );
 }
+
+const styles = {
+  sectionLabel: {
+    fontWeight: '700' as const,
+    fontSize: 16,
+    color: colors.text.primary,
+    marginTop: spacing[6],
+    marginBottom: spacing[2],
+  },
+};

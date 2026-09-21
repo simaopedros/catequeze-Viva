@@ -1,7 +1,6 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { ClassListCard } from '../components/pastoralUi';
+import { EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
 
 type ClassItem = {
   id: string;
@@ -38,14 +37,14 @@ export function ClassesScreen({
         <EmptyState title="Sem turmas" body="Quando pertencer a uma turma, ela aparece aqui." />
       ) : (
         items.map((item) => (
-          <Pressable key={item.id} onPress={() => onOpen(item.id)} testID={`class-${item.id}`}>
-            <Card>
-              <Text style={{ color: colors.text.primary, fontWeight: '700', fontSize: 17 }}>{item.name || 'Turma'}</Text>
-              <Text style={{ color: colors.text.muted, marginTop: 4 }}>
-                {item.community?.name || 'Comunidade'} {item.year ? `· ${item.year}` : ''}
-              </Text>
-            </Card>
-          </Pressable>
+          <ClassListCard
+            key={item.id}
+            testID={`class-${item.id}`}
+            name={item.name || 'Turma'}
+            community={item.community?.name}
+            year={item.year}
+            onPress={() => onOpen(item.id)}
+          />
         ))
       )}
     </Screen>

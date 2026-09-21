@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { SocialPost } from '../api/types';
+import { ReactionBar } from './pastoralUi';
+import { Avatar, Card } from './ui';
 import { colors, spacing } from '../theme';
-import { Card } from './ui';
 
 const LONG_BODY = 280;
 
@@ -42,16 +43,22 @@ export function PostCard({
   const handle = post.author.handle || post.author.socialHandle;
 
   return (
-    <Card>
-      <Pressable
-        accessibilityRole="button"
-        testID={`post-author-${post.id}`}
-        onPress={() => handle && onOpenAuthor?.(handle)}
-        disabled={!handle}
-      >
-        <Text style={styles.author}>{post.author.displayName}</Text>
-        {handle ? <Text style={styles.handle}>@{handle}</Text> : null}
-      </Pressable>
+    <Card elevated>
+      <View style={styles.header}>
+        <Pressable
+          accessibilityRole="button"
+          testID={`post-author-${post.id}`}
+          onPress={() => handle && onOpenAuthor?.(handle)}
+          disabled={!handle}
+          style={styles.authorRow}
+        >
+          <Avatar name={post.author.displayName} size={40} />
+          <View style={styles.authorText}>
+            <Text style={styles.author}>{post.author.displayName}</Text>
+            {handle ? <Text style={styles.handle}>@{handle}</Text> : null}
+          </View>
+        </Pressable>
+      </View>
       <Pressable
         accessibilityRole="button"
         testID={`post-${post.id}`}
@@ -79,9 +86,7 @@ export function PostCard({
         onPress={() => post.slug && onOpenPost?.(post.slug)}
         disabled={!onOpenPost}
       >
-        <Text style={styles.meta}>
-          {post.reactionCount ?? 0} reações · {post.commentCount ?? 0} comentários
-        </Text>
+        <ReactionBar reactionCount={post.reactionCount} commentCount={post.commentCount} />
         {onOpenPost ? <Text style={styles.open}>Abrir publicação</Text> : null}
       </Pressable>
     </Card>
@@ -89,11 +94,13 @@ export function PostCard({
 }
 
 const styles = StyleSheet.create({
+  header: { marginBottom: spacing[3] },
+  authorRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[3] },
+  authorText: { flex: 1 },
   author: { color: colors.text.primary, fontWeight: '700', fontSize: 16 },
-  handle: { color: colors.accent[700], marginTop: 2, marginBottom: spacing.sm },
+  handle: { color: colors.accent[700], marginTop: 2, fontSize: 13 },
   body: { color: colors.primary[700], fontSize: 16, lineHeight: 23 },
   more: { color: colors.accent[700], fontWeight: '700', marginTop: 8 },
-  meta: { color: colors.text.muted, marginTop: spacing.sm, fontSize: 13 },
   open: { color: colors.accent[700], fontWeight: '700', marginTop: 8 },
   share: {
     marginTop: spacing.sm,

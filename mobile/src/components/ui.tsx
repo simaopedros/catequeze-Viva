@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
@@ -346,18 +347,21 @@ export function MeetingHighlightCard({
     );
   }
   return (
-    <Card style={styles.meetingCard}>
+    <LinearGradient colors={['#173B61', '#1E4D7A']} style={styles.meetingCardGradient}>
       <View style={styles.meetingAccent} />
-      {className ? <Text style={styles.meetingClass}>{className}</Text> : null}
-      <Text style={styles.meetingTitle}>{title}</Text>
-      {timeLabel ? <Text style={styles.listSubtitle}>{timeLabel}</Text> : null}
-      {onAttendance ? (
-        <PrimaryButton label="Fazer a chamada" onPress={onAttendance} variant="secondary" />
-      ) : null}
-      {onPress && !onAttendance ? (
-        <PrimaryButton label="Ver encontro" onPress={onPress} variant="ghost" />
-      ) : null}
-    </Card>
+      <Text style={styles.meetingBadge}>Encontro de hoje</Text>
+      {className ? <Text style={styles.meetingClassOnDark}>{className}</Text> : null}
+      <Text style={styles.meetingTitleOnDark}>{title}</Text>
+      {timeLabel ? <Text style={styles.meetingTimeOnDark}>{timeLabel}</Text> : null}
+      <View style={styles.meetingActions}>
+        {onAttendance ? (
+          <PrimaryButton label="Fazer a chamada" onPress={onAttendance} variant="accent" />
+        ) : null}
+        {onPress ? (
+          <PrimaryButton label="Ver encontro" onPress={onPress} variant="ghost" />
+        ) : null}
+      </View>
+    </LinearGradient>
   );
 }
 
@@ -564,16 +568,38 @@ const styles = StyleSheet.create({
   statValue: { fontSize: 24, fontWeight: '700', color: colors.text.primary },
   statLabel: { ...typography.bodySm, color: colors.text.muted, marginTop: spacing[1] },
   meetingCard: { overflow: 'hidden', paddingLeft: spacing[4] + 4 },
+  meetingCardGradient: {
+    borderRadius: radius.lg,
+    padding: spacing[5],
+    paddingLeft: spacing[4] + 8,
+    marginBottom: spacing[3],
+    overflow: 'hidden',
+    ...elevation.card,
+  },
   meetingAccent: {
     position: 'absolute',
     left: 0,
     top: 0,
     bottom: 0,
-    width: 4,
+    width: 5,
     backgroundColor: colors.accent[500],
   },
+  meetingBadge: {
+    ...typography.labelSm,
+    color: colors.accent[100],
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: radius.pill,
+    marginBottom: spacing[2],
+  },
   meetingClass: { ...typography.bodySm, fontWeight: '600', color: colors.primary[800] },
+  meetingClassOnDark: { ...typography.bodySm, fontWeight: '600', color: 'rgba(255,255,255,0.85)' },
   meetingTitle: { fontSize: 19, fontWeight: '700', color: colors.text.primary, marginTop: 4 },
+  meetingTitleOnDark: { fontSize: 22, fontWeight: '700', color: colors.white, marginTop: 4 },
+  meetingTimeOnDark: { ...typography.bodySm, color: 'rgba(255,255,255,0.75)', marginTop: 6 },
+  meetingActions: { marginTop: spacing[4], gap: spacing[2] },
   presenceRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[1], marginTop: spacing[2] },
   presenceChip: {
     paddingHorizontal: spacing[2],
