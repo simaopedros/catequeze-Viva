@@ -196,6 +196,12 @@ export function createMobileClient(options: MobileClientOptions) {
     catechismEntry(number: number, locale = 'pt-BR') {
       return request<any>(withQuery(MOBILE_PATHS.catechismEntry(number), { locale }));
     },
+    searchDirectory(q: string, locale = 'pt-BR') {
+      return request<{ id: string; number?: number; title: string }[]>(withQuery(MOBILE_PATHS.directorySearch, { q, locale }));
+    },
+    searchContent(q: string) {
+      return request<{ id: string; title: string; isAiGenerated?: boolean }[]>(withQuery(MOBILE_PATHS.contentSearch, { q }));
+    },
     saveAttendance(body: {
       meetingId: string;
       catechumenProfileId: string;

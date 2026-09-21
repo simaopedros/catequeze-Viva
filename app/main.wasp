@@ -2250,6 +2250,20 @@ api mobileCatechismEntry {
   entities: [CatechismEntry]
 }
 
+api mobileDirectorySearch {
+  fn: import { mobileDirectorySearch } from "@src/server/api/mobilePastoral",
+  auth: true,
+  httpRoute: (GET, "/mobile/directory/search"),
+  entities: [DirectoryEntry]
+}
+
+api mobileContentSearch {
+  fn: import { mobileContentSearch } from "@src/server/api/mobilePastoral",
+  auth: true,
+  httpRoute: (GET, "/mobile/content/search"),
+  entities: [ContentItem, Membership, Parish, ClassCatechist, Diocese]
+}
+
 api mobileAttendanceSheet {
   fn: import { mobileAttendanceSheet } from "@src/server/api/mobilePastoral",
   auth: true,

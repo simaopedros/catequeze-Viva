@@ -22,9 +22,11 @@ export default function BibleChapterRoute() {
       error={error}
       canPublish={Boolean(access.data?.canPublish)}
       onShareVerse={(verseNumber) => {
+        const verse = data?.verses?.find((item) => item.number === verseNumber);
+        if (!verse?.id) return;
         router.push({
           pathname: '/(app)/community/compose',
-          params: { kind: 'VERSE', sourceId: `${bookId}:${chapterNumber}:${verseNumber}` },
+          params: { kind: 'VERSE', sourceId: verse.id },
         });
       }}
     />

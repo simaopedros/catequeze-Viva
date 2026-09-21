@@ -10,6 +10,8 @@ import { getMeetingAttendanceSheet, listMeetingsForClasses } from '../operations
 import { acknowledgePastoralAnnouncement, listPastoralAnnouncements } from '../operations/pastoralAnnouncementOperations';
 import { getSacramentalJourney, listSacramentalJourneys, updateMilestoneStatus } from '../operations/sacramentOperations';
 import { getCatechismEntry, listCatechismByCategory, searchCatechism } from '../operations/bibleOperations';
+import { listContentItems } from '../operations/contentOperations';
+import { searchDirectory } from '../operations/directoryOperations';
 import { assertTwoFactorSessionVerified } from '../operations/twoFactorOperations';
 
 function toOp(context: any) {
@@ -103,6 +105,33 @@ export async function mobileCatechismEntry(req: Request, res: Response, context:
   const number = Number(optionalString(req.params.number));
   if (!Number.isFinite(number)) throw new HttpError(400, 'Missing or invalid number.');
   return res.json(await getCatechismEntry({ number, locale: optionalString(req.query.locale) }, opCtx));
+}
+
+export async function mobileDirectorySearch(req: Request, res: Response, context: any) {
+  const opCtx = await gate(context);
+  const rows = await searchDirectory(
+    { query: optionalString(req.query.q) || '', locale: optionalString(req.query.locale) },
+    opCtx,
+  );
+  const list = Array.isArray(rows) ? rows : [];
+  return res.json(list.map((entry: any) => ({ id: entry.id, number: entry.number, title: entry.title || '' })));
+}
+
+export async function mobileContentSearch(req: Request, res: Response, context: any) {
+  const opCtx = await gate(context);
+  const payload = await listContentItems(
+    { search: optionalString(req.query.q) || '', take: 20 },
+    opCtx,
+  );
+  const rows = Array.isArray(payload) ? payload : payload?.items;
+  const list = Array.isArray(rows) ? rows : [];
+  return res.json(
+    list.map((item: any) => ({
+      id: item.id,
+      title: item.title || '',
+      isAiGenerated: Boolean(item.isAiGenerated),
+    })),
+  );
 }
 
 export async function mobileAttendanceSheet(req: Request, res: Response, context: any) {

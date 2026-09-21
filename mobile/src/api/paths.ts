@@ -26,6 +26,8 @@ export const MOBILE_PATHS = {
   catechismSearch: '/mobile/catechism/search',
   catechismCategory: (category: string) => `/mobile/catechism/categories/${encodeURIComponent(category)}`,
   catechismEntry: (number: number | string) => `/mobile/catechism/entries/${number}`,
+  directorySearch: '/mobile/directory/search',
+  contentSearch: '/mobile/content/search',
   messages: '/mobile/messages',
   messageDetails: (id: string) => `/mobile/messages/${encodeURIComponent(id)}`,
   notifications: '/mobile/notifications',

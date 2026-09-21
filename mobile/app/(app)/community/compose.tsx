@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import type { SocialShare } from '../../../src/api/types';
 import { useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
-import { ComposeScreen } from '../../../src/screens/ComposeScreen';
+import { ComposeScreen, type PostKind } from '../../../src/screens/ComposeScreen';
 
 export default function ComposeRoute() {
   const { api } = useAuth();
@@ -29,7 +29,24 @@ export default function ComposeRoute() {
           setError(err instanceof Error ? err.message : 'Partilha inválida.');
         }
       }}
+      initialKind={params.kind ? String(params.kind) : 'TEXT'}
       initialSourceId={params.sourceId ? String(params.sourceId) : ''}
+      onOpenBible={() => router.push('/(app)/bible')}
+      onSearch={async (kind: PostKind, query: string) => {
+        if (kind === 'CATECHISM') {
+          const rows = await api.searchCatechism(query);
+          return (rows ?? []).map((row: any) => ({ id: row.id, title: `${row.number} · ${row.question || row.title || ''}` }));
+        }
+        if (kind === 'DIRECTORY') {
+          const rows = await api.searchDirectory(query);
+          return (rows ?? []).map((row) => ({ id: row.id, title: row.title || String(row.number || '') }));
+        }
+        const rows = await api.searchContent(query);
+        const ai = kind === 'AI_ARTIFACT';
+        return (rows ?? [])
+          .filter((row) => Boolean(row.isAiGenerated) === ai)
+          .map((row) => ({ id: row.id, title: row.title }));
+      }}
       onPublish={async (body, share) => {
         setBusy(true);
         setError(null);

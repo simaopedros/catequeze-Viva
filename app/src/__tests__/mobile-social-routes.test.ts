@@ -47,6 +47,8 @@ const PASTORAL_ROUTES = [
   ['mobileCatechismSearch', 'GET', '/mobile/catechism/search'],
   ['mobileCatechismCategory', 'GET', '/mobile/catechism/categories/:category'],
   ['mobileCatechismEntry', 'GET', '/mobile/catechism/entries/:number'],
+  ['mobileDirectorySearch', 'GET', '/mobile/directory/search'],
+  ['mobileContentSearch', 'GET', '/mobile/content/search'],
   ['mobileAttendanceSheet', 'GET', '/mobile/meetings/:id/attendance'],
 ] as const;
 
