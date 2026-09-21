@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import { Upload } from 'tus-js-client';
 import type { TokenProvider } from '../api/client';
 import type { SocialVideoUploadTicket } from '../api/types';
@@ -15,6 +16,36 @@ export type SocialUploadAuth = {
   getToken: TokenProvider;
 };
 
+/** RN file part for FormData — must not be cast to Blob (breaks Expo fetch). */
+export function toReactNativeFormFile(file: LocalMediaFile) {
+  return {
+    uri: normalizeUploadUri(file.uri),
+    name: file.name,
+    type: file.mimeType || 'application/octet-stream',
+  };
+}
+
+/**
+ * Image picker URIs must be passed as-is to XHR multipart; Expo's fetch FormData
+ * encoder only supports strings/Blobs and throws "Unsupported FormDataPart implementation".
+ */
+export function normalizeUploadUri(uri: string): string {
+  const trimmed = uri.trim();
+  if (!trimmed) return trimmed;
+  if (
+    trimmed.startsWith('file://') ||
+    trimmed.startsWith('content://') ||
+    trimmed.startsWith('ph://') ||
+    trimmed.startsWith('assets-library://')
+  ) {
+    return trimmed;
+  }
+  if (Platform.OS === 'android' && trimmed.startsWith('/')) {
+    return `file://${trimmed}`;
+  }
+  return trimmed;
+}
+
 async function authHeaders(getToken: TokenProvider) {
   const token = await Promise.resolve(getToken());
   const headers: Record<string, string> = { Accept: 'application/json' };
@@ -22,32 +53,82 @@ async function authHeaders(getToken: TokenProvider) {
   return headers;
 }
 
+function postMultipart(
+  auth: SocialUploadAuth,
+  path: string,
+  buildForm: () => FormData,
+  handlers?: { onProgress?: (percent: number) => void },
+): Promise<{ ok: boolean; status: number; payload: Record<string, unknown> }> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const baseUrl = auth.getBaseUrl().replace(/\/$/, '');
+    const url = `${baseUrl}${path}`;
+
+    xhr.upload.onprogress = (event) => {
+      if (!handlers?.onProgress || !event.lengthComputable) return;
+      handlers.onProgress(Math.round((event.loaded / event.total) * 100));
+    };
+
+    xhr.onload = () => {
+      let payload: Record<string, unknown> = {};
+      try {
+        payload = JSON.parse(xhr.responseText || '{}') as Record<string, unknown>;
+      } catch {
+        payload = { message: xhr.responseText };
+      }
+      resolve({
+        ok: xhr.status >= 200 && xhr.status < 300,
+        status: xhr.status,
+        payload,
+      });
+    };
+
+    xhr.onerror = () => reject(new Error('Falha na ligação ao servidor.'));
+    xhr.onabort = () => reject(new Error('Envio cancelado.'));
+
+    xhr.open('POST', url);
+
+    void authHeaders(auth.getToken).then((headers) => {
+      for (const [key, value] of Object.entries(headers)) {
+        xhr.setRequestHeader(key, value);
+      }
+      xhr.send(buildForm());
+    });
+  });
+}
+
 export async function uploadSocialImageFromUri(
   auth: SocialUploadAuth,
   file: LocalMediaFile,
+  handlers?: { onProgress?: (percent: number) => void },
 ): Promise<{ mediaId: string; url: string }> {
-  const formData = new FormData();
-  formData.append('file', {
-    uri: file.uri,
-    name: file.name,
-    type: file.mimeType,
-  } as unknown as Blob);
+  const result = await postMultipart(
+    auth,
+    '/api/social/images',
+    () => {
+      const formData = new FormData();
+      formData.append('file', toReactNativeFormFile(file) as unknown as Blob);
+      return formData;
+    },
+    handlers,
+  );
 
-  const baseUrl = auth.getBaseUrl().replace(/\/$/, '');
-  const response = await fetch(`${baseUrl}/api/social/images`, {
-    method: 'POST',
-    headers: await authHeaders(auth.getToken),
-    body: formData,
-  });
-
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(payload?.error || 'Falha ao enviar imagem.');
+  if (!result.ok) {
+    const message =
+      typeof result.payload.error === 'string'
+        ? result.payload.error
+        : typeof result.payload.message === 'string'
+          ? result.payload.message
+          : 'Falha ao enviar imagem.';
+    throw new Error(message);
   }
-  if (!payload?.mediaId || !payload?.url) {
+
+  const mediaId = result.payload.mediaId;
+  const url = result.payload.url;
+  if (typeof mediaId !== 'string' || typeof url !== 'string') {
     throw new Error('Resposta de upload inválida.');
   }
-  return { mediaId: payload.mediaId as string, url: payload.url as string };
+  return { mediaId, url };
 }
 
 function isStreamTicket(
@@ -80,7 +161,7 @@ export function uploadSocialVideoFromUri(
 
   void (async () => {
     try {
-      const blob = await fetch(file.uri).then((res) => res.blob());
+      const blob = await fetch(normalizeUploadUri(file.uri)).then((res) => res.blob());
       if (aborted) return;
 
       upload = new Upload(blob, {
@@ -130,11 +211,7 @@ function uploadSocialVideoViaServer(
 ): { abort: () => void } {
   const xhr = new XMLHttpRequest();
   const form = new FormData();
-  form.append('file', {
-    uri: file.uri,
-    name: file.name,
-    type: file.mimeType,
-  } as unknown as Blob);
+  form.append('file', toReactNativeFormFile(file) as unknown as Blob);
   form.append('mediaId', mediaId);
 
   xhr.upload.onprogress = (event) => {

@@ -185,11 +185,20 @@ export function InlineCommunityComposer({
     ]);
 
     try {
-      const uploaded = await uploadSocialImageFromUri(composeMedia.uploadAuth, {
-        uri: asset.uri,
-        name: asset.fileName || `image-${Date.now()}.jpg`,
-        mimeType: asset.mimeType || 'image/jpeg',
-      });
+      const uploaded = await uploadSocialImageFromUri(
+        composeMedia.uploadAuth,
+        {
+          uri: asset.uri,
+          name: asset.fileName || `image-${Date.now()}.jpg`,
+          mimeType: asset.mimeType || 'image/jpeg',
+        },
+        {
+          onProgress: (percent) =>
+            setMedia((current) =>
+              current.map((item) => (item.key === key ? { ...item, progress: percent } : item)),
+            ),
+        },
+      );
       setMedia((current) =>
         current.map((item) =>
           item.key === key
