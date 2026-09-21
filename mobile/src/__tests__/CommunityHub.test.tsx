@@ -25,10 +25,11 @@ describe('Community hub', () => {
 
     expect(view.getByTestId('community-hub')).toBeTruthy();
     expect(view.queryByText('Publicações')).toBeNull();
-    for (const area of COMMUNITY_AREAS.filter((item) => item.id !== 'feed')) {
+    for (const area of COMMUNITY_AREAS.filter((item) => item.id !== 'feed' && item.id !== 'following')) {
       expect(view.getByTestId(`area-${area.id}`)).toBeTruthy();
-      expect(view.getByText(area.label)).toBeTruthy();
     }
+    expect(view.queryByText('Publicar')).toBeNull();
+    expect(view.queryByText('Pesquisar')).toBeNull();
     expect(view.queryByTestId('area-feed')).toBeNull();
 
     fireEvent.press(view.getByTestId('area-members'));

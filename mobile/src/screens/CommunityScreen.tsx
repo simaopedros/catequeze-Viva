@@ -1,9 +1,10 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { PostCard } from '../components/PostCard';
-import { BrandButton, EmptyState, HubTile, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, EmptyState, LoadingState, Screen } from '../components/ui';
 import type { SocialAccess, SocialPost, SocialTopic } from '../api/types';
-import { colors, radius, spacing, type } from '../theme';
+import { colors, shadow, spacing, type } from '../theme';
 import { COMMUNITY_AREAS, type CommunityAreaId } from './communityAreas';
 
 const SORTS = [
@@ -12,45 +13,22 @@ const SORTS = [
   { id: 'foryou', label: 'Para si' },
 ] as const;
 
-const GRID_AREAS = ['shorts', 'following', 'topics', 'members'] as const;
-const ACCOUNT_AREAS = ['me', 'edit', 'blocked', 'notifications'] as const;
+const ICON_AREAS = [
+  { id: 'shorts', icon: 'play-outline' },
+  { id: 'members', icon: 'people-outline' },
+  { id: 'topics', icon: 'pricetags-outline' },
+  { id: 'notifications', icon: 'notifications-outline' },
+  { id: 'blocked', icon: 'ban-outline' },
+  { id: 'edit', icon: 'create-outline' },
+] as const;
 
 function area(id: CommunityAreaId) {
   return COMMUNITY_AREAS.find((item) => item.id === id)!;
 }
 
-function Chip({
-  label,
-  active,
-  onPress,
-  testID,
-}: {
-  label: string;
-  active?: boolean;
-  onPress: () => void;
-  testID?: string;
-}) {
-  return (
-    <Pressable
-      testID={testID}
-      onPress={onPress}
-      style={{
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-        borderRadius: radius.pill,
-        backgroundColor: active ? colors.ink : colors.paper,
-        borderWidth: 1,
-        borderColor: active ? colors.ink : colors.line,
-      }}
-    >
-      <Text style={{ color: active ? colors.white : colors.ink, fontFamily: type.bodyBold, fontSize: 13 }}>{label}</Text>
-    </Pressable>
-  );
-}
-
 export function CommunityScreen({
   title = 'Comunidade',
-  subtitle = 'Ler e seguir é livre. Publicar pede assinatura.',
+  subtitle,
   posts,
   topics,
   access,
@@ -96,105 +74,131 @@ export function CommunityScreen({
   onLoadMore?: () => void;
 }) {
   return (
+    <View style={{ flex: 1 }}>
     <Screen testID="community-screen">
-      <ScreenTitle title={title} subtitle={subtitle} />
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm }}>
+        <Text style={{ flex: 1, color: colors.ink, fontFamily: type.display, fontSize: 32, lineHeight: 36 }}>{title}</Text>
+        {showHub && onSearch ? (
+          <Pressable
+            accessibilityLabel={area('search').label}
+            testID="area-search"
+            onPress={onSearch}
+            hitSlop={8}
+            style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Ionicons name="search-outline" size={22} color={colors.ink} />
+          </Pressable>
+        ) : null}
+        {showHub && onOpenArea ? (
+          <Pressable
+            accessibilityLabel={area('me').label}
+            testID="area-me"
+            onPress={() => onOpenArea('me')}
+            hitSlop={8}
+            style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Ionicons name="person-circle-outline" size={26} color={colors.ink} />
+          </Pressable>
+        ) : null}
+      </View>
+      {subtitle ? (
+        <Text style={{ color: colors.muted, fontFamily: type.body, marginBottom: spacing.sm }}>{subtitle}</Text>
+      ) : null}
       {showHub && onOpenArea ? (
-        <View testID="community-hub" style={{ marginBottom: spacing.md, gap: spacing.sm }}>
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            <View style={{ flex: 1 }}>
-              <BrandButton label={area('compose').label} onPress={onCompose} testID="area-compose" />
-            </View>
-            {onSearch ? (
-              <View style={{ flex: 1 }}>
-                <BrandButton variant="ghost" label={area('search').label} onPress={onSearch} testID="area-search" />
-              </View>
-            ) : null}
-          </View>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-            {GRID_AREAS.map((id) => {
-              const item = area(id);
-              return (
-                <HubTile
-                  key={id}
-                  label={item.label}
-                  hint={item.hint}
-                  testID={`area-${id}`}
-                  onPress={() => onOpenArea(id)}
-                />
-              );
-            })}
-          </View>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 14, paddingVertical: 4 }}>
-            {ACCOUNT_AREAS.map((id) => (
-              <Pressable key={id} testID={`area-${id}`} onPress={() => onOpenArea(id)}>
-                <Text style={{ color: colors.muted, fontFamily: type.bodyMedium, fontSize: 13 }}>{area(id).label}</Text>
-              </Pressable>
-            ))}
-          </View>
+        <View testID="community-hub" style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.md }}>
+          {ICON_AREAS.map((item) => (
+            <Pressable
+              key={item.id}
+              accessibilityLabel={area(item.id).label}
+              testID={`area-${item.id}`}
+              onPress={() => onOpenArea(item.id)}
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: colors.paper,
+                borderWidth: 1,
+                borderColor: colors.line,
+              }}
+            >
+              <Ionicons name={item.icon} size={18} color={colors.ink} />
+            </Pressable>
+          ))}
         </View>
       ) : null}
-      {!showHub ? <BrandButton label="Nova publicação" onPress={onCompose} testID="compose-open" /> : null}
       {!showHub && onSearch ? (
-        <BrandButton variant="ghost" label="Pesquisar pessoas e publicações" onPress={onSearch} testID="open-search" />
-      ) : null}
-      {!showHub && onToggleFollowing ? (
-        <BrandButton
-          variant={following ? 'primary' : 'ghost'}
-          label={following ? 'A ver quem segue' : 'Só quem eu sigo'}
-          onPress={onToggleFollowing}
-          testID="filter-following"
-        />
+        <Pressable onPress={onSearch} testID="open-search" style={{ marginBottom: spacing.sm }}>
+          <Text style={{ color: colors.goldDark, fontFamily: type.bodyBold }}>Pesquisar</Text>
+        </Pressable>
       ) : null}
       {access && !access.canPublish ? (
-        <View
-          style={{
-            backgroundColor: colors.cream,
-            borderRadius: radius.md,
-            borderWidth: 1,
-            borderColor: colors.line,
-            padding: spacing.md,
-            marginBottom: spacing.md,
-          }}
-        >
-          <Text style={{ color: colors.goldDark, fontFamily: type.bodyMedium, lineHeight: 20 }}>
-            {access.reason === 'subscription'
-              ? 'Pode ler e seguir. Para publicar, precisa de uma assinatura activa.'
-              : 'A publicação está limitada nesta conta.'}
-          </Text>
-        </View>
+        <Text style={{ color: colors.goldDark, fontFamily: type.body, fontSize: 13, marginBottom: spacing.sm }}>
+          {access.reason === 'subscription' ? 'Publicar pede assinatura.' : 'Publicação limitada nesta conta.'}
+        </Text>
       ) : null}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 8, paddingBottom: spacing.sm }}
+        contentContainerStyle={{ gap: 18, paddingBottom: spacing.sm, alignItems: 'center' }}
       >
         {SORTS.map((item) => (
-          <Chip
-            key={item.id}
-            label={item.label}
-            active={sort === item.id}
-            testID={`sort-${item.id}`}
-            onPress={() => onChangeSort(item.id)}
-          />
+          <Pressable key={item.id} testID={`sort-${item.id}`} onPress={() => onChangeSort(item.id)}>
+            <Text
+              style={{
+                color: sort === item.id ? colors.ink : colors.muted,
+                fontFamily: type.bodyBold,
+                fontSize: 15,
+                borderBottomWidth: sort === item.id ? 2 : 0,
+                borderBottomColor: colors.gold,
+                paddingBottom: 4,
+              }}
+            >
+              {item.label}
+            </Text>
+          </Pressable>
         ))}
         {showHub && onToggleFollowing ? (
-          <Chip label="Quem sigo" active={following} testID="filter-following" onPress={onToggleFollowing} />
+          <Pressable testID="filter-following" onPress={onToggleFollowing}>
+            <Text
+              style={{
+                color: following ? colors.ink : colors.muted,
+                fontFamily: type.bodyBold,
+                fontSize: 15,
+                borderBottomWidth: following ? 2 : 0,
+                borderBottomColor: colors.gold,
+                paddingBottom: 4,
+              }}
+            >
+              Seguindo
+            </Text>
+          </Pressable>
+        ) : null}
+        {!showHub && onToggleFollowing ? (
+          <Pressable testID="filter-following" onPress={onToggleFollowing}>
+            <Text style={{ color: following ? colors.ink : colors.muted, fontFamily: type.bodyBold }}>Seguindo</Text>
+          </Pressable>
         ) : null}
       </ScrollView>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 8, paddingBottom: spacing.md }}
+        contentContainerStyle={{ gap: 16, paddingBottom: spacing.md }}
       >
-        <Chip label="Todos" active={!topicSlug} onPress={() => onChangeTopic(null)} />
+        <Pressable onPress={() => onChangeTopic(null)}>
+          <Text style={{ color: !topicSlug ? colors.goldDark : colors.muted, fontFamily: type.bodyMedium }}>Todos</Text>
+        </Pressable>
         {topics.map((topic) => (
-          <Chip
+          <Pressable
             key={topic.slug}
-            label={topic.name}
-            active={topicSlug === topic.slug}
             testID={`topic-${topic.slug}`}
             onPress={() => (onOpenTopic ? onOpenTopic(topic.slug) : onChangeTopic(topic.slug))}
-          />
+          >
+            <Text style={{ color: topicSlug === topic.slug ? colors.goldDark : colors.muted, fontFamily: type.bodyMedium }}>
+              {topic.name}
+            </Text>
+          </Pressable>
         ))}
       </ScrollView>
       {loading ? <LoadingState /> : null}
@@ -210,5 +214,25 @@ export function CommunityScreen({
         <BrandButton variant="ghost" label="Carregar mais" onPress={onLoadMore} testID="load-more" />
       ) : null}
     </Screen>
+    <Pressable
+      accessibilityLabel={area('compose').label}
+      testID={showHub ? 'area-compose' : 'compose-open'}
+      onPress={onCompose}
+      style={{
+        position: 'absolute',
+        right: 20,
+        bottom: 20,
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        backgroundColor: colors.gold,
+        alignItems: 'center',
+        justifyContent: 'center',
+        ...shadow.card,
+      }}
+    >
+      <Ionicons name="add" size={30} color={colors.ink} />
+    </Pressable>
+    </View>
   );
 }
