@@ -24,6 +24,8 @@ export default function HomeRoute() {
   return (
     <HomeScreen
       name={displayName(user)}
+      firstName={user?.firstName ?? undefined}
+      avatarUrl={user?.avatarUrl}
       workspaceName={workspaceName}
       stats={data}
       loading={loading}
@@ -32,7 +34,6 @@ export default function HomeRoute() {
       refreshing={refreshing}
       onOpenClasses={() => router.push('/(app)/(tabs)/classes')}
       onOpenCatechumens={() => router.push('/(app)/catechumens')}
-      onOpenCalendar={() => router.push('/(app)/calendar')}
       onOpenClass={(id) => router.push(`/(app)/class/${id}`)}
       onOpenMeeting={(id) => router.push(`/(app)/meeting/${id}`)}
       onOpenAttendance={(id) => router.push(`/(app)/meeting/${id}/attendance`)}
