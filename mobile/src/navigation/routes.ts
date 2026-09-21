@@ -33,6 +33,14 @@ export const appRoutes = {
   documents: '/(app)/documents',
   myProfile: '/(app)/profile',
   notifications: '/(app)/notifications',
+  catechumens: '/(app)/catechumens',
+  catechumen: (id: string) => `/(app)/catechumens/${id}`,
+  families: '/(app)/families',
+  family: (id: string) => `/(app)/families/${id}`,
+  calendar: '/(app)/calendar',
+  announcements: '/(app)/announcements',
+  journeys: '/(app)/journeys',
+  catechism: '/(app)/catechism',
 } as const;
 
 export function resolveAuthHref(status: 'booting' | 'guest' | 'needs2fa' | 'ready') {

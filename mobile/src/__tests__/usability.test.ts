@@ -29,10 +29,16 @@ describe('usability map', () => {
       appRoutes.documents,
       appRoutes.notifications,
       appRoutes.more,
+      appRoutes.catechumens,
+      appRoutes.families,
+      appRoutes.calendar,
+      appRoutes.announcements,
+      appRoutes.journeys,
+      appRoutes.catechism,
     ];
 
     expect(signedOut).toHaveLength(3);
-    expect(signedIn).toHaveLength(24);
+    expect(signedIn).toHaveLength(30);
     expect(APP_TABS).toHaveLength(5);
   });
 });

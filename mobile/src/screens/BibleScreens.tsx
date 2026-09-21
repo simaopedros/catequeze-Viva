@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable, Text } from 'react-native';
 import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import type { BibleBook, BibleChapter } from '../api/types';
-import { colors } from '../theme';
+import { colors, type } from '../theme';
 
 export function BibleBooksScreen({
   books,
@@ -84,10 +84,10 @@ export function BibleChapterScreen({
       />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Capítulo indisponível" body={error} /> : null}
-      {(chapter?.verses || []).map((verse) => (
+        {(chapter?.verses || []).map((verse) => (
         <Card key={verse.number}>
-          <Text style={{ color: colors.goldDark, fontWeight: '700' }}>{verse.number}</Text>
-          <Text style={{ color: colors.inkSoft, marginTop: 6, lineHeight: 22 }}>{verse.text}</Text>
+          <Text style={{ color: colors.goldDark, fontFamily: type.bodyBold, fontSize: 12 }}>{verse.number}</Text>
+          <Text style={{ color: colors.inkSoft, marginTop: 6, lineHeight: 26, fontFamily: type.body, fontSize: 17 }}>{verse.text}</Text>
           {canPublish ? (
             <BrandButton
               variant="ghost"

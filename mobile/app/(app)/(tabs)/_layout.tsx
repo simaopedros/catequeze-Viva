@@ -7,11 +7,12 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: colors.ink },
-        headerTintColor: colors.cream,
-        tabBarActiveTintColor: colors.gold,
-        tabBarInactiveTintColor: '#8aa0b5',
-        tabBarStyle: { backgroundColor: colors.ink, borderTopColor: colors.inkSoft },
+        headerStyle: { backgroundColor: colors.cream },
+        headerTintColor: colors.ink,
+        headerShadowVisible: false,
+        tabBarActiveTintColor: colors.goldDark,
+        tabBarInactiveTintColor: colors.muted,
+        tabBarStyle: { backgroundColor: colors.paper, borderTopColor: colors.line },
       }}
     >
       {APP_TABS.map((tab) => (

@@ -1,15 +1,18 @@
 export const colors = {
-  ink: '#071d36',
-  inkSoft: '#123152',
-  gold: '#bd8b58',
-  goldDark: '#8d6238',
-  cream: '#f6efe4',
-  paper: '#fffaf3',
-  muted: '#5c6b7a',
-  line: '#d8c7b0',
-  danger: '#b42318',
-  success: '#1f7a4d',
-  white: '#ffffff',
+  ink: '#071A2D',
+  inkSoft: '#0A2540',
+  midnight: '#153A63',
+  gold: '#D39A2B',
+  goldDark: '#8A6418',
+  goldLight: '#F4CF7A',
+  cream: '#FFF7E7',
+  paper: '#FFFDF8',
+  muted: '#5C6B7A',
+  inkMuted: '#A8B8C9',
+  line: '#E6D7C3',
+  danger: '#B42318',
+  success: '#1F7A4D',
+  white: '#FFFFFF',
 } as const;
 
 export const spacing = {
@@ -18,4 +21,28 @@ export const spacing = {
   md: 16,
   lg: 24,
   xl: 32,
+} as const;
+
+export const radius = {
+  sm: 10,
+  md: 16,
+  lg: 22,
+  pill: 999,
+} as const;
+
+export const type = {
+  display: 'CormorantGaramond_600SemiBold',
+  body: 'Inter_400Regular',
+  bodyMedium: 'Inter_500Medium',
+  bodyBold: 'Inter_600SemiBold',
+} as const;
+
+export const shadow = {
+  card: {
+    shadowColor: '#071A2D',
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 2,
+  },
 } as const;

@@ -30,12 +30,12 @@ export function ForgotPasswordScreen({
       )}
       {!sent ? (
         <BrandButton
-          label={busy ? 'A enviar…' : 'Enviar link'}
+          label={busy ? 'Enviando…' : 'Enviar link'}
           disabled={busy || !email}
           onPress={() => onSubmit(email.trim())}
         />
       ) : null}
-      <BrandButton variant="ghost" label="Voltar ao início de sessão" onPress={onBack} />
+      <BrandButton variant="ghost" label="Voltar ao login" onPress={onBack} />
     </Screen>
   );
 }

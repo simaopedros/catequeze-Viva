@@ -1,9 +1,14 @@
+import { CormorantGaramond_600SemiBold } from '@expo-google-fonts/cormorant-garamond';
+import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, useFonts } from '@expo-google-fonts/inter';
 import { Stack, useRouter, useSegments } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { AuthProvider, useAuth } from '../src/auth/AuthContext';
-import { colors } from '../src/theme';
+import { colors, type } from '../src/theme';
+
+SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
 function Gate({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
@@ -34,22 +39,42 @@ function Gate({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    CormorantGaramond_600SemiBold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) SplashScreen.hideAsync().catch(() => undefined);
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.cream }}>
+        <ActivityIndicator color={colors.gold} />
+      </View>
+    );
+  }
+
   return (
     <AuthProvider>
-      <StatusBar style="light" backgroundColor={colors.ink} />
+      <StatusBar style="dark" backgroundColor={colors.cream} />
       <Gate>
         <Stack
           screenOptions={{
-            headerStyle: { backgroundColor: colors.ink },
-            headerTintColor: colors.cream,
-            headerTitleStyle: { fontWeight: '700' },
+            headerStyle: { backgroundColor: colors.cream },
+            headerTintColor: colors.ink,
+            headerTitleStyle: { fontFamily: type.bodyBold },
+            headerShadowVisible: false,
             contentStyle: { backgroundColor: colors.cream },
           }}
         >
           <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ title: 'Entrar' }} />
-          <Stack.Screen name="two-factor" options={{ title: '2FA' }} />
-          <Stack.Screen name="forgot-password" options={{ title: 'Recuperar' }} />
+          <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="two-factor" options={{ title: 'Verificação' }} />
+          <Stack.Screen name="forgot-password" options={{ title: 'Recuperar senha' }} />
           <Stack.Screen name="(app)" options={{ headerShown: false }} />
         </Stack>
       </Gate>

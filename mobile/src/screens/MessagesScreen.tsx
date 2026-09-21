@@ -1,43 +1,39 @@
 import React from 'react';
 import { Pressable, Text } from 'react-native';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
-
-function asConversations(payload: any) {
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.items)) return payload.items;
-  if (Array.isArray(payload?.conversations)) return payload.conversations;
-  return [];
-}
+import { Card, EmptyState, ErrorState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { asList } from '../format';
+import { colors, type } from '../theme';
 
 export function MessagesScreen({
   payload,
   loading,
   error,
   onOpen,
+  onRefresh,
 }: {
   payload: any;
   loading?: boolean;
   error?: string | null;
   onOpen: (id: string) => void;
+  onRefresh?: () => void;
 }) {
-  const items = asConversations(payload);
+  const items = asList(payload);
   return (
-    <Screen testID="messages-screen">
+    <Screen testID="messages-screen" refreshing={loading} onRefresh={onRefresh}>
       <ScreenTitle title="Mensagens" subtitle="Conversas da paróquia e das turmas." />
       {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Mensagens indisponíveis" body={error} /> : null}
+      {error ? <ErrorState title="Mensagens indisponíveis" body={error} /> : null}
       {items.length === 0 && !loading ? (
         <EmptyState title="Caixa vazia" body="Quando alguém escrever, a conversa aparece aqui." />
       ) : (
         items.map((item: any) => (
           <Pressable key={item.id} onPress={() => onOpen(item.id)} testID={`conversation-${item.id}`}>
             <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>
+              <Text style={{ color: colors.ink, fontFamily: type.bodyBold }}>
                 {item.title || item.name || item.subject || 'Conversa'}
               </Text>
-              <Text style={{ color: colors.muted, marginTop: 4 }} numberOfLines={2}>
-                {item.lastMessage?.content || item.preview || ' '}
+              <Text style={{ color: colors.muted, marginTop: 4, fontFamily: type.body }} numberOfLines={2}>
+                {item.lastMessage?.content || item.preview || item.lastMessage?.body || 'Sem prévia'}
               </Text>
             </Card>
           </Pressable>

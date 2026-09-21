@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Text } from 'react-native';
-import { BrandButton, Card, EmptyState, Field, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { TextInput, View } from 'react-native';
+import { BrandButton, ChatBubble, EmptyState, ErrorState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { colors, type } from '../theme';
 
 export function ThreadScreen({
   data,
@@ -9,38 +9,66 @@ export function ThreadScreen({
   error,
   onSend,
   busy,
+  currentUserId,
 }: {
   data: any;
   loading?: boolean;
   error?: string | null;
   onSend: (content: string) => Promise<void> | void;
   busy?: boolean;
+  currentUserId?: string | null;
 }) {
   const [content, setContent] = useState('');
   const messages = data?.messages || data?.items || [];
 
   return (
-    <Screen testID="thread-screen">
-      <ScreenTitle title={data?.title || data?.name || 'Conversa'} />
-      {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Conversa indisponível" body={error} /> : null}
-      {messages.map((message: any) => (
-        <Card key={message.id}>
-          <Text style={{ color: colors.goldDark, fontWeight: '700' }}>
-            {message.author?.displayName || message.senderName || 'Membro'}
-          </Text>
-          <Text style={{ color: colors.inkSoft, marginTop: 6 }}>{message.content || message.body}</Text>
-        </Card>
-      ))}
-      <Field label="Mensagem" value={content} onChangeText={setContent} testID="message-input" />
-      <BrandButton
-        label={busy ? 'A enviar…' : 'Enviar'}
-        disabled={busy || !content.trim()}
-        onPress={async () => {
-          await onSend(content.trim());
-          setContent('');
-        }}
-      />
-    </Screen>
+    <View style={{ flex: 1, backgroundColor: colors.cream }}>
+      <Screen testID="thread-screen">
+        <ScreenTitle title={data?.title || data?.name || 'Conversa'} />
+        {loading ? <LoadingState /> : null}
+        {error ? <ErrorState title="Conversa indisponível" body={error} /> : null}
+        {messages.map((message: any) => {
+          const authorId = message.author?.id || message.senderId || message.userId;
+          const mine = Boolean(currentUserId && authorId === currentUserId) || Boolean(message.mine);
+          return (
+            <ChatBubble
+              key={message.id}
+              mine={mine}
+              author={message.author?.displayName || message.senderName || 'Membro'}
+              body={message.content || message.body || ''}
+            />
+          );
+        })}
+        {!loading && messages.length === 0 ? (
+          <EmptyState title="Conversa nova" body="Escreva a primeira mensagem aqui embaixo." />
+        ) : null}
+      </Screen>
+      <View style={{ padding: 16, borderTopWidth: 1, borderTopColor: colors.line, backgroundColor: colors.paper }}>
+        <TextInput
+          testID="message-input"
+          value={content}
+          onChangeText={setContent}
+          placeholder="Mensagem"
+          placeholderTextColor={colors.muted}
+          style={{
+            borderWidth: 1,
+            borderColor: colors.line,
+            borderRadius: 12,
+            paddingHorizontal: 14,
+            minHeight: 48,
+            color: colors.ink,
+            fontFamily: type.body,
+          }}
+        />
+        <BrandButton
+          label={busy ? 'Enviando…' : 'Enviar'}
+          disabled={busy || !content.trim()}
+          onPress={async () => {
+            await onSend(content.trim());
+            setContent('');
+          }}
+        />
+      </View>
+    </View>
   );
 }

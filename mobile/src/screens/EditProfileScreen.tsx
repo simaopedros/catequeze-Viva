@@ -43,7 +43,7 @@ export function EditProfileScreen({
       />
       <BrandButton
         testID="save-profile"
-        label={busy ? 'A guardar…' : 'Guardar perfil público'}
+        label={busy ? 'Salvando…' : 'Salvar perfil público'}
         disabled={busy}
         onPress={onSave}
       />

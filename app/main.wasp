@@ -2186,6 +2186,76 @@ api mobileBibleChapter {
   httpRoute: (GET, "/mobile/bible/books/:bookId/chapters/:chapter"),
   entities: [BibleBook, BibleChapter, BibleVerse]
 }
+
+api mobileCalendar {
+  fn: import { mobileCalendar } from "@src/server/api/mobilePastoral",
+  auth: true,
+  httpRoute: (GET, "/mobile/calendar"),
+  entities: [LiturgicalEvent, Membership, Parish, Diocese, Community, ClassCatechist, Meeting, CatechesisClass, GuardianProfile, CatechumenProfile, ClassEnrollment]
+}
+
+api mobileAnnouncements {
+  fn: import { mobileAnnouncements } from "@src/server/api/mobilePastoral",
+  auth: true,
+  httpRoute: (GET, "/mobile/announcements"),
+  entities: [PastoralAnnouncement, PastoralAnnouncementAck, Membership, Parish, User, Diocese, Community, ClassCatechist]
+}
+
+api mobileAcknowledgeAnnouncement {
+  fn: import { mobileAcknowledgeAnnouncement } from "@src/server/api/mobilePastoral",
+  auth: true,
+  httpRoute: (POST, "/mobile/announcements/:id/acknowledge"),
+  entities: [PastoralAnnouncement, PastoralAnnouncementAck]
+}
+
+api mobileJourneys {
+  fn: import { mobileJourneys } from "@src/server/api/mobilePastoral",
+  auth: true,
+  httpRoute: (GET, "/mobile/journeys"),
+  entities: [SacramentalJourney, Membership, ClassCatechist, ClassEnrollment, CatechumenProfile, GuardianProfile, CatechesisClass, Parish]
+}
+
+api mobileJourney {
+  fn: import { mobileJourney } from "@src/server/api/mobilePastoral",
+  auth: true,
+  httpRoute: (GET, "/mobile/journeys/:id"),
+  entities: [SacramentalJourney, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, SacramentalJourneyTemplate, Sacrament, Parish]
+}
+
+api mobileUpdateMilestone {
+  fn: import { mobileUpdateMilestone } from "@src/server/api/mobilePastoral",
+  auth: true,
+  httpRoute: (POST, "/mobile/journeys/milestones/:id"),
+  entities: [SacramentalMilestone, Membership, SacramentalJourney, CatechumenProfile, ClassEnrollment, ClassCatechist, Parish]
+}
+
+api mobileCatechismSearch {
+  fn: import { mobileCatechismSearch } from "@src/server/api/mobilePastoral",
+  auth: true,
+  httpRoute: (GET, "/mobile/catechism/search"),
+  entities: [CatechismEntry]
+}
+
+api mobileCatechismCategory {
+  fn: import { mobileCatechismCategory } from "@src/server/api/mobilePastoral",
+  auth: true,
+  httpRoute: (GET, "/mobile/catechism/categories/:category"),
+  entities: [CatechismEntry]
+}
+
+api mobileCatechismEntry {
+  fn: import { mobileCatechismEntry } from "@src/server/api/mobilePastoral",
+  auth: true,
+  httpRoute: (GET, "/mobile/catechism/entries/:number"),
+  entities: [CatechismEntry]
+}
+
+api mobileAttendanceSheet {
+  fn: import { mobileAttendanceSheet } from "@src/server/api/mobilePastoral",
+  auth: true,
+  httpRoute: (GET, "/mobile/meetings/:id/attendance"),
+  entities: [Meeting, AttendanceRecord, CatechumenProfile, CatechesisClass, ClassEnrollment, Membership, Parish, ClassCatechist, User]
+}
 //#endregion
 
 api chatStreamApi {

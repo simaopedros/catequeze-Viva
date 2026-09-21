@@ -1,12 +1,14 @@
 import { Stack } from 'expo-router';
-import { colors } from '../../src/theme';
+import { colors, type } from '../../src/theme';
 
 export default function AppLayout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: colors.ink },
-        headerTintColor: colors.cream,
+        headerStyle: { backgroundColor: colors.cream },
+        headerTintColor: colors.ink,
+        headerTitleStyle: { fontFamily: type.bodyBold },
+        headerShadowVisible: false,
         contentStyle: { backgroundColor: colors.cream },
       }}
     >
@@ -33,6 +35,17 @@ export default function AppLayout() {
       <Stack.Screen name="documents" options={{ title: 'Documentos' }} />
       <Stack.Screen name="profile" options={{ title: 'Perfil' }} />
       <Stack.Screen name="notifications" options={{ title: 'Notificações' }} />
+      <Stack.Screen name="catechumens/index" options={{ title: 'Catequizandos' }} />
+      <Stack.Screen name="catechumens/[id]" options={{ title: 'Catequizando' }} />
+      <Stack.Screen name="families/index" options={{ title: 'Famílias' }} />
+      <Stack.Screen name="families/[id]" options={{ title: 'Família' }} />
+      <Stack.Screen name="calendar" options={{ title: 'Agenda' }} />
+      <Stack.Screen name="announcements/index" options={{ title: 'Comunicados' }} />
+      <Stack.Screen name="announcements/[id]" options={{ title: 'Comunicado' }} />
+      <Stack.Screen name="journeys/index" options={{ title: 'Jornadas' }} />
+      <Stack.Screen name="journeys/[id]" options={{ title: 'Jornada' }} />
+      <Stack.Screen name="catechism/index" options={{ title: 'Catecismo' }} />
+      <Stack.Screen name="catechism/[number]" options={{ title: 'Catecismo' }} />
     </Stack>
   );
 }

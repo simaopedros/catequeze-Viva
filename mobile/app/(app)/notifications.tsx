@@ -16,6 +16,10 @@ export default function NotificationsRoute() {
         await api.markNotificationRead(id);
         await reload();
       }}
+      onReadAll={async () => {
+        await api.markAllNotificationsRead();
+        await reload();
+      }}
     />
   );
 }

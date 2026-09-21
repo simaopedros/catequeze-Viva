@@ -1,8 +1,8 @@
 import React from 'react';
-import { Text } from 'react-native';
-import { BrandButton, Card, Field, Screen, ScreenTitle } from '../components/ui';
+import { Pressable, Text, View } from 'react-native';
+import { BrandButton, Card, HubTile, Screen, ScreenTitle } from '../components/ui';
 import type { SocialProfile, Workspace } from '../api/types';
-import { colors } from '../theme';
+import { colors, type } from '../theme';
 
 export function MoreScreen({
   name,
@@ -12,15 +12,16 @@ export function MoreScreen({
   onSelectWorkspace,
   onOpenBible,
   onOpenDocuments,
-  onOpenCommunity,
+  onOpenCatechumens,
+  onOpenFamilies,
+  onOpenCalendar,
+  onOpenAnnouncements,
+  onOpenJourneys,
+  onOpenCatechism,
+  onOpenNotifications,
   onOpenEditProfile,
   onOpenProfile,
-  onSaveProfile,
   onLogout,
-  handle,
-  bio,
-  onHandleChange,
-  onBioChange,
 }: {
   name: string;
   workspaces: Workspace[];
@@ -29,24 +30,37 @@ export function MoreScreen({
   onSelectWorkspace: (id: string) => void;
   onOpenBible: () => void;
   onOpenDocuments: () => void;
-  onOpenCommunity?: () => void;
+  onOpenCatechumens: () => void;
+  onOpenFamilies: () => void;
+  onOpenCalendar: () => void;
+  onOpenAnnouncements: () => void;
+  onOpenJourneys: () => void;
+  onOpenCatechism: () => void;
+  onOpenNotifications: () => void;
   onOpenEditProfile?: () => void;
   onOpenProfile: () => void;
-  onSaveProfile: () => void;
   onLogout: () => void;
-  handle: string;
-  bio: string;
-  onHandleChange: (value: string) => void;
-  onBioChange: (value: string) => void;
 }) {
+  const tiles = [
+    { label: 'Agenda', hint: 'Mês e encontros', onPress: onOpenCalendar, testID: 'open-calendar' },
+    { label: 'Comunicados', hint: 'Avisos da paróquia', onPress: onOpenAnnouncements, testID: 'open-announcements' },
+    { label: 'Jornadas', hint: 'Marcos sacramentais', onPress: onOpenJourneys, testID: 'open-journeys' },
+    { label: 'Bíblia', hint: 'Ler e partilhar', onPress: onOpenBible, testID: 'open-bible' },
+    { label: 'Catecismo', hint: 'Seis partes', onPress: onOpenCatechism, testID: 'open-catechism' },
+    { label: 'Documentos', hint: 'Arquivos da turma', onPress: onOpenDocuments, testID: 'open-documents' },
+    { label: 'Catequizandos', hint: 'Consulta rápida', onPress: onOpenCatechumens, testID: 'open-catechumens' },
+    { label: 'Famílias', hint: 'Agregados', onPress: onOpenFamilies, testID: 'open-families' },
+    { label: 'Notificações', hint: 'O que mudou', onPress: onOpenNotifications, testID: 'open-notifications' },
+  ];
+
   return (
     <Screen testID="more-screen">
       <ScreenTitle title="Mais" subtitle={name} />
-      <BrandButton label="Bíblia" onPress={onOpenBible} testID="open-bible" />
-      <BrandButton variant="ghost" label="Documentos" onPress={onOpenDocuments} />
-      {onOpenCommunity ? (
-        <BrandButton variant="ghost" label="Áreas da Comunidade" onPress={onOpenCommunity} testID="open-community" />
-      ) : null}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+        {tiles.map((tile) => (
+          <HubTile key={tile.label} label={tile.label} hint={tile.hint} onPress={tile.onPress} testID={tile.testID} />
+        ))}
+      </View>
       {profile?.handle ? (
         <BrandButton variant="ghost" label={`Ver perfil @${profile.handle}`} onPress={onOpenProfile} />
       ) : null}
@@ -54,25 +68,21 @@ export function MoreScreen({
         <BrandButton variant="ghost" label="Editar perfil público" onPress={onOpenEditProfile} testID="open-edit-profile" />
       ) : null}
       <Card>
-        <Text style={{ color: colors.ink, fontWeight: '700', marginBottom: 8 }}>Espaço de trabalho</Text>
+        <Text style={{ color: colors.ink, fontFamily: type.bodyBold, marginBottom: 8 }}>Espaço de trabalho</Text>
         {workspaces.map((workspace) => (
-          <Text
-            key={workspace.id}
-            onPress={() => onSelectWorkspace(workspace.id)}
-            style={{
-              color: workspace.id === workspaceId ? colors.goldDark : colors.inkSoft,
-              marginBottom: 6,
-              fontWeight: workspace.id === workspaceId ? '700' : '400',
-            }}
-          >
-            {workspace.name}
-          </Text>
+          <Pressable key={workspace.id} onPress={() => onSelectWorkspace(workspace.id)} style={{ minHeight: 44, justifyContent: 'center' }}>
+            <Text
+              style={{
+                color: workspace.id === workspaceId ? colors.goldDark : colors.inkSoft,
+                fontFamily: workspace.id === workspaceId ? type.bodyBold : type.body,
+              }}
+            >
+              {workspace.name}
+            </Text>
+          </Pressable>
         ))}
       </Card>
-      <Field label="O seu @" value={handle} onChangeText={onHandleChange} testID="profile-handle" />
-      <Field label="Bio" value={bio} onChangeText={onBioChange} multiline />
-      <BrandButton label="Guardar perfil público" onPress={onSaveProfile} />
-      <BrandButton variant="danger" label="Terminar sessão" onPress={onLogout} testID="logout-button" />
+      <BrandButton variant="danger" label="Sair" onPress={onLogout} testID="logout-button" />
     </Screen>
   );
 }

@@ -1,6 +1,7 @@
 import { useFocusEffect, useRouter } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../../../src/auth/AuthContext';
+import type { SocialPost } from '../../../src/api/types';
 import { useAsync } from '../../../src/hooks/useAsync';
 import { openCommunityArea } from '../../../src/screens/communityNavigation';
 import { CommunityScreen } from '../../../src/screens/CommunityScreen';
@@ -12,6 +13,11 @@ export default function CommunityRoute() {
   const [topicSlug, setTopicSlug] = useState<string | null>(null);
   const [following, setFollowing] = useState(false);
   const feed = useAsync(() => api.socialFeed({ sort, topicSlug, following }), [sort, topicSlug, following]);
+  const [tail, setTail] = useState<{ items: SocialPost[]; nextCursor: string | null }>({ items: [], nextCursor: null });
+
+  useEffect(() => {
+    setTail({ items: [], nextCursor: null });
+  }, [sort, topicSlug, following]);
   const topics = useAsync(() => api.socialTopics(), []);
   const access = useAsync(() => api.socialAccess(), []);
   const me = useAsync(() => api.mySocialProfile(), []);
@@ -24,7 +30,17 @@ export default function CommunityRoute() {
 
   return (
     <CommunityScreen
-      posts={feed.data?.items ?? []}
+      posts={[...(feed.data?.items ?? []), ...tail.items]}
+      hasMore={Boolean(tail.items.length ? tail.nextCursor : feed.data?.nextCursor)}
+      onLoadMore={async () => {
+        const cursor = tail.items.length ? tail.nextCursor : feed.data?.nextCursor;
+        if (!cursor) return;
+        const page = await api.socialFeed({ sort, topicSlug, following, cursor });
+        setTail((current) => ({
+          items: [...current.items, ...(page.items ?? [])],
+          nextCursor: page.nextCursor,
+        }));
+      }}
       topics={topics.data ?? []}
       access={access.data}
       sort={sort}

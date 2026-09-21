@@ -151,6 +151,51 @@ export function createMobileClient(options: MobileClientOptions) {
     meetingDetails(id: string) {
       return request<any>(MOBILE_PATHS.meetingDetails(id));
     },
+    catechumens() {
+      return request<any>(MOBILE_PATHS.catechumens);
+    },
+    catechumen(id: string) {
+      return request<any>(MOBILE_PATHS.catechumenDetails(id));
+    },
+    families(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.families, { workspaceId }));
+    },
+    family(id: string) {
+      return request<any>(MOBILE_PATHS.familyDetails(id));
+    },
+    attendanceSheet(id: string) {
+      return request<any>(MOBILE_PATHS.attendanceSheet(id));
+    },
+    calendar(workspaceId?: string) {
+      return request<{ events: any[]; meetings: any[] }>(withQuery(MOBILE_PATHS.calendar, { workspaceId }));
+    },
+    announcements(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.announcements, { workspaceId }));
+    },
+    acknowledgeAnnouncement(id: string) {
+      return request<any>(MOBILE_PATHS.announcementAck(id), { method: 'POST' });
+    },
+    journeys(workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.journeys, { workspaceId }));
+    },
+    journey(id: string) {
+      return request<any>(MOBILE_PATHS.journey(id));
+    },
+    updateMilestone(id: string, status: 'COMPLETED' | 'PENDING') {
+      return request<any>(MOBILE_PATHS.journeyMilestone(id), {
+        method: 'POST',
+        body: JSON.stringify({ status }),
+      });
+    },
+    searchCatechism(q: string, locale = 'pt-BR') {
+      return request<any[]>(withQuery(MOBILE_PATHS.catechismSearch, { q, locale }));
+    },
+    catechismCategory(category: string, locale = 'pt-BR') {
+      return request<any[]>(withQuery(MOBILE_PATHS.catechismCategory(category), { locale }));
+    },
+    catechismEntry(number: number, locale = 'pt-BR') {
+      return request<any>(withQuery(MOBILE_PATHS.catechismEntry(number), { locale }));
+    },
     saveAttendance(body: {
       meetingId: string;
       catechumenProfileId: string;
@@ -179,6 +224,9 @@ export function createMobileClient(options: MobileClientOptions) {
     },
     markNotificationRead(id: string) {
       return request<any>(MOBILE_PATHS.notificationRead(id), { method: 'POST' });
+    },
+    markAllNotificationsRead() {
+      return request<any>(MOBILE_PATHS.notificationsReadAll, { method: 'POST' });
     },
     documents() {
       return request<any>(MOBILE_PATHS.documents);

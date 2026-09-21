@@ -22,15 +22,17 @@ export function ClassesScreen({
   loading,
   error,
   onOpen,
+  onRefresh,
 }: {
   payload: any;
   loading?: boolean;
   error?: string | null;
   onOpen: (id: string) => void;
+  onRefresh?: () => void;
 }) {
   const items = asList(payload);
   return (
-    <Screen testID="classes-screen">
+    <Screen testID="classes-screen" refreshing={loading} onRefresh={onRefresh}>
       <ScreenTitle title="Turmas" subtitle="Encontros, catequizandos e presença." />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Turmas indisponíveis" body={error} /> : null}

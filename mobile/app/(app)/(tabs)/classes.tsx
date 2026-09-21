@@ -7,13 +7,14 @@ import { ClassesScreen } from '../../../src/screens/ClassesScreen';
 export default function ClassesRoute() {
   const { api, workspaceId } = useAuth();
   const router = useRouter();
-  const { data, loading, error } = useAsync(() => api.classes(workspaceId || undefined), [workspaceId]);
+  const { data, loading, error, reload } = useAsync(() => api.classes(workspaceId || undefined), [workspaceId]);
 
   return (
     <ClassesScreen
       payload={data}
       loading={loading}
       error={error}
+      onRefresh={reload}
       onOpen={(id) => router.push(`/(app)/class/${id}`)}
     />
   );

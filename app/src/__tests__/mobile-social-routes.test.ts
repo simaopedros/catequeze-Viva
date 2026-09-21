@@ -7,6 +7,10 @@ const mobileSocialSource = readFileSync(
   resolve(__dirname, '../server/api/mobileSocial.ts'),
   'utf8',
 );
+const mobilePastoralSource = readFileSync(
+  resolve(__dirname, '../server/api/mobilePastoral.ts'),
+  'utf8',
+);
 
 const REQUIRED_ROUTES = [
   ['mobileSocialFeed', 'GET', '/mobile/social/feed'],
@@ -33,11 +37,30 @@ const REQUIRED_ROUTES = [
   ['mobileBibleChapter', 'GET', '/mobile/bible/books/:bookId/chapters/:chapter'],
 ] as const;
 
+const PASTORAL_ROUTES = [
+  ['mobileCalendar', 'GET', '/mobile/calendar'],
+  ['mobileAnnouncements', 'GET', '/mobile/announcements'],
+  ['mobileAcknowledgeAnnouncement', 'POST', '/mobile/announcements/:id/acknowledge'],
+  ['mobileJourneys', 'GET', '/mobile/journeys'],
+  ['mobileJourney', 'GET', '/mobile/journeys/:id'],
+  ['mobileUpdateMilestone', 'POST', '/mobile/journeys/milestones/:id'],
+  ['mobileCatechismSearch', 'GET', '/mobile/catechism/search'],
+  ['mobileCatechismCategory', 'GET', '/mobile/catechism/categories/:category'],
+  ['mobileCatechismEntry', 'GET', '/mobile/catechism/entries/:number'],
+  ['mobileAttendanceSheet', 'GET', '/mobile/meetings/:id/attendance'],
+] as const;
+
 describe('mobile social + bible API wiring', () => {
   it.each(REQUIRED_ROUTES)('declares %s as %s %s', (fn, method, path) => {
     expect(waspSource).toContain(`fn: import { ${fn} } from "@src/server/api/mobileSocial"`);
     expect(waspSource).toContain(`httpRoute: (${method}, "${path}")`);
     expect(mobileSocialSource).toContain(`export async function ${fn}`);
+  });
+
+  it.each(PASTORAL_ROUTES)('declares %s as %s %s', (fn, method, path) => {
+    expect(waspSource).toContain(`fn: import { ${fn} } from "@src/server/api/mobilePastoral"`);
+    expect(waspSource).toContain(`httpRoute: (${method}, "${path}")`);
+    expect(mobilePastoralSource).toContain(`export async function ${fn}`);
   });
 
   it('imports social operations from the modules Wasp already exposes', () => {
