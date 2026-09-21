@@ -2166,6 +2166,20 @@ api mobileSocialReport {
   entities: [SocialReport, SocialPost, SocialComment]
 }
 
+api mobileSocialVideoUpload {
+  fn: import { mobileSocialVideoUpload } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/media/video-upload"),
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese, SocialPost, PricingPlan, PricingPlanPrice]
+}
+
+api mobileSocialMediaStatus {
+  fn: import { mobileSocialMediaStatus } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/media/status"),
+  entities: [SocialMedia]
+}
+
 api mobileCalendar {
   fn: import { mobileCalendar } from "@src/server/api/mobile",
   auth: true,
