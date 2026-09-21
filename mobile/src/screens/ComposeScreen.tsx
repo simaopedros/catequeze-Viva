@@ -4,7 +4,7 @@ import { Image, Pressable, Text, TextInput, View } from 'react-native';
 import { ErrorText, Screen } from '../components/ui';
 import { ShareCard } from '../components/PostCard';
 import type { SocialShare } from '../api/types';
-import { colors, radius, shadow, spacing, type } from '../theme';
+import { colors, radius, spacing, type } from '../theme';
 
 export const POST_KINDS = [
   { id: 'IMAGE', label: 'Imagem', icon: 'image-outline' },
@@ -98,7 +98,6 @@ export function ComposeScreen({
             borderWidth: 1,
             borderColor: colors.line,
             padding: spacing.lg,
-            ...shadow.card,
           }}
         >
           <TextInput
@@ -126,7 +125,7 @@ export function ComposeScreen({
               ))}
             </View>
           ) : null}
-          <View testID="compose-kinds" style={{ flexDirection: 'row', gap: 4, marginTop: spacing.md, flexWrap: 'wrap' }}>
+          <View testID="compose-kinds" style={{ flexDirection: 'row', gap: 14, marginTop: spacing.md, flexWrap: 'wrap' }}>
             {POST_KINDS.map((item) => {
               const active = item.id === 'IMAGE' || item.id === 'VIDEO' ? media.some((row) => row.kind === item.id) : shareKind === item.id;
               return (
@@ -142,16 +141,12 @@ export function ComposeScreen({
                     setShareKind((current) => (current === item.id ? null : item.id));
                     setHits([]);
                   }}
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: 22,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: active ? colors.ink : colors.cream,
-                  }}
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 6 }}
                 >
-                  <Ionicons name={item.icon as any} size={20} color={active ? colors.goldLight : colors.goldDark} />
+                  <Ionicons name={item.icon as any} size={18} color={colors.ink} />
+                  <Text style={{ color: active ? colors.ink : colors.muted, fontFamily: active ? type.bodyBold : type.body, fontSize: 15 }}>
+                    {item.label}
+                  </Text>
                 </Pressable>
               );
             })}
@@ -176,7 +171,7 @@ export function ComposeScreen({
             style={{
               marginTop: spacing.md,
               backgroundColor: colors.paper,
-              borderRadius: radius.pill,
+              borderRadius: radius.sm,
               borderWidth: 1,
               borderColor: colors.line,
               minHeight: 44,
@@ -207,7 +202,7 @@ export function ComposeScreen({
         ) : null}
         <ErrorText message={localError || error} />
         {blocked ? (
-          <Text style={{ color: colors.goldDark, fontFamily: type.body, marginTop: spacing.sm }}>Publicar pede assinatura.</Text>
+          <Text style={{ color: colors.ink, fontFamily: type.body, marginTop: spacing.sm }}>Publicar pede assinatura.</Text>
         ) : null}
         {preview ? (
           <View style={{ marginTop: spacing.sm }}>

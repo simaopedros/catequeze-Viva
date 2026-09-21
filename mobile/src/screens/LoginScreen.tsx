@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 import { BrandButton, ErrorText, Field, Screen } from '../components/ui';
-import { colors, type } from '../theme';
+import { colors, spacing, type } from '../theme';
 
 export function LoginScreen({
   onSubmit,
@@ -18,26 +18,10 @@ export function LoginScreen({
   const [password, setPassword] = useState('');
 
   return (
-    <Screen testID="login-screen">
-      <View
-        style={{
-          backgroundColor: colors.ink,
-          borderRadius: 22,
-          padding: 24,
-          marginBottom: 24,
-          marginTop: 24,
-        }}
-      >
-        <Text style={{ color: colors.goldLight, fontFamily: type.bodyBold, letterSpacing: 1.2, fontSize: 12 }}>
-          CATEQUESE VIVA
-        </Text>
-        <Text style={{ color: colors.cream, fontFamily: type.display, fontSize: 40, lineHeight: 44, marginTop: 8 }}>
-          Você semeia a fé.
-        </Text>
-        <Text style={{ color: colors.inkMuted, fontFamily: type.body, marginTop: 8, lineHeight: 22 }}>
-          A mesma conta da plataforma, agora no bolso.
-        </Text>
-      </View>
+    <Screen testID="login-screen" contentStyle={{ paddingTop: 48 }}>
+      <Text style={{ color: colors.ink, fontFamily: type.bodyBold, fontSize: 22, marginBottom: spacing.lg }}>
+        Catequese Viva
+      </Text>
       <ErrorText message={error} />
       <Field
         label="E-mail"

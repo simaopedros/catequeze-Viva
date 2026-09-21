@@ -13,7 +13,7 @@ import {
   type TextInputProps,
   type ViewStyle,
 } from 'react-native';
-import { colors, radius, shadow, spacing, type } from '../theme';
+import { colors, radius, spacing, type } from '../theme';
 import { initials } from '../format';
 
 export function Screen({
@@ -229,10 +229,8 @@ export function MetricTile({
 }) {
   return (
     <Pressable onPress={onPress} testID={testID} style={{ flex: 1 }} disabled={!onPress}>
-      <Card style={{ marginBottom: 0 }}>
-        <Text style={styles.metricLabel}>{label}</Text>
-        <Text style={styles.metricValue}>{value}</Text>
-      </Card>
+      <Text style={styles.metricValue}>{value}</Text>
+      <Text style={styles.metricLabel}>{label}</Text>
     </Pressable>
   );
 }
@@ -362,7 +360,7 @@ export function HubTile({
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.cream },
   screenContent: { padding: spacing.lg, paddingBottom: 48 },
-  title: { color: colors.ink, fontSize: 32, fontFamily: type.display, lineHeight: 36 },
+  title: { color: colors.ink, fontSize: 22, fontFamily: type.bodyBold, lineHeight: 28 },
   subtitle: { color: colors.muted, fontSize: 15, marginTop: 4, lineHeight: 22, fontFamily: type.body },
   section: {
     color: colors.ink,
@@ -373,12 +371,10 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: colors.paper,
-    borderRadius: radius.md,
+    borderRadius: radius.sm,
     padding: spacing.md,
     borderWidth: 1,
     borderColor: colors.line,
-    marginBottom: spacing.md,
-    ...shadow.card,
   },
   cardTitle: { color: colors.ink, fontSize: 18, fontFamily: type.bodyBold, marginBottom: 6 },
   button: {
@@ -411,14 +407,14 @@ const styles = StyleSheet.create({
   error: { color: colors.danger, marginBottom: spacing.sm, fontFamily: type.body },
   loading: { alignItems: 'center', padding: spacing.xl, gap: 10 },
   metricLabel: { color: colors.muted, fontFamily: type.body, fontSize: 13 },
-  metricValue: { color: colors.ink, fontFamily: type.display, fontSize: 28, marginTop: 4 },
+  metricValue: { color: colors.ink, fontFamily: type.bodyBold, fontSize: 22 },
   hero: {
     backgroundColor: colors.ink,
     borderRadius: radius.lg,
     padding: spacing.lg,
     marginBottom: spacing.md,
   },
-  heroKicker: { color: colors.goldLight, fontFamily: type.bodyBold, letterSpacing: 0.4, fontSize: 12 },
+  heroKicker: { color: colors.inkMuted, fontFamily: type.body, fontSize: 13 },
   heroTitle: { color: colors.cream, fontFamily: type.display, fontSize: 30, marginTop: 6 },
   heroMeta: { color: colors.inkMuted, fontFamily: type.body, marginTop: 6, lineHeight: 20 },
   heroAction: {
@@ -466,13 +462,10 @@ const styles = StyleSheet.create({
   statusLabel: { color: colors.muted, fontFamily: type.bodyMedium, fontSize: 13 },
   hubTile: {
     width: '47%',
-    backgroundColor: colors.paper,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.line,
-    padding: spacing.md,
-    minHeight: 88,
-    ...shadow.card,
+    paddingVertical: spacing.sm,
+    minHeight: 64,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.line,
   },
   hubLabel: { color: colors.ink, fontFamily: type.bodyBold, fontSize: 16 },
   hubHint: { color: colors.muted, fontFamily: type.body, fontSize: 13, marginTop: 4 },

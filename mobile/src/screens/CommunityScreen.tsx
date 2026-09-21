@@ -4,7 +4,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { PostCard } from '../components/PostCard';
 import { BrandButton, EmptyState, LoadingState, Screen } from '../components/ui';
 import type { SocialAccess, SocialPost, SocialTopic } from '../api/types';
-import { colors, shadow, spacing, type } from '../theme';
+import { colors, spacing, type } from '../theme';
 import { COMMUNITY_AREAS, type CommunityAreaId } from './communityAreas';
 
 const SORTS = [
@@ -80,7 +80,7 @@ export function CommunityScreen({
         <Text style={{ color: colors.ink, fontFamily: type.display, fontSize: 28, lineHeight: 32, marginBottom: spacing.sm }}>{title}</Text>
       ) : null}
       {showHub && onOpenArea ? (
-        <View testID="community-hub" style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 8 }}>
+        <View testID="community-hub" style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
           {onSearch ? (
             <Pressable
               accessibilityLabel={area('search').label}
@@ -107,9 +107,9 @@ export function CommunityScreen({
               accessibilityLabel={area(item.id).label}
               testID={`area-${item.id}`}
               onPress={() => onOpenArea(item.id)}
-              style={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center' }}
+              style={{ paddingVertical: 6, paddingRight: 12 }}
             >
-              <Ionicons name={item.icon} size={20} color={colors.ink} />
+              <Text style={{ color: colors.ink, fontFamily: type.body, fontSize: 15 }}>{area(item.id).label}</Text>
             </Pressable>
           ))}
         </View>
@@ -138,7 +138,7 @@ export function CommunityScreen({
                 fontFamily: type.bodyBold,
                 fontSize: 15,
                 borderBottomWidth: sort === item.id ? 2 : 0,
-                borderBottomColor: colors.gold,
+                borderBottomColor: colors.ink,
                 paddingBottom: 4,
               }}
             >
@@ -154,7 +154,7 @@ export function CommunityScreen({
                 fontFamily: type.bodyBold,
                 fontSize: 15,
                 borderBottomWidth: following ? 2 : 0,
-                borderBottomColor: colors.gold,
+                borderBottomColor: colors.ink,
                 paddingBottom: 4,
               }}
             >
@@ -175,7 +175,7 @@ export function CommunityScreen({
         contentContainerStyle={{ gap: 16, alignItems: 'center' }}
       >
         <Pressable onPress={() => onChangeTopic(null)}>
-          <Text style={{ color: !topicSlug ? colors.goldDark : colors.muted, fontFamily: type.bodyMedium }}>Todos</Text>
+          <Text style={{ color: !topicSlug ? colors.ink : colors.muted, fontFamily: type.bodyMedium }}>Todos</Text>
         </Pressable>
         {topics.map((topic) => (
           <Pressable
@@ -183,7 +183,7 @@ export function CommunityScreen({
             testID={`topic-${topic.slug}`}
             onPress={() => (onOpenTopic ? onOpenTopic(topic.slug) : onChangeTopic(topic.slug))}
           >
-            <Text style={{ color: topicSlug === topic.slug ? colors.goldDark : colors.muted, fontFamily: type.bodyMedium }}>
+            <Text style={{ color: topicSlug === topic.slug ? colors.ink : colors.muted, fontFamily: type.bodyMedium }}>
               {topic.name}
             </Text>
           </Pressable>
@@ -216,7 +216,6 @@ export function CommunityScreen({
         backgroundColor: colors.gold,
         alignItems: 'center',
         justifyContent: 'center',
-        ...shadow.card,
       }}
     >
       <Ionicons name="add" size={30} color={colors.ink} />

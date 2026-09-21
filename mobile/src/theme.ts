@@ -24,9 +24,9 @@ export const spacing = {
 } as const;
 
 export const radius = {
-  sm: 10,
-  md: 16,
-  lg: 22,
+  sm: 8,
+  md: 8,
+  lg: 8,
   pill: 999,
 } as const;
 
@@ -38,11 +38,5 @@ export const type = {
 } as const;
 
 export const shadow = {
-  card: {
-    shadowColor: '#071A2D',
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 2,
-  },
+  card: {},
 } as const;

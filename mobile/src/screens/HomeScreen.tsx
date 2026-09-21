@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Card, EncounterCard, ErrorState, LoadingState, MetricTile, Screen } from '../components/ui';
+import { EncounterCard, ErrorState, LoadingState, MetricTile, Screen } from '../components/ui';
 import { formatDay, formatRelative, formatWhen, personName } from '../format';
 import { colors, radius, spacing, type } from '../theme';
 
@@ -80,7 +80,7 @@ export function HomeScreen({
         {name}
       </Text>
       {workspace ? (
-        <Text style={{ color: colors.goldDark, fontFamily: type.bodyMedium, marginTop: 2, marginBottom: spacing.sm }} numberOfLines={1}>
+        <Text style={{ color: colors.muted, fontFamily: type.body, marginTop: 2, marginBottom: spacing.sm }} numberOfLines={1}>
           {workspace}
         </Text>
       ) : (
@@ -98,12 +98,9 @@ export function HomeScreen({
           onPress={() => onOpenMeeting(focus.id)}
         />
       ) : !loading ? (
-        <Card>
-          <Text style={{ color: colors.ink, fontFamily: type.bodyBold }}>Sem encontro hoje</Text>
-          <Text style={{ color: colors.muted, fontFamily: type.body, marginTop: 4 }}>A agenda da semana está abaixo.</Text>
-        </Card>
+        <Text style={{ color: colors.muted, fontFamily: type.body, marginBottom: spacing.md }}>Sem encontro hoje.</Text>
       ) : null}
-      <View style={{ flexDirection: 'row', gap: 8 }}>
+      <View style={{ flexDirection: 'row', gap: 12, marginBottom: spacing.md }}>
         <MetricTile label="Turmas" value={stats?.activeClasses ?? '—'} onPress={onOpenClasses} testID="metric-classes" />
         <MetricTile
           label="Catequizandos"
@@ -111,8 +108,6 @@ export function HomeScreen({
           onPress={onOpenCatechumens}
           testID="metric-catechumens"
         />
-      </View>
-      <View style={{ flexDirection: 'row', gap: 8, marginTop: 8, marginBottom: spacing.sm }}>
         <MetricTile label="Presença" value={stats?.avgAttendance != null ? `${stats.avgAttendance}%` : '—'} />
         <MetricTile
           label="Sacramentos"
@@ -140,15 +135,18 @@ export function HomeScreen({
         <>
           <Text style={{ color: colors.ink, fontFamily: type.bodyBold, marginTop: 4, marginBottom: 6 }}>Turmas</Text>
           {classes.map((item) => (
-            <Pressable key={item.id} onPress={() => (onOpenClass ? onOpenClass(item.id) : onOpenClasses())} testID={`class-${item.id}`}>
-              <Card style={{ marginBottom: 8, paddingVertical: 12 }}>
-                <Text style={{ color: colors.ink, fontFamily: type.bodyBold }} numberOfLines={1}>
-                  {item.name || 'Turma'}
-                </Text>
-                <Text style={{ color: colors.muted, fontFamily: type.body, marginTop: 2 }}>
-                  {item.enrollmentCount ?? 0} catequizandos
-                </Text>
-              </Card>
+            <Pressable
+              key={item.id}
+              onPress={() => (onOpenClass ? onOpenClass(item.id) : onOpenClasses())}
+              testID={`class-${item.id}`}
+              style={{ paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.line }}
+            >
+              <Text style={{ color: colors.ink, fontFamily: type.bodyBold }} numberOfLines={1}>
+                {item.name || 'Turma'}
+              </Text>
+              <Text style={{ color: colors.muted, fontFamily: type.body, marginTop: 2 }}>
+                {item.enrollmentCount ?? 0} catequizandos
+              </Text>
             </Pressable>
           ))}
         </>
@@ -168,20 +166,23 @@ export function HomeScreen({
         <Text style={{ color: colors.muted, fontFamily: type.body }}>Agenda livre esta semana.</Text>
       ) : (
         upcoming.map((meeting) => (
-          <Pressable key={meeting.id} onPress={() => onOpenMeeting(meeting.id)} testID={`meeting-${meeting.id}`}>
-            <Card style={{ marginBottom: 8, paddingVertical: 12 }}>
-              <Text style={{ color: colors.ink, fontFamily: type.bodyBold }} numberOfLines={1}>
-                {meeting.title || meeting.theme || 'Encontro'}
-              </Text>
-              <Text style={{ color: colors.muted, fontFamily: type.body, marginTop: 2 }} numberOfLines={1}>
-                {meeting.class?.name || 'Turma'} · {formatRelative(meeting.startsAt || meeting.date)}
-              </Text>
-            </Card>
+          <Pressable
+            key={meeting.id}
+            onPress={() => onOpenMeeting(meeting.id)}
+            testID={`meeting-${meeting.id}`}
+            style={{ paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.line }}
+          >
+            <Text style={{ color: colors.ink, fontFamily: type.bodyBold }} numberOfLines={1}>
+              {meeting.title || meeting.theme || 'Encontro'}
+            </Text>
+            <Text style={{ color: colors.muted, fontFamily: type.body, marginTop: 2 }} numberOfLines={1}>
+              {meeting.class?.name || 'Turma'} · {formatRelative(meeting.startsAt || meeting.date)}
+            </Text>
           </Pressable>
         ))
       )}
       <Pressable onPress={onOpenCalendar} testID="open-calendar" style={{ paddingVertical: 8 }}>
-        <Text style={{ color: colors.goldDark, fontFamily: type.bodyBold }}>Ver a agenda</Text>
+        <Text style={{ color: colors.ink, fontFamily: type.bodyBold }}>Ver a agenda</Text>
       </Pressable>
     </Screen>
   );
