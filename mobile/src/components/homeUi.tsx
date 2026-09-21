@@ -134,9 +134,9 @@ export function HomeStatsRow({
   };
 
   return (
-    <View testID="home-stats-row">
+    <View testID="home-stats-row" style={styles.statsSection}>
       <Text style={styles.sectionTitle}>Hoje</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.statsScroll}>
+      <View style={styles.statsRow}>
         {STAT_CONFIG.map((item) => {
           const Icon = item.icon;
           const value = values[item.key as keyof typeof values];
@@ -144,20 +144,30 @@ export function HomeStatsRow({
           const tile = (
             <View style={styles.statTile}>
               <View style={[styles.statIconCircle, { backgroundColor: item.bg }]}>
-                <Icon size={18} color={item.tint} />
+                <Icon size={16} color={item.tint} />
               </View>
-              <Text style={styles.statLabel}>{item.label}</Text>
-              <Text style={styles.statValue}>{value}</Text>
+              <Text style={styles.statLabel} numberOfLines={2}>
+                {item.label}
+              </Text>
+              <Text style={styles.statValue} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>
+                {value}
+              </Text>
             </View>
           );
-          if (!onPress) return <View key={item.key} style={styles.statTileWrap}>{tile}</View>;
+          if (!onPress) {
+            return (
+              <View key={item.key} style={styles.statTileWrap}>
+                {tile}
+              </View>
+            );
+          }
           return (
             <Pressable key={item.key} onPress={onPress} style={styles.statTileWrap}>
               {tile}
             </Pressable>
           );
         })}
-      </ScrollView>
+      </View>
     </View>
   );
 }
@@ -326,27 +336,50 @@ const styles = StyleSheet.create({
     marginBottom: spacing[3],
   },
   sectionLink: { ...typography.labelLg, color: colors.primary[700] },
-  statsScroll: { gap: spacing[2], paddingBottom: spacing[2] },
-  statTileWrap: { width: 92 },
+  statsSection: { marginBottom: spacing[4] },
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    gap: spacing[2],
+  },
+  statTileWrap: {
+    flex: 1,
+    minWidth: 0,
+  },
   statTile: {
+    flex: 1,
     backgroundColor: colors.surface,
-    borderRadius: radius.lg,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: spacing[3],
-    minHeight: 118,
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[1],
+    alignItems: 'center',
+    minHeight: 100,
     ...elevation.card,
   },
   statIconCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing[2],
+    marginBottom: spacing[1],
   },
-  statLabel: { ...typography.caption, color: colors.text.muted, fontWeight: '600' },
-  statValue: { fontSize: 22, fontWeight: '700', color: colors.text.primary, marginTop: 4 },
+  statLabel: {
+    fontSize: 10,
+    lineHeight: 13,
+    color: colors.text.muted,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  statValue: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text.primary,
+    marginTop: spacing[1],
+    textAlign: 'center',
+  },
   alertsCard: { paddingVertical: spacing[1], marginBottom: spacing[5] },
   alertRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[3], paddingVertical: spacing[3], paddingHorizontal: spacing[2] },
   alertIcon: {
