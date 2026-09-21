@@ -1,4 +1,5 @@
 import * as ImagePicker from 'expo-image-picker';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { Image as ImageIcon, PenLine, Video, X } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -18,6 +19,7 @@ import {
 } from 'react-native';
 import type { CommunityComposePayload, SocialVideoUploadTicket } from '../api/types';
 import { DEFAULT_COMPOSE_MEDIA_LIMITS, MAX_SOCIAL_VIDEO_BYTES } from '../social/constants';
+import { normalizeUploadUri } from '../social/socialMediaUpload';
 import {
   type SocialUploadAuth,
   uploadSocialImageFromUri,
@@ -362,11 +364,9 @@ export function InlineCommunityComposer({
           {media.map((item) => (
             <View key={item.key} style={styles.mediaThumbWrap} testID={`compose-media-${item.kind}`}>
               {item.kind === 'IMAGE' ? (
-                <Image source={{ uri: item.previewUri }} style={styles.mediaThumb} />
+                <Image source={{ uri: normalizeUploadUri(item.previewUri) }} style={styles.mediaThumb} />
               ) : (
-                <View style={[styles.mediaThumb, styles.videoThumb]}>
-                  <Video size={28} color={colors.primary[800]} />
-                </View>
+                <ComposerVideoPreview uri={normalizeUploadUri(item.previewUri)} />
               )}
               {item.uploading ? (
                 <View style={styles.mediaOverlay}>
@@ -459,6 +459,22 @@ export function InlineCommunityComposer({
         </View>
       )}
     </Animated.View>
+  );
+}
+
+function ComposerVideoPreview({ uri }: { uri: string }) {
+  const player = useVideoPlayer(uri, (instance) => {
+    instance.loop = true;
+    instance.muted = true;
+  });
+
+  return (
+    <VideoView
+      player={player}
+      style={styles.mediaThumb}
+      contentFit="cover"
+      nativeControls={false}
+    />
   );
 }
 

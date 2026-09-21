@@ -1,6 +1,10 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import { CommunityScreen } from '../screens/CommunityScreen';
+
+jest.mock('../auth/AuthContext', () => ({
+  useAuth: () => ({ apiBaseUrl: 'https://api.example.com' }),
+}));
 import { openCommunityArea } from '../screens/communityNavigation';
 import { appRoutes } from '../navigation/routes';
 

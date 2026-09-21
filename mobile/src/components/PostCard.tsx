@@ -1,6 +1,7 @@
 import { Heart, MessageCircle, MoreHorizontal } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { PostMediaGallery } from './PostMediaGallery';
 import type { SocialPost } from '../api/types';
 import { formatPostTimeAgo, postScopeMeta } from './communityUi';
 import { Avatar } from './ui';
@@ -33,17 +34,19 @@ export function PostCard({
   post,
   onOpenAuthor,
   onOpenPost,
+  mediaBaseUrl,
 }: {
   post: SocialPost;
   onOpenAuthor?: (handle: string) => void;
   onOpenPost?: (slug: string) => void;
+  mediaBaseUrl?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
   const long = (post.body || '').length > LONG_BODY;
   const body = !long || expanded ? post.body : `${post.body.slice(0, LONG_BODY).trimEnd()}…`;
   const handle = post.author.handle || post.author.socialHandle;
   const meta = `${postScopeMeta(post)} • ${formatPostTimeAgo(post.publishedAt || post.createdAt)}`;
-  const images = (post.media ?? []).filter((m) => m.url && (m.kind === 'IMAGE' || !m.kind));
+  const media = post.media ?? [];
 
   return (
     <View style={styles.card}>
@@ -79,13 +82,7 @@ export function PostCard({
         </Pressable>
       ) : null}
 
-      {images.length > 0 ? (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mediaRow}>
-          {images.map((item) => (
-            <Image key={item.id} source={{ uri: item.url! }} style={styles.mediaImage} resizeMode="cover" />
-          ))}
-        </ScrollView>
-      ) : null}
+      {media.length > 0 ? <PostMediaGallery media={media} baseUrl={mediaBaseUrl} /> : null}
 
       {post.share ? (
         <ShareCard
@@ -143,14 +140,6 @@ const styles = StyleSheet.create({
   meta: { color: colors.text.muted, fontSize: 13, marginTop: 2 },
   body: { color: colors.text.primary, fontSize: 15, lineHeight: 22 },
   more: { color: colors.primary[700], fontWeight: '700', marginTop: 8 },
-  mediaRow: { marginTop: spacing[3], marginHorizontal: -spacing[1] },
-  mediaImage: {
-    width: 280,
-    height: 160,
-    borderRadius: radius.md,
-    marginRight: spacing[2],
-    backgroundColor: colors.skeleton,
-  },
   footer: {
     marginTop: spacing[3],
     paddingTop: spacing[3],

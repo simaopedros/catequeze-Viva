@@ -4,6 +4,10 @@ import { LoginScreen } from '../screens/LoginScreen';
 import { TwoFactorScreen } from '../screens/TwoFactorScreen';
 import { CommunityScreen } from '../screens/CommunityScreen';
 
+jest.mock('../auth/AuthContext', () => ({
+  useAuth: () => ({ apiBaseUrl: 'https://api.example.com' }),
+}));
+
 describe('auth and community UI', () => {
   it('submits login credentials', () => {
     const onSubmit = jest.fn();

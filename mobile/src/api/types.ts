@@ -41,6 +41,23 @@ export type SocialAuthor = {
   socialHandle?: string | null;
 };
 
+export type SocialPostMedia = {
+  id: string;
+  kind?: 'IMAGE' | 'VIDEO' | string;
+  position?: number;
+  status?: string;
+  altText?: string | null;
+  width?: number | null;
+  height?: number | null;
+  durationSeconds?: number | null;
+  thumbnailUrl?: string | null;
+  imageUrl?: string | null;
+  videoUrl?: string | null;
+  embedUrl?: string | null;
+  /** @deprecated API uses imageUrl */
+  url?: string | null;
+};
+
 export type SocialShare = {
   kind: string;
   title: string;
@@ -65,7 +82,7 @@ export type SocialPost = {
   parish?: { id: string; name: string } | null;
   share?: SocialShare | null;
   topics?: { slug: string; name: string }[];
-  media?: { id: string; kind?: string; url?: string | null }[];
+  media?: SocialPostMedia[];
   isOwn?: boolean;
   viewerReaction?: 'AMEM' | 'REZO' | 'ALELUIA' | null;
 };

@@ -11,6 +11,7 @@ import { EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui'
 import type { CommunityComposePayload, SocialAccess, SocialPost, SocialTopic } from '../api/types';
 import type { InlineComposeMediaConfig } from '../components/InlineCommunityComposer';
 import { colors, spacing } from '../theme';
+import { useAuth } from '../auth/AuthContext';
 import type { CommunityAreaId } from './communityAreas';
 
 function filterByScope(posts: SocialPost[], scope: CommunityFeedScope) {
@@ -73,6 +74,7 @@ export function CommunityScreen({
   showHub?: boolean;
   onOpenArea?: (id: CommunityAreaId) => void;
 }) {
+  const { apiBaseUrl } = useAuth();
   const visiblePosts = useMemo(() => filterByScope(posts, feedScope), [posts, feedScope]);
   const canPublish = access?.canPublish !== false;
   const [composerExpanded, setComposerExpanded] = useState(false);
@@ -121,7 +123,13 @@ export function CommunityScreen({
         <EmptyState title="Ainda não há publicações" body="Quando a Comunidade tiver posts, eles aparecem aqui." />
       ) : (
         visiblePosts.map((post) => (
-          <PostCard key={post.id} post={post} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />
+          <PostCard
+            key={post.id}
+            post={post}
+            onOpenAuthor={onOpenAuthor}
+            onOpenPost={onOpenPost}
+            mediaBaseUrl={apiBaseUrl}
+          />
         ))
       )}
         </Screen>

@@ -43,4 +43,17 @@ describe('PostCard', () => {
     fireEvent.press(view.getByTestId('open-post-p1'));
     expect(onOpenPost).toHaveBeenCalledTimes(2);
   });
+
+  it('renders feed images using imageUrl from the API', () => {
+    const view = render(
+      <PostCard
+        post={post({
+          body: 'Com foto',
+          media: [{ id: 'img-1', kind: 'IMAGE', imageUrl: '/api/social/media/img-1' }],
+        })}
+      />,
+    );
+
+    expect(view.getByTestId('post-media-image-img-1')).toBeTruthy();
+  });
 });
