@@ -60,7 +60,7 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <StatusBar style="dark" backgroundColor={colors.cream} />
+      <StatusBar style="dark" />
       <Gate>
         <Stack
           screenOptions={{
