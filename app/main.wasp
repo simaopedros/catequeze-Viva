@@ -109,7 +109,8 @@ app OpenSaaS {
   db: {
     seeds: [
       import { seedPricingCatalog } from "@src/server/scripts/seedPricingCatalog",
-      import { seedSocialTopics } from "@src/server/scripts/seedSocialTopics"
+      import { seedSocialTopics } from "@src/server/scripts/seedSocialTopics",
+      import { seedMobileDemoExperience } from "@src/server/scripts/seedMobileDemoExperience"
     ]
   },
 }
