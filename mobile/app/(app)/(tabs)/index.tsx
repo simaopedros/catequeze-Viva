@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { displayName, listWorkspaces, useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
+import { appRoutes } from '../../../src/navigation/routes';
 import { HomeScreen } from '../../../src/screens/HomeScreen';
 
 export default function HomeRoute() {
@@ -21,6 +22,8 @@ export default function HomeRoute() {
       onOpenClasses={() => router.push('/(app)/(tabs)/classes')}
       onOpenCatechumens={() => router.push('/(app)/catechumens')}
       onOpenCalendar={() => router.push('/(app)/calendar')}
+      onOpenClass={(id) => router.push(appRoutes.classDetails(id))}
+      onOpenJourneys={() => router.push(appRoutes.journeys)}
       onOpenAttendance={(id) => router.push(`/(app)/meeting/${id}/attendance`)}
       onOpenMeeting={(id) => router.push(`/(app)/meeting/${id}`)}
     />
