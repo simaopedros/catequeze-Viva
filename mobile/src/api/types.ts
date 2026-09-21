@@ -62,6 +62,7 @@ export type SocialPost = {
   commentCount?: number;
   shareCount?: number;
   author: SocialAuthor;
+  parish?: { id: string; name: string } | null;
   share?: SocialShare | null;
   topics?: { slug: string; name: string }[];
   media?: { id: string; kind?: string; url?: string | null }[];

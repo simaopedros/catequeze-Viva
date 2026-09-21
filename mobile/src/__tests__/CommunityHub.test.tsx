@@ -1,41 +1,13 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import { CommunityScreen } from '../screens/CommunityScreen';
-import { COMMUNITY_AREAS } from '../screens/communityAreas';
 import { openCommunityArea } from '../screens/communityNavigation';
 import { appRoutes } from '../navigation/routes';
 
-describe('Community hub', () => {
-  it('mostra todas as áreas da rede social', () => {
-    const onOpenArea = jest.fn();
-    const view = render(
-      <CommunityScreen
-        posts={[]}
-        topics={[{ slug: 'oracao', name: 'Oração' }]}
-        sort="recent"
-        showHub
-        onOpenArea={onOpenArea}
-        onChangeSort={jest.fn()}
-        onChangeTopic={jest.fn()}
-        onOpenAuthor={jest.fn()}
-        onCompose={jest.fn()}
-        onSearch={jest.fn()}
-      />,
-    );
-
-    expect(view.getByTestId('community-hub')).toBeTruthy();
-    expect(view.getByTestId('compose-open')).toBeTruthy();
-    for (const area of COMMUNITY_AREAS.filter((item) => item.id !== 'feed')) {
-      expect(view.getByTestId(`area-${area.id}`)).toBeTruthy();
-      expect(view.getByText(area.label)).toBeTruthy();
-    }
-    expect(view.queryByTestId('area-feed')).toBeNull();
-
-    fireEvent.press(view.getByTestId('area-members'));
-    expect(onOpenArea).toHaveBeenCalledWith('members');
-  });
-
-  it('mostra as postagens no próprio feed, sem escondê-las atrás das áreas', () => {
+describe('Community feed', () => {
+  it('renderiza filtros, composer e feed no layout da Comunidade', () => {
+    const onCompose = jest.fn();
+    const onOpenLink = jest.fn();
     const view = render(
       <CommunityScreen
         posts={[
@@ -44,22 +16,29 @@ describe('Community hub', () => {
             slug: 'paz-e-bem',
             body: 'Paz e bem, irmãos. A catequese começou.',
             author: { id: 'u1', handle: 'coord_saojose', displayName: 'Coordenador São José', avatarUrl: null },
+            parish: { id: 'parish-1', name: 'Paróquia São João' },
+            createdAt: new Date().toISOString(),
           },
         ]}
-        topics={[]}
-        sort="recent"
-        showHub
-        onOpenArea={jest.fn()}
-        onChangeSort={jest.fn()}
-        onChangeTopic={jest.fn()}
+        feedScope="all"
+        onChangeFeedScope={jest.fn()}
         onOpenAuthor={jest.fn()}
         onOpenPost={jest.fn()}
-        onCompose={jest.fn()}
+        onCompose={onCompose}
+        onOpenLink={onOpenLink}
       />,
     );
 
+    expect(view.getByTestId('community-screen')).toBeTruthy();
+    expect(view.getByTestId('community-scope-filters')).toBeTruthy();
+    expect(view.getByTestId('community-compose-card')).toBeTruthy();
     expect(view.getByText('Paz e bem, irmãos. A catequese começou.')).toBeTruthy();
     expect(view.getByTestId('post-p1')).toBeTruthy();
+
+    fireEvent.press(view.getByTestId('compose-action-text'));
+    expect(onCompose).toHaveBeenCalled();
+    fireEvent.press(view.getByTestId('community-link-action'));
+    expect(onOpenLink).toHaveBeenCalled();
   });
 
   it('abre as rotas de cada área', () => {

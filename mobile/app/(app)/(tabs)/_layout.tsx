@@ -39,7 +39,7 @@ export default function TabsLayout() {
             name={tab.name}
             options={{
               title: tab.label,
-              headerShown: tab.name !== 'index' && tab.name !== 'classes',
+              headerShown: tab.name !== 'index' && tab.name !== 'classes' && tab.name !== 'community',
               tabBarIcon: ({ color }) => (Icon ? <Icon color={color} size={22} strokeWidth={2} /> : null),
             }}
           />

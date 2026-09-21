@@ -43,11 +43,9 @@ describe('auth and community UI', () => {
             author: { id: 'u', handle: 'joao', displayName: 'João', avatarUrl: null },
           },
         ]}
-        topics={[{ slug: 'liturgia', name: 'Liturgia' }]}
         access={{ authenticated: true, canPublish: true }}
-        sort="recent"
-        onChangeSort={jest.fn()}
-        onChangeTopic={jest.fn()}
+        feedScope="all"
+        onChangeFeedScope={jest.fn()}
         onOpenAuthor={jest.fn()}
         onCompose={onCompose}
       />,
@@ -55,7 +53,7 @@ describe('auth and community UI', () => {
 
     expect(view.getByTestId('community-screen')).toBeTruthy();
     expect(view.getByText('Paz e bem')).toBeTruthy();
-    fireEvent.press(view.getByTestId('compose-open'));
+    fireEvent.press(view.getByTestId('compose-action-text'));
     expect(onCompose).toHaveBeenCalled();
   });
 });

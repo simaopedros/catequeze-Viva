@@ -8,7 +8,7 @@ export default function TopicRoute() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const { api } = useAuth();
   const router = useRouter();
-  const [sort, setSort] = useState<'recent' | 'trending' | 'foryou'>('recent');
+  const [sort] = useState<'recent' | 'trending' | 'foryou'>('recent');
   const topicSlug = String(slug || '');
   const feed = useAsync(() => api.socialFeed({ sort, topicSlug }), [sort, topicSlug]);
   const topics = useAsync(() => api.socialTopics(), []);
@@ -17,25 +17,18 @@ export default function TopicRoute() {
 
   return (
     <CommunityScreen
+      variant="nested"
       title={topic?.name || 'Tópico'}
       subtitle="Publicações deste tema na Comunidade."
       posts={feed.data?.items ?? []}
-      topics={topics.data ?? []}
       access={access.data}
-      sort={sort}
-      topicSlug={topicSlug}
+      feedScope="all"
+      onChangeFeedScope={() => undefined}
       loading={feed.loading}
       error={feed.error}
-      onChangeSort={setSort}
-      onChangeTopic={(next) => {
-        if (!next) router.replace('/(app)/(tabs)/community');
-        else router.replace(`/(app)/community/t/${next}`);
-      }}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
       onOpenPost={(postSlug) => router.push(`/(app)/community/p/${postSlug}`)}
-      onOpenTopic={(next) => router.replace(`/(app)/community/t/${next}`)}
       onCompose={() => router.push('/(app)/community/compose')}
-      onSearch={() => router.push('/(app)/community/search')}
     />
   );
 }

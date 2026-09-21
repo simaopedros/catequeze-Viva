@@ -29,7 +29,7 @@ describe('PostCard', () => {
     const view = render(<PostCard post={post()} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />);
 
     expect(view.getByText('Ana Silva')).toBeTruthy();
-    expect(view.getByText('@ana')).toBeTruthy();
+    expect(view.getByText(/Turma/)).toBeTruthy();
     expect(view.getByText('João 3,16')).toBeTruthy();
     expect(view.getByText('Ver mais')).toBeTruthy();
 
