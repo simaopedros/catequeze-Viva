@@ -1,32 +1,51 @@
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
-import React, { useLayoutEffect, useState } from 'react';
-import { useAuth } from '../../../../src/auth/AuthContext';
-import { useAsync } from '../../../../src/hooks/useAsync';
-import { appRoutes } from '../../../../src/navigation/routes';
-import { ClassMeetingsScreen } from '../../../../src/screens/ClassMeetingsScreen';
+import React, { useLayoutEffect, useMemo, useState } from 'react';
+import { useAuth } from '../../src/auth/AuthContext';
+import { useAsync } from '../../src/hooks/useAsync';
+import { paramId } from '../../src/navigation/routeParams';
+import { appRoutes } from '../../src/navigation/routes';
+import { ClassMeetingsScreen } from '../../src/screens/ClassMeetingsScreen';
 
 export default function ClassMeetingsRoute() {
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const classId = String(id);
+  const params = useLocalSearchParams<{ classId?: string | string[] }>();
+  const classId = useMemo(() => paramId(params.classId), [params.classId]);
   const { api } = useAuth();
   const router = useRouter();
   const navigation = useNavigation();
   const [creating, setCreating] = useState(false);
 
-  const classDetails = useAsync(() => api.classDetails(classId), [classId]);
-  const meetings = useAsync(() => api.meetings(classId), [classId]);
+  const classDetails = useAsync(
+    () => (classId ? api.classDetails(classId) : Promise.reject(new Error('Turma inválida.'))),
+    [classId, api],
+  );
+  const meetings = useAsync(
+    () => (classId ? api.meetings(classId) : Promise.reject(new Error('Turma inválida.'))),
+    [classId, api],
+  );
 
   useLayoutEffect(() => {
     const name = classDetails.data?.name;
     navigation.setOptions({ title: name ? `Encontros · ${name}` : 'Encontros' });
   }, [classDetails.data?.name, navigation]);
 
+  if (!classId) {
+    return (
+      <ClassMeetingsScreen
+        meetingsPayload={[]}
+        error="Turma não encontrada. Volte e abra a turma novamente."
+        onOpenMeeting={() => undefined}
+        onOpenAttendance={() => undefined}
+        onCreateMeeting={async () => undefined}
+      />
+    );
+  }
+
   return (
     <ClassMeetingsScreen
       className={classDetails.data?.name}
       meetingsPayload={meetings.data}
-      loading={meetings.loading}
-      error={meetings.error}
+      loading={meetings.loading || classDetails.loading}
+      error={meetings.error || classDetails.error}
       creating={creating}
       onReload={() => void meetings.reload()}
       onOpenMeeting={(meetingId) => router.push(appRoutes.meeting(meetingId))}

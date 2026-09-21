@@ -3,17 +3,21 @@ import React, { useLayoutEffect, useMemo } from 'react';
 import { useAuth } from '../../../../src/auth/AuthContext';
 import { useAsync } from '../../../../src/hooks/useAsync';
 import { pickAttendanceMeetingId } from '../../../../src/meetings/meetingUtils';
+import { navigateToClassMeetings } from '../../../../src/navigation/classNavigation';
+import { paramId } from '../../../../src/navigation/routeParams';
 import { appRoutes } from '../../../../src/navigation/routes';
 import { ClassDetailScreen } from '../../../../src/screens/ClassDetailScreen';
 
 export default function ClassRoute() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id } = useLocalSearchParams<{ id?: string | string[] }>();
+  const classId = useMemo(() => paramId(id), [id]);
   const { api } = useAuth();
   const router = useRouter();
   const navigation = useNavigation();
-  const { data, loading, error } = useAsync(() => api.classDetails(String(id)), [id]);
-
-  const classId = String(id);
+  const { data, loading, error } = useAsync(
+    () => (classId ? api.classDetails(classId) : Promise.reject(new Error('Turma inválida.'))),
+    [classId, api],
+  );
 
   useLayoutEffect(() => {
     if (data?.name) {
@@ -24,7 +28,7 @@ export default function ClassRoute() {
   const meetings = data?.meetings || [];
   const attendanceMeetingId = useMemo(() => pickAttendanceMeetingId(meetings), [meetings]);
 
-  const openMeetingsHub = () => router.push(appRoutes.classMeetings(classId));
+  const openMeetingsHub = () => navigateToClassMeetings(router, classId);
 
   return (
     <ClassDetailScreen
