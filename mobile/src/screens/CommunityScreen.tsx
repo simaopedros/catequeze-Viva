@@ -75,56 +75,41 @@ export function CommunityScreen({
 }) {
   return (
     <View style={{ flex: 1 }}>
-    <Screen testID="community-screen">
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm }}>
-        {title !== 'Comunidade' ? (
-          <Text style={{ flex: 1, color: colors.ink, fontFamily: type.display, fontSize: 28, lineHeight: 32 }}>{title}</Text>
-        ) : (
-          <View style={{ flex: 1 }} />
-        )}
-        {showHub && onSearch ? (
-          <Pressable
-            accessibilityLabel={area('search').label}
-            testID="area-search"
-            onPress={onSearch}
-            hitSlop={8}
-            style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center' }}
-          >
-            <Ionicons name="search-outline" size={22} color={colors.ink} />
-          </Pressable>
-        ) : null}
-        {showHub && onOpenArea ? (
+    <Screen testID="community-screen" contentStyle={showHub ? { paddingTop: 4 } : undefined}>
+      {title !== 'Comunidade' ? (
+        <Text style={{ color: colors.ink, fontFamily: type.display, fontSize: 28, lineHeight: 32, marginBottom: spacing.sm }}>{title}</Text>
+      ) : null}
+      {showHub && onOpenArea ? (
+        <View testID="community-hub" style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 8 }}>
+          {onSearch ? (
+            <Pressable
+              accessibilityLabel={area('search').label}
+              testID="area-search"
+              onPress={onSearch}
+              hitSlop={8}
+              style={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center' }}
+            >
+              <Ionicons name="search-outline" size={22} color={colors.ink} />
+            </Pressable>
+          ) : null}
           <Pressable
             accessibilityLabel={area('me').label}
             testID="area-me"
             onPress={() => onOpenArea('me')}
             hitSlop={8}
-            style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center' }}
           >
-            <Ionicons name="person-circle-outline" size={26} color={colors.ink} />
+            <Ionicons name="person-circle-outline" size={24} color={colors.ink} />
           </Pressable>
-        ) : null}
-      </View>
-      {showHub && onOpenArea ? (
-        <View testID="community-hub" style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.md }}>
           {ICON_AREAS.map((item) => (
             <Pressable
               key={item.id}
               accessibilityLabel={area(item.id).label}
               testID={`area-${item.id}`}
               onPress={() => onOpenArea(item.id)}
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: colors.paper,
-                borderWidth: 1,
-                borderColor: colors.line,
-              }}
+              style={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center' }}
             >
-              <Ionicons name={item.icon} size={18} color={colors.ink} />
+              <Ionicons name={item.icon} size={20} color={colors.ink} />
             </Pressable>
           ))}
         </View>
@@ -142,7 +127,8 @@ export function CommunityScreen({
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 18, paddingBottom: spacing.sm, alignItems: 'center' }}
+        style={{ height: 32, flexGrow: 0, marginBottom: 4 }}
+        contentContainerStyle={{ gap: 18, alignItems: 'center' }}
       >
         {SORTS.map((item) => (
           <Pressable key={item.id} testID={`sort-${item.id}`} onPress={() => onChangeSort(item.id)}>
@@ -185,7 +171,8 @@ export function CommunityScreen({
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 16, paddingBottom: spacing.md }}
+        style={{ height: 28, flexGrow: 0, marginBottom: spacing.sm }}
+        contentContainerStyle={{ gap: 16, alignItems: 'center' }}
       >
         <Pressable onPress={() => onChangeTopic(null)}>
           <Text style={{ color: !topicSlug ? colors.goldDark : colors.muted, fontFamily: type.bodyMedium }}>Todos</Text>

@@ -22,18 +22,20 @@ export function Screen({
   testID,
   refreshing,
   onRefresh,
+  contentStyle,
 }: {
   children: React.ReactNode;
   padded?: boolean;
   testID?: string;
   refreshing?: boolean;
   onRefresh?: () => void;
+  contentStyle?: ViewStyle;
 }) {
   return (
     <ScrollView
       testID={testID}
       style={styles.screen}
-      contentContainerStyle={[styles.screenContent, padded && { padding: spacing.lg }]}
+      contentContainerStyle={[styles.screenContent, padded && { padding: spacing.lg }, contentStyle]}
       keyboardShouldPersistTaps="handled"
       refreshControl={
         onRefresh ? (
