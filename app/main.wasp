@@ -2166,6 +2166,66 @@ api mobileSocialReport {
   entities: [SocialReport, SocialPost, SocialComment]
 }
 
+api mobileCalendar {
+  fn: import { mobileCalendar } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/calendar")
+}
+
+api mobileAnnouncements {
+  fn: import { mobileAnnouncements } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/announcements")
+}
+
+api mobileAnnouncementDetails {
+  fn: import { mobileAnnouncementDetails } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/announcements/:id")
+}
+
+api mobileAcknowledgeAnnouncement {
+  fn: import { mobileAcknowledgeAnnouncement } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (POST, "/mobile/announcements/:id/acknowledge")
+}
+
+api mobileJourneys {
+  fn: import { mobileJourneys } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/journeys")
+}
+
+api mobileJourneyDetails {
+  fn: import { mobileJourneyDetails } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/journeys/:id")
+}
+
+api mobileUpdateJourneyMilestone {
+  fn: import { mobileUpdateJourneyMilestone } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (POST, "/mobile/journeys/milestones/:id")
+}
+
+api mobileCatechismSearch {
+  fn: import { mobileCatechismSearch } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/catechism/search")
+}
+
+api mobileCatechismCategory {
+  fn: import { mobileCatechismCategory } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/catechism/categories/:category")
+}
+
+api mobileCatechismEntry {
+  fn: import { mobileCatechismEntry } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/catechism/entries/:number")
+}
+
 api mobileBibleBooks {
   fn: import { mobileBibleBooks } from "@src/server/api/mobileSocial",
   auth: true,

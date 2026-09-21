@@ -10,6 +10,8 @@ import {
   mobileAuthLogout,
   mobileAuthTwoFactorVerify,
   mobileDashboard,
+  mobileAnnouncements,
+  mobileCatechismSearch,
 } from '../server/api/mobile';
 
 const itOrSkip = process.env.NODE_ENV === 'development' ? it : it.skip;
@@ -189,6 +191,20 @@ describe('mobile auth contract', () => {
     await expect(mobileDashboard(req, res, ctx)).rejects.toBeTruthy();
 
     await prisma.userTwoFactor.deleteMany({ where: { userId: USERS.coordSaoJose.id } });
+  });
+});
+
+describe('mobile content contract', () => {
+  it('rejects announcements without auth context', async () => {
+    const req = makeReq();
+    const res = makeRes();
+    await expect(mobileAnnouncements(req, res, { user: null })).rejects.toBeTruthy();
+  });
+
+  it('rejects catechism search without auth context', async () => {
+    const req = makeReq({ query: { q: 'credo' } });
+    const res = makeRes();
+    await expect(mobileCatechismSearch(req, res, { user: null })).rejects.toBeTruthy();
   });
 });
 

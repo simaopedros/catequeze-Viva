@@ -15,9 +15,24 @@ import { getDashboardStats } from '../operations/dashboardOperations';
 import { listClasses, getClassDetails } from '../operations/classOperations';
 import { listCatechumens, getCatechumenProfile } from '../operations/catechumenOperations';
 import { listHouseholds } from '../operations/familyOperations';
-import { listMeetings, getMeeting, saveAttendance } from '../operations/meetingOperations';
+import { listMeetings, getMeeting, saveAttendance, listMeetingsForClasses } from '../operations/meetingOperations';
 import { listDocuments } from '../operations/documentOperations';
 import { listConversations, getConversation, sendMessage } from '../operations/conversationOperations';
+import { listLiturgicalEvents } from '../operations/calendarOperations';
+import {
+  listPastoralAnnouncements,
+  acknowledgePastoralAnnouncement,
+} from '../operations/pastoralAnnouncementOperations';
+import {
+  listSacramentalJourneys,
+  getSacramentalJourney,
+  updateMilestoneStatus,
+} from '../operations/sacramentOperations';
+import {
+  searchCatechism,
+  listCatechismByCategory,
+  getCatechismEntry,
+} from '../operations/bibleOperations';
 import { verifyTwoFactorLogin, assertTwoFactorSessionVerified } from '../operations/twoFactorOperations';
 import {
   assertNotLocked,
@@ -511,6 +526,206 @@ export async function mobileDocuments(req: Request, res: Response, context: any)
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
   return res.json(await listDocuments(undefined as void, opCtx));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Calendar / announcements / journeys / catechism
+// ─────────────────────────────────────────────────────────────────────────────
+
+function parseDateOnly(value: unknown): Date | undefined {
+  const raw = parseOptionalString(value);
+  if (!raw) return undefined;
+  const date = new Date(raw);
+  return Number.isNaN(date.getTime()) ? undefined : date;
+}
+
+function meetingInRange(meetingDate: Date | string, from?: Date, to?: Date): boolean {
+  const date = meetingDate instanceof Date ? meetingDate : new Date(meetingDate);
+  if (Number.isNaN(date.getTime())) return false;
+  if (from && date < from) return false;
+  if (to && date > to) return false;
+  return true;
+}
+
+function unwrapListPayload(payload: any): any[] {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.items)) return payload.items;
+  if (Array.isArray(payload?.data)) return payload.data;
+  return [];
+}
+
+export async function mobileCalendar(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const workspaceId = parseOptionalString(req.query.workspaceId);
+  const from = parseDateOnly(req.query.from);
+  const to = parseDateOnly(req.query.to);
+
+  const classesPayload = await listClasses(
+    { workspaceId, take: 200, paginated: false },
+    opCtx,
+  );
+  const classes = unwrapListPayload(classesPayload);
+  const classIds = classes.map((row: any) => row.id).filter(Boolean);
+
+  const meetingsRaw =
+    classIds.length > 0 ? await listMeetingsForClasses({ classIds }, opCtx) : [];
+  const meetings = (meetingsRaw as any[]).filter((meeting) =>
+    meetingInRange(meeting.date, from, to),
+  );
+
+  const liturgicalRaw = await listLiturgicalEvents({ workspaceId }, opCtx);
+  const liturgical = (liturgicalRaw as any[]).filter((event) =>
+    meetingInRange(event.date, from, to),
+  );
+
+  const classNameById = new Map(classes.map((row: any) => [row.id, row.name]));
+
+  const items = [
+    ...meetings.map((meeting: any) => ({
+      kind: 'meeting' as const,
+      id: meeting.id,
+      meetingId: meeting.id,
+      classId: meeting.classId,
+      className: classNameById.get(meeting.classId) ?? null,
+      title: meeting.title || meeting.theme || 'Encontro',
+      theme: meeting.theme ?? null,
+      date: meeting.date,
+      startsAt: meeting.startsAt ?? meeting.date,
+      clickable: true,
+    })),
+    ...liturgical.map((event: any) => ({
+      kind: 'liturgy' as const,
+      id: event.id,
+      title: event.title || event.name || 'Liturgia',
+      date: event.date,
+      startsAt: event.startsAt ?? event.date,
+      clickable: false,
+    })),
+  ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  return res.json({ items });
+}
+
+export async function mobileAnnouncements(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const workspaceId = parseOptionalString(req.query.workspaceId);
+  const rows = await listPastoralAnnouncements({ workspaceId }, opCtx);
+  const published = (rows as any[]).filter((row) => row.status === 'PUBLISHED');
+  return res.json(
+    published.map((row) => ({
+      id: row.id,
+      title: row.title,
+      bodyPreview: typeof row.body === 'string' ? row.body.slice(0, 240) : '',
+      requireAck: row.requireAck,
+      acknowledged: row.acknowledged,
+      publishedAt: row.publishedAt,
+      createdAt: row.createdAt,
+    })),
+  );
+}
+
+export async function mobileAnnouncementDetails(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const id = parseRequiredString(req.params.id, 'id');
+  const workspaceId = parseOptionalString(req.query.workspaceId);
+  const rows = await listPastoralAnnouncements({ workspaceId }, opCtx);
+  const row = (rows as any[]).find((item) => item.id === id && item.status === 'PUBLISHED');
+  if (!row) {
+    throw new HttpError(404, 'Comunicado não encontrado.');
+  }
+  return res.json({
+    id: row.id,
+    title: row.title,
+    body: row.body,
+    requireAck: row.requireAck,
+    acknowledged: row.acknowledged,
+    publishedAt: row.publishedAt,
+    createdAt: row.createdAt,
+  });
+}
+
+export async function mobileAcknowledgeAnnouncement(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const id = parseRequiredString(req.params.id, 'id');
+  await acknowledgePastoralAnnouncement({ id }, opCtx);
+  return res.json({ ok: true, acknowledged: true });
+}
+
+export async function mobileJourneys(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const workspaceId = parseOptionalString(req.query.workspaceId);
+  const rows = await listSacramentalJourneys({ workspaceId, take: 100 }, opCtx);
+  return res.json(
+    (rows as any[]).map((journey) => ({
+      id: journey.id,
+      catechumenName: [journey.catechumenProfile?.firstName, journey.catechumenProfile?.lastName]
+        .filter(Boolean)
+        .join(' '),
+      templateName: journey.template?.name ?? null,
+      targetDate: journey.targetDate,
+      milestoneCount: journey.milestones?.length ?? 0,
+      completedCount:
+        journey.milestones?.filter((m: any) => m.status === 'COMPLETED').length ?? 0,
+    })),
+  );
+}
+
+export async function mobileJourneyDetails(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const id = parseRequiredString(req.params.id, 'id');
+  const journey = await getSacramentalJourney({ id }, opCtx);
+  return res.json(journey);
+}
+
+export async function mobileUpdateJourneyMilestone(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const milestoneId = parseRequiredString(req.params.id, 'id');
+  const body = req.body ?? {};
+  const status =
+    typeof body.status === 'string'
+      ? body.status
+      : body.completed === true
+        ? 'COMPLETED'
+        : body.completed === false
+          ? 'PENDING'
+          : undefined;
+  const updated = await updateMilestoneStatus({ milestoneId, status }, opCtx);
+  return res.json(updated);
+}
+
+export async function mobileCatechismSearch(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const query = parseOptionalString(req.query.q) ?? '';
+  const limit = parseOptionalInt(req.query.limit, 20);
+  const results = await searchCatechism({ query, limit }, opCtx);
+  return res.json({ results });
+}
+
+export async function mobileCatechismCategory(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const category = parseRequiredString(req.params.category, 'category');
+  const results = await listCatechismByCategory({ category }, opCtx);
+  return res.json({ results });
+}
+
+export async function mobileCatechismEntry(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const number = parseOptionalInt(req.params.number, NaN);
+  if (!Number.isFinite(number)) {
+    throw new HttpError(400, 'Número inválido.');
+  }
+  const entry = await getCatechismEntry({ number }, opCtx);
+  return res.json(entry);
 }
 
 export { authenticatedDocumentUpload as mobileDocumentUpload };
