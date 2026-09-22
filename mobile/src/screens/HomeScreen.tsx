@@ -7,6 +7,7 @@ import {
   HomeTopBar,
   formatMeetingTimeRange,
 } from '../components/homeUi';
+import { meetingTimeRangeInput, pickAttendanceMeetingId } from '../home/pickAttendanceMeeting';
 import { ErrorState, LoadingState, Screen } from '../components/ui';
 
 type Meeting = {
@@ -60,11 +61,13 @@ export function HomeScreen({
   onOpenClass?: (id: string) => void;
   onOpenCatechumens?: () => void;
   onOpenClasses?: () => void;
-  onOpenAttendanceOverview?: () => void;
+  onOpenAttendanceOverview?: (meetingId?: string) => void;
   onOpenSacraments?: () => void;
 }) {
   const today = new Date();
   const todayMeeting = stats?.todayMeetings?.[0];
+  const attendanceMeetingId = pickAttendanceMeetingId(stats);
+  const meetingTimes = meetingTimeRangeInput(todayMeeting);
   const alerts = (stats?.recentAlerts ?? []).slice(0, 3);
   const birthdays = (stats?.aniversariantes ?? []).slice(0, 2);
   const classes = (stats?.myClasses ?? []).slice(0, 8);
@@ -106,7 +109,7 @@ export function HomeScreen({
           <HomeTodayMeetingCard
             empty={!todayMeeting}
             classLabel={meetingClassLabel}
-            timeRange={formatMeetingTimeRange(todayMeeting?.startsAt, todayMeeting?.endsAt)}
+            timeRange={formatMeetingTimeRange(meetingTimes.start, meetingTimes.end)}
             theme={meetingTheme}
             onAttendance={todayMeeting ? () => onOpenAttendance(todayMeeting.id) : undefined}
             onPress={todayMeeting ? () => onOpenMeeting(todayMeeting.id) : undefined}
@@ -121,7 +124,11 @@ export function HomeScreen({
             }}
             onPressClasses={onOpenClasses}
             onPressCatechumens={onOpenCatechumens}
-            onPressAttendance={onOpenAttendanceOverview}
+            onPressAttendance={
+              onOpenAttendanceOverview
+                ? () => onOpenAttendanceOverview(attendanceMeetingId)
+                : undefined
+            }
             onPressSacraments={onOpenSacraments}
           />
 

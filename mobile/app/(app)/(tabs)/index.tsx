@@ -21,7 +21,6 @@ export default function HomeRoute() {
   }, [reload]);
 
   const workspaceName = listWorkspaces(bootstrap).find((w) => w.id === workspaceId)?.name;
-  const todayMeetingId = data?.todayMeetings?.[0]?.id;
 
   return (
     <HomeScreen
@@ -39,12 +38,12 @@ export default function HomeRoute() {
       onOpenClass={(id) => router.push(`/(app)/class/${id}`)}
       onOpenMeeting={(id) => router.push(`/(app)/meeting/${id}`)}
       onOpenAttendance={(id) => router.push(appRoutes.attendance(id))}
-      onOpenAttendanceOverview={() => {
-        if (todayMeetingId) {
-          router.push(appRoutes.attendance(todayMeetingId));
+      onOpenAttendanceOverview={(meetingId) => {
+        if (meetingId) {
+          router.push(appRoutes.attendance(meetingId));
           return;
         }
-        router.push(appRoutes.calendar);
+        router.push(appRoutes.classes);
       }}
       onOpenSacraments={() => router.push(appRoutes.journeys)}
     />

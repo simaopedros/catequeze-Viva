@@ -56,7 +56,7 @@ describe('HomeScreen mock layout', () => {
   it('fires navigation handlers for all Hoje stat tiles', () => {
     const onOpenClasses = jest.fn();
     const onOpenCatechumens = jest.fn();
-    const onOpenAttendanceOverview = jest.fn();
+    const onOpenAttendanceOverview = jest.fn<void, [string?]>();
     const onOpenSacraments = jest.fn();
     const view = render(
       <HomeScreen
@@ -79,6 +79,7 @@ describe('HomeScreen mock layout', () => {
     expect(onOpenClasses).toHaveBeenCalledTimes(1);
     expect(onOpenCatechumens).toHaveBeenCalledTimes(1);
     expect(onOpenAttendanceOverview).toHaveBeenCalledTimes(1);
+    expect(onOpenAttendanceOverview).toHaveBeenCalledWith(undefined);
     expect(onOpenSacraments).toHaveBeenCalledTimes(1);
   });
 });
