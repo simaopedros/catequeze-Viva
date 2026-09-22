@@ -270,7 +270,8 @@
       "catechism": "Catecismo",
       "document": "Biblioteca",
       "ai": "Asistencia editorial",
-      "directory": "Directorio"
+      "directory": "Directorio",
+      "post": "Publicación"
     }
   }
 }

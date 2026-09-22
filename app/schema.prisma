@@ -311,6 +311,7 @@ enum SocialShareKind {
   DOCUMENT
   AI_ARTIFACT
   DIRECTORY
+  POST
 }
 
 enum SocialVideoFormat {

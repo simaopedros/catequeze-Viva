@@ -1772,7 +1772,7 @@ action createSocialPost {
 
 query previewSocialShare {
   fn: import { previewSocialShare } from "@src/server/operations/socialShareResolve",
-  entities: [BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, ContentItem, Membership, Parish]
+  entities: [BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, ContentItem, Membership, Parish, SocialPost, User]
 }
 
 action recordSocialWatch {
@@ -2120,7 +2120,7 @@ api mobileSocialSharePreview {
   fn: import { mobileSocialSharePreview } from "@src/server/api/mobileSocial",
   auth: true,
   httpRoute: (POST, "/mobile/social/share/preview"),
-  entities: [BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, ContentItem, Membership, Parish]
+  entities: [BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, ContentItem, Membership, Parish, SocialPost, User]
 }
 
 api mobileSocialPost {

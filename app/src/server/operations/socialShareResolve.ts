@@ -4,11 +4,13 @@
  */
 import { HttpError } from 'wasp/server';
 import { assertCanAccessContent } from '../auth/contentAccess';
+import { buildAuthorDisplayName } from './socialAuthor';
 import {
   MAX_SHARE_EXCERPT,
   MAX_SHARE_SUBTITLE,
   MAX_SHARE_TITLE,
   buildCatechismHref,
+  buildCommunityPostHref,
   buildDirectoryHref,
   buildDocumentHref,
   buildVerseHref,
@@ -34,6 +36,50 @@ function snapshot(partial: SocialShareSnapshot): SocialShareSnapshot {
       ? sanitizeShareText(partial.sourceLabel, MAX_SHARE_SUBTITLE)
       : null,
   };
+}
+
+async function resolvePost(sourceId: string, context: any): Promise<SocialShareSnapshot> {
+  const key = sourceId.trim();
+  if (!key) {
+    throw new HttpError(400, 'Publicação não informada.');
+  }
+
+  const post = await context.entities.SocialPost.findFirst({
+    where: {
+      OR: [{ slug: key }, { id: key }],
+      status: 'PUBLISHED',
+    },
+    select: {
+      id: true,
+      slug: true,
+      body: true,
+      author: {
+        select: {
+          socialHandle: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+      parish: { select: { name: true } },
+    },
+  });
+
+  if (!post) {
+    throw new HttpError(404, 'Publicação não encontrada ou indisponível.');
+  }
+
+  const authorName = buildAuthorDisplayName(post.author);
+  const handle = post.author.socialHandle?.trim();
+
+  return snapshot({
+    kind: 'POST',
+    title: authorName,
+    subtitle: handle ? `@${handle}` : post.parish?.name ?? null,
+    excerpt: post.body || '',
+    href: buildCommunityPostHref(post.slug),
+    sourceId: post.slug,
+    sourceLabel: 'Publicação',
+  });
 }
 
 async function resolveVerse(sourceId: string, context: any): Promise<SocialShareSnapshot> {
@@ -183,6 +229,8 @@ export async function resolveSocialShare(
     case 'DOCUMENT':
     case 'AI_ARTIFACT':
       return resolveDocument(draft.sourceId, draft.kind, context);
+    case 'POST':
+      return resolvePost(draft.sourceId, context);
     default:
       throw new HttpError(400, 'Tipo de partilha inválido.');
   }

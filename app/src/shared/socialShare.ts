@@ -10,6 +10,7 @@ export const SOCIAL_SHARE_KINDS = [
   "DOCUMENT",
   "AI_ARTIFACT",
   "DIRECTORY",
+  "POST",
 ] as const;
 
 export type SocialShareKind = (typeof SOCIAL_SHARE_KINDS)[number];
@@ -87,6 +88,10 @@ export function buildDirectoryHref(entryNumber: number): string {
   return `/app/directory?entry=${encodeURIComponent(String(entryNumber))}`;
 }
 
+export function buildCommunityPostHref(slug: string): string {
+  return `/app/comunidade/p/${encodeURIComponent(slug)}`;
+}
+
 export function shareKindLabelKey(kind: SocialShareKind): string {
   switch (kind) {
     case "VERSE":
@@ -99,6 +104,8 @@ export function shareKindLabelKey(kind: SocialShareKind): string {
       return "nativeShare.kind.ai";
     case "DIRECTORY":
       return "nativeShare.kind.directory";
+    case "POST":
+      return "nativeShare.kind.post";
   }
 }
 
