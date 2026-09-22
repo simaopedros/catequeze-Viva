@@ -22,7 +22,7 @@ export default function AppLayout() {
       <Stack.Screen name="community/edit" options={{ title: 'Editar perfil' }} />
       <Stack.Screen name="community/blocked" options={{ title: 'Bloqueados' }} />
       <Stack.Screen name="community/connections" options={{ title: 'Ligações' }} />
-      <Stack.Screen name="community/p/[slug]" options={{ title: 'Publicação' }} />
+      <Stack.Screen name="community/p/[slug]" options={{ title: '' }} />
       <Stack.Screen name="community/t/[slug]" options={{ title: 'Tópico' }} />
       <Stack.Screen name="community/[handle]" options={{ title: 'Perfil' }} />
       <Stack.Screen name="class/[id]" options={{ headerShown: false }} />

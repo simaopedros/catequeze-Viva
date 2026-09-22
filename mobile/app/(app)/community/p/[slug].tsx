@@ -1,5 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { Alert } from 'react-native';
 import { useAuth } from '../../../../src/auth/AuthContext';
 import { useAsync } from '../../../../src/hooks/useAsync';
 import { PostDetailScreen } from '../../../../src/screens/PostDetailScreen';
@@ -15,8 +16,6 @@ export default function PostRoute() {
   );
   const access = useAsync(() => api.socialAccess(), []);
   const [busy, setBusy] = useState(false);
-  const [reportMessage, setReportMessage] = useState<string | null>(null);
-
   return (
     <PostDetailScreen
       post={post.data}
@@ -36,7 +35,6 @@ export default function PostRoute() {
           setBusy(false);
         }
       }}
-      reportMessage={reportMessage}
       onComment={async (body) => {
         if (!post.data?.id) return;
         setBusy(true);
@@ -50,12 +48,14 @@ export default function PostRoute() {
       onReport={async (reason) => {
         if (!post.data?.id) return;
         setBusy(true);
-        setReportMessage(null);
         try {
           await api.reportSocial({ targetType: 'POST', targetId: post.data.id, reason });
-          setReportMessage('Denúncia enviada. Obrigado.');
+          Alert.alert('Denúncia enviada', 'Obrigado por ajudar a cuidar da comunidade.');
         } catch (err) {
-          setReportMessage(err instanceof Error ? err.message : 'Não foi possível denunciar.');
+          Alert.alert(
+            'Não foi possível denunciar',
+            err instanceof Error ? err.message : 'Tente novamente mais tarde.',
+          );
         } finally {
           setBusy(false);
         }

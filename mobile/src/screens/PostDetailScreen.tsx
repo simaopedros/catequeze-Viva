@@ -1,22 +1,29 @@
-import React, { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { useNavigation } from 'expo-router';
+import { MoreVertical } from 'lucide-react-native';
+import React, { useLayoutEffect, useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { SocialAccess, SocialComment, SocialPost, SocialReportReason } from '../api/types';
 import { PostCard } from '../components/PostCard';
-import { BrandButton, EmptyState, Field, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { PostReactionStrip, type PastoralReactionId } from '../components/postReactionsUi';
+import { BrandButton, EmptyState, Field, LoadingState, Screen } from '../components/ui';
 import { colors, spacing } from '../theme';
 
-const REACTIONS = [
-  { id: 'AMEM' as const, label: 'Amém' },
-  { id: 'REZO' as const, label: 'Rezo' },
-  { id: 'ALELUIA' as const, label: 'Aleluia' },
+const REPORT_REASONS: { id: SocialReportReason; label: string }[] = [
+  { id: 'DOCTRINE', label: 'Conteúdo doutrinário inadequado' },
+  { id: 'HATE', label: 'Ódio ou ofensa' },
+  { id: 'SPAM', label: 'Spam' },
+  { id: 'OTHER', label: 'Outro motivo' },
 ];
 
-const REPORT_REASONS: { id: SocialReportReason; label: string }[] = [
-  { id: 'DOCTRINE', label: 'Doutrina' },
-  { id: 'HATE', label: 'Ódio' },
-  { id: 'SPAM', label: 'Spam' },
-  { id: 'OTHER', label: 'Outro' },
-];
+function openReportMenu(onReport: (reason: SocialReportReason) => void) {
+  Alert.alert('Denunciar publicação', 'Escolha o motivo da denúncia.', [
+    ...REPORT_REASONS.map((item) => ({
+      text: item.label,
+      onPress: () => onReport(item.id),
+    })),
+    { text: 'Cancelar', style: 'cancel' },
+  ]);
+}
 
 export function PostDetailScreen({
   post,
@@ -29,7 +36,6 @@ export function PostDetailScreen({
   onReact,
   onComment,
   onReport,
-  reportMessage,
 }: {
   post?: SocialPost | null;
   comments: SocialComment[];
@@ -38,13 +44,34 @@ export function PostDetailScreen({
   error?: string | null;
   busy?: boolean;
   onOpenAuthor: (handle: string) => void;
-  onReact: (type: 'AMEM' | 'REZO' | 'ALELUIA') => void;
+  onReact: (type: PastoralReactionId) => void;
   onComment: (body: string) => Promise<void> | void;
   onReport?: (reason: SocialReportReason) => Promise<void> | void;
-  reportMessage?: string | null;
 }) {
   const [body, setBody] = useState('');
-  const [reason, setReason] = useState<SocialReportReason>('OTHER');
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    if (!post) return;
+    const topicLine = post.topics?.map((topic) => topic.name).filter(Boolean).join(' · ');
+    navigation.setOptions({
+      title: post.author.displayName || 'Publicação',
+      headerRight: onReport
+        ? () => (
+            <Pressable
+              testID="post-menu"
+              onPress={() => openReportMenu((reason) => onReport(reason))}
+              hitSlop={12}
+              style={styles.headerMenu}
+              accessibilityRole="button"
+              accessibilityLabel="Mais opções"
+            >
+              <MoreVertical size={22} color={colors.primary[800]} strokeWidth={2.2} />
+            </Pressable>
+          )
+        : undefined,
+    });
+  }, [navigation, onReport, post]);
 
   if (loading) {
     return (
@@ -61,54 +88,48 @@ export function PostDetailScreen({
     );
   }
 
+  const topicLine = post.topics?.map((topic) => topic.name).filter(Boolean).join(' · ');
+
   return (
     <Screen testID="post-screen">
-      <ScreenTitle title="Publicação" subtitle={post.topics?.map((topic) => topic.name).join(' · ') || 'Comunidade'} />
-      <PostCard post={post} onOpenAuthor={onOpenAuthor} />
-      <View style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.md, flexWrap: 'wrap' }}>
-        {REACTIONS.map((item) => (
-          <Pressable
-            key={item.id}
-            testID={`react-${item.id}`}
-            onPress={() => onReact(item.id)}
-            disabled={busy}
-            style={{
-              paddingHorizontal: 12,
-              paddingVertical: 8,
-              borderRadius: 999,
-              backgroundColor: post.viewerReaction === item.id ? colors.text.primary : colors.surface,
-              borderWidth: 1,
-              borderColor: colors.border,
-            }}
-          >
-            <Text style={{ color: post.viewerReaction === item.id ? colors.white : colors.text.primary, fontWeight: '600' }}>
-              {item.label}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
-      <Text style={{ color: colors.text.primary, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm }}>Comentários</Text>
+      {topicLine ? <Text style={styles.topicLine}>{topicLine}</Text> : null}
+
+      <PostCard post={post} onOpenAuthor={onOpenAuthor} variant="detail" />
+
+      <PostReactionStrip
+        active={post.viewerReaction ?? null}
+        totalCount={post.reactionCount}
+        disabled={busy}
+        onReact={onReact}
+      />
+
+      <Text style={styles.commentsTitle}>
+        Comentários{comments.length > 0 ? ` (${comments.length})` : ''}
+      </Text>
+
       {comments.length === 0 ? (
-        <EmptyState title="Ainda sem comentários" body="Seja o primeiro a responder com um Amém ou uma palavra." />
+        <Text style={styles.commentsEmpty}>Ainda sem comentários. Partilhe uma palavra de encorajamento.</Text>
       ) : (
         comments.map((comment) => (
-          <View key={comment.id} testID={`comment-${comment.id}`} style={{ marginBottom: spacing.md }}>
-            <Text style={{ color: colors.text.primary, fontWeight: '700' }}>{comment.author.displayName}</Text>
+          <View key={comment.id} testID={`comment-${comment.id}`} style={styles.comment}>
+            <Text style={styles.commentAuthor}>{comment.author.displayName}</Text>
             {comment.author.handle || comment.author.socialHandle ? (
-              <Text style={{ color: colors.accent[700], marginBottom: 4 }}>
+              <Text style={styles.commentHandle}>
                 @{comment.author.handle || comment.author.socialHandle}
               </Text>
             ) : null}
-            <Text style={{ color: colors.primary[700], lineHeight: 22 }}>{comment.body}</Text>
+            <Text style={styles.commentBody}>{comment.body}</Text>
           </View>
         ))
       )}
+
       {access && !access.canPublish ? (
-        <Text style={{ color: colors.accent[700], marginBottom: spacing.sm }}>
+        <Text style={styles.commentHint}>
           Comentários pedem a mesma conta com que lê a Comunidade.
         </Text>
       ) : null}
-      <Field label="O seu comentário" value={body} onChangeText={setBody} multiline testID="comment-input" />
+
+      <Field label="Escrever comentário" value={body} onChangeText={setBody} multiline testID="comment-input" />
       <BrandButton
         testID="comment-submit"
         label={busy ? 'A enviar…' : 'Comentar'}
@@ -118,40 +139,40 @@ export function PostDetailScreen({
           setBody('');
         }}
       />
-      {onReport ? (
-        <View style={{ marginTop: spacing.lg }}>
-          <Text style={{ color: colors.text.primary, fontWeight: '700', marginBottom: spacing.sm }}>Denunciar</Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: spacing.sm }}>
-            {REPORT_REASONS.map((item) => (
-              <Pressable
-                key={item.id}
-                testID={`report-reason-${item.id}`}
-                onPress={() => setReason(item.id)}
-                style={{
-                  paddingHorizontal: 12,
-                  paddingVertical: 8,
-                  borderRadius: 999,
-                  backgroundColor: reason === item.id ? colors.text.primary : colors.surface,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                }}
-              >
-                <Text style={{ color: reason === item.id ? colors.white : colors.text.primary, fontWeight: '600' }}>
-                  {item.label}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-          {reportMessage ? <Text style={{ color: colors.success, marginBottom: spacing.sm }}>{reportMessage}</Text> : null}
-          <BrandButton
-            variant="ghost"
-            testID="report-submit"
-            label={busy ? 'A enviar…' : 'Enviar denúncia'}
-            disabled={busy}
-            onPress={() => onReport(reason)}
-          />
-        </View>
-      ) : null}
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  headerMenu: {
+    marginRight: spacing[1],
+    padding: spacing[1],
+  },
+  topicLine: {
+    fontSize: 13,
+    color: colors.text.muted,
+    marginBottom: spacing[3],
+  },
+  commentsTitle: {
+    color: colors.text.primary,
+    fontWeight: '700',
+    fontSize: 17,
+    marginBottom: spacing[2],
+  },
+  commentsEmpty: {
+    color: colors.text.muted,
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: spacing[4],
+  },
+  comment: {
+    marginBottom: spacing[3],
+    paddingBottom: spacing[3],
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
+  },
+  commentAuthor: { color: colors.text.primary, fontWeight: '700', fontSize: 15 },
+  commentHandle: { color: colors.accent[700], fontSize: 13, marginBottom: 4 },
+  commentBody: { color: colors.primary[700], lineHeight: 22, fontSize: 15 },
+  commentHint: { color: colors.accent[700], marginBottom: spacing.sm, fontSize: 13 },
+});

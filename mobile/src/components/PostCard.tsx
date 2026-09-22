@@ -35,12 +35,16 @@ export function PostCard({
   onOpenAuthor,
   onOpenPost,
   mediaBaseUrl,
+  variant = 'feed',
 }: {
   post: SocialPost;
   onOpenAuthor?: (handle: string) => void;
   onOpenPost?: (slug: string) => void;
   mediaBaseUrl?: string;
+  /** No feed mostra atalhos; no detalhe o conteúdo fica limpo. */
+  variant?: 'feed' | 'detail';
 }) {
+  const isDetail = variant === 'detail';
   const [expanded, setExpanded] = useState(false);
   const long = (post.body || '').length > LONG_BODY;
   const body = !long || expanded ? post.body : `${post.body.slice(0, LONG_BODY).trimEnd()}…`;
@@ -64,7 +68,7 @@ export function PostCard({
             <Text style={styles.meta}>{meta}</Text>
           </View>
         </Pressable>
-        <MoreHorizontal size={20} color={colors.text.placeholder} />
+        {!isDetail ? <MoreHorizontal size={20} color={colors.text.placeholder} /> : null}
       </View>
 
       <Pressable
@@ -93,28 +97,30 @@ export function PostCard({
         />
       ) : null}
 
-      <Pressable
-        accessibilityRole="button"
-        testID={`open-post-${post.id}`}
-        onPress={() => post.slug && onOpenPost?.(post.slug)}
-        disabled={!onOpenPost}
-        style={styles.footer}
-      >
-        <Text style={styles.reactionSummary}>
-          {(post.reactionCount ?? 0) > 0 ? `🙏 ❤️ ${post.reactionCount}` : ''}
-        </Text>
-        <View style={styles.footerActions}>
-          <View style={styles.footerStat}>
-            <Heart size={18} color={colors.text.muted} />
-            <Text style={styles.footerStatText}>{post.reactionCount ?? 0}</Text>
+      {!isDetail ? (
+        <Pressable
+          accessibilityRole="button"
+          testID={`open-post-${post.id}`}
+          onPress={() => post.slug && onOpenPost?.(post.slug)}
+          disabled={!onOpenPost}
+          style={styles.footer}
+        >
+          <Text style={styles.reactionSummary}>
+            {(post.reactionCount ?? 0) > 0 ? `🙏 ${post.reactionCount} reações` : ''}
+          </Text>
+          <View style={styles.footerActions}>
+            <View style={styles.footerStat}>
+              <Heart size={18} color={colors.text.muted} />
+              <Text style={styles.footerStatText}>{post.reactionCount ?? 0}</Text>
+            </View>
+            <View style={styles.footerStat}>
+              <MessageCircle size={18} color={colors.text.muted} />
+              <Text style={styles.footerStatText}>{post.commentCount ?? 0}</Text>
+            </View>
+            <MoreHorizontal size={18} color={colors.text.placeholder} />
           </View>
-          <View style={styles.footerStat}>
-            <MessageCircle size={18} color={colors.text.muted} />
-            <Text style={styles.footerStatText}>{post.commentCount ?? 0}</Text>
-          </View>
-          <MoreHorizontal size={18} color={colors.text.placeholder} />
-        </View>
-      </Pressable>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
