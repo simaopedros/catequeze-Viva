@@ -1,13 +1,13 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert } from 'react-native';
-import { useAuth } from '../../../../src/auth/AuthContext';
+import { displayName, useAuth } from '../../../../src/auth/AuthContext';
 import { useAsync } from '../../../../src/hooks/useAsync';
 import { PostDetailScreen } from '../../../../src/screens/PostDetailScreen';
 
 export default function PostRoute() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
-  const { api } = useAuth();
+  const { api, user } = useAuth();
   const router = useRouter();
   const post = useAsync(() => api.socialPost(String(slug || '')), [slug]);
   const comments = useAsync(
@@ -24,6 +24,7 @@ export default function PostRoute() {
       loading={post.loading}
       error={post.error}
       busy={busy}
+      viewerName={displayName(user)}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
       onReact={async (type) => {
         if (!post.data?.id) return;

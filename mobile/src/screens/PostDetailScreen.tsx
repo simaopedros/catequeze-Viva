@@ -3,9 +3,10 @@ import { MoreVertical } from 'lucide-react-native';
 import React, { useLayoutEffect, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { SocialAccess, SocialComment, SocialPost, SocialReportReason } from '../api/types';
+import { PostCommentComposer, PostCommentItem } from '../components/postCommentsUi';
 import { PostCard } from '../components/PostCard';
 import { PostReactionStrip, type PastoralReactionId } from '../components/postReactionsUi';
-import { BrandButton, EmptyState, Field, LoadingState, Screen } from '../components/ui';
+import { EmptyState, LoadingState, Screen } from '../components/ui';
 import { colors, spacing } from '../theme';
 
 const REPORT_REASONS: { id: SocialReportReason; label: string }[] = [
@@ -32,6 +33,7 @@ export function PostDetailScreen({
   loading,
   error,
   busy,
+  viewerName,
   onOpenAuthor,
   onReact,
   onComment,
@@ -43,6 +45,7 @@ export function PostDetailScreen({
   loading?: boolean;
   error?: string | null;
   busy?: boolean;
+  viewerName?: string;
   onOpenAuthor: (handle: string) => void;
   onReact: (type: PastoralReactionId) => void;
   onComment: (body: string) => Promise<void> | void;
@@ -50,10 +53,10 @@ export function PostDetailScreen({
 }) {
   const [body, setBody] = useState('');
   const navigation = useNavigation();
+  const canComment = !access || access.canPublish;
 
   useLayoutEffect(() => {
     if (!post) return;
-    const topicLine = post.topics?.map((topic) => topic.name).filter(Boolean).join(' · ');
     navigation.setOptions({
       title: post.author.displayName || 'Publicação',
       headerRight: onReport
@@ -90,6 +93,13 @@ export function PostDetailScreen({
 
   const topicLine = post.topics?.map((topic) => topic.name).filter(Boolean).join(' · ');
 
+  const submitComment = async () => {
+    const trimmed = body.trim();
+    if (!trimmed || !canComment) return;
+    await onComment(trimmed);
+    setBody('');
+  };
+
   return (
     <Screen testID="post-screen">
       {topicLine ? <Text style={styles.topicLine}>{topicLine}</Text> : null}
@@ -103,42 +113,36 @@ export function PostDetailScreen({
         onReact={onReact}
       />
 
-      <Text style={styles.commentsTitle}>
-        Comentários{comments.length > 0 ? ` (${comments.length})` : ''}
-      </Text>
-
-      {comments.length === 0 ? (
-        <Text style={styles.commentsEmpty}>Ainda sem comentários. Partilhe uma palavra de encorajamento.</Text>
-      ) : (
-        comments.map((comment) => (
-          <View key={comment.id} testID={`comment-${comment.id}`} style={styles.comment}>
-            <Text style={styles.commentAuthor}>{comment.author.displayName}</Text>
-            {comment.author.handle || comment.author.socialHandle ? (
-              <Text style={styles.commentHandle}>
-                @{comment.author.handle || comment.author.socialHandle}
-              </Text>
-            ) : null}
-            <Text style={styles.commentBody}>{comment.body}</Text>
-          </View>
-        ))
-      )}
-
-      {access && !access.canPublish ? (
-        <Text style={styles.commentHint}>
-          Comentários pedem a mesma conta com que lê a Comunidade.
+      <View style={styles.commentsSection} testID="post-comments-section">
+        <Text style={styles.commentsTitle}>
+          Comentários{comments.length > 0 ? ` · ${comments.length}` : ''}
         </Text>
-      ) : null}
 
-      <Field label="Escrever comentário" value={body} onChangeText={setBody} multiline testID="comment-input" />
-      <BrandButton
-        testID="comment-submit"
-        label={busy ? 'A enviar…' : 'Comentar'}
-        disabled={busy || !body.trim()}
-        onPress={async () => {
-          await onComment(body.trim());
-          setBody('');
-        }}
-      />
+        <PostCommentComposer
+          value={body}
+          onChangeText={setBody}
+          onSubmit={submitComment}
+          busy={busy}
+          disabled={!canComment}
+          viewerName={viewerName}
+        />
+
+        {!canComment ? (
+          <Text style={styles.commentHint}>
+            Use a mesma conta da Comunidade para participar na conversa.
+          </Text>
+        ) : null}
+
+        {comments.length === 0 ? (
+          <Text style={styles.commentsEmpty}>Seja o primeiro a responder.</Text>
+        ) : (
+          <View style={styles.commentList}>
+            {comments.map((comment) => (
+              <PostCommentItem key={comment.id} comment={comment} />
+            ))}
+          </View>
+        )}
+      </View>
     </Screen>
   );
 }
@@ -153,26 +157,34 @@ const styles = StyleSheet.create({
     color: colors.text.muted,
     marginBottom: spacing[3],
   },
+  commentsSection: {
+    marginTop: spacing[1],
+    paddingTop: spacing[2],
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.border,
+  },
   commentsTitle: {
-    color: colors.text.primary,
-    fontWeight: '700',
-    fontSize: 17,
-    marginBottom: spacing[2],
+    color: colors.text.muted,
+    fontWeight: '600',
+    fontSize: 13,
+    textTransform: 'uppercase',
+    letterSpacing: 0.3,
+    marginBottom: spacing[1],
   },
   commentsEmpty: {
     color: colors.text.muted,
     fontSize: 14,
     lineHeight: 20,
-    marginBottom: spacing[4],
+    paddingVertical: spacing[2],
   },
-  comment: {
+  commentList: {
+    marginTop: spacing[1],
+  },
+  commentHint: {
+    color: colors.text.muted,
+    fontSize: 13,
+    lineHeight: 18,
+    marginTop: -spacing[2],
     marginBottom: spacing[3],
-    paddingBottom: spacing[3],
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
   },
-  commentAuthor: { color: colors.text.primary, fontWeight: '700', fontSize: 15 },
-  commentHandle: { color: colors.accent[700], fontSize: 13, marginBottom: 4 },
-  commentBody: { color: colors.primary[700], lineHeight: 22, fontSize: 15 },
-  commentHint: { color: colors.accent[700], marginBottom: spacing.sm, fontSize: 13 },
 });
