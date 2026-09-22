@@ -3,8 +3,6 @@ import { MoreVertical } from 'lucide-react-native';
 import React, { useLayoutEffect, useState } from 'react';
 import {
   Alert,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -18,6 +16,7 @@ import { PostCommentComposer, PostCommentItem } from '../components/postComments
 import { PostCard } from '../components/PostCard';
 import { PostReactionStrip, type PastoralReactionId } from '../components/postReactionsUi';
 import { EmptyState, LoadingState, Screen } from '../components/ui';
+import { useKeyboardOffset } from '../hooks/useKeyboardOffset';
 import { colors, contentHorizontalPadding, spacing } from '../theme';
 
 const REPORT_REASONS: { id: SocialReportReason; label: string }[] = [
@@ -63,12 +62,15 @@ export function PostDetailScreen({
   onReport?: (reason: SocialReportReason) => Promise<void> | void;
 }) {
   const [body, setBody] = useState('');
+  const [composerHeight, setComposerHeight] = useState(72);
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  const keyboardOffset = useKeyboardOffset();
   const { width } = useWindowDimensions();
-  const keyboardVerticalOffset = Platform.OS === 'ios' ? insets.top + 44 : 0;
   const horizontal = contentHorizontalPadding(width);
   const canComment = !access || access.canPublish;
+  const scrollBottomInset =
+    composerHeight + spacing[4] + (keyboardOffset > 0 ? keyboardOffset : insets.bottom);
 
   useLayoutEffect(() => {
     if (!post) return;
@@ -116,15 +118,14 @@ export function PostDetailScreen({
   };
 
   return (
-    <SafeAreaView testID="post-screen" style={styles.root} edges={['left', 'right']}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={keyboardVerticalOffset}
-      >
+    <SafeAreaView testID="post-screen" style={styles.root} edges={['left', 'right', 'bottom']}>
+      <View style={styles.flex}>
         <ScrollView
           style={styles.flex}
-          contentContainerStyle={[styles.scrollContent, { paddingHorizontal: horizontal }]}
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingHorizontal: horizontal, paddingBottom: scrollBottomInset },
+          ]}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
         >
@@ -162,7 +163,21 @@ export function PostDetailScreen({
           </View>
         </ScrollView>
 
-        <SafeAreaView edges={['bottom']} style={[styles.composerBar, { paddingHorizontal: horizontal }]}>
+        <View
+          onLayout={(event) => {
+            const next = event.nativeEvent.layout.height;
+            if (next > 0 && Math.abs(next - composerHeight) > 1) {
+              setComposerHeight(next);
+            }
+          }}
+          style={[
+            styles.composerBar,
+            {
+              paddingHorizontal: horizontal,
+              bottom: keyboardOffset,
+            },
+          ]}
+        >
           <PostCommentComposer
             value={body}
             onChangeText={setBody}
@@ -172,8 +187,8 @@ export function PostDetailScreen({
             viewerName={viewerName}
             variant="footer"
           />
-        </SafeAreaView>
-      </KeyboardAvoidingView>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
@@ -227,10 +242,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing[3],
   },
   composerBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
     backgroundColor: colors.canvas,
     paddingTop: spacing[2],
-    paddingBottom: spacing[1],
+    paddingBottom: spacing[2],
   },
 });
