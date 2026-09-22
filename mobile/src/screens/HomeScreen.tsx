@@ -33,6 +33,8 @@ export function HomeScreen({
   onOpenClass,
   onOpenCatechumens,
   onOpenClasses,
+  onOpenAttendanceOverview,
+  onOpenSacraments,
 }: {
   name: string;
   firstName?: string;
@@ -58,6 +60,8 @@ export function HomeScreen({
   onOpenClass?: (id: string) => void;
   onOpenCatechumens?: () => void;
   onOpenClasses?: () => void;
+  onOpenAttendanceOverview?: () => void;
+  onOpenSacraments?: () => void;
 }) {
   const today = new Date();
   const todayMeeting = stats?.todayMeetings?.[0];
@@ -117,6 +121,8 @@ export function HomeScreen({
             }}
             onPressClasses={onOpenClasses}
             onPressCatechumens={onOpenCatechumens}
+            onPressAttendance={onOpenAttendanceOverview}
+            onPressSacraments={onOpenSacraments}
           />
 
           <HomeAlertsCard items={alertItems} />

@@ -129,6 +129,7 @@ function HomeStatTile({
   tint,
   bg,
   onPress,
+  testID,
 }: {
   label: string;
   value: string | number;
@@ -136,6 +137,7 @@ function HomeStatTile({
   tint: string;
   bg: string;
   onPress?: () => void;
+  testID?: string;
 }) {
   const body = (
     <View style={styles.statTile}>
@@ -154,7 +156,7 @@ function HomeStatTile({
   );
   if (!onPress) return body;
   return (
-    <Pressable onPress={onPress} style={{ width: '100%' }}>
+    <Pressable testID={testID} onPress={onPress} style={{ width: '100%' }}>
       {body}
     </Pressable>
   );
@@ -164,10 +166,14 @@ export function HomeStatsRow({
   values,
   onPressClasses,
   onPressCatechumens,
+  onPressAttendance,
+  onPressSacraments,
 }: {
   values: { classes: string | number; catechumens: string | number; attendance: string | number; sacraments: string | number };
   onPressClasses?: () => void;
   onPressCatechumens?: () => void;
+  onPressAttendance?: () => void;
+  onPressSacraments?: () => void;
 }) {
   const { width: screenWidth } = useWindowDimensions();
   const horizontalPad = contentHorizontalPadding(screenWidth);
@@ -179,6 +185,8 @@ export function HomeStatsRow({
   const handlers: Record<string, (() => void) | undefined> = {
     classes: onPressClasses,
     catechumens: onPressCatechumens,
+    attendance: onPressAttendance,
+    sacraments: onPressSacraments,
   };
 
   const renderTile = (item: (typeof STAT_CONFIG)[number], widthStyle: { width: number } | { flex: number }) => {
@@ -192,6 +200,7 @@ export function HomeStatsRow({
         tint={item.tint}
         bg={item.bg}
         onPress={onPress}
+        testID={`home-stat-${item.key}`}
       />
     );
     return (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import { HomeScreen } from '../screens/HomeScreen';
 import { shortClassLabel } from '../components/homeUi';
 
@@ -51,5 +51,34 @@ describe('HomeScreen mock layout', () => {
   it('shortens class labels for carousel chips', () => {
     expect(shortClassLabel('Turma 3A - Crisma')).toBe('3A');
     expect(shortClassLabel('Turma 1A')).toBe('1A');
+  });
+
+  it('fires navigation handlers for all Hoje stat tiles', () => {
+    const onOpenClasses = jest.fn();
+    const onOpenCatechumens = jest.fn();
+    const onOpenAttendanceOverview = jest.fn();
+    const onOpenSacraments = jest.fn();
+    const view = render(
+      <HomeScreen
+        name="Pedro"
+        stats={{ activeClasses: 1, activeCatechumens: 2, avgAttendance: 80, pendingSacraments: 1 }}
+        onOpenMeeting={jest.fn()}
+        onOpenAttendance={jest.fn()}
+        onOpenClasses={onOpenClasses}
+        onOpenCatechumens={onOpenCatechumens}
+        onOpenAttendanceOverview={onOpenAttendanceOverview}
+        onOpenSacraments={onOpenSacraments}
+      />,
+    );
+
+    fireEvent.press(view.getByTestId('home-stat-classes'));
+    fireEvent.press(view.getByTestId('home-stat-catechumens'));
+    fireEvent.press(view.getByTestId('home-stat-attendance'));
+    fireEvent.press(view.getByTestId('home-stat-sacraments'));
+
+    expect(onOpenClasses).toHaveBeenCalledTimes(1);
+    expect(onOpenCatechumens).toHaveBeenCalledTimes(1);
+    expect(onOpenAttendanceOverview).toHaveBeenCalledTimes(1);
+    expect(onOpenSacraments).toHaveBeenCalledTimes(1);
   });
 });

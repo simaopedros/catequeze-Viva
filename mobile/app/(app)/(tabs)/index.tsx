@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { displayName, listWorkspaces, useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
+import { appRoutes } from '../../../src/navigation/routes';
 import { HomeScreen } from '../../../src/screens/HomeScreen';
 
 export default function HomeRoute() {
@@ -20,6 +21,7 @@ export default function HomeRoute() {
   }, [reload]);
 
   const workspaceName = listWorkspaces(bootstrap).find((w) => w.id === workspaceId)?.name;
+  const todayMeetingId = data?.todayMeetings?.[0]?.id;
 
   return (
     <HomeScreen
@@ -36,7 +38,15 @@ export default function HomeRoute() {
       onOpenCatechumens={() => router.push('/(app)/catechumens')}
       onOpenClass={(id) => router.push(`/(app)/class/${id}`)}
       onOpenMeeting={(id) => router.push(`/(app)/meeting/${id}`)}
-      onOpenAttendance={(id) => router.push(`/(app)/meeting/${id}/attendance`)}
+      onOpenAttendance={(id) => router.push(appRoutes.attendance(id))}
+      onOpenAttendanceOverview={() => {
+        if (todayMeetingId) {
+          router.push(appRoutes.attendance(todayMeetingId));
+          return;
+        }
+        router.push(appRoutes.calendar);
+      }}
+      onOpenSacraments={() => router.push(appRoutes.journeys)}
     />
   );
 }
