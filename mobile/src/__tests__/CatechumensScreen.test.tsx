@@ -20,6 +20,7 @@ describe('CatechumensScreen', () => {
     );
 
     expect(view.getByTestId('catechumens-screen')).toBeTruthy();
+    expect(view.getByTestId('catechumens-header')).toBeTruthy();
     expect(view.getByText('Ana Silva')).toBeTruthy();
     expect(view.getByText('3A — Crisma')).toBeTruthy();
     fireEvent.press(view.getByTestId('catechumen-p1'));

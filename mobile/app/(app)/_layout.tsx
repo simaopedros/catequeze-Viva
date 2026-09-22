@@ -49,7 +49,7 @@ export default function AppLayout() {
       <Stack.Screen name="journeys/[id]" options={{ title: 'Jornada' }} />
       <Stack.Screen name="catechism/index" options={{ title: 'Catecismo' }} />
       <Stack.Screen name="catechism/[number]" options={{ title: 'Catecismo' }} />
-      <Stack.Screen name="catechumens/index" options={{ headerShown: false }} />
+      <Stack.Screen name="catechumens/index" options={{ title: 'Catequizandos' }} />
       <Stack.Screen name="catechumens/[id]" options={{ title: 'Catequizando' }} />
       <Stack.Screen name="families/index" options={{ title: 'Famílias' }} />
       <Stack.Screen name="families/[id]" options={{ title: 'Família' }} />

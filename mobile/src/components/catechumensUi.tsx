@@ -20,7 +20,6 @@ export function CatechumensScreenHeader({ count }: { count?: number }) {
       : 'Consulta rápida por nome, turma ou família.';
   return (
     <View style={styles.headerBlock} testID="catechumens-header">
-      <Text style={styles.pageTitle}>Catequizandos</Text>
       <Text style={styles.pageSubtitle}>{subtitle}</Text>
     </View>
   );
@@ -91,15 +90,9 @@ export function CatechumenListDivider() {
 
 const styles = StyleSheet.create({
   headerBlock: {
-    marginBottom: spacing[4],
-  },
-  pageTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.primary[800],
+    marginBottom: spacing[3],
   },
   pageSubtitle: {
-    marginTop: spacing[1],
     fontSize: 15,
     lineHeight: 21,
     color: colors.text.muted,
