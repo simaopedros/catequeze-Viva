@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MessageBubble, MessageComposer } from '../components/pastoralUi';
 import { EmptyState, LoadingState } from '../components/ui';
+import {
+  formatMessageTime,
+  isOwnMessage,
+  messageAuthorLabel,
+  messageBody,
+  threadMessages,
+} from '../messages/threadPresentation';
 import { colors, spacing, typography } from '../theme';
-
-function isMineMessage(message: any, data: any) {
-  if (message.mine || message.isOwn) return true;
-  const viewerId = data?.viewerId || data?.currentUserId;
-  const authorId = message.author?.id || message.senderId;
-  return viewerId && authorId && viewerId === authorId;
-}
 
 export function ThreadScreen({
   data,
@@ -26,44 +33,130 @@ export function ThreadScreen({
   busy?: boolean;
 }) {
   const [content, setContent] = useState('');
-  const messages = data?.messages || data?.items || [];
-  const title = data?.title || data?.name || 'Conversa';
+  const scrollRef = useRef<ScrollView>(null);
+  const insets = useSafeAreaInsets();
+  const messages = threadMessages(data);
+
+  useEffect(() => {
+    if (messages.length === 0) return;
+    const timer = setTimeout(() => {
+      scrollRef.current?.scrollToEnd({ animated: true });
+    }, 80);
+    return () => clearTimeout(timer);
+  }, [messages.length, data]);
 
   return (
-    <SafeAreaView testID="thread-screen" style={{ flex: 1, backgroundColor: colors.canvas }} edges={['left', 'right']}>
-      <View style={{ paddingHorizontal: spacing[4], paddingVertical: spacing[3], borderBottomWidth: 1, borderBottomColor: colors.border }}>
-        <Text style={{ ...typography.headingSm, color: colors.text.primary }}>{title}</Text>
-      </View>
-      {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Conversa indisponível" body={error} /> : null}
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ padding: spacing[4], paddingBottom: spacing[6] }}
-        keyboardShouldPersistTaps="handled"
+    <SafeAreaView testID="thread-screen" style={styles.root} edges={['left', 'right', 'bottom']}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
       >
-        {messages.map((message: any) => {
-          const body = message.content || message.body || '';
-          const mine = isMineMessage(message, data);
-          return (
-            <MessageBubble
-              key={message.id}
-              body={body}
-              mine={mine}
-              author={mine ? undefined : message.author?.displayName || message.senderName || 'Membro'}
+        {loading ? <LoadingState /> : null}
+        {error ? (
+          <View style={styles.centered}>
+            <EmptyState title="Não foi possível abrir a conversa" body={error} />
+          </View>
+        ) : null}
+
+        {!loading && !error ? (
+          <ScrollView
+            ref={scrollRef}
+            style={styles.flex}
+            contentContainerStyle={[
+              styles.messageList,
+              messages.length === 0 && styles.messageListEmpty,
+            ]}
+            keyboardShouldPersistTaps="handled"
+            onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}
+          >
+            {messages.length === 0 ? (
+              <View style={styles.emptyWrap}>
+                <Text style={styles.emptyTitle}>Nenhuma mensagem ainda</Text>
+                <Text style={styles.emptyBody}>Envie a primeira mensagem abaixo.</Text>
+              </View>
+            ) : (
+              messages.map((message: any) => {
+                const body = messageBody(message);
+                if (!body) return null;
+                const mine = isOwnMessage(message, data);
+                const time = formatMessageTime(message.createdAt || message.sentAt);
+                return (
+                  <MessageBubble
+                    key={message.id}
+                    body={body}
+                    mine={mine}
+                    time={time}
+                    author={mine ? undefined : messageAuthorLabel(message)}
+                  />
+                );
+              })
+            )}
+          </ScrollView>
+        ) : null}
+
+        {!error ? (
+          <View style={[styles.composerWrap, { paddingBottom: Math.max(insets.bottom, spacing[2]) }]}>
+            <MessageComposer
+              testID="message-input"
+              value={content}
+              onChangeText={setContent}
+              busy={busy}
+              onSend={async () => {
+                const trimmed = content.trim();
+                if (!trimmed) return;
+                await onSend(trimmed);
+                setContent('');
+              }}
             />
-          );
-        })}
-      </ScrollView>
-      <MessageComposer
-        testID="message-input"
-        value={content}
-        onChangeText={setContent}
-        busy={busy}
-        onSend={async () => {
-          await onSend(content.trim());
-          setContent('');
-        }}
-      />
+          </View>
+        ) : null}
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: colors.canvas,
+  },
+  flex: { flex: 1 },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: spacing[4],
+  },
+  messageList: {
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[3],
+    paddingBottom: spacing[4],
+    gap: spacing[2],
+  },
+  messageListEmpty: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+  emptyWrap: {
+    alignItems: 'center',
+    paddingHorizontal: spacing[6],
+  },
+  emptyTitle: {
+    ...typography.headingSm,
+    color: colors.text.primary,
+    textAlign: 'center',
+  },
+  emptyBody: {
+    ...typography.bodySm,
+    color: colors.text.muted,
+    marginTop: spacing[2],
+    textAlign: 'center',
+  },
+  composerWrap: {
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    backgroundColor: colors.surface,
+    paddingHorizontal: spacing[3],
+    paddingTop: spacing[2],
+  },
+});

@@ -120,16 +120,21 @@ export function MessageBubble({
   body,
   author,
   mine,
+  time,
 }: {
   body: string;
   author?: string;
   mine?: boolean;
+  time?: string;
 }) {
   return (
     <View style={[styles.bubbleWrap, mine && styles.bubbleWrapMine]}>
       {!mine && author ? <Text style={styles.bubbleAuthor}>{author}</Text> : null}
       <View style={[styles.bubble, mine ? styles.bubbleMine : styles.bubbleTheirs]}>
         <Text style={[styles.bubbleText, mine && styles.bubbleTextMine]}>{body}</Text>
+        {time ? (
+          <Text style={[styles.bubbleTime, mine && styles.bubbleTimeMine]}>{time}</Text>
+        ) : null}
       </View>
     </View>
   );
@@ -148,24 +153,35 @@ export function MessageComposer({
   busy?: boolean;
   testID?: string;
 }) {
+  const canSend = Boolean(value.trim()) && !busy;
   return (
     <View style={styles.composer}>
       <TextInput
         testID={testID}
         value={value}
         onChangeText={onChangeText}
-        placeholder="Escreva uma mensagem…"
+        placeholder="Mensagem…"
         placeholderTextColor={colors.text.placeholder}
         style={styles.composerInput}
         multiline
+        accessibilityLabel="Escrever mensagem"
       />
-      <PrimaryButton
-        label={busy ? '…' : 'Enviar'}
+      <Pressable
+        testID="message-send"
         onPress={onSend}
-        disabled={busy || !value.trim()}
-        fullWidth={false}
-        variant="primary"
-      />
+        disabled={!canSend}
+        style={({ pressed }) => [
+          styles.composerSend,
+          canSend && styles.composerSendActive,
+          pressed && canSend && { opacity: 0.9 },
+        ]}
+        accessibilityRole="button"
+        accessibilityLabel="Enviar mensagem"
+      >
+        <Text style={[styles.composerSendLabel, canSend && styles.composerSendLabelActive]}>
+          {busy ? '…' : 'Enviar'}
+        </Text>
+      </Pressable>
     </View>
   );
 }
@@ -384,14 +400,37 @@ const styles = StyleSheet.create({
   },
   bubbleText: { ...typography.bodyMd, color: colors.primary[700] },
   bubbleTextMine: { color: colors.white },
+  bubbleTime: {
+    ...typography.caption,
+    color: colors.text.muted,
+    marginTop: spacing[1],
+    alignSelf: 'flex-end',
+  },
+  bubbleTimeMine: { color: 'rgba(255,255,255,0.82)' },
   composer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     gap: spacing[2],
-    paddingVertical: spacing[3],
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    backgroundColor: colors.surface,
+    paddingVertical: spacing[1],
+  },
+  composerSend: {
+    minHeight: 44,
+    paddingHorizontal: spacing[4],
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary[100],
+  },
+  composerSendActive: {
+    backgroundColor: colors.primary[800],
+  },
+  composerSendLabel: {
+    ...typography.labelLg,
+    color: colors.text.muted,
+    fontWeight: '700',
+  },
+  composerSendLabelActive: {
+    color: colors.white,
   },
   composerInput: {
     flex: 1,

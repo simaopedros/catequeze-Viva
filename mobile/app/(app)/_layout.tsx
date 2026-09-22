@@ -35,7 +35,10 @@ export default function AppLayout() {
         name="meeting/[id]/attendance"
         options={{ title: 'Presença', contentStyle: { backgroundColor: colors.surface } }}
       />
-      <Stack.Screen name="messages/[id]" options={{ title: 'Conversa' }} />
+      <Stack.Screen
+        name="messages/[id]"
+        options={{ title: 'Conversa', headerBackTitle: 'Mensagens' }}
+      />
       <Stack.Screen name="bible/index" options={{ title: 'Bíblia' }} />
       <Stack.Screen name="bible/[bookId]/index" options={{ title: 'Livro' }} />
       <Stack.Screen name="bible/[bookId]/[chapter]" options={{ title: 'Capítulo' }} />
