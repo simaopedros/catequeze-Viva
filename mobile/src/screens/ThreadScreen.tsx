@@ -1,16 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PostCommentComposer } from '../components/postCommentsUi';
 import { MessageBubble } from '../components/pastoralUi';
 import { EmptyState, LoadingState } from '../components/ui';
+import { useKeyboardOffset } from '../hooks/useKeyboardOffset';
 import {
   formatMessageTime,
   isOwnMessage,
@@ -36,9 +30,14 @@ export function ThreadScreen({
   viewerName?: string;
 }) {
   const [content, setContent] = useState('');
+  const [composerHeight, setComposerHeight] = useState(72);
   const scrollRef = useRef<ScrollView>(null);
   const insets = useSafeAreaInsets();
+  const keyboardOffset = useKeyboardOffset();
   const messages = threadMessages(data);
+  const keyboardOpen = keyboardOffset > 0;
+  const scrollBottomInset =
+    composerHeight + spacing[4] + (keyboardOpen ? keyboardOffset : Math.max(insets.bottom, spacing[2]));
 
   useEffect(() => {
     if (messages.length === 0) return;
@@ -48,13 +47,17 @@ export function ThreadScreen({
     return () => clearTimeout(timer);
   }, [messages.length, data]);
 
+  useEffect(() => {
+    if (!keyboardOpen) return;
+    const timer = setTimeout(() => {
+      scrollRef.current?.scrollToEnd({ animated: true });
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [keyboardOpen, keyboardOffset]);
+
   return (
-    <SafeAreaView testID="thread-screen" style={styles.root} edges={['left', 'right', 'bottom']}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
-      >
+    <SafeAreaView testID="thread-screen" style={styles.root} edges={['left', 'right']}>
+      <View style={styles.flex}>
         {loading ? <LoadingState /> : null}
         {error ? (
           <View style={styles.centered}>
@@ -68,9 +71,11 @@ export function ThreadScreen({
             style={styles.flex}
             contentContainerStyle={[
               styles.messageList,
+              { paddingBottom: scrollBottomInset },
               messages.length === 0 && styles.messageListEmpty,
             ]}
             keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
             onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}
           >
             {messages.length === 0 ? (
@@ -99,7 +104,21 @@ export function ThreadScreen({
         ) : null}
 
         {!error ? (
-          <View style={[styles.composerWrap, { paddingBottom: Math.max(insets.bottom, spacing[2]) }]}>
+          <View
+            onLayout={(event) => {
+              const next = event.nativeEvent.layout.height;
+              if (next > 0 && Math.abs(next - composerHeight) > 1) {
+                setComposerHeight(next);
+              }
+            }}
+            style={[
+              styles.composerBar,
+              {
+                paddingBottom: keyboardOpen ? spacing[2] : Math.max(insets.bottom, spacing[2]),
+                bottom: keyboardOffset,
+              },
+            ]}
+          >
             <PostCommentComposer
               variant="footer"
               testID="message-input"
@@ -118,7 +137,7 @@ export function ThreadScreen({
             />
           </View>
         ) : null}
-      </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -137,7 +156,6 @@ const styles = StyleSheet.create({
   messageList: {
     paddingHorizontal: spacing[4],
     paddingTop: spacing[3],
-    paddingBottom: spacing[4],
     gap: spacing[2],
   },
   messageListEmpty: {
@@ -159,7 +177,10 @@ const styles = StyleSheet.create({
     marginTop: spacing[2],
     textAlign: 'center',
   },
-  composerWrap: {
+  composerBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
     backgroundColor: colors.canvas,
