@@ -5,8 +5,10 @@ module.exports = function (api) {
       [
         'babel-preset-expo',
         {
-          // Evita plugins extra do @expo/ui que puxam worklets com versão diferente no Expo Go.
+          // Alinhado ao Expo Go SDK 57 — evita mismatch do plugin worklets no dispositivo.
           expoUi: false,
+          worklets: false,
+          reanimated: false,
         },
       ],
     ],
