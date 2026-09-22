@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Alert, Text, View } from 'react-native';
-import { ClassMeetingPreviewRow, formatClassMeetingWhen } from '../components/classDetailUi';
+import { Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ClassMeetingCard, ClassMeetingsHero } from '../components/classMeetingsUi';
 import {
   BrandButton,
   EmptyState,
@@ -8,34 +8,42 @@ import {
   LoadingState,
   PrimaryButton,
   Screen,
-  ScreenTitle,
+  SectionHeader,
 } from '../components/ui';
-import { asMeetingList, meetingWhen, type MeetingListItem } from '../meetings/meetingUtils';
-import { colors, spacing } from '../theme';
+import { countUpcomingMeetings, partitionClassMeetings } from '../meetings/classMeetingsPresentation';
+import { asMeetingList, type MeetingListItem } from '../meetings/meetingUtils';
+import { colors, radius, spacing, typography } from '../theme';
 
 export function ClassMeetingsScreen({
   className,
+  enrollmentCount,
   meetingsPayload,
   loading,
   error,
   creating,
+  refreshing,
   onOpenMeeting,
   onOpenAttendance,
   onCreateMeeting,
   onReload,
 }: {
   className?: string;
+  enrollmentCount?: number;
   meetingsPayload: unknown;
   loading?: boolean;
   error?: string | null;
   creating?: boolean;
+  refreshing?: boolean;
   onOpenMeeting: (meetingId: string) => void;
   onOpenAttendance: (meetingId: string) => void;
   onCreateMeeting: (draft: { title: string; theme: string; date: string }) => Promise<void>;
   onReload?: () => void;
 }) {
   const meetings = useMemo(() => asMeetingList(meetingsPayload), [meetingsPayload]);
-  const [showForm, setShowForm] = useState(false);
+  const { upcoming, past } = useMemo(() => partitionClassMeetings(meetings), [meetings]);
+  const upcomingCount = useMemo(() => countUpcomingMeetings(meetings), [meetings]);
+
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [theme, setTheme] = useState('');
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
@@ -54,31 +62,80 @@ export function ClassMeetingsScreen({
       await onCreateMeeting({ title: trimmedTitle, theme: theme.trim(), date: date.trim() });
       setTitle('');
       setTheme('');
-      setShowForm(false);
+      setSheetOpen(false);
       onReload?.();
     } catch (err) {
       Alert.alert('Encontro', err instanceof Error ? err.message : 'Não foi possível criar o encontro.');
     }
   };
 
+  const renderSection = (label: string, rows: MeetingListItem[]) => {
+    if (rows.length === 0) return null;
+    return (
+      <View style={styles.section}>
+        <SectionHeader title={label} />
+        {rows.map((meeting) => (
+          <ClassMeetingCard
+            key={meeting.id}
+            meeting={meeting}
+            onOpenMeeting={() => onOpenMeeting(meeting.id)}
+            onOpenAttendance={() => onOpenAttendance(meeting.id)}
+          />
+        ))}
+      </View>
+    );
+  };
+
   return (
-    <Screen testID="class-meetings-screen" variant="form">
-      <ScreenTitle
-        title="Encontros"
-        subtitle={className ? `Turma ${className}` : 'Agende sessões e abra a chamada de presença.'}
+    <Screen
+      testID="class-meetings-screen"
+      variant="form"
+      onRefresh={onReload}
+      refreshing={refreshing}
+    >
+      <ClassMeetingsHero
+        className={className}
+        enrollmentCount={enrollmentCount}
+        meetingCount={meetings.length}
+        upcomingCount={upcomingCount}
+        onCreate={() => setSheetOpen(true)}
       />
 
-      <PrimaryButton
-        testID="create-meeting-toggle"
-        label={showForm ? 'Cancelar novo encontro' : 'Criar encontro'}
-        onPress={() => setShowForm((value) => !value)}
-        variant={showForm ? 'ghost' : 'primary'}
-      />
+      {loading && meetings.length === 0 ? <LoadingState /> : null}
+      {error ? <EmptyState title="Encontros indisponíveis" body={error} /> : null}
 
-      {showForm ? (
-        <View testID="create-meeting-form" style={{ marginTop: spacing[4], marginBottom: spacing[4] }}>
-          <Field label="Título" value={title} onChangeText={setTitle} placeholder="Ex.: Encontro 12" testID="meeting-title" />
-          <Field label="Tema" value={theme} onChangeText={setTheme} placeholder="Ex.: Os dons do Espírito Santo" />
+      {!loading && !error && meetings.length === 0 ? (
+        <EmptyState
+          title="Ainda não há encontros"
+          body="Crie o primeiro encontro para planear aulas e registar presenças."
+        />
+      ) : null}
+
+      {!error ? (
+        <>
+          {renderSection('Próximos', upcoming)}
+          {renderSection('Anteriores', past)}
+        </>
+      ) : null}
+
+      <Modal visible={sheetOpen} animationType="slide" transparent onRequestClose={() => setSheetOpen(false)}>
+        <Pressable style={styles.backdrop} onPress={() => setSheetOpen(false)} />
+        <View style={styles.sheet} testID="create-meeting-form">
+          <Text style={styles.sheetTitle}>Novo encontro</Text>
+          {className ? <Text style={styles.sheetSubtitle}>Turma {className}</Text> : null}
+          <Field
+            label="Título"
+            value={title}
+            onChangeText={setTitle}
+            placeholder="Ex.: Encontro 12"
+            testID="meeting-title"
+          />
+          <Field
+            label="Tema"
+            value={theme}
+            onChangeText={setTheme}
+            placeholder="Ex.: Os dons do Espírito Santo"
+          />
           <Field label="Data (AAAA-MM-DD)" value={date} onChangeText={setDate} testID="meeting-date" />
           <BrandButton
             testID="create-meeting-submit"
@@ -86,44 +143,36 @@ export function ClassMeetingsScreen({
             onPress={submit}
             disabled={creating}
           />
+          <PrimaryButton label="Cancelar" variant="ghost" onPress={() => setSheetOpen(false)} />
         </View>
-      ) : null}
-
-      <Text style={{ color: colors.text.muted, fontSize: 13, marginBottom: spacing[3] }}>
-        Toque num encontro para ver detalhes. Use «Fazer chamada» para registar presenças.
-      </Text>
-
-      {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Encontros indisponíveis" body={error} /> : null}
-
-      {!loading && meetings.length === 0 ? (
-        <EmptyState
-          title="Ainda não há encontros"
-          body="Crie o primeiro encontro para começar a marcar presenças nesta turma."
-        />
-      ) : (
-        meetings.map((meeting: MeetingListItem) => (
-          <View key={meeting.id} style={{ marginBottom: spacing[2] }}>
-            <ClassMeetingPreviewRow
-              whenLabel={formatClassMeetingWhen(meetingWhen(meeting))}
-              theme={meeting.theme || meeting.title}
-              onPress={() => onOpenMeeting(meeting.id)}
-            />
-            <View style={{ flexDirection: 'row', gap: spacing[2], marginTop: spacing[1], marginLeft: spacing[1] }}>
-              <BrandButton
-                label="Detalhes"
-                variant="ghost"
-                onPress={() => onOpenMeeting(meeting.id)}
-              />
-              <BrandButton
-                testID={`meeting-attendance-${meeting.id}`}
-                label="Fazer chamada"
-                onPress={() => onOpenAttendance(meeting.id)}
-              />
-            </View>
-          </View>
-        ))
-      )}
+      </Modal>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  section: {
+    marginBottom: spacing[2],
+  },
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+  },
+  sheet: {
+    backgroundColor: colors.surface,
+    borderTopLeftRadius: radius.lg,
+    borderTopRightRadius: radius.lg,
+    padding: spacing[4],
+    paddingBottom: spacing[6],
+    gap: spacing[2],
+  },
+  sheetTitle: {
+    ...typography.headingSm,
+    color: colors.text.primary,
+  },
+  sheetSubtitle: {
+    ...typography.bodySm,
+    color: colors.text.muted,
+    marginBottom: spacing[2],
+  },
+});

@@ -24,9 +24,8 @@ export default function ClassMeetingsRoute() {
   );
 
   useLayoutEffect(() => {
-    const name = classDetails.data?.name;
-    navigation.setOptions({ title: name ? `Encontros · ${name}` : 'Encontros' });
-  }, [classDetails.data?.name, navigation]);
+    navigation.setOptions({ title: 'Encontros' });
+  }, [navigation]);
 
   if (!classId) {
     return (
@@ -43,11 +42,16 @@ export default function ClassMeetingsRoute() {
   return (
     <ClassMeetingsScreen
       className={classDetails.data?.name}
+      enrollmentCount={classDetails.data?.enrollmentCount ?? classDetails.data?.stats?.enrollmentCount}
       meetingsPayload={meetings.data}
       loading={meetings.loading || classDetails.loading}
       error={meetings.error || classDetails.error}
       creating={creating}
-      onReload={() => void meetings.reload()}
+      refreshing={meetings.loading}
+      onReload={() => {
+        void meetings.reload();
+        void classDetails.reload();
+      }}
       onOpenMeeting={(meetingId) => router.push(appRoutes.meeting(meetingId))}
       onOpenAttendance={(meetingId) => router.push(appRoutes.attendance(meetingId))}
       onCreateMeeting={async (draft) => {

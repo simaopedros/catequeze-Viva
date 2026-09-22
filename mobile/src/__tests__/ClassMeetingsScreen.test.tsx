@@ -16,6 +16,7 @@ describe('ClassMeetingsScreen', () => {
     );
 
     expect(view.getByTestId('class-meetings-screen')).toBeTruthy();
+    expect(view.getByTestId('class-meetings-hero')).toBeTruthy();
     fireEvent.press(view.getByTestId('create-meeting-toggle'));
     expect(view.getByTestId('create-meeting-form')).toBeTruthy();
     fireEvent.press(view.getByTestId('meeting-attendance-m1'));
