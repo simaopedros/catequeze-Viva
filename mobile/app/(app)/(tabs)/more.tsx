@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { displayName, listWorkspaces, useAuth } from '../../../src/auth/AuthContext';
+import { displayName, useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
+import { appRoutes } from '../../../src/navigation/routes';
 import { MoreScreen } from '../../../src/screens/MoreScreen';
 
 const MENU_ROUTES: Record<string, string> = {
@@ -17,17 +18,15 @@ const MENU_ROUTES: Record<string, string> = {
 };
 
 export default function MoreRoute() {
-  const { api, user, bootstrap, workspaceId, setWorkspaceId, logout } = useAuth();
+  const { api, user, logout } = useAuth();
   const router = useRouter();
   const profile = useAsync(() => api.mySocialProfile(), []);
 
   return (
     <MoreScreen
       name={displayName(user)}
-      workspaces={listWorkspaces(bootstrap)}
-      workspaceId={workspaceId}
       profile={profile.data}
-      onSelectWorkspace={(id) => setWorkspaceId(id)}
+      onOpenWorkspaceSwitch={() => router.push(appRoutes.workspaceSwitch)}
       onOpenMenu={(key) => {
         const href = MENU_ROUTES[key];
         if (href) router.push(href as any);

@@ -1,9 +1,12 @@
-import { pickAttendanceMeetingId } from '../home/pickAttendanceMeeting';
+import {
+  pickAttendanceMeetingIdFromDashboard,
+  pickAttendanceMeetingIdFromMeetings,
+} from '../meetings/pickAttendanceMeeting';
 
-describe('pickAttendanceMeetingId', () => {
+describe('pickAttendanceMeetingIdFromDashboard', () => {
   it('prefers todayMeetings', () => {
     expect(
-      pickAttendanceMeetingId({
+      pickAttendanceMeetingIdFromDashboard({
         todayMeetings: [{ id: 'today' }],
         upcomingMeetings: [{ id: 'up' }],
       }),
@@ -12,18 +15,20 @@ describe('pickAttendanceMeetingId', () => {
 
   it('uses pendingAttendanceMeeting when there is no meeting today', () => {
     expect(
-      pickAttendanceMeetingId({
+      pickAttendanceMeetingIdFromDashboard({
         todayMeetings: [],
         pendingAttendanceMeeting: { id: 'pending' },
       }),
     ).toBe('pending');
   });
+});
 
+describe('pickAttendanceMeetingIdFromMeetings', () => {
   it('uses upcoming meeting scheduled for local today', () => {
     const noon = new Date();
     noon.setHours(15, 0, 0, 0);
     expect(
-      pickAttendanceMeetingId({
+      pickAttendanceMeetingIdFromDashboard({
         todayMeetings: [],
         upcomingMeetings: [{ id: 'up-today', date: noon.toISOString() }],
       }),
@@ -34,9 +39,7 @@ describe('pickAttendanceMeetingId', () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     expect(
-      pickAttendanceMeetingId({
-        upcomingMeetings: [{ id: 'tomorrow', date: tomorrow.toISOString() }],
-      }),
+      pickAttendanceMeetingIdFromMeetings([{ id: 'tomorrow', date: tomorrow.toISOString() }]),
     ).toBe('tomorrow');
   });
 });

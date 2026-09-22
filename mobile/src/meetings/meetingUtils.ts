@@ -18,25 +18,4 @@ export function asMeetingList(payload: unknown): MeetingListItem[] {
   return [];
 }
 
-/** Prefer today's meeting, then the next upcoming, then the most recent for chamada. */
-export function pickAttendanceMeetingId(meetings: MeetingListItem[]): string | undefined {
-  const dated = meetings
-    .map((m) => ({ m, t: new Date(meetingWhen(m) || '').getTime() }))
-    .filter((row) => Number.isFinite(row.t))
-    .sort((a, b) => a.t - b.t);
-
-  if (dated.length === 0) return undefined;
-
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
-  const end = new Date(start);
-  end.setDate(end.getDate() + 1);
-
-  const today = dated.find((row) => row.t >= start.getTime() && row.t < end.getTime());
-  if (today) return today.m.id;
-
-  const upcoming = dated.find((row) => row.t >= start.getTime());
-  if (upcoming) return upcoming.m.id;
-
-  return dated[dated.length - 1]?.m.id;
-}
+export { pickAttendanceMeetingIdFromMeetings as pickAttendanceMeetingId } from './pickAttendanceMeeting';

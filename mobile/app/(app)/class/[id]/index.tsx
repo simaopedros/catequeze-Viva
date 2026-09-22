@@ -36,7 +36,16 @@ export default function ClassRoute() {
       loading={loading}
       error={error}
       onOpenMeeting={(meetingId) => router.push(appRoutes.meeting(meetingId))}
-      onOpenCatechumens={() => router.push(appRoutes.catechumens)}
+      onOpenCatechumens={() => {
+        if (classId) {
+          router.push({
+            pathname: '/(app)/catechumens',
+            params: { classId, className: data?.name ?? '' },
+          });
+          return;
+        }
+        router.push(appRoutes.catechumens);
+      }}
       onOpenAttendance={() => {
         if (attendanceMeetingId) {
           router.push(appRoutes.attendance(attendanceMeetingId));

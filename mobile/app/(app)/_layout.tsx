@@ -53,6 +53,7 @@ export default function AppLayout() {
       <Stack.Screen name="catechumens/[id]" options={{ title: 'Catequizando' }} />
       <Stack.Screen name="families/index" options={{ title: 'Famílias' }} />
       <Stack.Screen name="families/[id]" options={{ title: 'Família' }} />
+      <Stack.Screen name="workspace-switch" options={{ title: 'Trocar de espaço' }} />
     </Stack>
   );
 }

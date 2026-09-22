@@ -7,7 +7,11 @@ import {
   HomeTopBar,
   formatMeetingTimeRange,
 } from '../components/homeUi';
-import { meetingTimeRangeInput, pickAttendanceMeetingId } from '../home/pickAttendanceMeeting';
+import type { HomeAlertItem } from '../home/homeAlertNavigation';
+import {
+  meetingTimeRangeInput,
+  pickAttendanceMeetingIdFromDashboard,
+} from '../meetings/pickAttendanceMeeting';
 import { ErrorState, LoadingState, Screen } from '../components/ui';
 
 type Meeting = {
@@ -36,6 +40,7 @@ export function HomeScreen({
   onOpenClasses,
   onOpenAttendanceOverview,
   onOpenSacraments,
+  onOpenAlert,
 }: {
   name: string;
   firstName?: string;
@@ -63,10 +68,11 @@ export function HomeScreen({
   onOpenClasses?: () => void;
   onOpenAttendanceOverview?: (meetingId?: string) => void;
   onOpenSacraments?: () => void;
+  onOpenAlert?: (alert: HomeAlertItem) => void;
 }) {
   const today = new Date();
   const todayMeeting = stats?.todayMeetings?.[0];
-  const attendanceMeetingId = pickAttendanceMeetingId(stats);
+  const attendanceMeetingId = pickAttendanceMeetingIdFromDashboard(stats);
   const meetingTimes = meetingTimeRangeInput(todayMeeting);
   const alerts = (stats?.recentAlerts ?? []).slice(0, 3);
   const birthdays = (stats?.aniversariantes ?? []).slice(0, 2);
@@ -132,7 +138,7 @@ export function HomeScreen({
             onPressSacraments={onOpenSacraments}
           />
 
-          <HomeAlertsCard items={alertItems} />
+          <HomeAlertsCard items={alertItems} onPressItem={onOpenAlert ? (item) => onOpenAlert(item) : undefined} />
 
           <HomeClassesCarousel classes={classes} onOpenClass={onOpenClass} onOpenAll={onOpenClasses} />
         </>

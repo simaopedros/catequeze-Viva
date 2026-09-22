@@ -251,8 +251,10 @@ function alertVisual(type?: string, message?: string) {
 
 export function HomeAlertsCard({
   items,
+  onPressItem,
 }: {
   items: { type?: string; message?: string; meta?: string }[];
+  onPressItem?: (item: { type?: string; message?: string; meta?: string }, index: number) => void;
 }) {
   if (items.length === 0) return null;
   return (
@@ -262,18 +264,31 @@ export function HomeAlertsCard({
         {items.map((item, index) => {
           const visual = alertVisual(item.type, item.message);
           const Icon = visual.Icon;
+          const row = (
+            <View style={styles.alertRow}>
+              <View style={[styles.alertIcon, { backgroundColor: visual.bg }]}>
+                <Icon size={18} color={visual.color} />
+              </View>
+              <View style={styles.alertText}>
+                <Text style={styles.alertMessage}>{item.message}</Text>
+                {item.meta ? <Text style={styles.alertMeta}>{item.meta}</Text> : null}
+              </View>
+              <ChevronRight size={20} color={colors.text.placeholder} />
+            </View>
+          );
           return (
             <View key={`alert-${index}`}>
-              <View style={styles.alertRow}>
-                <View style={[styles.alertIcon, { backgroundColor: visual.bg }]}>
-                  <Icon size={18} color={visual.color} />
-                </View>
-                <View style={styles.alertText}>
-                  <Text style={styles.alertMessage}>{item.message}</Text>
-                  {item.meta ? <Text style={styles.alertMeta}>{item.meta}</Text> : null}
-                </View>
-                <ChevronRight size={20} color={colors.text.placeholder} />
-              </View>
+              {onPressItem ? (
+                <Pressable
+                  testID={`home-alert-${index}`}
+                  onPress={() => onPressItem(item, index)}
+                  style={({ pressed }) => (pressed ? { opacity: 0.92 } : undefined)}
+                >
+                  {row}
+                </Pressable>
+              ) : (
+                row
+              )}
               {index < items.length - 1 ? <View style={styles.alertDivider} /> : null}
             </View>
           );

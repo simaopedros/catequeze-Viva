@@ -13,11 +13,18 @@ const AVATAR_PALETTES = [
   { colors: ['#1ABC9C', '#16A085'] as const, text: colors.white },
 ];
 
-export function CatechumensScreenHeader({ count }: { count?: number }) {
+export function CatechumensScreenHeader({
+  count,
+  subtitle: subtitleOverride,
+}: {
+  count?: number;
+  subtitle?: string;
+}) {
   const subtitle =
-    typeof count === 'number'
+    subtitleOverride ??
+    (typeof count === 'number'
       ? `${count} catequizando${count === 1 ? '' : 's'} na paróquia`
-      : 'Consulta rápida por nome, turma ou família.';
+      : 'Consulta rápida por nome, turma ou família.');
   return (
     <View style={styles.headerBlock} testID="catechumens-header">
       <Text style={styles.pageSubtitle}>{subtitle}</Text>

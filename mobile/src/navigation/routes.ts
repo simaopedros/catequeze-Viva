@@ -43,6 +43,9 @@ export const appRoutes = {
   catechism: '/(app)/catechism',
   catechismEntry: (number: number) => `/(app)/catechism/${number}`,
   catechumens: '/(app)/catechumens',
+  catechumensForClass: (classId: string) =>
+    `/(app)/catechumens?classId=${encodeURIComponent(classId)}`,
+  workspaceSwitch: '/(app)/workspace-switch',
   catechumen: (id: string) => `/(app)/catechumens/${id}`,
   families: '/(app)/families',
   family: (id: string) => `/(app)/families/${id}`,

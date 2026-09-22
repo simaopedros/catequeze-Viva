@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import {
   asCatechumenRows,
+  filterCatechumenRowsByClass,
   filterCatechumensByQuery,
   mapCatechumenListItem,
 } from '../catechumens/catechumensPresentation';
@@ -18,19 +19,29 @@ export function CatechumensScreen({
   loading,
   error,
   onOpen,
+  classId,
+  className,
 }: {
   payload: unknown;
   loading?: boolean;
   error?: string | null;
   onOpen: (id: string) => void;
+  classId?: string;
+  className?: string;
 }) {
   const [query, setQuery] = useState('');
-  const items = useMemo(() => asCatechumenRows(payload).map(mapCatechumenListItem), [payload]);
+  const items = useMemo(() => {
+    const rows = classId ? filterCatechumenRowsByClass(asCatechumenRows(payload), classId) : asCatechumenRows(payload);
+    return rows.map(mapCatechumenListItem);
+  }, [payload, classId]);
   const filtered = useMemo(() => filterCatechumensByQuery(items, query), [items, query]);
 
   return (
     <Screen testID="catechumens-screen" safeAreaEdges={['top', 'left', 'right']}>
-      <CatechumensScreenHeader count={!loading && !error ? items.length : undefined} />
+      <CatechumensScreenHeader
+        count={!loading && !error ? items.length : undefined}
+        subtitle={className ? `Turma ${className}` : undefined}
+      />
       <CatechumensSearchBar value={query} onChangeText={setQuery} />
 
       {loading ? <LoadingState /> : null}

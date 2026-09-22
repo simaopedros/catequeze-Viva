@@ -1,40 +1,16 @@
 import { useNavigation } from 'expo-router';
 import { MoreVertical, Repeat2 } from 'lucide-react-native';
 import React, { useLayoutEffect, useState } from 'react';
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { SocialAccess, SocialComment, SocialPost, SocialReportReason } from '../api/types';
 import { PostCommentComposer, PostCommentItem } from '../components/postCommentsUi';
 import { PostCard } from '../components/PostCard';
 import { PostReactionStrip, type PastoralReactionId } from '../components/postReactionsUi';
+import { ReportSheet } from '../components/ReportSheet';
 import { EmptyState, LoadingState, Screen } from '../components/ui';
 import { useKeyboardOffset } from '../hooks/useKeyboardOffset';
 import { colors, contentHorizontalPadding, radius, spacing } from '../theme';
-
-const REPORT_REASONS: { id: SocialReportReason; label: string }[] = [
-  { id: 'DOCTRINE', label: 'Conteúdo doutrinário inadequado' },
-  { id: 'HATE', label: 'Ódio ou ofensa' },
-  { id: 'SPAM', label: 'Spam' },
-  { id: 'OTHER', label: 'Outro motivo' },
-];
-
-function openReportMenu(onReport: (reason: SocialReportReason) => void) {
-  Alert.alert('Denunciar publicação', 'Escolha o motivo da denúncia.', [
-    ...REPORT_REASONS.map((item) => ({
-      text: item.label,
-      onPress: () => onReport(item.id),
-    })),
-    { text: 'Cancelar', style: 'cancel' },
-  ]);
-}
 
 export function PostDetailScreen({
   post,
@@ -64,6 +40,8 @@ export function PostDetailScreen({
   onRepost?: () => void;
 }) {
   const [body, setBody] = useState('');
+  const [reportVisible, setReportVisible] = useState(false);
+  const [reportBusy, setReportBusy] = useState(false);
   const [composerHeight, setComposerHeight] = useState(72);
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
@@ -82,7 +60,7 @@ export function PostDetailScreen({
         ? () => (
             <Pressable
               testID="post-menu"
-              onPress={() => openReportMenu((reason) => onReport(reason))}
+              onPress={() => setReportVisible(true)}
               hitSlop={12}
               style={styles.headerMenu}
               accessibilityRole="button"
@@ -205,6 +183,22 @@ export function PostDetailScreen({
           />
         </View>
       </View>
+      {onReport ? (
+        <ReportSheet
+          visible={reportVisible}
+          onClose={() => setReportVisible(false)}
+          busy={reportBusy}
+          onSubmit={async (reason) => {
+            setReportBusy(true);
+            try {
+              await onReport(reason);
+              setReportVisible(false);
+            } finally {
+              setReportBusy(false);
+            }
+          }}
+        />
+      ) : null}
     </SafeAreaView>
   );
 }

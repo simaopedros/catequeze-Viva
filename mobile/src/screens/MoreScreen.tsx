@@ -5,15 +5,15 @@ import {
   Calendar,
   FileText,
   Flag,
-  Map,
+  RefreshCw,
   User,
   Users,
 } from 'lucide-react-native';
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { MenuIconRow } from '../components/pastoralUi';
 import { Avatar, PrimaryButton, Screen } from '../components/ui';
-import type { SocialProfile, Workspace } from '../api/types';
+import type { SocialProfile } from '../api/types';
 import { colors, spacing } from '../theme';
 
 const RESOURCE_ICONS: Record<string, typeof Calendar> = {
@@ -25,28 +25,23 @@ const RESOURCE_ICONS: Record<string, typeof Calendar> = {
   documents: FileText,
   catechumens: Users,
   families: Users,
-  notifications: Map,
 };
 
 export function MoreScreen({
   name,
-  workspaces,
-  workspaceId,
   profile,
-  onSelectWorkspace,
   onOpenMenu,
   onOpenEditProfile,
   onOpenProfile,
+  onOpenWorkspaceSwitch,
   onLogout,
 }: {
   name: string;
-  workspaces: Workspace[];
-  workspaceId: string | null;
   profile?: SocialProfile | null;
-  onSelectWorkspace: (id: string) => void;
   onOpenMenu: (key: string) => void;
   onOpenEditProfile?: () => void;
   onOpenProfile: () => void;
+  onOpenWorkspaceSwitch: () => void;
   onLogout: () => void;
 }) {
   const resources = [
@@ -58,7 +53,6 @@ export function MoreScreen({
     { key: 'documents', title: 'Documentos', help: 'Arquivos da turma' },
     { key: 'catechumens', title: 'Catequizandos', help: 'Consulta rápida' },
     { key: 'families', title: 'Famílias', help: 'Agregados' },
-    { key: 'notifications', title: 'Notificações', help: 'O que mudou' },
   ];
 
   return (
@@ -71,16 +65,25 @@ export function MoreScreen({
         </View>
       </View>
 
-      <Text style={{ fontSize: 13, color: colors.text.muted, marginBottom: spacing[4] }}>
-        Para criar encontros e marcar presenças: Turmas → turma → Encontros ou Presença.
-      </Text>
-
-      {profile?.handle ? (
-        <MenuIconRow title={`Ver perfil @${profile.handle}`} icon={User} onPress={onOpenProfile} />
-      ) : null}
+      <Text style={styles.sectionLabel}>Conta</Text>
+      <MenuIconRow title="Meu perfil" icon={User} onPress={onOpenProfile} testID="open-my-profile" />
       {onOpenEditProfile ? (
         <MenuIconRow title="Editar perfil público" icon={User} onPress={onOpenEditProfile} testID="open-edit-profile" />
       ) : null}
+      <MenuIconRow
+        title="Notificações"
+        help="O que mudou na paróquia"
+        icon={Bell}
+        onPress={() => onOpenMenu('notifications')}
+        testID="open-notifications"
+      />
+      <MenuIconRow
+        title="Trocar de espaço"
+        help="Paróquia ou comunidade ativa"
+        icon={RefreshCw}
+        onPress={onOpenWorkspaceSwitch}
+        testID="open-workspace-switch"
+      />
 
       <Text style={styles.sectionLabel}>Recursos</Text>
       {resources.map((item) => (
@@ -93,25 +96,6 @@ export function MoreScreen({
           testID={item.testID}
         />
       ))}
-
-      <Text style={styles.sectionLabel}>Espaço de trabalho</Text>
-      {workspaces.map((workspace) => {
-        const active = workspace.id === workspaceId;
-        return (
-          <Pressable
-            key={workspace.id}
-            onPress={() => onSelectWorkspace(workspace.id)}
-            style={{ minHeight: 48, justifyContent: 'center', paddingVertical: spacing[2] }}
-          >
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={{ fontSize: 15, color: colors.text.primary, fontWeight: active ? '700' : '400' }}>
-                {workspace.name}
-              </Text>
-              {active ? <Text style={{ color: colors.primary[800], fontWeight: '700' }}>✓</Text> : null}
-            </View>
-          </Pressable>
-        );
-      })}
 
       <View style={{ marginTop: spacing[8] }}>
         <PrimaryButton testID="logout-button" label="Sair" onPress={onLogout} variant="danger" />

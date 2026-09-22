@@ -46,6 +46,16 @@ export function mapCatechumenListItem(row: any): CatechumenListItem {
   };
 }
 
+export function filterCatechumenRowsByClass(rows: any[], classId: string): any[] {
+  const id = classId.trim();
+  if (!id) return rows;
+  return rows.filter((row) =>
+    (row?.enrollments ?? []).some(
+      (enrollment: any) => enrollment?.classId === id || enrollment?.class?.id === id,
+    ),
+  );
+}
+
 export function filterCatechumensByQuery(rows: CatechumenListItem[], query: string): CatechumenListItem[] {
   const q = query.trim().toLowerCase();
   if (!q) return rows;

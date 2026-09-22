@@ -2,6 +2,8 @@ import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { displayName, listWorkspaces, useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
+import { resolveHomeAlertTarget } from '../../../src/home/homeAlertNavigation';
+import { pickAttendanceMeetingIdFromDashboard } from '../../../src/meetings/pickAttendanceMeeting';
 import { appRoutes } from '../../../src/navigation/routes';
 import { HomeScreen } from '../../../src/screens/HomeScreen';
 
@@ -46,6 +48,17 @@ export default function HomeRoute() {
         router.push(appRoutes.classes);
       }}
       onOpenSacraments={() => router.push(appRoutes.journeys)}
+      onOpenAlert={(alert) => {
+        const target = resolveHomeAlertTarget(alert, {
+          todayMeetingId: pickAttendanceMeetingIdFromDashboard(data),
+        });
+        if (!target) return;
+        if (target.screen === 'messages') router.push(appRoutes.messages);
+        else if (target.screen === 'notifications') router.push(appRoutes.notifications);
+        else if (target.screen === 'classes') router.push(appRoutes.classes);
+        else if (target.screen === 'catechumens') router.push(appRoutes.catechumens);
+        else if (target.screen === 'attendance') router.push(appRoutes.attendance(target.meetingId));
+      }}
     />
   );
 }
