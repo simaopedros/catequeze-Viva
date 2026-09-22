@@ -13,7 +13,9 @@ export function PostCommentComposer({
   disabled,
   viewerName,
   testID = 'comment-input',
+  submitTestID = 'comment-submit',
   variant = 'inline',
+  placeholder,
 }: {
   value: string;
   onChangeText: (text: string) => void;
@@ -22,10 +24,14 @@ export function PostCommentComposer({
   disabled?: boolean;
   viewerName?: string;
   testID?: string;
+  submitTestID?: string;
+  placeholder?: string;
   /** `footer` = barra fixa acima do teclado (sem margem inferior extra). */
   variant?: 'inline' | 'footer';
 }) {
   const canSend = !disabled && !busy && value.trim().length > 0;
+  const placeholderText =
+    placeholder ?? (disabled ? 'Entre para comentar' : 'Partilhe uma palavra…');
 
   return (
     <View
@@ -38,7 +44,7 @@ export function PostCommentComposer({
           testID={testID}
           value={value}
           onChangeText={onChangeText}
-          placeholder={disabled ? 'Entre para comentar' : 'Partilhe uma palavra…'}
+          placeholder={placeholderText}
           placeholderTextColor={colors.text.placeholder}
           style={styles.composerInput}
           multiline
@@ -47,7 +53,7 @@ export function PostCommentComposer({
         />
       </View>
       <Pressable
-        testID="comment-submit"
+        testID={submitTestID}
         onPress={onSubmit}
         disabled={!canSend}
         accessibilityRole="button"

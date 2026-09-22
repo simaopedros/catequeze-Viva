@@ -2,14 +2,14 @@ import { useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { useLayoutEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { colors } from '../../../src/theme';
-import { useAuth } from '../../../src/auth/AuthContext';
+import { displayName, useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
 import { conversationSubtitle, conversationTitle } from '../../../src/messages/threadPresentation';
 import { ThreadScreen } from '../../../src/screens/ThreadScreen';
 
 export default function ThreadRoute() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { api } = useAuth();
+  const { api, user } = useAuth();
   const navigation = useNavigation();
   const { data, loading, error, reload } = useAsync(() => api.conversation(String(id)), [id]);
   const [busy, setBusy] = useState(false);
@@ -40,6 +40,7 @@ export default function ThreadRoute() {
       loading={loading}
       error={error}
       busy={busy}
+      viewerName={displayName(user)}
       onSend={async (content) => {
         setBusy(true);
         try {

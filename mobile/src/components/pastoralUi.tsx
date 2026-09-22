@@ -140,52 +140,6 @@ export function MessageBubble({
   );
 }
 
-export function MessageComposer({
-  value,
-  onChangeText,
-  onSend,
-  busy,
-  testID,
-}: {
-  value: string;
-  onChangeText: (t: string) => void;
-  onSend: () => void;
-  busy?: boolean;
-  testID?: string;
-}) {
-  const canSend = Boolean(value.trim()) && !busy;
-  return (
-    <View style={styles.composer}>
-      <TextInput
-        testID={testID}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder="Mensagem…"
-        placeholderTextColor={colors.text.placeholder}
-        style={styles.composerInput}
-        multiline
-        accessibilityLabel="Escrever mensagem"
-      />
-      <Pressable
-        testID="message-send"
-        onPress={onSend}
-        disabled={!canSend}
-        style={({ pressed }) => [
-          styles.composerSend,
-          canSend && styles.composerSendActive,
-          pressed && canSend && { opacity: 0.9 },
-        ]}
-        accessibilityRole="button"
-        accessibilityLabel="Enviar mensagem"
-      >
-        <Text style={[styles.composerSendLabel, canSend && styles.composerSendLabelActive]}>
-          {busy ? '…' : 'Enviar'}
-        </Text>
-      </Pressable>
-    </View>
-  );
-}
-
 export function ClassListCard({
   name,
   community,
@@ -407,43 +361,6 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   bubbleTimeMine: { color: 'rgba(255,255,255,0.82)' },
-  composer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: spacing[2],
-    paddingVertical: spacing[1],
-  },
-  composerSend: {
-    minHeight: 44,
-    paddingHorizontal: spacing[4],
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primary[100],
-  },
-  composerSendActive: {
-    backgroundColor: colors.primary[800],
-  },
-  composerSendLabel: {
-    ...typography.labelLg,
-    color: colors.text.muted,
-    fontWeight: '700',
-  },
-  composerSendLabelActive: {
-    color: colors.white,
-  },
-  composerInput: {
-    flex: 1,
-    minHeight: 44,
-    maxHeight: 120,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing[3],
-    paddingVertical: 10,
-    color: colors.text.primary,
-    fontSize: 15,
-  },
   classCard: { overflow: 'hidden', paddingLeft: spacing[4] + 6 },
   classAccent: {
     position: 'absolute',

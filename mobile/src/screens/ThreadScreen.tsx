@@ -8,7 +8,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MessageBubble, MessageComposer } from '../components/pastoralUi';
+import { PostCommentComposer } from '../components/postCommentsUi';
+import { MessageBubble } from '../components/pastoralUi';
 import { EmptyState, LoadingState } from '../components/ui';
 import {
   formatMessageTime,
@@ -25,12 +26,14 @@ export function ThreadScreen({
   error,
   onSend,
   busy,
+  viewerName,
 }: {
   data: any;
   loading?: boolean;
   error?: string | null;
   onSend: (content: string) => Promise<void> | void;
   busy?: boolean;
+  viewerName?: string;
 }) {
   const [content, setContent] = useState('');
   const scrollRef = useRef<ScrollView>(null);
@@ -97,12 +100,16 @@ export function ThreadScreen({
 
         {!error ? (
           <View style={[styles.composerWrap, { paddingBottom: Math.max(insets.bottom, spacing[2]) }]}>
-            <MessageComposer
+            <PostCommentComposer
+              variant="footer"
               testID="message-input"
+              submitTestID="message-send"
+              placeholder="Mensagem…"
+              viewerName={viewerName}
               value={content}
               onChangeText={setContent}
               busy={busy}
-              onSend={async () => {
+              onSubmit={async () => {
                 const trimmed = content.trim();
                 if (!trimmed) return;
                 await onSend(trimmed);
@@ -153,10 +160,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   composerWrap: {
-    borderTopWidth: 1,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
-    backgroundColor: colors.surface,
-    paddingHorizontal: spacing[3],
+    backgroundColor: colors.canvas,
+    paddingHorizontal: spacing[4],
     paddingTop: spacing[2],
   },
 });
