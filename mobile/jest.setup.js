@@ -19,16 +19,6 @@ jest.mock('expo-image-picker', () => ({
   UIImagePickerControllerQualityType: { Medium: 1 },
 }));
 
-jest.mock('react-native-keyboard-controller', () => {
-  const React = require('react');
-  const { View } = require('react-native');
-  return {
-    KeyboardProvider: ({ children }) => children,
-    KeyboardAvoidingView: ({ children, style }) => React.createElement(View, { style }, children),
-    KeyboardStickyView: ({ children, style }) => React.createElement(View, { style }, children),
-  };
-});
-
 jest.mock('lucide-react-native', () => {
   const React = require('react');
   const { View } = require('react-native');

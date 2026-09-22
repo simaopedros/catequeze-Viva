@@ -11,21 +11,28 @@ function offsetFromKeyboardEvent(event: KeyboardEvent): number {
 }
 
 /**
- * Distância entre a base da janela e o topo do teclado (útil para barras fixas no rodapé).
+ * Distância para elevar um rodapé fixo acima do teclado.
  */
 export function useKeyboardOffset(): number {
   const [offset, setOffset] = useState(0);
 
   useEffect(() => {
-    const showEvent = Platform.OS === 'ios' ? 'keyboardWillChangeFrame' : 'keyboardDidShow';
-    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
-
     const onShow = (event: KeyboardEvent) => {
       setOffset(offsetFromKeyboardEvent(event));
     };
     const onHide = () => setOffset(0);
 
-    const subscriptions = [Keyboard.addListener(showEvent, onShow), Keyboard.addListener(hideEvent, onHide)];
+    const subscriptions = Platform.OS === 'ios'
+      ? [
+          Keyboard.addListener('keyboardWillShow', onShow),
+          Keyboard.addListener('keyboardWillChangeFrame', onShow),
+          Keyboard.addListener('keyboardWillHide', onHide),
+        ]
+      : [
+          Keyboard.addListener('keyboardDidShow', onShow),
+          Keyboard.addListener('keyboardDidHide', onHide),
+        ];
+
     return () => subscriptions.forEach((subscription) => subscription.remove());
   }, []);
 
