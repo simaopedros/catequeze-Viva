@@ -17,7 +17,10 @@ import {
   UIManager,
   View,
 } from 'react-native';
-import type { CommunityComposePayload, SocialVideoUploadTicket } from '../api/types';
+import { audienceHint, audienceLabel, type CommunityPublishAudience } from '../community/publishAudience';
+import type { CommunityComposePayload, SocialShare, SocialVideoUploadTicket } from '../api/types';
+import { CommunityPublishAudiencePicker } from './communityUi';
+import { ShareCard } from './PostCard';
 import { DEFAULT_COMPOSE_MEDIA_LIMITS, MAX_SOCIAL_VIDEO_BYTES } from '../social/constants';
 import { normalizeUploadUri } from '../social/socialMediaUpload';
 import {
@@ -57,6 +60,12 @@ export function InlineCommunityComposer({
   composeMedia,
   expanded: expandedProp,
   onExpandedChange,
+  publishAudience,
+  onChangePublishAudience,
+  parishName,
+  repostPreview,
+  repostSourceId,
+  onClearRepost,
 }: {
   userName?: string;
   disabled?: boolean;
@@ -66,6 +75,13 @@ export function InlineCommunityComposer({
   composeMedia?: InlineComposeMediaConfig;
   expanded?: boolean;
   onExpandedChange?: (expanded: boolean) => void;
+  publishAudience: CommunityPublishAudience;
+  onChangePublishAudience: (audience: CommunityPublishAudience) => void;
+  parishName?: string | null;
+  repostPreview?: SocialShare | null;
+  /** Slug da publicação original (republicar). */
+  repostSourceId?: string | null;
+  onClearRepost?: () => void;
 }) {
   const limits = composeMedia?.limits ?? DEFAULT_COMPOSE_MEDIA_LIMITS;
   const [expandedInternal, setExpandedInternal] = useState(false);
@@ -123,6 +139,7 @@ export function InlineCommunityComposer({
     setMedia([]);
     setConsent(false);
     setLocalError(null);
+    onClearRepost?.();
     Keyboard.dismiss();
   };
 
@@ -309,8 +326,10 @@ export function InlineCommunityComposer({
   const canSubmit =
     !busy &&
     !uploading &&
-    (body.trim().length > 0 || media.length > 0) &&
+    (body.trim().length > 0 || media.length > 0 || Boolean(repostSourceId)) &&
     (media.length === 0 || consent);
+
+  const destinationLabel = audienceLabel(publishAudience, parishName);
 
   const publish = async () => {
     if (!canSubmit) return;
@@ -319,6 +338,8 @@ export function InlineCommunityComposer({
       body: body.trim(),
       mediaIds,
       mediaConsentAck: mediaIds.length > 0 ? consent : false,
+      audience: publishAudience,
+      share: repostSourceId ? { kind: 'POST', sourceId: repostSourceId } : null,
     });
     close();
   };
@@ -355,9 +376,42 @@ export function InlineCommunityComposer({
         ) : (
           <Pressable onPress={open} disabled={disabled} style={styles.placeholderPress} testID="compose-open-field">
             <Text style={styles.placeholder}>O que você gostaria de compartilhar?</Text>
+            <Text style={styles.destinationHint} testID="compose-destination-collapsed">
+              Publicar em: {destinationLabel}
+            </Text>
           </Pressable>
         )}
       </View>
+
+      {expanded ? (
+        <CommunityPublishAudiencePicker
+          value={publishAudience}
+          onChange={onChangePublishAudience}
+          parishName={parishName}
+          disabled={disabled || busy}
+        />
+      ) : null}
+
+      {expanded && repostPreview ? (
+        <View style={styles.repostCard} testID="compose-repost-preview">
+          <View style={styles.repostHeader}>
+            <Text style={styles.repostTitle}>Republicar publicação</Text>
+            <Pressable onPress={onClearRepost} hitSlop={8} testID="compose-repost-clear">
+              <X size={18} color={colors.text.muted} />
+            </Pressable>
+          </View>
+          <ShareCard
+            kind={repostPreview.sourceLabel || 'Publicação'}
+            title={repostPreview.title}
+            subtitle={repostPreview.subtitle}
+            excerpt={repostPreview.excerpt}
+          />
+        </View>
+      ) : null}
+
+      {expanded ? (
+        <Text style={styles.audienceHint}>{audienceHint(publishAudience)}</Text>
+      ) : null}
 
       {expanded && media.length > 0 ? (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mediaStrip}>
@@ -520,6 +574,34 @@ const styles = StyleSheet.create({
   placeholder: {
     ...typography.bodyMd,
     color: colors.text.placeholder,
+  },
+  destinationHint: {
+    marginTop: 4,
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.primary[700],
+  },
+  audienceHint: {
+    fontSize: 12,
+    lineHeight: 17,
+    color: colors.text.muted,
+    marginBottom: spacing[2],
+  },
+  repostCard: {
+    marginBottom: spacing[3],
+    gap: spacing[2],
+  },
+  repostHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  repostTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.text.muted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.3,
   },
   input: {
     flex: 1,

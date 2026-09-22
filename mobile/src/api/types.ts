@@ -147,6 +147,9 @@ export type CommunityComposePayload = {
   body: string;
   mediaIds: string[];
   mediaConsentAck: boolean;
+  audience: 'all' | 'parish' | 'classes';
+  parishId?: string | null;
+  share?: { kind: string; sourceId: string } | null;
 };
 
 export type SocialTopic = {

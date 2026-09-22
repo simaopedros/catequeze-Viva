@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, MoreHorizontal } from 'lucide-react-native';
+import { Heart, MessageCircle, MoreHorizontal, Repeat2 } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { PostMediaGallery } from './PostMediaGallery';
@@ -34,12 +34,14 @@ export function PostCard({
   post,
   onOpenAuthor,
   onOpenPost,
+  onRepost,
   mediaBaseUrl,
   variant = 'feed',
 }: {
   post: SocialPost;
   onOpenAuthor?: (handle: string) => void;
   onOpenPost?: (slug: string) => void;
+  onRepost?: () => void;
   mediaBaseUrl?: string;
   /** No feed mostra atalhos; no detalhe o conteúdo fica limpo. */
   variant?: 'feed' | 'detail';
@@ -117,7 +119,19 @@ export function PostCard({
               <MessageCircle size={18} color={colors.text.muted} />
               <Text style={styles.footerStatText}>{post.commentCount ?? 0}</Text>
             </View>
-            <MoreHorizontal size={18} color={colors.text.placeholder} />
+            {onRepost ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Republicar"
+                testID={`repost-${post.id}`}
+                onPress={onRepost}
+                style={styles.footerStat}
+              >
+                <Repeat2 size={18} color={colors.primary[800]} />
+              </Pressable>
+            ) : (
+              <MoreHorizontal size={18} color={colors.text.placeholder} />
+            )}
           </View>
         </Pressable>
       ) : null}

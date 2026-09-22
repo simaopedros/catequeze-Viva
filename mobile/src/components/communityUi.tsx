@@ -17,6 +17,12 @@ export function CommunityScreenHeader({ onLinkPress }: { onLinkPress?: () => voi
   );
 }
 
+const SCOPE_ITEMS: { id: CommunityFeedScope; label: string }[] = [
+  { id: 'all', label: 'Todos' },
+  { id: 'parish', label: 'Paróquia' },
+  { id: 'classes', label: 'Turmas' },
+];
+
 export function CommunityScopeFilters({
   value,
   onChange,
@@ -24,21 +30,77 @@ export function CommunityScopeFilters({
   value: CommunityFeedScope;
   onChange: (scope: CommunityFeedScope) => void;
 }) {
-  const items: { id: CommunityFeedScope; label: string }[] = [
-    { id: 'all', label: 'Todos' },
-    { id: 'parish', label: 'Paróquia' },
-    { id: 'classes', label: 'Turmas' },
-  ];
   return (
-    <View style={styles.scopeRow} testID="community-scope-filters">
+    <CommunityScopeChips
+      testID="community-scope-filters"
+      value={value}
+      onChange={onChange}
+      items={SCOPE_ITEMS}
+    />
+  );
+}
+
+export function CommunityPublishAudiencePicker({
+  value,
+  onChange,
+  parishName,
+  disabled,
+}: {
+  value: CommunityFeedScope;
+  onChange: (scope: CommunityFeedScope) => void;
+  parishName?: string | null;
+  disabled?: boolean;
+}) {
+  const items = SCOPE_ITEMS.map((item) =>
+    item.id === 'parish' && parishName
+      ? { ...item, label: parishName.length > 18 ? 'Paróquia' : `Paróquia · ${parishName}` }
+      : item,
+  );
+
+  return (
+    <View style={styles.publishAudienceBlock} testID="compose-audience-picker">
+      <Text style={styles.publishAudienceTitle}>Publicar em</Text>
+      <CommunityScopeChips
+        testID="compose-audience-chips"
+        value={value}
+        onChange={onChange}
+        items={items}
+        disabled={disabled}
+        chipTestIdPrefix="compose-audience"
+        compact
+      />
+    </View>
+  );
+}
+
+function CommunityScopeChips({
+  value,
+  onChange,
+  items,
+  testID,
+  disabled,
+  chipTestIdPrefix = 'scope',
+  compact,
+}: {
+  value: CommunityFeedScope;
+  onChange: (scope: CommunityFeedScope) => void;
+  items: { id: CommunityFeedScope; label: string }[];
+  testID?: string;
+  disabled?: boolean;
+  chipTestIdPrefix?: string;
+  compact?: boolean;
+}) {
+  return (
+    <View style={[styles.scopeRow, compact && styles.scopeRowCompact]} testID={testID}>
       {items.map((item) => {
         const active = value === item.id;
         return (
           <Pressable
             key={item.id}
-            testID={`scope-${item.id}`}
+            testID={`${chipTestIdPrefix}-${item.id}`}
             onPress={() => onChange(item.id)}
-            style={[styles.scopeChip, active && styles.scopeChipActive]}
+            disabled={disabled}
+            style={[styles.scopeChip, active && styles.scopeChipActive, disabled && styles.scopeChipDisabled]}
           >
             <Text style={[styles.scopeLabel, active && styles.scopeLabelActive]}>{item.label}</Text>
           </Pressable>
@@ -136,10 +198,28 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.primary[800],
   },
+  publishAudienceBlock: {
+    marginBottom: spacing[3],
+    gap: spacing[2],
+  },
+  publishAudienceTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.text.muted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
+  },
   scopeRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: spacing[2],
     marginBottom: spacing[4],
+  },
+  scopeRowCompact: {
+    marginBottom: 0,
+  },
+  scopeChipDisabled: {
+    opacity: 0.55,
   },
   scopeChip: {
     paddingHorizontal: spacing[4],

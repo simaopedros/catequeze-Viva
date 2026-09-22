@@ -26,6 +26,15 @@ export default function PostRoute() {
       busy={busy}
       viewerName={displayName(user)}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
+      onRepost={
+        post.data?.slug
+          ? () =>
+              router.push({
+                pathname: '/(app)/(tabs)/community',
+                params: { repostSlug: post.data!.slug! },
+              })
+          : undefined
+      }
       onReact={async (type) => {
         if (!post.data?.id) return;
         setBusy(true);

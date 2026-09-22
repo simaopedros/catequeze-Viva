@@ -1,5 +1,5 @@
 import { useNavigation } from 'expo-router';
-import { MoreVertical } from 'lucide-react-native';
+import { MoreVertical, Repeat2 } from 'lucide-react-native';
 import React, { useLayoutEffect, useState } from 'react';
 import {
   Alert,
@@ -17,7 +17,7 @@ import { PostCard } from '../components/PostCard';
 import { PostReactionStrip, type PastoralReactionId } from '../components/postReactionsUi';
 import { EmptyState, LoadingState, Screen } from '../components/ui';
 import { useKeyboardOffset } from '../hooks/useKeyboardOffset';
-import { colors, contentHorizontalPadding, spacing } from '../theme';
+import { colors, contentHorizontalPadding, radius, spacing } from '../theme';
 
 const REPORT_REASONS: { id: SocialReportReason; label: string }[] = [
   { id: 'DOCTRINE', label: 'Conteúdo doutrinário inadequado' },
@@ -48,6 +48,7 @@ export function PostDetailScreen({
   onReact,
   onComment,
   onReport,
+  onRepost,
 }: {
   post?: SocialPost | null;
   comments: SocialComment[];
@@ -60,6 +61,7 @@ export function PostDetailScreen({
   onReact: (type: PastoralReactionId) => void;
   onComment: (body: string) => Promise<void> | void;
   onReport?: (reason: SocialReportReason) => Promise<void> | void;
+  onRepost?: () => void;
 }) {
   const [body, setBody] = useState('');
   const [composerHeight, setComposerHeight] = useState(72);
@@ -140,6 +142,19 @@ export function PostDetailScreen({
             onReact={onReact}
           />
 
+          {onRepost ? (
+            <Pressable
+              testID="post-repost"
+              onPress={onRepost}
+              style={styles.repostButton}
+              accessibilityRole="button"
+              accessibilityLabel="Republicar na comunidade"
+            >
+              <Repeat2 size={18} color={colors.primary[800]} strokeWidth={2.2} />
+              <Text style={styles.repostLabel}>Republicar</Text>
+            </Pressable>
+          ) : null}
+
           <View style={styles.commentsSection} testID="post-comments-section">
             <Text style={styles.commentsTitle}>
               Comentários{comments.length > 0 ? ` · ${comments.length}` : ''}
@@ -212,6 +227,25 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.text.muted,
     marginBottom: spacing[3],
+  },
+  repostButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+    alignSelf: 'flex-start',
+    marginTop: spacing[2],
+    marginBottom: spacing[1],
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[3],
+    borderRadius: radius.pill,
+    backgroundColor: colors.primary[50],
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  repostLabel: {
+    color: colors.primary[800],
+    fontWeight: '600',
+    fontSize: 14,
   },
   commentsSection: {
     marginTop: spacing[1],

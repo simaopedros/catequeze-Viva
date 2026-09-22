@@ -40,14 +40,18 @@ describe('Community feed', () => {
     expect(view.getByText('Paz e bem, irmãos. A catequese começou.')).toBeTruthy();
     expect(view.getByTestId('post-p1')).toBeTruthy();
 
+    expect(view.getByTestId('compose-destination-collapsed')).toBeTruthy();
     fireEvent.press(view.getByTestId('compose-open-field'));
     expect(view.getByTestId('compose-input')).toBeTruthy();
+    expect(view.getByTestId('compose-audience-picker')).toBeTruthy();
     fireEvent.changeText(view.getByTestId('compose-input'), 'Nova mensagem pastoral');
     fireEvent.press(view.getByTestId('compose-publish'));
     expect(onPublishPost).toHaveBeenCalledWith({
       body: 'Nova mensagem pastoral',
       mediaIds: [],
       mediaConsentAck: false,
+      audience: 'all',
+      share: null,
     });
     fireEvent.press(view.getByTestId('community-link-action'));
     expect(onOpenLink).toHaveBeenCalled();

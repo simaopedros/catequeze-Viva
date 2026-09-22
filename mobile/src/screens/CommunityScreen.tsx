@@ -2,11 +2,13 @@ import React, { useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { InlineCommunityComposer } from '../components/InlineCommunityComposer';
 import { PostCard } from '../components/PostCard';
+import type { CommunityPublishAudience } from '../community/publishAudience';
 import {
   CommunityFeedScope,
   CommunityScopeFilters,
   CommunityScreenHeader,
 } from '../components/communityUi';
+import type { SocialShare } from '../api/types';
 import { EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
 import type { CommunityComposePayload, SocialAccess, SocialPost, SocialTopic } from '../api/types';
 import type { InlineComposeMediaConfig } from '../components/InlineCommunityComposer';
@@ -42,6 +44,15 @@ export function CommunityScreen({
   viewerAvatarUrl,
   showHub,
   onOpenArea,
+  parishName,
+  publishAudience,
+  onChangePublishAudience,
+  composerExpanded: composerExpandedProp,
+  onComposerExpandedChange,
+  repostPreview,
+  repostSourceId,
+  onClearRepost,
+  onRepost,
 }: {
   variant?: 'main' | 'nested';
   title?: string;
@@ -73,11 +84,29 @@ export function CommunityScreen({
   viewerAvatarUrl?: string | null;
   showHub?: boolean;
   onOpenArea?: (id: CommunityAreaId) => void;
+  parishName?: string | null;
+  publishAudience?: CommunityPublishAudience;
+  onChangePublishAudience?: (audience: CommunityPublishAudience) => void;
+  composerExpanded?: boolean;
+  onComposerExpandedChange?: (expanded: boolean) => void;
+  repostPreview?: SocialShare | null;
+  repostSourceId?: string | null;
+  onClearRepost?: () => void;
+  onRepost?: (slug: string) => void;
 }) {
   const { apiBaseUrl } = useAuth();
   const visiblePosts = useMemo(() => filterByScope(posts, feedScope), [posts, feedScope]);
   const canPublish = access?.canPublish !== false;
-  const [composerExpanded, setComposerExpanded] = useState(false);
+  const [composerExpandedInternal, setComposerExpandedInternal] = useState(false);
+  const composerExpanded = composerExpandedProp ?? composerExpandedInternal;
+  const setComposerExpanded = (value: boolean) => {
+    if (composerExpandedProp === undefined) {
+      setComposerExpandedInternal(value);
+    }
+    onComposerExpandedChange?.(value);
+  };
+  const audience = publishAudience ?? feedScope;
+  const setAudience = onChangePublishAudience ?? onChangeFeedScope;
 
   const useInlineComposer = variant === 'main' && Boolean(onPublishPost);
 
@@ -106,6 +135,12 @@ export function CommunityScreen({
               composeMedia={composeMedia}
               expanded={composerExpanded}
               onExpandedChange={setComposerExpanded}
+              publishAudience={audience}
+              onChangePublishAudience={setAudience}
+              parishName={parishName}
+              repostPreview={repostPreview}
+              repostSourceId={repostSourceId}
+              onClearRepost={onClearRepost}
             />
           ) : null}
 
@@ -128,6 +163,7 @@ export function CommunityScreen({
             post={post}
             onOpenAuthor={onOpenAuthor}
             onOpenPost={onOpenPost}
+            onRepost={onRepost && post.slug ? () => onRepost(post.slug!) : undefined}
             mediaBaseUrl={apiBaseUrl}
           />
         ))

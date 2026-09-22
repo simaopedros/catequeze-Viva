@@ -230,6 +230,7 @@ export function createMobileClient(options: MobileClientOptions) {
       share?: { kind: string; sourceId: string } | null;
       mediaIds?: string[];
       mediaConsentAck?: boolean;
+      parishId?: string | null;
     }) {
       return request<SocialPost>(MOBILE_PATHS.socialPosts, {
         method: 'POST',
