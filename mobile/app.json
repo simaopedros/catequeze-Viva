@@ -30,7 +30,8 @@
       "expo-secure-store",
       "expo-asset",
       "expo-font",
-      "expo-video"
+      "expo-video",
+      "react-native-keyboard-controller"
     ],
     "experiments": {
       "typedRoutes": false

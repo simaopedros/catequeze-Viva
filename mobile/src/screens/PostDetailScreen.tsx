@@ -10,13 +10,13 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { SocialAccess, SocialComment, SocialPost, SocialReportReason } from '../api/types';
 import { PostCommentComposer, PostCommentItem } from '../components/postCommentsUi';
 import { PostCard } from '../components/PostCard';
 import { PostReactionStrip, type PastoralReactionId } from '../components/postReactionsUi';
 import { EmptyState, LoadingState, Screen } from '../components/ui';
-import { useKeyboardOffset } from '../hooks/useKeyboardOffset';
 import { colors, contentHorizontalPadding, spacing } from '../theme';
 
 const REPORT_REASONS: { id: SocialReportReason; label: string }[] = [
@@ -65,12 +65,10 @@ export function PostDetailScreen({
   const [composerHeight, setComposerHeight] = useState(72);
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
-  const keyboardOffset = useKeyboardOffset();
   const { width } = useWindowDimensions();
   const horizontal = contentHorizontalPadding(width);
   const canComment = !access || access.canPublish;
-  const scrollBottomInset =
-    composerHeight + spacing[4] + (keyboardOffset > 0 ? keyboardOffset : insets.bottom);
+  const scrollBottomInset = composerHeight + spacing[4];
 
   useLayoutEffect(() => {
     if (!post) return;
@@ -118,8 +116,8 @@ export function PostDetailScreen({
   };
 
   return (
-    <SafeAreaView testID="post-screen" style={styles.root} edges={['left', 'right', 'bottom']}>
-      <View style={styles.flex}>
+    <SafeAreaView testID="post-screen" style={styles.root} edges={['left', 'right']}>
+      <KeyboardAvoidingView behavior="padding" style={styles.flex} automaticOffset keyboardVerticalOffset={spacing[2]}>
         <ScrollView
           style={styles.flex}
           contentContainerStyle={[
@@ -174,7 +172,7 @@ export function PostDetailScreen({
             styles.composerBar,
             {
               paddingHorizontal: horizontal,
-              bottom: keyboardOffset,
+              paddingBottom: Math.max(insets.bottom, spacing[2]),
             },
           ]}
         >
@@ -188,7 +186,7 @@ export function PostDetailScreen({
             variant="footer"
           />
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -242,13 +240,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing[3],
   },
   composerBar: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
     backgroundColor: colors.canvas,
     paddingTop: spacing[2],
-    paddingBottom: spacing[2],
   },
 });

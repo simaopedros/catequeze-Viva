@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react';
 import { Dimensions, Keyboard, type KeyboardEvent, Platform } from 'react-native';
 
 function offsetFromKeyboardEvent(event: KeyboardEvent): number {
+  const { height, screenY } = event.endCoordinates;
+  const screenHeight = Dimensions.get('screen').height;
   const windowHeight = Dimensions.get('window').height;
-  const { screenY } = event.endCoordinates;
-  return Math.max(0, windowHeight - screenY);
+  const fromScreen = Math.max(0, screenHeight - screenY);
+  const fromWindow = Math.max(0, windowHeight - screenY);
+  return Math.max(height, fromScreen, fromWindow);
 }
 
 /**

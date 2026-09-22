@@ -2,6 +2,7 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { AuthProvider, useAuth } from '../src/auth/AuthContext';
 import { colors } from '../src/theme';
 
@@ -35,24 +36,26 @@ function Gate({ children }: { children: React.ReactNode }) {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <StatusBar style="dark" />
-      <Gate>
-        <Stack
-          screenOptions={{
-            headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.primary[800],
-            headerTitleStyle: { fontWeight: '700', color: colors.text.primary },
-            contentStyle: { backgroundColor: colors.canvas },
-          }}
-        >
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="two-factor" options={{ title: 'Verificação' }} />
-          <Stack.Screen name="forgot-password" options={{ title: 'Recuperar senha' }} />
-          <Stack.Screen name="(app)" options={{ headerShown: false }} />
-        </Stack>
-      </Gate>
-    </AuthProvider>
+    <KeyboardProvider>
+      <AuthProvider>
+        <StatusBar style="dark" />
+        <Gate>
+          <Stack
+            screenOptions={{
+              headerStyle: { backgroundColor: colors.surface },
+              headerTintColor: colors.primary[800],
+              headerTitleStyle: { fontWeight: '700', color: colors.text.primary },
+              contentStyle: { backgroundColor: colors.canvas },
+            }}
+          >
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="login" options={{ headerShown: false }} />
+            <Stack.Screen name="two-factor" options={{ title: 'Verificação' }} />
+            <Stack.Screen name="forgot-password" options={{ title: 'Recuperar senha' }} />
+            <Stack.Screen name="(app)" options={{ headerShown: false }} />
+          </Stack>
+        </Gate>
+      </AuthProvider>
+    </KeyboardProvider>
   );
 }
