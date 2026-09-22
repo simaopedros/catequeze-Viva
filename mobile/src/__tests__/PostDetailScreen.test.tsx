@@ -1,6 +1,15 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PostDetailScreen } from '../screens/PostDetailScreen';
+
+function renderPostDetail(ui: React.ReactElement) {
+  return render(
+    <SafeAreaProvider initialMetrics={{ frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 44, bottom: 34, left: 0, right: 0 } }}>
+      {ui}
+    </SafeAreaProvider>,
+  );
+}
 
 jest.mock('expo-router', () => ({
   useNavigation: () => ({ setOptions: jest.fn() }),
@@ -20,7 +29,7 @@ const post = {
 describe('PostDetailScreen', () => {
   it('focuses on post content with a single pastoral reaction strip', () => {
     const onReact = jest.fn();
-    const view = render(
+    const view = renderPostDetail(
       <PostDetailScreen
         post={post}
         comments={[]}

@@ -22,7 +22,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#071d36"
       },
-      "package": "app.catechis.mobile"
+      "package": "app.catechis.mobile",
+      "softwareKeyboardLayoutMode": "resize"
     },
     "plugins": [
       "expo-router",

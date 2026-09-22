@@ -13,6 +13,7 @@ export function PostCommentComposer({
   disabled,
   viewerName,
   testID = 'comment-input',
+  variant = 'inline',
 }: {
   value: string;
   onChangeText: (text: string) => void;
@@ -21,11 +22,16 @@ export function PostCommentComposer({
   disabled?: boolean;
   viewerName?: string;
   testID?: string;
+  /** `footer` = barra fixa acima do teclado (sem margem inferior extra). */
+  variant?: 'inline' | 'footer';
 }) {
   const canSend = !disabled && !busy && value.trim().length > 0;
 
   return (
-    <View style={styles.composerRow} testID="post-comment-composer">
+    <View
+      style={[styles.composerRow, variant === 'footer' && styles.composerRowFooter]}
+      testID="post-comment-composer"
+    >
       <Avatar name={viewerName || 'Eu'} size={36} />
       <View style={styles.composerField}>
         <TextInput
@@ -86,6 +92,10 @@ const styles = StyleSheet.create({
     gap: spacing[2],
     marginBottom: spacing[4],
     paddingVertical: spacing[2],
+  },
+  composerRowFooter: {
+    marginBottom: 0,
+    paddingVertical: spacing[1],
   },
   composerField: {
     flex: 1,
