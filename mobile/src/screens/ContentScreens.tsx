@@ -1,10 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import {
   Card,
   EmptyState,
   ErrorState,
-  FilterChip,
   ListRow,
   LoadingState,
   PrimaryButton,
@@ -22,94 +21,6 @@ const CATECHISM_PARTS = [
   { key: 'VIRTUDES', title: 'As Virtudes' },
   { key: 'PECADO', title: 'O Pecado' },
 ];
-
-function startOfMonth(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth(), 1);
-}
-
-function daysInMonth(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-}
-
-export function CalendarScreen({
-  items,
-  loading,
-  error,
-  onOpenMeeting,
-}: {
-  items: any[];
-  loading?: boolean;
-  error?: string | null;
-  onOpenMeeting: (meetingId: string) => void;
-}) {
-  const [month, setMonth] = useState(startOfMonth(new Date()));
-  const [selectedDay, setSelectedDay] = useState(new Date().getDate());
-
-  const monthLabel = month.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-  const totalDays = daysInMonth(month);
-  const dayItems = useMemo(() => {
-    return items.filter((item) => {
-      const d = new Date(item.date);
-      return (
-        d.getFullYear() === month.getFullYear() &&
-        d.getMonth() === month.getMonth() &&
-        d.getDate() === selectedDay
-      );
-    });
-  }, [items, month, selectedDay]);
-
-  return (
-    <Screen testID="calendar-screen">
-      <ScreenTitle title="Agenda" subtitle="Encontros da turma e o calendário litúrgico." />
-      {loading ? <LoadingState /> : null}
-      {error ? <ErrorState title="Agenda indisponível" /> : null}
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing[4] }}>
-        <Pressable onPress={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}>
-          <Text style={{ fontSize: 22, color: colors.primary[800] }}>‹</Text>
-        </Pressable>
-        <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text.primary, textTransform: 'capitalize' }}>{monthLabel}</Text>
-        <Pressable onPress={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}>
-          <Text style={{ fontSize: 22, color: colors.primary[800] }}>›</Text>
-        </Pressable>
-      </View>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: spacing[4] }}>
-        {Array.from({ length: totalDays }, (_, i) => i + 1).map((day) => {
-          const active = day === selectedDay;
-          const hasItem = items.some((item) => {
-            const d = new Date(item.date);
-            return d.getFullYear() === month.getFullYear() && d.getMonth() === month.getMonth() && d.getDate() === day;
-          });
-          return (
-            <Pressable
-              key={day}
-              onPress={() => setSelectedDay(day)}
-              style={{
-                width: 42,
-                height: 42,
-                borderRadius: 21,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: active ? colors.primary[800] : 'transparent',
-              }}
-            >
-              <Text style={{ color: active ? colors.white : colors.text.primary, fontWeight: '600' }}>{day}</Text>
-              {hasItem ? <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: colors.accent[500], marginTop: 2 }} /> : null}
-            </Pressable>
-          );
-        })}
-      </View>
-      {dayItems.length === 0 ? <EmptyState title="Dia livre" /> : null}
-      {dayItems.map((item) => (
-        <ListRow
-          key={`${item.kind}-${item.id}`}
-          title={item.title}
-          subtitle={item.kind === 'meeting' ? 'Encontro' : 'Liturgia'}
-          onPress={item.clickable && item.meetingId ? () => onOpenMeeting(item.meetingId) : undefined}
-        />
-      ))}
-    </Screen>
-  );
-}
 
 export function AnnouncementsScreen({
   rows,

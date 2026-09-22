@@ -51,6 +51,8 @@ export const MOBILE_PATHS = {
   bibleChapter: (bookId: string, chapter: number) =>
     `/mobile/bible/books/${encodeURIComponent(bookId)}/chapters/${chapter}`,
   calendar: '/mobile/calendar',
+  calendarEvents: '/mobile/calendar/events',
+  calendarEvent: (id: string) => `/mobile/calendar/events/${encodeURIComponent(id)}`,
   announcements: '/mobile/announcements',
   announcementDetails: (id: string) => `/mobile/announcements/${encodeURIComponent(id)}`,
   acknowledgeAnnouncement: (id: string) => `/mobile/announcements/${encodeURIComponent(id)}/acknowledge`,

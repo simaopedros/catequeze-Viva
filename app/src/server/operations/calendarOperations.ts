@@ -172,6 +172,80 @@ export const createLiturgicalEvent = async (
   });
 };
 
+export const updateLiturgicalEvent = async (
+  args: {
+    id: string;
+    name?: string;
+    date?: string;
+    description?: string;
+    endDate?: string;
+    color?: string;
+    type?: string;
+  },
+  context: any,
+) => {
+  if (!context.user) throw new HttpError(401);
+
+  const event = await context.entities.LiturgicalEvent.findUnique({
+    where: { id: args.id },
+  });
+  if (!event) throw new HttpError(404, "Evento nao encontrado.");
+
+  const { assertStaffOperation } = await import("../auth/familySurface");
+  await assertStaffOperation(context, {
+    parishId: event.parishId,
+    message: "Apenas a equipe pastoral pode editar eventos no calendário.",
+  });
+
+  const actor = await resolveActorForResource(context, event);
+  const policy = (event.inheritancePolicy ||
+    "REQUIRED_EXTENDABLE") as InheritancePolicy;
+  const ownerType = (event.ownerType || "PARISH") as ResourceOwnerType;
+  if (
+    !canEditResource({
+      role: actor.role,
+      actorOwnerType: actor.ownerType,
+      resourceOwnerType: ownerType,
+      policy,
+      isPlatformAdmin: actor.isPlatformAdmin,
+    })
+  ) {
+    throw new HttpError(
+      403,
+      "Eventos herdados não podem ser editados neste nível.",
+    );
+  }
+
+  const data: Record<string, unknown> = {};
+  if (typeof args.name === "string" && args.name.trim()) {
+    data.name = args.name.trim();
+  }
+  if (args.date) {
+    data.date = new Date(args.date);
+  }
+  if (args.description !== undefined) {
+    data.description = args.description || null;
+  }
+  if (args.endDate !== undefined) {
+    data.endDate = args.endDate ? new Date(args.endDate) : null;
+  }
+  if (args.color) {
+    data.color = args.color;
+  }
+  if (args.type) {
+    data.type = args.type;
+  }
+
+  if (Object.keys(data).length === 0) {
+    throw new HttpError(400, "Nenhum campo para atualizar.");
+  }
+
+  return context.entities.LiturgicalEvent.update({
+    where: { id: args.id },
+    data,
+  });
+};
+
 export const deleteLiturgicalEvent = async (
   args: { id: string },
   context: any,

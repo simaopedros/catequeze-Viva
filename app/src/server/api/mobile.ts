@@ -23,10 +23,17 @@ import {
   getMeetingAttendanceSheet,
   listMeetingsForClasses,
   createMeeting,
+  updateMeeting,
+  deleteMeeting,
 } from '../operations/meetingOperations';
 import { listDocuments } from '../operations/documentOperations';
 import { listConversations, getConversation, sendMessage } from '../operations/conversationOperations';
-import { listLiturgicalEvents } from '../operations/calendarOperations';
+import {
+  createLiturgicalEvent,
+  deleteLiturgicalEvent,
+  listLiturgicalEvents,
+  updateLiturgicalEvent,
+} from '../operations/calendarOperations';
 import {
   listPastoralAnnouncements,
   acknowledgePastoralAnnouncement,
@@ -605,12 +612,23 @@ function unwrapListPayload(payload: any): any[] {
   return [];
 }
 
+async function mobileCanWriteCalendar(opCtx: any, workspaceId?: string): Promise<boolean> {
+  try {
+    const { assertStaffOperation } = await import('../auth/familySurface');
+    await assertStaffOperation(opCtx, { parishId: workspaceId });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function mobileCalendar(req: Request, res: Response, context: any) {
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
   const workspaceId = parseOptionalString(req.query.workspaceId);
   const from = parseDateOnly(req.query.from);
   const to = parseDateOnly(req.query.to);
+  const canWriteEvents = await mobileCanWriteCalendar(opCtx, workspaceId);
 
   const classesPayload = await listClasses(
     { workspaceId, take: 200, paginated: false },
@@ -644,18 +662,86 @@ export async function mobileCalendar(req: Request, res: Response, context: any) 
       date: meeting.date,
       startsAt: meeting.startsAt ?? meeting.date,
       clickable: true,
+      editable: canWriteEvents,
     })),
     ...liturgical.map((event: any) => ({
       kind: 'liturgy' as const,
       id: event.id,
       title: event.title || event.name || 'Liturgia',
+      description: event.description ?? null,
       date: event.date,
       startsAt: event.startsAt ?? event.date,
       clickable: false,
+      editable: canWriteEvents,
     })),
   ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  return res.json({ items });
+  return res.json({ items, canWriteEvents });
+}
+
+export async function mobileCreateCalendarEvent(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const body = req.body ?? {};
+  const workspaceId =
+    parseOptionalString(body.workspaceId) ?? parseOptionalString(req.query.workspaceId);
+  const name = parseOptionalString(body.name);
+  const date = parseOptionalString(body.date);
+  if (!name || !date) {
+    throw new HttpError(400, 'Informe nome e data do evento.');
+  }
+  const created = await createLiturgicalEvent(
+    {
+      name,
+      date,
+      description: parseOptionalString(body.description),
+      workspaceId,
+      parishId: workspaceId,
+      type: parseOptionalString(body.type),
+      color: parseOptionalString(body.color),
+    },
+    opCtx,
+  );
+  return res.json(created);
+}
+
+export async function mobileUpdateCalendarEvent(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const id = parseRequiredString(req.params.id, 'id');
+  const body = req.body ?? {};
+  const updated = await updateLiturgicalEvent(
+    {
+      id,
+      name: parseOptionalString(body.name),
+      date: parseOptionalString(body.date),
+      description: body.description === null ? '' : parseOptionalString(body.description),
+    },
+    opCtx,
+  );
+  return res.json(updated);
+}
+
+export async function mobileDeleteCalendarEvent(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const id = parseRequiredString(req.params.id, 'id');
+  await deleteLiturgicalEvent({ id }, opCtx);
+  return res.json({ ok: true });
+}
+
+export async function mobileUpdateMeeting(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const id = parseRequiredString(req.params.id, 'id');
+  return res.json(await updateMeeting({ id, ...(req.body ?? {}) }, opCtx));
+}
+
+export async function mobileDeleteMeeting(req: Request, res: Response, context: any) {
+  const opCtx = toOperationContext(context);
+  await requireMobileSessionVerification(opCtx);
+  const id = parseRequiredString(req.params.id, 'id');
+  return res.json(await deleteMeeting({ id }, opCtx));
 }
 
 export async function mobileAnnouncements(req: Request, res: Response, context: any) {

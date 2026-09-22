@@ -355,9 +355,48 @@ export function createMobileClient(options: MobileClientOptions) {
       return request<any>(MOBILE_PATHS.familyDetails(id));
     },
     calendar(workspaceId?: string, from?: string, to?: string) {
-      return request<{ items: any[] }>(
+      return request<{ items: any[]; canWriteEvents?: boolean }>(
         withQuery(MOBILE_PATHS.calendar, { workspaceId, from, to }),
       );
+    },
+    createCalendarEvent(body: {
+      name: string;
+      date: string;
+      description?: string;
+      workspaceId?: string;
+    }) {
+      return request<any>(MOBILE_PATHS.calendarEvents, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    updateCalendarEvent(
+      id: string,
+      body: { name?: string; date?: string; description?: string },
+    ) {
+      return request<any>(MOBILE_PATHS.calendarEvent(id), {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+      });
+    },
+    deleteCalendarEvent(id: string) {
+      return request<{ ok: boolean }>(MOBILE_PATHS.calendarEvent(id), {
+        method: 'DELETE',
+      });
+    },
+    updateMeeting(
+      id: string,
+      body: { title?: string; theme?: string; date?: string; notes?: string },
+    ) {
+      return request<any>(MOBILE_PATHS.meetingDetails(id), {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+      });
+    },
+    deleteMeeting(id: string) {
+      return request<{ success: boolean }>(MOBILE_PATHS.meetingDetails(id), {
+        method: 'DELETE',
+      });
     },
     announcements(workspaceId?: string) {
       return request<any[]>(withQuery(MOBILE_PATHS.announcements, { workspaceId }));
