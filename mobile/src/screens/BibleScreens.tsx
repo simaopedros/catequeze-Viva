@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, Text } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, Card, EmptyState, ListRow, LoadingState, Screen, ScreenIntro, ScreenTitle } from '../components/ui';
 import type { BibleBook, BibleChapter } from '../api/types';
 import { colors } from '../theme';
 
@@ -17,16 +17,17 @@ export function BibleBooksScreen({
 }) {
   return (
     <Screen testID="bible-books-screen">
-      <ScreenTitle title="Bíblia" subtitle="Leia e partilhe um versículo na Comunidade." />
+      <ScreenIntro text="Leia e partilhe um versículo na Comunidade." />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Bíblia indisponível" body={error} /> : null}
       {books.map((book) => (
-        <Pressable key={book.id} onPress={() => onOpen(book.id)} testID={`bible-book-${book.id}`}>
-          <Card>
-            <Text style={{ color: colors.text.primary, fontWeight: '700' }}>{book.name}</Text>
-            <Text style={{ color: colors.text.muted }}>{book.testament || ''}</Text>
-          </Card>
-        </Pressable>
+        <ListRow
+          key={book.id}
+          testID={`bible-book-${book.id}`}
+          title={book.name}
+          subtitle={book.testament || undefined}
+          onPress={() => onOpen(book.id)}
+        />
       ))}
     </Screen>
   );

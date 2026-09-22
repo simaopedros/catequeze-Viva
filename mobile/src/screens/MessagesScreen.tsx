@@ -1,6 +1,6 @@
 import React from 'react';
 import { ConversationRow } from '../components/pastoralUi';
-import { EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { EmptyState, LoadingState, Screen, ScreenIntro } from '../components/ui';
 
 function asConversations(payload: any) {
   if (Array.isArray(payload)) return payload;
@@ -13,20 +13,24 @@ export function MessagesScreen({
   payload,
   loading,
   error,
+  refreshing,
   onOpen,
+  onRefresh,
 }: {
   payload: any;
   loading?: boolean;
   error?: string | null;
+  refreshing?: boolean;
   onOpen: (id: string) => void;
+  onRefresh?: () => void;
 }) {
   const items = asConversations(payload);
   return (
-    <Screen testID="messages-screen">
-      <ScreenTitle title="Mensagens" subtitle="Conversas da paróquia e das turmas." />
-      {loading ? <LoadingState /> : null}
+    <Screen testID="messages-screen" onRefresh={onRefresh} refreshing={refreshing}>
+      <ScreenIntro text="Conversas da paróquia e das turmas." />
+      {loading && items.length === 0 ? <LoadingState /> : null}
       {error ? <EmptyState title="Mensagens indisponíveis" body={error} /> : null}
-      {items.length === 0 && !loading ? (
+      {items.length === 0 && !loading && !error ? (
         <EmptyState title="Caixa vazia" body="Quando alguém escrever, a conversa aparece aqui." />
       ) : (
         items.map((item: any) => (

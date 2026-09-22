@@ -8,10 +8,11 @@ import {
   LoadingState,
   PrimaryButton,
   Screen,
+  ScreenIntro,
   ScreenTitle,
   SearchInput,
 } from '../components/ui';
-import { colors, spacing } from '../theme';
+import { colors, spacing, typography } from '../theme';
 
 const CATECHISM_PARTS = [
   { key: 'CREDO', title: 'O Credo' },
@@ -26,29 +27,30 @@ export function AnnouncementsScreen({
   rows,
   loading,
   error,
+  refreshing,
   onOpen,
+  onRefresh,
 }: {
   rows: any[];
   loading?: boolean;
   error?: string | null;
+  refreshing?: boolean;
   onOpen: (id: string) => void;
+  onRefresh?: () => void;
 }) {
   return (
-    <Screen>
-      <ScreenTitle title="Comunicados" subtitle="Avisos da paróquia." />
-      {loading ? <LoadingState /> : null}
+    <Screen onRefresh={onRefresh} refreshing={refreshing}>
+      <ScreenIntro text="Avisos da paróquia." />
+      {loading && rows.length === 0 ? <LoadingState /> : null}
       {error ? <ErrorState title="Comunicados indisponíveis" /> : null}
       {!loading && !error && rows.length === 0 ? <EmptyState title="Nenhum comunicado" /> : null}
       {rows.map((row) => (
-        <Card key={row.id}>
-          <Pressable onPress={() => onOpen(row.id)}>
-            <Text style={{ fontWeight: '700', fontSize: 17, color: colors.text.primary }}>{row.title}</Text>
-            <Text style={{ color: colors.text.muted, marginTop: 4 }} numberOfLines={2}>{row.bodyPreview}</Text>
-            <Text style={{ marginTop: 8, fontSize: 13, color: row.acknowledged ? colors.success : colors.accent[700] }}>
-              {row.acknowledged ? 'Leitura confirmada' : 'Aguardando confirmação'}
-            </Text>
-          </Pressable>
-        </Card>
+        <ListRow
+          key={row.id}
+          title={row.title}
+          subtitle={row.acknowledged ? 'Leitura confirmada' : 'Aguardando confirmação · toque para abrir'}
+          onPress={() => onOpen(row.id)}
+        />
       ))}
     </Screen>
   );
@@ -72,7 +74,7 @@ export function AnnouncementDetailScreen({
 
   return (
     <Screen>
-      <ScreenTitle title={item.title} />
+      <Text style={{ ...typography.headingMd, color: colors.text.primary, marginBottom: spacing[3] }}>{item.title}</Text>
       <Text style={{ fontSize: 16, lineHeight: 24, color: colors.text.secondary }}>{item.body}</Text>
       {item.requireAck && !item.acknowledged ? (
         <PrimaryButton label={busy ? 'Confirmando…' : 'Confirmar leitura'} onPress={onAcknowledge} loading={busy} variant="accent" />
@@ -87,17 +89,21 @@ export function JourneysScreen({
   rows,
   loading,
   error,
+  refreshing,
   onOpen,
+  onRefresh,
 }: {
   rows: any[];
   loading?: boolean;
   error?: string | null;
+  refreshing?: boolean;
   onOpen: (id: string) => void;
+  onRefresh?: () => void;
 }) {
   return (
-    <Screen>
-      <ScreenTitle title="Jornadas" subtitle="Marcos sacramentais." />
-      {loading ? <LoadingState /> : null}
+    <Screen onRefresh={onRefresh} refreshing={refreshing}>
+      <ScreenIntro text="Marcos sacramentais dos catequizandos." />
+      {loading && rows.length === 0 ? <LoadingState /> : null}
       {error ? <ErrorState title="Jornadas indisponíveis" /> : null}
       {!loading && !error && rows.length === 0 ? (
         <EmptyState title="Sem jornadas. Quando uma jornada for aberta na web, ela aparece aqui." />
@@ -170,7 +176,7 @@ export function CatechismHomeScreen({
 
   return (
     <Screen testID="catechism-screen">
-      <ScreenTitle title="Catecismo" subtitle="Seis partes da fé." />
+      <ScreenIntro text="Seis partes da fé." />
       <SearchInput placeholder="Buscar no catecismo" value={query} onChangeText={setQuery} />
       <PrimaryButton label="Buscar" variant="secondary" onPress={() => onSearch(query)} loading={searching} />
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing[3], marginTop: spacing[4] }}>

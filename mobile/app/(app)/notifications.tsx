@@ -12,6 +12,8 @@ export default function NotificationsRoute() {
       payload={data}
       loading={loading}
       error={error}
+      refreshing={loading}
+      onRefresh={() => void reload()}
       onRead={async (id) => {
         await api.markNotificationRead(id);
         await reload();

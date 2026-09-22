@@ -7,13 +7,15 @@ import { AnnouncementsScreen } from '../../../src/screens/ContentScreens';
 export default function AnnouncementsRoute() {
   const { api, workspaceId } = useAuth();
   const router = useRouter();
-  const { data, loading, error } = useAsync(() => api.announcements(workspaceId || undefined), [workspaceId]);
+  const { data, loading, error, reload } = useAsync(() => api.announcements(workspaceId || undefined), [workspaceId]);
 
   return (
     <AnnouncementsScreen
       rows={data ?? []}
       loading={loading}
       error={error}
+      refreshing={loading}
+      onRefresh={() => void reload()}
       onOpen={(id) => router.push(`/(app)/announcements/${id}`)}
     />
   );

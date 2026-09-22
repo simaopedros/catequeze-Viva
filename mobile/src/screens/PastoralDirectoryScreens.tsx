@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { Text } from 'react-native';
 import {
   DetailRow,
   EmptyState,
@@ -6,20 +7,25 @@ import {
   ListRow,
   LoadingState,
   Screen,
-  ScreenTitle,
+  ScreenIntro,
   SearchInput,
 } from '../components/ui';
+import { colors, spacing, typography } from '../theme';
 
 export function FamiliesScreen({
   rows,
   loading,
   error,
+  refreshing,
   onOpen,
+  onRefresh,
 }: {
   rows: any[];
   loading?: boolean;
   error?: string | null;
+  refreshing?: boolean;
   onOpen: (id: string) => void;
+  onRefresh?: () => void;
 }) {
   const [query, setQuery] = useState('');
   const filtered = useMemo(() => {
@@ -29,10 +35,10 @@ export function FamiliesScreen({
   }, [query, rows]);
 
   return (
-    <Screen testID="families-screen">
-      <ScreenTitle title="Famílias" subtitle="Agregados e contactos." />
+    <Screen testID="families-screen" onRefresh={onRefresh} refreshing={refreshing}>
+      <ScreenIntro text="Agregados e contactos." />
       <SearchInput placeholder="Buscar por nome" value={query} onChangeText={setQuery} />
-      {loading ? <LoadingState /> : null}
+      {loading && filtered.length === 0 && rows.length === 0 ? <LoadingState /> : null}
       {error ? <ErrorState title="Lista indisponível" /> : null}
       {!loading && !error && filtered.length === 0 ? <EmptyState title="Ninguém por aqui" /> : null}
       {filtered.map((row) => (
@@ -55,7 +61,9 @@ export function FamilyDetailScreen({ household, loading, error }: { household: a
 
   return (
     <Screen>
-      <ScreenTitle title="Família" subtitle={household.name} />
+      <Text style={{ ...typography.headingMd, color: colors.text.primary, marginBottom: spacing[3] }}>
+        {household.name || 'Família'}
+      </Text>
       {household.parish?.name ? <DetailRow label="Paróquia" value={household.parish.name} /> : null}
       {household.phone ? <DetailRow label="Telefone" value={household.phone} /> : null}
       {household.notes ? <DetailRow label="Notas" value={household.notes} /> : null}

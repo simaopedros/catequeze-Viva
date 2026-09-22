@@ -28,7 +28,7 @@ describe('AttendanceScreen', () => {
     expect(view.getByTestId('attendance-stats')).toBeTruthy();
     expect(view.getByTestId('attendance-search')).toBeTruthy();
     expect(view.getByPlaceholderText('Buscar catequizando...')).toBeTruthy();
-    expect(view.getByTestId('attendance-save')).toHaveTextContent('Salvar presenças');
+    expect(view.getByTestId('attendance-save')).toHaveTextContent('Guardar presenças');
     expect(view.getByText('Ana Silva')).toBeTruthy();
     fireEvent.changeText(view.getByPlaceholderText('Buscar catequizando...'), 'Carla');
     expect(view.getByText('Carla Oliveira')).toBeTruthy();

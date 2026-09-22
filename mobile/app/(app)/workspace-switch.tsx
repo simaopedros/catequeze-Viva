@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { listWorkspaces, useAuth } from '../../src/auth/AuthContext';
-import { Screen, ScreenTitle } from '../../src/components/ui';
+import { Screen, ScreenIntro } from '../../src/components/ui';
 import { colors, spacing } from '../../src/theme';
 
 export default function WorkspaceSwitchRoute() {
@@ -10,10 +10,7 @@ export default function WorkspaceSwitchRoute() {
 
   return (
     <Screen testID="workspace-switch-screen">
-      <ScreenTitle
-        title="Trocar de espaço"
-        subtitle="Escolha a paróquia ou comunidade que deseja gerir neste dispositivo."
-      />
+      <ScreenIntro text="Escolha a paróquia ou comunidade que deseja gerir neste dispositivo." />
       {workspaces.map((workspace) => {
         const active = workspace.id === workspaceId;
         return (

@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable, Text } from 'react-native';
 import type { SocialSearch } from '../api/types';
 import { PostCard } from '../components/PostCard';
-import { Card, EmptyState, Field, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { Card, EmptyState, Field, LoadingState, Screen, ScreenIntro } from '../components/ui';
 import { colors, spacing } from '../theme';
 
 export function SearchScreen({
@@ -28,7 +28,7 @@ export function SearchScreen({
 
   return (
     <Screen testID="search-screen">
-      <ScreenTitle title="Pesquisar" subtitle="Encontre catequistas, tópicos e publicações da Comunidade." />
+      <ScreenIntro text="Encontre catequistas, tópicos e publicações da Comunidade." />
       <Field label="Pesquisar" value={query} onChangeText={onChangeQuery} testID="search-input" />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Pesquisa indisponível" body={error} /> : null}

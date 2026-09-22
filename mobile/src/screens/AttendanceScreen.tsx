@@ -155,7 +155,7 @@ export function AttendanceScreen({
 
       <View style={[styles.footer, { paddingHorizontal: horizontal }]}>
         <AttendanceSaveButton
-          label={saving ? 'Salvando…' : dirtyCount > 0 ? `Salvar presenças (${dirtyCount})` : 'Salvar presenças'}
+          label={saving ? 'A guardar…' : dirtyCount > 0 ? `Guardar presenças (${dirtyCount})` : 'Guardar presenças'}
           onPress={() => void handleSave()}
           testID="attendance-save"
           disabled={saving}

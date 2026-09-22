@@ -92,6 +92,11 @@ export function ScreenTitle({ title, subtitle }: { title: string; subtitle?: str
   );
 }
 
+/** Texto de contexto quando o título já aparece no header da navegação. */
+export function ScreenIntro({ text }: { text: string }) {
+  return <Text style={[styles.subtitle, { marginBottom: spacing[4] }]}>{text}</Text>;
+}
+
 export function SectionHeader({
   title,
   actionLabel,

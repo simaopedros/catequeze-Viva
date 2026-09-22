@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrandButton, ErrorText, Field, Screen, ScreenTitle } from '../components/ui';
+import { BrandButton, ErrorText, Field, Screen, ScreenIntro } from '../components/ui';
 import { ShareCard } from '../components/PostCard';
 import type { SocialShare } from '../api/types';
 
@@ -26,9 +26,8 @@ export function ComposeScreen({
 
   return (
     <Screen testID="compose-screen">
-      <ScreenTitle
-        title="Nova publicação"
-        subtitle={
+      <ScreenIntro
+        text={
           accessLoading
             ? 'A verificar se a sua conta pode publicar…'
             : canPublish
