@@ -419,7 +419,17 @@ export async function mobileClassDetails(req: Request, res: Response, context: a
 export async function mobileCatechumens(req: Request, res: Response, context: any) {
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
-  return res.json(await listCatechumens(undefined as void, opCtx));
+  const workspaceId = parseOptionalString(req.query.workspaceId);
+  return res.json(
+    await listCatechumens(
+      {
+        workspaceId,
+        take: parseOptionalInt(req.query.take, 100),
+        search: parseOptionalString(req.query.search),
+      },
+      opCtx,
+    ),
+  );
 }
 
 export async function mobileCatechumenDetails(req: Request, res: Response, context: any) {

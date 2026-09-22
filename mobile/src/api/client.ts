@@ -341,8 +341,8 @@ export function createMobileClient(options: MobileClientOptions) {
     bibleChapter(bookId: string, chapter: number, locale = 'pt-BR') {
       return request<BibleChapter>(withQuery(MOBILE_PATHS.bibleChapter(bookId, chapter), { locale }));
     },
-    catechumens() {
-      return request<any>(MOBILE_PATHS.catechumens);
+    catechumens(workspaceId?: string, search?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.catechumens, { workspaceId, take: 100, search }));
     },
     catechumenDetails(id: string) {
       return request<any>(MOBILE_PATHS.catechumenDetails(id));

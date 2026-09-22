@@ -91,8 +91,12 @@ describe('mobile HTTP client', () => {
     await client.bibleBook('gn');
     await client.bibleChapter('gn', 1);
     await client.saveAttendance({ meetingId: 'm1', catechumenProfileId: 'c1', status: 'PRESENT' });
+    await client.catechumens('parish-sj', 'ana');
 
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialAccess);
+    expect(urls).toContain(
+      'http://localhost:3001' + MOBILE_PATHS.catechumens + '?workspaceId=parish-sj&take=100&search=ana',
+    );
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialProfile('ana'));
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.bibleChapter('gn', 1) + '?locale=pt-BR');
     expect(urls).toContain('http://localhost:3001' + MOBILE_PATHS.socialPulse + '?memberLimit=40');
