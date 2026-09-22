@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   BookOpen,
   Cake,
   ChevronRight,
@@ -243,8 +244,8 @@ function alertVisual(type?: string, message?: string) {
   if (lower.includes('mensagem') || lower.includes('message')) {
     return { Icon: MessageCircle, bg: '#F0E9F8', color: '#6B3FA0' };
   }
-  if (type === 'warning') {
-    return { Icon: MessageCircle, bg: '#FFF3DF', color: colors.warning };
+  if (type === 'warning' || lower.includes('presença') || lower.includes('presenca') || lower.includes('chamada')) {
+    return { Icon: AlertTriangle, bg: colors.warningBg, color: colors.warning };
   }
   return { Icon: MessageCircle, bg: '#EAF3FA', color: colors.info };
 }

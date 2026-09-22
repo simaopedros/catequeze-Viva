@@ -50,7 +50,7 @@ export default function HomeRoute() {
       onOpenSacraments={() => router.push(appRoutes.journeys)}
       onOpenAlert={(alert) => {
         const target = resolveHomeAlertTarget(alert, {
-          todayMeetingId: pickAttendanceMeetingIdFromDashboard(data),
+          todayMeetingId: alert.meetingId ?? pickAttendanceMeetingIdFromDashboard(data),
         });
         if (!target) return;
         if (target.screen === 'messages') router.push(appRoutes.messages);

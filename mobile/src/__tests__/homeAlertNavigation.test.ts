@@ -18,4 +18,23 @@ describe('resolveHomeAlertTarget', () => {
       resolveHomeAlertTarget({ type: 'warning', message: 'Presença média baixa' }, { todayMeetingId: 'm1' }),
     ).toEqual({ screen: 'attendance', meetingId: 'm1' });
   });
+
+  it('prefers explicit meetingId on the alert', () => {
+    expect(
+      resolveHomeAlertTarget({
+        type: 'warning',
+        message: 'Chamada em curso',
+        meetingId: 'm-explicit',
+      }),
+    ).toEqual({ screen: 'attendance', meetingId: 'm-explicit' });
+  });
+
+  it('routes info about classes to classes screen', () => {
+    expect(
+      resolveHomeAlertTarget({
+        type: 'info',
+        message: 'Nenhuma turma ativa. Crie uma turma para começar.',
+      }),
+    ).toEqual({ screen: 'classes' });
+  });
 });

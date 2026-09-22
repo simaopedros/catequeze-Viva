@@ -2,6 +2,9 @@ export type HomeAlertItem = {
   type?: string;
   message?: string;
   meta?: string;
+  /** Quando definido, alertas de presença abrem esta chamada. */
+  meetingId?: string;
+  catechumenId?: string;
 };
 
 export type HomeAlertTarget =
@@ -19,6 +22,10 @@ export function resolveHomeAlertTarget(
   const type = (alert.type || '').toLowerCase();
   const text = `${alert.message || ''} ${alert.meta || ''}`.toLowerCase();
 
+  if (alert.meetingId) {
+    return { screen: 'attendance', meetingId: alert.meetingId };
+  }
+
   if (type === 'birthday' || text.includes('anivers')) {
     return { screen: 'catechumens' };
   }
@@ -27,19 +34,27 @@ export function resolveHomeAlertTarget(
     return { screen: 'messages' };
   }
 
-  if (text.includes('turma') || text.includes('rascunho')) {
-    return { screen: 'classes' };
-  }
+  const attendanceHint =
+    text.includes('presença') ||
+    text.includes('presenca') ||
+    text.includes('chamada') ||
+    text.includes('registar');
 
-  if (text.includes('presença') || text.includes('presenca') || type === 'warning') {
+  if (attendanceHint || type === 'warning') {
     if (options?.todayMeetingId) {
       return { screen: 'attendance', meetingId: options.todayMeetingId };
     }
+    if (attendanceHint) {
+      return { screen: 'classes' };
+    }
+  }
+
+  if (text.includes('rascunho') || (text.includes('turma') && !text.includes('mensagem'))) {
     return { screen: 'classes' };
   }
 
   if (type === 'info') {
-    return { screen: 'notifications' };
+    return { screen: 'classes' };
   }
 
   return { screen: 'notifications' };

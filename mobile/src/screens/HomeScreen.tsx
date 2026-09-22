@@ -7,6 +7,7 @@ import {
   HomeTopBar,
   formatMeetingTimeRange,
 } from '../components/homeUi';
+import { buildHomeAlertItems, type DashboardAlertSource } from '../home/homeAlerts';
 import type { HomeAlertItem } from '../home/homeAlertNavigation';
 import {
   meetingTimeRangeInput,
@@ -52,7 +53,9 @@ export function HomeScreen({
     avgAttendance?: number;
     pendingSacraments?: number;
     recentAlerts?: { type?: string; message?: string }[];
-    aniversariantes?: { id?: string; name?: string; day?: number }[];
+    aniversariantes?: DashboardAlertSource['aniversariantes'];
+    openRollCallIncomplete?: boolean;
+    pendingAttendanceMeeting?: DashboardAlertSource['pendingAttendanceMeeting'];
     myClasses?: { id: string; name: string; enrollmentCount?: number }[];
     upcomingMeetings?: Meeting[];
     todayMeetings?: Meeting[];
@@ -74,8 +77,7 @@ export function HomeScreen({
   const todayMeeting = stats?.todayMeetings?.[0];
   const attendanceMeetingId = pickAttendanceMeetingIdFromDashboard(stats);
   const meetingTimes = meetingTimeRangeInput(todayMeeting);
-  const alerts = (stats?.recentAlerts ?? []).slice(0, 3);
-  const birthdays = (stats?.aniversariantes ?? []).slice(0, 2);
+  const alertItems = buildHomeAlertItems(stats, { attendanceMeetingId });
   const classes = (stats?.myClasses ?? []).slice(0, 8);
 
   const greetingName = firstName || name.split(/\s+/)[0] || name;
@@ -85,15 +87,6 @@ export function HomeScreen({
   const meetingClassLabel = todayMeeting?.class?.name || todayMeeting?.title || todayMeeting?.theme || 'Encontro';
   const meetingTheme =
     todayMeeting?.theme && todayMeeting.theme !== meetingClassLabel ? todayMeeting.theme : undefined;
-
-  const alertItems = [
-    ...alerts.map((a) => ({ type: a.type, message: a.message })),
-    ...birthdays.map((b) => ({
-      type: 'birthday',
-      message: `Aniversário: ${b.name || 'Catequizando'}`,
-      meta: b.day != null ? `dia ${b.day}` : undefined,
-    })),
-  ].slice(0, 4);
 
   return (
     <Screen testID="home-screen" onRefresh={onRefresh} refreshing={refreshing} safeAreaEdges={['top', 'left', 'right']}>
