@@ -54,3 +54,108 @@ export function filterCatechumensByQuery(rows: CatechumenListItem[], query: stri
     return haystack.includes(q);
   });
 }
+
+export type CatechumenEnrollmentView = {
+  classId: string;
+  className: string;
+  stageName?: string;
+};
+
+export type CatechumenGuardianView = {
+  id: string;
+  name: string;
+  email?: string;
+};
+
+export type CatechumenJourneyView = {
+  id: string;
+  name: string;
+  milestoneCount: number;
+};
+
+export type CatechumenDetailView = {
+  id: string;
+  name: string;
+  initials: string;
+  email?: string;
+  birthDateLabel?: string;
+  ageYears?: number;
+  parishName?: string;
+  householdId?: string;
+  householdName?: string;
+  householdPhone?: string;
+  guardians: CatechumenGuardianView[];
+  enrollments: CatechumenEnrollmentView[];
+  journeys: CatechumenJourneyView[];
+  documentCount: number;
+};
+
+export function formatBirthDate(birthDate?: string | Date | null): { label?: string; ageYears?: number } {
+  if (!birthDate) return {};
+  const d = new Date(birthDate);
+  if (Number.isNaN(d.getTime())) return {};
+  const label = d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  const today = new Date();
+  let ageYears = today.getFullYear() - d.getFullYear();
+  const monthDiff = today.getMonth() - d.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < d.getDate())) {
+    ageYears -= 1;
+  }
+  return { label, ageYears: ageYears >= 0 ? ageYears : undefined };
+}
+
+function guardianName(guardian: any): string {
+  const user = guardian?.user;
+  const fromUser = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim();
+  if (fromUser) return fromUser;
+  return guardian?.name || 'Responsável';
+}
+
+export function mapCatechumenDetail(profile: any): CatechumenDetailView | null {
+  if (!profile?.id) return null;
+  const name = catechumenDisplayName(profile);
+  const birth = formatBirthDate(profile.birthDate);
+  const enrollments: CatechumenEnrollmentView[] = (profile.enrollments || [])
+    .map((enrollment: any) => {
+      const classId = enrollment?.class?.id;
+      const className = enrollment?.class?.name;
+      if (!classId || !className) return null;
+      return {
+        classId: String(classId),
+        className: String(className),
+        stageName: enrollment?.class?.stage?.name || undefined,
+      };
+    })
+    .filter(Boolean) as CatechumenEnrollmentView[];
+
+  const guardians: CatechumenGuardianView[] = (profile.household?.guardians || []).map((guardian: any) => ({
+    id: String(guardian.id),
+    name: guardianName(guardian),
+    email: guardian?.user?.email || guardian?.email || undefined,
+  }));
+
+  const journeys: CatechumenJourneyView[] = (profile.sacramentalJourneys || [])
+    .map((journey: any) => ({
+      id: String(journey.id),
+      name: journey?.template?.name || 'Jornada sacramental',
+      milestoneCount: Array.isArray(journey.milestones) ? journey.milestones.length : 0,
+    }))
+    .filter((j: CatechumenJourneyView) => Boolean(j.id));
+
+  return {
+    id: String(profile.id),
+    name,
+    initials: catechumenInitials(name),
+    email: profile.email || undefined,
+    birthDateLabel: birth.label,
+    ageYears: birth.ageYears,
+    parishName: profile.parish?.name || undefined,
+    householdId: profile.household?.id ? String(profile.household.id) : undefined,
+    householdName: profile.household?.name || undefined,
+    householdPhone: profile.household?.phone || undefined,
+    guardians,
+    enrollments,
+    journeys,
+    documentCount: Array.isArray(profile.documents) ? profile.documents.length : 0,
+  };
+}

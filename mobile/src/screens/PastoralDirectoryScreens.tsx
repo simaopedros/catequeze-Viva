@@ -10,30 +10,6 @@ import {
   SearchInput,
 } from '../components/ui';
 
-export function CatechumenDetailScreen({ profile, loading, error }: { profile: any; loading?: boolean; error?: string | null }) {
-  if (loading) return <Screen><LoadingState /></Screen>;
-  if (error || !profile) return <Screen><ErrorState title="Ficha indisponível" /></Screen>;
-
-  const name = [profile.firstName, profile.lastName].filter(Boolean).join(' ') || profile.displayName;
-  const className =
-    profile.enrollments?.find((e: any) => e?.class?.name)?.class?.name ||
-    profile.class?.name;
-  const fields = [
-    className ? { label: 'Turma', value: className } : null,
-    profile.household?.name ? { label: 'Família', value: profile.household.name } : null,
-    profile.parish?.name ? { label: 'Paróquia', value: profile.parish.name } : null,
-    profile.email ? { label: 'E-mail', value: profile.email } : null,
-    profile.phone ? { label: 'Telefone', value: profile.phone } : null,
-  ].filter(Boolean) as { label: string; value: string }[];
-
-  return (
-    <Screen>
-      <ScreenTitle title="Catequizando" subtitle={name} />
-      {fields.map((field) => <DetailRow key={field.label} label={field.label} value={field.value} />)}
-    </Screen>
-  );
-}
-
 export function FamiliesScreen({
   rows,
   loading,
