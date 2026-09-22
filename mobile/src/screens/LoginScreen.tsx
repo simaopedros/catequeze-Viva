@@ -1,10 +1,23 @@
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LoginHero } from '../components/LoginHero';
-import { ErrorText, Field, PasswordInput, PrimaryButton } from '../components/ui';
-import { colors, elevation, radius, spacing, typography } from '../theme';
-
+import {
+  LoginBrandHeader,
+  LoginFooterArt,
+  LoginIconField,
+  LoginPasswordField,
+} from '../components/loginUi';
+import { ErrorText, PrimaryButton } from '../components/ui';
+import { colors, contentHorizontalPadding, spacing } from '../theme';
 export function LoginScreen({
   onSubmit,
   onForgotPassword,
@@ -18,37 +31,35 @@ export function LoginScreen({
 }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { width } = useWindowDimensions();
+  const horizontal = contentHorizontalPadding(width);
 
   return (
-    <SafeAreaView testID="login-screen" style={styles.root} edges={['left', 'right']}>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.scroll}>
-          <LoginHero />
-          <View style={styles.formCard}>
-            <Text style={styles.formTitle}>Entrar</Text>
-            <Text style={styles.formSubtitle}>Use a mesma conta da plataforma web.</Text>
+    <SafeAreaView testID="login-screen" style={styles.root} edges={['top', 'left', 'right']}>
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.scroll}
+          showsVerticalScrollIndicator={false}
+        >
+          <LoginBrandHeader />
+
+          <View style={[styles.form, { paddingHorizontal: horizontal }]}>
             <ErrorText message={error} />
-            <Field
-              label="E-mail"
+            <LoginIconField
+              icon="mail"
+              placeholder="E-mail"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
               autoComplete="email"
               testID="login-email"
             />
-            <PasswordInput
-              label="Senha"
+            <LoginPasswordField
               value={password}
               onChangeText={setPassword}
-              autoComplete="password"
               testID="login-password"
             />
-            <Pressable
-              onPress={onForgotPassword}
-              style={{ alignSelf: 'flex-end', marginBottom: spacing[2], minHeight: 44, justifyContent: 'center' }}
-            >
-              <Text style={{ color: colors.primary[700], fontWeight: '600' }}>Esqueci a senha</Text>
-            </Pressable>
             <PrimaryButton
               testID="login-submit"
               label={busy ? 'Entrando…' : 'Entrar'}
@@ -56,7 +67,17 @@ export function LoginScreen({
               disabled={busy || !email || !password}
               onPress={() => onSubmit(email.trim(), password)}
             />
+            <Pressable
+              onPress={onForgotPassword}
+              style={styles.forgot}
+              accessibilityRole="link"
+              testID="login-forgot"
+            >
+              <Text style={styles.forgotText}>Esqueci a senha</Text>
+            </Pressable>
           </View>
+
+          <LoginFooterArt />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -64,24 +85,23 @@ export function LoginScreen({
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.canvas },
-  scroll: { flexGrow: 1, paddingBottom: spacing[8] },
-  formCard: {
-    marginTop: -32,
-    marginHorizontal: spacing[4],
-    backgroundColor: colors.surface,
-    borderRadius: radius.xl,
-    padding: spacing[5],
-    borderWidth: 1,
-    borderColor: colors.border,
-    ...elevation.card,
+  root: { flex: 1, backgroundColor: colors.surface },
+  flex: { flex: 1 },
+  scroll: { flexGrow: 1 },
+  form: {
+    paddingTop: spacing[2],
+    paddingBottom: spacing[2],
   },
-  formTitle: { ...typography.headingLg, color: colors.text.primary, textAlign: 'center' },
-  formSubtitle: {
-    ...typography.bodyMd,
-    color: colors.text.muted,
-    textAlign: 'center',
-    marginBottom: spacing[4],
-    marginTop: spacing[1],
+  forgot: {
+    alignSelf: 'center',
+    marginTop: spacing[4],
+    minHeight: 44,
+    justifyContent: 'center',
+    paddingHorizontal: spacing[2],
+  },
+  forgotText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.primary[700],
   },
 });

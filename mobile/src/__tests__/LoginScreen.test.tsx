@@ -22,6 +22,18 @@ describe('auth and community UI', () => {
     expect(onSubmit).toHaveBeenCalledWith('coord@paroquia.pt', 'Teste@123');
   });
 
+  it('shows branded login layout with footer art', () => {
+    const view = render(
+      <LoginScreen onSubmit={jest.fn()} onForgotPassword={jest.fn()} />,
+    );
+
+    expect(view.getByTestId('login-brand-header')).toBeTruthy();
+    expect(view.getByText('Catequese')).toBeTruthy();
+    expect(view.getByText('Viva')).toBeTruthy();
+    expect(view.getByTestId('login-footer-art')).toBeTruthy();
+    expect(view.getByText('Esqueci a senha')).toBeTruthy();
+  });
+
   it('requires six TOTP digits', () => {
     const onSubmit = jest.fn();
     const view = render(<TwoFactorScreen onSubmit={onSubmit} onCancel={jest.fn()} />);
