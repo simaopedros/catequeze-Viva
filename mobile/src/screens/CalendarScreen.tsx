@@ -1,31 +1,28 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  CalendarEventCard,
+  CalendarFilterRow,
+  CalendarHeroCard,
+  CalendarMonthGrid,
+  CalendarUpcomingStrip,
+  type CalendarFilter,
+} from '../components/calendarUi';
 import {
   BrandButton,
   EmptyState,
   ErrorState,
   Field,
-  ListRow,
   LoadingState,
   PrimaryButton,
   Screen,
+  SectionHeader,
 } from '../components/ui';
-import { dateKey } from '../calendar/calendarMonth';
+import { dateKey, formatSelectedDayHeading, isToday } from '../calendar/calendarMonth';
+import type { CalendarItem } from '../calendar/types';
 import { colors, radius, spacing, typography } from '../theme';
 
-export type CalendarItem = {
-  kind: 'meeting' | 'liturgy';
-  id: string;
-  title: string;
-  date: string;
-  meetingId?: string;
-  classId?: string;
-  className?: string | null;
-  theme?: string | null;
-  description?: string | null;
-  clickable?: boolean;
-  editable?: boolean;
-};
+export type { CalendarItem } from '../calendar/types';
 
 type ClassOption = { id: string; name?: string };
 
@@ -39,10 +36,6 @@ type EventDraft = {
   classId: string;
 };
 
-function daysInMonth(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-}
-
 function emptyDraft(dayIso: string, kind: 'liturgy' | 'meeting' = 'liturgy'): EventDraft {
   return {
     kind,
@@ -54,6 +47,10 @@ function emptyDraft(dayIso: string, kind: 'liturgy' | 'meeting' = 'liturgy'): Ev
   };
 }
 
+function daysInMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+}
+
 export function CalendarScreen({
   items,
   loading,
@@ -63,6 +60,7 @@ export function CalendarScreen({
   onMonthChange,
   classes,
   busy,
+  refreshing,
   onOpenMeeting,
   onReload,
   onCreateLiturgicalEvent,
@@ -80,6 +78,7 @@ export function CalendarScreen({
   onMonthChange: (month: Date) => void;
   classes: ClassOption[];
   busy?: boolean;
+  refreshing?: boolean;
   onOpenMeeting: (meetingId: string) => void;
   onReload?: () => void;
   onCreateLiturgicalEvent: (draft: { name: string; date: string; description?: string }) => Promise<void>;
@@ -101,27 +100,70 @@ export function CalendarScreen({
   onDeleteMeeting: (id: string) => Promise<void>;
 }) {
   const [selectedDay, setSelectedDay] = useState(() => new Date().getDate());
+  const [filter, setFilter] = useState<CalendarFilter>('all');
   const [sheetOpen, setSheetOpen] = useState(false);
   const [draft, setDraft] = useState<EventDraft>(() =>
     emptyDraft(dateKey(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())),
   );
 
   const monthLabel = month.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-  const totalDays = daysInMonth(month);
   const year = month.getFullYear();
   const monthIndex = month.getMonth();
+  const totalDays = daysInMonth(month);
+
+  useEffect(() => {
+    if (selectedDay > totalDays) {
+      setSelectedDay(totalDays);
+    }
+  }, [totalDays, selectedDay]);
+
+  const filteredItems = useMemo(() => {
+    if (filter === 'all') return items;
+    return items.filter((item) => item.kind === filter);
+  }, [items, filter]);
+
+  const meetingCount = useMemo(
+    () => items.filter((item) => item.kind === 'meeting').length,
+    [items],
+  );
+  const liturgyCount = useMemo(
+    () => items.filter((item) => item.kind === 'liturgy').length,
+    [items],
+  );
 
   const dayItems = useMemo(() => {
-    return items.filter((item) => {
-      const d = new Date(item.date);
-      return d.getFullYear() === year && d.getMonth() === monthIndex && d.getDate() === selectedDay;
-    });
-  }, [items, year, monthIndex, selectedDay]);
+    return filteredItems
+      .filter((item) => {
+        const d = new Date(item.date);
+        return d.getFullYear() === year && d.getMonth() === monthIndex && d.getDate() === selectedDay;
+      })
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [filteredItems, year, monthIndex, selectedDay]);
+
+  const upcomingItems = useMemo(() => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    return filteredItems
+      .filter((item) => {
+        const d = new Date(item.date);
+        return d >= now;
+      })
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(0, 8);
+  }, [filteredItems]);
+
+  const dayHeading = formatSelectedDayHeading(year, monthIndex, selectedDay);
 
   const openCreate = () => {
     const iso = dateKey(year, monthIndex, selectedDay);
     setDraft(emptyDraft(iso, 'liturgy'));
     setSheetOpen(true);
+  };
+
+  const goToToday = () => {
+    const now = new Date();
+    onMonthChange(new Date(now.getFullYear(), now.getMonth(), 1));
+    setSelectedDay(now.getDate());
   };
 
   const openEdit = (item: CalendarItem) => {
@@ -189,7 +231,6 @@ export function CalendarScreen({
     }
     if (item.kind === 'liturgy' && item.editable) {
       openEdit(item);
-      return;
     }
   };
 
@@ -244,81 +285,71 @@ export function CalendarScreen({
   };
 
   return (
-    <Screen testID="calendar-screen">
-      {loading ? <LoadingState /> : null}
+    <Screen testID="calendar-screen" refreshing={refreshing} onRefresh={onReload}>
+      {loading && items.length === 0 ? <LoadingState /> : null}
       {error ? <ErrorState title="Agenda indisponível" /> : null}
 
-      {canWriteEvents ? (
-        <PrimaryButton
-          testID="calendar-create-event"
-          label="Novo evento"
-          onPress={openCreate}
-          variant="primary"
-        />
-      ) : null}
+      <CalendarHeroCard
+        monthLabel={monthLabel}
+        meetingCount={meetingCount}
+        liturgyCount={liturgyCount}
+        onToday={goToToday}
+        onCreate={openCreate}
+        canWrite={canWriteEvents}
+      />
 
-      <View style={styles.monthRow}>
+      <CalendarFilterRow value={filter} onChange={setFilter} />
+
+      <View style={styles.monthNavRow}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Mês anterior"
           onPress={() => onMonthChange(new Date(year, monthIndex - 1, 1))}
+          style={styles.monthNavBtn}
         >
           <Text style={styles.monthNav}>‹</Text>
         </Pressable>
-        <Text style={styles.monthLabel}>{monthLabel}</Text>
+        <Text style={styles.monthNavLabel}>{monthLabel}</Text>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Próximo mês"
           onPress={() => onMonthChange(new Date(year, monthIndex + 1, 1))}
+          style={styles.monthNavBtn}
         >
           <Text style={styles.monthNav}>›</Text>
         </Pressable>
       </View>
 
-      <View style={styles.dayGrid}>
-        {Array.from({ length: totalDays }, (_, i) => i + 1).map((day) => {
-          const active = day === selectedDay;
-          const hasItem = items.some((item) => {
-            const d = new Date(item.date);
-            return d.getFullYear() === year && d.getMonth() === monthIndex && d.getDate() === day;
-          });
-          return (
-            <Pressable
-              key={day}
-              onPress={() => setSelectedDay(day)}
-              style={[styles.dayCell, active && styles.dayCellActive]}
-            >
-              <Text style={[styles.dayText, active && styles.dayTextActive]}>{day}</Text>
-              {hasItem ? <View style={styles.dayDot} /> : null}
-            </Pressable>
-          );
-        })}
-      </View>
+      <CalendarMonthGrid
+        month={month}
+        items={filteredItems}
+        selectedDay={selectedDay}
+        onSelectDay={setSelectedDay}
+      />
 
-      <Text style={styles.sectionLabel}>
-        {selectedDay} de {monthLabel}
-        {dayItems.length > 0 ? ` · ${dayItems.length} evento${dayItems.length === 1 ? '' : 's'}` : ''}
-      </Text>
+      <CalendarUpcomingStrip items={upcomingItems} onPressItem={handleItemPress} />
+
+      <SectionHeader
+        title={dayHeading.label}
+        actionLabel={isToday(year, monthIndex, selectedDay) ? undefined : 'Ir para hoje'}
+        onAction={isToday(year, monthIndex, selectedDay) ? undefined : goToToday}
+      />
+      <Text style={styles.weekdayCaption}>{dayHeading.weekday}</Text>
 
       {dayItems.length === 0 ? (
         <EmptyState
           title="Nada marcado"
-          body={canWriteEvents ? 'Toque em «Novo evento» para adicionar ao dia.' : 'Sem eventos neste dia.'}
+          body={canWriteEvents ? 'Use «Novo evento» no topo para planear este dia.' : 'Sem eventos neste dia.'}
         />
-      ) : null}
-
-      {dayItems.map((item) => (
-        <ListRow
-          key={`${item.kind}-${item.id}`}
-          title={item.title}
-          subtitle={
-            item.kind === 'meeting'
-              ? [item.className ? `Turma ${item.className}` : 'Encontro', item.theme].filter(Boolean).join(' · ')
-              : 'Evento pastoral'
-          }
-          onPress={() => handleItemPress(item)}
-        />
-      ))}
+      ) : (
+        dayItems.map((item) => (
+          <CalendarEventCard
+            key={`${item.kind}-${item.id}`}
+            item={item}
+            onPress={() => handleItemPress(item)}
+          />
+        ))
+      )}
 
       <Modal visible={sheetOpen} animationType="slide" transparent onRequestClose={() => setSheetOpen(false)}>
         <Pressable style={styles.backdrop} onPress={() => setSheetOpen(false)} />
@@ -425,59 +456,31 @@ export function CalendarScreen({
 }
 
 const styles = StyleSheet.create({
-  monthRow: {
+  monthNavRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: spacing[4],
-    marginBottom: spacing[4],
+    marginBottom: spacing[2],
+  },
+  monthNavBtn: {
+    padding: spacing[2],
   },
   monthNav: {
-    fontSize: 22,
+    fontSize: 24,
     color: colors.primary[800],
-    paddingHorizontal: spacing[2],
-  },
-  monthLabel: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: colors.text.primary,
-    textTransform: 'capitalize',
-  },
-  dayGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-    marginBottom: spacing[4],
-  },
-  dayCell: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dayCellActive: {
-    backgroundColor: colors.primary[800],
-  },
-  dayText: {
-    color: colors.text.primary,
     fontWeight: '600',
   },
-  dayTextActive: {
-    color: colors.white,
+  monthNavLabel: {
+    ...typography.labelLg,
+    color: colors.text.primary,
+    textTransform: 'capitalize',
   },
-  dayDot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: colors.accent[500],
-    marginTop: 2,
-  },
-  sectionLabel: {
+  weekdayCaption: {
     ...typography.bodySm,
     color: colors.text.muted,
-    marginBottom: spacing[3],
     textTransform: 'capitalize',
+    marginTop: -spacing[2],
+    marginBottom: spacing[3],
   },
   backdrop: {
     flex: 1,

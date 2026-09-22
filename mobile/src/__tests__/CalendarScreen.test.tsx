@@ -24,6 +24,8 @@ describe('CalendarScreen', () => {
 
     expect(view.getByTestId('calendar-screen')).toBeTruthy();
     expect(view.getByTestId('calendar-create-event')).toBeTruthy();
+    expect(view.getByTestId('calendar-hero')).toBeTruthy();
+    expect(view.getByTestId('calendar-month-grid')).toBeTruthy();
     expect(view.queryByText('Agenda')).toBeNull();
   });
 });

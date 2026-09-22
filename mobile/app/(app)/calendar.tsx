@@ -40,6 +40,7 @@ export default function CalendarRoute() {
       onMonthChange={setMonth}
       classes={unwrapClasses(classesQuery.data)}
       busy={busy}
+      refreshing={loading}
       onOpenMeeting={(id) => router.push(`/(app)/meeting/${id}`)}
       onReload={() => void reload()}
       onCreateLiturgicalEvent={async (draft) => {
