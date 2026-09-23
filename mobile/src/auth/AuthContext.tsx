@@ -11,6 +11,7 @@ type AuthValue = {
   user: MobileUser | null;
   bootstrap: BootstrapPayload | null;
   workspaceId: string | null;
+  apiBaseUrl: string;
   api: MobileClient;
   login: (email: string, password: string) => Promise<AuthPayload>;
   verifyTwoFactor: (token: string) => Promise<AuthPayload>;
@@ -58,15 +59,23 @@ export function AuthProvider({
   const [workspaceId, setWorkspaceState] = useState<string | null>(null);
   const tokenRef = React.useRef<string | null>(null);
 
+  const apiBaseUrl = useMemo(
+    () =>
+      (initialBaseUrl || process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001').replace(
+        /\/$/,
+        '',
+      ),
+    [initialBaseUrl],
+  );
+
   const api = useMemo(() => {
     const getToken = async () => tokenRef.current ?? (store ? store.getSessionId() : null);
     if (apiFactory) return apiFactory(getToken);
     return createMobileClient({
-      getBaseUrl: () =>
-        initialBaseUrl || process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001',
+      getBaseUrl: () => apiBaseUrl,
       getToken,
     });
-  }, [apiFactory, initialBaseUrl, store]);
+  }, [apiFactory, apiBaseUrl, store]);
 
   useEffect(() => {
     let cancelled = false;
@@ -119,6 +128,7 @@ export function AuthProvider({
       user,
       bootstrap,
       workspaceId,
+      apiBaseUrl,
       api,
       async login(email, password) {
         const payload = await api.login(email, password);
@@ -180,7 +190,7 @@ export function AuthProvider({
         setBootstrap(next.bootstrap);
       },
     }),
-    [api, bootstrap, status, store, user, workspaceId],
+    [api, apiBaseUrl, bootstrap, status, store, user, workspaceId],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

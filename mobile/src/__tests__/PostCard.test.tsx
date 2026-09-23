@@ -29,7 +29,7 @@ describe('PostCard', () => {
     const view = render(<PostCard post={post()} onOpenAuthor={onOpenAuthor} onOpenPost={onOpenPost} />);
 
     expect(view.getByText('Ana Silva')).toBeTruthy();
-    expect(view.getByText('@ana')).toBeTruthy();
+    expect(view.getByText(/Turma/)).toBeTruthy();
     expect(view.getByText('João 3,16')).toBeTruthy();
     expect(view.getByText('Ver mais')).toBeTruthy();
 
@@ -42,5 +42,18 @@ describe('PostCard', () => {
     expect(onOpenPost).toHaveBeenCalledWith('paz');
     fireEvent.press(view.getByTestId('open-post-p1'));
     expect(onOpenPost).toHaveBeenCalledTimes(2);
+  });
+
+  it('renders feed images using imageUrl from the API', () => {
+    const view = render(
+      <PostCard
+        post={post({
+          body: 'Com foto',
+          media: [{ id: 'img-1', kind: 'IMAGE', imageUrl: '/api/social/media/img-1' }],
+        })}
+      />,
+    );
+
+    expect(view.getByTestId('post-media-image-img-1')).toBeTruthy();
   });
 });

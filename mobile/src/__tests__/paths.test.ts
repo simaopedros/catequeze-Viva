@@ -22,7 +22,11 @@ describe('mobile path contract', () => {
     expect(MOBILE_PATHS.socialComments).toBe('/mobile/social/comments');
     expect(MOBILE_PATHS.socialReact).toBe('/mobile/social/react');
     expect(MOBILE_PATHS.socialSearch).toBe('/mobile/social/search');
+    expect(MOBILE_PATHS.socialVideoUpload).toBe('/mobile/social/media/video-upload');
+    expect(MOBILE_PATHS.socialMediaStatus).toBe('/mobile/social/media/status');
     expect(MOBILE_PATHS.bibleBooks).toBe('/mobile/bible/books');
     expect(MOBILE_PATHS.bibleChapter('jo', 3)).toBe('/mobile/bible/books/jo/chapters/3');
+    expect(MOBILE_PATHS.meetingAttendanceSheet('m1')).toBe('/mobile/meetings/m1/attendance-sheet');
+    expect(MOBILE_PATHS.attendanceBatch).toBe('/mobile/attendance/batch');
   });
 });

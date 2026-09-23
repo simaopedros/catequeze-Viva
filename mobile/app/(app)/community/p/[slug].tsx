@@ -1,12 +1,13 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { useAuth } from '../../../../src/auth/AuthContext';
+import { Alert } from 'react-native';
+import { displayName, useAuth } from '../../../../src/auth/AuthContext';
 import { useAsync } from '../../../../src/hooks/useAsync';
 import { PostDetailScreen } from '../../../../src/screens/PostDetailScreen';
 
 export default function PostRoute() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
-  const { api } = useAuth();
+  const { api, user } = useAuth();
   const router = useRouter();
   const post = useAsync(() => api.socialPost(String(slug || '')), [slug]);
   const comments = useAsync(
@@ -15,8 +16,6 @@ export default function PostRoute() {
   );
   const access = useAsync(() => api.socialAccess(), []);
   const [busy, setBusy] = useState(false);
-  const [reportMessage, setReportMessage] = useState<string | null>(null);
-
   return (
     <PostDetailScreen
       post={post.data}
@@ -25,7 +24,17 @@ export default function PostRoute() {
       loading={post.loading}
       error={post.error}
       busy={busy}
+      viewerName={displayName(user)}
       onOpenAuthor={(handle) => router.push(`/(app)/community/${handle}`)}
+      onRepost={
+        post.data?.slug
+          ? () =>
+              router.push({
+                pathname: '/(app)/(tabs)/community',
+                params: { repostSlug: post.data!.slug! },
+              })
+          : undefined
+      }
       onReact={async (type) => {
         if (!post.data?.id) return;
         setBusy(true);
@@ -36,7 +45,6 @@ export default function PostRoute() {
           setBusy(false);
         }
       }}
-      reportMessage={reportMessage}
       onComment={async (body) => {
         if (!post.data?.id) return;
         setBusy(true);
@@ -50,12 +58,14 @@ export default function PostRoute() {
       onReport={async (reason) => {
         if (!post.data?.id) return;
         setBusy(true);
-        setReportMessage(null);
         try {
           await api.reportSocial({ targetType: 'POST', targetId: post.data.id, reason });
-          setReportMessage('Denúncia enviada. Obrigado.');
+          Alert.alert('Denúncia enviada', 'Obrigado por ajudar a cuidar da comunidade.');
         } catch (err) {
-          setReportMessage(err instanceof Error ? err.message : 'Não foi possível denunciar.');
+          Alert.alert(
+            'Não foi possível denunciar',
+            err instanceof Error ? err.message : 'Tente novamente mais tarde.',
+          );
         } finally {
           setBusy(false);
         }

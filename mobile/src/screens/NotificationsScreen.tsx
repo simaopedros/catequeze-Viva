@@ -1,7 +1,7 @@
 import React from 'react';
-import { Text } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { Text, View } from 'react-native';
+import { EmptyState, ListRow, LoadingState, Screen } from '../components/ui';
+import { colors, spacing, typography } from '../theme';
 
 function asNotifications(payload: any) {
   if (Array.isArray(payload)) return payload;
@@ -13,32 +13,53 @@ export function NotificationsScreen({
   payload,
   loading,
   error,
+  refreshing,
   onRead,
+  onRefresh,
 }: {
   payload: any;
   loading?: boolean;
   error?: string | null;
+  refreshing?: boolean;
   onRead: (id: string) => void;
+  onRefresh?: () => void;
 }) {
   const items = asNotifications(payload);
+
   return (
-    <Screen testID="notifications-screen">
-      <ScreenTitle title="Notificações" />
-      {loading ? <LoadingState /> : null}
+    <Screen testID="notifications-screen" onRefresh={onRefresh} refreshing={refreshing}>
+      {loading && items.length === 0 ? <LoadingState /> : null}
       {error ? <EmptyState title="Caixa indisponível" body={error} /> : null}
-      {items.length === 0 && !loading ? (
+      {items.length === 0 && !loading && !error ? (
         <EmptyState title="Tudo em dia" body="Não há notificações por ler." />
       ) : (
-        items.map((item: any) => (
-          <Card key={item.id}>
-            <Text style={{ color: colors.ink, fontWeight: '700' }}>{item.title || 'Aviso'}</Text>
-            <Text style={{ color: colors.muted, marginTop: 4 }}>{item.body || item.message || ''}</Text>
-            {!item.readAt ? (
-              <BrandButton variant="ghost" label="Marcar como lida" onPress={() => onRead(item.id)} />
-            ) : null}
-          </Card>
-        ))
+        items.map((item: any) => {
+          const unread = !item.readAt;
+          return (
+            <ListRow
+              key={item.id}
+              testID={`notification-${item.id}`}
+              title={item.title || 'Aviso'}
+              subtitle={item.body || item.message || undefined}
+              onPress={unread ? () => onRead(item.id) : undefined}
+              right={
+                unread ? (
+                  <View style={{ paddingHorizontal: spacing[2] }}>
+                    <Text style={styles.unreadDot}>●</Text>
+                  </View>
+                ) : undefined
+              }
+            />
+          );
+        })
       )}
     </Screen>
   );
 }
+
+const styles = {
+  unreadDot: {
+    ...typography.labelSm,
+    color: colors.accent[700],
+  },
+};

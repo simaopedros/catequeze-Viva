@@ -15,6 +15,9 @@ export const MOBILE_PATHS = {
   familyDetails: (id: string) => `/mobile/families/${encodeURIComponent(id)}`,
   meetings: '/mobile/meetings',
   meetingDetails: (id: string) => `/mobile/meetings/${encodeURIComponent(id)}`,
+  meetingAttendanceSheet: (id: string) =>
+    `/mobile/meetings/${encodeURIComponent(id)}/attendance-sheet`,
+  attendanceBatch: '/mobile/attendance/batch',
   attendance: '/mobile/attendance',
   messages: '/mobile/messages',
   messageDetails: (id: string) => `/mobile/messages/${encodeURIComponent(id)}`,
@@ -41,16 +44,31 @@ export const MOBILE_PATHS = {
   socialConnections: '/mobile/social/connections',
   socialBlocks: '/mobile/social/blocks',
   socialReport: '/mobile/social/report',
+  socialVideoUpload: '/mobile/social/media/video-upload',
+  socialMediaStatus: '/mobile/social/media/status',
   bibleBooks: '/mobile/bible/books',
   bibleBook: (id: string) => `/mobile/bible/books/${encodeURIComponent(id)}`,
   bibleChapter: (bookId: string, chapter: number) =>
     `/mobile/bible/books/${encodeURIComponent(bookId)}/chapters/${chapter}`,
+  calendar: '/mobile/calendar',
+  calendarEvents: '/mobile/calendar/events',
+  calendarEvent: (id: string) => `/mobile/calendar/events/${encodeURIComponent(id)}`,
+  announcements: '/mobile/announcements',
+  announcementDetails: (id: string) => `/mobile/announcements/${encodeURIComponent(id)}`,
+  acknowledgeAnnouncement: (id: string) => `/mobile/announcements/${encodeURIComponent(id)}/acknowledge`,
+  journeys: '/mobile/journeys',
+  journeyDetails: (id: string) => `/mobile/journeys/${encodeURIComponent(id)}`,
+  journeyMilestone: (id: string) => `/mobile/journeys/milestones/${encodeURIComponent(id)}`,
+  catechismSearch: '/mobile/catechism/search',
+  catechismCategory: (category: string) =>
+    `/mobile/catechism/categories/${encodeURIComponent(category)}`,
+  catechismEntry: (number: number) => `/mobile/catechism/entries/${number}`,
 } as const;
 
 export const APP_TABS = [
-  { name: 'index', href: '/(app)/(tabs)', label: 'Início', icon: 'home-outline' },
-  { name: 'community', href: '/(app)/(tabs)/community', label: 'Comunidade', icon: 'people-outline' },
-  { name: 'classes', href: '/(app)/(tabs)/classes', label: 'Turmas', icon: 'school-outline' },
-  { name: 'messages', href: '/(app)/(tabs)/messages', label: 'Mensagens', icon: 'chatbubble-outline' },
-  { name: 'more', href: '/(app)/(tabs)/more', label: 'Mais', icon: 'ellipsis-horizontal' },
+  { name: 'index', href: '/(app)/(tabs)', label: 'Início', icon: 'home' },
+  { name: 'community', href: '/(app)/(tabs)/community', label: 'Comunidade', icon: 'users' },
+  { name: 'classes', href: '/(app)/(tabs)/classes', label: 'Turmas', icon: 'book-open' },
+  { name: 'messages', href: '/(app)/(tabs)/messages', label: 'Mensagens', icon: 'message-circle' },
+  { name: 'more', href: '/(app)/(tabs)/more', label: 'Mais', icon: 'menu' },
 ] as const;

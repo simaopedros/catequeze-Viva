@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, Text } from 'react-native';
 import type { SocialTopic } from '../api/types';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
+import { Card, EmptyState, LoadingState, Screen, ScreenIntro } from '../components/ui';
 import { colors } from '../theme';
 
 export function TopicsDirectoryScreen({
@@ -17,7 +17,7 @@ export function TopicsDirectoryScreen({
 }) {
   return (
     <Screen testID="topics-screen">
-      <ScreenTitle title="Tópicos" subtitle="As áreas temáticas da Comunidade — toque para abrir o feed." />
+      <ScreenIntro text="As áreas temáticas da Comunidade — toque para abrir o feed." />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Tópicos indisponíveis" body={error} /> : null}
       {!loading && topics.length === 0 ? (
@@ -26,10 +26,10 @@ export function TopicsDirectoryScreen({
       {topics.map((topic) => (
         <Pressable key={topic.slug} testID={`topic-card-${topic.slug}`} onPress={() => onOpenTopic(topic.slug)}>
           <Card>
-            <Text style={{ color: colors.goldDark, fontWeight: '700' }}>#{topic.slug}</Text>
-            <Text style={{ color: colors.ink, fontWeight: '700', marginTop: 4 }}>{topic.name}</Text>
+            <Text style={{ color: colors.accent[700], fontWeight: '700' }}>#{topic.slug}</Text>
+            <Text style={{ color: colors.text.primary, fontWeight: '700', marginTop: 4 }}>{topic.name}</Text>
             {topic.postCount != null ? (
-              <Text style={{ color: colors.muted, marginTop: 4 }}>{topic.postCount} publicações</Text>
+              <Text style={{ color: colors.text.muted, marginTop: 4 }}>{topic.postCount} publicações</Text>
             ) : null}
           </Card>
         </Pressable>

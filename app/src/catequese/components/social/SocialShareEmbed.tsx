@@ -6,6 +6,7 @@ import {
   FileText,
   Landmark,
   Library,
+  Share2,
 } from "lucide-react";
 import { cn } from "../../../client/utils";
 import type { SocialShareKind } from "../../../shared/socialShare";
@@ -26,6 +27,7 @@ const KIND_ICON = {
   DOCUMENT: FileText,
   AI_ARTIFACT: Feather,
   DIRECTORY: Library,
+  POST: Share2,
 } as const;
 
 export function SocialShareEmbed({

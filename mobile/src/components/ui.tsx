@@ -1,106 +1,421 @@
-import React from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
+  useWindowDimensions,
   type TextInputProps,
   type ViewStyle,
 } from 'react-native';
-import { colors, spacing } from '../theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  colors,
+  contentHorizontalPadding,
+  radius,
+  spacing,
+  typography,
+  attendanceStatus,
+  type AttendanceStatusKey,
+  elevation,
+} from '../theme';
 
 export function Screen({
   children,
   padded = true,
   testID,
+  scroll = true,
+  refreshing,
+  onRefresh,
+  variant = 'default',
+  safeAreaEdges = ['left', 'right'],
 }: {
   children: React.ReactNode;
   padded?: boolean;
   testID?: string;
+  scroll?: boolean;
+  refreshing?: boolean;
+  onRefresh?: () => void;
+  variant?: 'default' | 'fullBleed' | 'form' | 'feed';
+  /** Include `top` when the screen has no stack/tab header (e.g. Início). */
+  safeAreaEdges?: ('top' | 'bottom' | 'left' | 'right')[];
 }) {
+  const { width } = useWindowDimensions();
+  const horizontal = variant === 'fullBleed' ? 0 : contentHorizontalPadding(width);
+  const insetTop = safeAreaEdges.includes('top');
+  const contentStyle = [
+    styles.screenContent,
+    padded && {
+      paddingHorizontal: horizontal,
+      paddingTop: insetTop ? spacing[2] : spacing[4],
+    },
+    variant === 'form' && { paddingBottom: spacing[12] },
+  ];
+
+  if (!scroll) {
+    return (
+      <SafeAreaView testID={testID} style={styles.screen} edges={safeAreaEdges}>
+        <View style={[{ flex: 1 }, contentStyle]}>{children}</View>
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <ScrollView
-      testID={testID}
-      style={styles.screen}
-      contentContainerStyle={[styles.screenContent, padded && { padding: spacing.lg }]}
-      keyboardShouldPersistTaps="handled"
-    >
-      {children}
-    </ScrollView>
+    <SafeAreaView testID={testID} style={styles.screen} edges={safeAreaEdges}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={contentStyle}
+        keyboardShouldPersistTaps="handled"
+        refreshControl={
+          onRefresh ? (
+            <RefreshControl refreshing={Boolean(refreshing)} onRefresh={onRefresh} tintColor={colors.primary[800]} />
+          ) : undefined
+        }
+      >
+        {children}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 export function ScreenTitle({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
-    <View style={{ marginBottom: spacing.md }}>
+    <View style={{ marginBottom: spacing[4] }}>
       <Text style={styles.title}>{title}</Text>
       {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
     </View>
   );
 }
 
-export function Card({ children, style }: { children: React.ReactNode; style?: ViewStyle }) {
-  return <View style={[styles.card, style]}>{children}</View>;
+/** Texto de contexto quando o título já aparece no header da navegação. */
+export function ScreenIntro({ text }: { text: string }) {
+  return <Text style={[styles.subtitle, { marginBottom: spacing[4] }]}>{text}</Text>;
 }
 
-export function BrandButton({
+export function SectionHeader({
+  title,
+  actionLabel,
+  onAction,
+}: {
+  title: string;
+  actionLabel?: string;
+  onAction?: () => void;
+}) {
+  return (
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      {actionLabel && onAction ? (
+        <Pressable onPress={onAction} hitSlop={8}>
+          <Text style={styles.sectionAction}>{actionLabel}</Text>
+        </Pressable>
+      ) : null}
+    </View>
+  );
+}
+
+export function Card({ children, style, elevated }: { children: React.ReactNode; style?: ViewStyle; elevated?: boolean }) {
+  return <View style={[styles.card, elevated && elevation.card, style]}>{children}</View>;
+}
+
+export function PrimaryButton({
   label,
   onPress,
   disabled,
+  loading,
   variant = 'primary',
   testID,
+  fullWidth = true,
 }: {
   label: string;
   onPress: () => void;
   disabled?: boolean;
-  variant?: 'primary' | 'ghost' | 'danger';
+  loading?: boolean;
+  variant?: 'primary' | 'accent' | 'secondary' | 'ghost' | 'danger';
   testID?: string;
+  fullWidth?: boolean;
 }) {
+  const isDisabled = disabled || loading;
   return (
     <Pressable
       accessibilityRole="button"
       testID={testID}
       onPress={onPress}
-      disabled={disabled}
-      style={[
+      disabled={isDisabled}
+      style={({ pressed }) => [
         styles.button,
+        fullWidth && { alignSelf: 'stretch' },
         variant === 'primary' && styles.buttonPrimary,
+        variant === 'accent' && styles.buttonAccent,
+        variant === 'secondary' && styles.buttonSecondary,
         variant === 'ghost' && styles.buttonGhost,
         variant === 'danger' && styles.buttonDanger,
-        disabled && styles.buttonDisabled,
+        isDisabled && styles.buttonDisabled,
+        pressed && !isDisabled && { transform: [{ scale: 0.98 }] },
       ]}
     >
-      <Text
-        style={[
-          styles.buttonLabel,
-          variant === 'ghost' && { color: colors.ink },
-          variant === 'danger' && { color: colors.white },
-        ]}
-      >
-        {label}
-      </Text>
+      {loading ? (
+        <ActivityIndicator color={variant === 'accent' ? colors.text.primary : colors.white} />
+      ) : (
+        <Text
+          style={[
+            styles.buttonLabel,
+            variant === 'accent' && { color: colors.text.primary },
+            variant === 'secondary' && { color: colors.primary[800] },
+            variant === 'ghost' && { color: colors.primary[700] },
+            variant === 'danger' && { color: colors.danger },
+          ]}
+        >
+          {label}
+        </Text>
+      )}
     </Pressable>
   );
 }
 
+/** @deprecated use PrimaryButton */
+export const BrandButton = PrimaryButton;
+
 export function Field({
   label,
+  error,
   ...props
-}: TextInputProps & { label: string }) {
+}: TextInputProps & { label: string; error?: string | null }) {
   return (
-    <View style={{ marginBottom: spacing.md }}>
+    <View style={{ marginBottom: spacing[4] }}>
       <Text style={styles.fieldLabel}>{label}</Text>
       <TextInput
-        placeholderTextColor={colors.muted}
-        style={styles.input}
+        placeholderTextColor={colors.text.placeholder}
+        style={[styles.input, error && styles.inputError]}
         autoCapitalize="none"
         {...props}
       />
+      {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
+}
+
+export function SearchInput(props: TextInputProps & { label?: string }) {
+  const { label, ...rest } = props;
+  return (
+    <View style={{ marginBottom: spacing[4] }}>
+      {label ? <Text style={styles.fieldLabel}>{label}</Text> : null}
+      <TextInput
+        placeholderTextColor={colors.text.placeholder}
+        style={styles.searchInput}
+        autoCapitalize="none"
+        {...rest}
+      />
+    </View>
+  );
+}
+
+export function PasswordInput({
+  label,
+  value,
+  onChangeText,
+  ...props
+}: Omit<TextInputProps, 'secureTextEntry'> & { label: string }) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <View style={{ marginBottom: spacing[4] }}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      <View style={styles.passwordRow}>
+        <TextInput
+          value={value}
+          onChangeText={onChangeText}
+          secureTextEntry={!visible}
+          placeholderTextColor={colors.text.placeholder}
+          style={[styles.input, { flex: 1, marginBottom: 0 }]}
+          autoCapitalize="none"
+          {...props}
+        />
+        <Pressable onPress={() => setVisible((v) => !v)} style={styles.passwordToggle}>
+          <Text style={styles.sectionAction}>{visible ? 'Ocultar' : 'Mostrar'}</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+export function Avatar({ name, size = 40 }: { name?: string; size?: number }) {
+  const initial = (name?.trim()?.[0] ?? '?').toUpperCase();
+  return (
+    <View style={[styles.avatar, { width: size, height: size, borderRadius: size / 2 }]}>
+      <Text style={{ color: colors.primary[800], fontWeight: '700', fontSize: size * 0.38 }}>{initial}</Text>
+    </View>
+  );
+}
+
+export function ListRow({
+  title,
+  subtitle,
+  onPress,
+  right,
+  avatarName,
+  testID,
+}: {
+  title: string;
+  subtitle?: string;
+  onPress?: () => void;
+  right?: React.ReactNode;
+  avatarName?: string;
+  testID?: string;
+}) {
+  const content = (
+    <View style={styles.listRow}>
+      {avatarName ? <Avatar name={avatarName} size={40} /> : null}
+      <View style={{ flex: 1, marginLeft: avatarName ? spacing[3] : 0 }}>
+        <Text style={styles.listTitle}>{title}</Text>
+        {subtitle ? <Text style={styles.listSubtitle}>{subtitle}</Text> : null}
+      </View>
+      {right ?? (onPress ? <Text style={styles.chevron}>›</Text> : null)}
+    </View>
+  );
+  if (!onPress) return content;
+  return (
+    <Pressable testID={testID} onPress={onPress} style={({ pressed }) => pressed && { opacity: 0.92 }}>
+      {content}
+    </Pressable>
+  );
+}
+
+export function DetailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.detailRow}>
+      <Text style={styles.detailLabel}>{label}</Text>
+      <Text style={styles.detailValue}>{value}</Text>
+    </View>
+  );
+}
+
+export function FilterChip({
+  label,
+  active,
+  onPress,
+  testID,
+}: {
+  label: string;
+  active?: boolean;
+  onPress: () => void;
+  testID?: string;
+}) {
+  return (
+    <Pressable
+      testID={testID}
+      onPress={onPress}
+      style={[styles.chip, active && styles.chipActive]}
+    >
+      <Text style={[styles.chipLabel, active && styles.chipLabelActive]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+export function StatCard({
+  label,
+  value,
+  onPress,
+  disabled,
+}: {
+  label: string;
+  value: string | number;
+  onPress?: () => void;
+  disabled?: boolean;
+}) {
+  const inner = (
+    <Card style={styles.statCard}>
+      <Text style={styles.statValue}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+    </Card>
+  );
+  if (!onPress || disabled) return inner;
+  return <Pressable onPress={onPress}>{inner}</Pressable>;
+}
+
+export function MeetingHighlightCard({
+  className,
+  title,
+  timeLabel,
+  onPress,
+  onAttendance,
+  empty,
+}: {
+  className?: string;
+  title?: string;
+  timeLabel?: string;
+  onPress?: () => void;
+  onAttendance?: () => void;
+  empty?: boolean;
+}) {
+  if (empty) {
+    return (
+      <Card style={styles.meetingCard}>
+        <Text style={styles.listSubtitle}>Sem encontro hoje.</Text>
+      </Card>
+    );
+  }
+  return (
+    <LinearGradient colors={['#173B61', '#1E4D7A']} style={styles.meetingCardGradient}>
+      <View style={styles.meetingAccent} />
+      <Text style={styles.meetingBadge}>Encontro de hoje</Text>
+      {className ? <Text style={styles.meetingClassOnDark}>{className}</Text> : null}
+      <Text style={styles.meetingTitleOnDark}>{title}</Text>
+      {timeLabel ? <Text style={styles.meetingTimeOnDark}>{timeLabel}</Text> : null}
+      <View style={styles.meetingActions}>
+        {onAttendance ? (
+          <PrimaryButton label="Fazer a chamada" onPress={onAttendance} variant="accent" />
+        ) : null}
+        {onPress ? (
+          <PrimaryButton label="Ver encontro" onPress={onPress} variant="ghost" />
+        ) : null}
+      </View>
+    </LinearGradient>
+  );
+}
+
+export function PresenceSelector({
+  value,
+  onChange,
+  disabled,
+  testID,
+}: {
+  value: AttendanceStatusKey;
+  onChange: (status: AttendanceStatusKey) => void;
+  disabled?: boolean;
+  testID?: string;
+}) {
+  const keys = Object.keys(attendanceStatus) as AttendanceStatusKey[];
+  return (
+    <View style={styles.presenceRow} testID={testID}>
+      {keys.map((key) => {
+        const meta = attendanceStatus[key];
+        const active = value === key;
+        return (
+          <Pressable
+            key={key}
+            disabled={disabled}
+            onPress={() => onChange(key)}
+            style={[
+              styles.presenceChip,
+              active && { backgroundColor: meta.bg, borderColor: meta.color },
+            ]}
+          >
+            <Text style={[styles.presenceLabel, active && { color: meta.color, fontWeight: '700' }]}>
+              {meta.label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+export function Skeleton({ height = 16, width, style }: { height?: number; width?: number; style?: ViewStyle }) {
+  return <View style={[styles.skeleton, { height, width: width ?? '100%' }, style]} />;
 }
 
 export function ErrorText({ message }: { message?: string | null }) {
@@ -108,60 +423,216 @@ export function ErrorText({ message }: { message?: string | null }) {
   return <Text style={styles.error}>{message}</Text>;
 }
 
-export function LoadingState({ label = 'A carregar…' }: { label?: string }) {
+export function LoadingState({ label = 'Carregando…' }: { label?: string }) {
   return (
     <View style={styles.loading} testID="loading-state">
-      <ActivityIndicator color={colors.gold} />
+      <ActivityIndicator color={colors.primary[800]} />
       <Text style={styles.subtitle}>{label}</Text>
     </View>
   );
 }
 
-export function EmptyState({ title, body }: { title: string; body: string }) {
+export function EmptyState({
+  title,
+  body,
+  description,
+}: {
+  title: string;
+  body?: string;
+  description?: string;
+}) {
+  const detail = description ?? body;
   return (
-    <Card>
+    <View style={styles.emptyState}>
       <Text style={styles.cardTitle}>{title}</Text>
-      <Text style={styles.subtitle}>{body}</Text>
-    </Card>
+      {detail ? <Text style={styles.subtitle}>{detail}</Text> : null}
+    </View>
+  );
+}
+
+export function ErrorState({
+  title,
+  onRetry,
+}: {
+  title: string;
+  onRetry?: () => void;
+}) {
+  return (
+    <View style={styles.emptyState}>
+      <Text style={styles.cardTitle}>{title}</Text>
+      {onRetry ? <PrimaryButton label="Tentar novamente" onPress={onRetry} variant="secondary" /> : null}
+    </View>
+  );
+}
+
+export function BrandMark() {
+  return (
+    <View style={styles.brandMark}>
+      <Text style={styles.brandMarkText}>Catequese Viva</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.cream },
-  screenContent: { paddingBottom: 48 },
-  title: { color: colors.ink, fontSize: 28, fontWeight: '700' },
-  subtitle: { color: colors.muted, fontSize: 15, marginTop: 6, lineHeight: 22 },
-  card: {
-    backgroundColor: colors.paper,
-    borderRadius: 16,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.line,
-    marginBottom: spacing.md,
-  },
-  cardTitle: { color: colors.ink, fontSize: 18, fontWeight: '700', marginBottom: 6 },
-  button: {
-    borderRadius: 12,
-    paddingVertical: 14,
+  screen: { flex: 1, backgroundColor: colors.canvas },
+  screenContent: { paddingBottom: spacing[12] },
+  title: { ...typography.headingLg, color: colors.text.primary },
+  subtitle: { ...typography.bodyMd, color: colors.text.muted, marginTop: spacing[1] },
+  sectionHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: spacing.sm,
+    justifyContent: 'space-between',
+    marginBottom: spacing[3],
+    marginTop: spacing[2],
   },
-  buttonPrimary: { backgroundColor: colors.gold },
-  buttonGhost: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.line },
-  buttonDanger: { backgroundColor: colors.danger },
-  buttonDisabled: { opacity: 0.5 },
-  buttonLabel: { color: colors.ink, fontWeight: '700', fontSize: 16 },
-  fieldLabel: { color: colors.ink, fontWeight: '600', marginBottom: 6 },
-  input: {
-    backgroundColor: colors.white,
-    borderColor: colors.line,
+  sectionTitle: { ...typography.headingSm, color: colors.text.primary },
+  sectionAction: { ...typography.labelLg, color: colors.primary[700] },
+  card: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing[4],
     borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    color: colors.ink,
-    fontSize: 16,
+    borderColor: colors.border,
+    marginBottom: spacing[3],
   },
-  error: { color: colors.danger, marginBottom: spacing.sm },
-  loading: { alignItems: 'center', padding: spacing.xl, gap: 10 },
+  cardTitle: { ...typography.headingSm, color: colors.text.primary, marginBottom: spacing[1] },
+  button: {
+    borderRadius: 14,
+    minHeight: 48,
+    paddingHorizontal: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing[2],
+  },
+  buttonPrimary: { backgroundColor: colors.primary[800] },
+  buttonAccent: { backgroundColor: colors.accent[500] },
+  buttonSecondary: { backgroundColor: colors.primary[50], borderWidth: 1, borderColor: '#D6E2EC' },
+  buttonGhost: { backgroundColor: 'transparent' },
+  buttonDanger: { backgroundColor: colors.dangerBg },
+  buttonDisabled: { opacity: 0.45 },
+  buttonLabel: { ...typography.labelLg, color: colors.white },
+  fieldLabel: { ...typography.bodySm, fontWeight: '600', color: colors.text.secondary, marginBottom: spacing[1] },
+  input: {
+    backgroundColor: colors.surface,
+    borderColor: colors.borderStrong,
+    borderWidth: 1,
+    borderRadius: radius.md,
+    paddingHorizontal: 14,
+    minHeight: 50,
+    paddingVertical: 12,
+    color: colors.text.primary,
+    fontSize: typography.bodyMd.fontSize,
+  },
+  inputError: { borderColor: colors.danger },
+  searchInput: {
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderWidth: 1,
+    borderRadius: radius.md,
+    paddingHorizontal: 14,
+    minHeight: 48,
+    color: colors.text.primary,
+    fontSize: typography.bodyMd.fontSize,
+  },
+  passwordRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[2] },
+  passwordToggle: { paddingHorizontal: spacing[2], minHeight: 44, justifyContent: 'center' },
+  error: { color: colors.danger, marginBottom: spacing[2], fontSize: 13 },
+  loading: { alignItems: 'center', padding: spacing[8], gap: spacing[2] },
+  emptyState: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing[5],
+    marginBottom: spacing[3],
+  },
+  listRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 64,
+    paddingVertical: spacing[2],
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  listTitle: { ...typography.headingSm, color: colors.text.primary },
+  listSubtitle: { ...typography.bodySm, color: colors.text.muted, marginTop: 2 },
+  chevron: { fontSize: 22, color: colors.text.placeholder, paddingHorizontal: spacing[2] },
+  detailRow: {
+    paddingVertical: spacing[3],
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  detailLabel: { ...typography.labelSm, color: colors.text.muted, marginBottom: 4 },
+  detailValue: { fontSize: 15, fontWeight: '500', color: colors.text.primary },
+  chip: {
+    paddingHorizontal: spacing[3],
+    paddingVertical: 7,
+    borderRadius: radius.pill,
+    backgroundColor: colors.primary[50],
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginRight: spacing[2],
+  },
+  chipActive: { backgroundColor: colors.primary[800], borderColor: colors.primary[800] },
+  chipLabel: { ...typography.bodySm, fontWeight: '600', color: colors.text.secondary },
+  chipLabelActive: { color: colors.white },
+  statCard: { flex: 1, minHeight: 100, marginBottom: 0 },
+  statValue: { fontSize: 24, fontWeight: '700', color: colors.text.primary },
+  statLabel: { ...typography.bodySm, color: colors.text.muted, marginTop: spacing[1] },
+  meetingCard: { overflow: 'hidden', paddingLeft: spacing[4] + 4 },
+  meetingCardGradient: {
+    borderRadius: radius.lg,
+    padding: spacing[5],
+    paddingLeft: spacing[4] + 8,
+    marginBottom: spacing[3],
+    overflow: 'hidden',
+    ...elevation.card,
+  },
+  meetingAccent: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 5,
+    backgroundColor: colors.accent[500],
+  },
+  meetingBadge: {
+    ...typography.labelSm,
+    color: colors.accent[100],
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: radius.pill,
+    marginBottom: spacing[2],
+  },
+  meetingClass: { ...typography.bodySm, fontWeight: '600', color: colors.primary[800] },
+  meetingClassOnDark: { ...typography.bodySm, fontWeight: '600', color: 'rgba(255,255,255,0.85)' },
+  meetingTitle: { fontSize: 19, fontWeight: '700', color: colors.text.primary, marginTop: 4 },
+  meetingTitleOnDark: { fontSize: 22, fontWeight: '700', color: colors.white, marginTop: 4 },
+  meetingTimeOnDark: { ...typography.bodySm, color: 'rgba(255,255,255,0.75)', marginTop: 6 },
+  meetingActions: { marginTop: spacing[4], gap: spacing[2] },
+  presenceRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[1], marginTop: spacing[2] },
+  presenceChip: {
+    paddingHorizontal: spacing[2],
+    paddingVertical: 6,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
+    minHeight: 36,
+    justifyContent: 'center',
+  },
+  presenceLabel: { fontSize: 11, color: colors.text.secondary },
+  skeleton: { backgroundColor: colors.skeleton, borderRadius: radius.md },
+  avatar: {
+    backgroundColor: colors.primary[100],
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  brandMark: { alignItems: 'center', marginBottom: spacing[6], marginTop: spacing[8] },
+  brandMarkText: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.primary[900],
+  },
 });

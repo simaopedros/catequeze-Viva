@@ -4,6 +4,10 @@ import { LoginScreen } from '../screens/LoginScreen';
 import { TwoFactorScreen } from '../screens/TwoFactorScreen';
 import { CommunityScreen } from '../screens/CommunityScreen';
 
+jest.mock('../auth/AuthContext', () => ({
+  useAuth: () => ({ apiBaseUrl: 'https://api.example.com' }),
+}));
+
 describe('auth and community UI', () => {
   it('submits login credentials', () => {
     const onSubmit = jest.fn();
@@ -16,6 +20,18 @@ describe('auth and community UI', () => {
     fireEvent.press(view.getByTestId('login-submit'));
 
     expect(onSubmit).toHaveBeenCalledWith('coord@paroquia.pt', 'Teste@123');
+  });
+
+  it('shows branded login layout with footer art', () => {
+    const view = render(
+      <LoginScreen onSubmit={jest.fn()} onForgotPassword={jest.fn()} />,
+    );
+
+    expect(view.getByTestId('login-brand-header')).toBeTruthy();
+    expect(view.getByText('Catequese')).toBeTruthy();
+    expect(view.getByText('Viva')).toBeTruthy();
+    expect(view.getByTestId('login-footer-art')).toBeTruthy();
+    expect(view.getByText('Esqueci a senha')).toBeTruthy();
   });
 
   it('requires six TOTP digits', () => {
@@ -32,7 +48,7 @@ describe('auth and community UI', () => {
   });
 
   it('renders the feed and the compose affordance when publishing is allowed', () => {
-    const onCompose = jest.fn();
+    const onPublishPost = jest.fn().mockResolvedValue(undefined);
     const view = render(
       <CommunityScreen
         posts={[
@@ -43,19 +59,18 @@ describe('auth and community UI', () => {
             author: { id: 'u', handle: 'joao', displayName: 'João', avatarUrl: null },
           },
         ]}
-        topics={[{ slug: 'liturgia', name: 'Liturgia' }]}
         access={{ authenticated: true, canPublish: true }}
-        sort="recent"
-        onChangeSort={jest.fn()}
-        onChangeTopic={jest.fn()}
+        feedScope="all"
+        onChangeFeedScope={jest.fn()}
         onOpenAuthor={jest.fn()}
-        onCompose={onCompose}
+        onPublishPost={onPublishPost}
       />,
     );
 
     expect(view.getByTestId('community-screen')).toBeTruthy();
     expect(view.getByText('Paz e bem')).toBeTruthy();
-    fireEvent.press(view.getByTestId('compose-open'));
-    expect(onCompose).toHaveBeenCalled();
+    expect(view.getByTestId('community-compose-card')).toBeTruthy();
+    fireEvent.press(view.getByTestId('compose-open-field'));
+    expect(view.getByTestId('compose-input')).toBeTruthy();
   });
 });

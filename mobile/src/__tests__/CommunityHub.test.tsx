@@ -1,42 +1,17 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import { CommunityScreen } from '../screens/CommunityScreen';
-import { COMMUNITY_AREAS } from '../screens/communityAreas';
+
+jest.mock('../auth/AuthContext', () => ({
+  useAuth: () => ({ apiBaseUrl: 'https://api.example.com' }),
+}));
 import { openCommunityArea } from '../screens/communityNavigation';
 import { appRoutes } from '../navigation/routes';
 
-describe('Community hub', () => {
-  it('mostra todas as áreas da rede social', () => {
-    const onOpenArea = jest.fn();
-    const view = render(
-      <CommunityScreen
-        posts={[]}
-        topics={[{ slug: 'oracao', name: 'Oração' }]}
-        sort="recent"
-        showHub
-        onOpenArea={onOpenArea}
-        onChangeSort={jest.fn()}
-        onChangeTopic={jest.fn()}
-        onOpenAuthor={jest.fn()}
-        onCompose={jest.fn()}
-        onSearch={jest.fn()}
-      />,
-    );
-
-    expect(view.getByTestId('community-hub')).toBeTruthy();
-    expect(view.getByTestId('feed-heading')).toBeTruthy();
-    expect(view.getByText('Publicações')).toBeTruthy();
-    for (const area of COMMUNITY_AREAS.filter((item) => item.id !== 'feed')) {
-      expect(view.getByTestId(`area-${area.id}`)).toBeTruthy();
-      expect(view.getByText(area.label)).toBeTruthy();
-    }
-    expect(view.queryByTestId('area-feed')).toBeNull();
-
-    fireEvent.press(view.getByTestId('area-members'));
-    expect(onOpenArea).toHaveBeenCalledWith('members');
-  });
-
-  it('mostra as postagens no próprio feed, sem escondê-las atrás das áreas', () => {
+describe('Community feed', () => {
+  it('renderiza filtros, composer e feed no layout da Comunidade', () => {
+    const onPublishPost = jest.fn().mockResolvedValue(undefined);
+    const onOpenLink = jest.fn();
     const view = render(
       <CommunityScreen
         posts={[
@@ -45,22 +20,41 @@ describe('Community hub', () => {
             slug: 'paz-e-bem',
             body: 'Paz e bem, irmãos. A catequese começou.',
             author: { id: 'u1', handle: 'coord_saojose', displayName: 'Coordenador São José', avatarUrl: null },
+            parish: { id: 'parish-1', name: 'Paróquia São João' },
+            createdAt: new Date().toISOString(),
           },
         ]}
-        topics={[]}
-        sort="recent"
-        showHub
-        onOpenArea={jest.fn()}
-        onChangeSort={jest.fn()}
-        onChangeTopic={jest.fn()}
+        access={{ authenticated: true, canPublish: true }}
+        feedScope="all"
+        onChangeFeedScope={jest.fn()}
         onOpenAuthor={jest.fn()}
         onOpenPost={jest.fn()}
-        onCompose={jest.fn()}
+        onPublishPost={onPublishPost}
+        onOpenLink={onOpenLink}
       />,
     );
 
+    expect(view.getByTestId('community-screen')).toBeTruthy();
+    expect(view.getByTestId('community-scope-filters')).toBeTruthy();
+    expect(view.getByTestId('community-compose-card')).toBeTruthy();
     expect(view.getByText('Paz e bem, irmãos. A catequese começou.')).toBeTruthy();
     expect(view.getByTestId('post-p1')).toBeTruthy();
+
+    expect(view.getByTestId('compose-destination-collapsed')).toBeTruthy();
+    fireEvent.press(view.getByTestId('compose-open-field'));
+    expect(view.getByTestId('compose-input')).toBeTruthy();
+    expect(view.getByTestId('compose-audience-picker')).toBeTruthy();
+    fireEvent.changeText(view.getByTestId('compose-input'), 'Nova mensagem pastoral');
+    fireEvent.press(view.getByTestId('compose-publish'));
+    expect(onPublishPost).toHaveBeenCalledWith({
+      body: 'Nova mensagem pastoral',
+      mediaIds: [],
+      mediaConsentAck: false,
+      audience: 'all',
+      share: null,
+    });
+    fireEvent.press(view.getByTestId('community-link-action'));
+    expect(onOpenLink).toHaveBeenCalled();
   });
 
   it('abre as rotas de cada área', () => {

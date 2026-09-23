@@ -41,6 +41,23 @@ export type SocialAuthor = {
   socialHandle?: string | null;
 };
 
+export type SocialPostMedia = {
+  id: string;
+  kind?: 'IMAGE' | 'VIDEO' | string;
+  position?: number;
+  status?: string;
+  altText?: string | null;
+  width?: number | null;
+  height?: number | null;
+  durationSeconds?: number | null;
+  thumbnailUrl?: string | null;
+  imageUrl?: string | null;
+  videoUrl?: string | null;
+  embedUrl?: string | null;
+  /** @deprecated API uses imageUrl */
+  url?: string | null;
+};
+
 export type SocialShare = {
   kind: string;
   title: string;
@@ -62,9 +79,10 @@ export type SocialPost = {
   commentCount?: number;
   shareCount?: number;
   author: SocialAuthor;
+  parish?: { id: string; name: string } | null;
   share?: SocialShare | null;
   topics?: { slug: string; name: string }[];
-  media?: { id: string; kind?: string; url?: string | null }[];
+  media?: SocialPostMedia[];
   isOwn?: boolean;
   viewerReaction?: 'AMEM' | 'REZO' | 'ALELUIA' | null;
 };
@@ -102,6 +120,36 @@ export type SocialAccess = {
   reason?: string | null;
   banned?: boolean;
   quotaLeft?: number | null;
+  limits?: {
+    maxPostsPerDay?: number | null;
+    maxMediaPerPost: number;
+    maxVideoSeconds: number;
+  };
+};
+
+export type SocialVideoUploadTicket =
+  | {
+      transport: 'stream';
+      mediaId: string;
+      libraryId: string;
+      videoId: string;
+      tusEndpoint: string;
+      authorizationSignature: string;
+      authorizationExpire: number;
+      embedUrl: string;
+    }
+  | {
+      transport: 'server';
+      mediaId: string;
+    };
+
+export type CommunityComposePayload = {
+  body: string;
+  mediaIds: string[];
+  mediaConsentAck: boolean;
+  audience: 'all' | 'parish' | 'classes';
+  parishId?: string | null;
+  share?: { kind: string; sourceId: string } | null;
 };
 
 export type SocialTopic = {

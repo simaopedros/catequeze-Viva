@@ -1,7 +1,6 @@
 import React from 'react';
-import { Linking, Text } from 'react-native';
-import { BrandButton, Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { Linking } from 'react-native';
+import { EmptyState, ListRow, LoadingState, Screen, ScreenIntro } from '../components/ui';
 
 function asDocuments(payload: any) {
   if (Array.isArray(payload)) return payload;
@@ -14,32 +13,36 @@ export function DocumentsScreen({
   payload,
   loading,
   error,
+  refreshing,
   apiBase,
+  onRefresh,
 }: {
   payload: any;
   loading?: boolean;
   error?: string | null;
+  refreshing?: boolean;
   apiBase: string;
+  onRefresh?: () => void;
 }) {
   const items = asDocuments(payload);
+  const base = apiBase.replace(/\/$/, '');
+
   return (
-    <Screen testID="documents-screen">
-      <ScreenTitle title="Documentos" subtitle="Ficheiros da família e da turma." />
-      {loading ? <LoadingState /> : null}
+    <Screen testID="documents-screen" onRefresh={onRefresh} refreshing={refreshing}>
+      <ScreenIntro text="Ficheiros da família e da turma." />
+      {loading && items.length === 0 ? <LoadingState /> : null}
       {error ? <EmptyState title="Documentos indisponíveis" body={error} /> : null}
-      {items.length === 0 && !loading ? (
+      {items.length === 0 && !loading && !error ? (
         <EmptyState title="Pasta vazia" body="Ainda não há documentos para mostrar." />
       ) : (
         items.map((doc: any) => (
-          <Card key={doc.id}>
-            <Text style={{ color: colors.ink, fontWeight: '700' }}>{doc.title || doc.name || 'Documento'}</Text>
-            <Text style={{ color: colors.muted, marginTop: 4 }}>{doc.kind || doc.mimeType || ''}</Text>
-            <BrandButton
-              variant="ghost"
-              label="Abrir"
-              onPress={() => Linking.openURL(`${apiBase.replace(/\/$/, '')}/mobile/documents/${doc.id}`)}
-            />
-          </Card>
+          <ListRow
+            key={doc.id}
+            testID={`document-${doc.id}`}
+            title={doc.title || doc.name || 'Documento'}
+            subtitle={doc.kind || doc.mimeType || undefined}
+            onPress={() => Linking.openURL(`${base}/mobile/documents/${doc.id}`)}
+          />
         ))
       )}
     </Screen>

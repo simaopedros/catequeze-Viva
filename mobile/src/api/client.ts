@@ -16,6 +16,7 @@ import type {
   SocialSearch,
   SocialShare,
   SocialTopic,
+  SocialVideoUploadTicket,
 } from './types';
 
 export class MobileApiError extends Error {
@@ -148,8 +149,23 @@ export function createMobileClient(options: MobileClientOptions) {
     meetings(classId?: string) {
       return request<any>(withQuery(MOBILE_PATHS.meetings, { classId }));
     },
+    createMeeting(body: {
+      classId: string;
+      title: string;
+      theme?: string;
+      date: string;
+      notes?: string;
+    }) {
+      return request<any>(MOBILE_PATHS.meetings, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
     meetingDetails(id: string) {
       return request<any>(MOBILE_PATHS.meetingDetails(id));
+    },
+    meetingAttendanceSheet(meetingId: string) {
+      return request<any>(MOBILE_PATHS.meetingAttendanceSheet(meetingId));
     },
     saveAttendance(body: {
       meetingId: string;
@@ -158,6 +174,15 @@ export function createMobileClient(options: MobileClientOptions) {
       note?: string | null;
     }) {
       return request<any>(MOBILE_PATHS.attendance, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    saveAttendanceBatch(body: {
+      meetingId: string;
+      changes: Array<{ catechumenProfileId: string; status: string; note?: string | null }>;
+    }) {
+      return request<any>(MOBILE_PATHS.attendanceBatch, {
         method: 'POST',
         body: JSON.stringify(body),
       });
@@ -199,11 +224,36 @@ export function createMobileClient(options: MobileClientOptions) {
     socialTopics() {
       return request<SocialTopic[]>(MOBILE_PATHS.socialTopics);
     },
-    createPost(body: { body: string; topicSlugs?: string[]; share?: { kind: string; sourceId: string } | null }) {
+    createPost(body: {
+      body: string;
+      topicSlugs?: string[];
+      share?: { kind: string; sourceId: string } | null;
+      mediaIds?: string[];
+      mediaConsentAck?: boolean;
+      parishId?: string | null;
+    }) {
       return request<SocialPost>(MOBILE_PATHS.socialPosts, {
         method: 'POST',
         body: JSON.stringify(body),
       });
+    },
+    createSocialVideoUpload(body: { title?: string; durationSeconds?: number }) {
+      return request<SocialVideoUploadTicket>(MOBILE_PATHS.socialVideoUpload, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    getSocialMediaStatus(mediaIds: string[]) {
+      return request<{ id: string; status: string; kind?: string }[]>(MOBILE_PATHS.socialMediaStatus, {
+        method: 'POST',
+        body: JSON.stringify({ mediaIds }),
+      });
+    },
+    getUploadAuth() {
+      return {
+        getBaseUrl: options.getBaseUrl,
+        getToken: options.getToken,
+      };
     },
     socialProfile(handle: string) {
       return request<SocialProfile>(MOBILE_PATHS.socialProfile(handle));
@@ -291,6 +341,92 @@ export function createMobileClient(options: MobileClientOptions) {
     },
     bibleChapter(bookId: string, chapter: number, locale = 'pt-BR') {
       return request<BibleChapter>(withQuery(MOBILE_PATHS.bibleChapter(bookId, chapter), { locale }));
+    },
+    catechumens(workspaceId?: string, search?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.catechumens, { workspaceId, take: 100, search }));
+    },
+    catechumenDetails(id: string) {
+      return request<any>(MOBILE_PATHS.catechumenDetails(id));
+    },
+    families() {
+      return request<any>(MOBILE_PATHS.families);
+    },
+    familyDetails(id: string) {
+      return request<any>(MOBILE_PATHS.familyDetails(id));
+    },
+    calendar(workspaceId?: string, from?: string, to?: string) {
+      return request<{ items: any[]; canWriteEvents?: boolean }>(
+        withQuery(MOBILE_PATHS.calendar, { workspaceId, from, to }),
+      );
+    },
+    createCalendarEvent(body: {
+      name: string;
+      date: string;
+      description?: string;
+      workspaceId?: string;
+    }) {
+      return request<any>(MOBILE_PATHS.calendarEvents, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    updateCalendarEvent(
+      id: string,
+      body: { name?: string; date?: string; description?: string },
+    ) {
+      return request<any>(MOBILE_PATHS.calendarEvent(id), {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+      });
+    },
+    deleteCalendarEvent(id: string) {
+      return request<{ ok: boolean }>(MOBILE_PATHS.calendarEvent(id), {
+        method: 'DELETE',
+      });
+    },
+    updateMeeting(
+      id: string,
+      body: { title?: string; theme?: string; date?: string; notes?: string },
+    ) {
+      return request<any>(MOBILE_PATHS.meetingDetails(id), {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+      });
+    },
+    deleteMeeting(id: string) {
+      return request<{ success: boolean }>(MOBILE_PATHS.meetingDetails(id), {
+        method: 'DELETE',
+      });
+    },
+    announcements(workspaceId?: string) {
+      return request<any[]>(withQuery(MOBILE_PATHS.announcements, { workspaceId }));
+    },
+    announcementDetails(id: string, workspaceId?: string) {
+      return request<any>(withQuery(MOBILE_PATHS.announcementDetails(id), { workspaceId }));
+    },
+    acknowledgeAnnouncement(id: string) {
+      return request<{ ok: boolean }>(MOBILE_PATHS.acknowledgeAnnouncement(id), { method: 'POST' });
+    },
+    journeys(workspaceId?: string) {
+      return request<any[]>(withQuery(MOBILE_PATHS.journeys, { workspaceId }));
+    },
+    journeyDetails(id: string) {
+      return request<any>(MOBILE_PATHS.journeyDetails(id));
+    },
+    updateJourneyMilestone(milestoneId: string, status: string) {
+      return request<any>(MOBILE_PATHS.journeyMilestone(milestoneId), {
+        method: 'POST',
+        body: JSON.stringify({ status }),
+      });
+    },
+    searchCatechism(q: string, limit = 20) {
+      return request<{ results: any[] }>(withQuery(MOBILE_PATHS.catechismSearch, { q, limit }));
+    },
+    catechismCategory(category: string) {
+      return request<{ results: any[] }>(MOBILE_PATHS.catechismCategory(category));
+    },
+    catechismEntry(number: number) {
+      return request<any>(MOBILE_PATHS.catechismEntry(number));
     },
   };
 }

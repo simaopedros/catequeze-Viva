@@ -1,22 +1,16 @@
-import React, { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { useNavigation } from 'expo-router';
+import { MoreVertical, Repeat2 } from 'lucide-react-native';
+import React, { useLayoutEffect, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { SocialAccess, SocialComment, SocialPost, SocialReportReason } from '../api/types';
+import { PostCommentComposer, PostCommentItem } from '../components/postCommentsUi';
 import { PostCard } from '../components/PostCard';
-import { BrandButton, EmptyState, Field, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors, spacing } from '../theme';
-
-const REACTIONS = [
-  { id: 'AMEM' as const, label: 'Amém' },
-  { id: 'REZO' as const, label: 'Rezo' },
-  { id: 'ALELUIA' as const, label: 'Aleluia' },
-];
-
-const REPORT_REASONS: { id: SocialReportReason; label: string }[] = [
-  { id: 'DOCTRINE', label: 'Doutrina' },
-  { id: 'HATE', label: 'Ódio' },
-  { id: 'SPAM', label: 'Spam' },
-  { id: 'OTHER', label: 'Outro' },
-];
+import { PostReactionStrip, type PastoralReactionId } from '../components/postReactionsUi';
+import { ReportSheet } from '../components/ReportSheet';
+import { EmptyState, LoadingState, Screen } from '../components/ui';
+import { useKeyboardOffset } from '../hooks/useKeyboardOffset';
+import { colors, contentHorizontalPadding, radius, spacing } from '../theme';
 
 export function PostDetailScreen({
   post,
@@ -25,11 +19,12 @@ export function PostDetailScreen({
   loading,
   error,
   busy,
+  viewerName,
   onOpenAuthor,
   onReact,
   onComment,
   onReport,
-  reportMessage,
+  onRepost,
 }: {
   post?: SocialPost | null;
   comments: SocialComment[];
@@ -37,14 +32,46 @@ export function PostDetailScreen({
   loading?: boolean;
   error?: string | null;
   busy?: boolean;
+  viewerName?: string;
   onOpenAuthor: (handle: string) => void;
-  onReact: (type: 'AMEM' | 'REZO' | 'ALELUIA') => void;
+  onReact: (type: PastoralReactionId) => void;
   onComment: (body: string) => Promise<void> | void;
   onReport?: (reason: SocialReportReason) => Promise<void> | void;
-  reportMessage?: string | null;
+  onRepost?: () => void;
 }) {
   const [body, setBody] = useState('');
-  const [reason, setReason] = useState<SocialReportReason>('OTHER');
+  const [reportVisible, setReportVisible] = useState(false);
+  const [reportBusy, setReportBusy] = useState(false);
+  const [composerHeight, setComposerHeight] = useState(72);
+  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
+  const keyboardOffset = useKeyboardOffset();
+  const { width } = useWindowDimensions();
+  const horizontal = contentHorizontalPadding(width);
+  const canComment = !access || access.canPublish;
+  const keyboardOpen = keyboardOffset > 0;
+  const scrollBottomInset = composerHeight + spacing[4] + (keyboardOpen ? keyboardOffset : insets.bottom);
+
+  useLayoutEffect(() => {
+    if (!post) return;
+    navigation.setOptions({
+      title: post.author.displayName || 'Publicação',
+      headerRight: onReport
+        ? () => (
+            <Pressable
+              testID="post-menu"
+              onPress={() => setReportVisible(true)}
+              hitSlop={12}
+              style={styles.headerMenu}
+              accessibilityRole="button"
+              accessibilityLabel="Mais opções"
+            >
+              <MoreVertical size={22} color={colors.primary[800]} strokeWidth={2.2} />
+            </Pressable>
+          )
+        : undefined,
+    });
+  }, [navigation, onReport, post]);
 
   if (loading) {
     return (
@@ -61,97 +88,195 @@ export function PostDetailScreen({
     );
   }
 
+  const topicLine = post.topics?.map((topic) => topic.name).filter(Boolean).join(' · ');
+
+  const submitComment = async () => {
+    const trimmed = body.trim();
+    if (!trimmed || !canComment) return;
+    await onComment(trimmed);
+    setBody('');
+  };
+
   return (
-    <Screen testID="post-screen">
-      <ScreenTitle title="Publicação" subtitle={post.topics?.map((topic) => topic.name).join(' · ') || 'Comunidade'} />
-      <PostCard post={post} onOpenAuthor={onOpenAuthor} />
-      <View style={{ flexDirection: 'row', gap: 8, marginBottom: spacing.md, flexWrap: 'wrap' }}>
-        {REACTIONS.map((item) => (
-          <Pressable
-            key={item.id}
-            testID={`react-${item.id}`}
-            onPress={() => onReact(item.id)}
+    <SafeAreaView testID="post-screen" style={styles.root} edges={['left', 'right']}>
+      <View style={styles.flex}>
+        <ScrollView
+          style={styles.flex}
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingHorizontal: horizontal, paddingBottom: scrollBottomInset },
+          ]}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+        >
+          {topicLine ? <Text style={styles.topicLine}>{topicLine}</Text> : null}
+
+          <PostCard post={post} onOpenAuthor={onOpenAuthor} variant="detail" />
+
+          <PostReactionStrip
+            active={post.viewerReaction ?? null}
+            totalCount={post.reactionCount}
             disabled={busy}
-            style={{
-              paddingHorizontal: 12,
-              paddingVertical: 8,
-              borderRadius: 999,
-              backgroundColor: post.viewerReaction === item.id ? colors.ink : colors.paper,
-              borderWidth: 1,
-              borderColor: colors.line,
-            }}
-          >
-            <Text style={{ color: post.viewerReaction === item.id ? colors.white : colors.ink, fontWeight: '600' }}>
-              {item.label}
+            onReact={onReact}
+          />
+
+          {onRepost ? (
+            <Pressable
+              testID="post-repost"
+              onPress={onRepost}
+              style={styles.repostButton}
+              accessibilityRole="button"
+              accessibilityLabel="Republicar na comunidade"
+            >
+              <Repeat2 size={18} color={colors.primary[800]} strokeWidth={2.2} />
+              <Text style={styles.repostLabel}>Republicar</Text>
+            </Pressable>
+          ) : null}
+
+          <View style={styles.commentsSection} testID="post-comments-section">
+            <Text style={styles.commentsTitle}>
+              Comentários{comments.length > 0 ? ` · ${comments.length}` : ''}
             </Text>
-          </Pressable>
-        ))}
-      </View>
-      <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginBottom: spacing.sm }}>Comentários</Text>
-      {comments.length === 0 ? (
-        <EmptyState title="Ainda sem comentários" body="Seja o primeiro a responder com um Amém ou uma palavra." />
-      ) : (
-        comments.map((comment) => (
-          <View key={comment.id} testID={`comment-${comment.id}`} style={{ marginBottom: spacing.md }}>
-            <Text style={{ color: colors.ink, fontWeight: '700' }}>{comment.author.displayName}</Text>
-            {comment.author.handle || comment.author.socialHandle ? (
-              <Text style={{ color: colors.goldDark, marginBottom: 4 }}>
-                @{comment.author.handle || comment.author.socialHandle}
+
+            {!canComment ? (
+              <Text style={styles.commentHint}>
+                Use a mesma conta da Comunidade para participar na conversa.
               </Text>
             ) : null}
-            <Text style={{ color: colors.inkSoft, lineHeight: 22 }}>{comment.body}</Text>
+
+            {comments.length === 0 ? (
+              <Text style={styles.commentsEmpty}>Seja o primeiro a responder.</Text>
+            ) : (
+              <View style={styles.commentList}>
+                {comments.map((comment) => (
+                  <PostCommentItem key={comment.id} comment={comment} />
+                ))}
+              </View>
+            )}
           </View>
-        ))
-      )}
-      {access && !access.canPublish ? (
-        <Text style={{ color: colors.goldDark, marginBottom: spacing.sm }}>
-          Comentários pedem a mesma conta com que lê a Comunidade.
-        </Text>
-      ) : null}
-      <Field label="O seu comentário" value={body} onChangeText={setBody} multiline testID="comment-input" />
-      <BrandButton
-        testID="comment-submit"
-        label={busy ? 'A enviar…' : 'Comentar'}
-        disabled={busy || !body.trim()}
-        onPress={async () => {
-          await onComment(body.trim());
-          setBody('');
-        }}
-      />
-      {onReport ? (
-        <View style={{ marginTop: spacing.lg }}>
-          <Text style={{ color: colors.ink, fontWeight: '700', marginBottom: spacing.sm }}>Denunciar</Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: spacing.sm }}>
-            {REPORT_REASONS.map((item) => (
-              <Pressable
-                key={item.id}
-                testID={`report-reason-${item.id}`}
-                onPress={() => setReason(item.id)}
-                style={{
-                  paddingHorizontal: 12,
-                  paddingVertical: 8,
-                  borderRadius: 999,
-                  backgroundColor: reason === item.id ? colors.ink : colors.paper,
-                  borderWidth: 1,
-                  borderColor: colors.line,
-                }}
-              >
-                <Text style={{ color: reason === item.id ? colors.white : colors.ink, fontWeight: '600' }}>
-                  {item.label}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-          {reportMessage ? <Text style={{ color: colors.success, marginBottom: spacing.sm }}>{reportMessage}</Text> : null}
-          <BrandButton
-            variant="ghost"
-            testID="report-submit"
-            label={busy ? 'A enviar…' : 'Enviar denúncia'}
-            disabled={busy}
-            onPress={() => onReport(reason)}
+        </ScrollView>
+
+        <View
+          onLayout={(event) => {
+            const next = event.nativeEvent.layout.height;
+            if (next > 0 && Math.abs(next - composerHeight) > 1) {
+              setComposerHeight(next);
+            }
+          }}
+          style={[
+            styles.composerBar,
+            {
+              paddingHorizontal: horizontal,
+              paddingBottom: keyboardOpen ? spacing[2] : Math.max(insets.bottom, spacing[2]),
+              bottom: keyboardOffset,
+            },
+          ]}
+        >
+          <PostCommentComposer
+            value={body}
+            onChangeText={setBody}
+            onSubmit={submitComment}
+            busy={busy}
+            disabled={!canComment}
+            viewerName={viewerName}
+            variant="footer"
           />
         </View>
+      </View>
+      {onReport ? (
+        <ReportSheet
+          visible={reportVisible}
+          onClose={() => setReportVisible(false)}
+          busy={reportBusy}
+          onSubmit={async (reason) => {
+            setReportBusy(true);
+            try {
+              await onReport(reason);
+              setReportVisible(false);
+            } finally {
+              setReportBusy(false);
+            }
+          }}
+        />
       ) : null}
-    </Screen>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: colors.canvas,
+  },
+  flex: { flex: 1 },
+  scrollContent: {
+    paddingTop: spacing[4],
+    paddingBottom: spacing[4],
+  },
+  headerMenu: {
+    marginRight: spacing[1],
+    padding: spacing[1],
+  },
+  topicLine: {
+    fontSize: 13,
+    color: colors.text.muted,
+    marginBottom: spacing[3],
+  },
+  repostButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+    alignSelf: 'flex-start',
+    marginTop: spacing[2],
+    marginBottom: spacing[1],
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[3],
+    borderRadius: radius.pill,
+    backgroundColor: colors.primary[50],
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  repostLabel: {
+    color: colors.primary[800],
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  commentsSection: {
+    marginTop: spacing[1],
+    paddingTop: spacing[2],
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.border,
+  },
+  commentsTitle: {
+    color: colors.text.muted,
+    fontWeight: '600',
+    fontSize: 13,
+    textTransform: 'uppercase',
+    letterSpacing: 0.3,
+    marginBottom: spacing[2],
+  },
+  commentsEmpty: {
+    color: colors.text.muted,
+    fontSize: 14,
+    lineHeight: 20,
+    paddingVertical: spacing[2],
+  },
+  commentList: {
+    marginTop: spacing[1],
+  },
+  commentHint: {
+    color: colors.text.muted,
+    fontSize: 13,
+    lineHeight: 18,
+    marginBottom: spacing[3],
+  },
+  composerBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.border,
+    backgroundColor: colors.canvas,
+    paddingTop: spacing[2],
+  },
+});

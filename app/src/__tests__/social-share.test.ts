@@ -40,6 +40,7 @@ describe('social share snapshots', () => {
     expect(isSocialShareKind('DIRECTORY')).toBe(true);
     expect(isSocialShareKind('DOCUMENT')).toBe(true);
     expect(isSocialShareKind('AI_ARTIFACT')).toBe(true);
+    expect(isSocialShareKind('POST')).toBe(true);
     expect(isSocialShareKind('TEXT')).toBe(false);
     expect(isSocialShareKind('')).toBe(false);
   });
@@ -238,5 +239,34 @@ describe('resolveSocialShare', () => {
     );
     expect(ai.kind).toBe('AI_ARTIFACT');
     expect(ai.sourceLabel).toMatch(/editorial/i);
+  });
+
+  it('builds a republicação card from a published post slug', async () => {
+    const { resolveSocialShare } = await import('../server/operations/socialShareResolve');
+    const snap = await resolveSocialShare(
+      { kind: 'POST', sourceId: 'paz-e-bem' },
+      {
+        entities: {
+          SocialPost: {
+            findFirst: async () => ({
+              id: 'p1',
+              slug: 'paz-e-bem',
+              body: 'Paz e bem a todos na turma.',
+              author: {
+                displayName: 'Maria',
+                socialHandle: 'maria',
+                firstName: 'Maria',
+                lastName: 'Silva',
+              },
+              parish: { name: 'Paróquia São José' },
+            }),
+          },
+        },
+      },
+    );
+    expect(snap.kind).toBe('POST');
+    expect(snap.title).toBe('Maria Silva');
+    expect(snap.href).toBe('/app/comunidade/p/paz-e-bem');
+    expect(snap.excerpt).toContain('Paz e bem');
   });
 });

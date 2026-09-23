@@ -47,9 +47,12 @@ npx playwright test --ui   # Run e2e tests in Playwright UI
 ## Test seed data
 
 ```bash
-./seed_tests.sh            # Depopulates + seeds 1 diocese, 3 parishes, 17 users, classes, meetings
+./seed_tests.sh            # Depopulates + seeds diocese, paróquias, utilizadores, turmas, encontros (datas relativas a hoje), presenças, comunidade, comunicados
+wasp db seed               # Catálogo + tópicos sociais + refresh de datas do demo mobile (rode seed_tests.sh antes)
 ```
 Default password for all seed users: `Teste@123`. All fixture IDs are hardcoded — change them only in conjunction with the tests.
+
+**Demo mobile:** use `catequista.lead@catequese.com` ou `coord.saojose@catequese.com`. A **Turma 3A — Crisma** inclui ~14 catequizandos, encontro **hoje** («O Espírito Santo») com materiais, chamada parcial, 3 posts na Comunidade e comunicados paroquiais.
 
 ## Environment
 
@@ -78,3 +81,7 @@ Key dev vars:
 - **AI features**: AI-generated content, meeting plans, chat. Rate-limited by `UserAiCredits` and `DailyAiUsage`. OpenAI via `src/server/ai/`.
 - **Billing**: Stripe + LemonSqueezy + Polar + Woovi (PIX). Plans in `src/shared/pricing.ts`. Limits enforced in `src/shared/planLimits.ts`.
 - **CI** (`.github/workflows/ci.yml`): `npm run i18n:check` then `npm run test:unit`, plus `wasp compile`.
+
+## Mobile (`mobile/`)
+
+- Expo SDK 57; testes rápidos com **Expo Go**. Efeitos `expo-backdrop` (blur nativo em folhas e borda de scroll) exigem **development build** (`expo-dev-client`, `npm run prebuild`, `expo run:*`). No Go/web o app usa `expo-blur` ou overlay sólido via `PastoralBottomSheet` / `ScrollEdgeBlur`. Ver `mobile/README.md`.

@@ -24,8 +24,8 @@ function Gate({ children }: { children: React.ReactNode }) {
 
   if (status === 'booting') {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.cream }}>
-        <ActivityIndicator color={colors.gold} />
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.canvas }}>
+        <ActivityIndicator color={colors.accent[500]} />
       </View>
     );
   }
@@ -36,20 +36,20 @@ function Gate({ children }: { children: React.ReactNode }) {
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <StatusBar style="light" backgroundColor={colors.ink} />
+      <StatusBar style="dark" />
       <Gate>
         <Stack
           screenOptions={{
-            headerStyle: { backgroundColor: colors.ink },
-            headerTintColor: colors.cream,
-            headerTitleStyle: { fontWeight: '700' },
-            contentStyle: { backgroundColor: colors.cream },
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.primary[800],
+            headerTitleStyle: { fontWeight: '700', color: colors.text.primary },
+            contentStyle: { backgroundColor: colors.canvas },
           }}
         >
           <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ title: 'Entrar' }} />
-          <Stack.Screen name="two-factor" options={{ title: '2FA' }} />
-          <Stack.Screen name="forgot-password" options={{ title: 'Recuperar' }} />
+          <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="two-factor" options={{ title: 'Verificação' }} />
+          <Stack.Screen name="forgot-password" options={{ title: 'Recuperar senha' }} />
           <Stack.Screen name="(app)" options={{ headerShown: false }} />
         </Stack>
       </Gate>

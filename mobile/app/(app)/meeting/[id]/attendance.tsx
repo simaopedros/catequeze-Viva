@@ -1,31 +1,32 @@
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert } from 'react-native';
 import { useAuth } from '../../../../src/auth/AuthContext';
 import { useAsync } from '../../../../src/hooks/useAsync';
 import { AttendanceScreen } from '../../../../src/screens/AttendanceScreen';
 
 export default function AttendanceRoute() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const meetingId = String(id);
   const { api } = useAuth();
-  const { data, loading, error, reload } = useAsync(() => api.meetingDetails(String(id)), [id]);
-  const [busy, setBusy] = useState(false);
+  const { data, loading, error, reload } = useAsync(
+    () => api.meetingAttendanceSheet(meetingId),
+    [meetingId, api],
+  );
+  const [saving, setSaving] = useState(false);
 
   return (
     <AttendanceScreen
-      meeting={data}
+      sheet={data}
       loading={loading}
       error={error}
-      busy={busy}
-      onSave={async (catechumenProfileId, status) => {
-        setBusy(true);
+      saving={saving}
+      onSave={async (changes) => {
+        setSaving(true);
         try {
-          await api.saveAttendance({ meetingId: String(id), catechumenProfileId, status });
+          await api.saveAttendanceBatch({ meetingId, changes });
           await reload();
-        } catch (err) {
-          Alert.alert('Presença', err instanceof Error ? err.message : 'Não foi possível gravar.');
         } finally {
-          setBusy(false);
+          setSaving(false);
         }
       }}
     />

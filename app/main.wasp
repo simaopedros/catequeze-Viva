@@ -109,7 +109,8 @@ app OpenSaaS {
   db: {
     seeds: [
       import { seedPricingCatalog } from "@src/server/scripts/seedPricingCatalog",
-      import { seedSocialTopics } from "@src/server/scripts/seedSocialTopics"
+      import { seedSocialTopics } from "@src/server/scripts/seedSocialTopics",
+      import { seedMobileDemoExperience } from "@src/server/scripts/seedMobileDemoExperience"
     ]
   },
 }
@@ -1300,6 +1301,11 @@ action deleteLiturgicalEvent {
   fn: import { deleteLiturgicalEvent } from "@src/server/operations/calendarOperations",
   entities: [LiturgicalEvent, Membership, Parish, Diocese, ClassCatechist]
 }
+
+action updateLiturgicalEvent {
+  fn: import { updateLiturgicalEvent } from "@src/server/operations/calendarOperations",
+  entities: [LiturgicalEvent, Membership, Parish, Diocese, ClassCatechist]
+}
 //#endregion
 
 //#region Hierarchical pastoral resources
@@ -1771,7 +1777,7 @@ action createSocialPost {
 
 query previewSocialShare {
   fn: import { previewSocialShare } from "@src/server/operations/socialShareResolve",
-  entities: [BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, ContentItem, Membership, Parish]
+  entities: [BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, ContentItem, Membership, Parish, SocialPost, User]
 }
 
 action recordSocialWatch {
@@ -1963,16 +1969,35 @@ api mobileMeetings {
   httpRoute: (GET, "/mobile/meetings")
 }
 
+api mobileCreateMeeting {
+  fn: import { mobileCreateMeeting } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (POST, "/mobile/meetings"),
+  entities: [Meeting, CatechesisClass, Membership, User]
+}
+
 api mobileMeetingDetails {
   fn: import { mobileMeetingDetails } from "@src/server/api/mobile",
   auth: true,
   httpRoute: (GET, "/mobile/meetings/:id")
 }
 
+api mobileMeetingAttendanceSheet {
+  fn: import { mobileMeetingAttendanceSheet } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/meetings/:id/attendance-sheet")
+}
+
 api mobileSaveAttendance {
   fn: import { mobileSaveAttendance } from "@src/server/api/mobile",
   auth: true,
   httpRoute: (POST, "/mobile/attendance")
+}
+
+api mobileSaveAttendanceBatch {
+  fn: import { mobileSaveAttendanceBatch } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (POST, "/mobile/attendance/batch")
 }
 
 api mobileConversations {
@@ -2100,7 +2125,7 @@ api mobileSocialSharePreview {
   fn: import { mobileSocialSharePreview } from "@src/server/api/mobileSocial",
   auth: true,
   httpRoute: (POST, "/mobile/social/share/preview"),
-  entities: [BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, ContentItem, Membership, Parish]
+  entities: [BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, ContentItem, Membership, Parish, SocialPost, User]
 }
 
 api mobileSocialPost {
@@ -2164,6 +2189,115 @@ api mobileSocialReport {
   auth: true,
   httpRoute: (POST, "/mobile/social/report"),
   entities: [SocialReport, SocialPost, SocialComment]
+}
+
+api mobileSocialVideoUpload {
+  fn: import { mobileSocialVideoUpload } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/media/video-upload"),
+  entities: [SocialMedia, User, Membership, Parish, TenantBilling, Diocese, SocialPost, PricingPlan, PricingPlanPrice]
+}
+
+api mobileSocialMediaStatus {
+  fn: import { mobileSocialMediaStatus } from "@src/server/api/mobileSocial",
+  auth: true,
+  httpRoute: (POST, "/mobile/social/media/status"),
+  entities: [SocialMedia]
+}
+
+api mobileCalendar {
+  fn: import { mobileCalendar } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/calendar")
+}
+
+api mobileCreateCalendarEvent {
+  fn: import { mobileCreateCalendarEvent } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (POST, "/mobile/calendar/events"),
+  entities: [LiturgicalEvent, Membership, Parish, Diocese, Community, ClassCatechist]
+}
+
+api mobileUpdateCalendarEvent {
+  fn: import { mobileUpdateCalendarEvent } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (PATCH, "/mobile/calendar/events/:id"),
+  entities: [LiturgicalEvent, Membership, Parish, Diocese, Community, ClassCatechist]
+}
+
+api mobileDeleteCalendarEvent {
+  fn: import { mobileDeleteCalendarEvent } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (DELETE, "/mobile/calendar/events/:id"),
+  entities: [LiturgicalEvent, Membership, Parish, Diocese, Community, ClassCatechist]
+}
+
+api mobileUpdateMeeting {
+  fn: import { mobileUpdateMeeting } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (PATCH, "/mobile/meetings/:id"),
+  entities: [Meeting, CatechesisClass, Membership, User, AttendanceRecord]
+}
+
+api mobileDeleteMeeting {
+  fn: import { mobileDeleteMeeting } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (DELETE, "/mobile/meetings/:id"),
+  entities: [Meeting, CatechesisClass, Membership, User, AttendanceRecord]
+}
+
+api mobileAnnouncements {
+  fn: import { mobileAnnouncements } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/announcements")
+}
+
+api mobileAnnouncementDetails {
+  fn: import { mobileAnnouncementDetails } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/announcements/:id")
+}
+
+api mobileAcknowledgeAnnouncement {
+  fn: import { mobileAcknowledgeAnnouncement } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (POST, "/mobile/announcements/:id/acknowledge")
+}
+
+api mobileJourneys {
+  fn: import { mobileJourneys } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/journeys")
+}
+
+api mobileJourneyDetails {
+  fn: import { mobileJourneyDetails } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/journeys/:id")
+}
+
+api mobileUpdateJourneyMilestone {
+  fn: import { mobileUpdateJourneyMilestone } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (POST, "/mobile/journeys/milestones/:id")
+}
+
+api mobileCatechismSearch {
+  fn: import { mobileCatechismSearch } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/catechism/search")
+}
+
+api mobileCatechismCategory {
+  fn: import { mobileCatechismCategory } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/catechism/categories/:category")
+}
+
+api mobileCatechismEntry {
+  fn: import { mobileCatechismEntry } from "@src/server/api/mobile",
+  auth: true,
+  httpRoute: (GET, "/mobile/catechism/entries/:number")
 }
 
 api mobileBibleBooks {

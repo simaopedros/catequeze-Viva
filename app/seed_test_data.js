@@ -16,6 +16,14 @@ const p = new PrismaClient();
 // ─── Argon2 hash pre-computado para "Teste@123" ─────────────────────────────
 const PASSWORD_HASH = '$argon2id$v=19$m=19456,t=2,p=1$qHjjB48hT5iSphjcQFRlVQ$vKgJ4vaxEit/i0cKDo6KtZAU+6gn54mdbFIYpzPeafY';
 
+/** Data/hora local para encontros demo (hoje + offset em dias). */
+function meetingAt(daysFromToday, hour = 15, minute = 0) {
+  const d = new Date();
+  d.setHours(hour, minute, 0, 0);
+  d.setDate(d.getDate() + daysFromToday);
+  return d;
+}
+
 // ─── Constantes ─────────────────────────────────────────────────────────────
 const DIOCESE_ID = 'f6e4e87c-f287-4e15-b281-012e40c49ab9'; // Arquidiocese de Sorocaba
 
@@ -120,6 +128,11 @@ async function seed() {
       console.warn(`  (skip ${label}: ${err.message})`);
     }
   };
+  await skipMissing('socialReaction', () => p.socialReaction.deleteMany({}));
+  await skipMissing('socialComment', () => p.socialComment.deleteMany({}));
+  await skipMissing('socialPostTopic', () => p.socialPostTopic.deleteMany({}));
+  await skipMissing('socialFollow', () => p.socialFollow.deleteMany({}));
+  await skipMissing('socialPost', () => p.socialPost.deleteMany({}));
   await skipMissing('formationLessonProgress', () => p.formationLessonProgress.deleteMany({}));
   await skipMissing('formationLesson', () => p.formationLesson.deleteMany({}));
   await skipMissing('formationModule', () => p.formationModule.deleteMany({}));
@@ -354,7 +367,7 @@ async function seed() {
 
   await p.catechesisClass.createMany({
     data: [
-      { id: classCrismaId, name: 'Turma Crisma 2026', parishId: PARISH_SAO_JOSE_ID, communityId: COMMUNITY_SAO_JOSE_ID, stageId: stageId2, sacramentId: sacramentoCrismaId, status: 'ACTIVE', maxCapacity: 30, dayOfWeek: '3', startTime: '19:00', endTime: '20:30' },
+      { id: classCrismaId, name: 'Turma 3A - Crisma', parishId: PARISH_SAO_JOSE_ID, communityId: COMMUNITY_SAO_JOSE_ID, stageId: stageId2, sacramentId: sacramentoCrismaId, status: 'ACTIVE', maxCapacity: 30, dayOfWeek: '3', startTime: '15:00', endTime: '16:30', location: 'Salão paroquial' },
       { id: classInfantilId, name: 'Turma Infantil 2026', parishId: PARISH_SAO_JOSE_ID, communityId: COMMUNITY_SAO_JOSE_ID, stageId: stageId1, status: 'ACTIVE', maxCapacity: 20, dayOfWeek: '6', startTime: '09:00', endTime: '10:30' },
       { id: classEucaristiaId, name: 'Turma Eucaristia 2026', parishId: PARISH_SANTA_MARIA_ID, communityId: COMMUNITY_SANTA_MARIA_ID, stageId: stageId3, sacramentId: sacramentoEucaristiaId, status: 'ACTIVE', maxCapacity: 15, dayOfWeek: '5', startTime: '14:00', endTime: '15:30' },
       { id: classSanJoaoId, name: 'Turma Rural 2026', parishId: PARISH_SAN_JOAO_ID, communityId: COMMUNITY_SAN_JOAO_ID, stageId: stageId3, status: 'ACTIVE', maxCapacity: 10, dayOfWeek: '7', startTime: '08:00', endTime: '09:30' },
@@ -486,6 +499,16 @@ async function seed() {
     { id: 'test-catech-self-01', firstName: 'Catequizando', lastName: 'Teste', birthDate: new Date('2010-05-05'), householdId: null, parishId: PARISH_SAO_JOSE_ID, userId: 'user-catech-000001' },
     { id: 'test-catech-sj-extra-1', firstName: 'Gabriel', lastName: 'Moraes', birthDate: new Date('2014-09-12'), householdId: null, parishId: PARISH_SAO_JOSE_ID },
     { id: 'test-catech-sj-extra-2', firstName: 'Luiza', lastName: 'Ferreira', birthDate: new Date('2015-11-04'), householdId: null, parishId: PARISH_SAO_JOSE_ID },
+    { id: 'test-catech-demo-01', firstName: 'Ana Clara', lastName: 'Silva', birthDate: new Date('2011-04-12'), householdId: null, parishId: PARISH_SAO_JOSE_ID },
+    { id: 'test-catech-demo-02', firstName: 'Bruno', lastName: 'Santos', birthDate: new Date('2011-08-03'), householdId: null, parishId: PARISH_SAO_JOSE_ID },
+    { id: 'test-catech-demo-03', firstName: 'Carla', lastName: 'Oliveira', birthDate: new Date('2010-12-19'), householdId: null, parishId: PARISH_SAO_JOSE_ID },
+    { id: 'test-catech-demo-04', firstName: 'Daniel', lastName: 'Costa', birthDate: new Date('2011-01-25'), householdId: null, parishId: PARISH_SAO_JOSE_ID },
+    { id: 'test-catech-demo-05', firstName: 'Eduarda', lastName: 'Lima', birthDate: new Date('2011-06-08'), householdId: null, parishId: PARISH_SAO_JOSE_ID },
+    { id: 'test-catech-demo-06', firstName: 'Felipe', lastName: 'Rodrigues', birthDate: new Date('2010-09-14'), householdId: null, parishId: PARISH_SAO_JOSE_ID },
+    { id: 'test-catech-demo-07', firstName: 'Giovana', lastName: 'Mendes', birthDate: new Date('2011-02-02'), householdId: null, parishId: PARISH_SAO_JOSE_ID },
+    { id: 'test-catech-demo-08', firstName: 'Henrique', lastName: 'Almeida', birthDate: new Date('2010-11-30'), householdId: null, parishId: PARISH_SAO_JOSE_ID },
+    { id: 'test-catech-demo-09', firstName: 'Isabela', lastName: 'Rocha', birthDate: new Date('2011-07-17'), householdId: null, parishId: PARISH_SAO_JOSE_ID },
+    { id: 'test-catech-demo-10', firstName: 'João Pedro', lastName: 'Martins', birthDate: new Date('2010-05-22'), householdId: null, parishId: PARISH_SAO_JOSE_ID },
     
     // Santa Maria
     { id: 'test-catech-sm-01', firstName: 'Mariana', lastName: 'Oliveira', birthDate: new Date('2013-11-30'), householdId: householdOliveiraId, parishId: PARISH_SANTA_MARIA_ID },
@@ -533,6 +556,16 @@ async function seed() {
     { classId: classCrismaId, catechumenProfileId: 'test-catech-sj-sem-01', status: 'ENROLLED' },
     { classId: classInfantilId, catechumenProfileId: 'test-catech-self-01', status: 'ENROLLED' },
     { classId: classCrismaId, catechumenProfileId: 'test-catech-sj-extra-1', status: 'ENROLLED' },
+    { classId: classCrismaId, catechumenProfileId: 'test-catech-demo-01', status: 'ENROLLED' },
+    { classId: classCrismaId, catechumenProfileId: 'test-catech-demo-02', status: 'ENROLLED' },
+    { classId: classCrismaId, catechumenProfileId: 'test-catech-demo-03', status: 'ENROLLED' },
+    { classId: classCrismaId, catechumenProfileId: 'test-catech-demo-04', status: 'ENROLLED' },
+    { classId: classCrismaId, catechumenProfileId: 'test-catech-demo-05', status: 'ENROLLED' },
+    { classId: classCrismaId, catechumenProfileId: 'test-catech-demo-06', status: 'ENROLLED' },
+    { classId: classCrismaId, catechumenProfileId: 'test-catech-demo-07', status: 'ENROLLED' },
+    { classId: classCrismaId, catechumenProfileId: 'test-catech-demo-08', status: 'ENROLLED' },
+    { classId: classCrismaId, catechumenProfileId: 'test-catech-demo-09', status: 'ENROLLED' },
+    { classId: classCrismaId, catechumenProfileId: 'test-catech-demo-10', status: 'ENROLLED' },
     { classId: classInfantilId, catechumenProfileId: 'test-catech-sj-extra-2', status: 'ENROLLED' },
     // Santa Maria
     { classId: classEucaristiaId, catechumenProfileId: 'test-catech-sm-01', status: 'ENROLLED' },
@@ -556,44 +589,148 @@ async function seed() {
   }
   console.log(`✅ ${enrollmentData.length} Matrículas (ClassEnrollments) estabelecidas`);
 
-  // ═══ 14. Create Meetings (Encontros) ═══
+  // ═══ 14. Conteúdo pedagógico (encontro «O Espírito Santo») ═══
+  const contentEspiritoSantoId = 'test-content-espirito-01';
+  await p.contentItem.create({
+    data: {
+      id: contentEspiritoSantoId,
+      title: 'Encontro — O Espírito Santo',
+      theme: 'O Espírito Santo',
+      pastoralObjective: 'Aprofundar o papel do Espírito Santo na vida do cristão.',
+      biblicalRef: 'Jo 14,16-17',
+      openingPrayer: 'Vinde, Espírito Santo, enchei os corações dos vossos fiéis...',
+      mainContent:
+        'Reflexão sobre a ação do Espírito Santo na vida do cristão e na Igreja. Partilha em pequenos grupos e síntese com a turma.',
+      materials: 'Apresentação.pdf\nVídeo: O Espírito Santo',
+      activity: 'Dinâmica dos dons: cada grupo apresenta um dom do Espírito com um exemplo concreto.',
+      estimatedTime: 90,
+      status: 'PUBLISHED',
+      parishId: PARISH_SAO_JOSE_ID,
+      createdById: 'user-lead-sj-00001',
+      visibilityScope: 'PARISH',
+    },
+  });
+
+  // ═══ 14b. Create Meetings (Encontros) — datas relativas a hoje ═══
   const meetingCrisma1Id = 'test-meeting-crisma-01';
   const meetingCrisma2Id = 'test-meeting-crisma-02';
+  const meetingCrismaTodayId = 'test-meeting-crisma-today';
+  const meetingCrismaNextId = 'test-meeting-crisma-03';
   const meetingInfantilId = 'test-meeting-infantil-01';
   const meetingEucaristiaId = 'test-meeting-eucaristia-01';
   const meetingSanJoaoId = 'test-meeting-sanjoao-01';
 
   await p.meeting.createMany({
     data: [
-      { id: meetingCrisma1Id, classId: classCrismaId, date: new Date('2026-06-07T19:00:00'), title: 'Encontro 1 - O Espírito Santo', theme: 'Introdução e Dons', status: 'COMPLETED' },
-      { id: meetingCrisma2Id, classId: classCrismaId, date: new Date('2026-06-14T19:00:00'), title: 'Encontro 2 - A Crisma e o Compromisso', theme: 'O Sacramento do Envio', status: 'NOT_STARTED' },
-      { id: meetingInfantilId, classId: classInfantilId, date: new Date('2026-06-06T09:00:00'), title: 'Encontro 1 - A Criação do Mundo', theme: 'Gênesis para crianças', status: 'COMPLETED' },
-      { id: meetingEucaristiaId, classId: classEucaristiaId, date: new Date('2026-06-08T14:00:00'), title: 'Encontro 1 - A Ceia do Senhor', theme: 'O Pão da Vida', status: 'COMPLETED' },
-      { id: meetingSanJoaoId, classId: classSanJoaoId, date: new Date('2026-06-09T08:00:00'), title: 'Encontro 1 - Jesus, o Bom Pastor', theme: 'Introdução ao Evangelho', status: 'COMPLETED' },
-    ]
+      {
+        id: meetingCrisma1Id,
+        classId: classCrismaId,
+        date: meetingAt(-14, 15, 0),
+        title: 'Encontro 1 — Dons do Espírito',
+        theme: 'Introdução e Dons',
+        details: 'Primeiro encontro do trimestre: acolhida e apresentação da turma.',
+        status: 'COMPLETED',
+      },
+      {
+        id: meetingCrisma2Id,
+        classId: classCrismaId,
+        date: meetingAt(-7, 15, 0),
+        title: 'Encontro 2 — A Igreja missionária',
+        theme: 'Missão e comunhão',
+        details: 'Reflexão sobre o envio dos discípulos.',
+        status: 'COMPLETED',
+      },
+      {
+        id: meetingCrismaTodayId,
+        classId: classCrismaId,
+        contentId: contentEspiritoSantoId,
+        date: meetingAt(0, 15, 0),
+        title: 'Encontro 3 — O Espírito Santo',
+        theme: 'O Espírito Santo',
+        details: 'Reflexão sobre a ação do Espírito Santo na vida do cristão e na Igreja.',
+        status: 'IN_PROGRESS',
+      },
+      {
+        id: meetingCrismaNextId,
+        classId: classCrismaId,
+        date: meetingAt(7, 15, 0),
+        title: 'Encontro 4 — A Crisma e o compromisso',
+        theme: 'O Sacramento do Envio',
+        details: 'Preparação para a celebração da Crisma.',
+        status: 'NOT_STARTED',
+      },
+      {
+        id: meetingInfantilId,
+        classId: classInfantilId,
+        date: meetingAt(-3, 9, 0),
+        title: 'Encontro 1 — A Criação do Mundo',
+        theme: 'Gênesis para crianças',
+        status: 'COMPLETED',
+      },
+      {
+        id: meetingEucaristiaId,
+        classId: classEucaristiaId,
+        date: meetingAt(-5, 14, 0),
+        title: 'Encontro 1 — A Ceia do Senhor',
+        theme: 'O Pão da Vida',
+        status: 'COMPLETED',
+      },
+      {
+        id: meetingSanJoaoId,
+        classId: classSanJoaoId,
+        date: meetingAt(-2, 8, 0),
+        title: 'Encontro 1 — Jesus, o Bom Pastor',
+        theme: 'Introdução ao Evangelho',
+        status: 'COMPLETED',
+      },
+    ],
   });
 
-  // Attendance for completed meetings
+  const crismaRoster = [
+    'test-catech-silva-01',
+    'test-catech-santos-01',
+    'test-catech-sj-sem-01',
+    'test-catech-sj-extra-1',
+    'test-catech-demo-01',
+    'test-catech-demo-02',
+    'test-catech-demo-03',
+    'test-catech-demo-04',
+    'test-catech-demo-05',
+    'test-catech-demo-06',
+    'test-catech-demo-07',
+    'test-catech-demo-08',
+    'test-catech-demo-09',
+    'test-catech-demo-10',
+  ];
+
+  const attendanceRows = [];
+  const statusPattern = ['PRESENT', 'PRESENT', 'PRESENT', 'PRESENT', 'PRESENT', 'PRESENT', 'PRESENT', 'PRESENT', 'PRESENT', 'PRESENT', 'PRESENT', 'PRESENT', 'ABSENT', 'LATE'];
+  for (let i = 0; i < crismaRoster.length; i++) {
+    attendanceRows.push({
+      meetingId: meetingCrismaTodayId,
+      catechumenProfileId: crismaRoster[i],
+      status: statusPattern[i] || 'PRESENT',
+      recordedById: 'user-lead-sj-00001',
+    });
+  }
+
   await p.attendanceRecord.createMany({
     data: [
-      // Crisma 1
+      ...attendanceRows,
       { meetingId: meetingCrisma1Id, catechumenProfileId: 'test-catech-silva-01', status: 'PRESENT', recordedById: 'user-lead-sj-00001' },
       { meetingId: meetingCrisma1Id, catechumenProfileId: 'test-catech-santos-01', status: 'PRESENT', recordedById: 'user-lead-sj-00001' },
       { meetingId: meetingCrisma1Id, catechumenProfileId: 'test-catech-sj-sem-01', status: 'PRESENT', recordedById: 'user-lead-sj-00001' },
       { meetingId: meetingCrisma1Id, catechumenProfileId: 'test-catech-sj-extra-1', status: 'ABSENT', recordedById: 'user-lead-sj-00001' },
-      // Infantil 1
       { meetingId: meetingInfantilId, catechumenProfileId: 'test-catech-silva-02', status: 'PRESENT', recordedById: 'user-lead-sj-00001' },
       { meetingId: meetingInfantilId, catechumenProfileId: 'test-catech-santos-02', status: 'LATE', recordedById: 'user-lead-sj-00001' },
       { meetingId: meetingInfantilId, catechumenProfileId: 'test-catech-self-01', status: 'ABSENT', recordedById: 'user-lead-sj-00001' },
-      // Eucaristia 1
       { meetingId: meetingEucaristiaId, catechumenProfileId: 'test-catech-sm-01', status: 'PRESENT', recordedById: 'user-lead-sm-00001' },
       { meetingId: meetingEucaristiaId, catechumenProfileId: 'test-catech-sm-02', status: 'PRESENT', recordedById: 'user-lead-sm-00001' },
-      // São João 1
       { meetingId: meetingSanJoaoId, catechumenProfileId: 'test-catech-so-01', status: 'PRESENT', recordedById: 'user-lead-so-00001' },
       { meetingId: meetingSanJoaoId, catechumenProfileId: 'test-catech-so-02', status: 'PRESENT', recordedById: 'user-lead-so-00001' },
-    ]
+    ],
   });
-  console.log('✅ 5 Encontros + 11 Registros de Chamada/Presença criados');
+  console.log(`✅ 7 Encontros (incl. hoje «O Espírito Santo») + ${attendanceRows.length + 11} presenças`);
 
   // ═══ 14b. Hierarchical pastoral resources (diocese → parish) ═══
   const seedHierarchy = async () => {
@@ -803,9 +940,158 @@ async function seed() {
   // ═══ 16. Create Content Items (Biblioteca de Apoio) ═══
   const contentId = 'test-content-000001';
   await p.contentItem.create({
-    data: { id: contentId, title: 'Lição sobre o Espírito Santo (TESTE)', mainContent: 'Conteúdo de teste sobre o Espírito Santo e seus dons. Introdução e reflexão.', status: 'PUBLISHED', parishId: PARISH_SAO_JOSE_ID, createdById: 'user-lead-sj-00001', visibilityScope: 'PARISH' }
+    data: {
+      id: contentId,
+      title: 'Roteiro — Retiro de Crisma (TESTE)',
+      mainContent: 'Programação sugerida para o retiro paroquial: acolhida, adoração, testemunhos e envio.',
+      status: 'PUBLISHED',
+      parishId: PARISH_SAO_JOSE_ID,
+      createdById: 'user-lead-sj-00001',
+      visibilityScope: 'PARISH',
+    },
   });
-  console.log('✅ 1 Artigo de Conteúdo Pastoral publicado');
+  console.log('✅ 2 artigos de conteúdo pastoral publicados (incl. encontro O Espírito Santo)');
+
+  // ═══ 16b. Comunicados paroquiais (mobile) ═══
+  await skipMissing('parish announcements', async () => {
+    const now = new Date();
+    await p.pastoralAnnouncement.createMany({
+      data: [
+        {
+          id: 'test-announce-parish-01',
+          title: 'Retiro de Crisma — inscrições abertas',
+          body: 'Inscrições até sexta-feira. Catequistas: confirmem a lista de crismandos no app.',
+          status: 'PUBLISHED',
+          audience: 'coordinators',
+          requireAck: false,
+          publishedAt: now,
+          ownerType: 'PARISH',
+          inheritancePolicy: 'SUGGESTED',
+          parishId: PARISH_SAO_JOSE_ID,
+          createdById: 'user-coord-sj-0001',
+        },
+        {
+          id: 'test-announce-parish-02',
+          title: 'Encontro diocesano de crismandos',
+          body: 'Dia 28/09 no centro de eventos. Transporte sai da paróquia às 8h.',
+          status: 'PUBLISHED',
+          audience: 'all',
+          requireAck: true,
+          publishedAt: now,
+          ownerType: 'PARISH',
+          inheritancePolicy: 'SUGGESTED',
+          parishId: PARISH_SAO_JOSE_ID,
+          createdById: 'user-coord-sj-0001',
+        },
+      ],
+    });
+    await p.liturgicalEvent.createMany({
+      data: [
+        {
+          id: 'test-event-parish-retiro',
+          name: 'Retiro de Crisma — Turma 3A',
+          date: meetingAt(10, 8, 0),
+          type: 'parish',
+          ownerType: 'PARISH',
+          inheritancePolicy: 'SUGGESTED',
+          parishId: PARISH_SAO_JOSE_ID,
+        },
+        {
+          id: 'test-event-parish-missa',
+          name: 'Missa de envio — Crisma',
+          date: meetingAt(21, 19, 0),
+          type: 'parish',
+          ownerType: 'PARISH',
+          inheritancePolicy: 'SUGGESTED',
+          parishId: PARISH_SAO_JOSE_ID,
+        },
+      ],
+    });
+    console.log('✅ Comunicados paroquiais + eventos no calendário');
+  });
+
+  // ═══ 16c. Comunidade (feed social demo) ═══
+  await skipMissing('social demo feed', async () => {
+    const topics = [
+      { slug: 'liturgia', name: 'Liturgia', position: 1 },
+      { slug: 'catequese', name: 'Catequese', position: 2 },
+      { slug: 'testemunho', name: 'Testemunho', position: 9 },
+    ];
+    for (const t of topics) {
+      await p.socialTopic.upsert({
+        where: { slug: t.slug },
+        create: { ...t, active: true },
+        update: { name: t.name, active: true },
+      });
+    }
+    const topicCatequese = await p.socialTopic.findUnique({ where: { slug: 'catequese' } });
+    const topicTestemunho = await p.socialTopic.findUnique({ where: { slug: 'testemunho' } });
+    const publishedAt = new Date();
+    const posts = [
+      {
+        id: 'test-social-post-01',
+        slug: 'demo-bem-vindos-crisma',
+        authorId: 'user-lead-sj-00001',
+        parishId: PARISH_SAO_JOSE_ID,
+        body: 'Bem-vindos à Turma 3A! Hoje refletimos sobre o Espírito Santo. Partilhem uma frase que os marcou. 🙏',
+        publishedAt,
+        reactionCount: 12,
+        commentCount: 3,
+      },
+      {
+        id: 'test-social-post-02',
+        slug: 'demo-retiro-crisma',
+        authorId: 'user-coord-sj-0001',
+        parishId: PARISH_SAO_JOSE_ID,
+        body: 'Retiro de Crisma confirmado! Catequistas, vejam os materiais no encontro de hoje no app.',
+        publishedAt,
+        reactionCount: 8,
+        commentCount: 1,
+      },
+      {
+        id: 'test-social-post-03',
+        slug: 'demo-testemunho-espirito',
+        authorId: 'user-lead-sj-00001',
+        parishId: PARISH_SAO_JOSE_ID,
+        body: '«O Espírito Santo nos fortalece no caminho.» — partilha do último encontro com os jovens.',
+        publishedAt,
+        reactionCount: 24,
+        commentCount: 5,
+      },
+    ];
+    for (const post of posts) {
+      await p.socialPost.upsert({
+        where: { slug: post.slug },
+        create: post,
+        update: {
+          body: post.body,
+          reactionCount: post.reactionCount,
+          commentCount: post.commentCount,
+          publishedAt: post.publishedAt,
+        },
+      });
+    }
+    if (topicCatequese) {
+      await p.socialPostTopic.upsert({
+        where: { postId_topicId: { postId: 'test-social-post-01', topicId: topicCatequese.id } },
+        create: { postId: 'test-social-post-01', topicId: topicCatequese.id },
+        update: {},
+      });
+      await p.socialPostTopic.upsert({
+        where: { postId_topicId: { postId: 'test-social-post-02', topicId: topicCatequese.id } },
+        create: { postId: 'test-social-post-02', topicId: topicCatequese.id },
+        update: {},
+      });
+    }
+    if (topicTestemunho) {
+      await p.socialPostTopic.upsert({
+        where: { postId_topicId: { postId: 'test-social-post-03', topicId: topicTestemunho.id } },
+        create: { postId: 'test-social-post-03', topicId: topicTestemunho.id },
+        update: {},
+      });
+    }
+    console.log('✅ Feed da Comunidade: 3 publicações demo');
+  });
 
   // ═══ 17. Create Conversations & Messages ═══
   try {
@@ -872,8 +1158,9 @@ async function seed() {
   console.log(`  Catequizandos: ${catechumens.length}`);
   console.log(`  Famílias: 4`);
   console.log(`  Matrículas: ${enrollmentData.length}`);
-  console.log(`  Encontros Criados: 5`);
-  console.log(`  Presenças Lançadas: 11`);
+  console.log(`  Encontros Criados: 7 (encontro de HOJE na Turma 3A — Crisma)`);
+  console.log(`  Turma 3A — Crisma: ${crismaRoster.length} catequizandos matriculados`);
+  console.log(`  Feed Comunidade: 3 posts demo (após seed)`);
   console.log('═'.repeat(75));
 
   await p.$disconnect();

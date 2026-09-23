@@ -1,7 +1,6 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { Card, EmptyState, LoadingState, Screen, ScreenTitle } from '../components/ui';
-import { colors } from '../theme';
+import { ConversationRow } from '../components/pastoralUi';
+import { EmptyState, LoadingState, Screen, ScreenIntro } from '../components/ui';
 
 function asConversations(payload: any) {
   if (Array.isArray(payload)) return payload;
@@ -14,33 +13,37 @@ export function MessagesScreen({
   payload,
   loading,
   error,
+  refreshing,
   onOpen,
+  onRefresh,
 }: {
   payload: any;
   loading?: boolean;
   error?: string | null;
+  refreshing?: boolean;
   onOpen: (id: string) => void;
+  onRefresh?: () => void;
 }) {
   const items = asConversations(payload);
   return (
-    <Screen testID="messages-screen">
-      <ScreenTitle title="Mensagens" subtitle="Conversas da paróquia e das turmas." />
-      {loading ? <LoadingState /> : null}
+    <Screen testID="messages-screen" onRefresh={onRefresh} refreshing={refreshing}>
+      <ScreenIntro text="Conversas da paróquia e das turmas." />
+      {loading && items.length === 0 ? <LoadingState /> : null}
       {error ? <EmptyState title="Mensagens indisponíveis" body={error} /> : null}
-      {items.length === 0 && !loading ? (
+      {items.length === 0 && !loading && !error ? (
         <EmptyState title="Caixa vazia" body="Quando alguém escrever, a conversa aparece aqui." />
       ) : (
         items.map((item: any) => (
-          <Pressable key={item.id} onPress={() => onOpen(item.id)} testID={`conversation-${item.id}`}>
-            <Card>
-              <Text style={{ color: colors.ink, fontWeight: '700' }}>
-                {item.title || item.name || item.subject || 'Conversa'}
-              </Text>
-              <Text style={{ color: colors.muted, marginTop: 4 }} numberOfLines={2}>
-                {item.lastMessage?.content || item.preview || ' '}
-              </Text>
-            </Card>
-          </Pressable>
+          <ConversationRow
+            key={item.id}
+            testID={`conversation-${item.id}`}
+            title={item.title || item.name || item.subject || 'Conversa'}
+            preview={item.lastMessage?.content || item.preview}
+            time={item.lastMessageAt || item.updatedAt}
+            unread={item.unreadCount}
+            avatarName={item.title || item.name}
+            onPress={() => onOpen(item.id)}
+          />
         ))
       )}
     </Screen>

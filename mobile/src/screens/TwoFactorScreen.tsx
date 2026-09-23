@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { BrandButton, ErrorText, Field, Screen, ScreenTitle } from '../components/ui';
+import { OtpCodeInput } from '../components/OtpCodeInput';
+import { ErrorText, PrimaryButton, Screen, ScreenTitle } from '../components/ui';
 
 export function TwoFactorScreen({
   onSubmit,
@@ -21,21 +22,14 @@ export function TwoFactorScreen({
         subtitle="Introduza o código de 6 dígitos da aplicação autenticadora."
       />
       <ErrorText message={error} />
-      <Field
-        label="Código"
-        value={token}
-        onChangeText={setToken}
-        keyboardType="number-pad"
-        maxLength={6}
-        testID="totp-input"
-      />
-      <BrandButton
+      <OtpCodeInput testID="totp-input" value={token} onChange={setToken} />
+      <PrimaryButton
         testID="totp-submit"
         label={busy ? 'A verificar…' : 'Continuar'}
         disabled={busy || token.length < 6}
         onPress={() => onSubmit(token)}
       />
-      <BrandButton variant="ghost" label="Sair" onPress={onCancel} />
+      <PrimaryButton variant="ghost" label="Sair" onPress={onCancel} />
     </Screen>
   );
 }

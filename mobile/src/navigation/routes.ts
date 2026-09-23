@@ -24,6 +24,8 @@ export const appRoutes = {
   topic: (slug: string) => `/(app)/community/t/${encodeURIComponent(slug)}`,
   profile: (handle: string) => `/(app)/community/${encodeURIComponent(handle)}`,
   classDetails: (id: string) => `/(app)/class/${id}`,
+  classMeetings: (classId: string) =>
+    `/(app)/class-meetings?classId=${encodeURIComponent(classId)}`,
   meeting: (id: string) => `/(app)/meeting/${id}`,
   attendance: (id: string) => `/(app)/meeting/${id}/attendance`,
   thread: (id: string) => `/(app)/messages/${id}`,
@@ -33,6 +35,20 @@ export const appRoutes = {
   documents: '/(app)/documents',
   myProfile: '/(app)/profile',
   notifications: '/(app)/notifications',
+  calendar: '/(app)/calendar',
+  announcements: '/(app)/announcements',
+  announcement: (id: string) => `/(app)/announcements/${id}`,
+  journeys: '/(app)/journeys',
+  journey: (id: string) => `/(app)/journeys/${id}`,
+  catechism: '/(app)/catechism',
+  catechismEntry: (number: number) => `/(app)/catechism/${number}`,
+  catechumens: '/(app)/catechumens',
+  catechumensForClass: (classId: string) =>
+    `/(app)/catechumens?classId=${encodeURIComponent(classId)}`,
+  workspaceSwitch: '/(app)/workspace-switch',
+  catechumen: (id: string) => `/(app)/catechumens/${id}`,
+  families: '/(app)/families',
+  family: (id: string) => `/(app)/families/${id}`,
 } as const;
 
 export function resolveAuthHref(status: 'booting' | 'guest' | 'needs2fa' | 'ready') {

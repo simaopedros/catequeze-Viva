@@ -56,24 +56,24 @@ export function ProfileScreen({
     <Screen testID="profile-screen">
       <ScreenTitle title={data.displayName} subtitle={handle ? `@${handle}` : 'Sem handle público'} />
       {data.bio || data.socialBio ? (
-        <Text style={{ color: colors.inkSoft, marginBottom: 12 }}>{data.bio || data.socialBio}</Text>
+        <Text style={{ color: colors.primary[700], marginBottom: 12 }}>{data.bio || data.socialBio}</Text>
       ) : null}
       {data.websiteUrl ? (
-        <Text style={{ color: colors.goldDark, marginBottom: 12 }}>{data.websiteUrl}</Text>
+        <Text style={{ color: colors.accent[700], marginBottom: 12 }}>{data.websiteUrl}</Text>
       ) : null}
       <Pressable testID="open-followers" onPress={onOpenFollowers} disabled={!onOpenFollowers}>
-        <Text style={{ color: colors.muted, marginBottom: 8 }}>
-          <Text style={{ color: colors.ink, fontWeight: '700' }}>{followers}</Text> seguidores
+        <Text style={{ color: colors.text.muted, marginBottom: 8 }}>
+          <Text style={{ color: colors.text.primary, fontWeight: '700' }}>{followers}</Text> seguidores
         </Text>
       </Pressable>
       <Pressable testID="open-following" onPress={onOpenFollowing} disabled={!onOpenFollowing}>
-        <Text style={{ color: colors.muted, marginBottom: 16 }}>
-          <Text style={{ color: colors.ink, fontWeight: '700' }}>{following}</Text> a seguir
+        <Text style={{ color: colors.text.muted, marginBottom: 16 }}>
+          <Text style={{ color: colors.text.primary, fontWeight: '700' }}>{following}</Text> a seguir
         </Text>
       </Pressable>
       {data.isOwn ? (
         <>
-          <Text style={{ color: colors.muted, marginBottom: 8 }}>Este é o seu perfil público.</Text>
+          <Text style={{ color: colors.text.muted, marginBottom: 8 }}>Este é o seu perfil público.</Text>
           {onEdit ? <BrandButton label="Editar perfil" onPress={onEdit} testID="edit-own-profile" /> : null}
         </>
       ) : (
@@ -93,7 +93,7 @@ export function ProfileScreen({
           />
         </>
       )}
-      <Text style={{ color: colors.ink, fontWeight: '700', fontSize: 18, marginTop: 20, marginBottom: 8 }}>
+      <Text style={{ color: colors.text.primary, fontWeight: '700', fontSize: 18, marginTop: 20, marginBottom: 8 }}>
         Publicações
       </Text>
       {(posts ?? []).length === 0 ? (
