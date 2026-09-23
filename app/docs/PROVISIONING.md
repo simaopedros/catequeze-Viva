@@ -2,6 +2,8 @@
 
 Guia para provisionar Neon, Contabo, Bunny.net e Cloudflare conforme o plano de produção v2.
 
+Para sair do VPS (Tunnel, Containers, mapa de variáveis): [`CLOUDFLARE_MIGRATION.md`](CLOUDFLARE_MIGRATION.md).
+
 ## 1. Neon PostgreSQL
 
 ### Produção
