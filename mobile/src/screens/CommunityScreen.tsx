@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { InlineCommunityComposer } from '../components/InlineCommunityComposer';
+import { ScrollEdgeBlur } from '../components/ScrollEdgeBlur';
 import { PostCard } from '../components/PostCard';
 import type { CommunityPublishAudience } from '../community/publishAudience';
 import {
@@ -117,6 +118,7 @@ export function CommunityScreen({
       keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
     >
       <View style={{ flex: 1 }}>
+        {variant === 'main' ? <ScrollEdgeBlur edge="top" extraHeight={72} /> : null}
         <Screen testID="community-screen" variant="feed" safeAreaEdges={variant === 'main' ? ['top', 'left', 'right'] : ['left', 'right']}>
           {variant === 'main' ? <CommunityScreenHeader onLinkPress={onOpenLink} /> : null}
           {variant === 'nested' && title ? <ScreenTitle title={title} subtitle={subtitle} /> : null}

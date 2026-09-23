@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { PastoralBottomSheet } from '../components/PastoralBottomSheet';
 import {
   CalendarEventCard,
   CalendarFilterRow,
@@ -351,9 +352,12 @@ export function CalendarScreen({
         ))
       )}
 
-      <Modal visible={sheetOpen} animationType="slide" transparent onRequestClose={() => setSheetOpen(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setSheetOpen(false)} />
-        <View style={styles.sheet} testID="calendar-event-sheet">
+      <PastoralBottomSheet
+        visible={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        testID="calendar-event-sheet"
+        sheetStyle={styles.sheetExtra}
+      >
           <Text style={styles.sheetTitle}>{draft.id ? 'Editar evento' : 'Novo evento'}</Text>
 
           {!draft.id ? (
@@ -449,8 +453,7 @@ export function CalendarScreen({
             />
           ) : null}
           <PrimaryButton label="Cancelar" variant="ghost" onPress={() => setSheetOpen(false)} />
-        </View>
-      </Modal>
+      </PastoralBottomSheet>
     </Screen>
   );
 }
@@ -482,17 +485,9 @@ const styles = StyleSheet.create({
     marginTop: -spacing[2],
     marginBottom: spacing[3],
   },
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.35)',
-  },
-  sheet: {
-    backgroundColor: colors.surface,
-    borderTopLeftRadius: radius.lg,
-    borderTopRightRadius: radius.lg,
+  sheetExtra: {
     padding: spacing[4],
     paddingBottom: spacing[6],
-    gap: spacing[2],
   },
   sheetTitle: {
     ...typography.headingSm,

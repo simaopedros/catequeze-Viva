@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
+import { PastoralBottomSheet } from '../components/PastoralBottomSheet';
 import { ClassMeetingCard, ClassMeetingsHero } from '../components/classMeetingsUi';
 import {
   BrandButton,
@@ -118,9 +119,12 @@ export function ClassMeetingsScreen({
         </>
       ) : null}
 
-      <Modal visible={sheetOpen} animationType="slide" transparent onRequestClose={() => setSheetOpen(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setSheetOpen(false)} />
-        <View style={styles.sheet} testID="create-meeting-form">
+      <PastoralBottomSheet
+        visible={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        testID="create-meeting-form"
+        sheetStyle={styles.sheetExtra}
+      >
           <Text style={styles.sheetTitle}>Novo encontro</Text>
           {className ? <Text style={styles.sheetSubtitle}>Turma {className}</Text> : null}
           <Field
@@ -144,8 +148,7 @@ export function ClassMeetingsScreen({
             disabled={creating}
           />
           <PrimaryButton label="Cancelar" variant="ghost" onPress={() => setSheetOpen(false)} />
-        </View>
-      </Modal>
+      </PastoralBottomSheet>
     </Screen>
   );
 }
@@ -154,17 +157,9 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: spacing[2],
   },
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.35)',
-  },
-  sheet: {
-    backgroundColor: colors.surface,
-    borderTopLeftRadius: radius.lg,
-    borderTopRightRadius: radius.lg,
+  sheetExtra: {
     padding: spacing[4],
     paddingBottom: spacing[6],
-    gap: spacing[2],
   },
   sheetTitle: {
     ...typography.headingSm,

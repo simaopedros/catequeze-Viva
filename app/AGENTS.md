@@ -81,3 +81,7 @@ Key dev vars:
 - **AI features**: AI-generated content, meeting plans, chat. Rate-limited by `UserAiCredits` and `DailyAiUsage`. OpenAI via `src/server/ai/`.
 - **Billing**: Stripe + LemonSqueezy + Polar + Woovi (PIX). Plans in `src/shared/pricing.ts`. Limits enforced in `src/shared/planLimits.ts`.
 - **CI** (`.github/workflows/ci.yml`): `npm run i18n:check` then `npm run test:unit`, plus `wasp compile`.
+
+## Mobile (`mobile/`)
+
+- Expo SDK 57; testes rápidos com **Expo Go**. Efeitos `expo-backdrop` (blur nativo em folhas e borda de scroll) exigem **development build** (`expo-dev-client`, `npm run prebuild`, `expo run:*`). No Go/web o app usa `expo-blur` ou overlay sólido via `PastoralBottomSheet` / `ScrollEdgeBlur`. Ver `mobile/README.md`.

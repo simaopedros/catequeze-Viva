@@ -25,6 +25,7 @@
       "softwareKeyboardLayoutMode": "resize"
     },
     "plugins": [
+      "expo-dev-client",
       "expo-router",
       "expo-secure-store",
       "expo-asset",

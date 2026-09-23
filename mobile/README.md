@@ -19,7 +19,22 @@ npm install
 npm start
 ```
 
-No telemóvel: app Expo Go e o QR code. Emulador: `npm run android` ou `npm run ios`.
+No telemóvel: app **Expo Go** e o QR code. Emulador: `npm run android` ou `npm run ios`.
+
+### Expo Go vs development build (blur)
+
+Efeitos de desfoque (`expo-backdrop`) **não** existem no Expo Go nem na web. O app usa fallbacks (`expo-blur` / overlay escuro) para manter o mesmo fluxo sem crash.
+
+Para testar blur nativo (folhas modais, borda de scroll na Comunidade):
+
+```bash
+cd mobile
+npm install
+npm run prebuild          # gera android/ e ios/ (pastas ignoradas no git)
+npm run android:dev       # ou npm run ios:dev — requer SDK nativo local
+```
+
+Dependências: `expo-dev-client`, `expo-backdrop`. O plugin `expo-dev-client` está em `app.json`. Em CI/EAS, use um [development build](https://docs.expo.dev/develop/development-builds/introduction/) em vez do Go.
 
 A sessão (Bearer) fica em `expo-secure-store`. O 2FA, quando activo na conta, pede o código TOTP antes de abrir as tabs.
 
