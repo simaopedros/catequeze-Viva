@@ -7,13 +7,17 @@ deploy/
 ├── docker-compose.yml          # produção: caddy + server + worker
 ├── docker-compose.homolog.yml
 ├── Caddyfile / Caddyfile.homolog
+├── Caddyfile.homolog.fly       # SPA no VPS, API na Fly (ver docs/FLY.md)
 ├── Dockerfile.server
 ├── .env.server.homolog.example
 └── scripts/
     ├── deploy.sh
+    ├── fly-secrets.sh
     ├── backup-db.sh
     └── seed-homolog.sh
 ```
+
+API no Fly (Neon inalterado): `app/fly.homolog.toml`, `app/fly.toml`, guia [`docs/FLY.md`](../docs/FLY.md).
 
 ## Deploy rápido
 
@@ -47,4 +51,4 @@ docker compose -f docker-compose.yml up -d --force-recreate caddy
 
 O `scripts/deploy.sh` recusa deploy se o Caddyfile ativo não contiver `handle /api/*`.
 
-Ver também: `docs/PROVISIONING.md`, `docs/HOMOLOG.md`, `docs/BACKUP.md`, `docs/CLOUDFLARE_MIGRATION.md`
+Ver também: `docs/PROVISIONING.md`, `docs/HOMOLOG.md`, `docs/BACKUP.md`, `docs/CLOUDFLARE_MIGRATION.md`, `docs/FLY.md`

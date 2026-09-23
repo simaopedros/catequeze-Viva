@@ -4,6 +4,8 @@ Guia para provisionar Neon, Contabo, Bunny.net e Cloudflare conforme o plano de 
 
 Para sair do VPS (Tunnel, Containers, mapa de variáveis): [`CLOUDFLARE_MIGRATION.md`](CLOUDFLARE_MIGRATION.md).
 
+API Wasp no Fly.io (SPA no VPS): [`FLY.md`](FLY.md).
+
 ## 1. Neon PostgreSQL
 
 ### Produção

@@ -8,6 +8,8 @@ Protegido por **Cloudflare Access** (equipa only — plano Free até 50 users). 
 
 **Nota:** `api-homolog.catechis.app` fica **fora** do Access (webhook Stripe + evita CORS). Staff e família usam same-origin API via Caddy.
 
+Para mover só a API para a Fly (SPA no VPS): [`FLY.md`](FLY.md).
+
 ## Verificação automatizada
 
 ```bash

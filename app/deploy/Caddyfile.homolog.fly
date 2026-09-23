@@ -1,0 +1,128 @@
+{
+  email admin@catechis.app
+  # Origem API = Fly. SPA continua neste Caddy. Ver docs/FLY.md.
+  # Cloudflare: SSL Full (não Strict) com tls internal. Ver CLOUDFLARE_SSL.md.
+}
+
+(homolog_api) {
+  request_body {
+    max_size 64MB
+  }
+  reverse_proxy https://catechis-api-homolog.fly.dev {
+    header_up Host catechis-api-homolog.fly.dev
+    header_up X-Forwarded-Host {host}
+    header_up X-Real-IP {remote_host}
+    header_up X-Forwarded-For {remote_host}
+    header_up X-Forwarded-Proto https
+    flush_interval -1
+    transport http {
+      tls
+    }
+  }
+}
+
+homolog.catechis.app {
+  tls internal
+  encode zstd gzip
+
+  handle /auth/* {
+    import homolog_api
+  }
+  handle /operations/* {
+    import homolog_api
+  }
+  handle /api/* {
+    import homolog_api
+  }
+  handle /c/* {
+    import homolog_api
+  }
+  handle /comunidade/sitemap.xml {
+    import homolog_api
+  }
+  handle /blog/sitemap.xml {
+    import homolog_api
+  }
+  @blog_crawler {
+    path /blog/*
+    header_regexp User-Agent (?i)(facebookexternalhit|facebookcatalog|whatsapp|twitterbot|telegrambot|linkedinbot|slackbot|discordbot|pinterest|googlebot|bingbot|applebot|embedly|redditbot|skypeuripreview|vkshare|w3c_validator)
+  }
+  handle @blog_crawler {
+    import homolog_api
+  }
+  handle /health {
+    import homolog_api
+  }
+  handle /readyz {
+    import homolog_api
+  }
+  handle /payments-webhook {
+    import homolog_api
+  }
+
+  handle /assets/* {
+    root * /srv/web-app
+    header Cache-Control "public, max-age=31536000, immutable"
+    file_server
+  }
+
+  @static path /landing/* /icons/* /brand/* /favicon.svg /favicon.ico /manifest.json /public-banner.webp /sw.js
+  handle @static {
+    root * /srv/web-app
+    header Cache-Control "public, max-age=86400"
+    file_server
+  }
+
+  handle {
+    root * /srv/web-app
+    header Cache-Control "public, max-age=0, must-revalidate"
+    try_files {path} /index.html
+    file_server
+  }
+}
+
+familia-homolog.catechis.app {
+  tls internal
+  encode zstd gzip
+
+  handle /auth/* {
+    import homolog_api
+  }
+  handle /operations/* {
+    import homolog_api
+  }
+  handle /api/* {
+    import homolog_api
+  }
+  handle /c/* {
+    import homolog_api
+  }
+  handle /comunidade/sitemap.xml {
+    import homolog_api
+  }
+  handle /health {
+    import homolog_api
+  }
+  handle /readyz {
+    import homolog_api
+  }
+  handle /payments-webhook {
+    import homolog_api
+  }
+
+  handle /assets/* {
+    root * /srv/web-app
+    header Cache-Control "public, max-age=31536000, immutable"
+    file_server
+  }
+
+  handle {
+    root * /srv/web-app
+    header Cache-Control "public, max-age=0, must-revalidate"
+    try_files {path} /index.html
+    file_server
+  }
+}
+
+# api-homolog DNS deve apontar para a Fly (não para este VPS).
+# Este bloco fica de propósito fora — Stripe e Expo falam com a Fly directo.
