@@ -55,3 +55,4 @@ e2e-tests/prisma/
 .qwen/
 **/.qwen/
 *.bak
+nul
