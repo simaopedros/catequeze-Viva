@@ -10,7 +10,6 @@ import {
   Screen,
   ScreenIntro,
   ScreenTitle,
-  SearchInput,
 } from '../components/ui';
 import { colors, spacing, typography } from '../theme';
 

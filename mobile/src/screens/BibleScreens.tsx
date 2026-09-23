@@ -1,8 +1,30 @@
-import React from 'react';
-import { Pressable, Text } from 'react-native';
-import { BrandButton, Card, EmptyState, ListRow, LoadingState, Screen, ScreenIntro, ScreenTitle } from '../components/ui';
+import React, { useMemo, useState } from 'react';
+import {
+  BibleBookHeroCard,
+  BibleChapterGrid,
+  BibleHeroCard,
+  BibleTestamentFilters,
+  BibleVerseCard,
+} from '../components/bibleUi';
+import {
+  bibleBookChapterCount,
+  bibleTestamentLabel,
+  booksForTestament,
+  filterBibleBooks,
+  partitionBibleBooks,
+  type BibleTestamentFilter,
+} from '../bible/biblePresentation';
+import {
+  EmptyState,
+  ErrorState,
+  ListRow,
+  LoadingState,
+  Screen,
+  ScreenIntro,
+  SearchInput,
+  SectionHeader,
+} from '../components/ui';
 import type { BibleBook, BibleChapter } from '../api/types';
-import { colors } from '../theme';
 
 export function BibleBooksScreen({
   books,
@@ -15,20 +37,74 @@ export function BibleBooksScreen({
   error?: string | null;
   onOpen: (id: string) => void;
 }) {
+  const [query, setQuery] = useState('');
+  const [testament, setTestament] = useState<BibleTestamentFilter>('all');
+  const partitioned = useMemo(() => partitionBibleBooks(books), [books]);
+
+  const filtered = useMemo(() => {
+    const scoped = booksForTestament(partitioned.all, testament);
+    return filterBibleBooks(scoped, query);
+  }, [partitioned.all, testament, query]);
+
+  const showGrouped = testament === 'all' && !query.trim();
+
   return (
     <Screen testID="bible-books-screen">
-      <ScreenIntro text="Leia e partilhe um versículo na Comunidade." />
-      {loading ? <LoadingState /> : null}
-      {error ? <EmptyState title="Bíblia indisponível" body={error} /> : null}
-      {books.map((book) => (
-        <ListRow
-          key={book.id}
-          testID={`bible-book-${book.id}`}
-          title={book.name}
-          subtitle={book.testament || undefined}
-          onPress={() => onOpen(book.id)}
-        />
-      ))}
+      <BibleHeroCard
+        bookCount={partitioned.all.length}
+        otCount={partitioned.ot.length}
+        ntCount={partitioned.nt.length}
+      />
+      <ScreenIntro text="Escolha um livro ou filtre por testamento." />
+      <SearchInput
+        placeholder="Pesquisar livro"
+        value={query}
+        onChangeText={setQuery}
+        autoCapitalize="none"
+      />
+      <BibleTestamentFilters value={testament} onChange={setTestament} />
+
+      {loading && books.length === 0 ? <LoadingState /> : null}
+      {error ? <ErrorState title="Bíblia indisponível" /> : null}
+
+      {!loading && !error && filtered.length === 0 ? (
+        <EmptyState title="Nenhum livro encontrado" body="Tente outro nome ou limpe a pesquisa." />
+      ) : null}
+
+      {showGrouped ? (
+        <>
+          <SectionHeader title="Antigo Testamento" />
+          {partitioned.ot.map((book) => (
+            <ListRow
+              key={book.id}
+              testID={`bible-book-${book.id}`}
+              title={book.name}
+              subtitle={bibleBookChapterCount(book) ? `${bibleBookChapterCount(book)} cap.` : undefined}
+              onPress={() => onOpen(book.id)}
+            />
+          ))}
+          <SectionHeader title="Novo Testamento" />
+          {partitioned.nt.map((book) => (
+            <ListRow
+              key={book.id}
+              testID={`bible-book-${book.id}`}
+              title={book.name}
+              subtitle={bibleBookChapterCount(book) ? `${bibleBookChapterCount(book)} cap.` : undefined}
+              onPress={() => onOpen(book.id)}
+            />
+          ))}
+        </>
+      ) : (
+        filtered.map((book) => (
+          <ListRow
+            key={book.id}
+            testID={`bible-book-${book.id}`}
+            title={book.name}
+            subtitle={bibleTestamentLabel(book.testament)}
+            onPress={() => onOpen(book.id)}
+          />
+        ))
+      )}
     </Screen>
   );
 }
@@ -45,21 +121,22 @@ export function BibleBookScreen({
   onOpenChapter: (chapter: number) => void;
 }) {
   const chapters = book?.chapters ?? [];
+  const chapterCount = bibleBookChapterCount(book ?? { id: '', name: '' });
+
   return (
     <Screen testID="bible-book-screen">
-      <ScreenTitle title={book?.name || 'Livro'} />
+      <BibleBookHeroCard
+        bookName={book?.name || 'Livro'}
+        testamentLabel={bibleTestamentLabel(book?.testament)}
+        chapterCount={chapterCount}
+      />
+      <ScreenIntro text="Toque num capítulo para ler." />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Livro indisponível" body={error} /> : null}
       {chapters.length === 0 && !loading ? (
         <EmptyState title="Sem capítulos" body="Este livro ainda não tem capítulos no cache." />
       ) : (
-        chapters.map((chapter) => (
-          <Pressable key={chapter.id || chapter.number} onPress={() => onOpenChapter(chapter.number)}>
-            <Card>
-              <Text style={{ color: colors.text.primary, fontWeight: '700' }}>Capítulo {chapter.number}</Text>
-            </Card>
-          </Pressable>
-        ))
+        <BibleChapterGrid chapters={chapters} onOpenChapter={onOpenChapter} />
       )}
     </Screen>
   );
@@ -78,25 +155,27 @@ export function BibleChapterScreen({
   canPublish?: boolean;
   onShareVerse: (verseNumber: number, text: string) => void;
 }) {
+  const heading = chapter?.book?.name
+    ? `${chapter.book.name} ${chapter.number}`
+    : `Capítulo ${chapter?.number ?? ''}`;
+
+  const intro = canPublish
+    ? `${heading} — toque em «Partilhar» para publicar na Comunidade.`
+    : heading;
+
   return (
     <Screen testID="bible-chapter-screen">
-      <ScreenTitle
-        title={chapter?.book?.name ? `${chapter.book.name} ${chapter.number}` : `Capítulo ${chapter?.number ?? ''}`}
-      />
+      <ScreenIntro text={intro} />
       {loading ? <LoadingState /> : null}
       {error ? <EmptyState title="Capítulo indisponível" body={error} /> : null}
       {(chapter?.verses || []).map((verse) => (
-        <Card key={verse.number}>
-          <Text style={{ color: colors.accent[700], fontWeight: '700' }}>{verse.number}</Text>
-          <Text style={{ color: colors.primary[700], marginTop: 6, lineHeight: 22 }}>{verse.text}</Text>
-          {canPublish ? (
-            <BrandButton
-              variant="ghost"
-              label="Partilhar na Comunidade"
-              onPress={() => onShareVerse(verse.number, verse.text)}
-            />
-          ) : null}
-        </Card>
+        <BibleVerseCard
+          key={verse.number}
+          number={verse.number}
+          text={verse.text}
+          canPublish={canPublish}
+          onShare={() => onShareVerse(verse.number, verse.text)}
+        />
       ))}
     </Screen>
   );
