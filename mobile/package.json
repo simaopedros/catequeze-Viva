@@ -12,6 +12,7 @@
     "web": "expo start --web",
     "prebuild": "expo prebuild",
     "prebuild:clean": "expo prebuild --clean",
+    "build:dev:android": "bash scripts/eas-development-android.sh",
     "test": "jest",
     "typecheck": "tsc --noEmit"
   },
