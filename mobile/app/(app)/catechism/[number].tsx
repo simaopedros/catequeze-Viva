@@ -2,7 +2,7 @@ import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { useAuth } from '../../../src/auth/AuthContext';
 import { useAsync } from '../../../src/hooks/useAsync';
-import { CatechismEntryScreen } from '../../../src/screens/ContentScreens';
+import { CatechismEntryScreen } from '../../../src/screens/CatechismScreens';
 
 export default function CatechismEntryRoute() {
   const { number } = useLocalSearchParams<{ number: string }>();
