@@ -932,7 +932,7 @@ query getMeeting {
 
 query getMeetingAttendance {
   fn: import { getMeetingAttendance } from "@src/server/operations/meetingOperations",
-  entities: [AttendanceRecord, CatechumenProfile, Meeting, CatechesisClass, Membership]
+  entities: [AttendanceRecord, CatechumenProfile, Meeting, CatechesisClass, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
 }
 
 query getClassAttendanceMatrix {

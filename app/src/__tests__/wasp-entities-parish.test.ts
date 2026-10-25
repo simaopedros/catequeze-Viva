@@ -119,4 +119,12 @@ describe('Wasp entities for parish onboarding actions', () => {
     expect(createModule).toContain('FormationModule');
     expect(createModule).toContain('FormationTrack');
   });
+
+  it('getMeetingAttendance declares the entities used by the class access check', () => {
+    const entities = entitiesForOperation(waspSource, 'query', 'getMeetingAttendance');
+    expect(entities).toContain('Parish');
+    expect(entities).toContain('ClassCatechist');
+    expect(entities).toContain('ClassEnrollment');
+    expect(entities).toContain('GuardianProfile');
+  });
 });
