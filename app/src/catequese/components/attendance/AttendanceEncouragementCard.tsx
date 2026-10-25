@@ -5,6 +5,7 @@ import {
   firstNameOf,
   type EncouragementTier,
 } from "../../lib/attendanceEncouragement";
+import { NOT_FILLED_STATUS } from "../../../shared/attendanceMetrics";
 
 type TimelineItem = { id?: string; date: string; status: string };
 
@@ -70,7 +71,6 @@ const DOT_COLORS: Record<string, { fill: string; stroke: string }> = {
   LATE: { fill: BRAND_GOLD, stroke: BRAND_GOLD },
   JUSTIFIED: { fill: "#9db8d9", stroke: "#9db8d9" },
   ABSENT: { fill: "#ffffff", stroke: "#c4c4cc" },
-  NOT_FILLED: { fill: "#f4f4f5", stroke: "#e4e4e7" },
 };
 
 const MAX_DOTS = 40;
@@ -139,7 +139,9 @@ function PerfectSeal({ size = 84 }: { size?: number }) {
   const points = Array.from({ length: 24 }, (_, i) => {
     const angle = (Math.PI * 2 * i) / 24 - Math.PI / 2;
     const r = i % 2 === 0 ? size / 2 : size / 2 - 5;
-    return `${size / 2 + r * Math.cos(angle)},${size / 2 + r * Math.sin(angle)}`;
+    return `${size / 2 + r * Math.cos(angle)},${
+      size / 2 + r * Math.sin(angle)
+    }`;
   }).join(" ");
   return (
     <svg
@@ -150,11 +152,19 @@ function PerfectSeal({ size = 84 }: { size?: number }) {
       style={{ flexShrink: 0 }}
     >
       <path
-        d={`M${size * 0.3} ${size * 0.7} L${size * 0.22} ${size + 12} L${size * 0.36} ${size + 4} L${size * 0.46} ${size + 13} L${size * 0.48} ${size * 0.72} Z`}
+        d={`M${size * 0.3} ${size * 0.7} L${size * 0.22} ${size + 12} L${
+          size * 0.36
+        } ${size + 4} L${size * 0.46} ${size + 13} L${size * 0.48} ${
+          size * 0.72
+        } Z`}
         fill={BRAND_GOLD_MUTED}
       />
       <path
-        d={`M${size * 0.7} ${size * 0.7} L${size * 0.78} ${size + 12} L${size * 0.64} ${size + 4} L${size * 0.54} ${size + 13} L${size * 0.52} ${size * 0.72} Z`}
+        d={`M${size * 0.7} ${size * 0.7} L${size * 0.78} ${size + 12} L${
+          size * 0.64
+        } ${size + 4} L${size * 0.54} ${size + 13} L${size * 0.52} ${
+          size * 0.72
+        } Z`}
         fill={BRAND_GOLD_MUTED}
       />
       <polygon points={points} fill={BRAND_GOLD} />
@@ -200,8 +210,10 @@ export function PresenceTrail({
   label: string;
   legend: { status: string; label: string }[];
 }) {
-  if (!items.length) return null;
-  const visible = items.slice(-MAX_DOTS);
+  const visible = items
+    .filter((item) => item.status && item.status !== NOT_FILLED_STATUS)
+    .slice(-MAX_DOTS);
+  if (!visible.length) return null;
   return (
     <div style={{ marginTop: "12px" }}>
       <p
@@ -220,7 +232,7 @@ export function PresenceTrail({
         aria-hidden
       >
         {visible.map((item, i) => {
-          const colors = DOT_COLORS[item.status] || DOT_COLORS.NOT_FILLED;
+          const colors = DOT_COLORS[item.status] || DOT_COLORS.ABSENT;
           return (
             <span
               key={item.id || `${item.date}-${i}`}
@@ -251,7 +263,11 @@ export function PresenceTrail({
           return (
             <span
               key={entry.status}
-              style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
             >
               <span
                 style={{

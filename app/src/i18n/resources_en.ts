@@ -5753,6 +5753,13 @@ export const pastoralAnalysis_en = {
         "message": "We know life brings challenges. We believe you can do it — at the next meeting we will be waiting for you with open arms!",
         "verse": "“Behold, I make all things new.” (Rev 21:5)"
       }
+    },
+    "timelineStatus": {
+      "PRESENT": "Present",
+      "LATE": "Late",
+      "JUSTIFIED": "Excused",
+      "ABSENT": "Absent",
+      "NOT_FILLED": "Not recorded"
     }
   } as const;
 

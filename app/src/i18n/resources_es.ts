@@ -5753,6 +5753,13 @@ export const pastoralAnalysis_es = {
         "message": "Sabemos que la vida trae desafíos. Creemos que lo vas a lograr — ¡en el próximo encuentro te esperamos con los brazos abiertos!",
         "verse": "“Yo hago nuevas todas las cosas.” (Ap 21,5)"
       }
+    },
+    "timelineStatus": {
+      "PRESENT": "Presente",
+      "LATE": "Retrasado",
+      "JUSTIFIED": "Justificado",
+      "ABSENT": "Ausente",
+      "NOT_FILLED": "Sin registrar"
     }
   } as const;
 

@@ -216,4 +216,8 @@ describe("formatMonthLabel", () => {
       "agosto",
     );
   });
+
+  it("capitalizes only the first letter", () => {
+    expect(formatMonthLabel("2026-06", "pt-BR")).toBe("Junho de 2026");
+  });
 });

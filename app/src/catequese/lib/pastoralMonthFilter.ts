@@ -82,10 +82,11 @@ export function monthKeyFromDate(value: string | Date): string {
 export function formatMonthLabel(monthKey: string, locale = "pt-BR"): string {
   const [year, month] = monthKey.split("-").map(Number);
   if (!year || !month) return monthKey;
-  return new Date(year, month - 1, 1).toLocaleDateString(locale, {
+  const label = new Date(year, month - 1, 1).toLocaleDateString(locale, {
     month: "long",
     year: "numeric",
   });
+  return label.charAt(0).toLocaleUpperCase(locale) + label.slice(1);
 }
 
 export function resolveDefaultMonth(
@@ -200,7 +201,9 @@ export function filterPastoralByMonth(
   const recounted =
     meetingTimeline.length > 0
       ? recountTimeline(meetingTimeline)
-      : recountMonthRow(data.monthlyPresence.find((row) => row.month === period));
+      : recountMonthRow(
+          data.monthlyPresence.find((row) => row.month === period),
+        );
   let riskLevel: string | null = null;
   if (canSeeSensitive && data.riskLevel != null) {
     riskLevel =

@@ -192,11 +192,11 @@ export function PastoralAnalysisInline({
     value ? formatAppDate(value, currentLocale) : "-";
   const displayTheme = (item: any) => item.theme || item.title || t("meeting");
   const statusLabels: Record<string, string> = {
-    PRESENT: t("present"),
-    LATE: t("late"),
-    JUSTIFIED: t("justified"),
-    ABSENT: t("absent"),
-    NOT_FILLED: t("notFilled"),
+    PRESENT: t("timelineStatus.PRESENT"),
+    LATE: t("timelineStatus.LATE"),
+    JUSTIFIED: t("timelineStatus.JUSTIFIED"),
+    ABSENT: t("timelineStatus.ABSENT"),
+    NOT_FILLED: t("timelineStatus.NOT_FILLED"),
   };
   const canSeeSensitiveSignals = Boolean(data.canSeeSensitiveSignals);
   const frequencyLabel =
@@ -585,7 +585,6 @@ export function PastoralAnalysisInline({
                       style={{
                         padding: "8px",
                         fontWeight: 500,
-                        textTransform: "capitalize",
                       }}
                     >
                       {formatMonthLabel(row.month, locale)}
@@ -1042,7 +1041,7 @@ export function PastoralAnalysisInline({
                 <tbody>
                   {(data.monthlyPresence || []).map((row: any) => (
                     <tr key={row.month} className="border-t">
-                      <td className="p-2 font-semibold capitalize tracking-tight text-brand-ink">
+                      <td className="p-2 font-semibold tracking-tight text-brand-ink">
                         {formatMonthLabel(row.month, locale)}
                       </td>
                       <td className="p-2 text-center text-brand-ink">
