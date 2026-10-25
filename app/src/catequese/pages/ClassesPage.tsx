@@ -485,7 +485,8 @@ export default function ClassesPage() {
                 <div
                   className={cn(
                     "mt-4 rounded-sm px-3 py-2.5 text-sm font-medium",
-                    cls.meetings?.[0] && isToday(cls.meetings[0].date)
+                    cls.meetings?.[0] &&
+                      isTodayInAppTimezone(cls.meetings[0].date)
                       ? "border border-brand-ink/20 bg-muted/30 font-semibold text-brand-ink"
                       : "border border-border/70 bg-muted/20 text-muted-foreground",
                   )}
