@@ -351,6 +351,7 @@ export const getClassAttendanceMatrix = async (
     where: {
       classId: args.classId,
       date: { gte: fromDate, lt: toDate },
+      status: { not: "CANCELLED" },
     },
     orderBy: { date: "desc" },
     take,

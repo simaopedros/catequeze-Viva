@@ -6,21 +6,10 @@ import {
   emptyAggregate,
   getClassAttendanceAggregates,
 } from '../reports/attendanceAggregates';
+import { reportPeriodStart, type ReportsPeriod } from '../../shared/attendanceMetrics';
 
 /** Safety cap: a parish overview never needs more than this many classes at once. */
 const MAX_CLASSES_IN_OVERVIEW = 500;
-
-export type ReportsPeriod = 'all' | 'month' | 'quarter';
-
-export function reportPeriodStart(
-  period: ReportsPeriod | undefined,
-  now: Date = new Date(),
-): Date | undefined {
-  if (period !== 'month' && period !== 'quarter') return undefined;
-  const from = new Date(now);
-  from.setMonth(from.getMonth() - (period === 'month' ? 1 : 3));
-  return from;
-}
 
 export const getReportsOverview = async (
   _args: { workspaceId?: string; parishId?: string; period?: ReportsPeriod } | void,

@@ -841,7 +841,7 @@ export const attendance_pt_BR = {
       "title_placeholder": "Título",
       "absent_label": "Faltou",
       "justified_label": "Abonado",
-      "late_label": "Atrasos",
+      "late_label": "Atrasado",
       "not_filled": "Não preenchido",
       "empty": "Crie um encontro para começar.",
       "empty_desc": "Nenhum registro de presença encontrado para esta turma.",
@@ -875,7 +875,14 @@ export const attendance_pt_BR = {
       "bulk_retry": "Tentar novamente os que falharam",
       "bulk_retry_hint": "{{count}} catequizando(s) sem registro. Tentar de novo?",
       "create_meeting_success": "Encontro criado.",
-      "date_placeholder": "DD/MM/AAAA"
+      "date_placeholder": "DD/MM/AAAA",
+      "history_range": "Histórico",
+      "range_30": "30 dias",
+      "range_90": "90 dias",
+      "range_180": "180 dias",
+      "no_title": "Sem título",
+      "enrollment_filter": "Filtrar por situação da matrícula",
+      "status_cell": "{{name}}, {{date}}: {{status}}"
     },
     "sheet": {
       "eyebrow": "Chamada",

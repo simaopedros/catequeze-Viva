@@ -841,7 +841,7 @@ export const attendance_es = {
       "title_placeholder": "Título",
       "absent_label": "Faltó",
       "justified_label": "Justificado",
-      "late_label": "Retrasos",
+      "late_label": "Retrasado",
       "not_filled": "Sin completar",
       "empty": "Cree un encuentro para comenzar.",
       "empty_desc": "No se encontraron registros de asistencia para este grupo.",
@@ -875,7 +875,14 @@ export const attendance_es = {
       "bulk_retry": "Reintentar los que fallaron",
       "bulk_retry_hint": "{{count}} catecúmeno(s) sin registro. ¿Reintentar?",
       "create_meeting_success": "Encuentro creado.",
-      "date_placeholder": "DD/MM/AAAA"
+      "date_placeholder": "DD/MM/AAAA",
+      "history_range": "Historial",
+      "range_30": "30 días",
+      "range_90": "90 días",
+      "range_180": "180 días",
+      "no_title": "Sin título",
+      "enrollment_filter": "Filtrar por situación de la inscripción",
+      "status_cell": "{{name}}, {{date}}: {{status}}"
     },
     "sheet": {
       "eyebrow": "Lista",

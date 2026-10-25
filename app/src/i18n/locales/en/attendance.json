@@ -43,7 +43,6 @@
     "present_letter": "P",
     "late_letter": "L",
     "absent_letter": "A",
-    "late_letter": "L",
     "justified_letter": "E",
     "meetings_count_one": "{{count}} meeting",
     "meetings_count_plural": "{{count}} meetings",
@@ -60,7 +59,14 @@
     "bulk_retry": "Retry failed students",
     "bulk_retry_hint": "{{count}} student(s) were not saved. Retry?",
     "create_meeting_success": "Meeting created.",
-    "date_placeholder": "MM/DD/YYYY"
+    "date_placeholder": "MM/DD/YYYY",
+    "history_range": "History",
+    "range_30": "30 days",
+    "range_90": "90 days",
+    "range_180": "180 days",
+    "no_title": "Untitled",
+    "enrollment_filter": "Filter by enrollment status",
+    "status_cell": "{{name}}, {{date}}: {{status}}"
   },
   "sheet": {
     "eyebrow": "Roll call",

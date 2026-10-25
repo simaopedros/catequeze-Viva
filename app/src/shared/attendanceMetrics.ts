@@ -62,6 +62,16 @@ export function addStatus(counts: AttendanceCounts, status: string): void {
   }
 }
 
+export function countStatuses(
+  statuses: Iterable<string | null | undefined>,
+): AttendanceCounts {
+  const counts = emptyAttendanceCounts();
+  for (const status of statuses) {
+    if (status) addStatus(counts, status);
+  }
+  return counts;
+}
+
 export function attendedTotal(counts: AttendanceCounts): number {
   return counts.present + counts.late + counts.justified;
 }
@@ -88,6 +98,19 @@ export function resolveMeetingStatus(
 ): AttendanceStatusValue | typeof NOT_FILLED_STATUS {
   if (ownStatus) return ownStatus as AttendanceStatusValue;
   return meetingHasAttendance ? "ABSENT" : NOT_FILLED_STATUS;
+}
+
+export type ReportsPeriod = "all" | "month" | "quarter";
+
+/** Lower bound of the reports period filter; `undefined` means no limit. */
+export function reportPeriodStart(
+  period: ReportsPeriod | undefined,
+  now: Date = new Date(),
+): Date | undefined {
+  if (period !== "month" && period !== "quarter") return undefined;
+  const from = new Date(now);
+  from.setUTCMonth(from.getUTCMonth() - (period === "month" ? 1 : 3));
+  return from;
 }
 
 export function ageFromBirthDate(

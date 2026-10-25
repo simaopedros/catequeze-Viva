@@ -34,6 +34,12 @@ import {
   AppPanel,
 } from "../../client/components/brand/AppChrome";
 import { MeetingAttendanceSheet } from "../components/attendance/MeetingAttendanceSheet";
+import {
+  type AttendanceCounts,
+  computeAttendanceRate,
+  countStatuses,
+  emptyAttendanceCounts,
+} from "../../shared/attendanceMetrics";
 
 /** Match Tailwind `md` — mobile sheet below this width. */
 function useIsMobileSheet() {
@@ -73,7 +79,10 @@ function StatusCell({
   onMark,
   isSaving,
   notFilledLabel,
+  describe,
 }: {
+  /** Builds the accessible name from the current status label. */
+  describe?: (statusLabel: string) => string;
   status: string | undefined;
   statusOptions: {
     key: string;
@@ -100,6 +109,7 @@ function StatusCell({
   }, [open]);
 
   const st = status ? statusOptions.find((o) => o.key === status) : null;
+  const currentLabel = st ? st.fullLabel : notFilledLabel;
 
   if (isSaving) {
     return (
@@ -112,14 +122,17 @@ function StatusCell({
   return (
     <div ref={ref} className="relative inline-block">
       <button
+        type="button"
         onClick={() => setOpen(!open)}
         className={`flex min-h-[44px] min-w-[44px] h-8 w-10 cursor-pointer items-center justify-center rounded-sm border text-xs font-semibold transition-colors ${
           st
             ? st.color
             : "bg-muted text-muted-foreground border-border hover:border-foreground/30"
         }`}
-        title={st ? st.fullLabel : notFilledLabel}
-        aria-label={notFilledLabel}
+        title={currentLabel}
+        aria-label={describe ? describe(currentLabel) : currentLabel}
+        aria-haspopup="menu"
+        aria-expanded={open}
       >
         {st ? st.label : <Minus className="h-3 w-3" />}
       </button>
@@ -130,6 +143,7 @@ function StatusCell({
         >
           {statusOptions.map((opt) => (
             <button
+              type="button"
               key={opt.key}
               onClick={() => {
                 onMark(opt.key);
@@ -180,11 +194,9 @@ export default function AttendancePage() {
     data: meetings = [],
     refetch: refetchMeetings,
     error: matrixError,
-  } = useQuery(
-    getClassAttendanceMatrix,
-    matrixArgs as any,
-    { enabled: Boolean(classId) && loadMatrix },
-  );
+  } = useQuery(getClassAttendanceMatrix, matrixArgs as any, {
+    enabled: Boolean(classId) && loadMatrix,
+  });
   const {
     data: cls,
     error: classError,
@@ -279,26 +291,17 @@ export default function AttendancePage() {
 
   // Derived: recompute stats whenever matrix, meetings, or catechumens change
   const stats = useMemo(() => {
-    const st: Record<
-      string,
-      { total: number; presentes: number; abonados: number; faltas: number }
-    > = {};
+    const st: Record<string, AttendanceCounts> = {};
     for (const m of meetings) {
-      st[m.id] = {
-        total: catechumens.length,
-        presentes: 0,
-        abonados: 0,
-        faltas: 0,
-      };
-      const records = matrix[m.id] || {};
-      Object.values(records).forEach((status) => {
-        if (status === "PRESENT") st[m.id].presentes++;
-        else if (status === "JUSTIFIED") st[m.id].abonados++;
-        else if (status === "ABSENT") st[m.id].faltas++;
-      });
+      st[m.id] = countStatuses(Object.values(matrix[m.id] || {}));
     }
     return st;
-  }, [matrix, meetings, catechumens]);
+  }, [matrix, meetings]);
+
+  const studentRate = (catechumenId: string) =>
+    computeAttendanceRate(
+      countStatuses(meetings.map((m: any) => matrix[m.id]?.[catechumenId])),
+    );
 
   const mark = async (
     meetingId: string,
@@ -461,15 +464,14 @@ export default function AttendancePage() {
   };
 
   const getOverallPct = () => {
-    if (meetings.length === 0 || catechumens.length === 0) return 0;
-    const totalPossible = meetings.length * catechumens.length;
-    const totalPresent = Object.values(stats).reduce(
-      (sum, s) => sum + s.presentes + s.abonados,
-      0,
-    );
-    return totalPossible > 0
-      ? Math.round((totalPresent / totalPossible) * 100)
-      : 0;
+    const total = emptyAttendanceCounts();
+    for (const s of Object.values(stats)) {
+      total.present += s.present;
+      total.late += s.late;
+      total.justified += s.justified;
+      total.absent += s.absent;
+    }
+    return computeAttendanceRate(total);
   };
 
   // Mobile operational path: single-meeting sheet (no historical matrix payload)
@@ -540,7 +542,7 @@ export default function AttendancePage() {
             className="mt-1 shrink-0 rounded-sm"
             asChild
           >
-            <Link to={`/app/classes/${classId}`}>
+            <Link to={`/app/classes/${classId}`} aria-label={tc("back")}>
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
@@ -612,11 +614,7 @@ export default function AttendancePage() {
             ))}
           </div>
           <label className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>
-              {t("matrix.history_range", {
-                defaultValue: "Histórico",
-              })}
-            </span>
+            <span>{t("matrix.history_range")}</span>
             <select
               value={rangeDays}
               onChange={(e) =>
@@ -624,15 +622,9 @@ export default function AttendancePage() {
               }
               className="h-9 rounded-sm border border-input bg-background px-2 text-xs font-medium text-foreground"
             >
-              <option value={30}>
-                {t("matrix.range_30", { defaultValue: "30 dias" })}
-              </option>
-              <option value={90}>
-                {t("matrix.range_90", { defaultValue: "90 dias" })}
-              </option>
-              <option value={180}>
-                {t("matrix.range_180", { defaultValue: "180 dias" })}
-              </option>
+              <option value={30}>{t("matrix.range_30")}</option>
+              <option value={90}>{t("matrix.range_90")}</option>
+              <option value={180}>{t("matrix.range_180")}</option>
             </select>
           </label>
         </div>
@@ -651,6 +643,7 @@ export default function AttendancePage() {
           )}
           <select
             value={enrollmentStatusFilter}
+            aria-label={t("matrix.enrollment_filter")}
             onChange={(e) => setEnrollmentStatusFilter(e.target.value)}
             className="h-8 rounded-sm border border-input bg-background px-2 py-1 text-xs"
           >
@@ -787,24 +780,23 @@ export default function AttendancePage() {
                               onMark={(val) => mark(m.id, cat.id, val)}
                               isSaving={isSaving}
                               notFilledLabel={t("matrix.not_filled")}
+                              describe={(label) =>
+                                t("matrix.status_cell", {
+                                  name: `${cat.firstName} ${cat.lastName}`.trim(),
+                                  date: formatDate(m.date, currentLocale, {
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                  }),
+                                  status: label,
+                                })
+                              }
                             />
                           </td>
                         );
                       })}
                       <td className="bg-muted/20 p-1 text-center">
                         <span className="text-sm font-semibold tabular-nums text-brand-ink">
-                          {meetings.length > 0
-                            ? Math.round(
-                                (Object.values(matrix).filter(
-                                  (m) =>
-                                    m[cat.id] === "PRESENT" ||
-                                    m[cat.id] === "JUSTIFIED",
-                                ).length /
-                                  meetings.length) *
-                                  100,
-                              )
-                            : 0}
-                          %
+                          {studentRate(cat.id)}%
                         </span>
                       </td>
                     </tr>
@@ -818,15 +810,16 @@ export default function AttendancePage() {
                     {meetings.map((m: any) => (
                       <td key={m.id} className="p-2 text-center text-overline">
                         <span className="text-brand-ink dark:text-brand-ink">
-                          {stats[m.id]?.presentes || 0}
+                          {(stats[m.id]?.present || 0) +
+                            (stats[m.id]?.late || 0)}
                           {t("matrix.present_letter")}
                         </span>{" "}
                         <span className="text-destructive">
-                          {stats[m.id]?.faltas || 0}
+                          {stats[m.id]?.absent || 0}
                           {t("matrix.absent_letter")}
                         </span>{" "}
                         <span className="text-muted-foreground dark:text-muted-foreground">
-                          {stats[m.id]?.abonados || 0}
+                          {stats[m.id]?.justified || 0}
                           {t("matrix.justified_letter")}
                         </span>
                       </td>
