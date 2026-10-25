@@ -1,7 +1,10 @@
 import { lazy } from "react";
 import { FaqSection } from "./components/FaqSection";
 import { LandingShell } from "./components/LandingShell";
-import { HomeDeferredSection } from "./home/HomeDeferredSection";
+import {
+  HomeDeferredSection,
+  useHomeAnchorNavigation,
+} from "./home/HomeDeferredSection";
 import { HomeHero } from "./home/HomeHero";
 import { HomeReveal } from "./home/HomeReveal";
 import { ScrollProgress } from "./home/ScrollProgress";
@@ -35,6 +38,7 @@ const loadClosingCta = () =>
  */
 export default function LandingPage() {
   const rootRef = useHomeMotionRoot();
+  useHomeAnchorNavigation(rootRef);
   return (
     <LandingShell ns="landing">
       <div ref={rootRef} className="home-root">

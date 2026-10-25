@@ -35,7 +35,7 @@ export function HomeClosingCta({ ns = "landing" }: { ns?: string }) {
       id="contato"
       data-landing-closing-cta
       data-paused={paused ? "" : undefined}
-      className="relative isolate overflow-hidden bg-brand-ink text-white"
+      className="relative isolate scroll-mt-20 overflow-hidden bg-brand-ink text-white"
     >
       <div
         aria-hidden
