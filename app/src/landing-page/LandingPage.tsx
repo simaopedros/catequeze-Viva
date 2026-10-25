@@ -1,7 +1,7 @@
 import { lazy } from "react";
 import { FaqSection } from "./components/FaqSection";
 import { LandingShell } from "./components/LandingShell";
-import { LazySection } from "./components/LazySection";
+import { HomeDeferredSection } from "./home/HomeDeferredSection";
 import { HomeHero } from "./home/HomeHero";
 import { HomeReveal } from "./home/HomeReveal";
 import { ScrollProgress } from "./home/ScrollProgress";
@@ -40,18 +40,18 @@ export default function LandingPage() {
       <div ref={rootRef} className="home-root">
         <ScrollProgress />
         <HomeHero />
-        <LazySection loader={loadBeforeAfter} />
-        <LazySection loader={loadHow} />
-        <LazySection loader={loadDemo} />
+        <HomeDeferredSection loader={loadBeforeAfter} />
+        <HomeDeferredSection loader={loadHow} />
+        <HomeDeferredSection loader={loadDemo} />
         <HomeReveal>
-          <LazySection>
+          <HomeDeferredSection>
             <GrowthPricingSection ns="landing" />
-          </LazySection>
+          </HomeDeferredSection>
         </HomeReveal>
         <HomeReveal>
           <FaqSection showCta />
         </HomeReveal>
-        <LazySection loader={loadClosingCta} />
+        <HomeDeferredSection loader={loadClosingCta} />
       </div>
     </LandingShell>
   );
