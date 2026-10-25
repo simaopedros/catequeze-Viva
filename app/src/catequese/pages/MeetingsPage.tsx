@@ -27,6 +27,7 @@ import {
   AppPanel,
 } from "../../client/components/brand/AppChrome";
 import { SkeletonPage } from "../../client/components/Skeletons";
+import { QueryErrorState } from "../../client/components/QueryErrorState";
 import { EmptyState } from "../../client/components/EmptyState";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import {
@@ -75,6 +76,7 @@ export default function MeetingsPage() {
     data: pageData,
     isLoading: loading,
     isFetching,
+    error: meetingsError,
     refetch: refetchMeetings,
   } = useQuery(
     listMeetings,
@@ -184,6 +186,10 @@ export default function MeetingsPage() {
         compact
       />
     );
+  }
+
+  if (meetingsError && meetings.length === 0) {
+    return <QueryErrorState error={meetingsError} onRetry={refetchMeetings} />;
   }
 
   if (loading) return <SkeletonPage />;

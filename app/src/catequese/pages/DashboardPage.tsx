@@ -10,6 +10,7 @@ import { PastoralDashboard } from "../components/dashboard/PastoralDashboard";
 import { CoordinatorDashboard } from "../components/dashboard/CoordinatorDashboard";
 import { InstitutionalDashboard } from "../components/dashboard/InstitutionalDashboard";
 import { SkeletonPage } from "../../client/components/Skeletons";
+import { QueryErrorState } from "../../client/components/QueryErrorState";
 import { FAMILY_PORTAL_ROLES, isFamilyPortalHost } from "../../shared/portal";
 import { shouldUseInstitutionalDashboard } from "../../shared/dashboardGate";
 
@@ -46,7 +47,12 @@ export default function DashboardPage() {
     });
 
   // Avoid fetching common dashboard stats when institutional view does not use them.
-  const { data: stats, isLoading: loadingStats } = useQuery(
+  const {
+    data: stats,
+    isLoading: loadingStats,
+    error: statsError,
+    refetch: refetchStats,
+  } = useQuery(
     getDashboardStats,
     {
       parishId: activeParishId || undefined,
@@ -68,6 +74,10 @@ export default function DashboardPage() {
 
   if (isInstitutional) {
     return <InstitutionalDashboard />;
+  }
+
+  if (statsError && !stats) {
+    return <QueryErrorState error={statsError} onRetry={refetchStats} />;
   }
 
   const roleDashboards: Record<string, React.ComponentType<{ stats: any }>> = {

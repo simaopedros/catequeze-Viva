@@ -35,6 +35,8 @@ import { PlanLimitBanner } from "../components/PlanLimitBanner";
 import { useClassFilters, useClassStatusMap } from "../../i18n/useLabels";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
+import { isTodayInAppTimezone } from "../../shared/calendarDate";
+import { QueryErrorState } from "../../client/components/QueryErrorState";
 import { formatClassSchedule } from "../../shared/classSchedule";
 import { cn } from "../../client/utils";
 import {
@@ -84,6 +86,8 @@ export default function ClassesPage() {
     data: pageData,
     isLoading,
     isFetching,
+    error,
+    refetch,
   } = useQuery(
     listClasses,
     {
@@ -144,12 +148,6 @@ export default function ClassesPage() {
     [classFilters, classes],
   );
 
-  const isToday = (dateStr: string) => {
-    const d = new Date(dateStr);
-    const today = new Date();
-    return d.toDateString() === today.toDateString();
-  };
-
   const clearFilters = () => {
     setSearch("");
     setFilter("");
@@ -163,7 +161,7 @@ export default function ClassesPage() {
     );
 
   const nextActionLabel = (cls: any) => {
-    if (cls.meetings?.[0] && isToday(cls.meetings[0].date)) {
+    if (cls.meetings?.[0] && isTodayInAppTimezone(cls.meetings[0].date)) {
       return t("meeting_today");
     }
     if (cls.meetings?.[0]) {
@@ -176,6 +174,10 @@ export default function ClassesPage() {
     }
     return t("attendance");
   };
+
+  if (error && items.length === 0) {
+    return <QueryErrorState error={error} onRetry={refetch} />;
+  }
 
   if (isLoading && items.length === 0) {
     return (

@@ -40,6 +40,7 @@ import {
   ArrowUp,
   ArrowDown,
   Minus,
+  ChevronRight,
 } from "lucide-react";
 import { Alert } from "../../../client/components/ui/alert";
 import { EmptyState } from "../../../client/components/EmptyState";
@@ -193,26 +194,46 @@ function AlertBanner({ alerts }: { alerts?: any[] }) {
 
   return (
     <div className="space-y-2">
-      {alerts.slice(0, 5).map((a: any, i: number) => (
-        <div
-          key={i}
-          className={`flex items-center gap-3 rounded-sm border p-3 ${
-            severityColors[a.severity] || severityColors.medium
-          }`}
-        >
-          <AlertTriangle className="h-4 w-4 flex-shrink-0" />
-          <div className="flex-1 min-w-0">
-            <span className="text-sm font-medium tracking-tight text-brand-ink">
-              {a.message}
-            </span>
-            {a.count > 0 && (
-              <Badge variant="outline" size="sm" className="ml-2">
-                {a.count}
-              </Badge>
+      {alerts.slice(0, 5).map((a: any, i: number) => {
+        const className = `flex items-center gap-3 rounded-sm border p-3 ${
+          severityColors[a.severity] || severityColors.medium
+        }`;
+        const content = (
+          <>
+            <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <span className="text-sm font-medium tracking-tight text-brand-ink">
+                {a.message}
+              </span>
+              {a.count > 0 && (
+                <Badge variant="outline" size="sm" className="ml-2">
+                  {a.count}
+                </Badge>
+              )}
+            </div>
+            {a.link && (
+              <ChevronRight
+                className="h-4 w-4 flex-shrink-0 text-muted-foreground"
+                aria-hidden
+              />
             )}
+          </>
+        );
+        return a.link ? (
+          <Link
+            key={i}
+            to={a.link}
+            className={`${className} transition-colors hover:border-brand-gold/60 hover:bg-brand-gold/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
+            data-testid="institutional-alert-link"
+          >
+            {content}
+          </Link>
+        ) : (
+          <div key={i} className={className}>
+            {content}
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -504,9 +525,7 @@ export function InstitutionalDashboard() {
           description={t("no_classes_description")}
         >
           <Button asChild className="mt-4 h-11 min-h-11 rounded-sm">
-            <Link to="/app/classes/new">
-              {t("create_class")}
-            </Link>
+            <Link to="/app/classes/new">{t("create_class")}</Link>
           </Button>
         </EmptyState>
       ) : overview ? (

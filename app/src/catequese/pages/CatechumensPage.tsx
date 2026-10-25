@@ -16,6 +16,7 @@ import { Badge } from "../../client/components/ui/badge";
 import { SearchInput } from "../../client/components/SearchInput";
 import { EmptyState } from "../../client/components/EmptyState";
 import { SkeletonCard } from "../../client/components/Skeletons";
+import { QueryErrorState } from "../../client/components/QueryErrorState";
 import {
   Select,
   SelectContent,
@@ -117,6 +118,8 @@ export default function CatechumensPage() {
     data: pageData,
     isLoading,
     isFetching,
+    error,
+    refetch,
   } = useQuery(
     listCatechumens,
     {
@@ -179,6 +182,10 @@ export default function CatechumensPage() {
   }, [nextCursor, isFetching]);
 
   const hasFilters = !!(search || (classFilter && classFilter !== "all"));
+
+  if (error && items.length === 0) {
+    return <QueryErrorState error={error} onRetry={refetch} />;
+  }
 
   if (isLoading && items.length === 0) {
     return (
@@ -331,7 +338,10 @@ export default function CatechumensPage() {
                   <AppDisplayTitle as="h2">
                     {t("no_catechumens")}
                   </AppDisplayTitle>
-                  <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
+                  <div
+                    className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent"
+                    aria-hidden
+                  />
                   <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
                     {t("catechumens.empty_desc")}
                   </p>

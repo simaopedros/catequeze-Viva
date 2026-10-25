@@ -4,12 +4,15 @@ import {
   addStatus,
   ageFromBirthDate,
   computeAttendanceRate,
+  countStatuses,
   emptyAttendanceCounts,
   isAttendedStatus,
   isCountableMeeting,
+  reportPeriodStart,
   resolveMeetingStatus,
   riskLevelFromRate,
 } from "../shared/attendanceMetrics";
+import { isTodayInAppTimezone } from "../shared/calendarDate";
 
 const NOW = new Date("2026-10-25T15:00:00Z");
 
@@ -102,5 +105,54 @@ describe("helpers", () => {
     expect(ageFromBirthDate("2014-12-10T12:00:00Z", NOW)).toBe(11);
     expect(ageFromBirthDate("2014-03-10T12:00:00Z", NOW)).toBe(12);
     expect(ageFromBirthDate(null, NOW)).toBeNull();
+  });
+});
+
+describe("countStatuses", () => {
+  it("counts LATE and JUSTIFIED as participation and skips empty cells", () => {
+    const counts = countStatuses([
+      "PRESENT",
+      "LATE",
+      "JUSTIFIED",
+      "ABSENT",
+      undefined,
+      null,
+    ]);
+    expect(counts).toEqual({ present: 1, late: 1, justified: 1, absent: 1 });
+    expect(computeAttendanceRate(counts)).toBe(75);
+  });
+});
+
+describe("reportPeriodStart", () => {
+  it("has no lower bound for the whole period", () => {
+    expect(reportPeriodStart("all", NOW)).toBeUndefined();
+    expect(reportPeriodStart(undefined, NOW)).toBeUndefined();
+  });
+
+  it("goes back one month or one quarter", () => {
+    expect(reportPeriodStart("month", NOW)?.toISOString()).toBe(
+      "2026-09-25T15:00:00.000Z",
+    );
+    expect(reportPeriodStart("quarter", NOW)?.toISOString()).toBe(
+      "2026-07-25T15:00:00.000Z",
+    );
+  });
+});
+
+describe("isTodayInAppTimezone", () => {
+  it("treats date-only meetings as calendar days in Brazil", () => {
+    const lateEveningInBrazil = new Date("2026-10-26T01:30:00Z");
+    expect(
+      isTodayInAppTimezone("2026-10-25T00:00:00.000Z", lateEveningInBrazil),
+    ).toBe(true);
+    expect(
+      isTodayInAppTimezone("2026-10-26T00:00:00.000Z", lateEveningInBrazil),
+    ).toBe(false);
+  });
+
+  it("compares timed meetings in the app timezone", () => {
+    expect(isTodayInAppTimezone("2026-10-25T22:00:00Z", NOW)).toBe(true);
+    expect(isTodayInAppTimezone("2026-10-26T04:00:00Z", NOW)).toBe(false);
+    expect(isTodayInAppTimezone("invalid", NOW)).toBe(false);
   });
 });

@@ -51,6 +51,15 @@ export function toAppCalendarDate(date: Date | string | number): Date {
   return d;
 }
 
+export function isTodayInAppTimezone(
+  date: Date | string | number,
+  now: Date = new Date(),
+): boolean {
+  const d = toAppCalendarDate(date);
+  if (Number.isNaN(d.getTime())) return false;
+  return todayInAppTimezone(d) === todayInAppTimezone(now);
+}
+
 export function meetingDateFromInput(value: string | Date): Date {
   if (value instanceof Date) {
     return toAppCalendarDate(value);
