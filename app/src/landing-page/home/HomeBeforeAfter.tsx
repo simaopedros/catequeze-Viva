@@ -190,7 +190,7 @@ function OrganizeStage({ ns, rows }: { ns: string; rows: TransformRow[] }) {
             return (
               <m.li
                 key={row.before}
-                className="absolute left-1/2 top-0 -ml-[110px] w-[220px] sm:-ml-[130px] sm:w-[260px]"
+                className="absolute inset-x-4 top-0 sm:inset-x-auto sm:left-1/2 sm:-ml-[150px] sm:w-[300px]"
                 initial={false}
                 animate={
                   organized
@@ -206,10 +206,10 @@ function OrganizeStage({ ns, rows }: { ns: string; rows: TransformRow[] }) {
               >
                 <div
                   className={cn(
-                    "relative flex h-11 items-center gap-3 rounded-xl border px-3 transition-[background-color,border-color,box-shadow] duration-500",
+                    "relative mx-auto flex h-11 items-center gap-3 rounded-xl border px-3 transition-[width,background-color,border-color,box-shadow] duration-500",
                     organized
-                      ? "border-emerald-700/15 bg-white shadow-[0_10px_24px_-16px_rgba(7,26,45,0.5)]"
-                      : "border-dashed border-brand-gold/45 bg-[#FFF9EF] shadow-none",
+                      ? "w-full border-emerald-700/15 bg-white shadow-[0_10px_24px_-16px_rgba(7,26,45,0.5)]"
+                      : "w-[180px] border-dashed border-brand-gold/45 bg-[#FFF9EF] shadow-none",
                   )}
                 >
                   <span
@@ -226,7 +226,7 @@ function OrganizeStage({ ns, rows }: { ns: string; rows: TransformRow[] }) {
                       <Icon className="h-4 w-4" />
                     )}
                   </span>
-                  <span className="relative h-5 flex-1 overflow-hidden text-[13px]">
+                  <span className="relative h-5 flex-1 overflow-hidden text-[12px] min-[360px]:text-[13px]">
                     <m.span
                       className="absolute inset-0 truncate text-brand-ink/60 line-through decoration-brand-gold/60"
                       initial={false}
