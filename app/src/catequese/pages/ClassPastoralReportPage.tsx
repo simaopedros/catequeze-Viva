@@ -36,6 +36,7 @@ const STATUS_COLORS: Record<string, string> = {
 export default function ClassPastoralReportPage() {
   const { t } = useTranslation("pastoralReport");
   const { t: tc } = useTranslation("common");
+  const { t: tcl } = useTranslation("classes");
   const statusLabel = (status: string) =>
     t(`enrollment_status.${status}`, { defaultValue: status });
   const { currentLocale } = useLocale();
@@ -183,7 +184,7 @@ export default function ClassPastoralReportPage() {
         }}
         secondaryActions={[
           {
-            label: tc("attendance") || "Presença",
+            label: tcl("attendance"),
             href: `/app/classes/${id}/attendance`,
           },
         ]}
