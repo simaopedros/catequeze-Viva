@@ -330,6 +330,204 @@
   animation: content-fade-in var(--motion-duration-normal, 250ms) var(--motion-easing-default, ease-out) both;
 }
 
+/* ── Home landing (/) motion ─────────────────────────────────────────
+   Only transform/opacity/clip-path/stroke animate. Hero headline and
+   product shot never start at opacity 0 (they are LCP candidates).
+   `.home-root[data-motion-ready]` is set by JS after mount, so reveal
+   hiding never applies if JS did not run. `[data-home-lite]` (saveData /
+   low-memory devices) turns off continuous loops. */
+
+@keyframes home-word-rise {
+  from { transform: translateY(105%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes home-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes home-tilt-in {
+  from { transform: perspective(1600px) rotateX(16deg) translateY(32px) scale(0.965); }
+  to   { transform: perspective(1600px) rotateX(0deg) translateY(0) scale(1); }
+}
+
+@keyframes home-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes home-pop {
+  from { opacity: 0; transform: scale(0); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes home-float {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-10px); }
+}
+
+@keyframes home-glow {
+  from { opacity: 0.55; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1.04); }
+}
+
+@keyframes home-shimmer {
+  0%, 70% { transform: translateX(-120%) skewX(-18deg); }
+  100%    { transform: translateX(260%) skewX(-18deg); }
+}
+
+@keyframes home-rays {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes home-drift {
+  0%   { opacity: 0; transform: translate3d(0, 0, 0) scale(0.6); }
+  15%  { opacity: 0.9; }
+  100% { opacity: 0; transform: translate3d(var(--home-drift-x, 12px), -160px, 0) scale(1); }
+}
+
+@keyframes home-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@utility home-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+@utility home-word-inner {
+  display: inline-block;
+  animation: home-word-rise 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility home-fade-up {
+  animation: home-fade-up 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility home-tilt-in {
+  transform-origin: 50% 0%;
+  animation: home-tilt-in 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility home-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: home-draw var(--home-draw-duration, 900ms) cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+@utility home-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: home-pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@utility home-float {
+  animation: home-float 3.2s ease-in-out infinite alternate;
+}
+
+@utility home-glow {
+  animation: home-glow 4.5s ease-in-out infinite alternate;
+}
+
+@utility home-shimmer {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 40%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.38), transparent);
+    transform: translateX(-120%) skewX(-18deg);
+    animation: home-shimmer 4.2s ease-in-out 1.6s infinite;
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+@utility home-rays {
+  animation: home-rays 90s linear infinite;
+}
+
+@utility home-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.03 0 0 0 0 0.1 0 0 0 0 0.18 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+.home-root[data-motion-ready] .home-reveal {
+  transition:
+    opacity 800ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--home-reveal-delay, 0ms);
+}
+.home-root[data-motion-ready] .home-reveal:not([data-inview]) {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+.home-root[data-home-lite] .home-loop,
+.home-root[data-home-lite] .home-loop::after {
+  animation: none !important;
+}
+[data-paused] .home-loop,
+[data-paused] .home-loop::after {
+  animation-play-state: paused !important;
+}
+
+.home-particle {
+  position: absolute;
+  bottom: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: #f1c76b;
+  box-shadow: 0 0 10px 2px rgba(241, 199, 107, 0.55);
+  opacity: 0;
+  animation: home-drift var(--home-drift-duration, 9s) linear var(--home-drift-delay, 0s) infinite;
+}
+
+/* Scrollytelling: the pinned phone only exists on wide AND tall viewports.
+   Everywhere else each step renders its own inline mock (no JS layout). */
+.home-how-pinned-col { display: none; }
+@media (min-width: 1024px) and (min-height: 700px) {
+  .home-how-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    column-gap: 5rem;
+    max-width: none;
+  }
+  .home-how-pinned-col { display: block; }
+  .home-how-pinned { position: sticky; top: 6rem; }
+  .home-how-inline-mock { display: none; }
+  .home-how-step { min-height: 72vh; }
+}
+
+.home-scroll-progress { display: none; }
+@supports (animation-timeline: scroll()) {
+  .home-scroll-progress {
+    display: block;
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 3px;
+    z-index: 110;
+    pointer-events: none;
+    transform-origin: 0 50%;
+    background: linear-gradient(90deg, #8a6418, #d39a2b 45%, #f1c76b);
+    animation: home-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-scroll-progress { display: none !important; }
+  .home-particle { display: none; }
+}
+
 /* ── Content area stabilization ───────────────────────────────────── */
 
 /* Prevent content containers from collapsing during loading/transitions */

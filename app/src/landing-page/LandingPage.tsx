@@ -1,49 +1,58 @@
 import { lazy } from "react";
 import { FaqSection } from "./components/FaqSection";
-import { HeroSection } from "./components/HeroSection";
 import { LandingShell } from "./components/LandingShell";
 import { LazySection } from "./components/LazySection";
+import { HomeHero } from "./home/HomeHero";
+import { HomeReveal } from "./home/HomeReveal";
+import { ScrollProgress } from "./home/ScrollProgress";
+import { useHomeMotionRoot } from "./home/homeMotionEnv";
 
-const loadProblem = () =>
-  import("./components/ProblemSection").then((m) => ({
-    default: m.ProblemSection,
+const loadBeforeAfter = () =>
+  import("./home/HomeBeforeAfter").then((m) => ({
+    default: m.HomeBeforeAfter,
   }));
 const loadHow = () =>
-  import("./components/HowItWorksSection").then((m) => ({
-    default: m.HowItWorksSection,
+  import("./home/HomeHowItWorks").then((m) => ({
+    default: m.HomeHowItWorks,
   }));
 const loadDemo = () =>
-  import("./components/InteractiveDemoSection").then((m) => ({
-    default: m.InteractiveDemoSection,
+  import("./home/HomeAiDemo").then((m) => ({
+    default: m.HomeAiDemo,
   }));
 const GrowthPricingSection = lazy(() =>
   import("./components/GrowthPricingSection").then((m) => ({
     default: m.GrowthPricingSection,
   })),
 );
-const loadCta = () =>
-  import("./components/CtaSection").then((m) => ({
-    default: function Cta() {
-      return <m.CtaSection responsiveCtas />;
-    },
+const loadClosingCta = () =>
+  import("./home/HomeClosingCta").then((m) => ({
+    default: m.HomeClosingCta,
   }));
 
 /**
- * Home: editorial SaaS story, not a feature catalog.
- * Promise → pain → how it works → IA demo → pricing → FAQ → CTA.
+ * Home: promise → pain resolved → how it works → IA demo → pricing → FAQ → CTA.
+ * Hero motion is CSS-only; sections below the fold load `motion` lazily.
  */
 export default function LandingPage() {
+  const rootRef = useHomeMotionRoot();
   return (
     <LandingShell ns="landing">
-      <HeroSection responsiveCtas variant="centered" />
-      <LazySection loader={loadProblem} />
-      <LazySection loader={loadHow} />
-      <LazySection loader={loadDemo} />
-      <LazySection>
-        <GrowthPricingSection ns="landing" />
-      </LazySection>
-      <FaqSection showCta />
-      <LazySection loader={loadCta} />
+      <div ref={rootRef} className="home-root">
+        <ScrollProgress />
+        <HomeHero />
+        <LazySection loader={loadBeforeAfter} />
+        <LazySection loader={loadHow} />
+        <LazySection loader={loadDemo} />
+        <HomeReveal>
+          <LazySection>
+            <GrowthPricingSection ns="landing" />
+          </LazySection>
+        </HomeReveal>
+        <HomeReveal>
+          <FaqSection showCta />
+        </HomeReveal>
+        <LazySection loader={loadClosingCta} />
+      </div>
     </LandingShell>
   );
 }
