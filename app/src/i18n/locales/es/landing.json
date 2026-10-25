@@ -730,5 +730,174 @@
       }
     ],
     "compare": "Comparar detalles de los planes"
+  },
+  "home": {
+    "hero": {
+      "cards": [
+        {
+          "label": "Asistencia de hoy",
+          "value": "19 presentes"
+        },
+        {
+          "label": "Domingo, 9h",
+          "value": "Encuentro listo"
+        },
+        {
+          "label": "Familia de Ana",
+          "value": "Justificó la falta"
+        }
+      ]
+    },
+    "before_after": {
+      "toggle_label": "Comparar la rutina",
+      "caption_before": "Cada cosa en un rincón.",
+      "caption_after": "Todo en el mismo lugar."
+    },
+    "how": {
+      "prepare": {
+        "title": "Guion del encuentro",
+        "meta": "Perdón · 10–12 años · 60 min",
+        "items": [
+          "Acogida",
+          "Dinámica",
+          "Evangelio · Lc 15,11-32",
+          "Reflexión",
+          "Actividad",
+          "Oración final"
+        ],
+        "done": "Listo para el domingo"
+      },
+      "attendance": {
+        "title": "Grupo de Confirmación",
+        "meta": "22 catequizandos · hoy",
+        "present": "Presentes",
+        "absent": "Faltas",
+        "justified": "Justificadas",
+        "students": [
+          "Ana Clara",
+          "Bruno",
+          "Carla",
+          "Davi",
+          "Elisa",
+          "Felipe"
+        ]
+      },
+      "follow": {
+        "title": "Seguimiento",
+        "meta": "Grupo de Confirmación · semestre",
+        "ring_label": "Asistencia acumulada",
+        "next_label": "Próximo encuentro",
+        "next_value": "Domingo · 9h",
+        "last_label": "Último encuentro",
+        "last_value": "08/09",
+        "bars_label": "Últimos encuentros"
+      }
+    },
+    "demo": {
+      "progress": "{{current}} de {{total}} etapas",
+      "minutes": "{{count}} min",
+      "done_title": "¿Te gustó? Prepara el tuyo de verdad.",
+      "done_text": "Con el tema de tu grupo y la Biblia y el Catecismo al lado. Revisas todo antes de usarlo.",
+      "done_cta": "Empezar 7 días gratis",
+      "done_helper": "7 días gratis · Cancela cuando quieras",
+      "topics": {
+        "perdao": [
+          {
+            "title": "Acogida",
+            "detail": "Ronda de conversación: ¿cuándo te costó pedir perdón?",
+            "minutes": 5
+          },
+          {
+            "title": "Dinámica",
+            "detail": "Nudo humano: desatar juntos lo que parecía sin salida.",
+            "minutes": 10
+          },
+          {
+            "title": "Evangelio",
+            "detail": "Lc 15,11-32 — el padre misericordioso.",
+            "minutes": 10
+          },
+          {
+            "title": "Reflexión",
+            "detail": "¿Qué siente el padre al ver volver a su hijo?",
+            "minutes": 15
+          },
+          {
+            "title": "Actividad",
+            "detail": "Escribir una nota de reconciliación para alguien.",
+            "minutes": 15
+          },
+          {
+            "title": "Oración final",
+            "detail": "Padrenuestro de manos unidas, pidiendo y ofreciendo perdón.",
+            "minutes": 5
+          }
+        ],
+        "eucaristia": [
+          {
+            "title": "Acogida",
+            "detail": "Compartir: ¿cuál es tu comida en familia favorita?",
+            "minutes": 5
+          },
+          {
+            "title": "Dinámica",
+            "detail": "Partir y repartir el pan entre todo el grupo.",
+            "minutes": 10
+          },
+          {
+            "title": "Evangelio",
+            "detail": "Jn 6,35-40 — Yo soy el pan de vida.",
+            "minutes": 10
+          },
+          {
+            "title": "Reflexión",
+            "detail": "¿Por qué Jesús eligió quedarse con nosotros en el pan?",
+            "minutes": 15
+          },
+          {
+            "title": "Actividad",
+            "detail": "Armar el camino de la Misa, del inicio a la comunión.",
+            "minutes": 15
+          },
+          {
+            "title": "Oración final",
+            "detail": "Silencio y oración de acción de gracias.",
+            "minutes": 5
+          }
+        ],
+        "crisma": [
+          {
+            "title": "Acogida",
+            "detail": "Música y conversación: ¿quién me ayuda a ser fuerte?",
+            "minutes": 10
+          },
+          {
+            "title": "Dinámica",
+            "detail": "Viento y llama: signos del Espíritu en el día a día.",
+            "minutes": 15
+          },
+          {
+            "title": "Evangelio",
+            "detail": "Hch 2,1-11 — Pentecostés.",
+            "minutes": 10
+          },
+          {
+            "title": "Reflexión",
+            "detail": "Los dones del Espíritu Santo en mi vida.",
+            "minutes": 15
+          },
+          {
+            "title": "Actividad",
+            "detail": "Un gesto concreto de servicio en la comunidad.",
+            "minutes": 20
+          },
+          {
+            "title": "Oración final",
+            "detail": "Ven, Espíritu Santo, con las manos abiertas.",
+            "minutes": 5
+          }
+        ]
+      }
+    }
   }
 }

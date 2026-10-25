@@ -4421,6 +4421,175 @@ export const landing_en = {
         }
       ],
       "compare": "Compare plan details"
+    },
+    "home": {
+      "hero": {
+        "cards": [
+          {
+            "label": "Today's attendance",
+            "value": "19 present"
+          },
+          {
+            "label": "Sunday, 9am",
+            "value": "Session ready"
+          },
+          {
+            "label": "Ana's family",
+            "value": "Excused the absence"
+          }
+        ]
+      },
+      "before_after": {
+        "toggle_label": "Compare the routine",
+        "caption_before": "Everything in a different place.",
+        "caption_after": "Everything in one place."
+      },
+      "how": {
+        "prepare": {
+          "title": "Session plan",
+          "meta": "Forgiveness · ages 10–12 · 60 min",
+          "items": [
+            "Welcome",
+            "Activity starter",
+            "Gospel · Lk 15:11-32",
+            "Reflection",
+            "Hands-on activity",
+            "Closing prayer"
+          ],
+          "done": "Ready for Sunday"
+        },
+        "attendance": {
+          "title": "Confirmation class",
+          "meta": "22 students · today",
+          "present": "Present",
+          "absent": "Absent",
+          "justified": "Excused",
+          "students": [
+            "Ana Clara",
+            "Bruno",
+            "Carla",
+            "Davi",
+            "Elisa",
+            "Felipe"
+          ]
+        },
+        "follow": {
+          "title": "Follow-up",
+          "meta": "Confirmation class · semester",
+          "ring_label": "Overall attendance",
+          "next_label": "Next session",
+          "next_value": "Sunday · 9am",
+          "last_label": "Last session",
+          "last_value": "09/08",
+          "bars_label": "Recent sessions"
+        }
+      },
+      "demo": {
+        "progress": "{{current}} of {{total}} steps",
+        "minutes": "{{count}} min",
+        "done_title": "Like it? Prepare yours for real.",
+        "done_text": "With your class theme, the Bible and the Catechism side by side. You review everything before using it.",
+        "done_cta": "Start 7-day free trial",
+        "done_helper": "7 free days · Cancel anytime",
+        "topics": {
+          "perdao": [
+            {
+              "title": "Welcome",
+              "detail": "Circle talk: when was it hard to say sorry?",
+              "minutes": 5
+            },
+            {
+              "title": "Activity starter",
+              "detail": "Human knot: untie together what seemed stuck.",
+              "minutes": 10
+            },
+            {
+              "title": "Gospel",
+              "detail": "Lk 15:11-32 — the merciful father.",
+              "minutes": 10
+            },
+            {
+              "title": "Reflection",
+              "detail": "How does the father feel when his son returns?",
+              "minutes": 15
+            },
+            {
+              "title": "Hands-on activity",
+              "detail": "Write a reconciliation note to someone.",
+              "minutes": 15
+            },
+            {
+              "title": "Closing prayer",
+              "detail": "Our Father holding hands, asking and offering forgiveness.",
+              "minutes": 5
+            }
+          ],
+          "eucaristia": [
+            {
+              "title": "Welcome",
+              "detail": "Share: what is your favorite family meal?",
+              "minutes": 5
+            },
+            {
+              "title": "Activity starter",
+              "detail": "Break and share bread with the whole class.",
+              "minutes": 10
+            },
+            {
+              "title": "Gospel",
+              "detail": "Jn 6:35-40 — I am the bread of life.",
+              "minutes": 10
+            },
+            {
+              "title": "Reflection",
+              "detail": "Why did Jesus choose to stay with us in the bread?",
+              "minutes": 15
+            },
+            {
+              "title": "Hands-on activity",
+              "detail": "Build the path of the Mass, from the start to Communion.",
+              "minutes": 15
+            },
+            {
+              "title": "Closing prayer",
+              "detail": "Silence and a prayer of thanksgiving.",
+              "minutes": 5
+            }
+          ],
+          "crisma": [
+            {
+              "title": "Welcome",
+              "detail": "Music and talk: who helps me be strong?",
+              "minutes": 10
+            },
+            {
+              "title": "Activity starter",
+              "detail": "Wind and flame: signs of the Spirit in daily life.",
+              "minutes": 15
+            },
+            {
+              "title": "Gospel",
+              "detail": "Acts 2:1-11 — Pentecost.",
+              "minutes": 10
+            },
+            {
+              "title": "Reflection",
+              "detail": "The gifts of the Holy Spirit in my life.",
+              "minutes": 15
+            },
+            {
+              "title": "Hands-on activity",
+              "detail": "A concrete act of service in the community.",
+              "minutes": 20
+            },
+            {
+              "title": "Closing prayer",
+              "detail": "Come, Holy Spirit, with open hands.",
+              "minutes": 5
+            }
+          ]
+        }
+      }
     }
   } as const;
 
