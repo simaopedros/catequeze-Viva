@@ -39,6 +39,17 @@ function rateBarClass(rate: number) {
   return "bg-muted-foreground/40";
 }
 
+function hasRecords(r: any) {
+  return (
+    (r.totalAttendanceRecords ??
+      (r.attendedCount ?? r.presentCount ?? 0) + (r.absentCount ?? 0)) > 0
+  );
+}
+
+function rateLabel(r: any) {
+  return hasRecords(r) ? `${r.attendanceRate}%` : "—";
+}
+
 function isPerfect(r: any) {
   return r.attendanceRate === 100 && r.totalMeetings > 0;
 }
@@ -83,8 +94,9 @@ export default function ReportsPage() {
     return data.classReports.filter((r: any) => r.parishId === activeParishId);
   }, [data, activeParishId]);
 
-  const visibleTotals = useMemo(
-    () => ({
+  const visibleTotals = useMemo(() => {
+    const withRecords = classReports.filter(hasRecords);
+    return {
       totalEnrolled: classReports.reduce(
         (s: number, r: any) => s + (r.totalEnrolled || 0),
         0,
@@ -94,17 +106,16 @@ export default function ReportsPage() {
         0,
       ),
       avgAttendance:
-        classReports.length > 0
+        withRecords.length > 0
           ? Math.round(
-              classReports.reduce(
+              withRecords.reduce(
                 (s: number, r: any) => s + (r.attendanceRate || 0),
                 0,
-              ) / classReports.length,
+              ) / withRecords.length,
             )
           : 0,
-    }),
-    [classReports],
-  );
+    };
+  }, [classReports]);
 
   const handleExportCSV = () => {
     if (!classReports.length) return;
@@ -422,7 +433,7 @@ export default function ReportsPage() {
                     <div className="flex min-w-0 flex-1 flex-col gap-1.5 sm:max-w-xs sm:items-end">
                       <div className="flex items-center justify-between gap-3 sm:w-full sm:justify-end">
                         <span className="text-sm font-semibold tabular-nums text-brand-ink">
-                          {r.attendanceRate}%
+                          {rateLabel(r)}
                         </span>
                         <span className="text-xs text-muted-foreground">
                           {t("present_absent", {
@@ -509,7 +520,7 @@ export default function ReportsPage() {
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-lg font-semibold tabular-nums text-brand-ink">
-                        {r.attendanceRate}%
+                        {rateLabel(r)}
                       </span>
                       <div className="h-1.5 w-24 rounded-sm bg-muted">
                         <div

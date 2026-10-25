@@ -177,6 +177,35 @@ describe("ReportsPage — presença", () => {
     print.mockRestore();
   });
 
+  it("calcula a média só com turmas que já têm chamada", () => {
+    stubUseQuery([
+      [
+        getReportsOverview,
+        {
+          classReports: [
+            PERFECT_CLASS,
+            {
+              ...ATTENTION_CLASS,
+              id: "class-empty",
+              name: "Turma Nova",
+              totalMeetings: 0,
+              totalAttendanceRecords: 0,
+              presentCount: 0,
+              attendedCount: 0,
+              absentCount: 0,
+              attendanceRate: 0,
+            },
+          ],
+        },
+      ],
+    ]);
+    renderPage(<ReportsPage />);
+
+    expect(screen.getAllByText("100%").length).toBeGreaterThan(0);
+    expect(screen.queryByText("50%")).not.toBeInTheDocument();
+    expect(screen.getAllByText("—").length).toBeGreaterThan(0);
+  });
+
   it("desabilita o PDF quando não há turmas", () => {
     stubUseQuery([[getReportsOverview, { classReports: [] }]]);
     renderPage(<ReportsPage />);

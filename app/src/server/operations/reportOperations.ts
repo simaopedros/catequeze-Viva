@@ -84,8 +84,10 @@ export const getReportsOverview = async (
 
   const totalEnrolled = classReports.reduce((s: number, c: any) => s + c.totalEnrolled, 0);
   const totalMeetings = classReports.reduce((s: number, c: any) => s + c.totalMeetings, 0);
-  const avgAttendance = classReports.length > 0
-    ? Math.round(classReports.reduce((s: number, c: any) => s + c.attendanceRate, 0) / classReports.length)
+  // Classes without any roll call yet would drag the average down with a fake 0%.
+  const ratedClasses = classReports.filter((c: any) => c.totalAttendanceRecords > 0);
+  const avgAttendance = ratedClasses.length > 0
+    ? Math.round(ratedClasses.reduce((s: number, c: any) => s + c.attendanceRate, 0) / ratedClasses.length)
     : 0;
 
   return {

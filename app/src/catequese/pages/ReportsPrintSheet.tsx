@@ -12,6 +12,7 @@ export type ReportsPrintClass = {
   presentCount: number;
   absentCount: number;
   attendanceRate: number;
+  totalAttendanceRecords?: number;
 };
 
 const PORTAL_ID = "reports-print-portal";
@@ -289,7 +290,9 @@ export function ReportsPrintSheet({
                         />
                       </div>
                       <span style={{ fontWeight: 700, minWidth: "34px" }}>
-                        {c.attendanceRate}%
+                        {c.totalAttendanceRecords === 0
+                          ? "—"
+                          : `${c.attendanceRate}%`}
                       </span>
                     </div>
                   </td>
