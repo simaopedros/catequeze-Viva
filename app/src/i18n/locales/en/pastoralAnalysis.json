@@ -14,15 +14,17 @@
   "monthlyPresence": "Monthly presence",
   "distribution": "Distribution",
   "timeline": "Timeline",
-  "missedThemes": "Missed themes",
+  "missedThemes": "Themes to catch up on",
   "pastoralNotes": "Pastoral notes",
   "generatePdf": "Generate PDF",
   "print": "Print",
   "notFilled": "Not filled",
-  "riskHighWarning": "High dropout risk",
-  "consecutiveAbsencesWarning": "{{count}} consecutive absences",
-  "lowFrequencyWarning": "Attendance below 50%",
-  "droppedWarning": "Youth has dropped out",
+  "careAlertsTitle": "Pastoral follow-up (visible to the team only)",
+  "careAlertsHint": "A caring call to the family often makes all the difference.",
+  "riskHighWarning": "Needs closer pastoral follow-up",
+  "consecutiveAbsencesWarning_one": "{{count}} meeting in a row missed — how about a caring call?",
+  "consecutiveAbsencesWarning_other": "{{count}} meetings in a row missed — how about a caring call?",
+  "droppedWarning": "Left the class — worth reaching out to understand and welcome",
   "noMeetings": "No meetings registered in this class",
   "enrollmentStatus": "Status",
   "origin": "Origin",
@@ -31,15 +33,53 @@
   "present": "Present",
   "absent": "Absent",
   "late": "Late",
-  "justified": "Justified",
+  "justified": "Excused",
+  "justifiedExtra_one": "+ {{count}} excused absence",
+  "justifiedExtra_other": "+ {{count}} excused absences",
+  "trailMissed": "Missed",
   "month": "Month",
   "meeting": "Meeting",
   "endDate": "End date",
   "noNotes": "No notes registered",
-  "noMissedThemes": "No themes missed",
+  "noMissedThemes": "No themes to catch up on — well done!",
   "noAttendedThemes": "No attended themes recorded",
   "reportTitle": "Individual catechumen report",
   "meetings": "Meetings",
   "attendedThemes": "Themes attended",
-  "issuedAt": "Issued on"
+  "issuedAt": "Issued on",
+  "printFooter": "Walking together in faith. With love, the catechesis team.",
+  "encouragement": {
+    "summary": "Took part in {{attended}} of {{total}} meetings",
+    "trailTitle": "Meeting journey",
+    "perfect": {
+      "badge": "Perfect attendance",
+      "title": "Congratulations, {{name}}!",
+      "message": "You were present at every meeting. Your faithfulness is a beautiful witness for the whole class. Keep it up!",
+      "verse": "“I am with you always.” (Mt 28:20)"
+    },
+    "excellent": {
+      "badge": "Outstanding attendance",
+      "title": "What a joy to walk with you, {{name}}!",
+      "message": "You took part in almost every meeting. Your commitment makes a difference and fills our catechesis with life!",
+      "verse": "“Where two or three are gathered in my name, there am I among them.” (Mt 18:20)"
+    },
+    "good": {
+      "badge": "On a good path",
+      "title": "Well done, {{name}}!",
+      "message": "You have been taking part steadily. Every meeting is a new chance to grow in faith — we are counting on you!",
+      "verse": "“Blessed are those who hear the word of God and keep it.” (Lk 11:28)"
+    },
+    "missYou": {
+      "badge": "We miss you",
+      "title": "{{name}}, the class misses you!",
+      "message": "Your place is always saved. We believe in you and look forward to seeing you at the next meeting!",
+      "verse": "“Come to me, all you who are weary, and I will give you rest.” (Mt 11:28)"
+    },
+    "newStart": {
+      "badge": "A fresh start",
+      "title": "{{name}}, every meeting is a fresh start!",
+      "message": "We know life brings challenges. We believe you can do it — at the next meeting we will be waiting for you with open arms!",
+      "verse": "“Behold, I make all things new.” (Rev 21:5)"
+    }
+  }
 }

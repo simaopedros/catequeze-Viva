@@ -18,6 +18,7 @@ import {
   Link2,
   Copy,
   AlertTriangle,
+  HeartHandshake,
   Cross,
   Trash2,
   BarChart3,
@@ -710,20 +711,29 @@ export default function CatechumenDetailPage() {
                       <Badge
                         variant={
                           report.riskLevel === "ALTO"
-                            ? "destructive"
+                            ? "outline"
                             : report.riskLevel === "MÉDIO"
                               ? "secondary"
                               : "default"
                         }
-                        className="text-overline"
+                        className={`text-overline ${
+                          report.riskLevel === "ALTO"
+                            ? "border-warning/50 bg-warning/10 text-brand-gold-muted"
+                            : ""
+                        }`}
                       >
                         {t("catechumens.detail_risk", {
-                          level: report.riskLevel,
+                          level:
+                            report.riskLevel === "ALTO"
+                              ? t("catechumens.detail_care_high")
+                              : report.riskLevel === "MÉDIO"
+                                ? t("catechumens.detail_care_medium")
+                                : t("catechumens.detail_care_low"),
                         })}
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="text-overline">
-                        Resumo restrito
+                        {t("catechumens.detail_restricted_summary")}
                       </Badge>
                     )}
                   </div>
@@ -754,8 +764,11 @@ export default function CatechumenDetailPage() {
                     </div>
                   </div>
                   {report.maxConsecutiveAbsences >= 3 && (
-                    <p className="text-xs text-destructive flex items-center gap-1">
-                      <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                    <p className="flex items-center gap-1 text-xs text-brand-gold-muted">
+                      <HeartHandshake
+                        className="h-3.5 w-3.5 shrink-0"
+                        aria-hidden
+                      />
                       {t("catechumens.detail_consecutive_absences", {
                         count: report.maxConsecutiveAbsences,
                       })}
@@ -796,7 +809,9 @@ export default function CatechumenDetailPage() {
                 {profile.enrollments.map((enr: any) => (
                   <option key={enr.id} value={enr.classId}>
                     {enr.class?.name || enr.classId}{" "}
-                    {enr.status !== "ENROLLED" ? `(${enr.status})` : ""}
+                    {enr.status !== "ENROLLED"
+                      ? `(${t(`catechumens.detail_enrollment_status.${enr.status}`, { defaultValue: enr.status })})`
+                      : ""}
                   </option>
                 ))}
               </select>

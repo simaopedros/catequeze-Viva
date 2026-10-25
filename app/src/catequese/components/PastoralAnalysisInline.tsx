@@ -6,12 +6,14 @@ import {
   getCatechumenPastoralAnalysis,
 } from "wasp/client/operations";
 import {
-  AlertTriangle,
+  BookOpen,
   CheckCircle,
   Clock,
+  HeartHandshake,
   Printer,
-  XCircle,
 } from "lucide-react";
+import { AttendanceEncouragementCard } from "./attendance/AttendanceEncouragementCard";
+import { getAttendanceEncouragement } from "../lib/attendanceEncouragement";
 import { Button } from "../../client/components/ui/button";
 import { formatDate as formatAppDate } from "../../i18n/format";
 import { useLocale } from "../../i18n/useLocale";
@@ -208,6 +210,28 @@ export function PastoralAnalysisInline({
   const monthOptions = (data.monthlyPresence || []).map(
     (row: { month: string }) => row.month,
   );
+  const attendedCount =
+    filtered.presentCount + filtered.lateCount + filtered.justifiedCount;
+  const encouragementTier = getAttendanceEncouragement({
+    frequency: filtered.overallFrequency,
+    totalValidMeetings: filtered.totalValidMeetings,
+    consecutiveAbsences: filtered.consecutiveAbsences,
+  });
+  const alertLabel = (alert: { type: string }) => {
+    switch (alert.type) {
+      case "risk_high":
+        return t("riskHighWarning");
+      case "consecutive_absences":
+        return t("consecutiveAbsencesWarning", {
+          count: filtered.consecutiveAbsences ?? 0,
+        });
+      case "dropped":
+        return t("droppedWarning");
+      default:
+        return null;
+    }
+  };
+  const visibleAlerts = filtered.alerts.filter((a) => alertLabel(a) !== null);
 
   const printContent =
     portalRef.current &&
@@ -340,42 +364,15 @@ export function PastoralAnalysisInline({
           </div>
         </div>
 
-        {canSeeSensitiveSignals && filtered.alerts.length > 0 && (
-          <div
-            style={{
-              border: "1px solid #d4d4d8",
-              borderRadius: "12px",
-              padding: "12px",
-              marginBottom: "16px",
-              breakInside: "avoid",
-            }}
-          >
-            {filtered.alerts.map((a, i) => (
-              <div
-                key={`${a.type}-${i}`}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  borderRadius: "8px",
-                  background: "#fef2f2",
-                  padding: "8px",
-                  fontSize: "12px",
-                  color: "#dc2626",
-                  marginBottom: i < filtered.alerts.length - 1 ? "4px" : 0,
-                }}
-              >
-                <span style={{ flexShrink: 0 }}>⚠</span>
-                {a.type === "risk_high" && t("riskHighWarning")}
-                {a.type === "consecutive_absences" &&
-                  t("consecutiveAbsencesWarning", {
-                    count: filtered.consecutiveAbsences,
-                  })}
-                {a.type === "low_frequency" && t("lowFrequencyWarning")}
-              </div>
-            ))}
-          </div>
-        )}
+        <AttendanceEncouragementCard
+          tier={encouragementTier}
+          name={catechumen.name}
+          frequency={filtered.overallFrequency}
+          attendedCount={attendedCount}
+          totalMeetings={filtered.totalValidMeetings}
+          timeline={filtered.meetingTimeline}
+          variant="print"
+        />
 
         <div
           style={{
@@ -466,13 +463,18 @@ export function PastoralAnalysisInline({
               style={{
                 fontSize: "24px",
                 fontWeight: "bold",
-                color: "#dc2626",
+                color: "#4b5563",
                 margin: 0,
               }}
             >
-              {filtered.justifiedCount + filtered.absentCount}
+              {filtered.absentCount}
             </p>
             <p style={{ color: "#6b7280", margin: "4px 0 0" }}>{t("absent")}</p>
+            {filtered.justifiedCount > 0 && (
+              <p style={{ color: "#6b7280", margin: "2px 0 0", fontSize: "10px" }}>
+                {t("justifiedExtra", { count: filtered.justifiedCount })}
+              </p>
+            )}
           </div>
         </div>
 
@@ -551,6 +553,15 @@ export function PastoralAnalysisInline({
                       fontWeight: 500,
                     }}
                   >
+                    {t("justified")}
+                  </th>
+                  <th
+                    style={{
+                      padding: "8px",
+                      textAlign: "center",
+                      fontWeight: 500,
+                    }}
+                  >
                     {t("absent")}
                   </th>
                   <th
@@ -570,8 +581,14 @@ export function PastoralAnalysisInline({
                     key={row.month}
                     style={{ borderTop: "1px solid #e5e7eb" }}
                   >
-                    <td style={{ padding: "8px", fontWeight: 500 }}>
-                      {row.month}
+                    <td
+                      style={{
+                        padding: "8px",
+                        fontWeight: 500,
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {formatMonthLabel(row.month, locale)}
                     </td>
                     <td
                       style={{
@@ -595,10 +612,19 @@ export function PastoralAnalysisInline({
                       style={{
                         padding: "8px",
                         textAlign: "center",
-                        color: "#dc2626",
+                        color: "#4f6f94",
                       }}
                     >
-                      {row.absent + row.justified}
+                      {row.justified}
+                    </td>
+                    <td
+                      style={{
+                        padding: "8px",
+                        textAlign: "center",
+                        color: "#4b5563",
+                      }}
+                    >
+                      {row.absent}
                     </td>
                     <td style={{ padding: "8px", textAlign: "center" }}>
                       {row.totalMeetings}
@@ -680,11 +706,11 @@ export function PastoralAnalysisInline({
                 fontSize: "12px",
                 fontWeight: 600,
                 textTransform: "uppercase",
-                color: "#dc2626",
+                color: "#8A6418",
                 margin: "0 0 12px",
               }}
             >
-              ✗ {t("missedThemes")} ({filtered.missedThemes.length})
+              ↻ {t("missedThemes")} ({filtered.missedThemes.length})
             </h4>
             {filtered.missedThemes.length ? (
               <div>
@@ -781,6 +807,17 @@ export function PastoralAnalysisInline({
             {enrollment.notes || t("noNotes")}
           </p>
         </div>
+        <p
+          style={{
+            textAlign: "center",
+            fontSize: "11px",
+            color: "#8A6418",
+            margin: "16px 0 0",
+            fontStyle: "italic",
+          }}
+        >
+          {t("printFooter")}
+        </p>
       </div>,
       portalRef.current,
     );
@@ -892,22 +929,38 @@ export function PastoralAnalysisInline({
           </div>
         </div>
 
-        {canSeeSensitiveSignals && filtered.alerts.length > 0 && (
-          <div className="pastoral-print-card space-y-1 rounded-sm border border-border/70 bg-white p-3">
-            {filtered.alerts.map((a, i) => (
+        <AttendanceEncouragementCard
+          tier={encouragementTier}
+          name={catechumen.name}
+          frequency={filtered.overallFrequency}
+          attendedCount={attendedCount}
+          totalMeetings={filtered.totalValidMeetings}
+          timeline={filtered.meetingTimeline}
+        />
+
+        {canSeeSensitiveSignals && visibleAlerts.length > 0 && (
+          <div
+            className="space-y-1 rounded-sm border border-warning/40 bg-warning/10 p-3"
+            data-testid="pastoral-care-alerts"
+          >
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-gold-muted">
+              {t("careAlertsTitle")}
+            </p>
+            {visibleAlerts.map((a, i) => (
               <div
                 key={`${a.type}-${i}`}
-                className="flex items-center gap-2 rounded bg-destructive/10 p-2 text-xs text-destructive"
+                className="flex items-center gap-2 text-xs text-brand-ink"
               >
-                <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-                {a.type === "risk_high" && t("riskHighWarning")}
-                {a.type === "consecutive_absences" &&
-                  t("consecutiveAbsencesWarning", {
-                    count: filtered.consecutiveAbsences,
-                  })}
-                {a.type === "low_frequency" && t("lowFrequencyWarning")}
+                <HeartHandshake
+                  className="h-3.5 w-3.5 shrink-0 text-brand-gold-muted"
+                  aria-hidden
+                />
+                {alertLabel(a)}
               </div>
             ))}
+            <p className="pt-1 text-micro text-muted-foreground">
+              {t("careAlertsHint")}
+            </p>
           </div>
         )}
 
@@ -939,10 +992,15 @@ export function PastoralAnalysisInline({
             <p className="text-muted-foreground">{t("present")}</p>
           </div>
           <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-3">
-            <p className="text-2xl font-semibold tracking-tight tabular-nums text-destructive">
-              {filtered.justifiedCount + filtered.absentCount}
+            <p className="text-2xl font-semibold tracking-tight tabular-nums text-muted-foreground">
+              {filtered.absentCount}
             </p>
             <p className="text-muted-foreground">{t("absent")}</p>
+            {filtered.justifiedCount > 0 && (
+              <p className="text-micro text-muted-foreground">
+                {t("justifiedExtra", { count: filtered.justifiedCount })}
+              </p>
+            )}
           </div>
         </div>
 
@@ -971,6 +1029,9 @@ export function PastoralAnalysisInline({
                       {t("late")}
                     </th>
                     <th className="p-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("justified")}
+                    </th>
+                    <th className="p-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("absent")}
                     </th>
                     <th className="p-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -981,8 +1042,8 @@ export function PastoralAnalysisInline({
                 <tbody>
                   {(data.monthlyPresence || []).map((row: any) => (
                     <tr key={row.month} className="border-t">
-                      <td className="p-2 font-semibold tracking-tight text-brand-ink">
-                        {row.month}
+                      <td className="p-2 font-semibold capitalize tracking-tight text-brand-ink">
+                        {formatMonthLabel(row.month, locale)}
                       </td>
                       <td className="p-2 text-center text-brand-ink">
                         {row.present}
@@ -990,8 +1051,11 @@ export function PastoralAnalysisInline({
                       <td className="p-2 text-center text-brand-gold-muted">
                         {row.late}
                       </td>
-                      <td className="p-2 text-center text-destructive">
-                        {row.absent + row.justified}
+                      <td className="p-2 text-center text-muted-foreground">
+                        {row.justified}
+                      </td>
+                      <td className="p-2 text-center text-muted-foreground">
+                        {row.absent}
                       </td>
                       <td className="p-2 text-center">{row.totalMeetings}</td>
                     </tr>
@@ -1032,8 +1096,8 @@ export function PastoralAnalysisInline({
             )}
           </div>
           <div className="pastoral-print-card rounded-sm border border-border/70 bg-white p-4">
-            <h4 className="mb-3 flex items-center gap-1 text-xs font-semibold uppercase text-destructive">
-              <XCircle className="h-3 w-3" />
+            <h4 className="mb-3 flex items-center gap-1 text-xs font-semibold uppercase text-brand-gold-muted">
+              <BookOpen className="h-3 w-3" />
               {t("missedThemes")} ({filtered.missedThemes.length})
             </h4>
             {filtered.missedThemes.length ? (

@@ -1,7 +1,7 @@
 {
   "title": "Informes",
   "attendance_report": "Asistencia por grupo/etapa/período",
-  "dropout_risk": "Catecúmenos con riesgo de abandono",
+  "dropout_risk": "Catecúmenos que necesitan acompañamiento",
   "pending_docs": "Documentos pendientes",
   "sacramental_progress": "Progreso sacramental",
   "catechist_workload": "Carga de catequistas",
@@ -25,8 +25,8 @@
     "total_meetings": "Total encuentros",
     "avg_attendance": "Asistencia media"
   },
-  "dropout_title": "Riesgo de abandono",
-  "dropout_desc": "Grupos con asistencia por debajo del 50% en los últimos encuentros:",
+  "dropout_title": "Grupos que necesitan atención",
+  "dropout_desc": "Grupos con asistencia por debajo del 50% — un buen momento para acoger y reacercar a las familias:",
   "attendance_by_class": "Asistencia por grupo",
   "no_classes": "Ningún grupo",
   "no_classes_desc": "Registre grupos para ver los informes de asistencia.",

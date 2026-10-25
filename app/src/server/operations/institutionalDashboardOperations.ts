@@ -790,7 +790,7 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
     }
   }
 
-  // 8. Risco de evasão
+  // 8. Catequizandos que precisam de acompanhamento (3+ faltas nos encontros recentes)
   if (recentMeetings.length >= 3) {
     const meetingIds = recentMeetings.map((m: any) => m.id);
     const catechumenIds = enrolledCatechumens.map((e: any) => e.catechumenProfileId).filter(Boolean);
@@ -801,7 +801,7 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
           where: {
             catechumenProfileId: { in: catechumenIds },
             meetingId: { in: meetingIds },
-            status: { in: ['ABSENT', 'LATE'] },
+            status: 'ABSENT',
           },
           _count: { id: true },
         })
@@ -816,7 +816,7 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
         severity: 'high',
         category: 'predictive',
         count: atRiskCount,
-        message: `${atRiskCount} catequizando(s) com 3+ ausências consecutivas — risco de evasão.`,
+        message: `${atRiskCount} catequizando(s) com 3+ faltas nos últimos encontros — que tal um contato carinhoso com as famílias?`,
       });
     }
   }

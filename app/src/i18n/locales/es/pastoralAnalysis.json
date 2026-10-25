@@ -14,15 +14,17 @@
   "monthlyPresence": "Asistencia mensual",
   "distribution": "Distribución",
   "timeline": "Línea de tiempo",
-  "missedThemes": "Temas perdidos",
+  "missedThemes": "Temas para retomar",
   "pastoralNotes": "Notas pastorales",
   "generatePdf": "Generar PDF",
   "print": "Imprimir",
   "notFilled": "No completado",
-  "riskHighWarning": "Alto riesgo de deserción",
-  "consecutiveAbsencesWarning": "{{count}} faltas consecutivas",
-  "lowFrequencyWarning": "Asistencia por debajo del 50%",
-  "droppedWarning": "El joven ha desertado",
+  "careAlertsTitle": "Acompañamiento pastoral (visible solo para el equipo)",
+  "careAlertsHint": "Un contacto cariñoso con la familia suele marcar la diferencia.",
+  "riskHighWarning": "Necesita un acompañamiento pastoral más cercano",
+  "consecutiveAbsencesWarning_one": "{{count}} encuentro seguido sin participar — ¿qué tal un contacto cariñoso?",
+  "consecutiveAbsencesWarning_other": "{{count}} encuentros seguidos sin participar — ¿qué tal un contacto cariñoso?",
+  "droppedWarning": "Dejó la clase — vale la pena contactar para comprender y acoger",
   "noMeetings": "Sin encuentros registrados en esta clase",
   "enrollmentStatus": "Estado",
   "origin": "Origen",
@@ -32,14 +34,52 @@
   "absent": "Ausentes",
   "late": "Tardanzas",
   "justified": "Justificados",
+  "justifiedExtra_one": "+ {{count}} falta justificada",
+  "justifiedExtra_other": "+ {{count}} faltas justificadas",
+  "trailMissed": "Faltó",
   "month": "Mes",
   "meeting": "Encuentro",
   "endDate": "Fecha de salida",
   "noNotes": "Sin notas registradas",
-  "noMissedThemes": "Sin temas perdidos",
+  "noMissedThemes": "Ningún tema para retomar — ¡felicidades!",
   "noAttendedThemes": "Ningún tema con asistencia registrado",
   "reportTitle": "Informe individual del catecúmeno",
   "meetings": "Encuentros",
   "attendedThemes": "Temas en los que estuvo presente",
-  "issuedAt": "Emitido el"
+  "issuedAt": "Emitido el",
+  "printFooter": "Caminamos juntos en la fe. Con cariño, el equipo de catequesis.",
+  "encouragement": {
+    "summary": "Participó en {{attended}} de {{total}} encuentros",
+    "trailTitle": "Camino en los encuentros",
+    "perfect": {
+      "badge": "Asistencia perfecta",
+      "title": "¡Felicidades, {{name}}!",
+      "message": "Estuviste presente en todos los encuentros. Tu fidelidad es un hermoso testimonio para toda la clase. ¡Sigue así!",
+      "verse": "“Yo estoy con ustedes todos los días.” (Mt 28,20)"
+    },
+    "excellent": {
+      "badge": "Asistencia ejemplar",
+      "title": "¡Qué alegría caminar contigo, {{name}}!",
+      "message": "Participaste en casi todos los encuentros. ¡Tu compromiso marca la diferencia y llena de vida la catequesis!",
+      "verse": "“Donde dos o tres están reunidos en mi nombre, allí estoy yo en medio de ellos.” (Mt 18,20)"
+    },
+    "good": {
+      "badge": "Buen camino",
+      "title": "¡Muy bien, {{name}}!",
+      "message": "Has participado con constancia. Cada encuentro es una nueva oportunidad para crecer en la fe — ¡contamos contigo!",
+      "verse": "“Dichosos los que escuchan la Palabra de Dios y la cumplen.” (Lc 11,28)"
+    },
+    "missYou": {
+      "badge": "Te extrañamos",
+      "title": "¡{{name}}, la clase te extraña!",
+      "message": "Tu lugar siempre está guardado. ¡Creemos en ti y te esperamos en el próximo encuentro!",
+      "verse": "“Vengan a mí todos los que están cansados, y yo los aliviaré.” (Mt 11,28)"
+    },
+    "newStart": {
+      "badge": "Un nuevo comienzo",
+      "title": "¡{{name}}, cada encuentro es un nuevo comienzo!",
+      "message": "Sabemos que la vida trae desafíos. Creemos que lo vas a lograr — ¡en el próximo encuentro te esperamos con los brazos abiertos!",
+      "verse": "“Yo hago nuevas todas las cosas.” (Ap 21,5)"
+    }
+  }
 }

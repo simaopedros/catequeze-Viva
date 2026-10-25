@@ -1,7 +1,7 @@
 {
   "title": "Relatórios",
   "attendance_report": "Presença por turma/etapa/período",
-  "dropout_risk": "Catequizandos com risco de evasão",
+  "dropout_risk": "Catequizandos que precisam de acompanhamento",
   "pending_docs": "Documentos pendentes",
   "sacramental_progress": "Progresso sacramental",
   "catechist_workload": "Carga de catequistas",
@@ -25,8 +25,8 @@
     "total_meetings": "Total encontros",
     "avg_attendance": "Presença média"
   },
-  "dropout_title": "Risco de evasão",
-  "dropout_desc": "Turmas com presença abaixo de 50% nos últimos encontros:",
+  "dropout_title": "Turmas que precisam de atenção",
+  "dropout_desc": "Turmas com presença abaixo de 50% — um bom momento para acolher e reaproximar as famílias:",
   "attendance_by_class": "Presença por turma",
   "no_classes": "Nenhuma turma",
   "no_classes_desc": "Cadastre turmas para ver os relatórios de presença.",
