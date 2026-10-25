@@ -149,6 +149,55 @@ describe("filterPastoralByMonth", () => {
     expect(slice.consecutiveAbsences).toBeNull();
     expect(slice.alerts).toEqual([]);
   });
+
+  it("does not count meetings without a roll call as absences", () => {
+    const data = sampleData();
+    const slice = filterPastoralByMonth(
+      {
+        ...data,
+        meetingTimeline: [
+          ...data.meetingTimeline,
+          { id: "9", date: "2026-08-31T00:00:00.000Z", status: "NOT_FILLED" },
+        ],
+      },
+      "2026-08",
+    );
+    expect(slice.totalValidMeetings).toBe(5);
+    expect(slice.absentCount).toBe(1);
+    expect(slice.overallFrequency).toBe(80);
+  });
+
+  it("uses the monthly series when the timeline is hidden from the viewer", () => {
+    const slice = filterPastoralByMonth(
+      sampleData({
+        canSeeSensitiveSignals: false,
+        consecutiveAbsences: null,
+        rankingPosition: null,
+        riskLevel: null,
+        alerts: [],
+        meetingTimeline: [],
+        attendedThemes: [],
+        missedThemes: [],
+      }),
+      "2026-08",
+    );
+    expect(slice.totalValidMeetings).toBe(5);
+    expect(slice.overallFrequency).toBe(80);
+    expect(slice.consecutiveAbsences).toBeNull();
+  });
+
+  it("only raises the follow-up alert after a few meetings", () => {
+    const slice = filterPastoralByMonth(
+      sampleData({
+        meetingTimeline: [
+          { id: "1", date: "2026-09-06T00:00:00.000Z", status: "ABSENT" },
+        ],
+      }),
+      "2026-09",
+    );
+    expect(slice.riskLevel).toBe("ALTO");
+    expect(slice.alerts).toEqual([]);
+  });
 });
 
 describe("toLineChartRows", () => {

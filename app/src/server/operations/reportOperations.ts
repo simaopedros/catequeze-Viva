@@ -2,6 +2,7 @@ import { HttpError } from 'wasp/server';
 import { requireWorkspaceAccess, classWhereForAccess } from './sharedScope';
 import {
   attendanceRate,
+  attendedCount,
   emptyAggregate,
   getClassAttendanceAggregates,
 } from '../reports/attendanceAggregates';
@@ -63,6 +64,9 @@ export const getReportsOverview = async (
       totalMeetings: agg.totalMeetings,
       totalAttendanceRecords: agg.totalAttendanceRecords,
       presentCount: agg.presentCount,
+      lateCount: agg.lateCount,
+      justifiedCount: agg.justifiedCount,
+      attendedCount: attendedCount(agg),
       absentCount: agg.absentCount,
       attendanceRate: attendanceRate(agg),
     };

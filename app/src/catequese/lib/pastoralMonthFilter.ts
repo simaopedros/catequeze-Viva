@@ -1,3 +1,12 @@
+import {
+  NOT_FILLED_STATUS,
+  addStatus,
+  attendedTotal,
+  computeAttendanceRate,
+  emptyAttendanceCounts,
+  riskLevelFromRate,
+} from "../../shared/attendanceMetrics";
+
 export const PASTORAL_PERIOD_ALL = "all" as const;
 
 export type PastoralPeriod = typeof PASTORAL_PERIOD_ALL | string;
@@ -10,6 +19,7 @@ export type MonthlyPresenceRow = {
   late: number;
   justified: number;
   totalMeetings: number;
+  notFilled?: number;
 };
 
 export type PastoralTimelineItem = {
@@ -96,68 +106,58 @@ export function toLineChartRows(monthlyPresence: MonthlyPresenceRow[]) {
 }
 
 function recountTimeline(items: PastoralTimelineItem[]) {
-  let presentCount = 0;
-  let absentCount = 0;
-  let lateCount = 0;
-  let justifiedCount = 0;
+  const counts = emptyAttendanceCounts();
   let consecutive = 0;
   let maxConsecutive = 0;
 
   for (const item of items) {
-    switch (item.status) {
-      case "PRESENT":
-        presentCount++;
-        consecutive = 0;
-        break;
-      case "LATE":
-        lateCount++;
-        consecutive = 0;
-        break;
-      case "JUSTIFIED":
-        justifiedCount++;
-        consecutive = 0;
-        break;
-      case "ABSENT":
-      default:
-        absentCount++;
-        consecutive++;
-        break;
-    }
+    if (item.status === NOT_FILLED_STATUS) continue;
+    addStatus(counts, item.status);
+    consecutive = item.status === "ABSENT" ? consecutive + 1 : 0;
     if (consecutive > maxConsecutive) maxConsecutive = consecutive;
   }
 
-  const totalValidMeetings = items.length;
-  const pastoralPresent = presentCount + lateCount + justifiedCount;
-  const overallFrequency =
-    totalValidMeetings > 0
-      ? Math.round((pastoralPresent / totalValidMeetings) * 100)
-      : 0;
-
   return {
-    presentCount,
-    absentCount,
-    lateCount,
-    justifiedCount,
-    totalValidMeetings,
-    overallFrequency,
+    presentCount: counts.present,
+    absentCount: counts.absent,
+    lateCount: counts.late,
+    justifiedCount: counts.justified,
+    totalValidMeetings: attendedTotal(counts) + counts.absent,
+    overallFrequency: computeAttendanceRate(counts),
     maxConsecutive,
+  };
+}
+
+function recountMonthRow(row: MonthlyPresenceRow | undefined) {
+  const counts = {
+    present: row?.present ?? 0,
+    late: row?.late ?? 0,
+    justified: row?.justified ?? 0,
+    absent: row?.absent ?? 0,
+  };
+  return {
+    presentCount: counts.present,
+    absentCount: counts.absent,
+    lateCount: counts.late,
+    justifiedCount: counts.justified,
+    totalValidMeetings: attendedTotal(counts) + counts.absent,
+    overallFrequency: computeAttendanceRate(counts),
+    maxConsecutive: 0,
   };
 }
 
 function alertsForSlice(
   canSeeSensitiveSignals: boolean,
-  overallFrequency: number,
   totalValidMeetings: number,
   maxConsecutive: number,
   riskLevel: string | null,
 ): PastoralAlert[] {
   if (!canSeeSensitiveSignals) return [];
   const alerts: PastoralAlert[] = [];
-  if (riskLevel === "ALTO") alerts.push({ type: "risk_high" });
-  if (maxConsecutive >= 3) alerts.push({ type: "consecutive_absences" });
-  if (overallFrequency < 50 && totalValidMeetings > 2) {
-    alerts.push({ type: "low_frequency" });
+  if (riskLevel === "ALTO" && totalValidMeetings > 2) {
+    alerts.push({ type: "risk_high" });
   }
+  if (maxConsecutive >= 3) alerts.push({ type: "consecutive_absences" });
   return alerts;
 }
 
@@ -197,12 +197,16 @@ export function filterPastoralByMonth(
     (item) => monthKeyFromDate(item.date) === period,
   );
 
-  const recounted = recountTimeline(meetingTimeline);
+  const recounted =
+    meetingTimeline.length > 0
+      ? recountTimeline(meetingTimeline)
+      : recountMonthRow(data.monthlyPresence.find((row) => row.month === period));
   let riskLevel: string | null = null;
   if (canSeeSensitive && data.riskLevel != null) {
-    if (recounted.overallFrequency < 50) riskLevel = "ALTO";
-    else if (recounted.overallFrequency < 75) riskLevel = "MÉDIO";
-    else riskLevel = "BAIXO";
+    riskLevel =
+      recounted.totalValidMeetings > 0
+        ? riskLevelFromRate(recounted.overallFrequency)
+        : "BAIXO";
   }
 
   return {
@@ -220,7 +224,6 @@ export function filterPastoralByMonth(
     missedThemes,
     alerts: alertsForSlice(
       canSeeSensitive,
-      recounted.overallFrequency,
       recounted.totalValidMeetings,
       recounted.maxConsecutive,
       riskLevel,

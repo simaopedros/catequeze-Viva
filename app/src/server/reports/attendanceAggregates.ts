@@ -35,12 +35,17 @@ const toNumber = (value: bigint | number | null | undefined): number => Number(v
  */
 export async function getClassAttendanceAggregates(
   classIds: string[],
-  range?: { from?: Date; to?: Date },
+  range?: { from?: Date; to?: Date; now?: Date },
 ): Promise<Map<string, ClassAttendanceAggregate>> {
   const result = new Map<string, ClassAttendanceAggregate>();
   if (classIds.length === 0) return result;
 
-  const conditions: Prisma.Sql[] = [Prisma.sql`m."classId" IN (${Prisma.join(classIds)})`];
+  // Cancelled meetings never count; future ones only once a roll call exists.
+  const conditions: Prisma.Sql[] = [
+    Prisma.sql`m."classId" IN (${Prisma.join(classIds)})`,
+    Prisma.sql`m."status" <> 'CANCELLED'`,
+    Prisma.sql`(m."date" <= ${range?.now ?? new Date()} OR a."id" IS NOT NULL)`,
+  ];
   if (range?.from) conditions.push(Prisma.sql`m."date" >= ${range.from}`);
   if (range?.to) conditions.push(Prisma.sql`m."date" <= ${range.to}`);
 
@@ -88,8 +93,17 @@ export function emptyAggregate(classId: string): ClassAttendanceAggregate {
   };
 }
 
-export function attendanceRate(agg: Pick<ClassAttendanceAggregate, 'presentCount' | 'totalAttendanceRecords'>): number {
+/** PRESENT, LATE and JUSTIFIED count as participation (see shared/attendanceMetrics). */
+export function attendedCount(
+  agg: Pick<ClassAttendanceAggregate, 'presentCount' | 'lateCount' | 'justifiedCount'>,
+): number {
+  return agg.presentCount + agg.lateCount + agg.justifiedCount;
+}
+
+export function attendanceRate(
+  agg: Pick<ClassAttendanceAggregate, 'presentCount' | 'lateCount' | 'justifiedCount' | 'totalAttendanceRecords'>,
+): number {
   return agg.totalAttendanceRecords > 0
-    ? Math.round((agg.presentCount / agg.totalAttendanceRecords) * 100)
+    ? Math.round((attendedCount(agg) / agg.totalAttendanceRecords) * 100)
     : 0;
 }

@@ -804,9 +804,15 @@ export const saveAttendance = async (args: any, context: any) => {
   // Verificar pertencimento à turma através do meeting
   const meeting = await context.entities.Meeting.findUnique({
     where: { id: args.meetingId },
-    select: { classId: true },
+    select: { classId: true, status: true },
   });
   if (!meeting) throw new HttpError(404, "Encontro não encontrado.");
+  if (meeting.status === "CANCELLED") {
+    throw new HttpError(
+      400,
+      "Não é possível registar presença em encontro cancelado.",
+    );
+  }
   await assertUserBelongsToClass(context, meeting.classId);
 
   // Validate catechumen is enrolled in this class

@@ -2,16 +2,14 @@
  * Individual catechumen attendance report — percentage, missed classes, risk assessment.
  */
 import { HttpError } from 'wasp/server';
-import { assertCanAccessCatechumenProfile, getUserParishRoles, isCatechistOrAboveRole } from '../auth/helpers';
+import { assertCanAccessCatechumenProfile, getEffectiveParishRole, isCatechistOrAboveRole } from '../auth/helpers';
 import { assertTwoFactorSessionVerified } from './twoFactorOperations';
+import { computeAttendanceRate, riskLevelFromRate } from '../../shared/attendanceMetrics';
 
 export const getCatechumenAttendanceReport = async (args: { catechumenId: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
   await assertTwoFactorSessionVerified(context);
   await assertCanAccessCatechumenProfile(context, args.catechumenId);
-
-  const parishRoles = await getUserParishRoles(context);
-  const canSeeSensitiveSignals = context.user?.isAdmin || parishRoles.some((r: any) => isCatechistOrAboveRole(r.role));
 
   const catechumenWithAttendance = await context.entities.CatechumenProfile.findUnique({
     where: { id: args.catechumenId },
@@ -19,16 +17,31 @@ export const getCatechumenAttendanceReport = async (args: { catechumenId: string
       id: true,
       firstName: true,
       lastName: true,
+      parishId: true,
       enrollments: {
-        where: { status: 'ENROLLED' },
-        select: { class: { select: { id: true, name: true } } },
+        select: { class: { select: { id: true, name: true, parishId: true } } },
       },
       attendanceRecords: {
+        where: { meeting: { status: { not: 'CANCELLED' } } },
         include: { meeting: { select: { id: true, date: true, title: true, class: { select: { name: true } } } } },
       },
     },
   });
   if (!catechumenWithAttendance) return null;
+
+  // Sensitive signals only for the team of a workspace this catechumen belongs to.
+  const catechumenParishIds = new Set<string>(
+    [
+      catechumenWithAttendance.parishId,
+      ...catechumenWithAttendance.enrollments.map((e: any) => e.class?.parishId),
+    ].filter(Boolean),
+  );
+  let canSeeSensitiveSignals = Boolean(context.user?.isAdmin);
+  for (const parishId of catechumenParishIds) {
+    if (canSeeSensitiveSignals) break;
+    const role = await getEffectiveParishRole(context, parishId);
+    canSeeSensitiveSignals = Boolean(role && isCatechistOrAboveRole(role));
+  }
 
   const catechumen = { id: catechumenWithAttendance.id, firstName: catechumenWithAttendance.firstName, lastName: catechumenWithAttendance.lastName };
 
@@ -53,7 +66,12 @@ export const getCatechumenAttendanceReport = async (args: { catechumenId: string
   }
 
   const total = totalPresent + totalAbsent + totalLate + totalJustified;
-  const attendanceRate = total > 0 ? Math.round(((totalPresent + totalLate) / total) * 100) : 0;
+  const attendanceRate = computeAttendanceRate({
+    present: totalPresent,
+    late: totalLate,
+    justified: totalJustified,
+    absent: totalAbsent,
+  });
 
   allAttendance.sort((a, b) => new Date(b.meetingDate).getTime() - new Date(a.meetingDate).getTime());
 
@@ -77,7 +95,7 @@ export const getCatechumenAttendanceReport = async (args: { catechumenId: string
     totalJustified,
     attendanceRate,
     maxConsecutiveAbsences: canSeeSensitiveSignals ? maxConsecutive : null,
-    riskLevel: canSeeSensitiveSignals ? (attendanceRate < 50 ? 'ALTO' : attendanceRate < 75 ? 'MÉDIO' : 'BAIXO') : null,
+    riskLevel: canSeeSensitiveSignals ? (total > 0 ? riskLevelFromRate(attendanceRate) : 'BAIXO') : null,
     records: allAttendance.slice(0, 50),
   };
 };
