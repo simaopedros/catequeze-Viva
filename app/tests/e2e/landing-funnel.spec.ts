@@ -24,6 +24,44 @@ async function openLanding(page: Page, path: string) {
   await dismissCookieBanner(page);
 }
 
+/** Home sections mount as the visitor scrolls, so scroll like one. */
+async function scrollHomeUntilAttached(page: Page, selector: string) {
+  const target = page.locator(selector);
+  for (let i = 0; i < 40 && (await target.count()) === 0; i++) {
+    await page.evaluate(() =>
+      window.scrollBy(0, Math.round(window.innerHeight * 0.8)),
+    );
+    await page.waitForTimeout(150);
+  }
+  await expect(target).toBeAttached();
+  await target.scrollIntoViewIfNeeded();
+  return target;
+}
+
+/** Overflow from the home's own art; the shared navbar is covered elsewhere. */
+async function assertHomeContentFits(page: Page) {
+  const { scrollWidth, clientWidth } = await page.evaluate(() => ({
+    scrollWidth: document.querySelector(".home-root")?.scrollWidth ?? 0,
+    clientWidth: document.documentElement.clientWidth,
+  }));
+  expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 4);
+}
+
+async function expectSectionAtTop(page: Page, id: string) {
+  await expect
+    .poll(
+      () =>
+        page.evaluate((sectionId) => {
+          const top = document
+            .getElementById(sectionId)
+            ?.getBoundingClientRect().top;
+          return top !== undefined && top >= 0 && top < 160;
+        }, id),
+      { timeout: 10000 },
+    )
+    .toBe(true);
+}
+
 test.describe("landing funnel — meta and conversion surfaces", () => {
   for (const landing of LANDINGS) {
     test(`${landing.path} sets SPA title and campaign meta`, async ({
@@ -70,9 +108,7 @@ test.describe("landing funnel — meta and conversion surfaces", () => {
     page,
   }) => {
     await openLanding(page, "/");
-    const pricing = page.locator("#planos");
-    await expect(pricing).toBeAttached({ timeout: 15000 });
-    await pricing.scrollIntoViewIfNeeded();
+    const pricing = await scrollHomeUntilAttached(page, "#planos");
     await expect(pricing).toBeVisible({ timeout: 10000 });
     await expect(pricing.locator('a[href*="plan=single"]')).toBeVisible({
       timeout: 10000,
@@ -108,4 +144,72 @@ test.describe("landing multi-viewport smoke", () => {
       await assertNoHorizontalOverflow(page, 4);
     });
   }
+});
+
+const HOME_MOTION_VIEWPORTS = [
+  ...VIEWPORTS,
+  { name: "short-laptop", width: 1024, height: 600 },
+] as const;
+
+test.describe("home motion — reduced motion and layout", () => {
+  test.use({ reducedMotion: "reduce" });
+
+  for (const vp of HOME_MOTION_VIEWPORTS) {
+    test(`home content is reachable with reduced motion @ ${vp.name}`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: vp.width, height: vp.height });
+      await openLanding(page, "/");
+
+      await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+      await expect(
+        page.locator("[data-landing-hero] a[href^='/signup']").first(),
+      ).toBeVisible();
+
+      const pricing = await scrollHomeUntilAttached(page, "#planos");
+      await expect(pricing).toBeVisible({ timeout: 15000 });
+
+      await assertHomeContentFits(page);
+    });
+  }
+
+  test("each how-it-works step heading becomes visible on scroll", async ({
+    page,
+  }) => {
+    await openLanding(page, "/");
+    const how = await scrollHomeUntilAttached(page, "#como");
+    await expect(
+      how.getByRole("heading", { name: /Da preparação ao acompanhamento/ }),
+    ).toBeVisible({ timeout: 15000 });
+
+    const steps = how.locator(".home-how-step h3");
+    await expect(steps).toHaveCount(3);
+    for (let i = 0; i < 3; i++) {
+      const step = steps.nth(i);
+      await step.scrollIntoViewIfNeeded();
+      await expect(step).toBeVisible();
+    }
+  });
+});
+
+test.describe("home anchors reach sections that mount lazily", () => {
+  test("hero secondary CTA jumps to how it works", async ({ page }) => {
+    await openLanding(page, "/");
+    await page.locator("[data-landing-hero] a[href='/#como']").click();
+    await expectSectionAtTop(page, "como");
+  });
+
+  test("navbar plans link jumps to pricing before any scroll", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openLanding(page, "/");
+    await page.locator('nav a[href="/#planos"]').first().click();
+    await expectSectionAtTop(page, "planos");
+  });
+
+  test("deep link /#planos opens on pricing", async ({ page }) => {
+    await openLanding(page, "/#planos");
+    await expectSectionAtTop(page, "planos");
+  });
 });
