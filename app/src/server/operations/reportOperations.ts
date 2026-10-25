@@ -10,8 +10,20 @@ import {
 /** Safety cap: a parish overview never needs more than this many classes at once. */
 const MAX_CLASSES_IN_OVERVIEW = 500;
 
+export type ReportsPeriod = 'all' | 'month' | 'quarter';
+
+export function reportPeriodStart(
+  period: ReportsPeriod | undefined,
+  now: Date = new Date(),
+): Date | undefined {
+  if (period !== 'month' && period !== 'quarter') return undefined;
+  const from = new Date(now);
+  from.setMonth(from.getMonth() - (period === 'month' ? 1 : 3));
+  return from;
+}
+
 export const getReportsOverview = async (
-  _args: { workspaceId?: string; parishId?: string } | void,
+  _args: { workspaceId?: string; parishId?: string; period?: ReportsPeriod } | void,
   context: any,
 ) => {
   if (!context.user) throw new HttpError(401);
@@ -51,9 +63,18 @@ export const getReportsOverview = async (
     take: MAX_CLASSES_IN_OVERVIEW,
   });
 
-  const aggregates = await getClassAttendanceAggregates(classes.map((c: any) => c.id));
+  const periodStart = reportPeriodStart(args.period);
+  const aggregates = await getClassAttendanceAggregates(
+    classes.map((c: any) => c.id),
+    periodStart ? { from: periodStart } : undefined,
+  );
 
-  const classReports = classes.map((cls: any) => {
+  // With a period selected, classes without meetings in that window are left out.
+  const classesInPeriod = periodStart
+    ? classes.filter((cls: any) => (aggregates.get(cls.id)?.totalMeetings ?? 0) > 0)
+    : classes;
+
+  const classReports = classesInPeriod.map((cls: any) => {
     const agg = aggregates.get(cls.id) ?? emptyAggregate(cls.id);
     return {
       id: cls.id,

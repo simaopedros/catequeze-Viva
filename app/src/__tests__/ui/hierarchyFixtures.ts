@@ -47,7 +47,13 @@ export function tFromBundle(bundle: Bundle) {
       nsBundle = bundles[ns] || bundle;
       lookupKey = rest;
     }
-    const value = lookup(nsBundle, lookupKey);
+    let value = lookup(nsBundle, lookupKey);
+    if (value === undefined && typeof opts?.count === "number") {
+      value = lookup(
+        nsBundle,
+        `${lookupKey}_${opts.count === 1 ? "one" : "other"}`,
+      );
+    }
     if (opts?.returnObjects) return value ?? key;
     if (typeof value !== "string") {
       return typeof opts?.defaultValue === "string" ? opts.defaultValue : key;

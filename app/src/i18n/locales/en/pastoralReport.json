@@ -42,5 +42,6 @@
     "TRANSFERRED": "Transferred",
     "COMPLETED": "Completed",
     "MOVED_TO_OTHER_CLASS": "Moved to another class"
-  }
+  },
+  "perfectAttendance": "100% attendance"
 }

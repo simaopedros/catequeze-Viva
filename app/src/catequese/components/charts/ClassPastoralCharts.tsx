@@ -23,8 +23,8 @@ import {
 const ATTENDANCE_COLORS = {
   present: "#071A2D",
   late: "#D39A2B",
-  justified: "#071A2D",
-  absent: "#b91c1c",
+  justified: "#9db8d9",
+  absent: "#cbd5e1",
 };
 
 export function ClassPastoralCharts({

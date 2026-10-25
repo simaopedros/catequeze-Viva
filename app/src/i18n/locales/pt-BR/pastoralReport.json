@@ -42,5 +42,6 @@
     "TRANSFERRED": "Transferido",
     "COMPLETED": "Concluído",
     "MOVED_TO_OTHER_CLASS": "Mudou de turma"
-  }
+  },
+  "perfectAttendance": "100% presença"
 }

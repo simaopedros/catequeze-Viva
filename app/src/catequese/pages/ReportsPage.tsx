@@ -5,12 +5,12 @@ import { QueryErrorState } from "../../client/components/QueryErrorState";
 import { Badge } from "../../client/components/ui/badge";
 import {
   BarChart3,
-  Download,
   Trophy,
-  AlertTriangle,
-  FileText,
-  PieChart,
   Activity,
+  Award,
+  HeartHandshake,
+  Medal,
+  Star,
 } from "lucide-react";
 import { FilterPills } from "../../client/components/FilterPills";
 import {
@@ -27,6 +27,21 @@ import {
 } from "wasp/client/operations";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
+import { formatDate } from "../../i18n/format";
+import { useLocale } from "../../i18n/useLocale";
+import { ReportsPrintSheet } from "./ReportsPrintSheet";
+
+const MEDAL_COLORS = ["#D39A2B", "#9ca3af", "#b07a4a"];
+
+function rateBarClass(rate: number) {
+  if (rate >= 75) return "bg-success";
+  if (rate >= 50) return "bg-warning";
+  return "bg-muted-foreground/40";
+}
+
+function isPerfect(r: any) {
+  return r.attendanceRate === 100 && r.totalMeetings > 0;
+}
 
 const ReportsChartsPanel = lazy(() =>
   import("./ReportsChartsPanel").then((m) => ({
@@ -40,7 +55,9 @@ export default function ReportsPage() {
   const { t: tc } = useTranslation("common");
   const { activeParishId } = useActiveParish();
   const { workspaceType } = useActiveWorkspace();
+  const { currentLocale } = useLocale();
   const isDioceseView = workspaceType === "DIOCESE";
+  const [period, setPeriod] = useState<"all" | "month" | "quarter">("all");
   const {
     data,
     isLoading: loading,
@@ -48,7 +65,7 @@ export default function ReportsPage() {
     refetch,
   } = useQuery(
     getReportsOverview,
-    { workspaceId: activeParishId || undefined } as any,
+    { workspaceId: activeParishId || undefined, period } as any,
     { enabled: Boolean(activeParishId) },
   );
   const { data: adoption } = useQuery(
@@ -59,28 +76,12 @@ export default function ReportsPage() {
   const [tab, setTab] = useState<"presenca" | "ranking" | "grafico" | "adesao">(
     "presenca",
   );
-  const [period, setPeriod] = useState("all");
 
   const classReports = useMemo(() => {
     if (!data?.classReports) return [];
-    let result = data.classReports;
-    if (activeParishId)
-      result = result.filter((r: any) => r.parishId === activeParishId);
-    // Filter by period
-    if (period !== "all") {
-      const now = new Date();
-      const cutoff = new Date();
-      if (period === "month") cutoff.setMonth(now.getMonth() - 1);
-      else if (period === "quarter") cutoff.setMonth(now.getMonth() - 3);
-      result = result.filter((r: any) => {
-        const lastMeeting = r.lastMeetingDate
-          ? new Date(r.lastMeetingDate)
-          : null;
-        return lastMeeting && lastMeeting >= cutoff;
-      });
-    }
-    return result;
-  }, [data, activeParishId, period]);
+    if (!activeParishId) return data.classReports;
+    return data.classReports.filter((r: any) => r.parishId === activeParishId);
+  }, [data, activeParishId]);
 
   const visibleTotals = useMemo(
     () => ({
@@ -127,7 +128,7 @@ export default function ReportsPage() {
         r.name,
         r.totalEnrolled,
         r.totalMeetings,
-        r.presentCount,
+        r.attendedCount ?? r.presentCount,
         r.absentCount,
         r.attendanceRate + "%",
       ]),
@@ -139,7 +140,9 @@ export default function ReportsPage() {
     const a = document.createElement("a");
     const url = URL.createObjectURL(blob);
     a.href = url;
-    a.download = "relatorio.csv";
+    a.download = `relatorio-presenca-${new Date()
+      .toISOString()
+      .slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -155,7 +158,7 @@ export default function ReportsPage() {
         [presentKey]: r.attendanceRate,
         [absentKey]: 100 - r.attendanceRate,
         fullName: r.name,
-        presentCount: r.presentCount,
+        presentCount: r.attendedCount ?? r.presentCount,
         absentCount: r.absentCount,
         enrolled: r.totalEnrolled,
       })),
@@ -163,13 +166,8 @@ export default function ReportsPage() {
   );
 
   const pieData = useMemo(() => {
-    const total =
-      classReports.reduce(
-        (s: number, r: any) => s + r.presentCount + r.absentCount,
-        0,
-      ) || 1;
     const present = classReports.reduce(
-      (s: number, r: any) => s + r.presentCount,
+      (s: number, r: any) => s + (r.attendedCount ?? r.presentCount),
       0,
     );
     const absent = classReports.reduce(
@@ -178,23 +176,29 @@ export default function ReportsPage() {
     );
     return [
       { name: t("present"), value: present, color: "#071A2D" },
-      { name: t("absent"), value: absent, color: "#b91c1c" },
+      { name: t("absent"), value: absent, color: "#cbd5e1" },
     ];
   }, [classReports, t]);
 
-  // Calculate dropout risk (classes with < 50% attendance)
-  const riskClasses = useMemo(() => {
-    if (!classReports.length) return [];
-    return classReports.filter(
-      (r: any) => r.attendanceRate < 50 && r.totalMeetings > 2,
-    );
-  }, [classReports]);
+  const riskClasses = useMemo(
+    () =>
+      classReports.filter(
+        (r: any) => r.attendanceRate < 50 && r.totalMeetings > 2,
+      ),
+    [classReports],
+  );
 
-  // Max bar value for chart
-  const maxBar = useMemo(() => {
-    if (!classReports.length) return 100;
-    return Math.max(...classReports.map((r: any) => r.attendanceRate), 100);
-  }, [classReports]);
+  const perfectClasses = useMemo(
+    () => classReports.filter(isPerfect),
+    [classReports],
+  );
+
+  const periodLabel =
+    period === "month"
+      ? t("periods.month")
+      : period === "quarter"
+        ? t("periods.quarter")
+        : t("periods.all");
 
   if (error && !data) {
     return <QueryErrorState error={error} onRetry={refetch} />;
@@ -228,11 +232,22 @@ export default function ReportsPage() {
         secondaryActions={[
           {
             label: t("export_pdf"),
-            onClick: () => {},
-            disabled: true,
+            onClick: () => window.print(),
+            disabled: !classReports.length,
+            testId: "reports-export-pdf",
           },
         ]}
       />
+      {classReports.length > 0 && (
+        <ReportsPrintSheet
+          classes={classReports}
+          perfectClasses={perfectClasses}
+          attentionClasses={riskClasses}
+          totals={visibleTotals}
+          periodLabel={periodLabel}
+          issuedAt={formatDate(new Date(), currentLocale)}
+        />
+      )}
       <FilterPills
         className="mt-0"
         options={[
@@ -282,11 +297,10 @@ export default function ReportsPage() {
             { value: "quarter", label: t("periods.quarter") },
           ]}
           value={period}
-          onChange={setPeriod}
+          onChange={(v) => setPeriod(v as typeof period)}
         />
         <p className="text-sm text-muted-foreground">
-          {classReports.length}{" "}
-          {classReports.length === 1 ? t("tabs.attendance") : t("title")}
+          {t("classes_count", { count: classReports.length })}
         </p>
       </div>
 
@@ -307,22 +321,54 @@ export default function ReportsPage() {
 
       {tab === "presenca" && (
         <>
-          {/* Risk alert */}
+          {perfectClasses.length > 0 && (
+            <div
+              className="rounded-sm border-2 border-brand-gold/60 bg-gradient-to-br from-brand-gold/[0.06] to-brand-gold/[0.16] p-4"
+              data-testid="reports-celebration"
+            >
+              <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold tracking-tight text-brand-gold-muted">
+                <Award className="h-4 w-4 text-brand-gold" aria-hidden />
+                {t("celebrate_title")}
+              </h3>
+              <p className="mb-2 text-xs text-brand-ink/80">
+                {t("celebrate_desc")}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {perfectClasses.map((r: any) => (
+                  <Badge
+                    key={r.id}
+                    variant="outline"
+                    className="gap-1 border-brand-gold/50 bg-white text-caption text-brand-ink"
+                  >
+                    <Star
+                      className="h-3 w-3 fill-brand-gold text-brand-gold"
+                      aria-hidden
+                    />
+                    {r.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+
           {riskClasses.length > 0 && (
-            <div className="rounded-sm border border-destructive/30 bg-destructive/10 p-4">
-              <h3 className="mb-2 flex items-center gap-2 text-[11px] font-medium tracking-wide text-destructive">
-                <AlertTriangle className="h-3.5 w-3.5" />
+            <div
+              className="rounded-sm border border-warning/40 bg-warning/10 p-4"
+              data-testid="reports-attention"
+            >
+              <h3 className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-gold-muted">
+                <HeartHandshake className="h-3.5 w-3.5" aria-hidden />
                 {t("dropout_title")}
               </h3>
-              <p className="mb-2 text-xs text-destructive/90">
+              <p className="mb-2 text-xs text-brand-ink/80">
                 {t("dropout_desc")}
               </p>
               <div className="flex flex-wrap gap-2">
                 {riskClasses.map((r: any) => (
                   <Badge
                     key={r.id}
-                    variant="destructive"
-                    className="text-caption"
+                    variant="outline"
+                    className="border-warning/50 bg-white text-caption text-brand-ink"
                   >
                     {r.name}: {r.attendanceRate}%
                   </Badge>
@@ -351,9 +397,21 @@ export default function ReportsPage() {
                     className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold tracking-tight text-brand-ink">
+                      <div className="flex items-center gap-1.5 text-sm font-semibold tracking-tight text-brand-ink">
                         {r.name}
-                      </p>
+                        {isPerfect(r) && (
+                          <Badge
+                            variant="outline"
+                            className="gap-1 border-brand-gold/50 bg-brand-gold/10 px-1.5 py-0 text-micro text-brand-gold-muted"
+                          >
+                            <Star
+                              className="h-3 w-3 fill-brand-gold text-brand-gold"
+                              aria-hidden
+                            />
+                            {t("perfect_badge")}
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-xs text-muted-foreground">
                         {t("enrolled_meetings", {
                           enrolled: r.totalEnrolled,
@@ -368,20 +426,16 @@ export default function ReportsPage() {
                         </span>
                         <span className="text-xs text-muted-foreground">
                           {t("present_absent", {
-                            present: r.presentCount,
+                            present: r.attendedCount ?? r.presentCount,
                             absent: r.absentCount,
                           })}
                         </span>
                       </div>
                       <div className="h-2 w-full rounded-sm bg-muted sm:w-40">
                         <div
-                          className={`h-2 rounded-sm ${
-                            r.attendanceRate >= 70
-                              ? "bg-success"
-                              : r.attendanceRate >= 40
-                                ? "bg-warning"
-                                : "bg-destructive"
-                          }`}
+                          className={`h-2 rounded-sm ${rateBarClass(
+                            r.attendanceRate,
+                          )}`}
                           style={{
                             width: `${Math.min(100, r.attendanceRate)}%`,
                           }}
@@ -428,11 +482,25 @@ export default function ReportsPage() {
                             : "border-border/70 bg-muted/30 text-muted-foreground"
                         }`}
                       >
-                        {i + 1}
+                        {i < 3 ? (
+                          <Medal
+                            className="h-5 w-5"
+                            style={{ color: MEDAL_COLORS[i] }}
+                            aria-label={String(i + 1)}
+                          />
+                        ) : (
+                          i + 1
+                        )}
                       </span>
                       <div>
-                        <p className="text-sm font-semibold tracking-tight text-brand-ink">
+                        <p className="flex items-center gap-1.5 text-sm font-semibold tracking-tight text-brand-ink">
                           {r.name}
+                          {isPerfect(r) && (
+                            <Star
+                              className="h-3.5 w-3.5 fill-brand-gold text-brand-gold"
+                              aria-label={t("perfect_badge")}
+                            />
+                          )}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {r.totalEnrolled} {tc("enrolled")}
@@ -445,14 +513,12 @@ export default function ReportsPage() {
                       </span>
                       <div className="h-1.5 w-24 rounded-sm bg-muted">
                         <div
-                          className={`h-1.5 rounded-sm ${
-                            r.attendanceRate >= 80
-                              ? "bg-warning"
-                              : r.attendanceRate >= 60
-                                ? "bg-success"
-                                : "bg-destructive"
-                          }`}
-                          style={{ width: r.attendanceRate + "%" }}
+                          className={`h-1.5 rounded-sm ${rateBarClass(
+                            r.attendanceRate,
+                          )}`}
+                          style={{
+                            width: `${Math.min(100, r.attendanceRate)}%`,
+                          }}
                         />
                       </div>
                     </div>

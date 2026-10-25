@@ -5793,7 +5793,8 @@ export const pastoralReport_es = {
       "TRANSFERRED": "Transferido",
       "COMPLETED": "Concluido",
       "MOVED_TO_OTHER_CLASS": "Cambió de grupo"
-    }
+    },
+    "perfectAttendance": "100% asistencia"
   } as const;
 
 export const public_es = {
@@ -6056,7 +6057,6 @@ export const reports_es = {
     "absent": "Ausentes",
     "attendance_label": "Asistencia",
     "records": "registros",
-    "pdf_soon": "Exportación PDF próximamente",
     "csv_headers": {
       "class": "Grupo",
       "enrolled": "Inscritos",
@@ -6064,7 +6064,17 @@ export const reports_es = {
       "present": "Presentes",
       "absent": "Ausentes",
       "rate": "Asistencia %"
-    }
+    },
+    "subtitle": "Asistencia, ranking y visión consolidada de los grupos.",
+    "classes_count_one": "{{count}} grupo",
+    "classes_count_other": "{{count}} grupos",
+    "celebrate_title": "Grupos con asistencia perfecta",
+    "celebrate_desc": "¡Qué alegría! Estos grupos tuvieron 100% de asistencia en el período — felicitaciones a los catequistas y a las familias:",
+    "perfect_badge": "100% asistencia",
+    "print_title": "Informe de asistencia de los grupos",
+    "print_issued": "Emitido el {{date}}",
+    "print_period": "Período: {{period}}",
+    "print_footer": "Cada encuentro es una semilla. ¡Gracias por caminar con cada catequizando!"
   } as const;
 
 export const sacraments_es = {

@@ -5793,7 +5793,8 @@ export const pastoralReport_en = {
       "TRANSFERRED": "Transferred",
       "COMPLETED": "Completed",
       "MOVED_TO_OTHER_CLASS": "Moved to another class"
-    }
+    },
+    "perfectAttendance": "100% attendance"
   } as const;
 
 export const public_en = {
@@ -6056,7 +6057,6 @@ export const reports_en = {
     "absent": "Absent",
     "attendance_label": "Attendance",
     "records": "records",
-    "pdf_soon": "PDF export coming soon",
     "csv_headers": {
       "class": "Class",
       "enrolled": "Enrolled",
@@ -6064,7 +6064,17 @@ export const reports_en = {
       "present": "Present",
       "absent": "Absent",
       "rate": "Attendance %"
-    }
+    },
+    "subtitle": "Attendance, ranking and a consolidated view of your classes.",
+    "classes_count_one": "{{count}} class",
+    "classes_count_other": "{{count}} classes",
+    "celebrate_title": "Classes with perfect attendance",
+    "celebrate_desc": "What a joy! These classes had 100% attendance in the period — congratulations to catechists and families:",
+    "perfect_badge": "100% attendance",
+    "print_title": "Class attendance report",
+    "print_issued": "Issued on {{date}}",
+    "print_period": "Period: {{period}}",
+    "print_footer": "Every meeting is a seed. Thank you for walking alongside each catechumen!"
   } as const;
 
 export const sacraments_en = {

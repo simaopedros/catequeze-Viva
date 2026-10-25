@@ -3314,7 +3314,8 @@ export const pastoralReport_pt_BR_app = {
       "TRANSFERRED": "Transferido",
       "COMPLETED": "Concluído",
       "MOVED_TO_OTHER_CLASS": "Mudou de turma"
-    }
+    },
+    "perfectAttendance": "100% presença"
   } as const;
 
 export const reports_pt_BR_app = {
@@ -3362,7 +3363,6 @@ export const reports_pt_BR_app = {
     "absent": "Ausentes",
     "attendance_label": "Presença",
     "records": "registros",
-    "pdf_soon": "Exportação PDF em breve",
     "csv_headers": {
       "class": "Turma",
       "enrolled": "Inscritos",
@@ -3370,7 +3370,17 @@ export const reports_pt_BR_app = {
       "present": "Presentes",
       "absent": "Ausentes",
       "rate": "Presença %"
-    }
+    },
+    "subtitle": "Presença, ranking e visão consolidada das turmas.",
+    "classes_count_one": "{{count}} turma",
+    "classes_count_other": "{{count}} turmas",
+    "celebrate_title": "Turmas com presença perfeita",
+    "celebrate_desc": "Que alegria! Estas turmas tiveram 100% de presença no período — parabéns aos catequistas e às famílias:",
+    "perfect_badge": "100% presença",
+    "print_title": "Relatório de presença das turmas",
+    "print_issued": "Emitido em {{date}}",
+    "print_period": "Período: {{period}}",
+    "print_footer": "Cada encontro é uma semente. Obrigado por caminhar com cada catequizando!"
   } as const;
 
 export const sacraments_pt_BR_app = {

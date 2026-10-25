@@ -42,5 +42,6 @@
     "TRANSFERRED": "Transferido",
     "COMPLETED": "Concluido",
     "MOVED_TO_OTHER_CLASS": "Cambió de grupo"
-  }
+  },
+  "perfectAttendance": "100% asistencia"
 }

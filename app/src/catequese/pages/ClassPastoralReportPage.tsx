@@ -12,15 +12,10 @@ import { EmptyState } from "../../client/components/EmptyState";
 import { FilterPills } from "../../client/components/FilterPills";
 import { ChartSuspenseFallback } from "../../client/components/ChartSuspenseFallback";
 import { useQuery, getClassPastoralReport } from "wasp/client/operations";
-import {
-  AlertTriangle,
-  Trophy,
-  BarChart3,
-  ArrowLeft,
-  Gift,
-  Star,
-} from "lucide-react";
+import { Trophy, BarChart3, ArrowLeft, Gift, Star } from "lucide-react";
 import { formatDate } from "../../i18n/format";
+import { QueryErrorState } from "../../client/components/QueryErrorState";
+import { monthKeyFromDate } from "../lib/pastoralMonthFilter";
 import { useLocale } from "../../i18n/useLocale";
 
 const ClassPastoralCharts = lazy(() =>
@@ -29,10 +24,10 @@ const ClassPastoralCharts = lazy(() =>
   })),
 );
 
-const RISK_COLORS = { ALTO: "#b91c1c", MÉDIO: "#D39A2B", BAIXO: "#071A2D" };
+const RISK_COLORS = { ALTO: "#8A6418", MÉDIO: "#4f6f94", BAIXO: "#1f7a52" };
 const STATUS_COLORS: Record<string, string> = {
   ENROLLED: "#071A2D",
-  DROPPED: "#b91c1c",
+  DROPPED: "#9ca3af",
   TRANSFERRED: "#D39A2B",
   COMPLETED: "#071A2D",
   MOVED_TO_OTHER_CLASS: "#071A2D",
@@ -45,7 +40,12 @@ export default function ClassPastoralReportPage() {
     t(`enrollment_status.${status}`, { defaultValue: status });
   const { currentLocale } = useLocale();
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading: loading } = useQuery(getClassPastoralReport, {
+  const {
+    data,
+    isLoading: loading,
+    error,
+    refetch,
+  } = useQuery(getClassPastoralReport, {
     classId: id!,
   });
   const [rankingFilter, setRankingFilter] = useState("all");
@@ -81,11 +81,7 @@ export default function ClassPastoralReportPage() {
     if (!data?.meetingsWithAttendance) return [];
     const months: Record<string, any> = {};
     for (const m of data.meetingsWithAttendance) {
-      const d = new Date(m.date);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
-        2,
-        "0",
-      )}`;
+      const key = monthKeyFromDate(m.date);
       if (!months[key])
         months[key] = {
           month: key,
@@ -94,7 +90,8 @@ export default function ClassPastoralReportPage() {
           recordTotal: 0,
         };
       months[key].meetings++;
-      months[key].presentTotal += m.presentCount + m.justifiedCount;
+      months[key].presentTotal +=
+        m.presentCount + m.lateCount + m.justifiedCount;
       months[key].recordTotal +=
         m.presentCount + m.absentCount + m.lateCount + m.justifiedCount;
     }
@@ -132,7 +129,45 @@ export default function ClassPastoralReportPage() {
       </div>
     );
 
+  if (error && !data) {
+    return <QueryErrorState error={error} onRetry={refetch} />;
+  }
+
   if (!data) return <EmptyState icon={BarChart3} title={t("noData")} compact />;
+
+  const riskBadge = (r: any) => (
+    <Badge
+      variant="outline"
+      className="px-1.5 py-0 text-micro"
+      style={{
+        color: RISK_COLORS[r.riskLevel as keyof typeof RISK_COLORS],
+      }}
+    >
+      {t(
+        r.riskLevel === "ALTO"
+          ? "riskHigh"
+          : r.riskLevel === "MÉDIO"
+            ? "riskMedium"
+            : "riskLow",
+      )}
+    </Badge>
+  );
+  const perfectBadge = (r: any) =>
+    r.attendanceRate === 100 && r.totalValidMeetings > 0 ? (
+      <Badge
+        variant="outline"
+        className="gap-1 border-brand-gold/50 bg-brand-gold/10 px-1.5 py-0 text-micro text-brand-gold-muted"
+      >
+        <Star className="h-3 w-3 fill-brand-gold text-brand-gold" aria-hidden />
+        {t("perfectAttendance")}
+      </Badge>
+    ) : null;
+  const rowTone = (r: any, i: number) =>
+    r.riskLevel === "ALTO" && r.enrollmentStatus === "ENROLLED"
+      ? "bg-warning/[0.06]"
+      : i < 3
+        ? "bg-brand-gold/[0.04]"
+        : "";
 
   return (
     <div className="space-y-6">
@@ -236,14 +271,7 @@ export default function ClassPastoralReportPage() {
                 {filteredRanking.map((r: any, i: number) => (
                   <div
                     key={r.catechumenId}
-                    className={`space-y-2 p-4 ${
-                      r.riskLevel === "ALTO" &&
-                      r.enrollmentStatus === "ENROLLED"
-                        ? "bg-destructive/5"
-                        : i < 3
-                          ? "bg-brand-gold/[0.04]"
-                          : ""
-                    }`}
+                    className={`space-y-2 p-4 ${rowTone(r, i)}`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex min-w-0 items-center gap-2">
@@ -263,13 +291,17 @@ export default function ClassPastoralReportPage() {
                           <p className="text-xs text-muted-foreground">
                             {statusLabel(r.enrollmentStatus)}
                           </p>
+                          <div className="mt-1 flex flex-wrap gap-1">
+                            {riskBadge(r)}
+                            {perfectBadge(r)}
+                          </div>
                         </div>
                       </div>
                       <span className="shrink-0 text-base font-semibold tabular-nums text-brand-ink">
                         {r.attendanceRate}%
                       </span>
                     </div>
-                    <div className="grid grid-cols-4 gap-2 text-center text-xs">
+                    <div className="grid grid-cols-5 gap-2 text-center text-xs">
                       <div>
                         <p className="text-muted-foreground">{t("present")}</p>
                         <p className="font-semibold tabular-nums">
@@ -280,6 +312,14 @@ export default function ClassPastoralReportPage() {
                         <p className="text-muted-foreground">{t("late")}</p>
                         <p className="font-semibold tabular-nums">
                           {r.lateCount}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">
+                          {t("justified")}
+                        </p>
+                        <p className="font-semibold tabular-nums">
+                          {r.justifiedCount}
                         </p>
                       </div>
                       <div>
@@ -337,17 +377,7 @@ export default function ClassPastoralReportPage() {
                   </thead>
                   <tbody className="divide-y">
                     {filteredRanking.map((r: any, i: number) => (
-                      <tr
-                        key={r.catechumenId}
-                        className={
-                          r.riskLevel === "ALTO" &&
-                          r.enrollmentStatus === "ENROLLED"
-                            ? "bg-destructive/5"
-                            : i < 3
-                              ? "bg-brand-gold/[0.04]"
-                              : ""
-                        }
-                      >
+                      <tr key={r.catechumenId} className={rowTone(r, i)}>
                         <td className="p-3">
                           <span
                             className={`inline-flex h-7 min-w-7 items-center justify-center rounded-sm border px-1.5 text-xs font-semibold tabular-nums ${
@@ -364,30 +394,14 @@ export default function ClassPastoralReportPage() {
                             <span className="font-semibold tracking-tight text-brand-ink">
                               {r.name}
                             </span>
-                            <Badge
-                              variant="outline"
-                              className="px-1.5 py-0 text-micro"
-                              style={{
-                                color:
-                                  RISK_COLORS[
-                                    r.riskLevel as keyof typeof RISK_COLORS
-                                  ],
-                              }}
-                            >
-                              {t(
-                                r.riskLevel === "ALTO"
-                                  ? "riskHigh"
-                                  : r.riskLevel === "MÉDIO"
-                                    ? "riskMedium"
-                                    : "riskLow",
-                              )}
-                            </Badge>
+                            {riskBadge(r)}
+                            {perfectBadge(r)}
                           </div>
                         </td>
                         <td className="p-3 text-center">{r.presentCount}</td>
                         <td className="p-3 text-center">{r.lateCount}</td>
                         <td className="p-3 text-center">{r.justifiedCount}</td>
-                        <td className="p-3 text-center text-destructive font-medium">
+                        <td className="p-3 text-center font-medium text-muted-foreground">
                           {r.absentCount}
                         </td>
                         <td className="p-3 text-center">

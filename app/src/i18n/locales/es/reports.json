@@ -43,7 +43,6 @@
   "absent": "Ausentes",
   "attendance_label": "Asistencia",
   "records": "registros",
-  "pdf_soon": "Exportación PDF próximamente",
   "csv_headers": {
     "class": "Grupo",
     "enrolled": "Inscritos",
@@ -51,5 +50,15 @@
     "present": "Presentes",
     "absent": "Ausentes",
     "rate": "Asistencia %"
-  }
+  },
+  "subtitle": "Asistencia, ranking y visión consolidada de los grupos.",
+  "classes_count_one": "{{count}} grupo",
+  "classes_count_other": "{{count}} grupos",
+  "celebrate_title": "Grupos con asistencia perfecta",
+  "celebrate_desc": "¡Qué alegría! Estos grupos tuvieron 100% de asistencia en el período — felicitaciones a los catequistas y a las familias:",
+  "perfect_badge": "100% asistencia",
+  "print_title": "Informe de asistencia de los grupos",
+  "print_issued": "Emitido el {{date}}",
+  "print_period": "Período: {{period}}",
+  "print_footer": "Cada encuentro es una semilla. ¡Gracias por caminar con cada catequizando!"
 }
