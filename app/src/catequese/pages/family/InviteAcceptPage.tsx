@@ -107,14 +107,14 @@ function InviteErrorState({
           {!isStaffPortal && (
             <Link
               to={codeTo}
-              className="text-brand-ink underline underline-offset-2 text-sm"
+              className="inline-flex min-h-11 w-full items-center justify-center text-sm text-brand-ink underline underline-offset-2"
             >
               {t("invite.enter_code_instead")}
             </Link>
           )}
           <Link
             to={homeTo}
-            className="text-muted-foreground underline underline-offset-2 text-sm"
+            className="inline-flex min-h-11 w-full items-center justify-center text-sm text-muted-foreground underline underline-offset-2"
           >
             {t("invite.back_home")}
           </Link>
