@@ -172,7 +172,7 @@ export default function ClassesPage() {
         }),
       });
     }
-    return t("attendance");
+    return t("no_meeting_scheduled");
   };
 
   if (error && items.length === 0) {
@@ -521,11 +521,6 @@ export default function ClassesPage() {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem asChild>
                       <Link to={`/app/classes/${cls.id}`}>{t("details")}</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to={`/app/classes/${cls.id}/attendance`}>
-                        {t("attendance")}
-                      </Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

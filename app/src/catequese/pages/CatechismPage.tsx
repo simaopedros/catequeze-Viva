@@ -20,6 +20,68 @@ import {
   getCatechismEntry,
 } from "wasp/client/operations";
 import { useLocale } from "../../i18n/useLocale";
+import {
+  catechismDisplayText,
+  catechismPreview,
+} from "../../shared/catechismText";
+
+const PAGE_SIZE = 30;
+
+function CatechismEntryCard({
+  entry,
+  expanded,
+  onToggle,
+  locale,
+  registerRef,
+}: {
+  entry: any;
+  expanded: boolean;
+  onToggle: () => void;
+  locale: string;
+  registerRef?: (el: HTMLDivElement | null) => void;
+}) {
+  const preview = catechismPreview(entry);
+  return (
+    <div
+      ref={registerRef}
+      className="rounded-sm border border-border/70 bg-white"
+    >
+      <button
+        onClick={onToggle}
+        aria-expanded={expanded}
+        className="w-full text-left p-4 flex items-start justify-between gap-3"
+      >
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start gap-2">
+            <span className="mt-0.5 shrink-0 rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
+              {entry.number}
+            </span>
+            {!(expanded && preview.isExcerpt) && (
+              <p className="text-sm font-semibold tracking-tight text-brand-ink">
+                {catechismDisplayText(preview.title, locale)}
+              </p>
+            )}
+            {expanded && preview.isExcerpt && (
+              <p className="text-sm leading-relaxed text-brand-ink whitespace-pre-line">
+                {catechismDisplayText(entry.answer || "", locale)}
+              </p>
+            )}
+          </div>
+          {expanded && !preview.isExcerpt && (
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+              {catechismDisplayText(entry.answer || "", locale)}
+            </p>
+          )}
+        </div>
+        {expanded ? (
+          <ChevronUp className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+        ) : (
+          <ChevronDown className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+        )}
+      </button>
+    </div>
+  );
+}
 
 const CATEGORY_KEYS = [
   "creed",
@@ -43,6 +105,7 @@ export default function CatechismPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   // URL-driven entry loading
   const urlEntryLoaded = useRef<string | null>(null);
@@ -85,6 +148,7 @@ export default function CatechismPage() {
   const loadCategory = async (cat: string) => {
     setLoading(true);
     setCategory(cat);
+    setVisibleCount(PAGE_SIZE);
     setSearchResults([]);
     setError("");
     urlEntryLoaded.current = null;
@@ -106,6 +170,7 @@ export default function CatechismPage() {
     setLoading(true);
     setCategory("");
     setEntries([]);
+    setVisibleCount(PAGE_SIZE);
     setError("");
     urlEntryLoaded.current = null;
     try {
@@ -201,42 +266,28 @@ export default function CatechismPage() {
           <p className="text-sm text-muted-foreground">
             {t("resultsCount", { count: searchResults.length })}
           </p>
-          {displayEntries.map((entry: any) => (
-            <div
+          {displayEntries.slice(0, visibleCount).map((entry: any) => (
+            <CatechismEntryCard
               key={entry.id}
-              ref={(el) => {
+              entry={entry}
+              locale={currentLocale}
+              expanded={!!expanded[entry.id]}
+              onToggle={() => toggle(entry.id)}
+              registerRef={(el) => {
                 if (el) entryRefs.current.set(entry.id, el);
                 else entryRefs.current.delete(entry.id);
               }}
-              className="rounded-sm border border-border/70 bg-white"
-            >
-              <button
-                onClick={() => toggle(entry.id)}
-                className="w-full text-left p-4 flex items-start justify-between gap-3"
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
-                      {entry.number}
-                    </span>
-                    <p className="text-sm font-semibold tracking-tight text-brand-ink">
-                      {entry.question}
-                    </p>
-                  </div>
-                  {expanded[entry.id] && (
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                      {entry.answer}
-                    </p>
-                  )}
-                </div>
-                {expanded[entry.id] ? (
-                  <ChevronUp className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                )}
-              </button>
-            </div>
+            />
           ))}
+          {displayEntries.length > visibleCount && (
+            <ShowMore
+              onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
+              label={t("showMore", {
+                shown: visibleCount,
+                total: displayEntries.length,
+              })}
+            />
+          )}
         </div>
       ) : entries.length > 0 ? (
         <div className="space-y-2">
@@ -246,38 +297,24 @@ export default function CatechismPage() {
               category: t(`categories.${category}`),
             })}
           </p>
-          {entries.map((entry: any) => (
-            <div
+          {entries.slice(0, visibleCount).map((entry: any) => (
+            <CatechismEntryCard
               key={entry.id}
-              className="rounded-sm border border-border/70 bg-white"
-            >
-              <button
-                onClick={() => toggle(entry.id)}
-                className="w-full text-left p-4 flex items-start justify-between gap-3"
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="rounded-sm border border-border/70 bg-muted/30 px-1.5 py-0.5 text-xs font-semibold tracking-tight text-brand-ink">
-                      {entry.number}
-                    </span>
-                    <p className="text-sm font-semibold tracking-tight text-brand-ink">
-                      {entry.question}
-                    </p>
-                  </div>
-                  {expanded[entry.id] && (
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                      {entry.answer}
-                    </p>
-                  )}
-                </div>
-                {expanded[entry.id] ? (
-                  <ChevronUp className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                )}
-              </button>
-            </div>
+              entry={entry}
+              locale={currentLocale}
+              expanded={!!expanded[entry.id]}
+              onToggle={() => toggle(entry.id)}
+            />
           ))}
+          {entries.length > visibleCount && (
+            <ShowMore
+              onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
+              label={t("showMore", {
+                shown: visibleCount,
+                total: entries.length,
+              })}
+            />
+          )}
         </div>
       ) : category ? (
         <div className="text-center text-muted-foreground py-12">
@@ -296,6 +333,21 @@ export default function CatechismPage() {
           </p>
         </div>
       )}
+    </div>
+  );
+}
+
+function ShowMore({ onClick, label }: { onClick: () => void; label: string }) {
+  return (
+    <div className="flex justify-center pt-2">
+      <Button
+        variant="outline"
+        size="sm"
+        className="rounded-sm"
+        onClick={onClick}
+      >
+        {label}
+      </Button>
     </div>
   );
 }

@@ -66,7 +66,8 @@
   "trial_banner_ends": "Ends on {{date}}.",
   "trial_banner_cta": "View billing",
   "trial_soft_title": "You've used the essentials — no rush",
-  "trial_soft_subtitle": "{{count}} trial days left. When you're ready, review plans to keep everything in one place.",
+  "trial_soft_subtitle_one": "{{count}} trial day left. When you're ready, review plans to keep everything in one place.",
+  "trial_soft_subtitle_other": "{{count}} trial days left. When you're ready, review plans to keep everything in one place.",
   "trial_soft_cta": "See plans",
   "trial_soft_dismiss": "Dismiss plan suggestion",
   "trial_topbar_one": "1 trial day left",
@@ -181,8 +182,10 @@
   "upgrade_plans_subtitle": "Choose the subscription that removes this blocker and keeps your catechesis in the same flow.",
   "upgrade_checklist_title": "What you keep with the upgrade",
   "upgrade_checklist_workspace_ready": "Your current workspace is already ready to keep growing.",
-  "upgrade_checklist_classes_active": "{{count}} active class stays in the same workspace.",
-  "upgrade_checklist_catechumens_active": "{{count}} catechumens already registered keep their history and follow-up.",
+  "upgrade_checklist_classes_active_one": "{{count}} active class stays in the same workspace.",
+  "upgrade_checklist_classes_active_other": "{{count}} active classes stay in the same workspace.",
+  "upgrade_checklist_catechumens_active_one": "{{count}} catechumen already registered keeps their history and follow-up.",
+  "upgrade_checklist_catechumens_active_other": "{{count}} catechumens already registered keep their history and follow-up.",
   "upgrade_checklist_keep_history": "Your history, meetings, and attendance stay in the same place.",
   "upgrade_journey": {
     "generic": {

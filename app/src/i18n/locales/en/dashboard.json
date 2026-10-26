@@ -49,13 +49,15 @@
     },
     "register_attendance": {
       "title": "Record attendance",
-      "subtitle": "{{className}} · {{count}} catechumens",
+      "subtitle_one": "{{className}} · {{count}} catechumen",
+      "subtitle_other": "{{className}} · {{count}} catechumens",
       "context": "Attendance for the last encounter has not been recorded yet.",
       "cta": "Record attendance"
     },
     "low_frequency": {
       "title": "Low attendance",
-      "subtitle": "{{count}} catechumens",
+      "subtitle_one": "{{count}} catechumen",
+      "subtitle_other": "{{count}} catechumens",
       "context": "Below {{threshold}}% attendance. Follow up and talk to the families to encourage them.",
       "cta": "See details"
     },
@@ -67,7 +69,8 @@
     },
     "pending_sacraments": {
       "title": "Sacramental pending items",
-      "subtitle": "{{count}} pending",
+      "subtitle_one": "{{count}} pending",
+      "subtitle_other": "{{count}} pending",
       "context": "There are sacramental milestones waiting for follow-up.",
       "cta": "See pending items"
     }
@@ -80,7 +83,8 @@
   },
   "birthday_today": "Today",
   "birthday_tomorrow": "Tomorrow",
-  "in_days": "In {{count}} days",
+  "in_days_one": "In {{count}} day",
+  "in_days_other": "In {{count}} days",
   "my_catechesis": "My catechesis",
   "see_full_report": "See full report",
   "see_classes": "See classes",
@@ -236,7 +240,7 @@
   "import_catechumens": "Import catechumens",
   "mobile": {
     "none_registered": "None",
-    "no_attendance": "No records",
+    "no_attendance": "No roll call yet",
     "all_clear": "All clear",
     "no_catechumens": "No catechumens"
   }

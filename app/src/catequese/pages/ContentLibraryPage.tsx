@@ -438,7 +438,7 @@ export default function ContentLibraryPage() {
           <div className="space-y-6">
             <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
               <SurfaceSection
-                title="Primeiros conteudos"
+                title={t("library.first_contents_title")}
                 icon={CheckCircle2}
                 tone="soft"
                 className="p-6 lg:p-8"
@@ -485,20 +485,20 @@ export default function ContentLibraryPage() {
                 </div>
               </SurfaceSection>
 
-              <SurfaceSection title="Fluxo sugerido" icon={FileText}>
+              <SurfaceSection
+                title={t("library.suggested_flow_title")}
+                icon={FileText}
+              >
                 <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
                   <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-                    Crie roteiros base para organizar temas, tempo estimado e
-                    publico.
+                    {t("library.suggested_flow_step_1")}
                   </div>
                   <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-                    Adicione atividades para transformar o conteudo em encontro
-                    utilizavel.
+                    {t("library.suggested_flow_step_2")}
                   </div>
                   {AI_FEATURES_ENABLED && (
                     <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-                      Combine criação manual com assistência editorial quando
-                      precisar acelerar a preparação.
+                      {t("library.suggested_flow_step_3")}
                     </div>
                   )}
                 </div>

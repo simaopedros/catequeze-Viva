@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { TimeInput } from "../../client/components/ui/time-input";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
@@ -331,7 +332,7 @@ export default function CreateClassPage() {
                     <FormItem>
                       <FormLabel>{t("start")}</FormLabel>
                       <FormControl>
-                        <Input type="time" {...field} />
+                        <TimeInput {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -345,7 +346,7 @@ export default function CreateClassPage() {
                     <FormItem>
                       <FormLabel>{t("end")}</FormLabel>
                       <FormControl>
-                        <Input type="time" {...field} />
+                        <TimeInput {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
