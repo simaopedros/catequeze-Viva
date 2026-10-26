@@ -1,13 +1,10 @@
 import { HttpError } from "wasp/server";
 import { z } from "zod";
+import { audienceAllowsRole } from "../../shared/pastoralAnnouncementAudience";
 import {
   canPublishAt,
   defaultPolicyFor,
 } from "../../shared/resourceInheritance";
-import {
-  isCatechistOrAboveRole,
-  isCoordinatorOrAboveRole,
-} from "../auth/helpers";
 import { validateOrThrow } from "../validation";
 import {
   actorCanViewOfficialResource,
@@ -31,22 +28,6 @@ const createAnnouncementSchema = z.object({
     .enum(["LOCKED", "REQUIRED_EXTENDABLE", "SUGGESTED", "LOCAL"])
     .optional(),
 });
-
-/** Whether a published announcement's audience includes this membership role. */
-export function audienceAllowsRole(audience: string, role: string): boolean {
-  switch (audience) {
-    case "all":
-      return true;
-    case "families":
-      return role === "GUARDIAN" || role === "CATECHUMEN";
-    case "catechists":
-      return isCatechistOrAboveRole(role);
-    case "coordinators":
-      return isCoordinatorOrAboveRole(role);
-    default:
-      return false;
-  }
-}
 
 export const listPastoralAnnouncements = async (
   args: { workspaceId?: string } | void,
