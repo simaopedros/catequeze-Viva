@@ -310,6 +310,11 @@
     to   { opacity: 1; }
   }
 
+  @keyframes activity-bar {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(300%); }
+  }
+
   @keyframes slide-indicator {
     from { opacity: 0; transform: scaleX(0.85); }
     to   { opacity: 1; transform: scaleX(1); }

@@ -18,7 +18,9 @@ interface OnAfterSignupArgs {
 /**
  * Runs right after a new user account is created (any auth method).
  *
- * 1. Starts the commercial trial only after Stripe Checkout (no in-app grant).
+ * 1. Does not touch billing: the no-card 7-day product trial is granted
+ *    lazily by ensureProductTrial when the user first creates a workspace
+ *    or class (family portal invitees never reach that path).
  * 2. Sends Meta CAPI CompleteRegistration (email + Google OAuth signups).
  * 3. Converts any PendingInvitations addressed to the new user's email into
  *    INVITED memberships. Keeps the PendingInvitation records alive so the
@@ -71,7 +73,7 @@ export const onAfterSignup = async ({
     /* ignore */
   }
 
-  // Product trial is granted by Stripe Checkout, never here.
+  // Product trial is granted by ensureProductTrial, never here.
   // Family portal invitees remain excluded from commercial conversion below.
 
   // Never fire commercial Meta conversion for family portal signups.

@@ -252,7 +252,7 @@
     },
     {
       "q": "Preciso informar cartão para testar?",
-      "a": "Sim. O Stripe pede o cartão para começar o trial; a cobrança só acontece depois dos 7 dias. Cancele a tempo se não quiser continuar."
+      "a": "Não. O teste de 7 dias do Plano Catequista começa sem cartão, assim que você cria sua primeira turma. O cartão só é pedido quando você decidir assinar."
     },
     {
       "q": "Posso cancelar quando quiser?",

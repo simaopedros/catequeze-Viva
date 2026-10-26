@@ -74,6 +74,43 @@ describe('resolveStripeCheckoutTrialDays', () => {
     ).toBe(2);
   });
 
+  it('returns only remaining days for a no-card in-app trial with trialEndsAt', () => {
+    const createdAt = new Date('2026-03-05T12:00:00.000Z');
+    const trialEndsAt = new Date('2026-03-12T12:00:00.000Z');
+    expect(
+      resolveStripeCheckoutTrialDays({
+        user: { subscriptionStatus: 'trialing', subscriptionPlan: 'single', createdAt, trialEndsAt },
+        now,
+      }),
+    ).toBe(2);
+    expect(
+      resolveStripeCheckoutTrialDays({
+        user: {
+          subscriptionStatus: 'trialing',
+          subscriptionPlan: 'single',
+          paymentProcessorUserId: 'cus_abandoned',
+          createdAt,
+          trialEndsAt,
+        },
+        now,
+      }),
+    ).toBe(2);
+  });
+
+  it('returns 0 after a no-card in-app trial expired', () => {
+    expect(
+      resolveStripeCheckoutTrialDays({
+        user: {
+          subscriptionStatus: 'deleted',
+          subscriptionPlan: 'catechist_free',
+          createdAt: new Date('2026-02-01T12:00:00.000Z'),
+          trialEndsAt: new Date('2026-02-08T12:00:00.000Z'),
+        },
+        now,
+      }),
+    ).toBe(0);
+  });
+
   it('returns 0 when the user already used a Stripe trial', () => {
     expect(
       resolveStripeCheckoutTrialDays({
