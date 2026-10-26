@@ -2477,7 +2477,54 @@ export const common_en = {
       "family_label": "Family",
       "family_unlinked": "Not linked",
       "next_enroll": "Enroll in a class",
-      "view_profile": "Open profile"
+      "view_profile": "Open profile",
+      "family_contact_hint": "Phone numbers and guardians belong to the family: pick or create the family above.",
+      "danger_zone": "More options",
+      "enroll": {
+        "open": "Enroll in a class",
+        "title": "Enroll in a class",
+        "desc": "Choose a class for {{name}}.",
+        "label": "Class",
+        "label_optional": "Class (optional)",
+        "none": "Enroll later",
+        "placeholder": "Select a class",
+        "submit": "Enroll",
+        "success": "Enrolled",
+        "error": "Could not enroll",
+        "no_classes": "There is no other active class available. Create a class first."
+      },
+      "certificate": {
+        "open": "Generate letter",
+        "dialog_title": "Generate a letter or certificate",
+        "dialog_desc": "Check the details and generate a page ready to print or save as PDF.",
+        "kind_label": "Document",
+        "class_label": "Class",
+        "parish_label": "Parish or community",
+        "place_label": "City",
+        "place_placeholder": "e.g. São Paulo",
+        "date_label": "Date",
+        "signer_catechist": "Catechist",
+        "signer_coordinator": "Catechesis coordinator / Parish priest",
+        "generate": "Generate and print",
+        "popup_blocked": "Your browser blocked the new window. Allow pop-ups for this site and try again.",
+        "no_attendance": "There is no attendance recorded yet to calculate the rate.",
+        "birth_clause": ", born on {{date}},",
+        "place_date": "{{place}}, {{date}}.",
+        "kinds": {
+          "enrollment": {
+            "title": "Enrollment letter",
+            "body": "We hereby declare that {{name}}{{birth}} is enrolled in catechesis at {{parish}}, in the class {{className}}."
+          },
+          "attendance": {
+            "title": "Attendance letter",
+            "body": "We hereby declare that {{name}}{{birth}} takes part in the catechesis meetings of the class {{className}} at {{parish}}, with {{pct}}% attendance in the meetings recorded to date."
+          },
+          "completion": {
+            "title": "Certificate of completion",
+            "body": "We certify that {{name}}{{birth}} has completed the {{stage}} stage of catechesis in the class {{className}} at {{parish}}, walking in faith with dedication."
+          }
+        }
+      }
     },
     "global_search_placeholder": "Search catechumens, classes, content, Bible...",
     "two_factor_code_placeholder": "6-digit code",
@@ -3863,7 +3910,7 @@ export const landing_en = {
           "Up to 3 classes",
           "150 catechumens",
           "Attendance and calendar",
-          "Publish in the Community"
+          "Portal for the families in your class"
         ]
       },
       "unlimited": {

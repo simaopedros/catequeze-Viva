@@ -1000,7 +1000,54 @@ export const common_pt_BR_core = {
       "family_label": "Família",
       "family_unlinked": "Não vinculada",
       "next_enroll": "Matricular em uma turma",
-      "view_profile": "Abrir ficha"
+      "view_profile": "Abrir ficha",
+      "family_contact_hint": "Telefone e responsáveis ficam na família: escolha ou crie a família acima.",
+      "danger_zone": "Mais opções",
+      "enroll": {
+        "open": "Matricular em turma",
+        "title": "Matricular em turma",
+        "desc": "Escolha a turma de {{name}}.",
+        "label": "Turma",
+        "label_optional": "Turma (opcional)",
+        "none": "Matricular depois",
+        "placeholder": "Selecione a turma",
+        "submit": "Matricular",
+        "success": "Matrícula feita",
+        "error": "Não foi possível matricular",
+        "no_classes": "Não há outra turma ativa disponível. Crie uma turma primeiro."
+      },
+      "certificate": {
+        "open": "Gerar declaração",
+        "dialog_title": "Gerar declaração ou certificado",
+        "dialog_desc": "Confira os dados e gere uma página pronta para imprimir ou salvar em PDF.",
+        "kind_label": "Documento",
+        "class_label": "Turma",
+        "parish_label": "Paróquia ou comunidade",
+        "place_label": "Cidade",
+        "place_placeholder": "Ex.: São Paulo",
+        "date_label": "Data",
+        "signer_catechist": "Catequista",
+        "signer_coordinator": "Coordenação da catequese / Pároco",
+        "generate": "Gerar e imprimir",
+        "popup_blocked": "O navegador bloqueou a nova janela. Permita pop-ups para este site e tente de novo.",
+        "no_attendance": "Ainda não há presenças registradas para calcular a frequência.",
+        "birth_clause": ", nascido(a) em {{date}},",
+        "place_date": "{{place}}, {{date}}.",
+        "kinds": {
+          "enrollment": {
+            "title": "Declaração de matrícula",
+            "body": "Declaramos, para os devidos fins, que {{name}}{{birth}} está matriculado(a) na catequese da {{parish}}, na turma {{className}}."
+          },
+          "attendance": {
+            "title": "Declaração de frequência",
+            "body": "Declaramos, para os devidos fins, que {{name}}{{birth}} participa dos encontros de catequese da turma {{className}}, na {{parish}}, com frequência de {{pct}}% nos encontros registrados até esta data."
+          },
+          "completion": {
+            "title": "Certificado de conclusão",
+            "body": "Certificamos que {{name}}{{birth}} concluiu a etapa {{stage}} da catequese na turma {{className}}, da {{parish}}, caminhando na fé com dedicação."
+          }
+        }
+      }
     },
     "families": {
       "subtitle_registered": "{{count}} famílias cadastradas",
@@ -1448,7 +1495,7 @@ export const landing_pt_BR_core = {
           "Até 3 turmas",
           "150 catequizandos",
           "Presença e calendário",
-          "Publicar na Comunidade"
+          "Portal para as famílias da turma"
         ]
       },
       "unlimited": {
