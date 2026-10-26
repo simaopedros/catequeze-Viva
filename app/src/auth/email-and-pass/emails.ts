@@ -11,6 +11,7 @@ import {
 import { isFamilyPortalRequestContext } from '../../server/requestPortalContext';
 import { renderBrandedEmail } from '../../emails/renderEmail';
 import type { ServerLocale } from '../../server/i18n/serverLocale';
+import { withEmailVerificationTtl } from './verificationTtl';
 
 function authLocale(): ServerLocale {
   const env = process.env.EMAIL_DEFAULT_LOCALE;
@@ -60,7 +61,11 @@ export function buildVerificationEmailContent(
   verificationLink: string,
   portal: AuthEmailPortal = resolveAuthEmailPortal(verificationLink),
 ): AuthEmailContent {
-  const link = resolveAuthEmailLink(verificationLink, portal);
+  // Re-mint so signup + resend share an explicit 48h expiry (not Wasp's long-lived default).
+  const link = resolveAuthEmailLink(
+    withEmailVerificationTtl(verificationLink),
+    portal,
+  );
 
   if (portal === 'family') {
     const rendered = renderBrandedEmail({
