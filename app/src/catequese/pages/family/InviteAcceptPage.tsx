@@ -5,6 +5,7 @@ import { useQuery, useAction } from "wasp/client/operations";
 import * as ops from "wasp/client/operations";
 import { useAuth } from "wasp/client/auth";
 import { Button } from "../../../client/components/ui/button";
+import { Badge } from "../../../client/components/ui/badge";
 import { clearPendingInviteToken } from "../../../auth/inviteTokenStorage";
 import { trackMarketingEvent } from "../../../client/analytics/marketingAnalytics";
 import {
@@ -22,6 +23,12 @@ import {
   AppEyebrow,
 } from "../../../client/components/brand/AppChrome";
 import { Alert } from "../../../client/components/ui/alert";
+import {
+  inviteAcceptErrorKind,
+  inviteErrorDescKey,
+  inviteErrorTitleKey,
+  type InviteAcceptErrorKind,
+} from "../../../shared/inviteAcceptErrors";
 
 const getInvitationByToken = (ops as any).getInvitationByToken;
 const acceptInvitationByTokenAction = (ops as any).acceptInvitationByToken;
@@ -39,6 +46,83 @@ interface InvitationData {
   portal?: "family" | "staff";
 }
 
+function InviteErrorState({
+  kind,
+  isStaffPortal,
+}: {
+  kind: InviteAcceptErrorKind;
+  isStaffPortal: boolean;
+}) {
+  const { t } = useTranslation("family");
+  const homeTo = "/";
+  const codeTo = "/convite";
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
+      <div className="w-full max-w-md text-center space-y-6">
+        <Alert
+          variant="destructive"
+          className="inline-flex h-16 w-16 items-center justify-center"
+        >
+          {kind === "expired" ? (
+            <Clock className="h-8 w-8 text-destructive" />
+          ) : (
+            <AlertTriangle className="h-8 w-8 text-destructive" />
+          )}
+        </Alert>
+        <div className="space-y-2.5">
+          <AppDisplayTitle className="text-center">
+            {t(`invite.${inviteErrorTitleKey(kind)}`)}
+          </AppDisplayTitle>
+          <AppGoldRule className="mx-auto" />
+          <p className="text-muted-foreground">
+            {t(`invite.${inviteErrorDescKey(kind)}`)}
+          </p>
+        </div>
+        <div className="flex flex-col gap-2">
+          {(kind === "expired" ||
+            kind === "not_found" ||
+            kind === "generic") && (
+            <p className="text-sm text-muted-foreground">
+              {t("invite.ask_new_invite")}
+            </p>
+          )}
+          {kind === "wrong_email" && (
+            <Link
+              to={isStaffPortal ? "/login" : "/entrar"}
+              className="block h-10 w-full rounded-sm bg-brand-ink px-4 py-2 text-center text-sm font-medium text-white"
+            >
+              {t("invite.go_to_login")}
+            </Link>
+          )}
+          {kind === "already_used" && (
+            <Link
+              to={isStaffPortal ? "/login" : "/entrar"}
+              className="block h-10 w-full rounded-sm bg-brand-ink px-4 py-2 text-center text-sm font-medium text-white"
+            >
+              {t("invite.login")}
+            </Link>
+          )}
+          {!isStaffPortal && (
+            <Link
+              to={codeTo}
+              className="text-brand-ink underline underline-offset-2 text-sm"
+            >
+              {t("invite.enter_code_instead")}
+            </Link>
+          )}
+          <Link
+            to={homeTo}
+            className="text-muted-foreground underline underline-offset-2 text-sm"
+          >
+            {t("invite.back_home")}
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function InviteAcceptPage() {
   const { t, i18n } = useTranslation("family");
   const { token } = useParams<{ token: string }>();
@@ -47,6 +131,8 @@ export default function InviteAcceptPage() {
   const [accepting, setAccepting] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [error, setError] = useState("");
+  const [acceptErrorKind, setAcceptErrorKind] =
+    useState<InviteAcceptErrorKind | null>(null);
 
   const {
     data: rawInvitation,
@@ -66,6 +152,7 @@ export default function InviteAcceptPage() {
     if (!token) return;
     setAccepting(true);
     setError("");
+    setAcceptErrorKind(null);
     try {
       await acceptAction({ token });
       clearPendingInviteToken();
@@ -78,7 +165,13 @@ export default function InviteAcceptPage() {
       setAccepted(true);
       setTimeout(() => navigate("/app"), 1500);
     } catch (e: any) {
-      setError(e.message || t("invite.accept_error"));
+      const kind = inviteAcceptErrorKind(e);
+      setAcceptErrorKind(kind);
+      setError(
+        e?.message ||
+          t(`invite.${inviteErrorDescKey(kind)}`) ||
+          t("invite.accept_error"),
+      );
     } finally {
       setAccepting(false);
     }
@@ -93,41 +186,15 @@ export default function InviteAcceptPage() {
   }
 
   if (queryError || !invitation) {
-    const isExpired = (queryError as any)?.statusCode === 410;
+    const kind = queryError
+      ? inviteAcceptErrorKind(queryError)
+      : ("not_found" as const);
+    return <InviteErrorState kind={kind} isStaffPortal={false} />;
+  }
+
+  if (acceptErrorKind && acceptErrorKind !== "generic") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
-        <div className="w-full max-w-md text-center space-y-6">
-          <Alert
-            variant="destructive"
-            className="inline-flex h-16 w-16 items-center justify-center"
-          >
-            {isExpired ? (
-              <Clock className="h-8 w-8 text-destructive" />
-            ) : (
-              <AlertTriangle className="h-8 w-8 text-destructive" />
-            )}
-          </Alert>
-          <div className="space-y-2.5">
-            <AppDisplayTitle className="text-center">
-              {isExpired
-                ? t("invite.expired_title")
-                : t("invite.not_found_title")}
-            </AppDisplayTitle>
-            <AppGoldRule className="mx-auto" />
-            <p className="text-muted-foreground">
-              {isExpired
-                ? t("invite.expired_desc_accept")
-                : t("invite.not_found_desc")}
-            </p>
-          </div>
-          <Link
-            to="/"
-            className="text-brand-ink underline underline-offset-2 text-sm"
-          >
-            {t("invite.back_home")}
-          </Link>
-        </div>
-      </div>
+      <InviteErrorState kind={acceptErrorKind} isStaffPortal={isStaffPortal} />
     );
   }
 
@@ -205,6 +272,13 @@ export default function InviteAcceptPage() {
             </div>
           </div>
 
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="outline" className="gap-1">
+              <Clock className="h-3 w-3" />
+              {t("invite.status_pending")}
+            </Badge>
+          </div>
+
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Clock className="h-3.5 w-3.5" />
             <span>
@@ -220,6 +294,20 @@ export default function InviteAcceptPage() {
                 </>
               )}
             </span>
+          </div>
+
+          <div className="rounded-sm border border-border/60 bg-muted/20 p-3 text-left space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {t("invite.what_to_do_title")}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {authUser
+                ? t("invite.what_to_do_logged_in")
+                : t("invite.what_to_do_logged_out")}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {t("invite.status_pending_hint")}
+            </p>
           </div>
         </div>
 
