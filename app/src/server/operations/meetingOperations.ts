@@ -1293,7 +1293,10 @@ export const getMeeting = async (
   return base;
 };
 
-export const deleteMeeting = async (args: { id: string }, context: any) => {
+export const deleteMeeting = async (
+  args: { id: string; surface?: string },
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
 
   const meeting = await context.entities.Meeting.findUnique({
