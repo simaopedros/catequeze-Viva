@@ -9,6 +9,23 @@ export class CatechumenUpdateValidationError extends Error {
   }
 }
 
+/** Simple RFC-ish check aligned with the edit-form client validation. */
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** Normalize optional email; empty clears; invalid non-empty rejects with PT message. */
+export function parseEmailOrThrow(raw: unknown): string | null {
+  if (raw === null || raw === undefined || raw === "") return null;
+  if (typeof raw !== "string") {
+    throw new CatechumenUpdateValidationError("E-mail inválido.");
+  }
+  const email = raw.trim();
+  if (!email) return null;
+  if (!EMAIL_PATTERN.test(email)) {
+    throw new CatechumenUpdateValidationError("E-mail inválido.");
+  }
+  return email;
+}
+
 /** Parse YYYY-MM-DD birth dates; reject future dates. */
 export function parseBirthDateOrThrow(raw: unknown): Date | null {
   if (!raw) return null;
@@ -46,10 +63,7 @@ export function buildCatechumenUpdateData(args: Record<string, unknown>) {
     data.lastName = lastName;
   }
   if (args.email !== undefined) {
-    data.email =
-      typeof args.email === "string" && args.email.trim()
-        ? args.email.trim()
-        : null;
+    data.email = parseEmailOrThrow(args.email);
   }
   if (args.photoUrl !== undefined) {
     data.photoUrl =
