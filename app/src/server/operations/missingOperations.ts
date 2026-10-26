@@ -146,8 +146,9 @@ export const listMessageCampaigns = async (
     throw new HttpError(400, 'workspaceId é obrigatório.');
   }
 
+  // Same bar as createMessageCampaign — family portal must not list campaigns.
   if (!context.user.isAdmin) {
-    await requireWorkspaceAccess(context, workspaceId);
+    await assertCanWriteParish(context, workspaceId);
   }
 
   return context.entities.MessageCampaign.findMany({
