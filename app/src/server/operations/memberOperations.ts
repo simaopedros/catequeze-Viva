@@ -1413,11 +1413,35 @@ export const cancelInvitation = async (
     }
 
     await context.entities.PendingInvitation.delete({ where: { id: inv.id } });
+
+    // Also revoke legacy Membership INVITED for the same email+parish so the
+    // invite link cannot be accepted after cancel (token path still finds it).
+    const emailNorm = normalizeInviteEmail(inv.email);
+    const legacyInvites = await context.entities.Membership.findMany({
+      where: {
+        parishId: inv.parishId,
+        status: 'INVITED',
+        user: { email: { equals: emailNorm, mode: 'insensitive' } },
+      },
+      select: { id: true },
+    });
+    if (legacyInvites.length > 0) {
+      await context.entities.Membership.updateMany({
+        where: { id: { in: legacyInvites.map((m: { id: string }) => m.id) } },
+        data: {
+          status: 'INACTIVE',
+          inviteToken: null,
+          inviteTokenExpiresAt: null,
+        },
+      });
+    }
+
     await writeAuditLog(context, 'DELETE', 'PendingInvitation', inv.id, {
       operation: 'MEMBER_INVITE_CANCEL',
       parishId: inv.parishId,
       email: inv.email,
       role: inv.role,
+      revokedMemberships: legacyInvites.length,
     });
     return { success: true };
   }
