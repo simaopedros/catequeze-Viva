@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { logger } from "../../logger";
 import { formatFrom } from "../config";
+import { sanitizeResendTags } from "../resendTags";
 import type {
   EmailProvider,
   NormalizedWebhookEvent,
@@ -28,8 +29,7 @@ function toHeaders(input: ProviderSendInput): Record<string, string> | undefined
 }
 
 function toTags(tags?: Record<string, string>) {
-  if (!tags) return undefined;
-  return Object.entries(tags).map(([name, value]) => ({ name, value }));
+  return sanitizeResendTags(tags);
 }
 
 async function sendOne(
