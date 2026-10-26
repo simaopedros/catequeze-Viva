@@ -17,6 +17,7 @@ import {
   buildCatechumenUpdateData,
   CatechumenUpdateValidationError,
   parseBirthDateOrThrow,
+  parseEmailOrThrow,
 } from "../../shared/catechumenUpdate";
 
 export { buildCatechumenUpdateData } from "../../shared/catechumenUpdate";
@@ -362,21 +363,24 @@ export const createCatechumen = async (args: any, context: any) => {
     }
   }
 
+  let email: string | null;
+  let birthDate: Date | null;
+  try {
+    email = parseEmailOrThrow(args.email);
+    birthDate = parseBirthDateOrThrow(args.birthDate);
+  } catch (error) {
+    if (error instanceof CatechumenUpdateValidationError) {
+      throw new HttpError(400, error.message);
+    }
+    throw error;
+  }
+
   return context.entities.CatechumenProfile.create({
     data: {
       firstName: args.firstName,
       lastName: args.lastName,
-      email: args.email || null,
-      birthDate: (() => {
-        try {
-          return parseBirthDateOrThrow(args.birthDate);
-        } catch (error) {
-          if (error instanceof CatechumenUpdateValidationError) {
-            throw new HttpError(400, error.message);
-          }
-          throw error;
-        }
-      })(),
+      email,
+      birthDate,
       householdId: args.householdId || null,
       photoUrl: args.photoUrl || null,
       parishId,
