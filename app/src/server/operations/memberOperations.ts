@@ -925,7 +925,14 @@ export const acceptInvitation = async (
 
   const membership = await context.entities.Membership.findUnique({
     where: { id: args.membershipId },
-    select: { id: true, userId: true, status: true, role: true, parishId: true },
+    select: {
+      id: true,
+      userId: true,
+      status: true,
+      role: true,
+      parishId: true,
+      inviteTokenExpiresAt: true,
+    },
   });
 
   if (!membership) throw new HttpError(404, 'Convite não encontrado.');
@@ -937,6 +944,16 @@ export const acceptInvitation = async (
   }
   if (membership.status !== 'INVITED') {
     throw new HttpError(400, 'Este convite já foi processado.');
+  }
+  if (
+    membership.inviteTokenExpiresAt &&
+    new Date() > new Date(membership.inviteTokenExpiresAt)
+  ) {
+    await context.entities.Membership.update({
+      where: { id: args.membershipId },
+      data: { status: 'INACTIVE', inviteToken: null, inviteTokenExpiresAt: null },
+    });
+    throw new HttpError(400, 'Este convite expirou. Peça um novo convite.');
   }
 
   const updated = await context.entities.Membership.update({
