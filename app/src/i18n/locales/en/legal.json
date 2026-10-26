@@ -3,8 +3,14 @@
     "title": "Terms of Use",
     "updated": "Last updated: May 31, 2026",
     "sections": {
-      "acceptance": { "title": "1. Acceptance of Terms", "text": "By accessing and using the Catequese Viva platform, you agree to these Terms of Use." },
-      "service": { "title": "2. Service Description", "text": "Catequese Viva is a SaaS platform for Catholic catechesis management: classes, attendance, content, sacraments, and pastoral communication." },
+      "acceptance": {
+        "title": "1. Acceptance of Terms",
+        "text": "By accessing and using the Catequese Viva platform, you agree to these Terms of Use."
+      },
+      "service": {
+        "title": "2. Service Description",
+        "text": "Catequese Viva is a SaaS platform for Catholic catechesis management: classes, attendance, content, sacraments, and pastoral communication."
+      },
       "obligations": {
         "title": "3. User Obligations",
         "items": [
@@ -15,39 +21,112 @@
           "Respect LGPD rules when handling catechumen data"
         ]
       },
-      "liability": { "title": "4. Limitation of Liability", "text": "Catequese Viva is not responsible for content published by users, pastoral decisions based on platform data, or temporary unavailability." },
-      "jurisdiction": { "title": "5. Jurisdiction", "text": "The courts of São Paulo, Brazil, are elected to resolve any disputes arising from these Terms of Use." }
+      "liability": {
+        "title": "4. Limitation of Liability",
+        "text": "Catequese Viva is not responsible for content published by users, pastoral decisions based on platform data, or temporary unavailability."
+      },
+      "jurisdiction": {
+        "title": "5. Jurisdiction",
+        "text": "The courts of São Paulo, Brazil, are elected to resolve any disputes arising from these Terms of Use."
+      }
     }
   },
   "privacy": {
     "title": "Privacy Policy",
-    "updated": "Last updated: May 31, 2026",
+    "updated": "Last updated: October 26, 2026",
     "sections": {
-      "intro": { "title": "1. Introduction", "text": "Catequese Viva is committed to protecting users' personal data, in compliance with the General Data Protection Law (LGPD — Law No. 13.709/2018). This policy explains how we collect, use, and protect your information." },
+      "intro": {
+        "title": "1. Introduction",
+        "text": "Catequese Viva is committed to protecting the personal data of its users and of catechumens, in accordance with Brazil's General Data Protection Law (LGPD — Law No. 13,709/2018). This policy explains which data we process, why, who we share it with, how long we keep it and how you exercise your rights."
+      },
+      "controller": {
+        "title": "2. Who is responsible for the data",
+        "text": "When a parish, diocese or catechist uses the platform to organize catechesis, that institution (or the catechist, on the personal plan) is the controller of the data about catechumens and families: it decides who is registered and why. Catequese Viva acts as the processor, handling that data only to provide the contracted service and according to the controller's instructions. For your own account data (sign-up, login, subscription), Catequese Viva is the controller."
+      },
       "collected": {
-        "title": "2. Data collected",
-        "intro": "We collect only data strictly necessary to provide services:",
+        "title": "3. Data we collect",
+        "intro": "We only collect the data needed to provide the service:",
         "items": [
-          "Name, email, and phone of users (catechists, coordinators, guardians)",
-          "Name and date of birth of catechumens",
-          "Attendance records at catechetical meetings",
-          "Sacramental documents submitted by families",
-          "Image and communication use consents"
+          "Name, email, phone and optional photo of users (catechists, coordinators, guardians)",
+          "Name, date of birth, optional photo and family link of catechumens",
+          "Attendance records, absence notes and pastoral notes from meetings",
+          "Sacramental documents uploaded by families (for example, baptism certificates)",
+          "Image-use and communication consents",
+          "Technical access data (IP address, browser, date and time) for security and fraud prevention",
+          "Subscription payment data, processed directly by Stripe — we never store your card number"
         ]
       },
       "purpose": {
-        "title": "3. Purpose of processing",
-        "intro": "Data is used exclusively to:",
+        "title": "4. Why we process data",
+        "intro": "Data is used only to:",
         "items": [
-          "Manage parish catechesis (classes, attendance, sacraments)",
-          "Pastoral communication between coordinators, catechists, and families",
-          "Generate anonymized pastoral reports",
-          "Comply with legal and canonical obligations"
+          "Manage catechesis (classes, meetings, attendance, sacraments and documents)",
+          "Support pastoral communication between coordinators, catechists and families",
+          "Produce pastoral reports for the parish, without public exposure of individual data",
+          "Bill and manage the subscription",
+          "Keep accounts secure, provide support and meet legal obligations"
+        ],
+        "outro": "We do not sell personal data and we do not use catechumens' data for advertising."
+      },
+      "legal_basis": {
+        "title": "5. Legal bases",
+        "text": "We process data to perform the contract with whoever subscribes to the service (art. 7, V), to comply with legal obligations (art. 7, II), on legitimate interest for security and service improvement (art. 7, IX), and on consent where required — for example, for image use, marketing cookies and children's data (art. 7, I and art. 14)."
+      },
+      "minors": {
+        "title": "6. Children's and teenagers' data (LGPD art. 14)",
+        "intro": "Most catechumens are minors, so their data is processed in the best interest of the child and adolescent:",
+        "items": [
+          "Data about children (up to 12 years old) is only processed with specific, prominent consent from at least one parent or legal guardian, recorded on the platform by the parish or catechist",
+          "We collect the minimum needed for catechesis; no data is required as a condition for taking part in games, apps or activities beyond what is strictly necessary",
+          "Families can see in the family portal which data about the catechumen is registered and which consents were given",
+          "Photos of catechumens are only used with the guardian's image consent",
+          "Access is restricted to the class's catechists and coordinators; minors' data is never shared with third parties for commercial purposes",
+          "Parents and guardians can ask for correction or deletion at any time, through the parish or the data protection contact below"
         ]
       },
-      "minors": { "title": "4. Protection of minors' data", "text": "Children's and adolescents' data receives special protection: minimal collection, mandatory parental consent, restricted access, and no sharing with third parties." },
-      "rights": { "title": "5. Your rights (LGPD)", "text": "Access, correct, export, or request deletion of your data. To exercise these rights, go to Settings in the app or contact contato@catechis.app." },
-      "dpo": { "title": "6. DPO Contact", "email_label": "Email:", "email": "privacidade@catechis.app" }
+      "sharing": {
+        "title": "7. Sharing with service providers",
+        "intro": "We only share data with providers that help us run the service, under contract and bound by confidentiality:",
+        "items": [
+          "Cloud hosting, database and file storage",
+          "Stripe, to process subscription payments",
+          "Transactional email providers (confirmations, invitations and notices)",
+          "Error monitoring, to fix technical failures",
+          "Analytics and marketing tools (Google and Meta) only if you accept the corresponding cookies"
+        ],
+        "outro": "Some of these providers may store data outside Brazil. In those cases we require adequate safeguards, as set out in LGPD art. 33."
+      },
+      "retention": {
+        "title": "8. How long we keep data",
+        "text": "We keep data while the account or institution uses the platform. When an account is closed, its data is deleted or anonymized, except what we must keep by law (for example, tax records for the subscription). The parish can export its data before closing."
+      },
+      "security": {
+        "title": "9. Security",
+        "text": "We use encrypted connections (HTTPS), role-based access (coordinator, catechist, family), optional two-factor authentication and audit logs. If a relevant security incident occurs, we will notify those affected and the ANPD as required by law."
+      },
+      "cookies": {
+        "title": "10. Cookies",
+        "text": "We use essential cookies for login and for the app to work. Analytics and marketing cookies are only enabled with your consent in the cookie notice, and you can change that choice at any time."
+      },
+      "rights": {
+        "title": "11. Your rights (LGPD)",
+        "intro": "At any time you can:",
+        "items": [
+          "Confirm whether we process your data and access it",
+          "Correct incomplete or outdated data",
+          "Export your data (portability) — available under Settings in the app",
+          "Ask for deletion or anonymization of unnecessary data",
+          "Withdraw consent and learn who we share data with"
+        ],
+        "outro": "If the request involves catechumens registered by a parish, we will forward it to that parish and help them respond."
+      },
+      "dpo": {
+        "title": "12. Data protection officer (DPO)",
+        "text": "Catequese Viva's data protection officer is the official channel for questions, data subject requests and communications from the ANPD.",
+        "email_label": "DPO email:",
+        "email": "privacidade@catechis.app",
+        "response": "We reply within 15 days. You can also reach us at contato@catechis.app or through the Contact page."
+      }
     }
   }
 }
