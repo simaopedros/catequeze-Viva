@@ -36,12 +36,22 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email || !message) return;
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      setFeedback({ type: "error", text: t("contact.required_hint") });
+      return;
+    }
 
     setSending(true);
     setFeedback(null);
     try {
-      await submitContactMessage({ name, email, message });
+      const trimmedSubject = subject.trim();
+      await submitContactMessage({
+        name,
+        email,
+        message: trimmedSubject
+          ? `${t("contact.subject_prefix")}: ${trimmedSubject}\n\n${message}`
+          : message,
+      });
       setFeedback({ type: "success", text: t("contact.success") });
       setName("");
       setEmail("");
@@ -72,9 +82,14 @@ export default function ContactPage() {
               <Mail className="h-5 w-5 text-brand-ink" />
               <span>contato@catechis.app</span>
             </div>
-            <div className="flex items-center gap-3 text-muted-foreground">
-              <Phone className="h-5 w-5 text-brand-ink" />
-              <span>+55 11 93930-7494</span>
+            <div className="flex items-start gap-3 text-muted-foreground">
+              <Phone className="mt-0.5 h-5 w-5 text-brand-ink" />
+              <span>
+                <span className="block text-xs font-medium uppercase tracking-wide text-brand-ink">
+                  {t("contact.phone_label")}
+                </span>
+                +55 11 93930-7494
+              </span>
             </div>
             <div className="flex items-center gap-3 text-muted-foreground">
               <MapPin className="h-5 w-5 text-brand-ink" />
@@ -142,9 +157,12 @@ export default function ContactPage() {
               </div>
             )}
 
+            <p className="text-xs text-muted-foreground">
+              {t("contact.required_hint")}
+            </p>
             <Button
               type="submit"
-              disabled={sending || !name || !email || !message}
+              disabled={sending}
               className="gap-2 rounded-sm bg-brand-ink text-white hover:bg-brand-ink-soft"
             >
               <Send className="h-4 w-4" />
