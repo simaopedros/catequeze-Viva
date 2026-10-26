@@ -243,24 +243,9 @@ export const createHousehold = async (
 ) => {
   if (!context.user) throw new HttpError(401);
 
-  let parishId = args.parishId?.trim() || undefined;
-  if (!parishId && !context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, status: 'ACTIVE' },
-      select: { parishId: true },
-    });
-    parishId = membership?.parishId;
-
-    // Fallback to personal workspace
-    if (!parishId) {
-      const personal = await context.entities.Parish.findFirst({
-        where: { ownerId: context.user.id, type: 'PERSONAL' },
-        select: { id: true },
-      });
-      if (personal) parishId = personal.id;
-    }
-  }
-
+  // Require an explicit workspace — do not pick an arbitrary ACTIVE membership
+  // (multi-parish catechists could silently create the family in the wrong tenant).
+  const parishId = args.parishId?.trim() || undefined;
   if (!parishId && !context.user.isAdmin) {
     throw new HttpError(400, 'É necessário especificar uma paróquia para criar a família.');
   }
