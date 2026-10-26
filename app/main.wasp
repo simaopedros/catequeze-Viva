@@ -2066,6 +2066,8 @@ action submitActivity {
 //#region Landing Pages
 route AboutPublicRoute { path: "/about", to: AboutPublicPage }
 page AboutPublicPage { component: import AboutPage from "@src/catequese/pages/AboutPage" }
+route HelpPublicRoute { path: "/help", to: HelpPublicPage }
+page HelpPublicPage { component: import HelpPage from "@src/catequese/pages/HelpPage" }
 
 route BlogIndexRoute { path: "/blog", to: BlogIndexPage }
 page BlogIndexPage { component: import BlogIndexPage from "@src/catequese/pages/blog/BlogIndexPage" }

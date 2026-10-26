@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { BrandLockup } from "../client/components/brand/Brand";
+import { useHasBlogPosts } from "../client/hooks/useHasBlogPosts";
 import { SalesWhatsAppCta } from "../client/components/SalesWhatsAppCta";
 import { trackMarketingEvent } from "../client/analytics/marketingAnalytics";
 import { useLocale, SupportedLocale } from "../i18n/useLocale";
@@ -18,6 +19,7 @@ export function PublicFooter({
   hidePricing?: boolean;
 }) {
   const { t } = useTranslation("publicNav");
+  const hasBlogPosts = useHasBlogPosts();
   const { currentLocale, setLocale, supportedLocales } = useLocale();
 
   return (
@@ -71,11 +73,16 @@ export function PublicFooter({
                   {t("faq")}
                 </a>
               </li>
-              <li>
-                <Link to="/blog" className="transition-colors hover:text-white">
-                  {t("blog")}
-                </Link>
-              </li>
+              {hasBlogPosts && (
+                <li>
+                  <Link
+                    to="/blog"
+                    className="transition-colors hover:text-white"
+                  >
+                    {t("blog")}
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
 
@@ -150,12 +157,17 @@ export function PublicFooter({
             >
               {t("about")}
             </Link>
-            <Link
-              to="/blog"
-              className="transition-colors hover:text-[#E8EEF5]"
-            >
-              {t("blog")}
+            <Link to="/help" className="transition-colors hover:text-[#E8EEF5]">
+              {t("help")}
             </Link>
+            {hasBlogPosts && (
+              <Link
+                to="/blog"
+                className="transition-colors hover:text-[#E8EEF5]"
+              >
+                {t("blog")}
+              </Link>
+            )}
             <Link
               to="/privacy"
               className="transition-colors hover:text-[#E8EEF5]"

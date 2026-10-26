@@ -11,6 +11,7 @@ const PUBLIC_PATH_PREFIXES = [
   "/pricing",
   "/obrigado",
   "/about",
+  "/help",
   "/privacy",
   "/terms",
   "/contact",

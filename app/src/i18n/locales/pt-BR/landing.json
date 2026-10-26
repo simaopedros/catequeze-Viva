@@ -260,7 +260,7 @@
     },
     {
       "q": "Funciona no celular?",
-      "a": "Sim. Você organiza a turma e registra presença pelo navegador, sem instalar app."
+      "a": "Sim. Funciona direto no navegador do celular; se quiser, você pode adicionar o atalho à tela inicial."
     }
   ],
   "cta_eyebrow": "Volte ao que importa",
@@ -402,7 +402,7 @@
       },
       {
         "title": "No celular",
-        "desc": "Presença e acompanhamento no navegador, sem instalar app."
+        "desc": "Presença e acompanhamento no navegador do celular, sem baixar nada da loja."
       }
     ],
     "chips": [

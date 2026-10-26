@@ -260,7 +260,7 @@
     },
     {
       "q": "Does it work on mobile?",
-      "a": "Yes. You can organize the class and take attendance in the browser, with no app to install."
+      "a": "Yes. It runs in your phone's browser; if you like, you can add a shortcut to your home screen."
     }
   ],
   "cta_eyebrow": "Back to what matters",
@@ -402,7 +402,7 @@
       },
       {
         "title": "On mobile",
-        "desc": "Attendance and follow-up in the browser — nothing to install."
+        "desc": "Attendance and follow-up in your phone's browser — nothing to download from an app store."
       }
     ],
     "chips": [

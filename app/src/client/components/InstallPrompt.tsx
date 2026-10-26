@@ -3,42 +3,48 @@ import { Download, X, Minimize2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { useInstallPrompt } from "../hooks/useInstallPrompt";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router";
+import { shouldOfferInstallOnPath } from "../installPromptRoutes";
 
 /**
- * Elegant banner that invites the user to install the PWA.
- * Starts as a minimized pill after first interaction.
+ * Invites the user to install the PWA, only inside the signed-in app.
+ * Starts as a minimized pill on phones so it never covers forms.
  * Respects dismissal for 30 days.
- * Positioned higher to avoid blocking content and CTAs.
  */
 export function InstallPrompt() {
   const { canInstall, promptInstall, dismiss } = useInstallPrompt();
   const { t } = useTranslation("common");
-  const [minimized, setMinimized] = useState(false);
+  const { pathname } = useLocation();
+  const [minimized, setMinimized] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      !window.matchMedia("(min-width: 640px)").matches,
+  );
 
-  if (!canInstall) return null;
+  if (!canInstall || !shouldOfferInstallOnPath(pathname)) return null;
 
   if (minimized) {
     return (
-      <div className="fixed bottom-24 right-4 z-overlay animate-in fade-in duration-200">
+      <div className="fixed bottom-24 right-4 z-overlay flex items-center rounded-sm border border-border/70 bg-white text-xs font-medium animate-in fade-in duration-200">
         <button
+          type="button"
           onClick={() => setMinimized(false)}
-          className="flex items-center gap-2 rounded-sm border border-border/70 bg-white px-3 py-2 text-xs font-medium transition-colors hover:bg-muted/40"
+          className="flex items-center gap-2 rounded-l-sm px-3 py-2 transition-colors hover:bg-muted/40"
           aria-label={t("install_title")}
         >
           <Download className="h-3.5 w-3.5 text-brand-ink" />
           <span className="font-semibold tracking-tight text-brand-ink">
             {t("install_button")}
           </span>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              dismiss();
-            }}
-            className="ml-1 rounded-sm p-0.5 hover:bg-muted-foreground/10"
-            aria-label={t("close")}
-          >
-            <X className="h-3 w-3 text-muted-foreground/60" />
-          </button>
+        </button>
+        <button
+          type="button"
+          onClick={dismiss}
+          className="rounded-r-sm px-2 py-2 hover:bg-muted-foreground/10"
+          aria-label={t("close")}
+        >
+          <X className="h-3 w-3 text-muted-foreground/60" />
         </button>
       </div>
     );

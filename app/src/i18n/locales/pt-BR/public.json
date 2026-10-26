@@ -12,12 +12,32 @@
       "content": "Biblioteca de conteúdo — crie, revise e publique planos de encontro.",
       "communication": "Comunicação pastoral — envie mensagens segmentadas para famílias e catequistas.",
       "reports": "Relatórios e indicadores — acompanhe a saúde da catequese com KPIs."
-    }
+    },
+    "audience_title": "Para quem é",
+    "audience": [
+      "Catequistas que querem preparar o encontro e fazer a chamada sem papel e sem planilhas soltas.",
+      "Coordenações paroquiais que precisam ver todas as turmas, catequistas e sacramentos em um só lugar.",
+      "Dioceses que acompanham várias paróquias, com cada uma cuidando dos seus próprios dados."
+    ],
+    "principles_title": "Como trabalhamos",
+    "principles": [
+      "Fidelidade à Igreja: conteúdos e jornadas pensados a partir do Diretório para a Catequese e do caminho de iniciação à vida cristã.",
+      "Cuidado com quem é menor: dados de crianças e adolescentes tratados com consentimento do responsável e acesso restrito, conforme a LGPD.",
+      "Simplicidade: o catequista voluntário precisa resolver a semana em poucos minutos, também pelo celular.",
+      "A paróquia é dona dos dados: exporte quando quiser, sem prender ninguém à plataforma."
+    ],
+    "contact_title": "Fale com a gente",
+    "contact_text": "Tem sugestões, quer apresentar a Catequese Viva à sua paróquia ou diocese, ou encontrou um problema? Escreva para a equipe.",
+    "contact_cta": "Ir para Contato",
+    "help_cta": "Ver perguntas frequentes"
   },
   "contact": {
     "title": "Contato",
     "intro": "Entre em contato com a equipe da Catequese Viva.",
     "location": "São Paulo, Brasil",
+    "phone_label": "Telefone (suporte e assuntos gerais)",
+    "subject_prefix": "Assunto",
+    "required_hint": "Preencha os campos com * (nome, email e mensagem). Respondemos por email.",
     "name": "Nome *",
     "email": "Email *",
     "subject": "Assunto",
@@ -179,5 +199,86 @@
       "OTHER": "Outro"
     }
   },
-  "catechist_free": "Sem assinatura"
+  "catechist_free": "Sem assinatura",
+  "help": {
+    "title": "Ajuda",
+    "intro": "Respostas rápidas para as dúvidas mais comuns sobre a Catequese Viva. Não encontrou o que procurava? Fale com a equipe no fim da página.",
+    "contact_title": "Ainda precisa de ajuda?",
+    "contact_text": "Escreva para a equipe pela página de Contato. Se você já tem conta, use também a Central de suporte no menu do seu perfil.",
+    "contact_cta": "Falar com a equipe",
+    "groups": [
+      {
+        "title": "Conta e período de teste",
+        "items": [
+          {
+            "q": "Como começo a usar?",
+            "a": "Crie sua conta com email e senha (ou Google), confirme o email e siga os primeiros passos: escolha como vai usar (catequista ou paróquia) e crie sua primeira turma."
+          },
+          {
+            "q": "Preciso informar cartão para testar?",
+            "a": "Não. O teste gratuito de 7 dias do Plano Catequista começa sem cartão. O cartão só é pedido quando você decidir assinar."
+          },
+          {
+            "q": "O que acontece quando o teste termina?",
+            "a": "Seus dados continuam guardados. Para seguir registrando presença e usando as ferramentas da turma, escolha um plano na página Assinatura. A Bíblia, o Catecismo, as Configurações e a Central de suporte continuam abertos."
+          },
+          {
+            "q": "Como troco o cartão ou cancelo a assinatura?",
+            "a": "No menu do seu perfil, abra Assinatura e use o botão de gerenciar pagamento. Lá você troca o cartão, vê as faturas ou cancela, sem multa."
+          }
+        ]
+      },
+      {
+        "title": "Turmas, encontros e chamada",
+        "items": [
+          {
+            "q": "Como crio uma turma?",
+            "a": "Em Turmas, toque em Criar turma, informe o nome, a etapa e o dia e horário do encontro. Depois adicione os catequizandos."
+          },
+          {
+            "q": "Como faço a chamada?",
+            "a": "Abra a turma e toque em Presença. Se ainda não houver encontro para hoje, crie o encontro na própria tela e marque presente, ausente ou justificado para cada catequizando."
+          },
+          {
+            "q": "Dá para gerar os encontros do ano de uma vez?",
+            "a": "Sim. No planejamento da turma, gere os encontros semanais a partir do dia e horário da turma. Eles aparecem no Calendário."
+          },
+          {
+            "q": "Funciona no celular?",
+            "a": "Sim. Funciona direto no navegador do celular. Se quiser, adicione um atalho à tela inicial para abrir mais rápido."
+          }
+        ]
+      },
+      {
+        "title": "Famílias e catequizandos",
+        "items": [
+          {
+            "q": "Como cadastro um catequizando?",
+            "a": "Em Catequizandos, toque em Cadastrar, preencha nome, data de nascimento e a família. Depois matricule-o em uma turma pela ficha ou pela própria turma."
+          },
+          {
+            "q": "As famílias conseguem acompanhar?",
+            "a": "Sim. Na ficha do catequizando, convide o responsável para o portal da família. Ele vê avisos, presenças, documentos e consentimentos."
+          },
+          {
+            "q": "Posso importar uma lista que já tenho?",
+            "a": "Sim. Em Catequizandos, use Importar para enviar uma planilha com os nomes e datas de nascimento."
+          }
+        ]
+      },
+      {
+        "title": "Privacidade e dados de menores",
+        "items": [
+          {
+            "q": "Os dados das crianças estão protegidos?",
+            "a": "Sim. Seguimos a LGPD, incluindo o art. 14 para dados de crianças e adolescentes: coleta mínima, consentimento do responsável e acesso só para quem acompanha a turma. Veja a Política de Privacidade."
+          },
+          {
+            "q": "Como exporto ou apago meus dados?",
+            "a": "Em Configurações você exporta seus dados. Para pedir exclusão, escreva para privacidade@catechis.app."
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -2631,7 +2631,7 @@ export const common_en = {
     "offline_banner": "No internet connection. Some features may be unavailable.",
     "skip_to_content": "Skip to main content",
     "install_title": "Install App",
-    "install_description": "Add to your home screen for quick access and offline use.",
+    "install_description": "Add a shortcut to your home screen to open it faster.",
     "install_button": "Install",
     "offline_title": "No connection",
     "offline_description": "You are offline. Check your connection and try again.",
@@ -4056,7 +4056,7 @@ export const landing_en = {
       },
       {
         "q": "Does it work on mobile?",
-        "a": "Yes. You can organize the class and take attendance in the browser, with no app to install."
+        "a": "Yes. It runs in your phone's browser; if you like, you can add a shortcut to your home screen."
       }
     ],
     "cta_eyebrow": "Back to what matters",
@@ -4198,7 +4198,7 @@ export const landing_en = {
         },
         {
           "title": "On mobile",
-          "desc": "Attendance and follow-up in the browser — nothing to install."
+          "desc": "Attendance and follow-up in your phone's browser — nothing to download from an app store."
         }
       ],
       "chips": [
@@ -5066,45 +5066,99 @@ export const legal_en = {
     },
     "privacy": {
       "title": "Privacy Policy",
-      "updated": "Last updated: May 31, 2026",
+      "updated": "Last updated: October 26, 2026",
       "sections": {
         "intro": {
           "title": "1. Introduction",
-          "text": "Catequese Viva is committed to protecting users' personal data, in compliance with the General Data Protection Law (LGPD — Law No. 13.709/2018). This policy explains how we collect, use, and protect your information."
+          "text": "Catequese Viva is committed to protecting the personal data of its users and of catechumens, in accordance with Brazil's General Data Protection Law (LGPD — Law No. 13,709/2018). This policy explains which data we process, why, who we share it with, how long we keep it and how you exercise your rights."
+        },
+        "controller": {
+          "title": "2. Who is responsible for the data",
+          "text": "When a parish, diocese or catechist uses the platform to organize catechesis, that institution (or the catechist, on the personal plan) is the controller of the data about catechumens and families: it decides who is registered and why. Catequese Viva acts as the processor, handling that data only to provide the contracted service and according to the controller's instructions. For your own account data (sign-up, login, subscription), Catequese Viva is the controller."
         },
         "collected": {
-          "title": "2. Data collected",
-          "intro": "We collect only data strictly necessary to provide services:",
+          "title": "3. Data we collect",
+          "intro": "We only collect the data needed to provide the service:",
           "items": [
-            "Name, email, and phone of users (catechists, coordinators, guardians)",
-            "Name and date of birth of catechumens",
-            "Attendance records at catechetical meetings",
-            "Sacramental documents submitted by families",
-            "Image and communication use consents"
+            "Name, email, phone and optional photo of users (catechists, coordinators, guardians)",
+            "Name, date of birth, optional photo and family link of catechumens",
+            "Attendance records, absence notes and pastoral notes from meetings",
+            "Sacramental documents uploaded by families (for example, baptism certificates)",
+            "Image-use and communication consents",
+            "Technical access data (IP address, browser, date and time) for security and fraud prevention",
+            "Subscription payment data, processed directly by Stripe — we never store your card number"
           ]
         },
         "purpose": {
-          "title": "3. Purpose of processing",
-          "intro": "Data is used exclusively to:",
+          "title": "4. Why we process data",
+          "intro": "Data is used only to:",
           "items": [
-            "Manage parish catechesis (classes, attendance, sacraments)",
-            "Pastoral communication between coordinators, catechists, and families",
-            "Generate anonymized pastoral reports",
-            "Comply with legal and canonical obligations"
-          ]
+            "Manage catechesis (classes, meetings, attendance, sacraments and documents)",
+            "Support pastoral communication between coordinators, catechists and families",
+            "Produce pastoral reports for the parish, without public exposure of individual data",
+            "Bill and manage the subscription",
+            "Keep accounts secure, provide support and meet legal obligations"
+          ],
+          "outro": "We do not sell personal data and we do not use catechumens' data for advertising."
+        },
+        "legal_basis": {
+          "title": "5. Legal bases",
+          "text": "We process data to perform the contract with whoever subscribes to the service (art. 7, V), to comply with legal obligations (art. 7, II), on legitimate interest for security and service improvement (art. 7, IX), and on consent where required — for example, for image use, marketing cookies and children's data (art. 7, I and art. 14)."
         },
         "minors": {
-          "title": "4. Protection of minors' data",
-          "text": "Children's and adolescents' data receives special protection: minimal collection, mandatory parental consent, restricted access, and no sharing with third parties."
+          "title": "6. Children's and teenagers' data (LGPD art. 14)",
+          "intro": "Most catechumens are minors, so their data is processed in the best interest of the child and adolescent:",
+          "items": [
+            "Data about children (up to 12 years old) is only processed with specific, prominent consent from at least one parent or legal guardian, recorded on the platform by the parish or catechist",
+            "We collect the minimum needed for catechesis; no data is required as a condition for taking part in games, apps or activities beyond what is strictly necessary",
+            "Families can see in the family portal which data about the catechumen is registered and which consents were given",
+            "Photos of catechumens are only used with the guardian's image consent",
+            "Access is restricted to the class's catechists and coordinators; minors' data is never shared with third parties for commercial purposes",
+            "Parents and guardians can ask for correction or deletion at any time, through the parish or the data protection contact below"
+          ]
+        },
+        "sharing": {
+          "title": "7. Sharing with service providers",
+          "intro": "We only share data with providers that help us run the service, under contract and bound by confidentiality:",
+          "items": [
+            "Cloud hosting, database and file storage",
+            "Stripe, to process subscription payments",
+            "Transactional email providers (confirmations, invitations and notices)",
+            "Error monitoring, to fix technical failures",
+            "Analytics and marketing tools (Google and Meta) only if you accept the corresponding cookies"
+          ],
+          "outro": "Some of these providers may store data outside Brazil. In those cases we require adequate safeguards, as set out in LGPD art. 33."
+        },
+        "retention": {
+          "title": "8. How long we keep data",
+          "text": "We keep data while the account or institution uses the platform. When an account is closed, its data is deleted or anonymized, except what we must keep by law (for example, tax records for the subscription). The parish can export its data before closing."
+        },
+        "security": {
+          "title": "9. Security",
+          "text": "We use encrypted connections (HTTPS), role-based access (coordinator, catechist, family), optional two-factor authentication and audit logs. If a relevant security incident occurs, we will notify those affected and the ANPD as required by law."
+        },
+        "cookies": {
+          "title": "10. Cookies",
+          "text": "We use essential cookies for login and for the app to work. Analytics and marketing cookies are only enabled with your consent in the cookie notice, and you can change that choice at any time."
         },
         "rights": {
-          "title": "5. Your rights (LGPD)",
-          "text": "Access, correct, export, or request deletion of your data. To exercise these rights, go to Settings in the app or contact contato@catechis.app."
+          "title": "11. Your rights (LGPD)",
+          "intro": "At any time you can:",
+          "items": [
+            "Confirm whether we process your data and access it",
+            "Correct incomplete or outdated data",
+            "Export your data (portability) — available under Settings in the app",
+            "Ask for deletion or anonymization of unnecessary data",
+            "Withdraw consent and learn who we share data with"
+          ],
+          "outro": "If the request involves catechumens registered by a parish, we will forward it to that parish and help them respond."
         },
         "dpo": {
-          "title": "6. DPO Contact",
-          "email_label": "Email:",
-          "email": "privacidade@catechis.app"
+          "title": "12. Data protection officer (DPO)",
+          "text": "Catequese Viva's data protection officer is the official channel for questions, data subject requests and communications from the ANPD.",
+          "email_label": "DPO email:",
+          "email": "privacidade@catechis.app",
+          "response": "We reply within 15 days. You can also reach us at contato@catechis.app or through the Contact page."
         }
       }
     }
@@ -6132,12 +6186,32 @@ export const public_en = {
         "content": "Content library — create, review, and publish meeting plans.",
         "communication": "Pastoral communication — send segmented messages to families and catechists.",
         "reports": "Reports and indicators — track catechesis health with KPIs."
-      }
+      },
+      "audience_title": "Who it's for",
+      "audience": [
+        "Catechists who want to prepare meetings and take attendance without paper or scattered spreadsheets.",
+        "Parish coordinators who need to see every class, catechist and sacrament in one place.",
+        "Dioceses that follow several parishes, with each parish looking after its own data."
+      ],
+      "principles_title": "How we work",
+      "principles": [
+        "Faithful to the Church: content and journeys built on the Directory for Catechesis and the path of Christian initiation.",
+        "Care for minors: children's and teenagers' data handled with guardian consent and restricted access, in line with the LGPD.",
+        "Simplicity: volunteer catechists should sort out their week in a few minutes, on their phone too.",
+        "The parish owns its data: export it whenever you like, with no lock-in."
+      ],
+      "contact_title": "Talk to us",
+      "contact_text": "Have suggestions, want to present Catequese Viva to your parish or diocese, or found a problem? Write to the team.",
+      "contact_cta": "Go to Contact",
+      "help_cta": "See frequently asked questions"
     },
     "contact": {
       "title": "Contact",
       "intro": "Get in touch with the Catequese Viva team.",
       "location": "São Paulo, Brazil",
+      "phone_label": "Phone (support and general questions)",
+      "subject_prefix": "Subject",
+      "required_hint": "Fill in the fields marked * (name, email and message). We reply by email.",
       "name": "Name *",
       "email": "Email *",
       "subject": "Subject",
@@ -6299,7 +6373,88 @@ export const public_en = {
         "OTHER": "Other"
       }
     },
-    "catechist_free": "No subscription"
+    "catechist_free": "No subscription",
+    "help": {
+      "title": "Help",
+      "intro": "Quick answers to the most common questions about Catequese Viva. Didn't find what you need? Contact the team at the bottom of the page.",
+      "contact_title": "Still need help?",
+      "contact_text": "Write to the team through the Contact page. If you already have an account, you can also use the Support center in your profile menu.",
+      "contact_cta": "Contact the team",
+      "groups": [
+        {
+          "title": "Account and free trial",
+          "items": [
+            {
+              "q": "How do I get started?",
+              "a": "Create your account with email and password (or Google), confirm your email and follow the first steps: choose how you'll use it (catechist or parish) and create your first class."
+            },
+            {
+              "q": "Do I need a card to try it?",
+              "a": "No. The 7-day free trial of the Catechist plan starts without a card. You are only asked for a card when you decide to subscribe."
+            },
+            {
+              "q": "What happens when the trial ends?",
+              "a": "Your data stays saved. To keep taking attendance and using class tools, choose a plan on the Subscription page. The Bible, Catechism, Settings and Support center stay open."
+            },
+            {
+              "q": "How do I change my card or cancel?",
+              "a": "In your profile menu, open Subscription and use the manage payment button. There you can change the card, see invoices or cancel, with no fee."
+            }
+          ]
+        },
+        {
+          "title": "Classes, meetings and attendance",
+          "items": [
+            {
+              "q": "How do I create a class?",
+              "a": "In Classes, tap Create class, enter the name, stage and meeting day and time. Then add the catechumens."
+            },
+            {
+              "q": "How do I take attendance?",
+              "a": "Open the class and tap Attendance. If there is no meeting for today yet, create it on the same screen and mark each catechumen present, absent or excused."
+            },
+            {
+              "q": "Can I generate the whole year's meetings at once?",
+              "a": "Yes. In the class planning, generate weekly meetings from the class day and time. They show up in the Calendar."
+            },
+            {
+              "q": "Does it work on my phone?",
+              "a": "Yes. It runs in your phone's browser. If you like, add a shortcut to your home screen to open it faster."
+            }
+          ]
+        },
+        {
+          "title": "Families and catechumens",
+          "items": [
+            {
+              "q": "How do I register a catechumen?",
+              "a": "In Catechumens, tap Register and fill in the name, date of birth and family. Then enroll them in a class from their record or from the class itself."
+            },
+            {
+              "q": "Can families follow along?",
+              "a": "Yes. On the catechumen's record, invite the guardian to the family portal. They see notices, attendance, documents and consents."
+            },
+            {
+              "q": "Can I import a list I already have?",
+              "a": "Yes. In Catechumens, use Import to upload a spreadsheet with names and dates of birth."
+            }
+          ]
+        },
+        {
+          "title": "Privacy and children's data",
+          "items": [
+            {
+              "q": "Is children's data protected?",
+              "a": "Yes. We follow Brazil's LGPD, including art. 14 on children's and teenagers' data: minimal collection, guardian consent and access only for those who run the class. See the Privacy Policy."
+            },
+            {
+              "q": "How do I export or delete my data?",
+              "a": "You can export your data in Settings. To ask for deletion, write to privacidade@catechis.app."
+            }
+          ]
+        }
+      ]
+    }
   } as const;
 
 export const publicNav_en = {
@@ -6330,7 +6485,8 @@ export const publicNav_en = {
     "footer_talk": "Talk to us",
     "footer_start": "Try it",
     "footer_start_desc": "More presence in the meeting, less weight in the week. Start your 7 days.",
-    "language": "Language"
+    "language": "Language",
+    "help": "Help"
   } as const;
 
 export const reports_en = {

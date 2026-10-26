@@ -2631,7 +2631,7 @@ export const common_es = {
     "offline_banner": "Sin conexión a internet. Algunas funciones pueden no estar disponibles.",
     "skip_to_content": "Ir al contenido principal",
     "install_title": "Instalar App",
-    "install_description": "Agregue a la pantalla de inicio para acceso rápido y sin conexión.",
+    "install_description": "Agregue un acceso directo a la pantalla de inicio para abrir más rápido.",
     "install_button": "Instalar",
     "offline_title": "Sin conexión",
     "offline_description": "Estás sin conexión. Verifica tu conexión e inténtalo de nuevo.",
@@ -4056,7 +4056,7 @@ export const landing_es = {
       },
       {
         "q": "¿Funciona en el celular?",
-        "a": "Sí. Organizas el grupo y registras asistencia en el navegador, sin instalar una app."
+        "a": "Sí. Funciona directo en el navegador del celular; si quieres, puedes añadir el acceso directo a la pantalla de inicio."
       }
     ],
     "cta_eyebrow": "Vuelve a lo que importa",
@@ -4198,7 +4198,7 @@ export const landing_es = {
         },
         {
           "title": "En el celular",
-          "desc": "Asistencia y seguimiento en el navegador, sin instalar app."
+          "desc": "Asistencia y seguimiento en el navegador del celular, sin descargar nada de la tienda."
         }
       ],
       "chips": [
@@ -5066,45 +5066,99 @@ export const legal_es = {
     },
     "privacy": {
       "title": "Política de Privacidad",
-      "updated": "Última actualización: 31 de mayo de 2026",
+      "updated": "Última actualización: 26 de octubre de 2026",
       "sections": {
         "intro": {
           "title": "1. Introducción",
-          "text": "Catequesis Viva está comprometida con la protección de los datos personales de sus usuarios, en conformidad con la Ley General de Protección de Datos (LGPD — Ley nº 13.709/2018). Esta política explica cómo recopilamos, usamos y protegemos su información."
+          "text": "Catequesis Viva se compromete a proteger los datos personales de sus usuarios y de los catequizandos, de acuerdo con la Ley General de Protección de Datos de Brasil (LGPD — Ley nº 13.709/2018). Esta política explica qué datos tratamos, para qué, con quién los compartimos, cuánto tiempo los guardamos y cómo ejercer sus derechos."
+        },
+        "controller": {
+          "title": "2. Quién es responsable de los datos",
+          "text": "Cuando una parroquia, diócesis o catequista usa la plataforma para organizar la catequesis, esa institución (o el catequista, en el plan personal) es la responsable de los datos de catequizandos y familias: decide a quién se registra y para qué. Catequesis Viva actúa como encargada del tratamiento, usando esos datos solo para prestar el servicio contratado y según las instrucciones del responsable. Para los datos de su propia cuenta (registro, acceso, suscripción), Catequesis Viva es la responsable."
         },
         "collected": {
-          "title": "2. Datos recopilados",
-          "intro": "Recopilamos solo los datos estrictamente necesarios para la prestación de servicios:",
+          "title": "3. Datos recopilados",
+          "intro": "Recopilamos solo los datos necesarios para prestar el servicio:",
           "items": [
-            "Nombre, email y teléfono de usuarios (catequistas, coordinadores, responsables)",
-            "Nombre y fecha de nacimiento de catecúmenos",
-            "Registros de asistencia en encuentros catequéticos",
-            "Documentos sacramentales enviados por las familias",
-            "Consentimientos de uso de imagen y comunicación"
+            "Nombre, email, teléfono y foto opcional de los usuarios (catequistas, coordinadores, responsables)",
+            "Nombre, fecha de nacimiento, foto opcional y vínculo familiar de los catequizandos",
+            "Registros de asistencia, justificaciones y notas pastorales de los encuentros",
+            "Documentos sacramentales enviados por las familias (por ejemplo, certificados de bautismo)",
+            "Consentimientos de uso de imagen y de comunicación",
+            "Datos técnicos de acceso (dirección IP, navegador, fecha y hora) para seguridad y prevención de fraude",
+            "Datos de pago de la suscripción, procesados directamente por Stripe — no guardamos el número de la tarjeta"
           ]
         },
         "purpose": {
-          "title": "3. Finalidad del tratamiento",
+          "title": "4. Finalidad del tratamiento",
           "intro": "Los datos se utilizan exclusivamente para:",
           "items": [
-            "Gestión de la catequesis parroquial (grupos, asistencia, sacramentos)",
-            "Comunicación pastoral entre coordinadores, catequistas y familias",
-            "Generación de informes pastorales anonimizados",
-            "Cumplimiento de obligaciones legales y canónicas"
-          ]
+            "Gestionar la catequesis (grupos, encuentros, asistencia, sacramentos y documentos)",
+            "Facilitar la comunicación pastoral entre coordinadores, catequistas y familias",
+            "Elaborar informes pastorales para la parroquia, sin exposición pública de datos individuales",
+            "Cobrar y gestionar la suscripción",
+            "Mantener la seguridad de la cuenta, dar soporte y cumplir obligaciones legales"
+          ],
+          "outro": "No vendemos datos personales ni usamos datos de catequizandos para publicidad."
+        },
+        "legal_basis": {
+          "title": "5. Bases legales",
+          "text": "Tratamos datos para ejecutar el contrato con quien se suscribe al servicio (art. 7, V), cumplir obligaciones legales (art. 7, II), por interés legítimo para la seguridad y mejora del servicio (art. 7, IX) y con consentimiento cuando es necesario — por ejemplo, para uso de imagen, cookies de marketing y datos de niños (art. 7, I y art. 14)."
         },
         "minors": {
-          "title": "4. Protección de datos de menores",
-          "text": "Los datos de niños y adolescentes reciben protección especial: recopilación mínima, consentimiento parental obligatorio, acceso restringido y no compartición con terceros."
+          "title": "6. Datos de niños y adolescentes (art. 14 de la LGPD)",
+          "intro": "La mayoría de los catequizandos son menores de edad, por lo que sus datos se tratan según el interés superior del niño y del adolescente:",
+          "items": [
+            "Los datos de niños (hasta 12 años) solo se tratan con el consentimiento específico y destacado de al menos uno de los padres o del responsable legal, registrado en la plataforma por la parroquia o el catequista",
+            "Recopilamos lo mínimo necesario para la catequesis; ningún dato se exige como condición para participar en juegos, aplicaciones o actividades más allá de lo estrictamente necesario",
+            "Las familias pueden ver en el portal de la familia qué datos del catequizando están registrados y qué consentimientos se dieron",
+            "Las fotos de los catequizandos solo se usan con el consentimiento de imagen del responsable",
+            "El acceso está restringido a los catequistas y coordinadores del grupo; los datos de menores no se comparten con terceros con fines comerciales",
+            "Padres y responsables pueden pedir la corrección o eliminación de los datos en cualquier momento, a través de la parroquia o del contacto de protección de datos indicado abajo"
+          ]
+        },
+        "sharing": {
+          "title": "7. Compartición con proveedores",
+          "intro": "Solo compartimos datos con proveedores que nos ayudan a operar el servicio, bajo contrato y con obligación de confidencialidad:",
+          "items": [
+            "Alojamiento, base de datos y almacenamiento de archivos en la nube",
+            "Stripe, para procesar los pagos de la suscripción",
+            "Proveedores de email transaccional (confirmaciones, invitaciones y avisos)",
+            "Monitoreo de errores, para corregir fallas técnicas",
+            "Herramientas de análisis y marketing (Google y Meta) solo si acepta las cookies correspondientes"
+          ],
+          "outro": "Algunos de estos proveedores pueden guardar datos fuera de Brasil. En esos casos exigimos garantías adecuadas de protección, según el art. 33 de la LGPD."
+        },
+        "retention": {
+          "title": "8. Cuánto tiempo guardamos los datos",
+          "text": "Mantenemos los datos mientras la cuenta o la institución use la plataforma. Cuando se cierra una cuenta, sus datos se eliminan o anonimizan, salvo lo que debamos guardar por ley (por ejemplo, registros fiscales de la suscripción). La parroquia puede exportar sus datos antes del cierre."
+        },
+        "security": {
+          "title": "9. Seguridad",
+          "text": "Usamos conexión cifrada (HTTPS), control de acceso por rol (coordinador, catequista, familia), autenticación de dos factores opcional y registros de auditoría. Ante un incidente de seguridad relevante, avisaremos a los afectados y a la ANPD según la ley."
+        },
+        "cookies": {
+          "title": "10. Cookies",
+          "text": "Usamos cookies esenciales para el acceso y el funcionamiento de la aplicación. Las cookies de análisis y marketing solo se activan con su consentimiento en el aviso de cookies, y puede cambiar esa elección en cualquier momento."
         },
         "rights": {
-          "title": "5. Sus derechos (LGPD)",
-          "text": "Acceder, corregir, exportar o solicitar eliminación de sus datos. Para ejercer estos derechos, acceda a Configuración en la aplicación o contacte contato@catechis.app."
+          "title": "11. Sus derechos (LGPD)",
+          "intro": "En cualquier momento puede:",
+          "items": [
+            "Confirmar si tratamos sus datos y acceder a ellos",
+            "Corregir datos incompletos o desactualizados",
+            "Exportar sus datos (portabilidad) — disponible en Configuración en la aplicación",
+            "Pedir la eliminación o anonimización de datos innecesarios",
+            "Revocar consentimientos y saber con quién compartimos datos"
+          ],
+          "outro": "Si la solicitud involucra catequizandos registrados por una parroquia, la remitiremos a esa parroquia y la ayudaremos a responder."
         },
         "dpo": {
-          "title": "6. Contacto del DPO",
-          "email_label": "Email:",
-          "email": "privacidade@catechis.app"
+          "title": "12. Encargado de protección de datos (DPO)",
+          "text": "El encargado de protección de datos de Catequesis Viva es el canal oficial para dudas, solicitudes de los titulares y comunicaciones de la ANPD.",
+          "email_label": "Email del encargado:",
+          "email": "privacidade@catechis.app",
+          "response": "Respondemos en un plazo de 15 días. También puede escribirnos a contato@catechis.app o usar la página de Contacto."
         }
       }
     }
@@ -6132,12 +6186,32 @@ export const public_es = {
         "content": "Biblioteca de contenido — cree, revise y publique planes de encuentro.",
         "communication": "Comunicación pastoral — envíe mensajes segmentados a familias y catequistas.",
         "reports": "Informes e indicadores — siga la salud de la catequesis con KPIs."
-      }
+      },
+      "audience_title": "Para quién es",
+      "audience": [
+        "Catequistas que quieren preparar el encuentro y registrar la asistencia sin papel ni planillas sueltas.",
+        "Coordinaciones parroquiales que necesitan ver todos los grupos, catequistas y sacramentos en un solo lugar.",
+        "Diócesis que acompañan varias parroquias, cada una cuidando sus propios datos."
+      ],
+      "principles_title": "Cómo trabajamos",
+      "principles": [
+        "Fidelidad a la Iglesia: contenidos y recorridos pensados a partir del Directorio para la Catequesis y del camino de iniciación cristiana.",
+        "Cuidado de los menores: datos de niños y adolescentes tratados con consentimiento del responsable y acceso restringido, según la LGPD.",
+        "Sencillez: el catequista voluntario debe resolver su semana en pocos minutos, también desde el celular.",
+        "La parroquia es dueña de sus datos: expórtelos cuando quiera, sin ataduras."
+      ],
+      "contact_title": "Hable con nosotros",
+      "contact_text": "¿Tiene sugerencias, quiere presentar Catequesis Viva a su parroquia o diócesis, o encontró un problema? Escriba al equipo.",
+      "contact_cta": "Ir a Contacto",
+      "help_cta": "Ver preguntas frecuentes"
     },
     "contact": {
       "title": "Contacto",
       "intro": "Póngase en contacto con el equipo de Catequesis Viva.",
       "location": "São Paulo, Brasil",
+      "phone_label": "Teléfono (soporte y consultas generales)",
+      "subject_prefix": "Asunto",
+      "required_hint": "Complete los campos con * (nombre, email y mensaje). Respondemos por email.",
       "name": "Nombre *",
       "email": "Email *",
       "subject": "Asunto",
@@ -6299,7 +6373,88 @@ export const public_es = {
         "OTHER": "Otro"
       }
     },
-    "catechist_free": "Sin suscripción"
+    "catechist_free": "Sin suscripción",
+    "help": {
+      "title": "Ayuda",
+      "intro": "Respuestas rápidas a las dudas más comunes sobre Catequesis Viva. ¿No encontró lo que buscaba? Hable con el equipo al final de la página.",
+      "contact_title": "¿Todavía necesita ayuda?",
+      "contact_text": "Escriba al equipo desde la página de Contacto. Si ya tiene cuenta, también puede usar el Centro de soporte en el menú de su perfil.",
+      "contact_cta": "Hablar con el equipo",
+      "groups": [
+        {
+          "title": "Cuenta y período de prueba",
+          "items": [
+            {
+              "q": "¿Cómo empiezo?",
+              "a": "Cree su cuenta con email y contraseña (o Google), confirme el email y siga los primeros pasos: elija cómo la usará (catequista o parroquia) y cree su primer grupo."
+            },
+            {
+              "q": "¿Necesito tarjeta para probar?",
+              "a": "No. La prueba gratuita de 7 días del Plan Catequista empieza sin tarjeta. La tarjeta solo se pide cuando decida suscribirse."
+            },
+            {
+              "q": "¿Qué pasa cuando termina la prueba?",
+              "a": "Sus datos siguen guardados. Para seguir registrando asistencia y usando las herramientas del grupo, elija un plan en la página Suscripción. La Biblia, el Catecismo, la Configuración y el Centro de soporte siguen disponibles."
+            },
+            {
+              "q": "¿Cómo cambio la tarjeta o cancelo?",
+              "a": "En el menú de su perfil, abra Suscripción y use el botón para gestionar el pago. Allí puede cambiar la tarjeta, ver facturas o cancelar, sin multa."
+            }
+          ]
+        },
+        {
+          "title": "Grupos, encuentros y asistencia",
+          "items": [
+            {
+              "q": "¿Cómo creo un grupo?",
+              "a": "En Grupos, toque Crear grupo e indique el nombre, la etapa y el día y horario del encuentro. Después agregue a los catequizandos."
+            },
+            {
+              "q": "¿Cómo registro la asistencia?",
+              "a": "Abra el grupo y toque Asistencia. Si todavía no hay encuentro para hoy, créelo en la misma pantalla y marque presente, ausente o justificado para cada catequizando."
+            },
+            {
+              "q": "¿Puedo generar los encuentros del año de una vez?",
+              "a": "Sí. En la planificación del grupo, genere los encuentros semanales a partir del día y horario del grupo. Aparecen en el Calendario."
+            },
+            {
+              "q": "¿Funciona en el celular?",
+              "a": "Sí. Funciona directo en el navegador del celular. Si quiere, añada un acceso directo a la pantalla de inicio para abrir más rápido."
+            }
+          ]
+        },
+        {
+          "title": "Familias y catequizandos",
+          "items": [
+            {
+              "q": "¿Cómo registro a un catequizando?",
+              "a": "En Catequizandos, toque Registrar y complete el nombre, la fecha de nacimiento y la familia. Después inscríbalo en un grupo desde su ficha o desde el propio grupo."
+            },
+            {
+              "q": "¿Las familias pueden acompañar?",
+              "a": "Sí. En la ficha del catequizando, invite al responsable al portal de la familia. Verá avisos, asistencia, documentos y consentimientos."
+            },
+            {
+              "q": "¿Puedo importar una lista que ya tengo?",
+              "a": "Sí. En Catequizandos, use Importar para subir una planilla con nombres y fechas de nacimiento."
+            }
+          ]
+        },
+        {
+          "title": "Privacidad y datos de menores",
+          "items": [
+            {
+              "q": "¿Los datos de los niños están protegidos?",
+              "a": "Sí. Seguimos la LGPD de Brasil, incluido el art. 14 sobre datos de niños y adolescentes: recolección mínima, consentimiento del responsable y acceso solo para quienes acompañan el grupo. Vea la Política de Privacidad."
+            },
+            {
+              "q": "¿Cómo exporto o elimino mis datos?",
+              "a": "En Configuración puede exportar sus datos. Para pedir la eliminación, escriba a privacidade@catechis.app."
+            }
+          ]
+        }
+      ]
+    }
   } as const;
 
 export const publicNav_es = {
@@ -6330,7 +6485,8 @@ export const publicNav_es = {
     "footer_talk": "Habla con nosotros",
     "footer_start": "Probar",
     "footer_start_desc": "Más presencia en el encuentro, menos peso en la semana. Empieza los 7 días.",
-    "language": "Idioma"
+    "language": "Idioma",
+    "help": "Ayuda"
   } as const;
 
 export const reports_es = {

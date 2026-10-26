@@ -260,7 +260,7 @@
     },
     {
       "q": "¿Funciona en el celular?",
-      "a": "Sí. Organizas el grupo y registras asistencia en el navegador, sin instalar una app."
+      "a": "Sí. Funciona directo en el navegador del celular; si quieres, puedes añadir el acceso directo a la pantalla de inicio."
     }
   ],
   "cta_eyebrow": "Vuelve a lo que importa",
@@ -402,7 +402,7 @@
       },
       {
         "title": "En el celular",
-        "desc": "Asistencia y seguimiento en el navegador, sin instalar app."
+        "desc": "Asistencia y seguimiento en el navegador del celular, sin descargar nada de la tienda."
       }
     ],
     "chips": [
