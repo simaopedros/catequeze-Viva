@@ -36,6 +36,7 @@ import {
 } from "../../../client/offline/db";
 import { AppPanel } from "../../../client/components/brand/AppChrome";
 import { defaultMeetingDateIso } from "../../../shared/displayDate";
+import { displayMeetingRollCallStatus } from "../../../shared/meetingRollCallStatus";
 
 const STATUS_CYCLE = ["PRESENT", "LATE", "ABSENT", "JUSTIFIED"] as const;
 
@@ -378,7 +379,9 @@ export function MeetingAttendanceSheet({
               (p: any) => p.catechumenProfileId === r.catechumenProfileId,
             );
             return participant
-              ? `${participant.firstName || ""} ${participant.lastName || ""}`.trim()
+              ? `${participant.firstName || ""} ${
+                  participant.lastName || ""
+                }`.trim()
               : r.catechumenProfileId;
           })
           .filter(Boolean);
@@ -543,7 +546,7 @@ export function MeetingAttendanceSheet({
             : t("sheet.sync_saved")}
       </span>
       {/* Sticky header */}
-      <div className="sticky top-0 z-20 -mx-1 space-y-3 border-b border-border/70 bg-background/95 px-1 pb-3 pt-1 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className="sticky top-0 z-20 -mx-1 max-h-[38vh] space-y-2 overflow-y-auto border-b border-border/70 bg-background/95 px-1 pb-2 pt-1 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:max-h-none sm:overflow-visible sm:space-y-3 sm:pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="text-xs font-medium tracking-wide text-muted-foreground">
@@ -569,10 +572,16 @@ export function MeetingAttendanceSheet({
           </div>
           <div className="flex shrink-0 flex-col items-end gap-1">
             <Badge variant="outline">
-              {t(`status.${meeting.status}`, {
-                defaultValue: meeting.status,
-                ns: "meetings",
-              })}
+              {t(
+                `status.${displayMeetingRollCallStatus({
+                  meetingStatus: meeting.status,
+                  registeredCount: summary.registered,
+                })}`,
+                {
+                  defaultValue: meeting.status,
+                  ns: "meetings",
+                },
+              )}
             </Badge>
             {(!offline.isOnline || offline.pendingCount > 0) && (
               <Badge
@@ -628,7 +637,10 @@ export function MeetingAttendanceSheet({
             </p>
           )}
         </div>
+      </div>
 
+      {/* Actions stay below the sticky card so mobile lists remain scrollable */}
+      <div className="space-y-3 border-b border-border/70 pb-3 pt-3">
         <div className="flex items-center justify-between gap-2">
           {undoStack.length > 0 ? (
             <Button
@@ -732,7 +744,7 @@ export function MeetingAttendanceSheet({
       </div>
 
       {/* List */}
-      <ul className="mt-3 divide-y divide-border/70">
+      <ul className="mt-3 divide-y divide-border/70 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] sm:pb-4">
         {participants.map((p: any) => {
           const st = localStatus[p.catechumenProfileId];
           const sync = rowSync[p.catechumenProfileId] || "idle";
@@ -772,7 +784,11 @@ export function MeetingAttendanceSheet({
                   title={statusButtonTitle(st, t)}
                   aria-label={`${t("sheet.change_status", {
                     name: `${p.firstName} ${p.lastName}`,
-                  })} — ${st ? t(`sheet.status.${st}`, { defaultValue: st }) : t("sheet.status.none")}`}
+                  })} — ${
+                    st
+                      ? t(`sheet.status.${st}`, { defaultValue: st })
+                      : t("sheet.status.none")
+                  }`}
                 >
                   {sync === "saving" ? (
                     <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />

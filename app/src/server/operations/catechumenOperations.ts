@@ -1,14 +1,24 @@
-import { HttpError, prisma } from 'wasp/server';
-import { MembershipStatus, CatechistAssignmentRole } from '@prisma/client';
-import { assertCanAccessCatechumenProfile, requireAuth, writeAuditLog } from '../auth/helpers';
+import { HttpError, prisma } from "wasp/server";
+import { MembershipStatus, CatechistAssignmentRole } from "@prisma/client";
+import {
+  assertCanAccessCatechumenProfile,
+  requireAuth,
+  writeAuditLog,
+} from "../auth/helpers";
 import {
   requireWorkspaceAccess,
   isCoordinatorOrAbove,
   isCatechist,
   catechumenWhereForAccess,
-} from './sharedScope';
-import { deleteDocumentFile } from '../storage/documentStorage';
-import { legacyTake } from './listCursor';
+} from "./sharedScope";
+import { deleteDocumentFile } from "../storage/documentStorage";
+import { legacyTake } from "./listCursor";
+import {
+  buildCatechumenUpdateData,
+  CatechumenUpdateValidationError,
+} from "../../shared/catechumenUpdate";
+
+export { buildCatechumenUpdateData } from "../../shared/catechumenUpdate";
 
 type ListCatechumensArgs = {
   take?: number;
@@ -31,12 +41,12 @@ function encodeCatechumenCursor(row: {
 }): string {
   return Buffer.from(
     JSON.stringify({
-      f: row.firstName || '',
-      l: row.lastName || '',
+      f: row.firstName || "",
+      l: row.lastName || "",
       i: row.id,
     }),
-    'utf8',
-  ).toString('base64url');
+    "utf8",
+  ).toString("base64url");
 }
 
 function decodeCatechumenCursor(cursor: string): {
@@ -45,11 +55,9 @@ function decodeCatechumenCursor(cursor: string): {
   i: string;
 } | null {
   try {
-    const raw = JSON.parse(
-      Buffer.from(cursor, 'base64url').toString('utf8'),
-    );
-    if (typeof raw?.i !== 'string') return null;
-    return { f: raw.f || '', l: raw.l || '', i: raw.i };
+    const raw = JSON.parse(Buffer.from(cursor, "base64url").toString("utf8"));
+    if (typeof raw?.i !== "string") return null;
+    return { f: raw.f || "", l: raw.l || "", i: raw.i };
   } catch {
     return null;
   }
@@ -86,9 +94,9 @@ export const listCatechumens = async (
   if (!context.user) throw new HttpError(401);
 
   const orderBy: any = [
-    { firstName: 'asc' },
-    { lastName: 'asc' },
-    { id: 'asc' },
+    { firstName: "asc" },
+    { lastName: "asc" },
+    { id: "asc" },
   ];
   const include = {
     parish: { select: { id: true, name: true } },
@@ -108,8 +116,8 @@ export const listCatechumens = async (
         where,
         {
           OR: [
-            { firstName: { contains: search, mode: 'insensitive' as const } },
-            { lastName: { contains: search, mode: 'insensitive' as const } },
+            { firstName: { contains: search, mode: "insensitive" as const } },
+            { lastName: { contains: search, mode: "insensitive" as const } },
           ],
         },
       ],
@@ -151,7 +159,7 @@ export const listCatechumens = async (
 
   const access = await requireWorkspaceAccess(context, workspaceId);
 
-  if (access.isCoordinatorOrAbove || access.role === 'PASTORAL_VIEWER') {
+  if (access.isCoordinatorOrAbove || access.role === "PASTORAL_VIEWER") {
     // Full-parish roles keep the historical query; scoped community
     // coordinators are limited to their classes / community households.
     const rows = await context.entities.CatechumenProfile.findMany({
@@ -166,7 +174,7 @@ export const listCatechumens = async (
 
   if (access.isCatechist) {
     const classIds =
-      access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds;
+      access.allowedClassIds === "ALL" ? [] : access.allowedClassIds;
     if (classIds.length === 0) {
       return useCursorPage ? { items: [], nextCursor: null } : [];
     }
@@ -196,7 +204,7 @@ export const listCatechumens = async (
     return wrapResult(rows);
   }
 
-  if (access.role === 'GUARDIAN') {
+  if (access.role === "GUARDIAN") {
     const guardian = await context.entities.GuardianProfile.findUnique({
       where: { userId: context.user.id },
     });
@@ -213,7 +221,7 @@ export const listCatechumens = async (
     return useCursorPage ? { items: [], nextCursor: null } : [];
   }
 
-  if (access.role === 'CATECHUMEN') {
+  if (access.role === "CATECHUMEN") {
     const rows = await context.entities.CatechumenProfile.findMany({
       where: buildWhere({ userId: context.user.id }),
       orderBy,
@@ -227,7 +235,10 @@ export const listCatechumens = async (
   return useCursorPage ? { items: [], nextCursor: null } : [];
 };
 
-export const getCatechumenProfile = async (args: { id: string }, context: any) => {
+export const getCatechumenProfile = async (
+  args: { id: string },
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
   await assertCanAccessCatechumenProfile(context, args.id);
 
@@ -235,9 +246,35 @@ export const getCatechumenProfile = async (args: { id: string }, context: any) =
     where: { id: args.id },
     include: {
       parish: { select: { id: true, name: true } },
-      household: { include: { guardians: { include: { user: { select: { id: true, email: true, firstName: true, lastName: true } } } } } },
-      enrollments: { include: { class: { select: { id: true, name: true, stage: { select: { name: true } } } } } },
-      sacramentalJourneys: { include: { template: { select: { id: true, name: true } }, milestones: true } },
+      household: {
+        include: {
+          guardians: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  email: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      enrollments: {
+        include: {
+          class: {
+            select: { id: true, name: true, stage: { select: { name: true } } },
+          },
+        },
+      },
+      sacramentalJourneys: {
+        include: {
+          template: { select: { id: true, name: true } },
+          milestones: true,
+        },
+      },
       documents: true,
     },
   });
@@ -254,18 +291,24 @@ export const createCatechumen = async (args: any, context: any) => {
       select: { role: true, parishId: true },
     });
 
-    if (membership && (isCoordinatorOrAbove(membership.role) || isCatechist(membership.role))) {
+    if (
+      membership &&
+      (isCoordinatorOrAbove(membership.role) || isCatechist(membership.role))
+    ) {
       parishId = membership.parishId;
     } else {
       // Try personal workspace
       const personal = await context.entities.Parish.findFirst({
-        where: { ownerId: context.user.id, type: 'PERSONAL' },
+        where: { ownerId: context.user.id, type: "PERSONAL" },
         select: { id: true },
       });
       if (personal) {
         parishId = personal.id;
       } else {
-        throw new HttpError(403, 'Apenas coordenadores e catequistas podem criar catequizandos.');
+        throw new HttpError(
+          403,
+          "Apenas coordenadores e catequistas podem criar catequizandos.",
+        );
       }
     }
   } else {
@@ -273,12 +316,12 @@ export const createCatechumen = async (args: any, context: any) => {
     const membership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
       select: { parishId: true },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: "asc" },
     });
     parishId = membership?.parishId || null;
     if (!parishId) {
       const personal = await context.entities.Parish.findFirst({
-        where: { ownerId: context.user.id, type: 'PERSONAL' },
+        where: { ownerId: context.user.id, type: "PERSONAL" },
         select: { id: true },
       });
       if (personal) parishId = personal.id;
@@ -287,10 +330,20 @@ export const createCatechumen = async (args: any, context: any) => {
 
   return context.entities.CatechumenProfile.create({
     data: {
-      firstName: args.firstName, lastName: args.lastName,
+      firstName: args.firstName,
+      lastName: args.lastName,
       email: args.email || null,
-      birthDate: args.birthDate ? (() => { const [y, m, d] = args.birthDate.slice(0, 10).split('-').map(Number); return new Date(Date.UTC(y, m - 1, d, 12, 0, 0)); })() : null,
-      householdId: args.householdId || null, photoUrl: args.photoUrl || null,
+      birthDate: args.birthDate
+        ? (() => {
+            const [y, m, d] = args.birthDate
+              .slice(0, 10)
+              .split("-")
+              .map(Number);
+            return new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+          })()
+        : null,
+      householdId: args.householdId || null,
+      photoUrl: args.photoUrl || null,
       parishId,
     },
   });
@@ -300,7 +353,7 @@ export const updateCatechumen = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
 
   if (!args.id) {
-    throw new HttpError(400, 'ID do catequizando é obrigatório.');
+    throw new HttpError(400, "ID do catequizando é obrigatório.");
   }
 
   if (!context.user.isAdmin) {
@@ -309,7 +362,7 @@ export const updateCatechumen = async (args: any, context: any) => {
       select: { userId: true },
     });
     if (!catechumen) {
-      throw new HttpError(404, 'Catequizando não encontrado.');
+      throw new HttpError(404, "Catequizando não encontrado.");
     }
     // Self-update allowed; otherwise require access to THIS catechumen's workspace
     if (catechumen.userId !== context.user.id) {
@@ -317,10 +370,22 @@ export const updateCatechumen = async (args: any, context: any) => {
     }
   }
 
-  const { id, ...data } = args;
+  let data: Record<string, unknown>;
+  try {
+    data = buildCatechumenUpdateData(args);
+  } catch (error) {
+    if (error instanceof CatechumenUpdateValidationError) {
+      throw new HttpError(400, error.message);
+    }
+    throw error;
+  }
+  if (Object.keys(data).length === 0) {
+    throw new HttpError(400, "Nenhum campo para atualizar.");
+  }
+
   return context.entities.CatechumenProfile.update({
-    where: { id },
-    data: { ...data, birthDate: data.birthDate ? (() => { const [y, m, d] = data.birthDate.slice(0, 10).split('-').map(Number); return new Date(Date.UTC(y, m - 1, d, 12, 0, 0)); })() : undefined },
+    where: { id: args.id },
+    data,
   });
 };
 
@@ -328,7 +393,7 @@ export const deleteCatechumen = async (args: { id: string }, context: any) => {
   requireAuth(context.user);
 
   if (!args.id) {
-    throw new HttpError(400, 'ID do catequizando é obrigatório.');
+    throw new HttpError(400, "ID do catequizando é obrigatório.");
   }
 
   await assertCanAccessCatechumenProfile(context, args.id);
@@ -346,7 +411,7 @@ export const deleteCatechumen = async (args: { id: string }, context: any) => {
   });
 
   if (!catechumen) {
-    throw new HttpError(404, 'Catequizando não encontrado.');
+    throw new HttpError(404, "Catequizando não encontrado.");
   }
 
   if (!context.user.isAdmin) {
@@ -354,30 +419,34 @@ export const deleteCatechumen = async (args: { id: string }, context: any) => {
     const parishCandidates = [
       catechumen.parishId,
       catechumen.household?.parishId,
-      ...(catechumen.enrollments || []).map(
-        (e: any) => e.class?.parishId,
-      ),
+      ...(catechumen.enrollments || []).map((e: any) => e.class?.parishId),
     ].filter(Boolean) as string[];
     let canManage = false;
     for (const pid of [...new Set(parishCandidates)]) {
-      const access = await requireWorkspaceAccess(context, pid).catch(() => null);
-      if (
-        access &&
-        (access.isCoordinatorOrAbove || access.isCatechist)
-      ) {
+      const access = await requireWorkspaceAccess(context, pid).catch(
+        () => null,
+      );
+      if (access && (access.isCoordinatorOrAbove || access.isCatechist)) {
         canManage = true;
         break;
       }
     }
     if (!canManage) {
-      throw new HttpError(403, 'Apenas coordenadores e catequistas podem excluir catequizandos.');
+      throw new HttpError(
+        403,
+        "Apenas coordenadores e catequistas podem excluir catequizandos.",
+      );
     }
   }
 
   const documentKeys = catechumen.documents
     .map((document: any) => document.s3Key)
-    .filter((s3Key: string | null) => !!s3Key && !s3Key.startsWith('pending/')) as string[];
-  const journeyIds = catechumen.sacramentalJourneys.map((journey: any) => journey.id);
+    .filter(
+      (s3Key: string | null) => !!s3Key && !s3Key.startsWith("pending/"),
+    ) as string[];
+  const journeyIds = catechumen.sacramentalJourneys.map(
+    (journey: any) => journey.id,
+  );
 
   await prisma.$transaction(async (tx: any) => {
     if (journeyIds.length > 0) {
@@ -419,8 +488,8 @@ export const deleteCatechumen = async (args: { id: string }, context: any) => {
     }
   }
 
-  await writeAuditLog(context, 'DELETE', 'CatechumenProfile', args.id, {
-    operation: 'CATECHUMEN_DELETE',
+  await writeAuditLog(context, "DELETE", "CatechumenProfile", args.id, {
+    operation: "CATECHUMEN_DELETE",
     parishId: catechumen.parishId || null,
   });
 
