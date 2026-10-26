@@ -2042,7 +2042,7 @@ page AppFamilyDetailPage { authRequired: true, component: import FamilyDetailPag
 //#region Catequese Viva - Activities & Guardian
 query listActivitiesByContent {
   fn: import { listActivitiesByContent } from "@src/server/operations/activityOperations",
-  entities: [Activity, ContentItem, Membership, Parish]
+  entities: [Activity, ActivitySubmission, ContentItem, Membership, Parish, CatechumenProfile, GuardianProfile]
 }
 
 action createActivity {
