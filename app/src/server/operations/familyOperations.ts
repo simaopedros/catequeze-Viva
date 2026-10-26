@@ -336,9 +336,21 @@ export const addGuardianToHousehold = async (
 
     const existing = await context.entities.GuardianProfile.findFirst({
       where: { userId: args.userId },
+      select: {
+        id: true,
+        householdId: true,
+        household: { select: { id: true, parishId: true, name: true } },
+      },
     });
 
     if (existing) {
+      // Never silently steal a guardian already linked to another family.
+      if (existing.householdId && existing.householdId !== args.householdId) {
+        throw new HttpError(
+          409,
+          'Este responsável já está vinculado a outra família. Remova o vínculo anterior antes de transferir.',
+        );
+      }
       return context.entities.GuardianProfile.update({
         where: { id: existing.id },
         data: {
