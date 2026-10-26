@@ -2648,7 +2648,8 @@ export const navigation_pt_BR_core = {
       "community": "Comunidades"
     },
     "sidebarSection": "Navegação lateral",
-    "community": "Comunidade"
+    "community": "Comunidade",
+    "locked_hint": "requer assinatura"
   } as const;
 
 export const public_pt_BR_core = {

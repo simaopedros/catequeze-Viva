@@ -5286,7 +5286,8 @@ export const navigation_en = {
       "community": "Communities"
     },
     "sidebarSection": "Sidebar navigation",
-    "community": "Community"
+    "community": "Community",
+    "locked_hint": "requires a subscription"
   } as const;
 
 export const onboarding_en = {
