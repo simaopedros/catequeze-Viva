@@ -2,17 +2,60 @@
  * Auth hooks for Catequese Viva.
  */
 
-import { config } from 'wasp/server';
-import { isMetaCapiConfigured, sendMetaEvent } from '../payment/meta/metaCapi';
-import { logger } from '../server/logger';
-import { emitProductEventSafe } from '../server/email/events';
-import { PRODUCT_EVENT } from '../shared/emailCatalog';
+import { config } from "wasp/server";
+import { isMetaCapiConfigured, sendMetaEvent } from "../payment/meta/metaCapi";
+import { logger } from "../server/logger";
+import { emitProductEventSafe } from "../server/email/events";
+import { PRODUCT_EVENT } from "../shared/emailCatalog";
+
+interface AuthUserLite {
+  id: string;
+  email: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  locale?: string | null;
+}
 
 interface OnAfterSignupArgs {
-  user: { id: string; email: string | null };
+  user: AuthUserLite;
   prisma: any;
-  providerId?: unknown;
+  providerId?: { providerName?: string } | null;
   req?: unknown;
+}
+
+interface OnAfterEmailVerifiedArgs {
+  email: string;
+  user: AuthUserLite;
+  prisma: any;
+  req?: unknown;
+}
+
+function emailEventContext(prisma: any) {
+  return {
+    entities: {
+      EmailMessage: prisma.emailMessage,
+      EmailSuppression: prisma.emailSuppression,
+      EmailPreference: prisma.emailPreference,
+      User: prisma.user,
+    },
+  };
+}
+
+function isFamilyPortalHost(req: unknown): boolean {
+  try {
+    const headers = (req as any)?.headers || {};
+    const host = String(headers["x-forwarded-host"] || headers.host || "")
+      .split(",")[0]
+      .trim()
+      .toLowerCase();
+    return (
+      host.startsWith("familia.") ||
+      host.startsWith("familia-") ||
+      host.includes("familia")
+    );
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -26,10 +69,14 @@ interface OnAfterSignupArgs {
  *    INVITED memberships. Keeps the PendingInvitation records alive so the
  *    token-based accept flow (family portal) still works — they are deleted
  *    only when the user explicitly accepts via acceptInvitationByToken.
+ * 4. Welcome email is NOT sent here for email/password signups — it waits
+ *    for onAfterEmailVerified. OAuth providers already verified the email,
+ *    so those emit USER_EMAIL_VERIFIED immediately.
  */
 export const onAfterSignup = async ({
   user,
   prisma,
+  providerId,
   req,
 }: OnAfterSignupArgs): Promise<void> => {
   if (!user?.id) return;
@@ -43,7 +90,7 @@ export const onAfterSignup = async ({
       const pendingFamily = await prisma.pendingInvitation.findFirst({
         where: {
           email,
-          role: { in: ['GUARDIAN', 'CATECHUMEN'] },
+          role: { in: ["GUARDIAN", "CATECHUMEN"] },
           expiresAt: { gt: new Date() },
         },
         select: { id: true },
@@ -53,24 +100,8 @@ export const onAfterSignup = async ({
       /* non-fatal */
     }
   }
-  // Host signal when available
-  try {
-    const headers = (req as any)?.headers || {};
-    const host = String(
-      headers['x-forwarded-host'] || headers.host || '',
-    )
-      .split(',')[0]
-      .trim()
-      .toLowerCase();
-    if (
-      host.startsWith('familia.') ||
-      host.startsWith('familia-') ||
-      host.includes('familia')
-    ) {
-      isFamilyPortalSignup = true;
-    }
-  } catch {
-    /* ignore */
+  if (isFamilyPortalHost(req)) {
+    isFamilyPortalSignup = true;
   }
 
   // Product trial is granted by ensureProductTrial, never here.
@@ -90,7 +121,7 @@ export const onAfterSignup = async ({
       } catch {
         /* non-fatal */
       }
-      
+
       await sendCompleteRegistrationToMeta({
         userId: user.id,
         email: user.email,
@@ -99,7 +130,7 @@ export const onAfterSignup = async ({
         req,
       });
     } catch (error) {
-      logger.error('[meta-capi] CompleteRegistration hook failed', {
+      logger.error("[meta-capi] CompleteRegistration hook failed", {
         userId: user.id,
         error: error instanceof Error ? error.message : String(error),
       });
@@ -107,21 +138,32 @@ export const onAfterSignup = async ({
   }
 
   if (email && !isFamilyPortalSignup) {
+    const locale =
+      (user.locale as "pt-BR" | "en" | "es" | undefined) || "pt-BR";
     emitProductEventSafe({
       name: PRODUCT_EVENT.USER_SIGNED_UP,
       email,
       userId: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
       isFamilyPortal: false,
-      locale: 'pt-BR',
-      context: {
-        entities: {
-          EmailMessage: prisma.emailMessage,
-          EmailSuppression: prisma.emailSuppression,
-          EmailPreference: prisma.emailPreference,
-          User: prisma.user,
-        },
-      },
+      locale,
+      context: emailEventContext(prisma),
     });
+    // Google (and other OAuth) identities skip the email-verification step.
+    const providerName = providerId?.providerName;
+    if (providerName && providerName !== "email") {
+      emitProductEventSafe({
+        name: PRODUCT_EVENT.USER_EMAIL_VERIFIED,
+        email,
+        userId: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isFamilyPortal: false,
+        locale,
+        context: emailEventContext(prisma),
+      });
+    }
   }
 
   if (!email) return;
@@ -134,7 +176,7 @@ export const onAfterSignup = async ({
     if (pending.length === 0) {
       try {
         pending = await prisma.pendingInvitation.findMany({
-          where: { email: { equals: normalized, mode: 'insensitive' } },
+          where: { email: { equals: normalized, mode: "insensitive" } },
         });
       } catch {
         /* ignore */
@@ -147,11 +189,11 @@ export const onAfterSignup = async ({
         where: { userId: user.id, parishId: invitation.parishId },
       });
       if (existing) {
-        if (existing.status !== 'ACTIVE' && existing.status !== 'INVITED') {
+        if (existing.status !== "ACTIVE" && existing.status !== "INVITED") {
           await prisma.membership.update({
             where: { id: existing.id },
             data: {
-              status: 'INVITED',
+              status: "INVITED",
               role: invitation.role,
               communityId: invitation.communityId ?? null,
               inviteToken: invitation.token,
@@ -168,7 +210,7 @@ export const onAfterSignup = async ({
           parishId: invitation.parishId,
           communityId: invitation.communityId ?? null,
           role: invitation.role,
-          status: 'INVITED',
+          status: "INVITED",
           inviteToken: invitation.token,
           inviteTokenExpiresAt: invitation.expiresAt,
         },
@@ -179,12 +221,71 @@ export const onAfterSignup = async ({
   }
 };
 
+/**
+ * Runs once after email/password verification succeeds. Sends the welcome
+ * email (skipped at signup so unverified addresses never get it).
+ */
+export const onAfterEmailVerified = async ({
+  email,
+  user,
+  prisma,
+  req,
+}: OnAfterEmailVerifiedArgs): Promise<void> => {
+  if (!user?.id || !email?.trim()) return;
+
+  let isFamilyPortal = isFamilyPortalHost(req);
+  if (!isFamilyPortal) {
+    try {
+      const pendingFamily = await prisma.pendingInvitation.findFirst({
+        where: {
+          email,
+          role: { in: ["GUARDIAN", "CATECHUMEN"] },
+          expiresAt: { gt: new Date() },
+        },
+        select: { id: true },
+      });
+      isFamilyPortal = Boolean(pendingFamily);
+    } catch {
+      /* non-fatal */
+    }
+  }
+  if (isFamilyPortal) return;
+
+  let firstName = user.firstName;
+  let lastName = user.lastName;
+  let locale = (user.locale as "pt-BR" | "en" | "es" | undefined) || "pt-BR";
+  try {
+    const fullUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { firstName: true, lastName: true, locale: true },
+    });
+    if (fullUser) {
+      firstName = fullUser.firstName ?? firstName;
+      lastName = fullUser.lastName ?? lastName;
+      locale = (fullUser.locale as typeof locale) || locale;
+    }
+  } catch {
+    /* non-fatal */
+  }
+
+  emitProductEventSafe({
+    name: PRODUCT_EVENT.USER_EMAIL_VERIFIED,
+    email: email.trim(),
+    userId: user.id,
+    firstName,
+    lastName,
+    isFamilyPortal: false,
+    locale,
+    context: emailEventContext(prisma),
+  });
+};
+
 /** Extract client IP + UA from the Wasp/Express signup request for Meta EMQ. */
 export function extractClientMetaFromReq(req: unknown): {
   client_ip_address?: string;
   client_user_agent?: string;
 } {
-  if (!req || typeof req !== 'object') return {};
+  if (!req || typeof req !== "object") return {};
 
   const request = req as {
     ip?: string;
@@ -192,12 +293,12 @@ export function extractClientMetaFromReq(req: unknown): {
     socket?: { remoteAddress?: string };
   };
 
-  const forwarded = request.headers?.['x-forwarded-for'];
+  const forwarded = request.headers?.["x-forwarded-for"];
   const forwardedIp =
-    typeof forwarded === 'string'
-      ? forwarded.split(',')[0]?.trim()
+    typeof forwarded === "string"
+      ? forwarded.split(",")[0]?.trim()
       : Array.isArray(forwarded)
-        ? forwarded[0]?.split(',')[0]?.trim()
+        ? forwarded[0]?.split(",")[0]?.trim()
         : undefined;
 
   const rawIp =
@@ -206,9 +307,9 @@ export function extractClientMetaFromReq(req: unknown): {
   // Meta rejects / degrades private IPs; omit them in local dev.
   const client_ip_address = isPublicIp(rawIp) ? rawIp : undefined;
 
-  const rawUa = request.headers?.['user-agent'];
+  const rawUa = request.headers?.["user-agent"];
   const client_user_agent =
-    typeof rawUa === 'string'
+    typeof rawUa === "string"
       ? rawUa
       : Array.isArray(rawUa)
         ? rawUa[0]
@@ -222,10 +323,10 @@ export function extractClientMetaFromReq(req: unknown): {
 
 function isPublicIp(ip?: string): boolean {
   if (!ip) return false;
-  const normalized = ip.replace(/^::ffff:/, '');
-  if (normalized === '::1' || normalized === '127.0.0.1') return false;
-  if (normalized.startsWith('10.')) return false;
-  if (normalized.startsWith('192.168.')) return false;
+  const normalized = ip.replace(/^::ffff:/, "");
+  if (normalized === "::1" || normalized === "127.0.0.1") return false;
+  if (normalized.startsWith("10.")) return false;
+  if (normalized.startsWith("192.168.")) return false;
   if (/^172\.(1[6-9]|2\d|3[0-1])\./.test(normalized)) return false;
   return true;
 }
@@ -246,9 +347,12 @@ export async function sendCompleteRegistrationToMeta(args: {
   req?: unknown;
 }): Promise<void> {
   if (!isMetaCapiConfigured()) {
-    logger.info('[meta-capi] CompleteRegistration skipped — Meta CAPI not configured', {
-      userId: args.userId,
-    });
+    logger.info(
+      "[meta-capi] CompleteRegistration skipped — Meta CAPI not configured",
+      {
+        userId: args.userId,
+      },
+    );
     return;
   }
 
@@ -260,12 +364,14 @@ export async function sendCompleteRegistrationToMeta(args: {
   if (tracked) {
     try {
       const existing = await tracked.findUnique({ where: { eventId } });
-      if (existing?.status === 'sent') {
-        logger.info('[meta-capi] CompleteRegistration already sent', { eventId });
+      if (existing?.status === "sent") {
+        logger.info("[meta-capi] CompleteRegistration already sent", {
+          eventId,
+        });
         return;
       }
     } catch (error) {
-      logger.warn('[meta-capi] TrackedEvent lookup failed (continuing)', {
+      logger.warn("[meta-capi] TrackedEvent lookup failed (continuing)", {
         eventId,
         error: error instanceof Error ? error.message : String(error),
       });
@@ -274,7 +380,7 @@ export async function sendCompleteRegistrationToMeta(args: {
 
   try {
     const responseJson = await sendMetaEvent({
-      event_name: 'CompleteRegistration',
+      event_name: "CompleteRegistration",
       event_time: Math.floor(Date.now() / 1000),
       event_id: eventId,
       event_source_url: `${config.frontendUrl}/signup`,
@@ -286,14 +392,14 @@ export async function sendCompleteRegistrationToMeta(args: {
         client_user_agent: clientMeta.client_user_agent,
       },
       custom_data: {
-        content_name: 'Signup Catechis',
-        content_category: 'subscription',
-        content_type: 'product',
+        content_name: "Signup Catechis",
+        content_category: "subscription",
+        content_type: "product",
         status: true,
       },
     });
 
-    logger.info('[meta-capi] CompleteRegistration sent', {
+    logger.info("[meta-capi] CompleteRegistration sent", {
       userId: args.userId,
       eventId,
     });
@@ -303,28 +409,31 @@ export async function sendCompleteRegistrationToMeta(args: {
         await tracked.upsert({
           where: { eventId },
           create: {
-            provider: 'meta',
-            eventName: 'CompleteRegistration',
+            provider: "meta",
+            eventName: "CompleteRegistration",
             eventId,
-            status: 'sent',
+            status: "sent",
             responseJson,
             errorMessage: null,
           },
           update: {
-            status: 'sent',
+            status: "sent",
             responseJson,
             errorMessage: null,
           },
         });
       } catch (error) {
-        logger.warn('[meta-capi] TrackedEvent audit write failed after successful send', {
-          eventId,
-          error: error instanceof Error ? error.message : String(error),
-        });
+        logger.warn(
+          "[meta-capi] TrackedEvent audit write failed after successful send",
+          {
+            eventId,
+            error: error instanceof Error ? error.message : String(error),
+          },
+        );
       }
     }
   } catch (error) {
-    logger.error('[meta-capi] CompleteRegistration delivery failed', {
+    logger.error("[meta-capi] CompleteRegistration delivery failed", {
       userId: args.userId,
       eventId,
       error: error instanceof Error ? error.message : String(error),
@@ -335,17 +444,21 @@ export async function sendCompleteRegistrationToMeta(args: {
         await tracked.upsert({
           where: { eventId },
           create: {
-            provider: 'meta',
-            eventName: 'CompleteRegistration',
+            provider: "meta",
+            eventName: "CompleteRegistration",
             eventId,
-            status: 'failed',
+            status: "failed",
             errorMessage:
-              error instanceof Error ? error.message.slice(0, 500) : 'meta_delivery_failed',
+              error instanceof Error
+                ? error.message.slice(0, 500)
+                : "meta_delivery_failed",
           },
           update: {
-            status: 'failed',
+            status: "failed",
             errorMessage:
-              error instanceof Error ? error.message.slice(0, 500) : 'meta_delivery_failed',
+              error instanceof Error
+                ? error.message.slice(0, 500)
+                : "meta_delivery_failed",
           },
         });
       } catch {

@@ -26,8 +26,10 @@ export default function MySupportPage() {
   const {
     data: messages = [],
     isLoading,
+    isError,
+    isFetching,
     refetch,
-  } = useQuery(getMySupportMessages);
+  } = useQuery(getMySupportMessages, undefined, { retry: 1 });
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [feedback, setFeedback] = useState<"sent" | "error" | null>(null);
@@ -95,7 +97,24 @@ export default function MySupportPage() {
         </div>
       </form>
 
-      {isLoading ? (
+      {isError ? (
+        <Alert
+          variant="destructive"
+          className="flex flex-wrap items-center justify-between gap-3"
+        >
+          <span>{t("error_loading")}</span>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={isFetching}
+            onClick={() => void refetch()}
+          >
+            {isFetching && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {t("try_again")}
+          </Button>
+        </Alert>
+      ) : isLoading ? (
         <div className="flex justify-center py-12">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
         </div>

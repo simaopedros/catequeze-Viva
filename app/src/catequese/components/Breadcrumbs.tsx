@@ -1,6 +1,10 @@
 import { Link, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ChevronRight, Home } from "lucide-react";
+import {
+  getBreadcrumbLabel,
+  useBreadcrumbLabelsVersion,
+} from "../lib/breadcrumbLabels";
 
 interface BreadcrumbItem {
   label: string;
@@ -32,6 +36,7 @@ function segmentToNavKey(seg: string): string {
 export function Breadcrumbs({ className }: { className?: string }) {
   const location = useLocation();
   const { t } = useTranslation("navigation");
+  useBreadcrumbLabelsVersion();
 
   const segments = location.pathname.split("/").filter(Boolean);
   const hideOnMobileEncounter = isMobileEncounterRoute(location.pathname);
@@ -57,7 +62,8 @@ export function Breadcrumbs({ className }: { className?: string }) {
 
     if (isId) {
       return {
-        label: parentSingular || t("breadcrumb.detail"),
+        label:
+          getBreadcrumbLabel(to) || parentSingular || t("breadcrumb.detail"),
         // Em /app/classes/:id/attendance o id deixa de ser folha: vira o
         // caminho de volta para o detalhe, que antes não existia.
         to: i < segments.length - 1 ? to : undefined,

@@ -19,7 +19,7 @@
   "library": {
     "eyebrow": "Comunión",
     "title": "Carpeta oficial",
-    "subtitle": "{{published}} publicados · {{inherited}} heredados",
+    "subtitle": "$t(common:counts.published, {\"count\": {{published}} }) · $t(common:counts.inherited, {\"count\": {{inherited}} })",
     "new": "Nuevo recurso",
     "form_title": "Publicar recurso",
     "edit_title": "Editar recurso",
@@ -155,7 +155,9 @@
     "default_stage": "Etapa inicial",
     "stages_count_one": "{{count}} etapa",
     "stages_count_other": "{{count}} etapas",
-    "years_count": "{{count}} años instanciados",
+    "years_count_one": "{{count}} año instanciado",
+    "years_count_other": "{{count}} años instanciados",
+    "years_count_zero": "{{count}} años instanciados",
     "from": "A partir de {{name}}"
   },
   "formation": {
@@ -183,7 +185,7 @@
     "delete_confirm": "Las formaciones con inscritos o contenido se archivan; los borradores vacíos se eliminan.",
     "archived": "Formación archivada.",
     "not_found": "Formación no encontrada",
-    "detail_subtitle": "{{modules}} módulos · {{lessons}} clases · {{sessions}} encuentros · {{enrolled}} inscritos",
+    "detail_subtitle": "$t(common:counts.modules, {\"count\": {{modules}} }) · $t(common:counts.lessons, {\"count\": {{lessons}} }) · $t(common:counts.sessions, {\"count\": {{sessions}} }) · $t(common:counts.enrolled, {\"count\": {{enrolled}} })",
     "inherited_readonly": "Programa oficial: la parroquia inscribe al equipo y marca el progreso, pero solo la curia edita módulos y clases.",
     "tab_program": "Programa",
     "tab_sessions": "Encuentros en vivo",
@@ -252,7 +254,7 @@
     "enrollments_title": "Inscritos",
     "empty_title": "Ninguna formación",
     "empty_desc": "Cree la primera formación con módulos y clases, o espere a que la diócesis publique la escuela de catequistas.",
-    "meta": "{{modules}} módulos · {{lessons}} clases · {{enrolled}} inscritos · {{hours}}h",
+    "meta": "$t(common:counts.modules, {\"count\": {{modules}} }) · $t(common:counts.lessons, {\"count\": {{lessons}} }) · $t(common:counts.enrolled, {\"count\": {{enrolled}} }) · {{hours}}h",
     "kinds": {
       "INITIAL": "Inicial",
       "PERMANENT": "Permanente",

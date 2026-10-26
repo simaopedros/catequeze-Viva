@@ -66,6 +66,10 @@ import {
   liturgicalCelebrations,
 } from "../../shared/liturgicalCalendar";
 import {
+  DEFAULT_EVENT_TYPE,
+  newEventDefaultDate,
+} from "../../shared/calendarEventDefaults";
+import {
   Alert,
   AlertDescription,
   AlertTitle,
@@ -190,7 +194,7 @@ export default function CalendarPage() {
   const [desc, setDesc] = useState("");
   const [eventDate, setEventDate] = useState("");
   const [color, setColor] = useState(DEFAULT_COLOR);
-  const [eventType, setEventType] = useState("liturgical");
+  const [eventType, setEventType] = useState(DEFAULT_EVENT_TYPE);
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
@@ -345,12 +349,8 @@ export default function CalendarPage() {
   };
 
   const openNewEventForm = (day?: number) => {
-    const targetDay = day ?? selectedDay ?? 1;
-    setEventDate(
-      `${year}-${String(month + 1).padStart(2, "0")}-${String(
-        targetDay,
-      ).padStart(2, "0")}`,
-    );
+    setEventDate(newEventDefaultDate({ year, month, day: day ?? selectedDay }));
+    setEventType(DEFAULT_EVENT_TYPE);
     setMobilePanelOpen(false);
     setShowForm(true);
   };

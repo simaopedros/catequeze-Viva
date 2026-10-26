@@ -32,8 +32,9 @@
     "remove": "Quitar",
     "uploading": "Enviando {{percent}}%",
     "videoProcessing": "Procesando video...",
-    "quotaLeft": "{{count}} publicación restante hoy",
-    "quotaLeft_plural": "{{count}} publicaciones restantes hoy",
+    "quotaLeft_one": "{{count}} publicación restante hoy",
+    "quotaLeft_other": "{{count}} publicaciones restantes hoy",
+    "quotaLeft_zero": "{{count}} publicaciones restantes hoy",
     "videoTooLong": "Tu plan permite videos de hasta {{minutes}} minutos.",
     "tooManyMedia": "Tu plan permite {{count}} archivos por publicación.",
     "uploadFailed": "No se pudo enviar el archivo."

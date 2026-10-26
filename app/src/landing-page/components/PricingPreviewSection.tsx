@@ -16,7 +16,11 @@ import {
 } from "../../shared/currency";
 import { PLANS } from "../../shared/pricing";
 import { cn } from "../../client/utils";
-import { useLandingText, landingCopy, landingFeatureList } from "../hooks/useLandingText";
+import {
+  useLandingText,
+  landingCopy,
+  landingFeatureList,
+} from "../hooks/useLandingText";
 import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 
 type BillingInterval = "monthly" | "annual";
@@ -24,15 +28,21 @@ type BillingInterval = "monthly" | "annual";
 function formatPlanPrice(
   planId: string,
   interval: BillingInterval,
-  getBySlug: (slug: string) => { prices: { interval: string; unitAmountCents: number; isActive: boolean }[] },
+  getBySlug: (slug: string) => {
+    prices: { interval: string; unitAmountCents: number; isActive: boolean }[];
+  },
 ): {
   display: string;
   periodKey: "per_month" | "per_year";
   monthlyEquivalent?: string;
 } {
   const plan = getBySlug(planId);
-  const monthly = plan.prices.find((price) => price.interval === "monthly" && price.isActive);
-  const annual = plan.prices.find((price) => price.interval === "annual" && price.isActive);
+  const monthly = plan.prices.find(
+    (price) => price.interval === "monthly" && price.isActive,
+  );
+  const annual = plan.prices.find(
+    (price) => price.interval === "annual" && price.isActive,
+  );
   if (!monthly && !annual) {
     const def = PLANS[planId];
     if (!def) return { display: "—", periodKey: "per_month" };
@@ -78,14 +88,22 @@ export function PricingPreviewSection({ ns = "landing" }: { ns?: string }) {
   const [interval, setInterval] = useState<BillingInterval>("monthly");
 
   const previewPlans = publicPlans
-    .filter((plan) => plan.kind === "subscription" && plan.slug !== "catechist_free")
+    .filter(
+      (plan) => plan.kind === "subscription" && plan.slug !== "catechist_free",
+    )
     .map((plan) => {
       const loc = localize(plan);
-      const staticFallback = PRICING_PREVIEW.find((item) => item.planId === plan.slug);
+      const staticFallback = PRICING_PREVIEW.find(
+        (item) => item.planId === plan.slug,
+      );
       return {
         planId: plan.slug,
         highlight: plan.highlight,
-        desc: landingCopy(tr, `plans.${plan.slug}.desc`, plan.description || staticFallback?.desc || loc.name),
+        desc: landingCopy(
+          tr,
+          `plans.${plan.slug}.desc`,
+          plan.description || staticFallback?.desc || loc.name,
+        ),
         features: landingFeatureList(
           tr,
           `plans.${plan.slug}.features`,
@@ -232,11 +250,15 @@ function PricingPreviewCard({
     plan.planId === "single"
       ? "Para catequista individual"
       : plan.planId === "unlimited"
-        ? "Para paroquia e diocese"
+        ? "Para paróquia e diocese"
         : "",
   );
   const desc = landingCopy(tr, `plans.${plan.planId}.desc`, plan.desc);
-  const features = landingFeatureList(tr, `plans.${plan.planId}.features`, plan.features);
+  const features = landingFeatureList(
+    tr,
+    `plans.${plan.planId}.features`,
+    plan.features,
+  );
   const priced = formatPlanPrice(plan.planId, interval, getBySlug);
   const signupHref = `/signup?plan=${plan.planId}&interval=${interval}`;
   const ctaLabel =
@@ -312,8 +334,12 @@ function PricingPreviewCard({
               interval,
             });
             const catalogPlan = getBySlug(plan.planId);
-            const annual = catalogPlan.prices.find((price) => price.interval === "annual" && price.isActive);
-            const monthly = catalogPlan.prices.find((price) => price.interval === "monthly" && price.isActive);
+            const annual = catalogPlan.prices.find(
+              (price) => price.interval === "annual" && price.isActive,
+            );
+            const monthly = catalogPlan.prices.find(
+              (price) => price.interval === "monthly" && price.isActive,
+            );
             const cents =
               interval === "annual" && annual
                 ? annual.unitAmountCents

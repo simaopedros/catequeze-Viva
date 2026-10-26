@@ -1,8 +1,9 @@
+import { EMAIL_MESSAGE, type EmailMessageId } from "../../shared/emailCatalog";
 import {
-  EMAIL_MESSAGE,
-  type EmailMessageId,
-} from "../../shared/emailCatalog";
-import { getEmailsCopy, interpolate, resolveCampaignCopy } from "../lifecycle/copy";
+  getEmailsCopy,
+  interpolate,
+  resolveCampaignCopy,
+} from "../lifecycle/copy";
 import type { ServerLocale } from "../i18n/serverLocale";
 import { renderBrandedEmail } from "../../emails/renderEmail";
 import type { LifecycleCampaign } from "../lifecycle/selectCampaign";
@@ -42,7 +43,10 @@ export function renderCatalogEmail(
 ): RenderedEmail {
   const ns = getEmailsCopy(locale);
   const footerExtra = str(payload, "unsubscribeUrl")
-    ? `${ns.footer_reason}<br/><a href="${str(payload, "unsubscribeUrl")}" style="color:#64748b">${ns.unsubscribe}</a>`
+    ? `${ns.footer_reason}<br/><a href="${str(
+        payload,
+        "unsubscribeUrl",
+      )}" style="color:#64748b">${ns.unsubscribe}</a>`
     : ns.footer_reason;
 
   const campaign = LIFECYCLE_MESSAGE_TO_CAMPAIGN[messageId];
@@ -67,20 +71,25 @@ export function renderCatalogEmail(
       body: copy.body,
       ctaLabel: copy.cta,
       ctaUrl: str(payload, "ctaUrl"),
-      footer: `${copy.footerReason} ${copy.unsubscribeLabel}: ${str(payload, "unsubscribeUrl")}`,
+      footer: `${copy.footerReason} ${copy.unsubscribeLabel}: ${str(
+        payload,
+        "unsubscribeUrl",
+      )}`,
     });
     return { ...rendered, subject: copy.subject, heading: copy.heading };
   }
 
   if (messageId === EMAIL_MESSAGE.LIFECYCLE_WELCOME) {
-    const subject = interpolate(ns.welcome.subject, {
-      name: str(payload, "name", ns.fallback_name),
-    });
+    const name = str(payload, "name").trim();
+    const subject = name
+      ? interpolate(ns.welcome.subject, { name })
+      : ns.welcome.subject_no_name;
+    const body = name
+      ? interpolate(ns.welcome.body, { name })
+      : ns.welcome.body_no_name;
     const rendered = renderBrandedEmail({
       heading: ns.welcome.heading,
-      body: interpolate(ns.welcome.body, {
-        name: str(payload, "name", ns.fallback_name),
-      }),
+      body,
       ctaLabel: ns.welcome.cta,
       ctaUrl: str(payload, "ctaUrl"),
       footer: footerExtra,
@@ -93,7 +102,9 @@ export function renderCatalogEmail(
     messageId === EMAIL_MESSAGE.INVITE_STAFF
   ) {
     const block =
-      messageId === EMAIL_MESSAGE.INVITE_FAMILY ? ns.invite.family : ns.invite.staff;
+      messageId === EMAIL_MESSAGE.INVITE_FAMILY
+        ? ns.invite.family
+        : ns.invite.staff;
     const vars = {
       location: str(payload, "location"),
       role: str(payload, "roleLabel"),
@@ -116,7 +127,11 @@ export function renderCatalogEmail(
   if (messageId === EMAIL_MESSAGE.SUPPORT_REPLY) {
     const rendered = renderBrandedEmail({
       heading: ns.support_reply.heading,
-      body: `${interpolate(ns.support_reply.greeting, { name: str(payload, "name") })}\n\n${ns.support_reply.intro}\n\n${str(payload, "body")}\n\n${ns.support_reply.outro}`,
+      body: `${interpolate(ns.support_reply.greeting, {
+        name: str(payload, "name"),
+      })}\n\n${ns.support_reply.intro}\n\n${str(payload, "body")}\n\n${
+        ns.support_reply.outro
+      }`,
       ctaLabel: ns.support_reply.cta,
       ctaUrl: str(payload, "ctaUrl"),
       footer: ns.support_reply.footer,

@@ -47,7 +47,7 @@
   "migrate_data": "Migrate data",
   "not_coordinator": "You are not a coordinator of any parish.",
   "different_parishes": "Source and destination parishes must be different.",
-  "migration_success": "Migration complete! {{classes}} classes, {{households}} families, {{members}} members transferred.",
+  "migration_success": "Migration complete! $t(common:counts.classes, {\"count\": {{classes}} }), $t(common:counts.families, {\"count\": {{households}} }), $t(common:counts.members_transferred, {\"count\": {{members}} }).",
   "migration_error": "Error executing migration.",
   "privacy_notice": "Your data is protected under LGPD. No data is shared without consent.",
   "email_preferences": "Email preferences",

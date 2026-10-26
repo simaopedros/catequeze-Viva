@@ -87,6 +87,7 @@ app OpenSaaS {
     onAuthFailedRedirectTo: "/login",
     onAuthSucceededRedirectTo: "/app",
     onAfterSignup: import { onAfterSignup } from "@src/auth/hooks",
+    onAfterEmailVerified: import { onAfterEmailVerified } from "@src/auth/hooks",
   },
 
   client: {
@@ -571,6 +572,12 @@ route AppSupportRoute { path: "/app/suporte", to: AppSupportPage }
 page AppSupportPage {
   authRequired: true,
   component: import MySupportPage from "@src/catequese/pages/MySupportPage"
+}
+
+route AppSupportAliasRoute { path: "/app/support", to: AppSupportAliasPage }
+page AppSupportAliasPage {
+  authRequired: true,
+  component: import RedirectSupportToSuporte from "@src/catequese/pages/RedirectSupportToSuporte"
 }
 
 route AppBillingRoute { path: "/app/billing", to: AppBillingPage }

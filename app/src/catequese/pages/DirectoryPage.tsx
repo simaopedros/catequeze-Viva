@@ -201,7 +201,7 @@ export default function DirectoryPage() {
       ) : displayEntries.length > 0 ? (
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">
-            {displayEntries.length} {t("directory.paragraphs")}
+            {t("directory.paragraphs", { count: displayEntries.length })}
           </p>
           {displayEntries.map((entry: any) => (
             <div

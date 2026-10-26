@@ -30,7 +30,7 @@
   "attendance_by_class": "Attendance by class",
   "no_classes": "No classes",
   "no_classes_desc": "Register classes to see attendance reports.",
-  "enrolled_meetings": "{{enrolled}} enrolled · {{meetings}} meetings",
+  "enrolled_meetings": "$t(common:counts.enrolled, {\"count\": {{enrolled}} }) · $t(common:counts.meetings, {\"count\": {{meetings}} })",
   "present_absent": "{{present}}P / {{absent}}A",
   "ranking_title": "Attendance Ranking",
   "no_data": "No data",

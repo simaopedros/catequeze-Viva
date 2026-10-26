@@ -1,47 +1,57 @@
-import { HttpError, prisma } from 'wasp/server';
-import { EnrollmentStatus } from '@prisma/client';
-import { COORDINATOR_ROLES, getDioceseParishIds } from '../auth/helpers';
+import { HttpError, prisma } from "wasp/server";
+import { EnrollmentStatus } from "@prisma/client";
+import { COORDINATOR_ROLES, getDioceseParishIds } from "../auth/helpers";
 import {
   MAX_CSV_IMPORT_CHARS,
   MAX_CSV_IMPORT_ROWS,
-} from '../security/csvSafety';
+} from "../security/csvSafety";
 import {
   parseBirthDateUtc,
   parseCatechumenCsv,
-} from '../../shared/csvCatechumenImport';
-import { resolveEnrollmentCapacity } from './billingEnforcement';
-import { ensureSacramentalJourneyForCatechumen } from '../sacramentHelpers';
-import { logger } from '../logger';
+} from "../../shared/csvCatechumenImport";
+import { resolveEnrollmentCapacity } from "./billingEnforcement";
+import { ensureSacramentalJourneyForCatechumen } from "../sacramentHelpers";
+import { logger } from "../logger";
+import { pluralPt } from "../../shared/pluralPt";
 
-const IMPORT_ROLES = [...COORDINATOR_ROLES, 'LEAD_CATECHIST'];
+const IMPORT_ROLES = [...COORDINATOR_ROLES, "LEAD_CATECHIST"];
 
-async function resolveImportParish(context: any, args: { csvData: string; parishId?: string }): Promise<string> {
+async function resolveImportParish(
+  context: any,
+  args: { csvData: string; parishId?: string },
+): Promise<string> {
   if (context.user?.isAdmin) {
-    if (!args.parishId) throw new HttpError(400, 'Especifique parishId.');
+    if (!args.parishId) throw new HttpError(400, "Especifique parishId.");
     return args.parishId;
   }
 
   const importMemberships = await context.entities.Membership.findMany({
     where: {
       userId: context.user.id,
-      status: 'ACTIVE',
+      status: "ACTIVE",
       role: { in: IMPORT_ROLES },
     },
     select: { parishId: true },
-    orderBy: { createdAt: 'asc' },
+    orderBy: { createdAt: "asc" },
   });
 
   const personalWorkspace = await context.entities.Parish.findFirst({
-    where: { ownerId: context.user.id, type: 'PERSONAL' },
+    where: { ownerId: context.user.id, type: "PERSONAL" },
     select: { id: true },
   });
 
-  const allowedParishIds = new Set(importMemberships.map((m: any) => m.parishId));
+  const allowedParishIds = new Set(
+    importMemberships.map((m: any) => m.parishId),
+  );
   if (personalWorkspace) allowedParishIds.add(personalWorkspace.id);
 
   if (importMemberships.some((m: any) => m.parishId)) {
     const membershipForRole = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, status: 'ACTIVE', role: 'DIOCESE_ADMIN' },
+      where: {
+        userId: context.user.id,
+        status: "ACTIVE",
+        role: "DIOCESE_ADMIN",
+      },
       select: { id: true },
     });
     if (membershipForRole) {
@@ -51,12 +61,15 @@ async function resolveImportParish(context: any, args: { csvData: string; parish
   }
 
   if (allowedParishIds.size === 0) {
-    throw new HttpError(403, 'Sem permissão para realizar importações.');
+    throw new HttpError(403, "Sem permissão para realizar importações.");
   }
 
   if (args.parishId) {
     if (!allowedParishIds.has(args.parishId)) {
-      throw new HttpError(403, 'Sem permissão para importar catequizandos nesta paróquia.');
+      throw new HttpError(
+        403,
+        "Sem permissão para importar catequizandos nesta paróquia.",
+      );
     }
     return args.parishId;
   }
@@ -65,15 +78,18 @@ async function resolveImportParish(context: any, args: { csvData: string; parish
     return Array.from(allowedParishIds)[0] as string;
   }
 
-  throw new HttpError(400, 'Especifique parishId — você pertence a mais de uma paróquia ou comunidade com permissão de importação.');
+  throw new HttpError(
+    400,
+    "Especifique parishId — você pertence a mais de uma paróquia ou comunidade com permissão de importação.",
+  );
 }
 
 function normalizeClassKey(value: string): string {
   return value
     .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, ' ')
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
@@ -82,7 +98,11 @@ async function resolveClassForImport(
   parishId: string,
   classId?: string,
   className?: string,
-): Promise<{ id: string; sacramentId: string | null; maxCapacity: number | null } | null> {
+): Promise<{
+  id: string;
+  sacramentId: string | null;
+  maxCapacity: number | null;
+} | null> {
   if (classId) {
     const cls = await context.entities.CatechesisClass.findFirst({
       where: { id: classId, parishId },
@@ -92,17 +112,19 @@ async function resolveClassForImport(
   }
   if (!className) return null;
   const classes = await context.entities.CatechesisClass.findMany({
-    where: { parishId, status: { not: 'ARCHIVED' } },
+    where: { parishId, status: { not: "ARCHIVED" } },
     select: { id: true, name: true, sacramentId: true, maxCapacity: true },
   });
   const key = normalizeClassKey(className);
   const match = classes.find(
-    (cls: any) =>
-      normalizeClassKey(cls.name) === key ||
-      cls.id === className,
+    (cls: any) => normalizeClassKey(cls.name) === key || cls.id === className,
   );
   return match
-    ? { id: match.id, sacramentId: match.sacramentId, maxCapacity: match.maxCapacity }
+    ? {
+        id: match.id,
+        sacramentId: match.sacramentId,
+        maxCapacity: match.maxCapacity,
+      }
     : null;
 }
 
@@ -122,7 +144,7 @@ export const importCatechumensCSV = async (
   }
 
   const parsed = parseCatechumenCsv(args.csvData);
-  if (parsed.length === 0) throw new HttpError(400, 'CSV vazio.');
+  if (parsed.length === 0) throw new HttpError(400, "CSV vazio.");
   if (parsed.length > MAX_CSV_IMPORT_ROWS) {
     throw new HttpError(
       400,
@@ -164,15 +186,18 @@ export const importCatechumensCSV = async (
 
   if (toCreate.length === 0) return results;
 
-  let createdProfiles: { id: string; className: string; lineNumber: number }[] = [];
+  let createdProfiles: { id: string; className: string; lineNumber: number }[] =
+    [];
   try {
     const created = await prisma.catechumenProfile.createManyAndReturn({
-      data: toCreate.map(({ firstName, lastName, birthDate, parishId: pid }) => ({
-        firstName,
-        lastName,
-        birthDate,
-        parishId: pid,
-      })),
+      data: toCreate.map(
+        ({ firstName, lastName, birthDate, parishId: pid }) => ({
+          firstName,
+          lastName,
+          birthDate,
+          parishId: pid,
+        }),
+      ),
     });
     createdProfiles = created.map((profile, idx) => ({
       id: profile.id,
@@ -182,7 +207,13 @@ export const importCatechumensCSV = async (
     results.created = created.length;
   } catch (e: any) {
     results.errors += toCreate.length;
-    results.details.push(`Erro ao criar ${toCreate.length} catequizandos: ${e.message}`);
+    results.details.push(
+      `Erro ao criar ${pluralPt(
+        toCreate.length,
+        "catequizando",
+        "catequizandos",
+      )}: ${e.message}`,
+    );
     return results;
   }
 
@@ -190,11 +221,16 @@ export const importCatechumensCSV = async (
     ? await resolveClassForImport(context, parishId, args.classId)
     : null;
   if (args.classId && !scopedClass) {
-    results.details.push('Turma alvo não encontrada neste espaço — catequizandos ficaram sem matrícula.');
+    results.details.push(
+      "Turma alvo não encontrada neste espaço — catequizandos ficaram sem matrícula.",
+    );
   }
 
-  const classCache = new Map<string, Awaited<ReturnType<typeof resolveClassForImport>>>();
-  if (scopedClass) classCache.set('__scoped__', scopedClass);
+  const classCache = new Map<
+    string,
+    Awaited<ReturnType<typeof resolveClassForImport>>
+  >();
+  if (scopedClass) classCache.set("__scoped__", scopedClass);
 
   // Resolve the target class of every profile first (cached per class name).
   const targets: Array<{
@@ -207,7 +243,12 @@ export const importCatechumensCSV = async (
       if (!classCache.has(profile.className)) {
         classCache.set(
           profile.className,
-          await resolveClassForImport(context, parishId, undefined, profile.className),
+          await resolveClassForImport(
+            context,
+            parishId,
+            undefined,
+            profile.className,
+          ),
         );
       }
       target = classCache.get(profile.className) ?? null;
@@ -227,7 +268,9 @@ export const importCatechumensCSV = async (
 
   // Plan limit and class capacities are loaded once and tracked locally while
   // we decide which rows can be enrolled (instead of 2-3 queries per row).
-  const capacity = context.user.isAdmin ? null : await resolveEnrollmentCapacity(context, parishId);
+  const capacity = context.user.isAdmin
+    ? null
+    : await resolveEnrollmentCapacity(context, parishId);
   let remainingPlanSlots =
     capacity && capacity.maxCatechumens !== null
       ? Math.max(capacity.maxCatechumens - capacity.enrolledCount, 0)
@@ -236,19 +279,29 @@ export const importCatechumensCSV = async (
   const targetClassIds = [...new Set(targets.map((t) => t.target.id))];
   const enrolledByClass = new Map<string, number>();
   const enrolledGroups = await context.entities.ClassEnrollment.groupBy({
-    by: ['classId'],
-    where: { classId: { in: targetClassIds }, status: EnrollmentStatus.ENROLLED },
+    by: ["classId"],
+    where: {
+      classId: { in: targetClassIds },
+      status: EnrollmentStatus.ENROLLED,
+    },
     _count: { id: true },
   });
-  for (const g of enrolledGroups as any[]) enrolledByClass.set(g.classId, g._count.id);
+  for (const g of enrolledGroups as any[])
+    enrolledByClass.set(g.classId, g._count.id);
 
-  const enrollmentsToCreate: { classId: string; catechumenProfileId: string; status: EnrollmentStatus }[] = [];
+  const enrollmentsToCreate: {
+    classId: string;
+    catechumenProfileId: string;
+    status: EnrollmentStatus;
+  }[] = [];
   const journeysToEnsure: { profileId: string; sacramentId: string }[] = [];
 
   for (const { profile, target } of targets) {
     if (remainingPlanSlots <= 0) {
       results.details.push(
-        `Linha ${profile.lineNumber}: não foi possível matricular — ${capacity?.limitError().message ?? 'limite do plano atingido'}`,
+        `Linha ${profile.lineNumber}: não foi possível matricular — ${
+          capacity?.limitError().message ?? "limite do plano atingido"
+        }`,
       );
       continue;
     }
@@ -266,7 +319,11 @@ export const importCatechumensCSV = async (
       catechumenProfileId: profile.id,
       status: EnrollmentStatus.ENROLLED,
     });
-    if (target.sacramentId) journeysToEnsure.push({ profileId: profile.id, sacramentId: target.sacramentId });
+    if (target.sacramentId)
+      journeysToEnsure.push({
+        profileId: profile.id,
+        sacramentId: target.sacramentId,
+      });
   }
 
   if (enrollmentsToCreate.length > 0) {
@@ -278,7 +335,11 @@ export const importCatechumensCSV = async (
       results.enrolled += created?.count ?? enrollmentsToCreate.length;
     } catch (e: any) {
       results.details.push(
-        `Não foi possível matricular ${enrollmentsToCreate.length} catequizando(s) — ${e.message || e}`,
+        `Não foi possível matricular ${pluralPt(
+          enrollmentsToCreate.length,
+          "catequizando",
+          "catequizandos",
+        )} — ${e.message || e}`,
       );
       return results;
     }
@@ -286,9 +347,14 @@ export const importCatechumensCSV = async (
 
   for (const { profileId, sacramentId } of journeysToEnsure) {
     try {
-      await ensureSacramentalJourneyForCatechumen(profileId, sacramentId, parishId, context);
+      await ensureSacramentalJourneyForCatechumen(
+        profileId,
+        sacramentId,
+        parishId,
+        context,
+      );
     } catch (e: any) {
-      logger.warn('Failed to auto-create sacramental journey on CSV import', {
+      logger.warn("Failed to auto-create sacramental journey on CSV import", {
         catechumenProfileId: profileId,
         error: e instanceof Error ? e.message : String(e),
       });

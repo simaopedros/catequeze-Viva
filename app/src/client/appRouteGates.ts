@@ -74,6 +74,7 @@ export const SUBSCRIPTION_FREE_APP_PATHS = [
   "/app/select-workspace",
   "/app/settings",
   "/app/suporte",
+  "/app/support",
   "/app/bible",
   "/app/catechism",
   "/app/directory",

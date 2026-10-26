@@ -71,7 +71,11 @@ describe("outbox + fake provider", () => {
     const result = await enqueueEmail({
       messageId: EMAIL_MESSAGE.SUPPORT_REPLY,
       to: "Ana@Parish.COM",
-      payload: { name: "Ana", body: "Segue a resposta.", ctaUrl: "https://catechis.app/app/suporte" },
+      payload: {
+        name: "Ana",
+        body: "Segue a resposta.",
+        ctaUrl: "https://catechis.app/app/suporte",
+      },
       idempotencyKey: "support.reply:msg-1",
     });
     expect(result.status).toBe("SENT");
@@ -135,7 +139,7 @@ describe("outbox + fake provider", () => {
 });
 
 describe("product events", () => {
-  it("syncs the contact and sends welcome on signup", async () => {
+  it("syncs the contact on signup without sending welcome yet", async () => {
     await emitProductEvent({
       name: PRODUCT_EVENT.USER_SIGNED_UP,
       email: "new@catechis.app",
@@ -147,9 +151,39 @@ describe("product events", () => {
     expect(getFakeEvents().map((event) => event.name)).toContain(
       PRODUCT_EVENT.USER_SIGNED_UP,
     );
-    expect(getFakeSentEmails().some((email) => email.subject.includes("Bem-vindo"))).toBe(
-      true,
+    expect(
+      getFakeSentEmails().some((email) => email.subject.includes("Bem-vindo")),
+    ).toBe(false);
+  });
+
+  it("sends welcome after email verification, omitting empty names", async () => {
+    await emitProductEvent({
+      name: PRODUCT_EVENT.USER_EMAIL_VERIFIED,
+      email: "new@catechis.app",
+      userId: "u-1",
+      firstName: "",
+      isFamilyPortal: false,
+    });
+    const welcome = getFakeSentEmails().find((email) =>
+      email.subject.includes("Bem-vindo"),
     );
+    expect(welcome?.subject).toBe("Bem-vindo à Catequese Viva");
+    expect(welcome?.text || welcome?.html || "").toMatch(/Olá!/);
+    expect(welcome?.subject).not.toMatch(/,\s*$/);
+  });
+
+  it("keeps the name in welcome when one is known", async () => {
+    await emitProductEvent({
+      name: PRODUCT_EVENT.USER_EMAIL_VERIFIED,
+      email: "named@catechis.app",
+      userId: "u-2",
+      firstName: "João",
+      isFamilyPortal: false,
+    });
+    const welcome = getFakeSentEmails().find((email) =>
+      email.subject.includes("João"),
+    );
+    expect(welcome?.subject).toBe("Bem-vindo à Catequese Viva, João");
   });
 });
 
@@ -192,9 +226,9 @@ describe("list-unsubscribe headers", () => {
       "List-Unsubscribe=One-Click",
     );
 
-    expect(listUnsubscribeHeaders("", EMAIL_MESSAGE.PASTORAL_ANNOUNCEMENT)).toEqual(
-      {},
-    );
+    expect(
+      listUnsubscribeHeaders("", EMAIL_MESSAGE.PASTORAL_ANNOUNCEMENT),
+    ).toEqual({});
   });
 });
 

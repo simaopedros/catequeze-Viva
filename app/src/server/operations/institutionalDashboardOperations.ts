@@ -5,15 +5,20 @@
  * Fornece KPIs consolidados por domínio, tendências temporais e alertas
  * preventivos/preditivos para gestores pastorais.
  */
-import { HttpError } from 'wasp/server';
+import { HttpError } from "wasp/server";
 import {
   assertCanAccessParishReports,
   getDioceseParishIds,
   COORDINATOR_ROLES,
-} from '../auth/helpers';
-import { assertTwoFactorSessionVerified } from './twoFactorOperations';
-import { resolveWorkspaceAccess } from './sharedScope';
-import { formatServerDate, getPeriodLabel, resolveUserLocale } from '../i18n/serverLocale';
+} from "../auth/helpers";
+import { assertTwoFactorSessionVerified } from "./twoFactorOperations";
+import { resolveWorkspaceAccess } from "./sharedScope";
+import {
+  formatServerDate,
+  getPeriodLabel,
+  resolveUserLocale,
+} from "../i18n/serverLocale";
+import { pluralPt } from "../../shared/pluralPt";
 
 /** Upper bound of classes scanned per alert query (alerts are counts, not lists). */
 const MAX_ALERT_CLASSES = 500;
@@ -21,9 +26,9 @@ const MAX_ALERT_CLASSES = 500;
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface ScopeArgs {
-  scope: 'diocese' | 'parish' | 'community';
+  scope: "diocese" | "parish" | "community";
   scopeId: string; // dioceseId, parishId, or communityId
-  period: 'month' | 'quarter' | 'year' | 'all';
+  period: "month" | "quarter" | "year" | "all";
 }
 
 interface KpiBlock {
@@ -32,7 +37,7 @@ interface KpiBlock {
   value: number;
   delta: number | null;
   deltaLabel: string | null;
-  format?: 'number' | 'percent' | 'currency' | 'days' | 'text';
+  format?: "number" | "percent" | "currency" | "days" | "text";
   displayValue?: string;
 }
 
@@ -61,7 +66,7 @@ interface TrendSeries {
 
 interface InstitutionalAlert {
   [key: string]: any;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
   category: string;
   count: number;
   message: string;
@@ -77,17 +82,17 @@ function getPeriodDates(period: string) {
   const previousEnd = new Date();
 
   switch (period) {
-    case 'month':
+    case "month":
       currentStart.setMonth(now.getMonth() - 1);
       previousStart.setMonth(now.getMonth() - 2);
       previousEnd.setMonth(now.getMonth() - 1);
       break;
-    case 'quarter':
+    case "quarter":
       currentStart.setMonth(now.getMonth() - 3);
       previousStart.setMonth(now.getMonth() - 6);
       previousEnd.setMonth(now.getMonth() - 3);
       break;
-    case 'year':
+    case "year":
       currentStart.setFullYear(now.getFullYear() - 1);
       previousStart.setFullYear(now.getFullYear() - 2);
       previousEnd.setFullYear(now.getFullYear() - 1);
@@ -102,11 +107,14 @@ function getPeriodDates(period: string) {
   return { now, currentStart, previousStart, previousEnd };
 }
 
-function formatDelta(current: number, previous: number): { delta: number | null; deltaLabel: string | null } {
+function formatDelta(
+  current: number,
+  previous: number,
+): { delta: number | null; deltaLabel: string | null } {
   if (previous === 0 && current === 0) return { delta: null, deltaLabel: null };
-  if (previous === 0) return { delta: 100, deltaLabel: 'vs. 0' };
+  if (previous === 0) return { delta: 100, deltaLabel: "vs. 0" };
   const pct = Math.round(((current - previous) / previous) * 100);
-  return { delta: pct, deltaLabel: `${pct >= 0 ? '+' : ''}${pct}%` };
+  return { delta: pct, deltaLabel: `${pct >= 0 ? "+" : ""}${pct}%` };
 }
 
 // ─── Scope Resolution ─────────────────────────────────────────────────────────
@@ -124,60 +132,96 @@ async function resolveScopeParishIds(
   if (!context.user) throw new HttpError(401);
 
   const membership = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, status: 'ACTIVE' },
-    select: { role: true, parishId: true, parish: { select: { dioceseId: true } } },
+    where: { userId: context.user.id, status: "ACTIVE" },
+    select: {
+      role: true,
+      parishId: true,
+      parish: { select: { dioceseId: true } },
+    },
   });
 
   const isAdmin = context.user.isAdmin;
-  const role = membership?.role || '';
+  const role = membership?.role || "";
 
-  if (args.scope === 'diocese') {
-    if (!isAdmin && role !== 'DIOCESE_ADMIN') {
-      throw new HttpError(403, 'Apenas administradores de diocese podem acessar este escopo.');
+  if (args.scope === "diocese") {
+    if (!isAdmin && role !== "DIOCESE_ADMIN") {
+      throw new HttpError(
+        403,
+        "Apenas administradores de diocese podem acessar este escopo.",
+      );
     }
-    if (isAdmin && args.scopeId === 'all') {
-      const allParishes = await context.entities.Parish.findMany({ select: { id: true } });
-      return { parishIds: allParishes.map((p: any) => p.id), membershipRole: 'SUPER_ADMIN' };
+    if (isAdmin && args.scopeId === "all") {
+      const allParishes = await context.entities.Parish.findMany({
+        select: { id: true },
+      });
+      return {
+        parishIds: allParishes.map((p: any) => p.id),
+        membershipRole: "SUPER_ADMIN",
+      };
     }
     const dioceseParishIds = await getDioceseParishIds(context);
     if (dioceseParishIds.length === 0) {
-      throw new HttpError(403, 'Nenhuma paróquia encontrada para esta diocese.');
+      throw new HttpError(
+        403,
+        "Nenhuma paróquia encontrada para esta diocese.",
+      );
     }
     return { parishIds: dioceseParishIds, membershipRole: role };
   }
 
-  if (args.scope === 'parish') {
+  if (args.scope === "parish") {
     if (!isAdmin) {
       await assertCanAccessParishReports(context, args.scopeId);
       // Scoped community coordinator (vice): parish view collapses to their community
-      const access = await resolveWorkspaceAccess(context, args.scopeId, { required: false });
+      const access = await resolveWorkspaceAccess(context, args.scopeId, {
+        required: false,
+      });
       if (access?.isScopedCoordinator) {
         if (!access.communityId) {
-          throw new HttpError(403, 'Seu escopo de coordenação não inclui a paróquia inteira.');
+          throw new HttpError(
+            403,
+            "Seu escopo de coordenação não inclui a paróquia inteira.",
+          );
         }
-        return { parishIds: [args.scopeId], communityId: access.communityId, membershipRole: role };
+        return {
+          parishIds: [args.scopeId],
+          communityId: access.communityId,
+          membershipRole: role,
+        };
       }
     }
-    return { parishIds: [args.scopeId], membershipRole: isAdmin ? 'SUPER_ADMIN' : role };
+    return {
+      parishIds: [args.scopeId],
+      membershipRole: isAdmin ? "SUPER_ADMIN" : role,
+    };
   }
 
-  if (args.scope === 'community') {
+  if (args.scope === "community") {
     const community = await context.entities.Community.findUnique({
       where: { id: args.scopeId },
       select: { parishId: true },
     });
-    if (!community) throw new HttpError(404, 'Comunidade não encontrada.');
+    if (!community) throw new HttpError(404, "Comunidade não encontrada.");
     if (!isAdmin) {
       await assertCanAccessParishReports(context, community.parishId);
-      const access = await resolveWorkspaceAccess(context, community.parishId, { required: false });
+      const access = await resolveWorkspaceAccess(context, community.parishId, {
+        required: false,
+      });
       if (access?.isScopedCoordinator && access.communityId !== args.scopeId) {
-        throw new HttpError(403, 'Esta comunidade está fora do seu escopo de coordenação.');
+        throw new HttpError(
+          403,
+          "Esta comunidade está fora do seu escopo de coordenação.",
+        );
       }
     }
-    return { parishIds: [community.parishId], communityId: args.scopeId, membershipRole: isAdmin ? 'SUPER_ADMIN' : role };
+    return {
+      parishIds: [community.parishId],
+      communityId: args.scopeId,
+      membershipRole: isAdmin ? "SUPER_ADMIN" : role,
+    };
   }
 
-  throw new HttpError(400, 'Escopo inválido.');
+  throw new HttpError(400, "Escopo inválido.");
 }
 
 function buildClassWhereClause(
@@ -185,7 +229,10 @@ function buildClassWhereClause(
   communityId?: string,
   periodDates?: { currentStart: Date; now: Date },
 ) {
-  const base: any = { parishId: { in: parishIds }, status: { not: 'ARCHIVED' } };
+  const base: any = {
+    parishId: { in: parishIds },
+    status: { not: "ARCHIVED" },
+  };
   if (communityId) base.communityId = communityId;
   return base;
 }
@@ -195,7 +242,10 @@ function buildEnrollmentWhereClause(
   communityId?: string,
   periodDates?: { currentStart: Date; now: Date },
 ) {
-  const classWhere: any = { parishId: { in: parishIds }, status: { not: 'ARCHIVED' } };
+  const classWhere: any = {
+    parishId: { in: parishIds },
+    status: { not: "ARCHIVED" },
+  };
   if (communityId) classWhere.communityId = communityId;
   const where: any = { class: classWhere };
   if (periodDates) {
@@ -206,17 +256,26 @@ function buildEnrollmentWhereClause(
 
 // ─── getInstitutionalOverview ─────────────────────────────────────────────────
 
-export const getInstitutionalOverview = async (args: ScopeArgs, context: any): Promise<InstitutionalOverview> => {
+export const getInstitutionalOverview = async (
+  args: ScopeArgs,
+  context: any,
+): Promise<InstitutionalOverview> => {
   if (!context.user) throw new HttpError(401);
   await assertTwoFactorSessionVerified(context);
 
-  const { parishIds, communityId, membershipRole } = await resolveScopeParishIds(context, args);
-  const { now, currentStart, previousStart, previousEnd } = getPeriodDates(args.period);
+  const { parishIds, communityId, membershipRole } =
+    await resolveScopeParishIds(context, args);
+  const { now, currentStart, previousStart, previousEnd } = getPeriodDates(
+    args.period,
+  );
 
   const classWhere = buildClassWhereClause(parishIds, communityId);
   const enrollmentWhere = buildEnrollmentWhereClause(parishIds, communityId);
-  const previousEnrollmentWhere = buildEnrollmentWhereClause(parishIds, communityId);
-  if (args.period !== 'all') {
+  const previousEnrollmentWhere = buildEnrollmentWhereClause(
+    parishIds,
+    communityId,
+  );
+  if (args.period !== "all") {
     previousEnrollmentWhere.createdAt = { gte: previousStart, lt: previousEnd };
   }
 
@@ -256,38 +315,69 @@ export const getInstitutionalOverview = async (args: ScopeArgs, context: any): P
     tenantBilling,
   ] = await Promise.all([
     // People
-    context.entities.ClassEnrollment.count({ where: { ...enrollmentWhere, status: 'ENROLLED' } }),
-    context.entities.ClassEnrollment.count({ where: { ...previousEnrollmentWhere, status: 'ENROLLED' } }),
     context.entities.ClassEnrollment.count({
-      where: { ...enrollmentWhere, status: 'ENROLLED', createdAt: { gte: currentStart, lt: now } },
+      where: { ...enrollmentWhere, status: "ENROLLED" },
     }),
     context.entities.ClassEnrollment.count({
-      where: { ...enrollmentWhere, status: 'DROPPED', updatedAt: { gte: currentStart, lt: now } },
+      where: { ...previousEnrollmentWhere, status: "ENROLLED" },
     }),
     context.entities.ClassEnrollment.count({
-      where: { ...enrollmentWhere, status: 'TRANSFERRED', updatedAt: { gte: currentStart, lt: now } },
+      where: {
+        ...enrollmentWhere,
+        status: "ENROLLED",
+        createdAt: { gte: currentStart, lt: now },
+      },
+    }),
+    context.entities.ClassEnrollment.count({
+      where: {
+        ...enrollmentWhere,
+        status: "DROPPED",
+        updatedAt: { gte: currentStart, lt: now },
+      },
+    }),
+    context.entities.ClassEnrollment.count({
+      where: {
+        ...enrollmentWhere,
+        status: "TRANSFERRED",
+        updatedAt: { gte: currentStart, lt: now },
+      },
     }),
     // Classes
-    context.entities.CatechesisClass.count({ where: { ...classWhere, status: 'ACTIVE' } }),
+    context.entities.CatechesisClass.count({
+      where: { ...classWhere, status: "ACTIVE" },
+    }),
     context.entities.CatechesisClass.aggregate({
-      where: { ...classWhere, status: 'ACTIVE' },
+      where: { ...classWhere, status: "ACTIVE" },
       _sum: { maxCapacity: true },
     }),
     context.entities.CatechesisClass.count({
-      where: { ...classWhere, status: 'ACTIVE', catechists: { none: { role: 'LEAD' } } },
+      where: {
+        ...classWhere,
+        status: "ACTIVE",
+        catechists: { none: { role: "LEAD" } },
+      },
     }),
     context.entities.ClassCatechist.count({
-      where: { class: classWhere, role: 'LEAD' },
+      where: { class: classWhere, role: "LEAD" },
     }),
     // Attendance
     context.entities.AttendanceRecord.count({
-      where: { status: 'PRESENT', meeting: { class: classWhere, date: { gte: currentStart, lt: now } } },
+      where: {
+        status: "PRESENT",
+        meeting: { class: classWhere, date: { gte: currentStart, lt: now } },
+      },
     }),
     context.entities.AttendanceRecord.count({
-      where: { meeting: { class: classWhere, date: { gte: currentStart, lt: now } } },
+      where: {
+        meeting: { class: classWhere, date: { gte: currentStart, lt: now } },
+      },
     }),
     context.entities.Meeting.count({
-      where: { class: classWhere, status: 'COMPLETED', date: { gte: currentStart, lt: now } },
+      where: {
+        class: classWhere,
+        status: "COMPLETED",
+        date: { gte: currentStart, lt: now },
+      },
     }),
     context.entities.Meeting.count({
       where: { class: classWhere, date: { gte: currentStart, lt: now } },
@@ -298,20 +388,24 @@ export const getInstitutionalOverview = async (args: ScopeArgs, context: any): P
     }),
     context.entities.SacramentalMilestone.count({
       where: {
-        status: 'COMPLETED',
+        status: "COMPLETED",
         completedAt: { gte: currentStart, lt: now },
-        journey: { catechumenProfile: { enrollments: { some: enrollmentWhere } } },
+        journey: {
+          catechumenProfile: { enrollments: { some: enrollmentWhere } },
+        },
       },
     }),
     context.entities.SacramentalMilestone.count({
       where: {
-        status: { in: ['PENDING', 'IN_PROGRESS', 'WAITING_APPROVAL'] },
-        journey: { catechumenProfile: { enrollments: { some: enrollmentWhere } } },
+        status: { in: ["PENDING", "IN_PROGRESS", "WAITING_APPROVAL"] },
+        journey: {
+          catechumenProfile: { enrollments: { some: enrollmentWhere } },
+        },
       },
     }),
     context.entities.SacramentalMilestone.count({
       where: {
-        status: { in: ['PENDING', 'IN_PROGRESS'] },
+        status: { in: ["PENDING", "IN_PROGRESS"] },
         templateMilestone: { daysBeforeSacrament: { not: null } },
         journey: {
           targetDate: { lt: now },
@@ -321,119 +415,322 @@ export const getInstitutionalOverview = async (args: ScopeArgs, context: any): P
     }),
     // Content
     context.entities.ContentItem.count({
-      where: { status: 'IN_REVIEW', parishId: { in: parishIds } },
+      where: { status: "IN_REVIEW", parishId: { in: parishIds } },
     }),
     context.entities.ContentItem.count({
-      where: { status: 'PUBLISHED', updatedAt: { gte: currentStart, lt: now }, parishId: { in: parishIds } },
+      where: {
+        status: "PUBLISHED",
+        updatedAt: { gte: currentStart, lt: now },
+        parishId: { in: parishIds },
+      },
     }),
     context.entities.ContentItem.count({
-      where: { isAiGenerated: true, updatedAt: { gte: currentStart, lt: now }, parishId: { in: parishIds } },
+      where: {
+        isAiGenerated: true,
+        updatedAt: { gte: currentStart, lt: now },
+        parishId: { in: parishIds },
+      },
     }),
     // Compliance
     context.entities.Document.count({
       where: { catechumenProfile: { enrollments: { some: enrollmentWhere } } },
     }),
     context.entities.Document.count({
-      where: { status: 'PENDING', catechumenProfile: { enrollments: { some: enrollmentWhere } } },
+      where: {
+        status: "PENDING",
+        catechumenProfile: { enrollments: { some: enrollmentWhere } },
+      },
     }),
     context.entities.ConsentRecord.count({
-      where: { granted: false, household: { catechumens: { some: { enrollments: { some: enrollmentWhere } } } } },
+      where: {
+        granted: false,
+        household: {
+          catechumens: { some: { enrollments: { some: enrollmentWhere } } },
+        },
+      },
     }),
     context.entities.ConsentRecord.count({
-      where: { expiresAt: { gte: now, lt: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000) }, household: { catechumens: { some: { enrollments: { some: enrollmentWhere } } } } },
+      where: {
+        expiresAt: {
+          gte: now,
+          lt: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000),
+        },
+        household: {
+          catechumens: { some: { enrollments: { some: enrollmentWhere } } },
+        },
+      },
     }),
     // Communication
     context.entities.MessageCampaign.count({
-      where: { status: 'SENT', parishId: { in: parishIds }, createdAt: { gte: currentStart, lt: now } },
+      where: {
+        status: "SENT",
+        parishId: { in: parishIds },
+        createdAt: { gte: currentStart, lt: now },
+      },
     }),
     context.entities.MessageRecipient.count({
-      where: { campaign: { parishId: { in: parishIds }, createdAt: { gte: currentStart, lt: now } } },
+      where: {
+        campaign: {
+          parishId: { in: parishIds },
+          createdAt: { gte: currentStart, lt: now },
+        },
+      },
     }),
     context.entities.MessageRecipient.count({
-      where: { readAt: { not: null }, campaign: { parishId: { in: parishIds }, createdAt: { gte: currentStart, lt: now } } },
+      where: {
+        readAt: { not: null },
+        campaign: {
+          parishId: { in: parishIds },
+          createdAt: { gte: currentStart, lt: now },
+        },
+      },
     }),
     // License (only for managers)
-    context.user.isAdmin || (COORDINATOR_ROLES as readonly string[]).includes(membershipRole)
+    context.user.isAdmin ||
+    (COORDINATOR_ROLES as readonly string[]).includes(membershipRole)
       ? context.entities.TenantBilling.findFirst({
-          where: args.scope === 'diocese'
-            ? { diocese: { parishes: { some: { id: { in: parishIds } } } } }
-            : { parishId: args.scopeId },
-          select: { plan: true, status: true, trialEndsAt: true, currentPeriodEnd: true },
+          where:
+            args.scope === "diocese"
+              ? { diocese: { parishes: { some: { id: { in: parishIds } } } } }
+              : { parishId: args.scopeId },
+          select: {
+            plan: true,
+            status: true,
+            trialEndsAt: true,
+            currentPeriodEnd: true,
+          },
         })
       : Promise.resolve(null),
   ]);
 
-  const isManager = context.user.isAdmin || (COORDINATOR_ROLES as readonly string[]).includes(membershipRole);
+  const isManager =
+    context.user.isAdmin ||
+    (COORDINATOR_ROLES as readonly string[]).includes(membershipRole);
 
   // ── Build KPI blocks ──
-  const attendanceRate = totalAttendanceRecords > 0
-    ? Math.round((totalAttendancePresent / totalAttendanceRecords) * 100)
-    : 0;
+  const attendanceRate =
+    totalAttendanceRecords > 0
+      ? Math.round((totalAttendancePresent / totalAttendanceRecords) * 100)
+      : 0;
 
   const occupancyRate = totalClassCapacity?._sum?.maxCapacity
-    ? Math.round((activeEnrollments / (totalClassCapacity._sum.maxCapacity || 1)) * 100)
+    ? Math.round(
+        (activeEnrollments / (totalClassCapacity._sum.maxCapacity || 1)) * 100,
+      )
     : 0;
 
-  const readRate = totalRecipients > 0
-    ? Math.round((readRecipients / totalRecipients) * 100)
-    : 0;
+  const readRate =
+    totalRecipients > 0
+      ? Math.round((readRecipients / totalRecipients) * 100)
+      : 0;
 
   const publishedTotal = publishedContent || 0;
-  const aiPct = publishedTotal > 0 ? Math.round(((aiGeneratedContent || 0) / publishedTotal) * 100) : 0;
+  const aiPct =
+    publishedTotal > 0
+      ? Math.round(((aiGeneratedContent || 0) / publishedTotal) * 100)
+      : 0;
 
   const daysToTrialEnd = tenantBilling?.trialEndsAt
-    ? Math.ceil((tenantBilling.trialEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+    ? Math.ceil(
+        (tenantBilling.trialEndsAt.getTime() - now.getTime()) /
+          (1000 * 60 * 60 * 24),
+      )
     : null;
 
-  const license: KpiBlock[] | null = isManager && tenantBilling ? [
-    { label: 'Plano', value: 0, delta: null, deltaLabel: null, format: 'text', displayValue: tenantBilling.plan || '—' },
-    { label: 'Status', value: 0, delta: null, deltaLabel: null, format: 'text', displayValue: tenantBilling.status || '—' },
-    { label: 'Dias para fim do trial', value: daysToTrialEnd ?? 0, delta: null, deltaLabel: null, format: 'days' },
-  ] : null;
+  const license: KpiBlock[] | null =
+    isManager && tenantBilling
+      ? [
+          {
+            label: "Plano",
+            value: 0,
+            delta: null,
+            deltaLabel: null,
+            format: "text",
+            displayValue: tenantBilling.plan || "—",
+          },
+          {
+            label: "Status",
+            value: 0,
+            delta: null,
+            deltaLabel: null,
+            format: "text",
+            displayValue: tenantBilling.status || "—",
+          },
+          {
+            label: "Dias para fim do trial",
+            value: daysToTrialEnd ?? 0,
+            delta: null,
+            deltaLabel: null,
+            format: "days",
+          },
+        ]
+      : null;
 
   return {
     periodLabel,
     people: [
-      { label: 'Catequizandos ativos', value: activeEnrollments, ...formatDelta(activeEnrollments, previousEnrollments) },
-      { label: 'Novas matrículas', value: newEnrollments, delta: null, deltaLabel: null },
-      { label: 'Evasões', value: droppedEnrollments, delta: null, deltaLabel: null },
-      { label: 'Transferências', value: transferredEnrollments, delta: null, deltaLabel: null },
+      {
+        label: "Catequizandos ativos",
+        value: activeEnrollments,
+        ...formatDelta(activeEnrollments, previousEnrollments),
+      },
+      {
+        label: "Novas matrículas",
+        value: newEnrollments,
+        delta: null,
+        deltaLabel: null,
+      },
+      {
+        label: "Evasões",
+        value: droppedEnrollments,
+        delta: null,
+        deltaLabel: null,
+      },
+      {
+        label: "Transferências",
+        value: transferredEnrollments,
+        delta: null,
+        deltaLabel: null,
+      },
     ],
     classes: [
-      { label: 'Turmas ativas', value: activeClasses, delta: null, deltaLabel: null },
-      { label: 'Taxa de ocupação', value: occupancyRate, delta: null, deltaLabel: null, format: 'percent' },
-      { label: 'Turmas sem líder', value: classesWithoutLead, delta: null, deltaLabel: null },
       {
-        label: 'Razão catequizando:catequista',
-        value: totalCatechists > 0 ? Math.round((activeEnrollments / totalCatechists) * 10) / 10 : 0,
-        delta: null, deltaLabel: null,
+        label: "Turmas ativas",
+        value: activeClasses,
+        delta: null,
+        deltaLabel: null,
+      },
+      {
+        label: "Taxa de ocupação",
+        value: occupancyRate,
+        delta: null,
+        deltaLabel: null,
+        format: "percent",
+      },
+      {
+        label: "Turmas sem líder",
+        value: classesWithoutLead,
+        delta: null,
+        deltaLabel: null,
+      },
+      {
+        label: "Razão catequizando:catequista",
+        value:
+          totalCatechists > 0
+            ? Math.round((activeEnrollments / totalCatechists) * 10) / 10
+            : 0,
+        delta: null,
+        deltaLabel: null,
       },
     ],
     attendance: [
-      { label: 'Presença média', value: attendanceRate, delta: null, deltaLabel: null, format: 'percent' },
-      { label: 'Encontros realizados', value: totalMeetingsCompleted, delta: null, deltaLabel: null },
-      { label: 'Encontros planejados', value: totalMeetingsPlanned, delta: null, deltaLabel: null },
+      {
+        label: "Presença média",
+        value: attendanceRate,
+        delta: null,
+        deltaLabel: null,
+        format: "percent",
+      },
+      {
+        label: "Encontros realizados",
+        value: totalMeetingsCompleted,
+        delta: null,
+        deltaLabel: null,
+      },
+      {
+        label: "Encontros planejados",
+        value: totalMeetingsPlanned,
+        delta: null,
+        deltaLabel: null,
+      },
     ],
     sacraments: [
-      { label: 'Jornadas ativas', value: activeJourneys, delta: null, deltaLabel: null },
-      { label: 'Marcos concluídos', value: completedMilestones, delta: null, deltaLabel: null },
-      { label: 'Marcos pendentes', value: pendingMilestones, delta: null, deltaLabel: null },
-      { label: 'Marcos atrasados', value: overdueMilestones, delta: null, deltaLabel: null },
+      {
+        label: "Jornadas ativas",
+        value: activeJourneys,
+        delta: null,
+        deltaLabel: null,
+      },
+      {
+        label: "Marcos concluídos",
+        value: completedMilestones,
+        delta: null,
+        deltaLabel: null,
+      },
+      {
+        label: "Marcos pendentes",
+        value: pendingMilestones,
+        delta: null,
+        deltaLabel: null,
+      },
+      {
+        label: "Marcos atrasados",
+        value: overdueMilestones,
+        delta: null,
+        deltaLabel: null,
+      },
     ],
     content: [
-      { label: 'Em revisão', value: inReviewContent, delta: null, deltaLabel: null },
-      { label: 'Publicados no período', value: publishedTotal, delta: null, deltaLabel: null },
-      { label: '% Conteúdo editorial', value: aiPct, delta: null, deltaLabel: null, format: 'percent' },
+      {
+        label: "Em revisão",
+        value: inReviewContent,
+        delta: null,
+        deltaLabel: null,
+      },
+      {
+        label: "Publicados no período",
+        value: publishedTotal,
+        delta: null,
+        deltaLabel: null,
+      },
+      {
+        label: "% Conteúdo editorial",
+        value: aiPct,
+        delta: null,
+        deltaLabel: null,
+        format: "percent",
+      },
     ],
     compliance: [
-      { label: 'Documentos totais', value: totalDocuments, delta: null, deltaLabel: null },
-      { label: 'Documentos pendentes', value: pendingDocuments, delta: null, deltaLabel: null },
-      { label: 'Consentimentos ausentes', value: consentsAbsent, delta: null, deltaLabel: null },
-      { label: 'Consentimentos expirando', value: consentsExpiring, delta: null, deltaLabel: null },
+      {
+        label: "Documentos totais",
+        value: totalDocuments,
+        delta: null,
+        deltaLabel: null,
+      },
+      {
+        label: "Documentos pendentes",
+        value: pendingDocuments,
+        delta: null,
+        deltaLabel: null,
+      },
+      {
+        label: "Consentimentos ausentes",
+        value: consentsAbsent,
+        delta: null,
+        deltaLabel: null,
+      },
+      {
+        label: "Consentimentos expirando",
+        value: consentsExpiring,
+        delta: null,
+        deltaLabel: null,
+      },
     ],
     communication: [
-      { label: 'Campanhas enviadas', value: campaignsSent, delta: null, deltaLabel: null },
-      { label: 'Taxa de leitura', value: readRate, delta: null, deltaLabel: null, format: 'percent' },
+      {
+        label: "Campanhas enviadas",
+        value: campaignsSent,
+        delta: null,
+        deltaLabel: null,
+      },
+      {
+        label: "Taxa de leitura",
+        value: readRate,
+        delta: null,
+        deltaLabel: null,
+        format: "percent",
+      },
     ],
     license,
   };
@@ -441,7 +738,10 @@ export const getInstitutionalOverview = async (args: ScopeArgs, context: any): P
 
 // ─── getInstitutionalTrends ───────────────────────────────────────────────────
 
-export const getInstitutionalTrends = async (args: ScopeArgs, context: any): Promise<{
+export const getInstitutionalTrends = async (
+  args: ScopeArgs,
+  context: any,
+): Promise<{
   enrollments: TrendSeries;
   attendance: TrendSeries;
   sacramental: TrendSeries;
@@ -450,12 +750,13 @@ export const getInstitutionalTrends = async (args: ScopeArgs, context: any): Pro
   await assertTwoFactorSessionVerified(context);
 
   const { parishIds, communityId } = await resolveScopeParishIds(context, args);
-  const days = args.period === 'month' ? 30 : args.period === 'year' ? 12 : 90; // default quarter = 90 days
-  const isMonthly = args.period === 'year';
+  const days = args.period === "month" ? 30 : args.period === "year" ? 12 : 90; // default quarter = 90 days
+  const isMonthly = args.period === "year";
 
   const now = new Date();
   const userLocale = resolveUserLocale(context.user);
-  const intlLocale = userLocale === 'en' ? 'en-US' : userLocale === 'es' ? 'es' : 'pt-BR';
+  const intlLocale =
+    userLocale === "en" ? "en-US" : userLocale === "es" ? "es" : "pt-BR";
 
   // Build time buckets (labels + boundaries) in-memory
   const buckets: { label: string; start: Date; end: Date }[] = [];
@@ -469,15 +770,25 @@ export const getInstitutionalTrends = async (args: ScopeArgs, context: any): Pro
       start = new Date(now.getFullYear(), now.getMonth() - (days - 1 - i), 1);
       end = new Date(now.getFullYear(), now.getMonth() - (days - 1 - i) + 1, 1);
     } else {
-      start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (days - 1 - i));
+      start = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() - (days - 1 - i),
+      );
       start.setHours(0, 0, 0, 0);
       end = new Date(start);
       end.setDate(end.getDate() + 1);
     }
     buckets.push({
       label: isMonthly
-        ? start.toLocaleDateString(intlLocale, { month: 'short', year: '2-digit' })
-        : start.toLocaleDateString(intlLocale, { day: '2-digit', month: '2-digit' }),
+        ? start.toLocaleDateString(intlLocale, {
+            month: "short",
+            year: "2-digit",
+          })
+        : start.toLocaleDateString(intlLocale, {
+            day: "2-digit",
+            month: "2-digit",
+          }),
       start,
       end,
     });
@@ -487,40 +798,59 @@ export const getInstitutionalTrends = async (args: ScopeArgs, context: any): Pro
   const classWhereClause = buildClassWhereClause(parishIds, communityId);
 
   // Fetch all data in 4 queries instead of 5×days
-  const [
-    dropRecords,
-    attendanceRecords,
-    milestoneRecords,
-    totalEnrolled,
-  ] = await Promise.all([
-    // Drops in the full window
-    context.entities.ClassEnrollment.count({
-      where: { status: 'DROPPED', updatedAt: { gte: allStart, lt: allEnd }, class: classWhereClause },
-    }),
-    // Attendance: fetch present + total in full window, bucket in-memory
-    context.entities.AttendanceRecord.groupBy({
-      by: ['status'],
-      where: { meeting: { class: classWhereClause, date: { gte: allStart, lt: allEnd } } },
-      _count: { id: true },
-    }),
-    // Milestones completed in full window
-    context.entities.SacramentalMilestone.count({
-      where: {
-        status: 'COMPLETED',
-        completedAt: { gte: allStart, lt: allEnd },
-        journey: { catechumenProfile: { enrollments: { some: { class: classWhereClause } } } },
-      },
-    }),
-    // Total enrolled (cumulative at window end)
-    context.entities.ClassEnrollment.count({
-      where: { status: 'ENROLLED', createdAt: { lt: allEnd }, class: classWhereClause },
-    }),
-  ]);
+  const [dropRecords, attendanceRecords, milestoneRecords, totalEnrolled] =
+    await Promise.all([
+      // Drops in the full window
+      context.entities.ClassEnrollment.count({
+        where: {
+          status: "DROPPED",
+          updatedAt: { gte: allStart, lt: allEnd },
+          class: classWhereClause,
+        },
+      }),
+      // Attendance: fetch present + total in full window, bucket in-memory
+      context.entities.AttendanceRecord.groupBy({
+        by: ["status"],
+        where: {
+          meeting: {
+            class: classWhereClause,
+            date: { gte: allStart, lt: allEnd },
+          },
+        },
+        _count: { id: true },
+      }),
+      // Milestones completed in full window
+      context.entities.SacramentalMilestone.count({
+        where: {
+          status: "COMPLETED",
+          completedAt: { gte: allStart, lt: allEnd },
+          journey: {
+            catechumenProfile: {
+              enrollments: { some: { class: classWhereClause } },
+            },
+          },
+        },
+      }),
+      // Total enrolled (cumulative at window end)
+      context.entities.ClassEnrollment.count({
+        where: {
+          status: "ENROLLED",
+          createdAt: { lt: allEnd },
+          class: classWhereClause,
+        },
+      }),
+    ]);
 
   // Distribute evenly across buckets (drops, attendance, milestones share the window average)
-  const presentCount = (attendanceRecords as any[]).find((r: any) => r.status === 'PRESENT')?._count?.id || 0;
-  const totalCount = (attendanceRecords as any[]).reduce((s: number, r: any) => s + r._count.id, 0);
-  const avgAttendance = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 0;
+  const presentCount =
+    (attendanceRecords as any[]).find((r: any) => r.status === "PRESENT")
+      ?._count?.id || 0;
+  const totalCount = (attendanceRecords as any[]).reduce(
+    (s: number, r: any) => s + r._count.id,
+    0,
+  );
+  const avgAttendance =
+    totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 0;
 
   const labels: string[] = [];
   const enrollmentData: number[] = [];
@@ -535,7 +865,7 @@ export const getInstitutionalTrends = async (args: ScopeArgs, context: any): Pro
 
   for (let i = 0; i < days; i++) {
     labels.push(buckets[i].label);
-    enrollmentData.push(baseEnrolled + (i * perBucketDrop)); // linearly increasing
+    enrollmentData.push(baseEnrolled + i * perBucketDrop); // linearly increasing
     dropoutData.push(perBucketDrop);
     attendanceData.push(avgAttendance);
     milestoneData.push(perBucketMilestone);
@@ -545,20 +875,20 @@ export const getInstitutionalTrends = async (args: ScopeArgs, context: any): Pro
     enrollments: {
       labels,
       datasets: [
-        { label: 'Matriculados', data: enrollmentData, color: '#2563eb' },
-        { label: 'Evasões', data: dropoutData, color: '#ef4444' },
+        { label: "Matriculados", data: enrollmentData, color: "#2563eb" },
+        { label: "Evasões", data: dropoutData, color: "#ef4444" },
       ],
     },
     attendance: {
       labels,
       datasets: [
-        { label: 'Presença %', data: attendanceData, color: '#22c55e' },
+        { label: "Presença %", data: attendanceData, color: "#22c55e" },
       ],
     },
     sacramental: {
       labels,
       datasets: [
-        { label: 'Marcos concluídos', data: milestoneData, color: '#a855f7' },
+        { label: "Marcos concluídos", data: milestoneData, color: "#a855f7" },
       ],
     },
   };
@@ -566,11 +896,15 @@ export const getInstitutionalTrends = async (args: ScopeArgs, context: any): Pro
 
 // ─── getInstitutionalAlerts ───────────────────────────────────────────────────
 
-export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Promise<InstitutionalAlert[]> => {
+export const getInstitutionalAlerts = async (
+  args: ScopeArgs,
+  context: any,
+): Promise<InstitutionalAlert[]> => {
   if (!context.user) throw new HttpError(401);
   await assertTwoFactorSessionVerified(context);
 
-  const { parishIds, communityId, membershipRole } = await resolveScopeParishIds(context, args);
+  const { parishIds, communityId, membershipRole } =
+    await resolveScopeParishIds(context, args);
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
@@ -579,7 +913,9 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
   const alerts: InstitutionalAlert[] = [];
   const classWhere = buildClassWhereClause(parishIds, communityId);
   const enrollmentWhere = buildEnrollmentWhereClause(parishIds, communityId);
-  const isManager = context.user.isAdmin || (COORDINATOR_ROLES as readonly string[]).includes(membershipRole);
+  const isManager =
+    context.user.isAdmin ||
+    (COORDINATOR_ROLES as readonly string[]).includes(membershipRole);
 
   // ── Fetch all alert data in a single parallel roundtrip ────────────────────
 
@@ -599,37 +935,55 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
     // 1. Encontro de hoje sem presença lançada
     context.entities.Meeting.findMany({
       where: { date: { gte: todayStart, lt: todayEnd }, class: classWhere },
-      select: { id: true, class: { select: { id: true, name: true } }, _count: { select: { attendance: true } } },
+      select: {
+        id: true,
+        class: { select: { id: true, name: true } },
+        _count: { select: { attendance: true } },
+      },
     }),
     // 2. Turma sem LEAD
     context.entities.CatechesisClass.findMany({
-      where: { ...classWhere, status: 'ACTIVE', catechists: { none: { role: 'LEAD' } } },
+      where: {
+        ...classWhere,
+        status: "ACTIVE",
+        catechists: { none: { role: "LEAD" } },
+      },
       select: { id: true, name: true },
       take: 10,
     }),
     // 3. Turma sem encontro há mais de 4 semanas (activeClasses + last meeting)
     context.entities.CatechesisClass.findMany({
-      where: { ...classWhere, status: 'ACTIVE' },
+      where: { ...classWhere, status: "ACTIVE" },
       select: {
-        id: true, name: true,
-        meetings: { orderBy: { date: 'desc' }, take: 1, select: { date: true } },
+        id: true,
+        name: true,
+        meetings: {
+          orderBy: { date: "desc" },
+          take: 1,
+          select: { date: true },
+        },
       },
       take: MAX_ALERT_CLASSES,
     }),
     // 4. Capacidade excedida
     context.entities.CatechesisClass.findMany({
-      where: { ...classWhere, status: 'ACTIVE', maxCapacity: { gt: 0 } },
+      where: { ...classWhere, status: "ACTIVE", maxCapacity: { gt: 0 } },
       select: {
-        id: true, name: true, maxCapacity: true,
-        _count: { select: { enrollments: { where: { status: 'ENROLLED' } } } },
+        id: true,
+        name: true,
+        maxCapacity: true,
+        _count: { select: { enrollments: { where: { status: "ENROLLED" } } } },
       },
       take: MAX_ALERT_CLASSES,
     }),
     // 5. Documentos obrigatórios pendentes próximos do sacramento
     context.entities.SacramentalMilestone.count({
       where: {
-        status: 'PENDING',
-        templateMilestone: { required: true, daysBeforeSacrament: { not: null } },
+        status: "PENDING",
+        templateMilestone: {
+          required: true,
+          daysBeforeSacrament: { not: null },
+        },
         journey: {
           targetDate: { lte: thirtyDaysFromNow },
           catechumenProfile: { enrollments: { some: enrollmentWhere } },
@@ -640,38 +994,47 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
     context.entities.ConsentRecord.count({
       where: {
         expiresAt: { gte: now, lte: thirtyDaysFromNow },
-        household: { catechumens: { some: { enrollments: { some: enrollmentWhere } } } },
+        household: {
+          catechumens: { some: { enrollments: { some: enrollmentWhere } } },
+        },
       },
     }),
     // 7. Trial/licença (apenas gestores)
     isManager
       ? context.entities.TenantBilling.findFirst({
-          where: args.scope === 'diocese'
-            ? { diocese: { parishes: { some: { id: { in: parishIds } } } } }
-            : { parishId: args.scopeId },
+          where:
+            args.scope === "diocese"
+              ? { diocese: { parishes: { some: { id: { in: parishIds } } } } }
+              : { parishId: args.scopeId },
           select: { plan: true, status: true, trialEndsAt: true },
         })
       : Promise.resolve(null),
     // 8a. Recent meetings (for evasion risk)
     context.entities.Meeting.findMany({
       where: { class: classWhere, date: { lte: now } },
-      orderBy: { date: 'desc' },
+      orderBy: { date: "desc" },
       take: 5,
       select: { id: true, date: true },
     }),
     // 8b. Enrolled catechumens (for evasion risk)
     context.entities.ClassEnrollment.findMany({
-      where: { ...enrollmentWhere, status: 'ENROLLED', catechumenProfileId: { not: null } },
+      where: {
+        ...enrollmentWhere,
+        status: "ENROLLED",
+        catechumenProfileId: { not: null },
+      },
       select: { catechumenProfileId: true },
-      distinct: ['catechumenProfileId'],
+      distinct: ["catechumenProfileId"],
     }),
     // 9. Active classes with their last 3 meeting ids (attendance aggregated below, not loaded as rows)
     context.entities.CatechesisClass.findMany({
-      where: { ...classWhere, status: 'ACTIVE' },
+      where: { ...classWhere, status: "ACTIVE" },
       select: {
-        id: true, name: true,
+        id: true,
+        name: true,
         meetings: {
-          orderBy: { date: 'desc' }, take: 3,
+          orderBy: { date: "desc" },
+          take: 3,
           select: { id: true },
         },
       },
@@ -680,7 +1043,7 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
     // 10. Prontidão sacramental
     context.entities.SacramentalMilestone.count({
       where: {
-        status: { in: ['PENDING', 'IN_PROGRESS'] },
+        status: { in: ["PENDING", "IN_PROGRESS"] },
         journey: {
           targetDate: { gte: now, lte: thirtyDaysFromNow },
           catechumenProfile: { enrollments: { some: enrollmentWhere } },
@@ -692,13 +1055,19 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
   // ── Post-process: build alerts from fetched data ────────────────────────────
 
   // 1. Encontro de hoje sem presença lançada
-  const meetingsWithoutAttendance = todayMeetings.filter((m: any) => m._count?.attendance === 0);
+  const meetingsWithoutAttendance = todayMeetings.filter(
+    (m: any) => m._count?.attendance === 0,
+  );
   if (meetingsWithoutAttendance.length > 0) {
     alerts.push({
-      severity: 'high',
-      category: 'attendance',
+      severity: "high",
+      category: "attendance",
       count: meetingsWithoutAttendance.length,
-      message: `${meetingsWithoutAttendance.length} encontro(s) de hoje sem presença lançada.`,
+      message: `${pluralPt(
+        meetingsWithoutAttendance.length,
+        "encontro",
+        "encontros",
+      )} de hoje sem presença lançada.`,
       link: meetingsWithoutAttendance[0]?.class?.id
         ? `/app/classes/${meetingsWithoutAttendance[0].class.id}/attendance`
         : undefined,
@@ -708,11 +1077,17 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
   // 2. Turma sem LEAD
   if (classesWithoutLead.length > 0) {
     alerts.push({
-      severity: 'high',
-      category: 'classes',
+      severity: "high",
+      category: "classes",
       count: classesWithoutLead.length,
-      message: `${classesWithoutLead.length} turma(s) ativa(s) sem catequista responsável.`,
-      link: classesWithoutLead[0]?.id ? `/app/classes/${classesWithoutLead[0].id}` : undefined,
+      message: `${pluralPt(
+        classesWithoutLead.length,
+        "turma ativa",
+        "turmas ativas",
+      )} sem catequista responsável.`,
+      link: classesWithoutLead[0]?.id
+        ? `/app/classes/${classesWithoutLead[0].id}`
+        : undefined,
     });
   }
 
@@ -724,11 +1099,17 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
   });
   if (inactiveClasses.length > 0) {
     alerts.push({
-      severity: 'medium',
-      category: 'classes',
+      severity: "medium",
+      category: "classes",
       count: inactiveClasses.length,
-      message: `${inactiveClasses.length} turma(s) sem encontro há mais de 4 semanas.`,
-      link: inactiveClasses[0]?.id ? `/app/classes/${inactiveClasses[0].id}` : undefined,
+      message: `${pluralPt(
+        inactiveClasses.length,
+        "turma",
+        "turmas",
+      )} sem encontro há mais de 4 semanas.`,
+      link: inactiveClasses[0]?.id
+        ? `/app/classes/${inactiveClasses[0].id}`
+        : undefined,
     });
   }
 
@@ -738,54 +1119,72 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
   );
   if (overCap.length > 0) {
     alerts.push({
-      severity: 'medium',
-      category: 'classes',
+      severity: "medium",
+      category: "classes",
       count: overCap.length,
-      message: `${overCap.length} turma(s) com capacidade excedida.`,
+      message: `${pluralPt(
+        overCap.length,
+        "turma",
+        "turmas",
+      )} com capacidade excedida.`,
     });
   }
 
   // 5. Documentos obrigatórios pendentes
   if (pendingDocsNearSacrament > 0) {
     alerts.push({
-      severity: 'high',
-      category: 'sacraments',
+      severity: "high",
+      category: "sacraments",
       count: pendingDocsNearSacrament,
-      message: `${pendingDocsNearSacrament} marco(s) sacramental(is) obrigatório(s) pendente(s) — sacramento próximo.`,
+      message: `${pluralPt(
+        pendingDocsNearSacrament,
+        "marco sacramental obrigatório pendente",
+        "marcos sacramentais obrigatórios pendentes",
+      )} — sacramento próximo.`,
     });
   }
 
   // 6. Consentimentos expirando
   if (consentsExpiring > 0) {
     alerts.push({
-      severity: 'medium',
-      category: 'compliance',
+      severity: "medium",
+      category: "compliance",
       count: consentsExpiring,
-      message: `${consentsExpiring} consentimento(s) expirando nos próximos 30 dias.`,
+      message: `${pluralPt(
+        consentsExpiring,
+        "consentimento expirando",
+        "consentimentos expirando",
+      )} nos próximos 30 dias.`,
     });
   }
 
   // 7. Trial/licença expirando
   if (billing) {
-    if (billing.status === 'TRIAL' && billing.trialEndsAt) {
-      const daysLeft = Math.ceil((billing.trialEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    if (billing.status === "TRIAL" && billing.trialEndsAt) {
+      const daysLeft = Math.ceil(
+        (billing.trialEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+      );
       if (daysLeft <= 7 && daysLeft > 0) {
         alerts.push({
-          severity: daysLeft <= 3 ? 'critical' : 'high',
-          category: 'license',
+          severity: daysLeft <= 3 ? "critical" : "high",
+          category: "license",
           count: daysLeft,
-          message: `Trial expira em ${daysLeft} dia(s). Faça upgrade para manter o acesso.`,
-          link: '/app/billing',
+          message: `O teste termina em ${pluralPt(
+            daysLeft,
+            "dia",
+            "dias",
+          )}. Assine para manter o acesso.`,
+          link: "/app/billing",
         });
       }
     }
-    if (billing.status === 'PAST_DUE') {
+    if (billing.status === "PAST_DUE") {
       alerts.push({
-        severity: 'critical',
-        category: 'license',
+        severity: "critical",
+        category: "license",
         count: 1,
-        message: 'Pagamento em atraso. Regularize para evitar suspensão.',
-        link: '/app/billing',
+        message: "Pagamento em atraso. Regularize para evitar suspensão.",
+        link: "/app/billing",
       });
     }
   }
@@ -793,19 +1192,22 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
   // 8. Catequizandos que precisam de acompanhamento (3+ faltas nos encontros recentes)
   if (recentMeetings.length >= 3) {
     const meetingIds = recentMeetings.map((m: any) => m.id);
-    const catechumenIds = enrolledCatechumens.map((e: any) => e.catechumenProfileId).filter(Boolean);
+    const catechumenIds = enrolledCatechumens
+      .map((e: any) => e.catechumenProfileId)
+      .filter(Boolean);
 
-    const absenceCounts = catechumenIds.length > 0
-      ? await context.entities.AttendanceRecord.groupBy({
-          by: ['catechumenProfileId'],
-          where: {
-            catechumenProfileId: { in: catechumenIds },
-            meetingId: { in: meetingIds },
-            status: 'ABSENT',
-          },
-          _count: { id: true },
-        })
-      : [];
+    const absenceCounts =
+      catechumenIds.length > 0
+        ? await context.entities.AttendanceRecord.groupBy({
+            by: ["catechumenProfileId"],
+            where: {
+              catechumenProfileId: { in: catechumenIds },
+              meetingId: { in: meetingIds },
+              status: "ABSENT",
+            },
+            _count: { id: true },
+          })
+        : [];
 
     const atRiskCount = (absenceCounts as any[]).filter(
       (r: any) => r._count.id >= 3,
@@ -813,21 +1215,29 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
 
     if (atRiskCount > 0) {
       alerts.push({
-        severity: 'high',
-        category: 'predictive',
+        severity: "high",
+        category: "predictive",
         count: atRiskCount,
-        message: `${atRiskCount} catequizando(s) com 3+ faltas nos últimos encontros — que tal um contato carinhoso com as famílias?`,
+        message: `${pluralPt(
+          atRiskCount,
+          "catequizando",
+          "catequizandos",
+        )} com 3+ faltas nos últimos encontros — que tal um contato carinhoso com as famílias?`,
       });
     }
   }
 
   // 9. Turmas com presença < 50% nos últimos 3 encontros (agregado em SQL por encontro)
   let lowAttendanceClassCount = 0;
-  const eligibleClasses = activeClassesWithMeetings.filter((cls: any) => cls.meetings.length >= 3);
-  const recentMeetingIds = eligibleClasses.flatMap((cls: any) => cls.meetings.map((m: any) => m.id));
+  const eligibleClasses = activeClassesWithMeetings.filter(
+    (cls: any) => cls.meetings.length >= 3,
+  );
+  const recentMeetingIds = eligibleClasses.flatMap((cls: any) =>
+    cls.meetings.map((m: any) => m.id),
+  );
   if (recentMeetingIds.length > 0) {
     const perMeetingStatus = await context.entities.AttendanceRecord.groupBy({
-      by: ['meetingId', 'status'],
+      by: ["meetingId", "status"],
       where: { meetingId: { in: recentMeetingIds } },
       _count: { id: true },
     });
@@ -835,7 +1245,7 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
     for (const row of perMeetingStatus as any[]) {
       const entry = totals.get(row.meetingId) ?? { total: 0, present: 0 };
       entry.total += row._count.id;
-      if (row.status === 'PRESENT') entry.present += row._count.id;
+      if (row.status === "PRESENT") entry.present += row._count.id;
       totals.set(row.meetingId, entry);
     }
     for (const cls of eligibleClasses) {
@@ -854,20 +1264,28 @@ export const getInstitutionalAlerts = async (args: ScopeArgs, context: any): Pro
   }
   if (lowAttendanceClassCount > 0) {
     alerts.push({
-      severity: 'medium',
-      category: 'predictive',
+      severity: "medium",
+      category: "predictive",
       count: lowAttendanceClassCount,
-      message: `${lowAttendanceClassCount} turma(s) com presença abaixo de 50% nos últimos 3 encontros.`,
+      message: `${pluralPt(
+        lowAttendanceClassCount,
+        "turma",
+        "turmas",
+      )} com presença abaixo de 50% nos últimos 3 encontros.`,
     });
   }
 
   // 10. Prontidão sacramental
   if (overdueCount > 0) {
     alerts.push({
-      severity: 'medium',
-      category: 'predictive',
+      severity: "medium",
+      category: "predictive",
       count: overdueCount,
-      message: `${overdueCount} marco(s) sacramental(is) pendente(s) com data-alvo nos próximos 30 dias.`,
+      message: `${pluralPt(
+        overdueCount,
+        "marco sacramental pendente",
+        "marcos sacramentais pendentes",
+      )} com data-alvo nos próximos 30 dias.`,
     });
   }
 
@@ -894,7 +1312,7 @@ export const getInstitutionalDashboardCore = async (
   ]);
 
   const criticalAlerts = alerts.filter(
-    (a) => a.severity === 'critical' || a.severity === 'high',
+    (a) => a.severity === "critical" || a.severity === "high",
   );
 
   return {

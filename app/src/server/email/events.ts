@@ -22,7 +22,9 @@ export type ProductEventInput = {
   context?: { entities?: any };
 };
 
-export async function emitProductEvent(input: ProductEventInput): Promise<void> {
+export async function emitProductEvent(
+  input: ProductEventInput,
+): Promise<void> {
   const email = input.email?.trim();
   if (!email) return;
 
@@ -70,8 +72,10 @@ async function orchestrateInApp(input: ProductEventInput, email: string) {
   const billingUrl = `${appBaseUrl()}/app/billing`;
   const appUrl = `${appBaseUrl()}/app`;
 
+  // Welcome waits for email verification (or OAuth signup, which is already
+  // verified). Signup alone only syncs the contact / product event.
   if (
-    input.name === PRODUCT_EVENT.USER_SIGNED_UP &&
+    input.name === PRODUCT_EVENT.USER_EMAIL_VERIFIED &&
     !input.isFamilyPortal &&
     input.userId
   ) {
@@ -81,7 +85,7 @@ async function orchestrateInApp(input: ProductEventInput, email: string) {
       userId: input.userId,
       locale,
       payload: {
-        name: input.firstName || "",
+        name: (input.firstName || "").trim(),
         ctaUrl: appUrl,
       },
       idempotencyKey: `lifecycle.welcome:${input.userId}`,
@@ -97,7 +101,9 @@ async function orchestrateInApp(input: ProductEventInput, email: string) {
       userId: input.userId,
       locale,
       payload: { name: input.firstName || "", ctaUrl: billingUrl },
-      idempotencyKey: `billing.payment_failed:${input.userId}:${new Date().toISOString().slice(0, 10)}`,
+      idempotencyKey: `billing.payment_failed:${input.userId}:${new Date()
+        .toISOString()
+        .slice(0, 10)}`,
       context: input.context,
     });
   }
@@ -109,7 +115,9 @@ async function orchestrateInApp(input: ProductEventInput, email: string) {
       userId: input.userId,
       locale,
       payload: { name: input.firstName || "", ctaUrl: billingUrl },
-      idempotencyKey: `billing.canceled:${input.userId}:${new Date().toISOString().slice(0, 10)}`,
+      idempotencyKey: `billing.canceled:${input.userId}:${new Date()
+        .toISOString()
+        .slice(0, 10)}`,
       context: input.context,
     });
   }

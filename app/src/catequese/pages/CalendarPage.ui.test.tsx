@@ -118,7 +118,7 @@ describe("CalendarPage — origem e conflitos", () => {
     expect(screen.getByTestId("calendar-conflicts")).toBeInTheDocument();
   });
 
-  it("abre o formulário de novo evento sem precisar escolher um dia", async () => {
+  it("abre o formulário de novo evento com a data de hoje", async () => {
     const user = userEvent.setup();
     renderPage(<CalendarPage />);
     await screen.findByTestId("calendar-conflicts");
@@ -126,8 +126,12 @@ describe("CalendarPage — origem e conflitos", () => {
     await user.click(screen.getAllByRole("button", { name: /Novo evento/ })[0]);
     const dialog = await screen.findByRole("dialog");
     expect(dialog).toHaveTextContent("Novo evento");
+    const now = new Date();
+    const todayKey = `${now.getFullYear()}-${String(
+      now.getMonth() + 1,
+    ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
     expect(
       (screen.getByLabelText("Data do evento") as HTMLInputElement).value,
-    ).toMatch(/^\d{4}-\d{2}-01$/);
+    ).toBe(todayKey);
   });
 });

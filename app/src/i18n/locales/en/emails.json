@@ -9,8 +9,10 @@
   "unsubscribe_invalid_body": "This unsubscribe link is invalid or has expired.",
   "welcome": {
     "subject": "Welcome to Catequese Viva, {{name}}",
+    "subject_no_name": "Welcome to Catequese Viva",
     "heading": "Your catechesis starts here",
     "body": "Hi, {{name}}. Your account is ready. Create the first class to take attendance and prepare meetings in one place.",
+    "body_no_name": "Hi! Your account is ready. Create the first class to take attendance and prepare meetings in one place.",
     "cta": "Open the dashboard"
   },
   "invite": {

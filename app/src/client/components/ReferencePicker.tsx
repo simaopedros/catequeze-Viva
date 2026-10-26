@@ -455,7 +455,7 @@ export function ReferencePicker({
                         onClick={addSelectedVerses}
                       >
                         <Plus className="h-3 w-3 mr-0.5" />
-                        {selectedVerses.size} {t("references.verses")}
+                        {t("references.verses", { count: selectedVerses.size })}
                       </Button>
                     )}
                   </div>

@@ -9,8 +9,10 @@
   "unsubscribe_invalid_body": "Este enlace para cancelar la suscripción no es válido o ha caducado.",
   "welcome": {
     "subject": "Bienvenido a Catequese Viva, {{name}}",
+    "subject_no_name": "Bienvenido a Catequese Viva",
     "heading": "Tu catequesis empieza aquí",
     "body": "Hola, {{name}}. Tu cuenta está lista. Crea el primer grupo para pasar lista y preparar encuentros en el mismo lugar.",
+    "body_no_name": "¡Hola! Tu cuenta está lista. Crea el primer grupo para pasar lista y preparar encuentros en el mismo lugar.",
     "cta": "Abrir el panel"
   },
   "invite": {
