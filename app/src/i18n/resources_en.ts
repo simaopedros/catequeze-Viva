@@ -2598,12 +2598,18 @@ export const common_en = {
     "clear": "Clear",
     "support_inbox": {
       "title": "Support inbox",
-      "subtitle": "Team replies appear here and are also sent by email.",
+      "subtitle": "Send your question below. Team replies appear here and are also sent by email.",
       "your_message": "Your message",
       "our_reply": "Reply from Catequese Viva",
       "waiting": "Waiting for a reply.",
       "empty_title": "No support messages",
-      "empty_desc": "When the team replies to a contact from you, the conversation appears here."
+      "empty_desc": "When you send a message, the conversation with the team appears here.",
+      "new_label": "New message to support",
+      "new_placeholder": "Describe your question or the problem you found…",
+      "new_hint": "We will reply to {{email}}.",
+      "new_submit": "Send",
+      "new_sent": "Message sent. We will reply soon.",
+      "new_error": "Could not send right now. Please try again in a few minutes."
     },
     "validation": {
       "first_name_required": "Enter the first name.",
