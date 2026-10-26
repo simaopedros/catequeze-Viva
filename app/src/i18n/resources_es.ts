@@ -5140,7 +5140,8 @@ export const meetings_es = {
       },
       "next_label": "Próximo encuentro",
       "empty_mobile": "No hay encuentros programados."
-    }
+    },
+    "delete_confirm_button": "Eliminar encuentro"
   } as const;
 
 export const messages_es = {

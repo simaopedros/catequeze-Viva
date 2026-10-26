@@ -5140,7 +5140,8 @@ export const meetings_en = {
       },
       "next_label": "Next meeting",
       "empty_mobile": "No meeting scheduled."
-    }
+    },
+    "delete_confirm_button": "Delete meeting"
   } as const;
 
 export const messages_en = {

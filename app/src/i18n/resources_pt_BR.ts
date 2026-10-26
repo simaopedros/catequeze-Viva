@@ -5056,7 +5056,7 @@ export const meetings_pt_BR = {
     "generate_ai_activity": "Gerar atividade com assistência",
     "generate_whatsapp": "Gerar WhatsApp",
     "delete_confirm_title": "Remover encontro?",
-    "delete_confirm_desc": "Esta ação não pode ser desfeita. Os registos de presença serão removidos.",
+    "delete_confirm_desc": "Esta ação não pode ser desfeita. Os registros de presença deste encontro também serão removidos.",
     "delete_error": "Erro ao remover encontro.",
     "delete_success": "Encontro removido.",
     "search_content": "Buscar conteúdo...",
@@ -5140,7 +5140,8 @@ export const meetings_pt_BR = {
       },
       "next_label": "Próximo encontro",
       "empty_mobile": "Nenhum encontro agendado."
-    }
+    },
+    "delete_confirm_button": "Remover encontro"
   } as const;
 
 export const messages_pt_BR = {
