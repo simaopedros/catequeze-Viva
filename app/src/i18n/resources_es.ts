@@ -1072,7 +1072,7 @@ export const auth_es = {
     "signup_plan_unlimited": "Plan Parroquia",
     "signup_interval_monthly": "facturación mensual",
     "signup_interval_annual": "facturación anual",
-    "signup_context_no_card": "7 días gratis; tarjeta ahora, cobro después del trial",
+    "signup_context_no_card": "7 días gratis, sin tarjeta",
     "signup_context_change": "Cambiar",
     "signup_success_next_steps": "Próximos pasos",
     "signup_success_step_1": "Revisa tu bandeja de entrada y la carpeta de spam.",
@@ -3919,7 +3919,7 @@ export const landing_es = {
       },
       {
         "q": "¿Necesito informar tarjeta para probar?",
-        "a": "Sí. Stripe pide la tarjeta para empezar el trial; el cobro solo ocurre después de 7 días. Cancela a tiempo si no quieres continuar."
+        "a": "No. La prueba de 7 días del Plan Catequista empieza sin tarjeta en cuanto creas tu primer grupo. Solo pedimos la tarjeta cuando decidas suscribirte."
       },
       {
         "q": "¿Puedo cancelar cuando quiera?",
@@ -5329,10 +5329,10 @@ export const onboarding_es = {
       "hello_default": "Bienvenido/a",
       "question": "¿Cómo vas a usar Catequese Viva?",
       "personal_title": "Soy catequista y cuido mi grupo",
-      "personal_desc": "Crear el grupo, incluir catequizandos y usarlo en el día a día.",
+      "personal_desc": "Crea tu grupo e incluye a los catequizandos. Tienes 7 días gratis del Plan Catequista, sin tarjeta.",
       "personal_features": [],
       "manager_title": "Organizo la catequesis de la parroquia",
-      "manager_desc": "Parroquia, año catequético y grupos del equipo.",
+      "manager_desc": "Parroquia, año catequético y grupos del equipo. La prueba de 7 días del Plan Parroquia empieza en Stripe y pide tarjeta.",
       "manager_features": [],
       "helper": "Puedes cambiar de camino después si lo necesitas.",
       "launch_question": "Vamos a preparar el espacio de tu grupo.",
@@ -5340,7 +5340,9 @@ export const onboarding_es = {
       "diocese_title": "Soy de la diócesis",
       "diocese_desc": "Licencia paraguas para varias parroquias. Hable con ventas — no hay checkout público.",
       "invite_hint": "¿Ya tiene invitación a una parroquia? Entre por el correo. No cree otro espacio.",
-      "eyebrow": "Primeros pasos"
+      "eyebrow": "Primeros pasos",
+      "skip_explore": "Saltar y explorar la app primero",
+      "skip_explore_hint": "Creamos tu espacio personal con los 7 días gratis. Crea tu grupo cuando quieras."
     },
     "personal_setup": {
       "title": "Cuenta Personal",
@@ -5591,7 +5593,9 @@ export const onboarding_es = {
       "personal_people_title": "Quién forma parte del grupo",
       "personal_people_subtitle": "Añade nombres ahora o salta — la llamada ya está lista.",
       "diocese_title": "Licencia de la diócesis",
-      "diocese_subtitle": "No hay checkout público. Hable con ventas y, si quiere, elija la diócesis."
+      "diocese_subtitle": "No hay checkout público. Hable con ventas y, si quiere, elija la diócesis.",
+      "step_current": "Estás aquí",
+      "step_done": "Completado"
     },
     "back_clean": "Volver",
     "change_diocese_clean": "Cambiar",
@@ -6022,7 +6026,7 @@ export const public_es = {
     },
     "pricing": {
       "title": "Tres caminos: catequista, parroquia y diócesis",
-      "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis; tarjeta ahora, cobro después del trial.",
+      "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis en el Plan Catequista, sin tarjeta.",
       "payment_card": "Tarjeta",
       "annual_savings": "Ahorre 17% en anual",
       "monthly_tab": "Mensual",
@@ -6050,7 +6054,7 @@ export const public_es = {
       "faq": [
         {
           "q": "¿Cómo conozco la plataforma antes de suscribirme?",
-          "a": "Pruebas 7 días. Pedimos la tarjeta ahora y solo cobramos después del trial. Úsala con tu grupo de verdad y cancela si no tiene sentido continuar."
+          "a": "Pruebas 7 días, sin tarjeta. Úsalo con tu grupo de verdad; si tiene sentido continuar, suscríbete antes de que termine la prueba."
         },
         {
           "q": "¿Cuál es el precio?",
@@ -6058,7 +6062,7 @@ export const public_es = {
         },
         {
           "q": "¿Cómo funciona el pago?",
-          "a": "Empiezas con 7 días de prueba. Stripe pide la tarjeta ahora y solo cobra después del trial. Sin permanencia — cancela cuando quieras."
+          "a": "Empiezas con 7 días de prueba sin tarjeta. Al suscribirte, el pago se hace con Stripe. Sin permanencia — cancela cuando quieras."
         },
         {
           "q": "¿Y el reembolso del plan anual?",

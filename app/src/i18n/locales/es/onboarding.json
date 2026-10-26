@@ -38,10 +38,10 @@
     "hello_default": "Bienvenido/a",
     "question": "¿Cómo vas a usar Catequese Viva?",
     "personal_title": "Soy catequista y cuido mi grupo",
-    "personal_desc": "Crear el grupo, incluir catequizandos y usarlo en el día a día.",
+    "personal_desc": "Crea tu grupo e incluye a los catequizandos. Tienes 7 días gratis del Plan Catequista, sin tarjeta.",
     "personal_features": [],
     "manager_title": "Organizo la catequesis de la parroquia",
-    "manager_desc": "Parroquia, año catequético y grupos del equipo.",
+    "manager_desc": "Parroquia, año catequético y grupos del equipo. La prueba de 7 días del Plan Parroquia empieza en Stripe y pide tarjeta.",
     "manager_features": [],
     "helper": "Puedes cambiar de camino después si lo necesitas.",
     "launch_question": "Vamos a preparar el espacio de tu grupo.",
@@ -49,7 +49,9 @@
     "diocese_title": "Soy de la diócesis",
     "diocese_desc": "Licencia paraguas para varias parroquias. Hable con ventas — no hay checkout público.",
     "invite_hint": "¿Ya tiene invitación a una parroquia? Entre por el correo. No cree otro espacio.",
-    "eyebrow": "Primeros pasos"
+    "eyebrow": "Primeros pasos",
+    "skip_explore": "Saltar y explorar la app primero",
+    "skip_explore_hint": "Creamos tu espacio personal con los 7 días gratis. Crea tu grupo cuando quieras."
   },
   "personal_setup": {
     "title": "Cuenta Personal",
@@ -300,7 +302,9 @@
     "personal_people_title": "Quién forma parte del grupo",
     "personal_people_subtitle": "Añade nombres ahora o salta — la llamada ya está lista.",
     "diocese_title": "Licencia de la diócesis",
-    "diocese_subtitle": "No hay checkout público. Hable con ventas y, si quiere, elija la diócesis."
+    "diocese_subtitle": "No hay checkout público. Hable con ventas y, si quiere, elija la diócesis.",
+    "step_current": "Estás aquí",
+    "step_done": "Completado"
   },
   "back_clean": "Volver",
   "change_diocese_clean": "Cambiar",

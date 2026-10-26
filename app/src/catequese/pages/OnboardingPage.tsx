@@ -423,6 +423,7 @@ export default function OnboardingPage() {
 
         setClassId(created.id);
         setClassName(details.className.trim());
+        await invalidateShellContext();
 
         // Today's meeting so roll call works immediately after onboarding.
         try {
@@ -451,6 +452,30 @@ export default function OnboardingPage() {
             : message || t("finish_error"),
         );
       }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const skipToExplore = async () => {
+    setSaving(true);
+    setError("");
+    try {
+      await withTransientRetry(() => ensurePersonalWorkspace());
+      trackMarketingEvent("onboarding_skipped", {
+        account_type: "personal",
+        step: "welcome",
+      });
+      await invalidateShellContext();
+      clearPersisted();
+      clearIntendedPlan();
+      navigate("/app");
+    } catch (e) {
+      setError(
+        isTransientRequestError(e)
+          ? t("class_setup.transient_error")
+          : t("personal_workspace_error"),
+      );
     } finally {
       setSaving(false);
     }
@@ -671,6 +696,7 @@ export default function OnboardingPage() {
       {step === "welcome" && (
         <WelcomeStep
           launchCatequistaOnly={launchCatequistaOnly}
+          onSkipExplore={() => void skipToExplore()}
           onPersonal={() => {
             try {
               sessionStorage.setItem(

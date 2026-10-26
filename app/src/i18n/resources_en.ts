@@ -1072,7 +1072,7 @@ export const auth_en = {
     "signup_plan_unlimited": "Parish Plan",
     "signup_interval_monthly": "monthly billing",
     "signup_interval_annual": "annual billing",
-    "signup_context_no_card": "7 days free; card now, charge after trial",
+    "signup_context_no_card": "7 days free, no card required",
     "signup_context_change": "Change",
     "signup_success_next_steps": "Next steps",
     "signup_success_step_1": "Check your inbox and spam folder.",
@@ -3919,7 +3919,7 @@ export const landing_en = {
       },
       {
         "q": "Do I need a card to try it?",
-        "a": "Yes. Stripe asks for a card to start the trial; the charge only happens after 7 days. Cancel in time if you do not want to continue."
+        "a": "No. The 7-day Catechist Plan trial starts without a card as soon as you create your first class. We only ask for a card when you decide to subscribe."
       },
       {
         "q": "Can I cancel anytime?",
@@ -5329,10 +5329,10 @@ export const onboarding_en = {
       "hello_default": "Welcome",
       "question": "How will you use Catequese Viva?",
       "personal_title": "I am a catechist and run my class",
-      "personal_desc": "Create the class, add catechumens, and use it every week.",
+      "personal_desc": "Create your class and add your catechumens. You get 7 days of the Catechist Plan free, no card required.",
       "personal_features": [],
       "manager_title": "I organize parish catechesis",
-      "manager_desc": "Parish, catechetical year, and team classes.",
+      "manager_desc": "Parish, catechetical year, and team classes. The 7-day Parish Plan trial starts on Stripe and asks for a card.",
       "manager_features": [],
       "helper": "You can change path later if needed.",
       "launch_question": "Let's set up your class workspace.",
@@ -5340,7 +5340,9 @@ export const onboarding_en = {
       "diocese_title": "I represent a diocese",
       "diocese_desc": "Umbrella license for several parishes. Talk to sales — there is no public checkout.",
       "invite_hint": "Already invited to a parish? Join from the invite email. Do not create another space.",
-      "eyebrow": "First steps"
+      "eyebrow": "First steps",
+      "skip_explore": "Skip and explore the app first",
+      "skip_explore_hint": "We set up your personal space with the 7 free days. Create your class whenever you like."
     },
     "personal_setup": {
       "title": "Personal Account",
@@ -5591,7 +5593,9 @@ export const onboarding_en = {
       "personal_people_title": "Who is in this class",
       "personal_people_subtitle": "Add names now or skip — roll call is already set up.",
       "diocese_title": "Diocese license",
-      "diocese_subtitle": "There is no public checkout. Talk to sales and, if you want, pick the diocese."
+      "diocese_subtitle": "There is no public checkout. Talk to sales and, if you want, pick the diocese.",
+      "step_current": "You are here",
+      "step_done": "Done"
     },
     "back_clean": "Back",
     "change_diocese_clean": "Change",
@@ -6022,7 +6026,7 @@ export const public_en = {
     },
     "pricing": {
       "title": "Three paths: catechist, parish, and diocese",
-      "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7-day free trial; card now, charge after trial.",
+      "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7 days free on the Catechist Plan, no card required.",
       "payment_card": "Card",
       "annual_savings": "Save 17% on annual",
       "monthly_tab": "Monthly",
@@ -6050,7 +6054,7 @@ export const public_en = {
       "faq": [
         {
           "q": "How can I try the platform before subscribing?",
-          "a": "You try it for 7 days. We ask for a card now and only charge after the trial. Use it with your real class and cancel if it does not make sense to continue."
+          "a": "You try it for 7 days, no card required. Use it with your real class; if it makes sense to continue, subscribe before the trial ends."
         },
         {
           "q": "What is the price?",
@@ -6058,7 +6062,7 @@ export const public_en = {
         },
         {
           "q": "How does payment work?",
-          "a": "You start with a 7-day trial. Stripe asks for a card now and only charges after the trial. No lock-in — cancel anytime."
+          "a": "You start with a 7-day trial, no card required. When you subscribe, payment is handled by Stripe. No lock-in — cancel anytime."
         },
         {
           "q": "What about annual plan refunds?",
