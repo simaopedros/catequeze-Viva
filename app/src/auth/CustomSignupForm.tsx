@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { signup } from "wasp/client/auth";
 import { googleSignInUrl } from "wasp/client/auth";
+import { resendVerificationEmail } from "wasp/client/operations";
 import { useTranslation } from "react-i18next";
 import { Button } from "../client/components/ui/button";
 import { Input } from "../client/components/ui/input";
@@ -59,6 +60,8 @@ export default function CustomSignupForm({
   const [success, setSuccess] = useState(false);
   const [hasTrackedStart, setHasTrackedStart] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(!!defaultEmail);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
 
   const reportSignupError = (message: string, reason: string) => {
     setError(message);
@@ -172,6 +175,20 @@ export default function CustomSignupForm({
     }
   };
 
+  const handleResendVerification = async () => {
+    if (!email) return;
+    setResendLoading(true);
+    setResendMessage("");
+    try {
+      await resendVerificationEmail({ email });
+      setResendMessage(t("signup_success_resend_sent"));
+    } catch {
+      setResendMessage(t("signup_success_resend_error"));
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
   if (success) {
     return (
       <div className="space-y-6">
@@ -187,6 +204,37 @@ export default function CustomSignupForm({
             <span>{t("signup_success_sent_to", { email })}</span>{" "}
             {t("signup_success_check_email")}
           </p>
+          {resendMessage && (
+            <p className="text-sm font-medium text-brand-ink">
+              {resendMessage}
+            </p>
+          )}
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleResendVerification}
+              disabled={resendLoading}
+              className="h-9"
+            >
+              {resendLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                  {t("signup_loading")}
+                </>
+              ) : (
+                t("signup_success_resend")
+              )}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setSuccess(false)}
+              className="h-9"
+            >
+              {t("signup_success_wrong_email")}
+            </Button>
+          </div>
           {inviteToken && (
             <p className="text-sm leading-relaxed text-muted-foreground">
               {t("signup_success_invite_hint")}{" "}
@@ -217,13 +265,6 @@ export default function CustomSignupForm({
             </li>
           ))}
         </ol>
-        <Button
-          variant="outline"
-          onClick={() => setSuccess(false)}
-          className="h-11 w-full rounded-sm"
-        >
-          {t("signup_back_button")}
-        </Button>
       </div>
     );
   }

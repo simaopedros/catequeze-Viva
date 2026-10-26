@@ -20,6 +20,7 @@ import {
   getTwoFactorStatus,
   verifyTwoFactorLogin,
   beginTwoFactorChallenge,
+  resendVerificationEmail,
 } from "wasp/client/operations";
 import { isFamilyPortalHost } from "../shared/portal";
 import { rememberPendingInviteToken } from "./inviteTokenStorage";
@@ -54,6 +55,9 @@ export default function CustomLoginForm({
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [resendEmail, setResendEmail] = useState("");
+  const [isResending, setIsResending] = useState(false);
   const [twoFactorToken, setTwoFactorToken] = useState("");
 
   useEffect(() => {
@@ -78,17 +82,21 @@ export default function CustomLoginForm({
     }
     setIsLoading(true);
     setError("");
+    setNotice("");
+    setResendEmail("");
     try {
       await login({ email, password });
     } catch (err: any) {
-      // Wasp's login() throws English messages (e.g. "Invalid credentials");
-      // show the localized copy instead of the raw error.
+      // Wasp's login() throws English messages (e.g. "Invalid credentials")
+      // and uses the same error for a wrong password and an unconfirmed email,
+      // so the resend option is offered on any credentials error.
       const status = err?.statusCode ?? err?.response?.status;
-      setError(
-        typeof status === "number" && status >= 500
-          ? t("login_error_generic")
-          : t("login_error_invalid"),
-      );
+      if (typeof status === "number" && status >= 500) {
+        setError(t("login_error_generic"));
+      } else {
+        setError(t("login_error_invalid"));
+        setResendEmail(email);
+      }
       setIsLoading(false);
       return;
     }
@@ -135,6 +143,22 @@ export default function CustomLoginForm({
     setStep("login");
     setTwoFactorToken("");
     setError("");
+  };
+
+  const handleResendVerification = async () => {
+    if (!resendEmail) return;
+    setIsResending(true);
+    setError("");
+    setNotice("");
+    try {
+      await resendVerificationEmail({ email: resendEmail });
+      setNotice(t("login_resend_sent"));
+      setResendEmail("");
+    } catch {
+      setError(t("login_resend_error"));
+    } finally {
+      setIsResending(false);
+    }
   };
 
   if (step === "twofactor") {
@@ -247,6 +271,26 @@ export default function CustomLoginForm({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && <Alert variant="destructive">{error}</Alert>}
+          {notice && <Alert>{notice}</Alert>}
+          {resendEmail && (
+            <div className="space-y-2 rounded-sm border border-border/70 bg-muted/30 px-3 py-3">
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                {t("login_resend_hint")}
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleResendVerification}
+                disabled={isResending || isLoading}
+                className="h-9 w-full"
+              >
+                {isResending && (
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                )}
+                {t("login_resend_confirmation")}
+              </Button>
+            </div>
+          )}
 
           <div className="space-y-1.5">
             <Label

@@ -2348,6 +2348,11 @@ action beginTwoFactorChallenge {
   entities: [UserTwoFactor]
 }
 
+action resendVerificationEmail {
+  fn: import { resendVerificationEmail } from "@src/auth/email-and-pass/resendVerificationEmail",
+  auth: false
+}
+
 query getTwoFactorStatus {
   fn: import { getTwoFactorStatus } from "@src/server/operations/twoFactorOperations",
   entities: [UserTwoFactor, User, Membership]
