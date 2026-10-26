@@ -36,6 +36,7 @@ import {
 } from "../../../client/offline/db";
 import { AppPanel } from "../../../client/components/brand/AppChrome";
 import { defaultMeetingDateIso } from "../../../shared/displayDate";
+import { displayMeetingRollCallStatus } from "../../../shared/meetingRollCallStatus";
 
 const STATUS_CYCLE = ["PRESENT", "LATE", "ABSENT", "JUSTIFIED"] as const;
 
