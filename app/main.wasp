@@ -846,7 +846,7 @@ query getCatechumenProfile {
 
 action createCatechumen {
   fn: import { createCatechumen } from "@src/server/operations/catechumenOperations",
-  entities: [CatechumenProfile, Membership, Parish]
+  entities: [CatechumenProfile, Membership, Parish, Household, ClassCatechist]
 }
 
 action updateCatechumen {
