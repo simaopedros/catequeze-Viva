@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { TimeInput } from "../../client/components/ui/time-input";
 import { useParams, Link, useNavigate } from "react-router";
 import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 import { useState, useEffect, useMemo } from "react";
@@ -666,9 +667,8 @@ export default function ClassDetailPage() {
               </div>
               <div>
                 <label className="text-xs font-medium">{t("start")}</label>
-                <input
+                <TimeInput
                   aria-label={t("start")}
-                  type="time"
                   value={editStart}
                   onChange={(e) => setEditStart(e.target.value)}
                   className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
@@ -678,9 +678,8 @@ export default function ClassDetailPage() {
                 <label className="text-xs font-medium">
                   {t("detail.end_time")}
                 </label>
-                <input
+                <TimeInput
                   aria-label={t("detail.end_time")}
-                  type="time"
                   value={editEnd}
                   onChange={(e) => setEditEnd(e.target.value)}
                   className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
@@ -885,7 +884,12 @@ export default function ClassDetailPage() {
                           type="button"
                           onClick={() => handleUnenroll(e.id)}
                           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                          aria-label={tc("delete")}
+                          aria-label={t("detail.unenroll_aria", {
+                            name: `${e.catechumenProfile?.firstName ?? ""} ${e.catechumenProfile?.lastName ?? ""}`.trim(),
+                          })}
+                          title={t("detail.unenroll_aria", {
+                            name: `${e.catechumenProfile?.firstName ?? ""} ${e.catechumenProfile?.lastName ?? ""}`.trim(),
+                          })}
                         >
                           <XCircle className="h-4 w-4" />
                         </button>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { TimeInput } from "../../../client/components/ui/time-input";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../client/components/ui/button";
 import {
@@ -154,9 +155,8 @@ export function ClassSetupStep({
                   <Label htmlFor="ob-start" className="text-xs font-medium">
                     {t("class_setup.start_time")}
                   </Label>
-                  <Input
+                  <TimeInput
                     id="ob-start"
-                    type="time"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
                     className="h-11 rounded-sm"
@@ -167,9 +167,8 @@ export function ClassSetupStep({
                   <Label htmlFor="ob-end" className="text-xs font-medium">
                     {t("class_setup.end_time")}
                   </Label>
-                  <Input
+                  <TimeInput
                     id="ob-end"
-                    type="time"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
                     className="h-11 rounded-sm"

@@ -77,6 +77,9 @@ export function computeActivationFlags(stats: ActivationStatsInput | null | unde
  */
 export type TrialBannerMode = "hidden" | "soft" | "urgency";
 
+/** Soft upgrade card waits until the second half of the trial so day 0 stays quiet. */
+export const SOFT_UPGRADE_MAX_DAYS_LEFT = 4;
+
 export function getTrialBannerMode(args: {
   daysLeft: number | null;
   hasReachedFirstValue: boolean;
@@ -87,7 +90,8 @@ export function getTrialBannerMode(args: {
 
   if (daysLeft != null && daysLeft <= 2) return "urgency";
   if (isActivating) return "hidden";
-  if (hasReachedFirstValue && !softDismissed) return "soft";
+  if (daysLeft == null || daysLeft > SOFT_UPGRADE_MAX_DAYS_LEFT) return "hidden";
+  if (!softDismissed) return "soft";
   return "hidden";
 }
 

@@ -21,7 +21,7 @@
   },
   "signup": {
     "title": "Criar Conta",
-    "requires_invite": "O registo no portal da família requer um convite da tua paróquia. Usa o link que recebeste por email.",
+    "requires_invite": "O cadastro no portal da família requer um convite da sua paróquia. Use o link que você recebeu por e-mail.",
     "have_code": "Tenho um código de convite",
     "already_have": "Já tens conta?",
     "login": "Entrar",
@@ -96,7 +96,7 @@
     "tip_context": "Dica: também pode convidar a partir da ficha da família ou do catequizando. Esta página centraliza todos os convites do portal.",
     "open_portal": "Ver portal da família",
     "need_parish": "Selecione uma paróquia",
-    "need_parish_desc": "Escolha o espaço de trabalho da paróquia para gerir os convites da família.",
+    "need_parish_desc": "Escolha o espaço de trabalho da paróquia para gerenciar os convites da família.",
     "banner_title": "Portal da Família: convites em um só lugar",
     "banner_desc": "Convide responsáveis e catequizandos, acompanhe pendentes, copie o link ou envie no WhatsApp.",
     "banner_cta": "Abrir convites",

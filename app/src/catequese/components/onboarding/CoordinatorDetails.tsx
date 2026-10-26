@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { TimeInput } from "../../../client/components/ui/time-input";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../client/components/ui/button";
 import {
@@ -173,9 +174,8 @@ export function CoordinatorDetails({
                         >
                           {t("coordinator.start_time")}
                         </Label>
-                        <Input
+                        <TimeInput
                           id="coord-start"
-                          type="time"
                           value={startTime}
                           onChange={(e) => setStartTime(e.target.value)}
                           className="h-11 rounded-sm"
@@ -188,9 +188,8 @@ export function CoordinatorDetails({
                         >
                           {t("coordinator.end_time")}
                         </Label>
-                        <Input
+                        <TimeInput
                           id="coord-end"
-                          type="time"
                           value={endTime}
                           onChange={(e) => setEndTime(e.target.value)}
                           className="h-11 rounded-sm"

@@ -109,6 +109,16 @@ describe("getTrialBannerMode", () => {
     ).toBe("soft");
   });
 
+  it("stays hidden early in the trial even after first value", () => {
+    expect(
+      getTrialBannerMode({
+        daysLeft: 7,
+        hasReachedFirstValue: true,
+        softDismissed: false,
+      }),
+    ).toBe("hidden");
+  });
+
   it("hidden after soft dismiss", () => {
     expect(
       getTrialBannerMode({

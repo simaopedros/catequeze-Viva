@@ -56,6 +56,8 @@ import i18n, {
   normalizeLocale,
 } from "../i18n/config";
 import { needsFullAppNamespaces } from "./appRouteGates";
+import { installNativeValidationMessages } from "./nativeValidation";
+import { configureZodLocale } from "./zodLocale";
 
 /**
  * Runs `cb` once on the first user interaction (or after a long idle) so
@@ -166,6 +168,11 @@ configureQueryClient({
   },
 });
 
+const tCommon = (key: string, options?: Record<string, unknown>) =>
+  i18n.t(key, { ns: "common", ...options });
+installNativeValidationMessages(tCommon);
+configureZodLocale(i18n.language || "pt-BR", tCommon);
+i18n.on("languageChanged", (lng) => configureZodLocale(lng, tCommon));
 trackAxiosActivity(api);
 
 export default function App() {

@@ -66,7 +66,8 @@
   "trial_banner_ends": "Termina el {{date}}.",
   "trial_banner_cta": "Ver suscripción",
   "trial_soft_title": "Ya usaste lo esencial — sin prisa",
-  "trial_soft_subtitle": "Quedan {{count}} días de trial. Cuando quieras, revisa los planes para mantener todo en un solo lugar.",
+  "trial_soft_subtitle_one": "Queda {{count}} día de prueba. Cuando quieras, revisa los planes para mantener todo en un solo lugar.",
+  "trial_soft_subtitle_other": "Quedan {{count}} días de prueba. Cuando quieras, revisa los planes para mantener todo en un solo lugar.",
   "trial_soft_cta": "Ver planes",
   "trial_soft_dismiss": "Descartar sugerencia de plan",
   "trial_topbar_one": "1 día de prueba",
@@ -181,8 +182,10 @@
   "upgrade_plans_subtitle": "Elige la suscripción que elimina este bloqueo y mantiene tu catequesis en el mismo flujo.",
   "upgrade_checklist_title": "Lo que conservas con la mejora",
   "upgrade_checklist_workspace_ready": "Tu espacio actual ya está listo para seguir creciendo.",
-  "upgrade_checklist_classes_active": "{{count}} turma activa permanece en el mismo espacio.",
-  "upgrade_checklist_catechumens_active": "{{count}} catequizandos ya registrados conservan su historial y seguimiento.",
+  "upgrade_checklist_classes_active_one": "{{count}} grupo activo permanece en el mismo espacio.",
+  "upgrade_checklist_classes_active_other": "{{count}} grupos activos permanecen en el mismo espacio.",
+  "upgrade_checklist_catechumens_active_one": "{{count}} catecúmeno ya registrado conserva su historial y seguimiento.",
+  "upgrade_checklist_catechumens_active_other": "{{count}} catecúmenos ya registrados conservan su historial y seguimiento.",
   "upgrade_checklist_keep_history": "Tu historial, encuentros y asistencia permanecen en el mismo lugar.",
   "upgrade_journey": {
     "generic": {

@@ -1,7 +1,9 @@
 {
   "title": "Calendário",
-  "month_events": "{{month}} de {{year}} · {{count}} eventos",
-  "event_count": "{{count}} eventos",
+  "month_events_one": "{{month}} de {{year}} · {{count}} evento",
+  "month_events_other": "{{month}} de {{year}} · {{count}} eventos",
+  "event_count_one": "{{count}} evento",
+  "event_count_other": "{{count}} eventos",
   "today": "Hoje",
   "view_agenda": "Agenda",
   "view_month": "Mês",

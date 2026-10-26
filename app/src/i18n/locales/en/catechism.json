@@ -16,5 +16,6 @@
     "prayer": "Prayer",
     "virtues": "The Virtues",
     "sin": "Sin"
-  }
+  },
+  "showMore": "Show more ({{shown}} of {{total}})"
 }
