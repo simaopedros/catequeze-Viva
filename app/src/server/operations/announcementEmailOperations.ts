@@ -60,17 +60,24 @@ export const sendClassAnnouncementByEmail = async (
       catechumenProfile: {
         include: {
           household: {
-            include: { guardians: { include: { user: { select: { email: true } } } } },
+            include: {
+              guardians: {
+                include: { user: { select: { email: true } } },
+              },
+            },
           },
         },
       },
     },
   });
 
+  // Prefer linked User.email; fall back to GuardianProfile.email for
+  // responsáveis without an account (or with email only on the profile).
   const guardianEmails = new Set<string>();
   for (const e of enrollments) {
     for (const g of e.catechumenProfile?.household?.guardians || []) {
-      if (g.user?.email) guardianEmails.add(g.user.email);
+      const raw = (g.user?.email || g.email || '').trim().toLowerCase();
+      if (raw) guardianEmails.add(raw);
     }
   }
 
