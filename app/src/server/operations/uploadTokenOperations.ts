@@ -33,11 +33,11 @@ export const generateCatechumenUploadToken = async (
 
   if (!catechumen) throw new HttpError(404, 'Catequizando não encontrado.');
 
+  // Token generation follows the catechumen's parish / class enrollments only.
   const candidateParishIds = [
     ...new Set(
       [
         catechumen.parishId,
-        catechumen.household?.parishId,
         ...catechumen.enrollments.map((e: any) => e.class?.parishId),
       ].filter(Boolean) as string[],
     ),
