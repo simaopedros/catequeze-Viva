@@ -1739,6 +1739,7 @@ export const classes_en = {
     "indicators": "Indicators",
     "meeting_today": "Meeting today",
     "next_meeting": "Next: {{date}}",
+    "no_meeting_scheduled": "No meeting scheduled",
     "found_count": "{{count}} class(es) found",
     "catechumens_count_one": "{{count}} catechumen",
     "catechumens_count_other": "{{count}} catechumens",
@@ -1872,7 +1873,8 @@ export const classes_en = {
       "confirm_conclude_btn": "Conclude class",
       "confirm_remove_catechist_title": "Remove catechist",
       "confirm_remove_catechist_desc": "Are you sure you want to remove this catechist from the class?",
-      "error": "Error"
+      "error": "Error",
+      "unenroll_aria": "Remove {{name}} from the class"
     },
     "no_schedule": "No schedule",
     "first_classes": "First classes",
@@ -2497,7 +2499,7 @@ export const common_en = {
       "linked_classes": "{{count}} linked",
       "family_label": "Family",
       "family_unlinked": "Not linked",
-      "next_enroll": "Enroll in a class",
+      "next_enroll": "No class yet · open record to enroll",
       "view_profile": "Open profile"
     },
     "global_search_placeholder": "Search catechumens, classes, content, Bible...",

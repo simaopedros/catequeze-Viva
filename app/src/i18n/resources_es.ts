@@ -1739,6 +1739,7 @@ export const classes_es = {
     "indicators": "Indicadores",
     "meeting_today": "Encuentro hoy",
     "next_meeting": "Próx: {{date}}",
+    "no_meeting_scheduled": "Ningún encuentro programado",
     "found_count": "{{count}} grupo(s) encontrado(s)",
     "catechumens_count_one": "{{count}} catecúmeno",
     "catechumens_count_other": "{{count}} catecúmenos",
@@ -1872,7 +1873,8 @@ export const classes_es = {
       "confirm_conclude_btn": "Concluir grupo",
       "confirm_remove_catechist_title": "Quitar catequista",
       "confirm_remove_catechist_desc": "¿Está seguro de que desea quitar este catequista del grupo?",
-      "error": "Error"
+      "error": "Error",
+      "unenroll_aria": "Quitar a {{name}} del grupo"
     },
     "no_schedule": "Sin horario",
     "first_classes": "Primeros grupos",
@@ -2414,7 +2416,7 @@ export const common_es = {
       "linked_classes": "{{count}} vinculada(s)",
       "family_label": "Familia",
       "family_unlinked": "Sin vincular",
-      "next_enroll": "Inscribir en un grupo",
+      "next_enroll": "Sin grupo · abrir ficha para inscribir",
       "view_profile": "Abrir perfil"
     },
     "families": {

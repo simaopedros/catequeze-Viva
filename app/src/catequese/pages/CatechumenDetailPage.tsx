@@ -320,6 +320,11 @@ export default function CatechumenDetailPage() {
     return <div className="p-6 text-destructive">{t("not_found")}</div>;
 
   const getAge = (bd: string) => getAgeFromDate(bd);
+  const catechumenAge = profile?.birthDate
+    ? getAgeFromDate(String(profile.birthDate))
+    : null;
+  // Marriage certificates only make sense for adult catechumens (e.g. RICA).
+  const isAdultCatechumen = catechumenAge === null || catechumenAge >= 18;
   const age = getAge(profile.birthDate);
   const attendancePct = attendance.length
     ? Math.round(
@@ -969,8 +974,14 @@ export default function CatechumenDetailPage() {
                     onChange={(e) => setDocType(e.target.value)}
                     className="h-9 rounded-sm border border-input bg-background px-3 text-sm flex-1"
                   >
-                    {Object.entries(DOC_TYPE_SHORT_KEYS).map(
-                      ([value, i18nKey]) => (
+                    {Object.entries(DOC_TYPE_SHORT_KEYS)
+                      .filter(
+                        ([value]) =>
+                          value !== "MARRIAGE_CERTIFICATE" ||
+                          isAdultCatechumen ||
+                          docType === value,
+                      )
+                      .map(([value, i18nKey]) => (
                         <option key={value} value={value}>
                           {t(`catechumens.doc_types.${i18nKey}`)}
                         </option>

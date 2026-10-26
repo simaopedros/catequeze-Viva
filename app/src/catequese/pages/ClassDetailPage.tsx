@@ -875,7 +875,12 @@ export default function ClassDetailPage() {
                           type="button"
                           onClick={() => handleUnenroll(e.id)}
                           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                          aria-label={tc("delete")}
+                          aria-label={t("detail.unenroll_aria", {
+                            name: `${e.catechumenProfile?.firstName ?? ""} ${e.catechumenProfile?.lastName ?? ""}`.trim(),
+                          })}
+                          title={t("detail.unenroll_aria", {
+                            name: `${e.catechumenProfile?.firstName ?? ""} ${e.catechumenProfile?.lastName ?? ""}`.trim(),
+                          })}
                         >
                           <XCircle className="h-4 w-4" />
                         </button>

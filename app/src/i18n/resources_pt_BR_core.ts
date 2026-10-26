@@ -1006,7 +1006,7 @@ export const common_pt_BR_core = {
       "linked_classes": "{{count}} vinculada(s)",
       "family_label": "Família",
       "family_unlinked": "Não vinculada",
-      "next_enroll": "Matricular em uma turma",
+      "next_enroll": "Sem turma · abrir ficha para matricular",
       "view_profile": "Abrir ficha"
     },
     "families": {

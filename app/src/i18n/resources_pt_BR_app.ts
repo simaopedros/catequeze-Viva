@@ -1152,6 +1152,7 @@ export const classes_pt_BR_app = {
     "indicators": "Indicadores",
     "meeting_today": "Encontro hoje",
     "next_meeting": "Próx: {{date}}",
+    "no_meeting_scheduled": "Nenhum encontro agendado",
     "found_count": "{{count}} turma(s) encontrada(s)",
     "catechumens_count_one": "{{count}} catequizando",
     "catechumens_count_other": "{{count}} catequizandos",
@@ -1285,7 +1286,8 @@ export const classes_pt_BR_app = {
       "confirm_conclude_btn": "Concluir turma",
       "confirm_remove_catechist_title": "Remover catequista",
       "confirm_remove_catechist_desc": "Tem certeza que deseja remover este catequista da turma?",
-      "error": "Erro"
+      "error": "Erro",
+      "unenroll_aria": "Remover {{name}} da turma"
     },
     "no_schedule": "Sem horário",
     "first_classes": "Primeiras turmas",
