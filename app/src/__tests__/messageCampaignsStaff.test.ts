@@ -8,12 +8,13 @@ describe("listMessageCampaigns staff gate", () => {
     "utf8",
   );
 
-  it("uses assertCanWriteParish instead of bare requireWorkspaceAccess", () => {
+  it("blocks family-only roles via assertStaffOperation", () => {
     const listBlock = ops.slice(
       ops.indexOf("export const listMessageCampaigns"),
       ops.indexOf("export const exportReport"),
     );
-    expect(listBlock).toContain("assertCanWriteParish");
-    expect(listBlock).not.toContain("requireWorkspaceAccess");
+    expect(listBlock).toContain("requireWorkspaceAccess");
+    expect(listBlock).toContain("assertStaffOperation");
+    expect(listBlock).toContain("Apenas a equipe pastoral pode listar campanhas");
   });
 });
