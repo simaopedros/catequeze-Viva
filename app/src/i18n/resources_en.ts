@@ -2608,6 +2608,10 @@ export const common_en = {
       "password_min_length": "The new password must have at least 8 characters.",
       "phone_invalid": "Invalid phone number.",
       "too_long": "Text is too long."
+    },
+    "activity": {
+      "working": "Loading…",
+      "slow": "Still working… the connection is slow."
     }
   } as const;
 
