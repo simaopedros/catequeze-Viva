@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  isSubscriptionFreeAppPath,
   getPostCheckoutDestination,
   isMinimalAppPath,
   isPublicOnlyPath,
@@ -171,5 +172,28 @@ describe("shouldHoldOnboardingRedirectOnBilling", () => {
         isOnProductTrial: false,
       }),
     ).toBe(false);
+  });
+});
+
+describe("isSubscriptionFreeAppPath", () => {
+  it("keeps help, settings and reference texts open without a subscription", () => {
+    for (const path of [
+      "/app/suporte",
+      "/app/settings",
+      "/app/bible",
+      "/app/bible?book=jo",
+      "/app/catechism",
+      "/app/directory",
+      "/app/billing?plan=single",
+      "/account",
+    ]) {
+      expect(isSubscriptionFreeAppPath(path)).toBe(true);
+    }
+  });
+
+  it("still gates the working areas", () => {
+    for (const path of ["/app", "/app/classes", "/app/calendar", "/app/bibles"]) {
+      expect(isSubscriptionFreeAppPath(path)).toBe(false);
+    }
   });
 });

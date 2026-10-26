@@ -650,12 +650,18 @@
   "clear": "Limpar",
   "support_inbox": {
     "title": "Central de suporte",
-    "subtitle": "As respostas da equipa aparecem aqui e também são enviadas por email.",
-    "your_message": "A sua mensagem",
+    "subtitle": "Envie sua dúvida abaixo. As respostas da equipe aparecem aqui e também chegam por e-mail.",
+    "your_message": "Sua mensagem",
     "our_reply": "Resposta da Catequese Viva",
-    "waiting": "Ainda à espera de resposta.",
+    "waiting": "Aguardando resposta.",
     "empty_title": "Sem mensagens de suporte",
-    "empty_desc": "Quando a equipa responder a um contacto seu, a conversa aparece aqui."
+    "empty_desc": "Quando você enviar uma mensagem, a conversa com a equipe aparece aqui.",
+    "new_label": "Nova mensagem para o suporte",
+    "new_placeholder": "Descreva sua dúvida ou o problema que encontrou…",
+    "new_hint": "Responderemos para {{email}}.",
+    "new_submit": "Enviar",
+    "new_sent": "Mensagem enviada. Responderemos em breve.",
+    "new_error": "Não foi possível enviar agora. Tente novamente em alguns minutos."
   },
   "validation": {
     "first_name_required": "Informe o nome.",
@@ -669,5 +675,9 @@
     "password_min_length": "A nova senha precisa ter pelo menos 8 caracteres.",
     "phone_invalid": "Telefone inválido.",
     "too_long": "Texto muito longo."
+  },
+  "activity": {
+    "working": "Carregando…",
+    "slow": "Ainda trabalhando… a conexão está lenta."
   }
 }

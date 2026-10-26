@@ -490,6 +490,8 @@ export default function MeetingsPage() {
         onConfirm={handleDelete}
         title={t("delete_confirm_title")}
         description={t("delete_confirm_desc")}
+        confirmLabel={t("delete_confirm_button")}
+        variant="destructive"
       />
     </div>
   );

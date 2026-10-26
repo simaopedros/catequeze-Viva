@@ -61,6 +61,30 @@ export function isMinimalAppPath(
   return Boolean(opts?.needsOnboarding);
 }
 
+/**
+ * App routes that stay open without a subscription: billing/onboarding (the
+ * way in), account settings, support (so a blocked user can still ask for
+ * help) and the public-domain reference texts.
+ */
+export const SUBSCRIPTION_FREE_APP_PATHS = [
+  "/app/billing",
+  "/account",
+  "/app/onboarding",
+  "/app/select-workspace",
+  "/app/settings",
+  "/app/suporte",
+  "/app/bible",
+  "/app/catechism",
+  "/app/directory",
+] as const;
+
+export function isSubscriptionFreeAppPath(pathname: string): boolean {
+  const path = pathname.split("?")[0];
+  return SUBSCRIPTION_FREE_APP_PATHS.some(
+    (prefix) => path === prefix || path.startsWith(`${prefix}/`),
+  );
+}
+
 /** SubscriptionGate: never hold an always-accessible route on `checked`. */
 export function shouldRenderGatedRoute(opts: {
   userLoaded: boolean;

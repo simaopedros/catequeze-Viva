@@ -46,6 +46,8 @@ export type ParishBillingConversionProps = {
   variant?: BillingConversionVariant;
   planClassLimit?: number | null;
   planCatechumenLimit?: number | null;
+  /** Free days Stripe Checkout will grant before the first charge. */
+  checkoutTrialDays?: number;
 };
 
 function UsageStat({
@@ -97,8 +99,9 @@ export function ParishBillingConversion({
   variant = "parish",
   planClassLimit,
   planCatechumenLimit,
+  checkoutTrialDays = 0,
 }: ParishBillingConversionProps) {
-  const { t } = useTranslation("billing");
+  const { t, i18n } = useTranslation("billing");
   const [interval, setInterval] = useState<BillingInterval>(defaultInterval);
   const ns = variant === "catechist" ? "catechist_offer" : "parish_offer";
   const testId =
@@ -136,6 +139,25 @@ export function ParishBillingConversion({
   const resultCopy = isTrial
     ? t(`${ns}.result_trial`)
     : t(`${ns}.result_no_trial`);
+
+  const firstChargeLabel = new Date(
+    Date.now() + checkoutTrialDays * 24 * 60 * 60 * 1000,
+  ).toLocaleDateString(i18n?.language || "pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+  const chargeNote =
+    checkoutTrialDays > 0
+      ? t("checkout_charge_after_trial", {
+          count: checkoutTrialDays,
+          date: firstChargeLabel,
+        })
+      : t("checkout_charge_today");
+  const ctaLabel =
+    checkoutTrialDays > 0 && !isTrial
+      ? t("checkout_cta_start_trial", { count: checkoutTrialDays })
+      : t(`${ns}.cta`);
 
   const priceLabel = showAnnual
     ? formatMonthlyFromAnnualCents(annualCents!)
@@ -258,7 +280,11 @@ export function ParishBillingConversion({
           </>
         ) : (
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            {t(`${ns}.usage_benefits_label`)}
+            {t(
+              isTrial
+                ? `${ns}.usage_benefits_label`
+                : "checkout_plan_includes_label",
+            )}
           </p>
         )}
 
@@ -382,12 +408,18 @@ export function ParishBillingConversion({
             </>
           ) : (
             <>
-              {t(`${ns}.cta`)}
+              {ctaLabel}
               <ArrowUpRight className="h-4 w-4" />
             </>
           )}
         </Button>
-        <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+        <p
+          className="mt-3 text-center text-xs text-muted-foreground"
+          data-testid="billing-charge-note"
+        >
+          {chargeNote}
+        </p>
+        <p className="mt-1 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
           <Lock className="h-3.5 w-3.5" aria-hidden />
           {t(`${ns}.secure_payment`)}
         </p>

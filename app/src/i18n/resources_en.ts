@@ -33,7 +33,10 @@ export const account_en = {
     "manage_workspace_billing": "Manage workspace billing",
     "no_active_workspace": "No active workspace",
     "workspace_managed_desc": "You take part in this workspace. Plans and payments stay with whoever administers it.",
-    "workspace_managed_hint": "Questions about the plan? Talk to the coordination."
+    "workspace_managed_hint": "Questions about the plan? Talk to the coordination.",
+    "display_name": "Name",
+    "edit_profile_link": "Edit name, phone, photo and password in Settings",
+    "credits_hint": "Credits are used by the AI features (generating lesson plans, activities and messages). Each generation uses credits."
   } as const;
 
 export const activities_en = {
@@ -1072,7 +1075,7 @@ export const auth_en = {
     "signup_plan_unlimited": "Parish Plan",
     "signup_interval_monthly": "monthly billing",
     "signup_interval_annual": "annual billing",
-    "signup_context_no_card": "7 days free; card now, charge after trial",
+    "signup_context_no_card": "7 days free, no card required",
     "signup_context_change": "Change",
     "signup_success_next_steps": "Next steps",
     "signup_success_step_1": "Check your inbox and spam folder.",
@@ -1448,7 +1451,7 @@ export const billing_en = {
       "headline_trial_other": "Your trial ends in {{count}} days",
       "headline_trial_ended": "Your trial has ended",
       "headline_trial_active": "Your trial is active",
-      "headline_no_trial": "Keep your catechesis in the personal workspace",
+      "headline_no_trial": "Subscribe to the Catechist Plan to use your personal space",
       "result_trial": "Subscribe to the Catechist Plan and continue without interruption.",
       "result_no_trial": "The Catechist Plan covers your personal workspace: classes, attendance, and calendar.",
       "usage_aria": "Current usage compared with the Catechist Plan",
@@ -1530,7 +1533,13 @@ export const billing_en = {
       "diocese_sales_desc": "Parish coverage is assisted sales.",
       "diocese_cta": "Talk to sales about the diocese",
       "diocese_prefill": "Hi! I would like to talk about the Diocese Plan for {{name}} on Catequese Viva."
-    }
+    },
+    "checkout_cta_start_trial_one": "Start 1 free day",
+    "checkout_cta_start_trial_other": "Start {{count}} free days",
+    "checkout_charge_after_trial_one": "Stripe asks for your card now. You get 1 free day and the first charge is on {{date}}. Cancel before then to avoid being charged.",
+    "checkout_charge_after_trial_other": "Stripe asks for your card now. You get {{count}} free days and the first charge is on {{date}}. Cancel before then to avoid being charged.",
+    "checkout_charge_today": "You are charged on Stripe as soon as you confirm the subscription.",
+    "checkout_plan_includes_label": "What the plan includes"
   } as const;
 
 export const birthdays_en = {
@@ -1636,7 +1645,47 @@ export const calendar_en = {
     "confirm_delete_event_desc": "This action cannot be undone.",
     "delete_error": "Could not delete the event",
     "conflicts_title": "Possible calendar conflict",
-    "conflicts_desc": "{{count}} meeting(s) fall on the same day as a required diocesan or parish event."
+    "conflicts_desc": "{{count}} meeting(s) fall on the same day as a required diocesan or parish event.",
+    "event_created": "Event created",
+    "create_error": "Could not create the event",
+    "new_event_desc": "The event shows on the calendar for the whole parish or your space.",
+    "event_date": "Event date",
+    "event_type": "Event type",
+    "event_color": "Event color",
+    "delete_event_aria": "Delete the event {{name}}",
+    "export_ics_aria": "Export to calendar (.ics)",
+    "liturgical": {
+      "mary_mother_of_god": "Mary, Mother of God",
+      "epiphany": "Epiphany of the Lord",
+      "baptism_of_the_lord": "Baptism of the Lord",
+      "presentation_of_the_lord": "Presentation of the Lord",
+      "ash_wednesday": "Ash Wednesday",
+      "saint_joseph": "Saint Joseph, Spouse of Mary",
+      "annunciation": "Annunciation of the Lord",
+      "palm_sunday": "Palm Sunday",
+      "holy_thursday": "Holy Thursday",
+      "good_friday": "Good Friday",
+      "easter": "Easter Sunday",
+      "divine_mercy": "Divine Mercy Sunday",
+      "ascension": "Ascension of the Lord",
+      "pentecost": "Pentecost",
+      "holy_trinity": "Most Holy Trinity",
+      "corpus_christi": "Corpus Christi",
+      "sacred_heart": "Sacred Heart of Jesus",
+      "peter_and_paul": "Saints Peter and Paul",
+      "assumption": "Assumption of Mary",
+      "our_lady_aparecida": "Our Lady of Aparecida",
+      "all_saints": "All Saints",
+      "all_souls": "All Souls",
+      "christ_the_king": "Christ the King",
+      "advent_1": "1st Sunday of Advent",
+      "advent_2": "2nd Sunday of Advent",
+      "advent_3": "3rd Sunday of Advent (Gaudete)",
+      "advent_4": "4th Sunday of Advent",
+      "immaculate_conception": "Immaculate Conception",
+      "christmas": "Christmas"
+    },
+    "liturgical_generated_hint": "Liturgical calendar celebration (Brazilian bishops' conference dates). Check your diocese's liturgical directory."
   } as const;
 
 export const catecheticalYears_en = {
@@ -1859,7 +1908,20 @@ export const classes_en = {
       "confirm_conclude_btn": "Conclude class",
       "confirm_remove_catechist_title": "Remove catechist",
       "confirm_remove_catechist_desc": "Are you sure you want to remove this catechist from the class?",
-      "error": "Error"
+      "error": "Error",
+      "generate_title": "Generate meetings",
+      "generate_desc": "Create the class's next weekly meetings at once. Dates that already have a meeting are skipped.",
+      "generate_weekday": "Weekday",
+      "generate_count": "How many",
+      "generate_count_option_one": "{{count}} meeting",
+      "generate_count_option_other": "{{count}} meetings",
+      "generate_button": "Generate",
+      "generate_single": "Single meeting",
+      "generated_meeting_title": "Meeting {{number}}",
+      "generate_success_one": "{{count}} meeting created",
+      "generate_success_other": "{{count}} meetings created",
+      "generate_error_one": "Stopped after {{count}} meeting was created",
+      "generate_error_other": "Stopped after {{count}} meetings were created"
     },
     "no_schedule": "No schedule",
     "first_classes": "First classes",
@@ -2637,12 +2699,18 @@ export const common_en = {
     "clear": "Clear",
     "support_inbox": {
       "title": "Support inbox",
-      "subtitle": "Team replies appear here and are also sent by email.",
+      "subtitle": "Send your question below. Team replies appear here and are also sent by email.",
       "your_message": "Your message",
       "our_reply": "Reply from Catequese Viva",
       "waiting": "Waiting for a reply.",
       "empty_title": "No support messages",
-      "empty_desc": "When the team replies to a contact from you, the conversation appears here."
+      "empty_desc": "When you send a message, the conversation with the team appears here.",
+      "new_label": "New message to support",
+      "new_placeholder": "Describe your question or the problem you found…",
+      "new_hint": "We will reply to {{email}}.",
+      "new_submit": "Send",
+      "new_sent": "Message sent. We will reply soon.",
+      "new_error": "Could not send right now. Please try again in a few minutes."
     },
     "validation": {
       "first_name_required": "Enter the first name.",
@@ -2656,6 +2724,10 @@ export const common_en = {
       "password_min_length": "The new password must have at least 8 characters.",
       "phone_invalid": "Invalid phone number.",
       "too_long": "Text is too long."
+    },
+    "activity": {
+      "working": "Loading…",
+      "slow": "Still working… the connection is slow."
     }
   } as const;
 
@@ -3976,7 +4048,7 @@ export const landing_en = {
       },
       {
         "q": "Do I need a card to try it?",
-        "a": "Yes. Stripe asks for a card to start the trial; the charge only happens after 7 days. Cancel in time if you do not want to continue."
+        "a": "No. The 7-day Catechist Plan trial starts without a card as soon as you create your first class. We only ask for a card when you decide to subscribe."
       },
       {
         "q": "Can I cancel anytime?",
@@ -5144,7 +5216,8 @@ export const meetings_en = {
       },
       "next_label": "Next meeting",
       "empty_mobile": "No meeting scheduled."
-    }
+    },
+    "delete_confirm_button": "Delete meeting"
   } as const;
 
 export const messages_en = {
@@ -5343,7 +5416,8 @@ export const navigation_en = {
       "community": "Communities"
     },
     "sidebarSection": "Sidebar navigation",
-    "community": "Community"
+    "community": "Community",
+    "locked_hint": "requires a subscription"
   } as const;
 
 export const onboarding_en = {
@@ -5386,10 +5460,10 @@ export const onboarding_en = {
       "hello_default": "Welcome",
       "question": "How will you use Catequese Viva?",
       "personal_title": "I am a catechist and run my class",
-      "personal_desc": "Create the class, add catechumens, and use it every week.",
+      "personal_desc": "Create your class and add your catechumens. You get 7 days of the Catechist Plan free, no card required.",
       "personal_features": [],
       "manager_title": "I organize parish catechesis",
-      "manager_desc": "Parish, catechetical year, and team classes.",
+      "manager_desc": "Parish, catechetical year, and team classes. The 7-day Parish Plan trial starts on Stripe and asks for a card.",
       "manager_features": [],
       "helper": "You can change path later if needed.",
       "launch_question": "Let's set up your class workspace.",
@@ -5397,7 +5471,9 @@ export const onboarding_en = {
       "diocese_title": "I represent a diocese",
       "diocese_desc": "Umbrella license for several parishes. Talk to sales — there is no public checkout.",
       "invite_hint": "Already invited to a parish? Join from the invite email. Do not create another space.",
-      "eyebrow": "First steps"
+      "eyebrow": "First steps",
+      "skip_explore": "Skip and explore the app first",
+      "skip_explore_hint": "We set up your personal space with the 7 free days. Create your class whenever you like."
     },
     "personal_setup": {
       "title": "Personal Account",
@@ -5648,7 +5724,9 @@ export const onboarding_en = {
       "personal_people_title": "Who is in this class",
       "personal_people_subtitle": "Add names now or skip — roll call is already set up.",
       "diocese_title": "Diocese license",
-      "diocese_subtitle": "There is no public checkout. Talk to sales and, if you want, pick the diocese."
+      "diocese_subtitle": "There is no public checkout. Talk to sales and, if you want, pick the diocese.",
+      "step_current": "You are here",
+      "step_done": "Done"
     },
     "back_clean": "Back",
     "change_diocese_clean": "Change",
@@ -5681,7 +5759,10 @@ export const onboarding_en = {
       "saving": "Creating class…",
       "continue": "Continue",
       "transient_error": "The server was busy. Wait a few seconds and tap Continue again.",
-      "plan_limit": "Your trial has not unlocked the class yet. Wait a few seconds and try again.",
+      "plan_limit": "Your trial isn't active, so you can't create the class yet. Subscribe to the Catechist Plan to continue or contact support.",
+      "plan_limit_subscribe": "Subscribe to the Catechist Plan",
+      "plan_limit_support": "Contact support",
+      "plan_limit_support_prefill": "Hi! I'm signing up for Catequese Viva and couldn't create my first class (plan limit).",
       "start_time_invalid": "Invalid start time. Use HH:mm format (e.g. 7:00 PM as 19:00).",
       "end_time_invalid": "Invalid end time. Use HH:mm format (e.g. 8:30 PM as 20:30).",
       "default_meeting_title": "Today's meeting",
@@ -6076,7 +6157,7 @@ export const public_en = {
     },
     "pricing": {
       "title": "Three paths: catechist, parish, and diocese",
-      "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7-day free trial; card now, charge after trial.",
+      "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7 days free on the Catechist Plan, no card required.",
       "payment_card": "Card",
       "annual_savings": "Save 17% on annual",
       "monthly_tab": "Monthly",
@@ -6104,7 +6185,7 @@ export const public_en = {
       "faq": [
         {
           "q": "How can I try the platform before subscribing?",
-          "a": "You try it for 7 days. We ask for a card now and only charge after the trial. Use it with your real class and cancel if it does not make sense to continue."
+          "a": "You try it for 7 days, no card required. Use it with your real class; if it makes sense to continue, subscribe before the trial ends."
         },
         {
           "q": "What is the price?",
@@ -6112,7 +6193,7 @@ export const public_en = {
         },
         {
           "q": "How does payment work?",
-          "a": "You start with a 7-day trial. Stripe asks for a card now and only charges after the trial. No lock-in — cancel anytime."
+          "a": "You start with a 7-day trial, no card required. When you subscribe, payment is handled by Stripe. No lock-in — cancel anytime."
         },
         {
           "q": "What about annual plan refunds?",
@@ -6507,7 +6588,12 @@ export const settings_en = {
     "email_pref_lifecycle": "Activation tips, trial, and win-back emails",
     "email_pref_product": "Product news and newsletter",
     "email_pref_pastoral": "Class and parish announcements",
-    "email_pref_saved": "Email preferences saved."
+    "email_pref_saved": "Email preferences saved.",
+    "avatar_error": "Could not update the photo. Try a smaller image (JPG, PNG or WebP).",
+    "avatar_alt": "Profile photo",
+    "avatar_change": "Change photo",
+    "avatar_add": "Add photo",
+    "avatar_remove": "Remove photo"
   } as const;
 
 export const social_en = {

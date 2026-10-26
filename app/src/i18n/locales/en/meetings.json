@@ -104,5 +104,6 @@
     },
     "next_label": "Next meeting",
     "empty_mobile": "No meeting scheduled."
-  }
+  },
+  "delete_confirm_button": "Delete meeting"
 }
