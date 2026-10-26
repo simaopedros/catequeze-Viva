@@ -27,7 +27,6 @@ import {
   getProductTrialEndsAt,
 } from "../shared/pricing";
 import { useActiveWorkspace } from "../client/hooks/useActiveWorkspace";
-import { AI_FEATURES_ENABLED } from "../shared/aiFeatures";
 import { useRoleLabels } from "../i18n/useLabels";
 import { canManageWorkspaceBilling } from "../shared/billingAccess";
 import {
