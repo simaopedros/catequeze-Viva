@@ -2231,7 +2231,7 @@ export const common_en = {
     "edit": "Edit",
     "create": "Create",
     "search": "Search...",
-    "loading": "Loading...",
+    "loading": "Just a moment…",
     "error_generic": "Something went wrong. Please try again.",
     "success_save": "Saved successfully.",
     "confirm_delete": "Are you sure you want to delete?",

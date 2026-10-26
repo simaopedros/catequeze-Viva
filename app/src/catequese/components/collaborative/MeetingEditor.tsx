@@ -494,7 +494,7 @@ function VersionHistoryPanel({ onClose }: { onClose: () => void }) {
       </div>
 
       {loading && (
-        <div className="text-xs text-muted-foreground">Carregando...</div>
+        <div className="h-4 w-24 animate-pulse rounded-sm bg-muted/50" aria-hidden="true" />
       )}
       {!loading && versions.length === 0 && (
         <p className="text-xs text-muted-foreground">
