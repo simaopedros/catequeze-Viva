@@ -157,7 +157,11 @@ export default function PricingPage() {
         {plan.highlight && (
           <span className="absolute -top-3 right-5 inline-flex items-center gap-1 rounded-full bg-brand-gold px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-ink">
             <Star className="h-3 w-3" aria-hidden />
-            {tp("pricing.most_popular")}
+            {plan.planId === "unlimited" || plan.level === "institutional"
+              ? tp("pricing.badge_parish")
+              : tp("pricing.badge_catechist", {
+                  defaultValue: tp("pricing.most_popular"),
+                })}
           </span>
         )}
         <AppDisplayTitle as="h3" className="text-lg sm:text-lg">

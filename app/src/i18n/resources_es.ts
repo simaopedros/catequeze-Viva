@@ -6531,7 +6531,9 @@ export const public_es = {
       "annual_billed_as": "cobrado como {{price}}/año",
       "annual_save_amount": "ahorra {{price}} por año",
       "secure_payment": "Pago seguro a través de Stripe",
-      "interval_aria": "Periodicidad de la suscripción"
+      "interval_aria": "Periodicidad de la suscripción",
+      "badge_parish": "Para la parroquia",
+      "badge_catechist": "Hecho para el catequista"
     },
     "workspace": {
       "app_name": "Catequesis Viva",

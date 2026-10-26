@@ -6531,7 +6531,9 @@ export const public_en = {
       "annual_billed_as": "billed as {{price}}/year",
       "annual_save_amount": "save {{price}} per year",
       "secure_payment": "Secure payment via Stripe",
-      "interval_aria": "Billing interval"
+      "interval_aria": "Billing interval",
+      "badge_parish": "For the parish",
+      "badge_catechist": "Built for the catechist"
     },
     "workspace": {
       "app_name": "Catequese Viva",
