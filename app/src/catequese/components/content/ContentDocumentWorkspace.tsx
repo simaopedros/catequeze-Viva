@@ -32,7 +32,10 @@ import {
   SheetTitle,
 } from "../../../client/components/ui/sheet";
 import { ConfirmDialog } from "../../../client/components/ConfirmDialog";
-import { useUnsavedChangesGuard } from "../../../client/hooks/useUnsavedChangesGuard";
+import {
+  SKIP_UNSAVED_GUARD_STATE,
+  useUnsavedChangesGuard,
+} from "../../../client/hooks/useUnsavedChangesGuard";
 import { useTranslation } from "react-i18next";
 import { AI_FEATURES_ENABLED } from "../../../shared/aiFeatures";
 import { ReferencePicker } from "../../../client/components/ReferencePicker";
@@ -582,7 +585,10 @@ export function ContentDocumentWorkspace({
       baselineRef.current = snapshot;
       setLastSavedAt(new Date());
       setSaveState("saved");
-      navigate(`/app/content-library/${item.id}/edit`, { replace: true });
+      navigate(`/app/content-library/${item.id}/edit`, {
+        replace: true,
+        state: SKIP_UNSAVED_GUARD_STATE,
+      });
       return item.id;
     } catch (error: any) {
       setSaveState("error");

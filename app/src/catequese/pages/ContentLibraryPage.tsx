@@ -43,6 +43,7 @@ import {
   AppMetric,
 } from "../../client/components/brand/AppChrome";
 import { ImportContentModal } from "../components/content/ImportContentModal";
+import { SampleMeetingsPanel } from "../components/content/SampleMeetingsPanel";
 import { OriginBadge } from "../components/OriginBadge";
 
 const STATUS_KEYS = [
@@ -434,73 +435,76 @@ export default function ContentLibraryPage() {
             />
           </SurfaceSection>
         ) : (
-          <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-            <SurfaceSection
-              title="Primeiros conteudos"
-              icon={CheckCircle2}
-              tone="soft"
-              className="p-6 lg:p-8"
-            >
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <AppDisplayTitle as="h2">
-                    {t("library.empty_no_content")}
-                  </AppDisplayTitle>
-                  <div
-                    className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent"
-                    aria-hidden
-                  />
-                  <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-                    {t("library.empty_create_desc")}
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <Button className="h-11 rounded-sm px-5" asChild>
-                    <Link to="/app/content-library/new">{t("create")}</Link>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="h-11 rounded-sm px-5 bg-white"
-                    onClick={() => setImportOpen(true)}
-                  >
-                    <FileUp className="mr-2 h-4 w-4" />
-                    {t("library.import")}
-                  </Button>
-                  {AI_FEATURES_ENABLED && (
+          <div className="space-y-6">
+            <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+              <SurfaceSection
+                title="Primeiros conteudos"
+                icon={CheckCircle2}
+                tone="soft"
+                className="p-6 lg:p-8"
+              >
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <AppDisplayTitle as="h2">
+                      {t("library.empty_no_content")}
+                    </AppDisplayTitle>
+                    <div
+                      className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent"
+                      aria-hidden
+                    />
+                    <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+                      {t("library.empty_create_desc")}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <Button className="h-11 rounded-sm px-5" asChild>
+                      <Link to="/app/content-library/new">{t("create")}</Link>
+                    </Button>
                     <Button
                       variant="outline"
                       className="h-11 rounded-sm px-5 bg-white"
-                      asChild
+                      onClick={() => setImportOpen(true)}
                     >
-                      <Link to="/app/ai-hub?mode=create-meeting">
-                        {t("library.generate_ai", {
-                          defaultValue: "Assistência editorial",
-                        })}
-                      </Link>
+                      <FileUp className="mr-2 h-4 w-4" />
+                      {t("library.import")}
                     </Button>
+                    {AI_FEATURES_ENABLED && (
+                      <Button
+                        variant="outline"
+                        className="h-11 rounded-sm px-5 bg-white"
+                        asChild
+                      >
+                        <Link to="/app/ai-hub?mode=create-meeting">
+                          {t("library.generate_ai", {
+                            defaultValue: "Assistência editorial",
+                          })}
+                        </Link>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </SurfaceSection>
+
+              <SurfaceSection title="Fluxo sugerido" icon={FileText}>
+                <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+                  <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
+                    Crie roteiros base para organizar temas, tempo estimado e
+                    publico.
+                  </div>
+                  <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
+                    Adicione atividades para transformar o conteudo em encontro
+                    utilizavel.
+                  </div>
+                  {AI_FEATURES_ENABLED && (
+                    <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
+                      Combine criação manual com assistência editorial quando
+                      precisar acelerar a preparação.
+                    </div>
                   )}
                 </div>
-              </div>
-            </SurfaceSection>
-
-            <SurfaceSection title="Fluxo sugerido" icon={FileText}>
-              <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
-                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-                  Crie roteiros base para organizar temas, tempo estimado e
-                  publico.
-                </div>
-                <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-                  Adicione atividades para transformar o conteudo em encontro
-                  utilizavel.
-                </div>
-                {AI_FEATURES_ENABLED && (
-                  <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
-                    Combine criação manual com assistência editorial quando
-                    precisar acelerar a preparação.
-                  </div>
-                )}
-              </div>
-            </SurfaceSection>
+              </SurfaceSection>
+            </div>
+            <SampleMeetingsPanel />
           </div>
         )
       ) : view === "list" ? (

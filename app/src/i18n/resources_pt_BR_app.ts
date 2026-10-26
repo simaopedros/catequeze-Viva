@@ -1531,7 +1531,16 @@ export const content_pt_BR_app = {
       "error_import_invalid_file": "Ficheiro inválido ou corrompido.",
       "error_import_storage_not_configured": "Armazenamento de ficheiros indisponível. Tente mais tarde.",
       "error_import_parse_failed": "Não foi possível ler o ficheiro.",
-      "error_download_original": "Não foi possível descarregar o original."
+      "error_download_original": "Não foi possível descarregar o original.",
+      "samples": {
+        "title": "Roteiros de exemplo",
+        "desc": "Comece com um roteiro pronto e adapte para a sua turma. Uma cópia é criada na sua biblioteca para você editar.",
+        "use": "Usar este roteiro",
+        "created": "Roteiro copiado para a sua biblioteca",
+        "error": "Não foi possível copiar o roteiro",
+        "minutes_one": "{{count}} minuto",
+        "minutes_other": "{{count}} minutos"
+      }
     },
     "detail": {
       "by_author": "por {{name}}",
@@ -1930,7 +1939,7 @@ export const dashboard_pt_BR_app = {
     "kpi_trial_days_remaining": "Dias para fim do teste gratuito",
     "first_steps": "Primeiros passos",
     "how_to_start": "Como começar",
-    "how_to_start_1": "Crie a turma com etapa, dias de encontro e responsáveis.",
+    "how_to_start_1": "Crie a turma com nome, dia e horário do encontro.",
     "how_to_start_2": "Cadastre ou importe catequizandos e distribua nas turmas.",
     "how_to_start_3": "Faça a chamada do próximo encontro — é o passo que mais importa no dia a dia.",
     "empty_class_card_desc": "Crie sua primeira turma para organizar encontros, presença e acompanhamento.",

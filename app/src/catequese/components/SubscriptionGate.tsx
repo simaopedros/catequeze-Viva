@@ -78,7 +78,11 @@ function workspaceHasAccess(
 /** Whether the active workspace is paid/trialing for the current user. */
 export function useWorkspaceSubscriptionAccess() {
   const { data: user } = useAuth();
-  const { isPersonal, workspace } = useActiveWorkspace();
+  const {
+    isPersonal,
+    workspace,
+    isLoading: workspaceLoading,
+  } = useActiveWorkspace();
   const { userRole, isAdmin } = useUserContext();
 
   const isBillingManager = canManageWorkspaceBilling(
@@ -109,11 +113,12 @@ export function useWorkspaceSubscriptionAccess() {
     isPersonal,
     isBillingManager,
     hasAccess,
+    workspaceLoading,
   };
 }
 
 export function SubscriptionGate({ children }: { children: ReactNode }) {
-  const { user, isPersonal, isBillingManager, hasAccess } =
+  const { user, isPersonal, isBillingManager, hasAccess, workspaceLoading } =
     useWorkspaceSubscriptionAccess();
   const location = useLocation();
   const navigate = useNavigate();
@@ -123,6 +128,7 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (user === undefined) return;
+    if (workspaceLoading && !alwaysAccessible) return;
     if (alwaysAccessible) {
       setChecked(true);
       return;
@@ -148,14 +154,13 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
     navigate,
     isPersonal,
     isBillingManager,
+    workspaceLoading,
   ]);
 
   if (
     !shouldRenderGatedRoute({
       userLoaded: user !== undefined,
       alwaysAccessible,
-      hasAccess,
-      isBillingManager,
       checked,
     })
   ) {

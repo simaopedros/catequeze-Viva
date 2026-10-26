@@ -69,8 +69,6 @@ describe("shouldRenderGatedRoute", () => {
       shouldRenderGatedRoute({
         userLoaded: true,
         alwaysAccessible: true,
-        hasAccess: false,
-        isBillingManager: true,
         checked: false,
       }),
     ).toBe(true);
@@ -81,20 +79,16 @@ describe("shouldRenderGatedRoute", () => {
       shouldRenderGatedRoute({
         userLoaded: true,
         alwaysAccessible: false,
-        hasAccess: false,
-        isBillingManager: true,
         checked: false,
       }),
     ).toBe(false);
   });
 
-  it("renders the app once access is confirmed", () => {
+  it("renders the app once access is confirmed, and keeps it mounted", () => {
     expect(
       shouldRenderGatedRoute({
         userLoaded: true,
         alwaysAccessible: false,
-        hasAccess: true,
-        isBillingManager: true,
         checked: true,
       }),
     ).toBe(true);

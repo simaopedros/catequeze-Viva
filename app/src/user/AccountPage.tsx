@@ -10,6 +10,7 @@ import {
   AppPanel,
 } from "../client/components/brand/AppChrome";
 import { useUserContext } from "../client/hooks/useUserContext";
+import { AI_FEATURES_ENABLED } from "../shared/aiFeatures";
 import { Button } from "../client/components/ui/button";
 import { Card, CardContent, CardHeader } from "../client/components/ui/card";
 import { Separator } from "../client/components/ui/separator";
@@ -26,7 +27,6 @@ import {
   getProductTrialEndsAt,
 } from "../shared/pricing";
 import { useActiveWorkspace } from "../client/hooks/useActiveWorkspace";
-import { AI_FEATURES_ENABLED } from "../shared/aiFeatures";
 import { useRoleLabels } from "../i18n/useLabels";
 import { canManageWorkspaceBilling } from "../shared/billingAccess";
 import {
@@ -174,9 +174,7 @@ export default function AccountPage() {
               subscriptionStatus={user.subscriptionStatus}
               datePaid={user.datePaid}
               createdAt={user.createdAt}
-              trialEndsAt={
-                (user as { trialEndsAt?: Date | null }).trialEndsAt
-              }
+              trialEndsAt={(user as { trialEndsAt?: Date | null }).trialEndsAt}
               paymentProcessorUserId={user.paymentProcessorUserId}
             />
           </CardContent>
@@ -247,24 +245,24 @@ export default function AccountPage() {
       </div>
 
       {AI_FEATURES_ENABLED && (
-      <Card className="rounded-sm border-border/70">
-        <CardHeader className="space-y-1.5">
-          <AppEyebrow className="flex items-center gap-2">
-            <Coins className="h-3.5 w-3.5" />
-            {t("credits")}
-          </AppEyebrow>
-          <AppGoldRule className="w-8" />
-          <p className="text-xs text-muted-foreground">{t("credits_hint")}</p>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold tracking-tight text-brand-ink">
-              {t("credits_value", { count: user.credits })}
-            </span>
-            <BuyMoreButton subscriptionStatus={user.subscriptionStatus} />
-          </div>
-        </CardContent>
-      </Card>
+        <Card className="rounded-sm border-border/70">
+          <CardHeader className="space-y-1.5">
+            <AppEyebrow className="flex items-center gap-2">
+              <Coins className="h-3.5 w-3.5" />
+              {t("credits")}
+            </AppEyebrow>
+            <AppGoldRule className="w-8" />
+            <p className="text-xs text-muted-foreground">{t("credits_hint")}</p>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold tracking-tight text-brand-ink">
+                {t("credits_value", { count: user.credits })}
+              </span>
+              <BuyMoreButton subscriptionStatus={user.subscriptionStatus} />
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

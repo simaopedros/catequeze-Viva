@@ -89,13 +89,14 @@ export function isSubscriptionFreeAppPath(pathname: string): boolean {
 export function shouldRenderGatedRoute(opts: {
   userLoaded: boolean;
   alwaysAccessible: boolean;
-  hasAccess: boolean;
-  isBillingManager: boolean;
   checked: boolean;
 }): boolean {
   if (!opts.userLoaded) return false;
   if (opts.alwaysAccessible) return true;
-  if (!opts.hasAccess && opts.isBillingManager) return false;
+  // `checked` only flips to true once access was confirmed, and stays true for
+  // the page's lifetime: transient context refetches must not unmount the page
+  // (and wipe what the user was typing). The gate's effect still redirects
+  // when access is really gone.
   return opts.checked;
 }
 

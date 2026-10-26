@@ -2460,7 +2460,54 @@ export const common_pt_BR = {
       "family_label": "Família",
       "family_unlinked": "Não vinculada",
       "next_enroll": "Matricular em uma turma",
-      "view_profile": "Abrir ficha"
+      "view_profile": "Abrir ficha",
+      "family_contact_hint": "Telefone e responsáveis ficam na família: escolha ou crie a família acima.",
+      "danger_zone": "Mais opções",
+      "enroll": {
+        "open": "Matricular em turma",
+        "title": "Matricular em turma",
+        "desc": "Escolha a turma de {{name}}.",
+        "label": "Turma",
+        "label_optional": "Turma (opcional)",
+        "none": "Matricular depois",
+        "placeholder": "Selecione a turma",
+        "submit": "Matricular",
+        "success": "Matrícula feita",
+        "error": "Não foi possível matricular",
+        "no_classes": "Não há outra turma ativa disponível. Crie uma turma primeiro."
+      },
+      "certificate": {
+        "open": "Gerar declaração",
+        "dialog_title": "Gerar declaração ou certificado",
+        "dialog_desc": "Confira os dados e gere uma página pronta para imprimir ou salvar em PDF.",
+        "kind_label": "Documento",
+        "class_label": "Turma",
+        "parish_label": "Paróquia ou comunidade",
+        "place_label": "Cidade",
+        "place_placeholder": "Ex.: São Paulo",
+        "date_label": "Data",
+        "signer_catechist": "Catequista",
+        "signer_coordinator": "Coordenação da catequese / Pároco",
+        "generate": "Gerar e imprimir",
+        "popup_blocked": "O navegador bloqueou a nova janela. Permita pop-ups para este site e tente de novo.",
+        "no_attendance": "Ainda não há presenças registradas para calcular a frequência.",
+        "birth_clause": ", nascido(a) em {{date}},",
+        "place_date": "{{place}}, {{date}}.",
+        "kinds": {
+          "enrollment": {
+            "title": "Declaração de matrícula",
+            "body": "Declaramos, para os devidos fins, que {{name}}{{birth}} está matriculado(a) na catequese da {{parish}}, na turma {{className}}."
+          },
+          "attendance": {
+            "title": "Declaração de frequência",
+            "body": "Declaramos, para os devidos fins, que {{name}}{{birth}} participa dos encontros de catequese da turma {{className}}, na {{parish}}, com frequência de {{pct}}% nos encontros registrados até esta data."
+          },
+          "completion": {
+            "title": "Certificado de conclusão",
+            "body": "Certificamos que {{name}}{{birth}} concluiu a etapa {{stage}} da catequese na turma {{className}}, da {{parish}}, caminhando na fé com dedicação."
+          }
+        }
+      }
     },
     "families": {
       "subtitle_registered": "{{count}} famílias cadastradas",
@@ -2516,6 +2563,7 @@ export const common_pt_BR = {
       "error_remove_guardian": "Falha ao remover responsável.",
       "error_save": "Falha ao salvar.",
       "relationships": {
+        "guardian": "Responsável (sem especificar)",
         "father": "Pai",
         "mother": "Mãe",
         "grandparent": "Avô/Avó",
@@ -2782,7 +2830,16 @@ export const content_pt_BR = {
       "error_import_invalid_file": "Ficheiro inválido ou corrompido.",
       "error_import_storage_not_configured": "Armazenamento de ficheiros indisponível. Tente mais tarde.",
       "error_import_parse_failed": "Não foi possível ler o ficheiro.",
-      "error_download_original": "Não foi possível descarregar o original."
+      "error_download_original": "Não foi possível descarregar o original.",
+      "samples": {
+        "title": "Roteiros de exemplo",
+        "desc": "Comece com um roteiro pronto e adapte para a sua turma. Uma cópia é criada na sua biblioteca para você editar.",
+        "use": "Usar este roteiro",
+        "created": "Roteiro copiado para a sua biblioteca",
+        "error": "Não foi possível copiar o roteiro",
+        "minutes_one": "{{count}} minuto",
+        "minutes_other": "{{count}} minutos"
+      }
     },
     "detail": {
       "by_author": "por {{name}}",
@@ -3193,7 +3250,7 @@ export const dashboard_pt_BR = {
     "kpi_trial_days_remaining": "Dias para fim do teste gratuito",
     "first_steps": "Primeiros passos",
     "how_to_start": "Como começar",
-    "how_to_start_1": "Crie a turma com etapa, dias de encontro e responsáveis.",
+    "how_to_start_1": "Crie a turma com nome, dia e horário do encontro.",
     "how_to_start_2": "Cadastre ou importe catequizandos e distribua nas turmas.",
     "how_to_start_3": "Faça a chamada do próximo encontro — é o passo que mais importa no dia a dia.",
     "empty_class_card_desc": "Crie sua primeira turma para organizar encontros, presença e acompanhamento.",
@@ -3935,7 +3992,7 @@ export const landing_pt_BR = {
           "Até 3 turmas",
           "150 catequizandos",
           "Presença e calendário",
-          "Publicar na Comunidade"
+          "Portal para as famílias da turma"
         ]
       },
       "unlimited": {

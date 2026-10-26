@@ -2460,7 +2460,54 @@ export const common_es = {
       "family_label": "Familia",
       "family_unlinked": "Sin vincular",
       "next_enroll": "Inscribir en un grupo",
-      "view_profile": "Abrir perfil"
+      "view_profile": "Abrir perfil",
+      "family_contact_hint": "El teléfono y los responsables están en la familia: elija o cree la familia arriba.",
+      "danger_zone": "Más opciones",
+      "enroll": {
+        "open": "Inscribir en un grupo",
+        "title": "Inscribir en un grupo",
+        "desc": "Elija el grupo de {{name}}.",
+        "label": "Grupo",
+        "label_optional": "Grupo (opcional)",
+        "none": "Inscribir después",
+        "placeholder": "Seleccione el grupo",
+        "submit": "Inscribir",
+        "success": "Inscripción realizada",
+        "error": "No se pudo inscribir",
+        "no_classes": "No hay otro grupo activo disponible. Cree un grupo primero."
+      },
+      "certificate": {
+        "open": "Generar constancia",
+        "dialog_title": "Generar constancia o certificado",
+        "dialog_desc": "Revise los datos y genere una página lista para imprimir o guardar en PDF.",
+        "kind_label": "Documento",
+        "class_label": "Grupo",
+        "parish_label": "Parroquia o comunidad",
+        "place_label": "Ciudad",
+        "place_placeholder": "Ej.: São Paulo",
+        "date_label": "Fecha",
+        "signer_catechist": "Catequista",
+        "signer_coordinator": "Coordinación de catequesis / Párroco",
+        "generate": "Generar e imprimir",
+        "popup_blocked": "El navegador bloqueó la nueva ventana. Permita las ventanas emergentes para este sitio e intente de nuevo.",
+        "no_attendance": "Todavía no hay asistencias registradas para calcular la frecuencia.",
+        "birth_clause": ", nacido(a) el {{date}},",
+        "place_date": "{{place}}, {{date}}.",
+        "kinds": {
+          "enrollment": {
+            "title": "Constancia de inscripción",
+            "body": "Hacemos constar que {{name}}{{birth}} está inscrito(a) en la catequesis de {{parish}}, en el grupo {{className}}."
+          },
+          "attendance": {
+            "title": "Constancia de asistencia",
+            "body": "Hacemos constar que {{name}}{{birth}} participa en los encuentros de catequesis del grupo {{className}}, en {{parish}}, con una asistencia del {{pct}}% en los encuentros registrados hasta la fecha."
+          },
+          "completion": {
+            "title": "Certificado de conclusión",
+            "body": "Certificamos que {{name}}{{birth}} concluyó la etapa {{stage}} de la catequesis en el grupo {{className}}, de {{parish}}, caminando en la fe con dedicación."
+          }
+        }
+      }
     },
     "families": {
       "subtitle_registered": "{{count}} familias registradas",
@@ -2516,6 +2563,7 @@ export const common_es = {
       "error_remove_guardian": "Error al eliminar responsable.",
       "error_save": "Error al guardar.",
       "relationships": {
+        "guardian": "Responsable (sin especificar)",
         "father": "Padre",
         "mother": "Madre",
         "grandparent": "Abuelo/a",
@@ -2782,7 +2830,16 @@ export const content_es = {
       "error_import_invalid_file": "Archivo inválido o dañado.",
       "error_import_storage_not_configured": "Almacenamiento de archivos no disponible. Intente más tarde.",
       "error_import_parse_failed": "No se pudo leer el archivo.",
-      "error_download_original": "No se pudo descargar el original."
+      "error_download_original": "No se pudo descargar el original.",
+      "samples": {
+        "title": "Guiones de ejemplo",
+        "desc": "Empiece con un guion listo y adáptelo a su grupo. Se crea una copia en su biblioteca para que la edite.",
+        "use": "Usar este guion",
+        "created": "Guion copiado a su biblioteca",
+        "error": "No se pudo copiar el guion",
+        "minutes_one": "{{count}} minuto",
+        "minutes_other": "{{count}} minutos"
+      }
     },
     "detail": {
       "by_author": "por {{name}}",
@@ -3193,7 +3250,7 @@ export const dashboard_es = {
     "kpi_trial_days_remaining": "Días para fin del trial",
     "first_steps": "Primeros pasos",
     "how_to_start": "Cómo empezar",
-    "how_to_start_1": "Cree el grupo con etapa, días de encuentro y responsables.",
+    "how_to_start_1": "Cree el grupo con nombre, día y horario del encuentro.",
     "how_to_start_2": "Registre o importe catecúmenos y asígnelos a los grupos.",
     "how_to_start_3": "Registra la asistencia y prepara el próximo encuentro del grupo.",
     "empty_class_card_desc": "Cree su primer grupo para organizar encuentros, asistencia y seguimiento.",
@@ -3935,7 +3992,7 @@ export const landing_es = {
           "Hasta 3 grupos",
           "150 catequizandos",
           "Asistencia y calendario",
-          "Publicar en la Comunidad"
+          "Portal para las familias de tu grupo"
         ]
       },
       "unlimited": {
