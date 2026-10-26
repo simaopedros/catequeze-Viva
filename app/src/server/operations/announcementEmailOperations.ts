@@ -112,5 +112,5 @@ export const sendClassAnnouncementByEmail = async (
     }
   }
 
-  return { sent, failed, total: recipients.length };
+  return { sent, failed, total: recipients.size };
 };
