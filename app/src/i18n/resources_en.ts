@@ -1636,7 +1636,15 @@ export const calendar_en = {
     "confirm_delete_event_desc": "This action cannot be undone.",
     "delete_error": "Could not delete the event",
     "conflicts_title": "Possible calendar conflict",
-    "conflicts_desc": "{{count}} meeting(s) fall on the same day as a required diocesan or parish event."
+    "conflicts_desc": "{{count}} meeting(s) fall on the same day as a required diocesan or parish event.",
+    "event_created": "Event created",
+    "create_error": "Could not create the event",
+    "new_event_desc": "The event shows on the calendar for the whole parish or your space.",
+    "event_date": "Event date",
+    "event_type": "Event type",
+    "event_color": "Event color",
+    "delete_event_aria": "Delete the event {{name}}",
+    "export_ics_aria": "Export to calendar (.ics)"
   } as const;
 
 export const catecheticalYears_en = {

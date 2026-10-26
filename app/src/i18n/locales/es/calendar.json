@@ -62,5 +62,13 @@
   "confirm_delete_event_desc": "Esta acción no se puede deshacer.",
   "delete_error": "Error al eliminar el evento",
   "conflicts_title": "Posible conflicto en el calendario",
-  "conflicts_desc": "{{count}} encuentro(s) coinciden con un evento obligatorio de la diócesis o de la parroquia."
+  "conflicts_desc": "{{count}} encuentro(s) coinciden con un evento obligatorio de la diócesis o de la parroquia.",
+  "event_created": "Evento creado",
+  "create_error": "No fue posible crear el evento",
+  "new_event_desc": "El evento aparece en el calendario de toda la parroquia o de tu espacio.",
+  "event_date": "Fecha del evento",
+  "event_type": "Tipo de evento",
+  "event_color": "Color del evento",
+  "delete_event_aria": "Eliminar el evento {{name}}",
+  "export_ics_aria": "Exportar a la agenda (.ics)"
 }
