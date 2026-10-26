@@ -1,6 +1,10 @@
 import { HttpError } from "wasp/server";
 import { resolveUserScope, requireWorkspaceAccess } from "./sharedScope";
-import { isFamilySurface, rolesAreFamilyOnly } from "../auth/familySurface";
+import {
+  isFamilySurface,
+  loadActiveRoles,
+  rolesAreFamilyOnly,
+} from "../auth/familySurface";
 import {
   BIRTHDAY_LIST_WINDOW_DAYS,
   INSIGHT_WINDOW_DAYS,
@@ -214,11 +218,164 @@ const REVIEWER_ROLES = [
   "DIOCESE_ADMIN",
 ] as const;
 
+const emptyFamilyDashboard = () => ({
+  activeCatechumens: 0,
+  activeClasses: 0,
+  avgAttendance: 0,
+  openRollCallIncomplete: false,
+  pendingSacraments: 0,
+  recentAlerts: [],
+  aniversariantes: [],
+  upcomingMeetings: [] as any[],
+  todayMeetings: [] as any[],
+  reviewQueue: [],
+  myClasses: [],
+  hasAnyAttendance: false,
+  hasAnyMeeting: false,
+  dependents: [] as any[],
+  familySurface: true as const,
+});
+
+async function upcomingMeetingsForClassIds(
+  context: any,
+  classIds: string[],
+): Promise<any[]> {
+  if (classIds.length === 0) return [];
+  const now = new Date();
+  return context.entities.Meeting.findMany({
+    where: {
+      classId: { in: classIds },
+      date: { gte: now },
+      status: { not: "CANCELLED" },
+    },
+    orderBy: { date: "asc" },
+    take: 5,
+    select: {
+      id: true,
+      title: true,
+      theme: true,
+      date: true,
+      status: true,
+      class: { select: { id: true, name: true } },
+    },
+  });
+}
+
+/**
+ * Lean family-portal dashboard — skips resolveUserScope / parish-wide work
+ * that dominated 0.7–2s API latency for guardian accounts.
+ */
+async function getFamilyPortalDashboardStats(context: any) {
+  const empty = emptyFamilyDashboard();
+  const roles = await loadActiveRoles(context);
+
+  const [guardianProfile, ownCatechumen] = await Promise.all([
+    roles.includes("GUARDIAN") || rolesAreFamilyOnly(roles)
+      ? context.entities.GuardianProfile.findFirst({
+          where: { userId: context.user.id },
+          select: { householdId: true },
+        })
+      : Promise.resolve(null),
+    roles.includes("CATECHUMEN")
+      ? context.entities.CatechumenProfile.findFirst({
+          where: { userId: context.user.id },
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            enrollments: {
+              where: { status: "ENROLLED" },
+              select: {
+                classId: true,
+                class: { select: { id: true, name: true } },
+              },
+            },
+          },
+        })
+      : Promise.resolve(null),
+  ]);
+
+  const householdId = guardianProfile?.householdId || null;
+  if (householdId) {
+    const dependents = await context.entities.CatechumenProfile.findMany({
+      where: { householdId },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        birthDate: true,
+        enrollments: {
+          where: { status: "ENROLLED" },
+          select: { class: { select: { id: true, name: true } } },
+        },
+      },
+      orderBy: { firstName: "asc" },
+    });
+    const classIds = [
+      ...new Set(
+        dependents.flatMap((d: any) =>
+          (d.enrollments || []).map((e: any) => e.class?.id).filter(Boolean),
+        ),
+      ),
+    ] as string[];
+    const upcomingMeetings = await upcomingMeetingsForClassIds(
+      context,
+      classIds,
+    );
+    const birthdays = dependents
+      .filter((d: any) => d.birthDate)
+      .map((d: any) => ({
+        id: d.id,
+        firstName: d.firstName,
+        lastName: d.lastName,
+        birthDate: d.birthDate,
+      }));
+    return {
+      ...empty,
+      activeCatechumens: dependents.length,
+      upcomingMeetings,
+      aniversariantes: birthdays,
+      dependents,
+      hasAnyMeeting: upcomingMeetings.length > 0,
+    };
+  }
+
+  if (ownCatechumen) {
+    const classIds = (ownCatechumen.enrollments || []).map(
+      (e: any) => e.classId,
+    );
+    const upcomingMeetings = await upcomingMeetingsForClassIds(
+      context,
+      classIds,
+    );
+    return {
+      ...empty,
+      upcomingMeetings,
+      hasAnyMeeting: upcomingMeetings.length > 0,
+      dependents: [
+        {
+          id: ownCatechumen.id,
+          firstName: ownCatechumen.firstName,
+          lastName: ownCatechumen.lastName,
+          enrollments: ownCatechumen.enrollments,
+        },
+      ],
+    };
+  }
+
+  return empty;
+}
+
 export const getDashboardStats = async (
   args: { parishId?: string; workspaceId?: string; surface?: string },
   context: any,
 ) => {
   if (!context.user) throw new HttpError(401);
+
+  // Family portal clients always pass surface=PORTAL — take the lean path first.
+  if (args.surface === "PORTAL") {
+    return getFamilyPortalDashboardStats(context);
+  }
 
   const isAdmin = context.user.isAdmin;
   const requestedWorkspace =
