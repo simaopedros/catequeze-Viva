@@ -113,11 +113,12 @@ export function useWorkspaceSubscriptionAccess() {
     isPersonal,
     isBillingManager,
     hasAccess,
+    workspaceLoading,
   };
 }
 
 export function SubscriptionGate({ children }: { children: ReactNode }) {
-  const { user, isPersonal, isBillingManager, hasAccess } =
+  const { user, isPersonal, isBillingManager, hasAccess, workspaceLoading } =
     useWorkspaceSubscriptionAccess();
   const location = useLocation();
   const navigate = useNavigate();
