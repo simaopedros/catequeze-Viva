@@ -2145,7 +2145,7 @@ export const common_pt_BR = {
     "edit": "Editar",
     "create": "Criar",
     "search": "Buscar...",
-    "loading": "Carregando...",
+    "loading": "Aguarde…",
     "error_generic": "Algo deu errado. Tente novamente.",
     "success_save": "Salvo com sucesso.",
     "confirm_delete": "Tem certeza que deseja excluir?",

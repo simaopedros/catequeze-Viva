@@ -723,7 +723,7 @@ export const saveAttendanceBatch = async (
     });
   }
 
-    try {
+  try {
     if (writes.length > 0) {
       const savedRows = await prisma.$transaction(async (tx: any) => {
         const rows: AttendanceExisting[] = [];
@@ -759,6 +759,14 @@ export const saveAttendanceBatch = async (
           updatedAt: saved.updatedAt,
         });
       });
+
+      // First recorded attendance leaves "Não iniciado" so the UI matches the %.
+      if (meeting.status === "NOT_STARTED") {
+        await context.entities.Meeting.update({
+          where: { id: args.meetingId },
+          data: { status: "IN_PROGRESS" },
+        });
+      }
     }
   } catch (e: any) {
     for (const write of writes) {
@@ -835,8 +843,17 @@ export const saveAttendance = async (args: any, context: any) => {
     },
   });
 
+  const bumpInProgress = async () => {
+    if (meeting.status === "NOT_STARTED") {
+      await context.entities.Meeting.update({
+        where: { id: args.meetingId },
+        data: { status: "IN_PROGRESS" },
+      });
+    }
+  };
+
   if (existing) {
-    return context.entities.AttendanceRecord.update({
+    const updated = await context.entities.AttendanceRecord.update({
       where: { id: existing.id },
       data: {
         status: args.status,
@@ -844,6 +861,8 @@ export const saveAttendance = async (args: any, context: any) => {
         recordedById: context.user.id,
       },
     });
+    await bumpInProgress();
+    return updated;
   }
   const created = await context.entities.AttendanceRecord.create({
     data: {
@@ -854,6 +873,7 @@ export const saveAttendance = async (args: any, context: any) => {
       recordedById: context.user.id,
     },
   });
+  await bumpInProgress();
   if (context.user.email) {
     emitProductEventSafe({
       name: PRODUCT_EVENT.FIRST_VALUE_REACHED,

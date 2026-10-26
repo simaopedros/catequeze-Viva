@@ -354,8 +354,12 @@ export async function assertCanAccessCatechumenProfile(
   // Self-access as catechumen
   if (catechumen.userId === context.user.id) return;
 
-  // Guardian of household
-  const guardian = await context.entities.GuardianProfile.findUnique({
+  // Guardian of household. Fall back to Prisma when the operation forgot
+  // GuardianProfile in main.wasp entities (that omission used to 500 edits).
+  const guardianDelegate =
+    context.entities?.GuardianProfile ??
+    (await import("wasp/server")).prisma.guardianProfile;
+  const guardian = await guardianDelegate.findUnique({
     where: { userId: context.user.id },
     select: { householdId: true },
   });

@@ -121,6 +121,35 @@ export function SkeletonPage({ className }: SkeletonProps) {
   );
 }
 
+/** Full-viewport fallback for public/app shell while chunks or i18n load. */
+export function RouteFallback({
+  className,
+  label,
+}: SkeletonProps & { label?: string }) {
+  return (
+    <div
+      role="status"
+      aria-busy="true"
+      aria-live="polite"
+      className={cn(
+        "flex min-h-screen flex-col bg-background px-4 py-8 sm:px-8",
+        className,
+      )}
+    >
+      {label ? <span className="sr-only">{label}</span> : null}
+      <div className="mx-auto w-full max-w-5xl flex-1 space-y-6">
+        <Skeleton className="h-10 w-40" />
+        <Skeleton className="h-[42vh] w-full max-h-[28rem] rounded-sm" />
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Skeleton className="h-24 rounded-sm" />
+          <Skeleton className="h-24 rounded-sm" />
+          <Skeleton className="h-24 rounded-sm" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function SkeletonChart({
   height = "h-64",
   className,
