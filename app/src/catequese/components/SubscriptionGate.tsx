@@ -12,14 +12,10 @@ import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { buildBillingJourneyHref } from "../lib/upgradeJourney";
 import { PaymentPlanId } from "../../payment/plans";
-import { shouldRenderGatedRoute } from "../../client/appRouteGates";
-
-const ALWAYS_ACCESSIBLE = [
-  "/app/billing",
-  "/account",
-  "/app/onboarding",
-  "/app/select-workspace",
-];
+import {
+  isSubscriptionFreeAppPath,
+  shouldRenderGatedRoute,
+} from "../../client/appRouteGates";
 
 interface WorkspaceBilling {
   plan?: string | null;
@@ -87,9 +83,7 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
 
-  const alwaysAccessible = ALWAYS_ACCESSIBLE.some((p) =>
-    location.pathname.startsWith(p),
-  );
+  const alwaysAccessible = isSubscriptionFreeAppPath(location.pathname);
 
   const isBillingManager = canManageWorkspaceBilling(
     workspace?.role || userRole,
