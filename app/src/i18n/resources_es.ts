@@ -2868,7 +2868,9 @@ export const common_es = {
       "native_too_long": "Usa como máximo {{max}} caracteres.",
       "native_min": "El mínimo es {{min}}.",
       "native_max": "El máximo es {{max}}.",
-      "native_invalid": "Valor no válido."
+      "native_invalid": "Valor no válido.",
+      "birth_date_future": "La fecha de nacimiento no puede ser futura.",
+      "birth_date_invalid": "Fecha de nacimiento no válida."
     },
     "activity": {
       "working": "Cargando…",

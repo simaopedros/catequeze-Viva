@@ -61,10 +61,13 @@ export function formatDateTime(
 export function getAgeFromDate(birthDate: string): number | null {
   if (!birthDate) return null;
   const b = new Date(birthDate);
+  if (Number.isNaN(b.getTime())) return null;
   const now = new Date();
   let age = now.getUTCFullYear() - b.getUTCFullYear();
   const m = now.getUTCMonth() - b.getUTCMonth();
   if (m < 0 || (m === 0 && now.getUTCDate() < b.getUTCDate())) age--;
+  // Future birth dates must not render as negative ages in the UI.
+  if (age < 0) return null;
   return age;
 }
 

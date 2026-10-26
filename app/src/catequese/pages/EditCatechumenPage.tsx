@@ -7,11 +7,19 @@ import {
   AppPanel,
 } from "../../client/components/brand/AppChrome";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
-import { ArrowLeft, Save, Camera } from "lucide-react";
-import { getCatechumenProfile, updateCatechumen } from "wasp/client/operations";
+import { ArrowLeft, Save, Camera, Plus } from "lucide-react";
+import {
+  useQuery,
+  getCatechumenProfile,
+  updateCatechumen,
+  listHouseholds,
+} from "wasp/client/operations";
 import { toast } from "../../client/hooks/use-toast";
 import { useUnsavedChangesGuard } from "../../client/hooks/useUnsavedChangesGuard";
+import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { Alert } from "../../client/components/ui/alert";
+import CreateHouseholdModal from "../components/CreateHouseholdModal";
+import { isBirthDateAllowed, todayDateKey } from "../../shared/personFields";
 
 function compressImage(file: File): Promise<string> {
   return new Promise((resolve) => {
@@ -46,23 +54,40 @@ export default function EditCatechumenPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
+  const { activeParishId } = useActiveParish();
+  const { data: households = [], refetch: refetchHouseholds } = useQuery(
+    listHouseholds,
+    { take: 200 },
+  );
+  const filteredHouseholds = useMemo(() => {
+    if (!activeParishId) return households;
+    return households.filter((h: any) => h.parishId === activeParishId);
+  }, [households, activeParishId]);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [birthDate, setBirthDate] = useState("");
+  const [email, setEmail] = useState("");
+  const [householdId, setHouseholdId] = useState("");
   const [photo, setPhoto] = useState("");
+  const [showCreateHouseholdModal, setShowCreateHouseholdModal] =
+    useState(false);
   const [baseline, setBaseline] = useState<{
     firstName: string;
     lastName: string;
     birthDate: string;
+    email: string;
+    householdId: string;
     photo: string;
   } | null>(null);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [fieldError, setFieldError] = useState("");
   const [saveFeedback, setSaveFeedback] = useState<{
     tone: "success" | "error";
     message: string;
   } | null>(null);
+  const maxBirthDate = todayDateKey();
 
   useEffect(() => {
     if (!id) return;
@@ -78,11 +103,15 @@ export default function EditCatechumenPage() {
             birthDate: p.birthDate
               ? new Date(p.birthDate).toISOString().slice(0, 10)
               : "",
+            email: p.email || "",
+            householdId: p.householdId || "",
             photo: p.photoUrl || "",
           };
           setFirstName(next.firstName);
           setLastName(next.lastName);
           setBirthDate(next.birthDate);
+          setEmail(next.email);
+          setHouseholdId(next.householdId);
           setPhoto(next.photo);
           setBaseline(next);
         }
@@ -100,9 +129,11 @@ export default function EditCatechumenPage() {
       firstName !== baseline.firstName ||
       lastName !== baseline.lastName ||
       birthDate !== baseline.birthDate ||
+      email !== baseline.email ||
+      householdId !== baseline.householdId ||
       photo !== baseline.photo
     );
-  }, [baseline, firstName, lastName, birthDate, photo]);
+  }, [baseline, firstName, lastName, birthDate, email, householdId, photo]);
 
   const leaveGuard = useUnsavedChangesGuard(isDirty && !saving);
 
@@ -116,6 +147,15 @@ export default function EditCatechumenPage() {
   const handleSave = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!firstName || !lastName) return;
+    if (birthDate && !isBirthDateAllowed(birthDate)) {
+      setFieldError(t("validation.birth_date_future"));
+      return;
+    }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setFieldError(t("validation.email_invalid"));
+      return;
+    }
+    setFieldError("");
     setSaving(true);
     setSaveFeedback(null);
     try {
@@ -123,10 +163,19 @@ export default function EditCatechumenPage() {
         id: id!,
         firstName,
         lastName,
-        birthDate: birthDate || undefined,
+        birthDate: birthDate || null,
+        email: email.trim() || null,
+        householdId: householdId || null,
         photoUrl: photo || undefined,
       });
-      setBaseline({ firstName, lastName, birthDate, photo });
+      setBaseline({
+        firstName,
+        lastName,
+        birthDate,
+        email,
+        householdId,
+        photo,
+      });
       const successMessage = t("catechumens.updated_success");
       setSaveFeedback({ tone: "success", message: successMessage });
       toast({ title: successMessage });
@@ -183,6 +232,11 @@ export default function EditCatechumenPage() {
 
           {/* <form> para Enter enviar — a tela era um div com botão onClick */}
           <form onSubmit={handleSave}>
+            {fieldError && (
+              <Alert variant="destructive" className="mb-4">
+                {fieldError}
+              </Alert>
+            )}
             {saveFeedback && (
               <Alert
                 variant={
@@ -257,10 +311,51 @@ export default function EditCatechumenPage() {
                   <input
                     aria-label={t("catechumens.birth_short")}
                     type="date"
+                    max={maxBirthDate}
                     value={birthDate}
                     onChange={(e) => setBirthDate(e.target.value)}
                     className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
                   />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">{t("email")}</label>
+                  <input
+                    aria-label={t("email")}
+                    type="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={t("email_placeholder")}
+                    className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">
+                    {t("catechumens.family")}
+                  </label>
+                  <select
+                    aria-label={t("catechumens.family")}
+                    value={householdId}
+                    onChange={(e) => setHouseholdId(e.target.value)}
+                    className="mt-1 flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
+                  >
+                    <option value="">{t("catechumens.no_family")}</option>
+                    {filteredHouseholds.map((h: any) => (
+                      <option key={h.id} value={h.id}>
+                        {h.name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    <button
+                      type="button"
+                      onClick={() => setShowCreateHouseholdModal(true)}
+                      className="inline-flex items-center gap-1 text-brand-ink underline"
+                    >
+                      <Plus className="h-3 w-3" />
+                      {t("families.create_new_family")}
+                    </button>
+                  </p>
                 </div>
                 <div className="h-20 md:h-4" aria-hidden />
               </div>
@@ -289,6 +384,15 @@ export default function EditCatechumenPage() {
           </form>
         </>
       )}
+
+      <CreateHouseholdModal
+        isOpen={showCreateHouseholdModal}
+        onClose={() => setShowCreateHouseholdModal(false)}
+        onCreated={(newHouseholdId) => {
+          setHouseholdId(newHouseholdId);
+          void refetchHouseholds();
+        }}
+      />
 
       <ConfirmDialog
         open={leaveGuard.dialogOpen}

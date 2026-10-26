@@ -291,7 +291,11 @@ export default function CreateCatechumenPage() {
                   <FormItem>
                     <FormLabel>{t("catechumens.birth_date")}</FormLabel>
                     <FormControl>
-                      <Input type="date" {...field} />
+                      <Input
+                        type="date"
+                        max={new Date().toISOString().slice(0, 10)}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

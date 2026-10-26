@@ -250,6 +250,18 @@ export default function FamilyDetailPage() {
 
   const handleSave = async () => {
     if (!id) return;
+    const phoneDigits = editPhone.replace(/\D/g, "");
+    if (
+      editPhone.trim() &&
+      (phoneDigits.length < 10 || phoneDigits.length > 15)
+    ) {
+      toast({
+        title: t("error"),
+        description: t("validation.phone_invalid"),
+        variant: "destructive",
+      });
+      return;
+    }
     setSaving(true);
     try {
       await updateHousehold({
@@ -486,7 +498,10 @@ export default function FamilyDetailPage() {
                   className="w-full border-b border-input bg-transparent text-2xl font-semibold tracking-tight text-brand-ink outline-none sm:text-[1.75rem]"
                   autoFocus
                 />
-                <div className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
+                <div
+                  className="h-px w-16 bg-gradient-to-r from-brand-gold to-transparent"
+                  aria-hidden
+                />
               </div>
               <div className="flex gap-2">
                 <Button

@@ -94,4 +94,10 @@ describe("buildCatechumenUpdateData", () => {
       buildCatechumenUpdateData({ birthDate: "not-a-date" }),
     ).toThrow(CatechumenUpdateValidationError);
   });
+
+  it("rejects future birth dates", () => {
+    expect(() =>
+      buildCatechumenUpdateData({ birthDate: "2999-01-01" }),
+    ).toThrow(/futuro/i);
+  });
 });

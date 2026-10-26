@@ -16,6 +16,7 @@ import { legacyTake } from "./listCursor";
 import {
   buildCatechumenUpdateData,
   CatechumenUpdateValidationError,
+  parseBirthDateOrThrow,
 } from "../../shared/catechumenUpdate";
 
 export { buildCatechumenUpdateData } from "../../shared/catechumenUpdate";
@@ -333,15 +334,16 @@ export const createCatechumen = async (args: any, context: any) => {
       firstName: args.firstName,
       lastName: args.lastName,
       email: args.email || null,
-      birthDate: args.birthDate
-        ? (() => {
-            const [y, m, d] = args.birthDate
-              .slice(0, 10)
-              .split("-")
-              .map(Number);
-            return new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
-          })()
-        : null,
+      birthDate: (() => {
+        try {
+          return parseBirthDateOrThrow(args.birthDate);
+        } catch (error) {
+          if (error instanceof CatechumenUpdateValidationError) {
+            throw new HttpError(400, error.message);
+          }
+          throw error;
+        }
+      })(),
       householdId: args.householdId || null,
       photoUrl: args.photoUrl || null,
       parishId,
