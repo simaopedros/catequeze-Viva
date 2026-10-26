@@ -84,7 +84,7 @@ const DEFAULT_PLANS = [
       'Até 3 turmas',
       '150 catequizandos no total',
       'Presença e calendário litúrgico',
-      'Publicar na Comunidade',
+      'Portal para as famílias da sua turma',
     ],
     translations: {
       en: { name: 'Catechist Plan', features: ['Up to 3 classes', '150 catechumens in total'] },
@@ -122,7 +122,6 @@ const DEFAULT_PLANS = [
       'Catequizandos e catequistas ilimitados',
       'Comunicação integrada (pais/catequizandos)',
       'Documentos e certidões',
-      'Publicar na Comunidade',
     ],
     translations: {
       en: { name: 'Unlimited Plan', features: ['Unlimited parishes and classes'] },
