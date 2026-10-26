@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Menu, X } from "lucide-react";
 import { Button } from "../client/components/ui/button";
 import { BrandLockup } from "../client/components/brand/Brand";
+import { useHasBlogPosts } from "../client/hooks/useHasBlogPosts";
 
 export function PublicNavbar({
   hidePricing = false,
@@ -11,6 +12,7 @@ export function PublicNavbar({
   hidePricing?: boolean;
 }) {
   const { t } = useTranslation("publicNav");
+  const hasBlogPosts = useHasBlogPosts();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -51,9 +53,11 @@ export function PublicNavbar({
           <a href="/#duvidas" className={linkClass}>
             {t("faq")}
           </a>
-          <Link to="/blog" className={linkClass}>
-            {t("blog")}
-          </Link>
+          {hasBlogPosts && (
+            <Link to="/blog" className={linkClass}>
+              {t("blog")}
+            </Link>
+          )}
         </nav>
 
         <div className="hidden items-center gap-5 md:flex">
@@ -122,13 +126,15 @@ export function PublicNavbar({
               >
                 {t("faq")}
               </a>
-              <Link
-                to="/blog"
-                className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-brand-ink"
-                onClick={() => setOpen(false)}
-              >
-                {t("blog")}
-              </Link>
+              {hasBlogPosts && (
+                <Link
+                  to="/blog"
+                  className="border-b border-border/50 py-3.5 text-[0.9375rem] font-medium text-brand-ink"
+                  onClick={() => setOpen(false)}
+                >
+                  {t("blog")}
+                </Link>
+              )}
             </nav>
 
             <div className="mt-6 flex flex-col gap-2.5">

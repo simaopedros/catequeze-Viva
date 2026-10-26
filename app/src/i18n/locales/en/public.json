@@ -12,12 +12,32 @@
       "content": "Content library — create, review, and publish meeting plans.",
       "communication": "Pastoral communication — send segmented messages to families and catechists.",
       "reports": "Reports and indicators — track catechesis health with KPIs."
-    }
+    },
+    "audience_title": "Who it's for",
+    "audience": [
+      "Catechists who want to prepare meetings and take attendance without paper or scattered spreadsheets.",
+      "Parish coordinators who need to see every class, catechist and sacrament in one place.",
+      "Dioceses that follow several parishes, with each parish looking after its own data."
+    ],
+    "principles_title": "How we work",
+    "principles": [
+      "Faithful to the Church: content and journeys built on the Directory for Catechesis and the path of Christian initiation.",
+      "Care for minors: children's and teenagers' data handled with guardian consent and restricted access, in line with the LGPD.",
+      "Simplicity: volunteer catechists should sort out their week in a few minutes, on their phone too.",
+      "The parish owns its data: export it whenever you like, with no lock-in."
+    ],
+    "contact_title": "Talk to us",
+    "contact_text": "Have suggestions, want to present Catequese Viva to your parish or diocese, or found a problem? Write to the team.",
+    "contact_cta": "Go to Contact",
+    "help_cta": "See frequently asked questions"
   },
   "contact": {
     "title": "Contact",
     "intro": "Get in touch with the Catequese Viva team.",
     "location": "São Paulo, Brazil",
+    "phone_label": "Phone (support and general questions)",
+    "subject_prefix": "Subject",
+    "required_hint": "Fill in the fields marked * (name, email and message). We reply by email.",
     "name": "Name *",
     "email": "Email *",
     "subject": "Subject",
@@ -37,7 +57,7 @@
   },
   "pricing": {
     "title": "Three paths: catechist, parish, and diocese",
-    "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7-day free trial; card now, charge after trial.",
+    "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7 days free on the Catechist Plan, no card required.",
     "payment_card": "Card",
     "annual_savings": "Save 17% on annual",
     "monthly_tab": "Monthly",
@@ -65,7 +85,7 @@
     "faq": [
       {
         "q": "How can I try the platform before subscribing?",
-        "a": "You try it for 7 days. We ask for a card now and only charge after the trial. Use it with your real class and cancel if it does not make sense to continue."
+        "a": "You try it for 7 days, no card required. Use it with your real class; if it makes sense to continue, subscribe before the trial ends."
       },
       {
         "q": "What is the price?",
@@ -73,7 +93,7 @@
       },
       {
         "q": "How does payment work?",
-        "a": "You start with a 7-day trial. Stripe asks for a card now and only charges after the trial. No lock-in — cancel anytime."
+        "a": "You start with a 7-day trial, no card required. When you subscribe, payment is handled by Stripe. No lock-in — cancel anytime."
       },
       {
         "q": "What about annual plan refunds?",
@@ -179,5 +199,86 @@
       "OTHER": "Other"
     }
   },
-  "catechist_free": "No subscription"
+  "catechist_free": "No subscription",
+  "help": {
+    "title": "Help",
+    "intro": "Quick answers to the most common questions about Catequese Viva. Didn't find what you need? Contact the team at the bottom of the page.",
+    "contact_title": "Still need help?",
+    "contact_text": "Write to the team through the Contact page. If you already have an account, you can also use the Support center in your profile menu.",
+    "contact_cta": "Contact the team",
+    "groups": [
+      {
+        "title": "Account and free trial",
+        "items": [
+          {
+            "q": "How do I get started?",
+            "a": "Create your account with email and password (or Google), confirm your email and follow the first steps: choose how you'll use it (catechist or parish) and create your first class."
+          },
+          {
+            "q": "Do I need a card to try it?",
+            "a": "No. The 7-day free trial of the Catechist plan starts without a card. You are only asked for a card when you decide to subscribe."
+          },
+          {
+            "q": "What happens when the trial ends?",
+            "a": "Your data stays saved. To keep taking attendance and using class tools, choose a plan on the Subscription page. The Bible, Catechism, Settings and Support center stay open."
+          },
+          {
+            "q": "How do I change my card or cancel?",
+            "a": "In your profile menu, open Subscription and use the manage payment button. There you can change the card, see invoices or cancel, with no fee."
+          }
+        ]
+      },
+      {
+        "title": "Classes, meetings and attendance",
+        "items": [
+          {
+            "q": "How do I create a class?",
+            "a": "In Classes, tap Create class, enter the name, stage and meeting day and time. Then add the catechumens."
+          },
+          {
+            "q": "How do I take attendance?",
+            "a": "Open the class and tap Attendance. If there is no meeting for today yet, create it on the same screen and mark each catechumen present, absent or excused."
+          },
+          {
+            "q": "Can I generate the whole year's meetings at once?",
+            "a": "Yes. In the class planning, generate weekly meetings from the class day and time. They show up in the Calendar."
+          },
+          {
+            "q": "Does it work on my phone?",
+            "a": "Yes. It runs in your phone's browser. If you like, add a shortcut to your home screen to open it faster."
+          }
+        ]
+      },
+      {
+        "title": "Families and catechumens",
+        "items": [
+          {
+            "q": "How do I register a catechumen?",
+            "a": "In Catechumens, tap Register and fill in the name, date of birth and family. Then enroll them in a class from their record or from the class itself."
+          },
+          {
+            "q": "Can families follow along?",
+            "a": "Yes. On the catechumen's record, invite the guardian to the family portal. They see notices, attendance, documents and consents."
+          },
+          {
+            "q": "Can I import a list I already have?",
+            "a": "Yes. In Catechumens, use Import to upload a spreadsheet with names and dates of birth."
+          }
+        ]
+      },
+      {
+        "title": "Privacy and children's data",
+        "items": [
+          {
+            "q": "Is children's data protected?",
+            "a": "Yes. We follow Brazil's LGPD, including art. 14 on children's and teenagers' data: minimal collection, guardian consent and access only for those who run the class. See the Privacy Policy."
+          },
+          {
+            "q": "How do I export or delete my data?",
+            "a": "You can export your data in Settings. To ask for deletion, write to privacidade@catechis.app."
+          }
+        ]
+      }
+    ]
+  }
 }

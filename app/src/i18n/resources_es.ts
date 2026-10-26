@@ -33,7 +33,10 @@ export const account_es = {
     "manage_workspace_billing": "Gestionar cobro del espacio",
     "no_active_workspace": "Ningún espacio activo",
     "workspace_managed_desc": "Participas en este espacio. Los planes y pagos quedan con quien lo administra.",
-    "workspace_managed_hint": "¿Dudas sobre el plan? Habla con la coordinación."
+    "workspace_managed_hint": "¿Dudas sobre el plan? Habla con la coordinación.",
+    "display_name": "Nombre",
+    "edit_profile_link": "Editar nombre, teléfono, foto y contraseña en Configuración",
+    "credits_hint": "Los créditos se usan en las funciones de IA (generar guiones, actividades y mensajes). Cada generación consume créditos."
   } as const;
 
 export const activities_es = {
@@ -1080,7 +1083,7 @@ export const auth_es = {
     "signup_plan_unlimited": "Plan Parroquia",
     "signup_interval_monthly": "facturación mensual",
     "signup_interval_annual": "facturación anual",
-    "signup_context_no_card": "7 días gratis; tarjeta ahora, cobro después del trial",
+    "signup_context_no_card": "7 días gratis, sin tarjeta",
     "signup_context_change": "Cambiar",
     "signup_success_next_steps": "Próximos pasos",
     "signup_success_step_1": "Revisa tu bandeja de entrada y la carpeta de spam.",
@@ -1456,7 +1459,7 @@ export const billing_es = {
       "headline_trial_other": "Tu prueba termina en {{count}} días",
       "headline_trial_ended": "Tu período de prueba terminó",
       "headline_trial_active": "Tu período de prueba está activo",
-      "headline_no_trial": "Continúa tu catequesis en el espacio personal",
+      "headline_no_trial": "Suscríbete al Plan Catequista para usar tu espacio personal",
       "result_trial": "Suscríbete al Plan Catequista y continúa sin interrupción.",
       "result_no_trial": "El Plan Catequista cubre tu espacio personal: grupos, asistencia y calendario.",
       "usage_aria": "Comparación del uso actual con el Plan Catequista",
@@ -1538,7 +1541,13 @@ export const billing_es = {
       "diocese_sales_desc": "La cobertura de las parroquias es venta asistida.",
       "diocese_cta": "Hablar con ventas sobre la diócesis",
       "diocese_prefill": "Hola! Quisiera hablar sobre el Plan Diócesis para {{name}} en Catequese Viva."
-    }
+    },
+    "checkout_cta_start_trial_one": "Empezar 1 día gratis",
+    "checkout_cta_start_trial_other": "Empezar {{count}} días gratis",
+    "checkout_charge_after_trial_one": "Stripe pide la tarjeta ahora. Tienes 1 día gratis y el primer cobro es el {{date}}. Cancela antes para no pagar.",
+    "checkout_charge_after_trial_other": "Stripe pide la tarjeta ahora. Tienes {{count}} días gratis y el primer cobro es el {{date}}. Cancela antes para no pagar.",
+    "checkout_charge_today": "El cobro se hace en Stripe en cuanto confirmes la suscripción.",
+    "checkout_plan_includes_label": "Qué incluye el plan"
   } as const;
 
 export const birthdays_es = {
@@ -1644,7 +1653,47 @@ export const calendar_es = {
     "confirm_delete_event_desc": "Esta acción no se puede deshacer.",
     "delete_error": "Error al eliminar el evento",
     "conflicts_title": "Posible conflicto en el calendario",
-    "conflicts_desc": "{{count}} encuentro(s) coinciden con un evento obligatorio de la diócesis o de la parroquia."
+    "conflicts_desc": "{{count}} encuentro(s) coinciden con un evento obligatorio de la diócesis o de la parroquia.",
+    "event_created": "Evento creado",
+    "create_error": "No fue posible crear el evento",
+    "new_event_desc": "El evento aparece en el calendario de toda la parroquia o de tu espacio.",
+    "event_date": "Fecha del evento",
+    "event_type": "Tipo de evento",
+    "event_color": "Color del evento",
+    "delete_event_aria": "Eliminar el evento {{name}}",
+    "export_ics_aria": "Exportar a la agenda (.ics)",
+    "liturgical": {
+      "mary_mother_of_god": "Santa María, Madre de Dios",
+      "epiphany": "Epifanía del Señor",
+      "baptism_of_the_lord": "Bautismo del Señor",
+      "presentation_of_the_lord": "Presentación del Señor",
+      "ash_wednesday": "Miércoles de Ceniza",
+      "saint_joseph": "San José, Esposo de María",
+      "annunciation": "Anunciación del Señor",
+      "palm_sunday": "Domingo de Ramos",
+      "holy_thursday": "Jueves Santo",
+      "good_friday": "Viernes Santo",
+      "easter": "Domingo de Pascua",
+      "divine_mercy": "Domingo de la Divina Misericordia",
+      "ascension": "Ascensión del Señor",
+      "pentecost": "Pentecostés",
+      "holy_trinity": "Santísima Trinidad",
+      "corpus_christi": "Corpus Christi",
+      "sacred_heart": "Sagrado Corazón de Jesús",
+      "peter_and_paul": "San Pedro y San Pablo",
+      "assumption": "Asunción de la Virgen",
+      "our_lady_aparecida": "Nuestra Señora Aparecida",
+      "all_saints": "Todos los Santos",
+      "all_souls": "Fieles Difuntos",
+      "christ_the_king": "Cristo Rey",
+      "advent_1": "1.er Domingo de Adviento",
+      "advent_2": "2.º Domingo de Adviento",
+      "advent_3": "3.er Domingo de Adviento (Gaudete)",
+      "advent_4": "4.º Domingo de Adviento",
+      "immaculate_conception": "Inmaculada Concepción",
+      "christmas": "Navidad del Señor"
+    },
+    "liturgical_generated_hint": "Celebración del calendario litúrgico (fechas de la CNBB). Consulta el directorio litúrgico de tu diócesis."
   } as const;
 
 export const catecheticalYears_es = {
@@ -1867,7 +1916,20 @@ export const classes_es = {
       "confirm_conclude_btn": "Concluir grupo",
       "confirm_remove_catechist_title": "Quitar catequista",
       "confirm_remove_catechist_desc": "¿Está seguro de que desea quitar este catequista del grupo?",
-      "error": "Error"
+      "error": "Error",
+      "generate_title": "Generar encuentros",
+      "generate_desc": "Crea de una vez los próximos encuentros semanales del grupo. Las fechas que ya tienen encuentro se omiten.",
+      "generate_weekday": "Día de la semana",
+      "generate_count": "Cantidad",
+      "generate_count_option_one": "{{count}} encuentro",
+      "generate_count_option_other": "{{count}} encuentros",
+      "generate_button": "Generar",
+      "generate_single": "Encuentro suelto",
+      "generated_meeting_title": "Encuentro {{number}}",
+      "generate_success_one": "{{count}} encuentro creado",
+      "generate_success_other": "{{count}} encuentros creados",
+      "generate_error_one": "Se detuvo tras crear {{count}} encuentro",
+      "generate_error_other": "Se detuvo tras crear {{count}} encuentros"
     },
     "no_schedule": "Sin horario",
     "first_classes": "Primeros grupos",
@@ -2406,7 +2468,54 @@ export const common_es = {
       "family_label": "Familia",
       "family_unlinked": "Sin vincular",
       "next_enroll": "Inscribir en un grupo",
-      "view_profile": "Abrir perfil"
+      "view_profile": "Abrir perfil",
+      "family_contact_hint": "El teléfono y los responsables están en la familia: elija o cree la familia arriba.",
+      "danger_zone": "Más opciones",
+      "enroll": {
+        "open": "Inscribir en un grupo",
+        "title": "Inscribir en un grupo",
+        "desc": "Elija el grupo de {{name}}.",
+        "label": "Grupo",
+        "label_optional": "Grupo (opcional)",
+        "none": "Inscribir después",
+        "placeholder": "Seleccione el grupo",
+        "submit": "Inscribir",
+        "success": "Inscripción realizada",
+        "error": "No se pudo inscribir",
+        "no_classes": "No hay otro grupo activo disponible. Cree un grupo primero."
+      },
+      "certificate": {
+        "open": "Generar constancia",
+        "dialog_title": "Generar constancia o certificado",
+        "dialog_desc": "Revise los datos y genere una página lista para imprimir o guardar en PDF.",
+        "kind_label": "Documento",
+        "class_label": "Grupo",
+        "parish_label": "Parroquia o comunidad",
+        "place_label": "Ciudad",
+        "place_placeholder": "Ej.: São Paulo",
+        "date_label": "Fecha",
+        "signer_catechist": "Catequista",
+        "signer_coordinator": "Coordinación de catequesis / Párroco",
+        "generate": "Generar e imprimir",
+        "popup_blocked": "El navegador bloqueó la nueva ventana. Permita las ventanas emergentes para este sitio e intente de nuevo.",
+        "no_attendance": "Todavía no hay asistencias registradas para calcular la frecuencia.",
+        "birth_clause": ", nacido(a) el {{date}},",
+        "place_date": "{{place}}, {{date}}.",
+        "kinds": {
+          "enrollment": {
+            "title": "Constancia de inscripción",
+            "body": "Hacemos constar que {{name}}{{birth}} está inscrito(a) en la catequesis de {{parish}}, en el grupo {{className}}."
+          },
+          "attendance": {
+            "title": "Constancia de asistencia",
+            "body": "Hacemos constar que {{name}}{{birth}} participa en los encuentros de catequesis del grupo {{className}}, en {{parish}}, con una asistencia del {{pct}}% en los encuentros registrados hasta la fecha."
+          },
+          "completion": {
+            "title": "Certificado de conclusión",
+            "body": "Certificamos que {{name}}{{birth}} concluyó la etapa {{stage}} de la catequesis en el grupo {{className}}, de {{parish}}, caminando en la fe con dedicación."
+          }
+        }
+      }
     },
     "families": {
       "subtitle_registered": "{{count}} familias registradas",
@@ -2462,6 +2571,7 @@ export const common_es = {
       "error_remove_guardian": "Error al eliminar responsable.",
       "error_save": "Error al guardar.",
       "relationships": {
+        "guardian": "Responsable (sin especificar)",
         "father": "Padre",
         "mother": "Madre",
         "grandparent": "Abuelo/a",
@@ -2529,7 +2639,7 @@ export const common_es = {
     "offline_banner": "Sin conexión a internet. Algunas funciones pueden no estar disponibles.",
     "skip_to_content": "Ir al contenido principal",
     "install_title": "Instalar App",
-    "install_description": "Agregue a la pantalla de inicio para acceso rápido y sin conexión.",
+    "install_description": "Agregue un acceso directo a la pantalla de inicio para abrir más rápido.",
     "install_button": "Instalar",
     "offline_title": "Sin conexión",
     "offline_description": "Estás sin conexión. Verifica tu conexión e inténtalo de nuevo.",
@@ -2597,12 +2707,18 @@ export const common_es = {
     "clear": "Limpiar",
     "support_inbox": {
       "title": "Central de soporte",
-      "subtitle": "Las respuestas del equipo aparecen aquí y también se envían por correo.",
+      "subtitle": "Envía tu duda abajo. Las respuestas del equipo aparecen aquí y también se envían por correo.",
       "your_message": "Tu mensaje",
       "our_reply": "Respuesta de Catequese Viva",
       "waiting": "Aún a la espera de respuesta.",
       "empty_title": "Sin mensajes de soporte",
-      "empty_desc": "Cuando el equipo responda a un contacto tuyo, la conversación aparece aquí."
+      "empty_desc": "Cuando envíes un mensaje, la conversación con el equipo aparece aquí.",
+      "new_label": "Nuevo mensaje al soporte",
+      "new_placeholder": "Describe tu duda o el problema que encontraste…",
+      "new_hint": "Responderemos a {{email}}.",
+      "new_submit": "Enviar",
+      "new_sent": "Mensaje enviado. Responderemos pronto.",
+      "new_error": "No fue posible enviar ahora. Inténtalo de nuevo en unos minutos."
     },
     "validation": {
       "first_name_required": "Indica el nombre.",
@@ -2616,6 +2732,10 @@ export const common_es = {
       "password_min_length": "La nueva contraseña debe tener al menos 8 caracteres.",
       "phone_invalid": "Teléfono no válido.",
       "too_long": "Texto demasiado largo."
+    },
+    "activity": {
+      "working": "Cargando…",
+      "slow": "Todavía trabajando… la conexión está lenta."
     }
   } as const;
 
@@ -2718,7 +2838,16 @@ export const content_es = {
       "error_import_invalid_file": "Archivo inválido o dañado.",
       "error_import_storage_not_configured": "Almacenamiento de archivos no disponible. Intente más tarde.",
       "error_import_parse_failed": "No se pudo leer el archivo.",
-      "error_download_original": "No se pudo descargar el original."
+      "error_download_original": "No se pudo descargar el original.",
+      "samples": {
+        "title": "Guiones de ejemplo",
+        "desc": "Empiece con un guion listo y adáptelo a su grupo. Se crea una copia en su biblioteca para que la edite.",
+        "use": "Usar este guion",
+        "created": "Guion copiado a su biblioteca",
+        "error": "No se pudo copiar el guion",
+        "minutes_one": "{{count}} minuto",
+        "minutes_other": "{{count}} minutos"
+      }
     },
     "detail": {
       "by_author": "por {{name}}",
@@ -3129,7 +3258,7 @@ export const dashboard_es = {
     "kpi_trial_days_remaining": "Días para fin del trial",
     "first_steps": "Primeros pasos",
     "how_to_start": "Cómo empezar",
-    "how_to_start_1": "Cree el grupo con etapa, días de encuentro y responsables.",
+    "how_to_start_1": "Cree el grupo con nombre, día y horario del encuentro.",
     "how_to_start_2": "Registre o importe catecúmenos y asígnelos a los grupos.",
     "how_to_start_3": "Registra la asistencia y prepara el próximo encuentro del grupo.",
     "empty_class_card_desc": "Cree su primer grupo para organizar encuentros, asistencia y seguimiento.",
@@ -3871,7 +4000,7 @@ export const landing_es = {
           "Hasta 3 grupos",
           "150 catequizandos",
           "Asistencia y calendario",
-          "Publicar en la Comunidad"
+          "Portal para las familias de tu grupo"
         ]
       },
       "unlimited": {
@@ -3927,7 +4056,7 @@ export const landing_es = {
       },
       {
         "q": "¿Necesito informar tarjeta para probar?",
-        "a": "Sí. Stripe pide la tarjeta para empezar el trial; el cobro solo ocurre después de 7 días. Cancela a tiempo si no quieres continuar."
+        "a": "No. La prueba de 7 días del Plan Catequista empieza sin tarjeta en cuanto creas tu primer grupo. Solo pedimos la tarjeta cuando decidas suscribirte."
       },
       {
         "q": "¿Puedo cancelar cuando quiera?",
@@ -3935,7 +4064,7 @@ export const landing_es = {
       },
       {
         "q": "¿Funciona en el celular?",
-        "a": "Sí. Organizas el grupo y registras asistencia en el navegador, sin instalar una app."
+        "a": "Sí. Funciona directo en el navegador del celular; si quieres, puedes añadir el acceso directo a la pantalla de inicio."
       }
     ],
     "cta_eyebrow": "Vuelve a lo que importa",
@@ -4077,7 +4206,7 @@ export const landing_es = {
         },
         {
           "title": "En el celular",
-          "desc": "Asistencia y seguimiento en el navegador, sin instalar app."
+          "desc": "Asistencia y seguimiento en el navegador del celular, sin descargar nada de la tienda."
         }
       ],
       "chips": [
@@ -4945,45 +5074,99 @@ export const legal_es = {
     },
     "privacy": {
       "title": "Política de Privacidad",
-      "updated": "Última actualización: 31 de mayo de 2026",
+      "updated": "Última actualización: 26 de octubre de 2026",
       "sections": {
         "intro": {
           "title": "1. Introducción",
-          "text": "Catequesis Viva está comprometida con la protección de los datos personales de sus usuarios, en conformidad con la Ley General de Protección de Datos (LGPD — Ley nº 13.709/2018). Esta política explica cómo recopilamos, usamos y protegemos su información."
+          "text": "Catequesis Viva se compromete a proteger los datos personales de sus usuarios y de los catequizandos, de acuerdo con la Ley General de Protección de Datos de Brasil (LGPD — Ley nº 13.709/2018). Esta política explica qué datos tratamos, para qué, con quién los compartimos, cuánto tiempo los guardamos y cómo ejercer sus derechos."
+        },
+        "controller": {
+          "title": "2. Quién es responsable de los datos",
+          "text": "Cuando una parroquia, diócesis o catequista usa la plataforma para organizar la catequesis, esa institución (o el catequista, en el plan personal) es la responsable de los datos de catequizandos y familias: decide a quién se registra y para qué. Catequesis Viva actúa como encargada del tratamiento, usando esos datos solo para prestar el servicio contratado y según las instrucciones del responsable. Para los datos de su propia cuenta (registro, acceso, suscripción), Catequesis Viva es la responsable."
         },
         "collected": {
-          "title": "2. Datos recopilados",
-          "intro": "Recopilamos solo los datos estrictamente necesarios para la prestación de servicios:",
+          "title": "3. Datos recopilados",
+          "intro": "Recopilamos solo los datos necesarios para prestar el servicio:",
           "items": [
-            "Nombre, email y teléfono de usuarios (catequistas, coordinadores, responsables)",
-            "Nombre y fecha de nacimiento de catecúmenos",
-            "Registros de asistencia en encuentros catequéticos",
-            "Documentos sacramentales enviados por las familias",
-            "Consentimientos de uso de imagen y comunicación"
+            "Nombre, email, teléfono y foto opcional de los usuarios (catequistas, coordinadores, responsables)",
+            "Nombre, fecha de nacimiento, foto opcional y vínculo familiar de los catequizandos",
+            "Registros de asistencia, justificaciones y notas pastorales de los encuentros",
+            "Documentos sacramentales enviados por las familias (por ejemplo, certificados de bautismo)",
+            "Consentimientos de uso de imagen y de comunicación",
+            "Datos técnicos de acceso (dirección IP, navegador, fecha y hora) para seguridad y prevención de fraude",
+            "Datos de pago de la suscripción, procesados directamente por Stripe — no guardamos el número de la tarjeta"
           ]
         },
         "purpose": {
-          "title": "3. Finalidad del tratamiento",
+          "title": "4. Finalidad del tratamiento",
           "intro": "Los datos se utilizan exclusivamente para:",
           "items": [
-            "Gestión de la catequesis parroquial (grupos, asistencia, sacramentos)",
-            "Comunicación pastoral entre coordinadores, catequistas y familias",
-            "Generación de informes pastorales anonimizados",
-            "Cumplimiento de obligaciones legales y canónicas"
-          ]
+            "Gestionar la catequesis (grupos, encuentros, asistencia, sacramentos y documentos)",
+            "Facilitar la comunicación pastoral entre coordinadores, catequistas y familias",
+            "Elaborar informes pastorales para la parroquia, sin exposición pública de datos individuales",
+            "Cobrar y gestionar la suscripción",
+            "Mantener la seguridad de la cuenta, dar soporte y cumplir obligaciones legales"
+          ],
+          "outro": "No vendemos datos personales ni usamos datos de catequizandos para publicidad."
+        },
+        "legal_basis": {
+          "title": "5. Bases legales",
+          "text": "Tratamos datos para ejecutar el contrato con quien se suscribe al servicio (art. 7, V), cumplir obligaciones legales (art. 7, II), por interés legítimo para la seguridad y mejora del servicio (art. 7, IX) y con consentimiento cuando es necesario — por ejemplo, para uso de imagen, cookies de marketing y datos de niños (art. 7, I y art. 14)."
         },
         "minors": {
-          "title": "4. Protección de datos de menores",
-          "text": "Los datos de niños y adolescentes reciben protección especial: recopilación mínima, consentimiento parental obligatorio, acceso restringido y no compartición con terceros."
+          "title": "6. Datos de niños y adolescentes (art. 14 de la LGPD)",
+          "intro": "La mayoría de los catequizandos son menores de edad, por lo que sus datos se tratan según el interés superior del niño y del adolescente:",
+          "items": [
+            "Los datos de niños (hasta 12 años) solo se tratan con el consentimiento específico y destacado de al menos uno de los padres o del responsable legal, registrado en la plataforma por la parroquia o el catequista",
+            "Recopilamos lo mínimo necesario para la catequesis; ningún dato se exige como condición para participar en juegos, aplicaciones o actividades más allá de lo estrictamente necesario",
+            "Las familias pueden ver en el portal de la familia qué datos del catequizando están registrados y qué consentimientos se dieron",
+            "Las fotos de los catequizandos solo se usan con el consentimiento de imagen del responsable",
+            "El acceso está restringido a los catequistas y coordinadores del grupo; los datos de menores no se comparten con terceros con fines comerciales",
+            "Padres y responsables pueden pedir la corrección o eliminación de los datos en cualquier momento, a través de la parroquia o del contacto de protección de datos indicado abajo"
+          ]
+        },
+        "sharing": {
+          "title": "7. Compartición con proveedores",
+          "intro": "Solo compartimos datos con proveedores que nos ayudan a operar el servicio, bajo contrato y con obligación de confidencialidad:",
+          "items": [
+            "Alojamiento, base de datos y almacenamiento de archivos en la nube",
+            "Stripe, para procesar los pagos de la suscripción",
+            "Proveedores de email transaccional (confirmaciones, invitaciones y avisos)",
+            "Monitoreo de errores, para corregir fallas técnicas",
+            "Herramientas de análisis y marketing (Google y Meta) solo si acepta las cookies correspondientes"
+          ],
+          "outro": "Algunos de estos proveedores pueden guardar datos fuera de Brasil. En esos casos exigimos garantías adecuadas de protección, según el art. 33 de la LGPD."
+        },
+        "retention": {
+          "title": "8. Cuánto tiempo guardamos los datos",
+          "text": "Mantenemos los datos mientras la cuenta o la institución use la plataforma. Cuando se cierra una cuenta, sus datos se eliminan o anonimizan, salvo lo que debamos guardar por ley (por ejemplo, registros fiscales de la suscripción). La parroquia puede exportar sus datos antes del cierre."
+        },
+        "security": {
+          "title": "9. Seguridad",
+          "text": "Usamos conexión cifrada (HTTPS), control de acceso por rol (coordinador, catequista, familia), autenticación de dos factores opcional y registros de auditoría. Ante un incidente de seguridad relevante, avisaremos a los afectados y a la ANPD según la ley."
+        },
+        "cookies": {
+          "title": "10. Cookies",
+          "text": "Usamos cookies esenciales para el acceso y el funcionamiento de la aplicación. Las cookies de análisis y marketing solo se activan con su consentimiento en el aviso de cookies, y puede cambiar esa elección en cualquier momento."
         },
         "rights": {
-          "title": "5. Sus derechos (LGPD)",
-          "text": "Acceder, corregir, exportar o solicitar eliminación de sus datos. Para ejercer estos derechos, acceda a Configuración en la aplicación o contacte contato@catechis.app."
+          "title": "11. Sus derechos (LGPD)",
+          "intro": "En cualquier momento puede:",
+          "items": [
+            "Confirmar si tratamos sus datos y acceder a ellos",
+            "Corregir datos incompletos o desactualizados",
+            "Exportar sus datos (portabilidad) — disponible en Configuración en la aplicación",
+            "Pedir la eliminación o anonimización de datos innecesarios",
+            "Revocar consentimientos y saber con quién compartimos datos"
+          ],
+          "outro": "Si la solicitud involucra catequizandos registrados por una parroquia, la remitiremos a esa parroquia y la ayudaremos a responder."
         },
         "dpo": {
-          "title": "6. Contacto del DPO",
-          "email_label": "Email:",
-          "email": "privacidade@catechis.app"
+          "title": "12. Encargado de protección de datos (DPO)",
+          "text": "El encargado de protección de datos de Catequesis Viva es el canal oficial para dudas, solicitudes de los titulares y comunicaciones de la ANPD.",
+          "email_label": "Email del encargado:",
+          "email": "privacidade@catechis.app",
+          "response": "Respondemos en un plazo de 15 días. También puede escribirnos a contato@catechis.app o usar la página de Contacto."
         }
       }
     }
@@ -5095,7 +5278,8 @@ export const meetings_es = {
       },
       "next_label": "Próximo encuentro",
       "empty_mobile": "No hay encuentros programados."
-    }
+    },
+    "delete_confirm_button": "Eliminar encuentro"
   } as const;
 
 export const messages_es = {
@@ -5294,7 +5478,8 @@ export const navigation_es = {
       "community": "Comunidades"
     },
     "sidebarSection": "Navegación lateral",
-    "community": "Comunidad"
+    "community": "Comunidad",
+    "locked_hint": "requiere suscripción"
   } as const;
 
 export const onboarding_es = {
@@ -5337,10 +5522,10 @@ export const onboarding_es = {
       "hello_default": "Bienvenido/a",
       "question": "¿Cómo vas a usar Catequese Viva?",
       "personal_title": "Soy catequista y cuido mi grupo",
-      "personal_desc": "Crear el grupo, incluir catequizandos y usarlo en el día a día.",
+      "personal_desc": "Crea tu grupo e incluye a los catequizandos. Tienes 7 días gratis del Plan Catequista, sin tarjeta.",
       "personal_features": [],
       "manager_title": "Organizo la catequesis de la parroquia",
-      "manager_desc": "Parroquia, año catequético y grupos del equipo.",
+      "manager_desc": "Parroquia, año catequético y grupos del equipo. La prueba de 7 días del Plan Parroquia empieza en Stripe y pide tarjeta.",
       "manager_features": [],
       "helper": "Puedes cambiar de camino después si lo necesitas.",
       "launch_question": "Vamos a preparar el espacio de tu grupo.",
@@ -5348,7 +5533,9 @@ export const onboarding_es = {
       "diocese_title": "Soy de la diócesis",
       "diocese_desc": "Licencia paraguas para varias parroquias. Hable con ventas — no hay checkout público.",
       "invite_hint": "¿Ya tiene invitación a una parroquia? Entre por el correo. No cree otro espacio.",
-      "eyebrow": "Primeros pasos"
+      "eyebrow": "Primeros pasos",
+      "skip_explore": "Saltar y explorar la app primero",
+      "skip_explore_hint": "Creamos tu espacio personal con los 7 días gratis. Crea tu grupo cuando quieras."
     },
     "personal_setup": {
       "title": "Cuenta Personal",
@@ -5599,7 +5786,9 @@ export const onboarding_es = {
       "personal_people_title": "Quién forma parte del grupo",
       "personal_people_subtitle": "Añade nombres ahora o salta — la llamada ya está lista.",
       "diocese_title": "Licencia de la diócesis",
-      "diocese_subtitle": "No hay checkout público. Hable con ventas y, si quiere, elija la diócesis."
+      "diocese_subtitle": "No hay checkout público. Hable con ventas y, si quiere, elija la diócesis.",
+      "step_current": "Estás aquí",
+      "step_done": "Completado"
     },
     "back_clean": "Volver",
     "change_diocese_clean": "Cambiar",
@@ -5632,7 +5821,10 @@ export const onboarding_es = {
       "saving": "Creando grupo…",
       "continue": "Continuar",
       "transient_error": "El servidor estaba ocupado. Espera unos segundos y pulsa Continuar otra vez.",
-      "plan_limit": "Tu prueba aún no ha liberado el grupo. Espera unos segundos e inténtalo de nuevo.",
+      "plan_limit": "Tu período de prueba no está activo, así que aún no puedes crear el grupo. Suscríbete al Plan Catequista para continuar o contacta con soporte.",
+      "plan_limit_subscribe": "Suscribirme al Plan Catequista",
+      "plan_limit_support": "Contactar con soporte",
+      "plan_limit_support_prefill": "¡Hola! Me estoy registrando en Catequese Viva y no pude crear mi primer grupo (límite del plan).",
       "start_time_invalid": "Horario de inicio inválido. Usa el formato HH:mm (ej.: 19:00).",
       "end_time_invalid": "Horario de fin inválido. Usa el formato HH:mm (ej.: 20:30).",
       "default_meeting_title": "Encuentro de hoy",
@@ -6002,12 +6194,32 @@ export const public_es = {
         "content": "Biblioteca de contenido — cree, revise y publique planes de encuentro.",
         "communication": "Comunicación pastoral — envíe mensajes segmentados a familias y catequistas.",
         "reports": "Informes e indicadores — siga la salud de la catequesis con KPIs."
-      }
+      },
+      "audience_title": "Para quién es",
+      "audience": [
+        "Catequistas que quieren preparar el encuentro y registrar la asistencia sin papel ni planillas sueltas.",
+        "Coordinaciones parroquiales que necesitan ver todos los grupos, catequistas y sacramentos en un solo lugar.",
+        "Diócesis que acompañan varias parroquias, cada una cuidando sus propios datos."
+      ],
+      "principles_title": "Cómo trabajamos",
+      "principles": [
+        "Fidelidad a la Iglesia: contenidos y recorridos pensados a partir del Directorio para la Catequesis y del camino de iniciación cristiana.",
+        "Cuidado de los menores: datos de niños y adolescentes tratados con consentimiento del responsable y acceso restringido, según la LGPD.",
+        "Sencillez: el catequista voluntario debe resolver su semana en pocos minutos, también desde el celular.",
+        "La parroquia es dueña de sus datos: expórtelos cuando quiera, sin ataduras."
+      ],
+      "contact_title": "Hable con nosotros",
+      "contact_text": "¿Tiene sugerencias, quiere presentar Catequesis Viva a su parroquia o diócesis, o encontró un problema? Escriba al equipo.",
+      "contact_cta": "Ir a Contacto",
+      "help_cta": "Ver preguntas frecuentes"
     },
     "contact": {
       "title": "Contacto",
       "intro": "Póngase en contacto con el equipo de Catequesis Viva.",
       "location": "São Paulo, Brasil",
+      "phone_label": "Teléfono (soporte y consultas generales)",
+      "subject_prefix": "Asunto",
+      "required_hint": "Complete los campos con * (nombre, email y mensaje). Respondemos por email.",
       "name": "Nombre *",
       "email": "Email *",
       "subject": "Asunto",
@@ -6027,7 +6239,7 @@ export const public_es = {
     },
     "pricing": {
       "title": "Tres caminos: catequista, parroquia y diócesis",
-      "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis; tarjeta ahora, cobro después del trial.",
+      "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis en el Plan Catequista, sin tarjeta.",
       "payment_card": "Tarjeta",
       "annual_savings": "Ahorre 17% en anual",
       "monthly_tab": "Mensual",
@@ -6055,7 +6267,7 @@ export const public_es = {
       "faq": [
         {
           "q": "¿Cómo conozco la plataforma antes de suscribirme?",
-          "a": "Pruebas 7 días. Pedimos la tarjeta ahora y solo cobramos después del trial. Úsala con tu grupo de verdad y cancela si no tiene sentido continuar."
+          "a": "Pruebas 7 días, sin tarjeta. Úsalo con tu grupo de verdad; si tiene sentido continuar, suscríbete antes de que termine la prueba."
         },
         {
           "q": "¿Cuál es el precio?",
@@ -6063,7 +6275,7 @@ export const public_es = {
         },
         {
           "q": "¿Cómo funciona el pago?",
-          "a": "Empiezas con 7 días de prueba. Stripe pide la tarjeta ahora y solo cobra después del trial. Sin permanencia — cancela cuando quieras."
+          "a": "Empiezas con 7 días de prueba sin tarjeta. Al suscribirte, el pago se hace con Stripe. Sin permanencia — cancela cuando quieras."
         },
         {
           "q": "¿Y el reembolso del plan anual?",
@@ -6169,7 +6381,88 @@ export const public_es = {
         "OTHER": "Otro"
       }
     },
-    "catechist_free": "Sin suscripción"
+    "catechist_free": "Sin suscripción",
+    "help": {
+      "title": "Ayuda",
+      "intro": "Respuestas rápidas a las dudas más comunes sobre Catequesis Viva. ¿No encontró lo que buscaba? Hable con el equipo al final de la página.",
+      "contact_title": "¿Todavía necesita ayuda?",
+      "contact_text": "Escriba al equipo desde la página de Contacto. Si ya tiene cuenta, también puede usar el Centro de soporte en el menú de su perfil.",
+      "contact_cta": "Hablar con el equipo",
+      "groups": [
+        {
+          "title": "Cuenta y período de prueba",
+          "items": [
+            {
+              "q": "¿Cómo empiezo?",
+              "a": "Cree su cuenta con email y contraseña (o Google), confirme el email y siga los primeros pasos: elija cómo la usará (catequista o parroquia) y cree su primer grupo."
+            },
+            {
+              "q": "¿Necesito tarjeta para probar?",
+              "a": "No. La prueba gratuita de 7 días del Plan Catequista empieza sin tarjeta. La tarjeta solo se pide cuando decida suscribirse."
+            },
+            {
+              "q": "¿Qué pasa cuando termina la prueba?",
+              "a": "Sus datos siguen guardados. Para seguir registrando asistencia y usando las herramientas del grupo, elija un plan en la página Suscripción. La Biblia, el Catecismo, la Configuración y el Centro de soporte siguen disponibles."
+            },
+            {
+              "q": "¿Cómo cambio la tarjeta o cancelo?",
+              "a": "En el menú de su perfil, abra Suscripción y use el botón para gestionar el pago. Allí puede cambiar la tarjeta, ver facturas o cancelar, sin multa."
+            }
+          ]
+        },
+        {
+          "title": "Grupos, encuentros y asistencia",
+          "items": [
+            {
+              "q": "¿Cómo creo un grupo?",
+              "a": "En Grupos, toque Crear grupo e indique el nombre, la etapa y el día y horario del encuentro. Después agregue a los catequizandos."
+            },
+            {
+              "q": "¿Cómo registro la asistencia?",
+              "a": "Abra el grupo y toque Asistencia. Si todavía no hay encuentro para hoy, créelo en la misma pantalla y marque presente, ausente o justificado para cada catequizando."
+            },
+            {
+              "q": "¿Puedo generar los encuentros del año de una vez?",
+              "a": "Sí. En la planificación del grupo, genere los encuentros semanales a partir del día y horario del grupo. Aparecen en el Calendario."
+            },
+            {
+              "q": "¿Funciona en el celular?",
+              "a": "Sí. Funciona directo en el navegador del celular. Si quiere, añada un acceso directo a la pantalla de inicio para abrir más rápido."
+            }
+          ]
+        },
+        {
+          "title": "Familias y catequizandos",
+          "items": [
+            {
+              "q": "¿Cómo registro a un catequizando?",
+              "a": "En Catequizandos, toque Registrar y complete el nombre, la fecha de nacimiento y la familia. Después inscríbalo en un grupo desde su ficha o desde el propio grupo."
+            },
+            {
+              "q": "¿Las familias pueden acompañar?",
+              "a": "Sí. En la ficha del catequizando, invite al responsable al portal de la familia. Verá avisos, asistencia, documentos y consentimientos."
+            },
+            {
+              "q": "¿Puedo importar una lista que ya tengo?",
+              "a": "Sí. En Catequizandos, use Importar para subir una planilla con nombres y fechas de nacimiento."
+            }
+          ]
+        },
+        {
+          "title": "Privacidad y datos de menores",
+          "items": [
+            {
+              "q": "¿Los datos de los niños están protegidos?",
+              "a": "Sí. Seguimos la LGPD de Brasil, incluido el art. 14 sobre datos de niños y adolescentes: recolección mínima, consentimiento del responsable y acceso solo para quienes acompañan el grupo. Vea la Política de Privacidad."
+            },
+            {
+              "q": "¿Cómo exporto o elimino mis datos?",
+              "a": "En Configuración puede exportar sus datos. Para pedir la eliminación, escriba a privacidade@catechis.app."
+            }
+          ]
+        }
+      ]
+    }
   } as const;
 
 export const publicNav_es = {
@@ -6200,7 +6493,8 @@ export const publicNav_es = {
     "footer_talk": "Habla con nosotros",
     "footer_start": "Probar",
     "footer_start_desc": "Más presencia en el encuentro, menos peso en la semana. Empieza los 7 días.",
-    "language": "Idioma"
+    "language": "Idioma",
+    "help": "Ayuda"
   } as const;
 
 export const reports_es = {
@@ -6458,7 +6752,12 @@ export const settings_es = {
     "email_pref_lifecycle": "Consejos de activación, prueba y retorno a la cuenta",
     "email_pref_product": "Novedades del producto y boletín",
     "email_pref_pastoral": "Comunicados de los grupos y de la parroquia",
-    "email_pref_saved": "Preferencias de correo guardadas."
+    "email_pref_saved": "Preferencias de correo guardadas.",
+    "avatar_error": "No fue posible actualizar la foto. Prueba una imagen más pequeña (JPG, PNG o WebP).",
+    "avatar_alt": "Foto de perfil",
+    "avatar_change": "Cambiar foto",
+    "avatar_add": "Añadir foto",
+    "avatar_remove": "Quitar foto"
   } as const;
 
 export const social_es = {

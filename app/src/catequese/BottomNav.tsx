@@ -9,7 +9,10 @@ import {
   MessageSquareText,
   GraduationCap,
   BarChart3,
+  Lock,
 } from "lucide-react";
+import { useWorkspaceSubscriptionAccess } from "./components/SubscriptionGate";
+import { isSubscriptionFreeAppPath } from "../client/appRouteGates";
 import { cn } from "../client/utils";
 import { useUserContext } from "../client/hooks/useUserContext";
 import { useActiveWorkspace } from "../client/hooks/useActiveWorkspace";
@@ -34,6 +37,9 @@ export function BottomNav() {
   const { workspaceType } = useActiveWorkspace();
   const [sheetOpen, setSheetOpen] = useState(false);
   const unreadCount = useUnreadNotificationCount();
+  const access = useWorkspaceSubscriptionAccess();
+  const subscriptionLocked =
+    access.userLoaded && access.isBillingManager && !access.hasAccess;
 
   const { bottomBar } = getVisibleNavigation({
     role: userRole,
@@ -88,7 +94,12 @@ export function BottomNav() {
               item.labelKey === "catechumens"
                 ? "catechumens_short"
                 : item.labelKey;
-            const label = t(labelKey, { defaultValue: t(item.labelKey) });
+            const baseLabel = t(labelKey, { defaultValue: t(item.labelKey) });
+            const locked =
+              subscriptionLocked && !isSubscriptionFreeAppPath(item.to);
+            const label = locked
+              ? `${baseLabel} — ${t("locked_hint")}`
+              : baseLabel;
             return (
               <NavLink
                 key={item.to}
@@ -121,10 +132,16 @@ export function BottomNav() {
                       )}
                     >
                       <item.Icon className="h-5 w-5 shrink-0" />
+                      {locked && (
+                        <Lock
+                          className="-ml-1 h-3 w-3 shrink-0 self-start text-muted-foreground/70"
+                          aria-hidden
+                        />
+                      )}
                     </span>
                     {/* Abaixo de 400px só ícone; rótulos curtos evitam "Catequiz…" em 360px. */}
                     <span className="hidden max-w-full truncate min-[400px]:block">
-                      {label}
+                      {baseLabel}
                     </span>
                   </>
                 )}

@@ -10,7 +10,9 @@ import {
   useQuery,
   listHouseholds,
   createCatechumen,
+  enrollCatechumen,
 } from "wasp/client/operations";
+import { useEnrollableClasses } from "../../client/hooks/useEnrollableClasses";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { toast } from "../../client/hooks/use-toast";
 import { useUnsavedChangesGuard } from "../../client/hooks/useUnsavedChangesGuard";
@@ -91,6 +93,8 @@ export default function CreateCatechumenPage() {
   }, [households, activeParishId]);
 
   const [photo, setPhoto] = useState("");
+  const [classId, setClassId] = useState("");
+  const { classes: enrollableClasses } = useEnrollableClasses(canManage);
   const [showCreateHouseholdModal, setShowCreateHouseholdModal] =
     useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -127,8 +131,23 @@ export default function CreateCatechumenPage() {
         photoUrl: photo || undefined,
         householdId: values.householdId || undefined,
       });
+      if (classId) {
+        try {
+          await enrollCatechumen({
+            classId,
+            catechumenProfileId: result.id,
+          });
+        } catch (enrollErr: any) {
+          toast({
+            title: t("catechumens.enroll.error"),
+            description: enrollErr?.message,
+            variant: "destructive",
+          });
+        }
+      }
       form.reset(values);
       setPhoto("");
+      setClassId("");
       toast({ title: t("catechumens.created_success") });
       navigate(`/app/catechumens/${result.id}`);
     } catch (err: any) {
@@ -341,10 +360,37 @@ export default function CreateCatechumenPage() {
                         </button>
                       </p>
                     )}
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {t("catechumens.family_contact_hint")}
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {enrollableClasses.length > 0 && (
+                <div className="space-y-2">
+                  <label
+                    htmlFor="catechumen-class"
+                    className="text-sm font-medium leading-none"
+                  >
+                    {t("catechumens.enroll.label_optional")}
+                  </label>
+                  <select
+                    id="catechumen-class"
+                    value={classId}
+                    onChange={(e) => setClassId(e.target.value)}
+                    className="flex h-12 min-h-12 w-full rounded-sm border border-input bg-background px-3 py-2 text-base md:h-11 md:min-h-11 md:text-sm"
+                  >
+                    <option value="">{t("catechumens.enroll.none")}</option>
+                    {enrollableClasses.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </form>
           </Form>
         </AppPanel>

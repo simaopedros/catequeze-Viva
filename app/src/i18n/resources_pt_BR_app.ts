@@ -33,7 +33,10 @@ export const account_pt_BR_app = {
     "manage_workspace_billing": "Gerenciar cobrança do espaço",
     "no_active_workspace": "Nenhum espaço ativo",
     "workspace_managed_desc": "Você participa deste espaço. Planos e pagamentos ficam com quem administra.",
-    "workspace_managed_hint": "Dúvidas de plano? Fale com a coordenação."
+    "workspace_managed_hint": "Dúvidas de plano? Fale com a coordenação.",
+    "display_name": "Nome",
+    "edit_profile_link": "Editar nome, telefone, foto e senha em Configurações",
+    "credits_hint": "Créditos são usados pelos recursos de IA (gerar roteiros, atividades e mensagens). Cada geração consome créditos."
   } as const;
 
 export const activities_pt_BR_app = {
@@ -1052,7 +1055,47 @@ export const calendar_pt_BR_app = {
     "confirm_delete_event_desc": "Esta ação não pode ser desfeita.",
     "delete_error": "Erro ao excluir o evento",
     "conflicts_title": "Possível conflito no calendário",
-    "conflicts_desc": "{{count}} encontro(s) coincidem com um evento obrigatório da diocese ou da paróquia."
+    "conflicts_desc": "{{count}} encontro(s) coincidem com um evento obrigatório da diocese ou da paróquia.",
+    "event_created": "Evento criado",
+    "create_error": "Não foi possível criar o evento",
+    "new_event_desc": "O evento aparece no calendário de toda a paróquia ou do seu espaço.",
+    "event_date": "Data do evento",
+    "event_type": "Tipo de evento",
+    "event_color": "Cor do evento",
+    "delete_event_aria": "Excluir o evento {{name}}",
+    "export_ics_aria": "Exportar para agenda (.ics)",
+    "liturgical": {
+      "mary_mother_of_god": "Santa Maria, Mãe de Deus",
+      "epiphany": "Epifania do Senhor",
+      "baptism_of_the_lord": "Batismo do Senhor",
+      "presentation_of_the_lord": "Apresentação do Senhor",
+      "ash_wednesday": "Quarta-feira de Cinzas",
+      "saint_joseph": "São José, Esposo de Maria",
+      "annunciation": "Anunciação do Senhor",
+      "palm_sunday": "Domingo de Ramos",
+      "holy_thursday": "Quinta-feira Santa",
+      "good_friday": "Sexta-feira da Paixão",
+      "easter": "Páscoa do Senhor",
+      "divine_mercy": "Domingo da Divina Misericórdia",
+      "ascension": "Ascensão do Senhor",
+      "pentecost": "Pentecostes",
+      "holy_trinity": "Santíssima Trindade",
+      "corpus_christi": "Corpus Christi",
+      "sacred_heart": "Sagrado Coração de Jesus",
+      "peter_and_paul": "São Pedro e São Paulo",
+      "assumption": "Assunção de Nossa Senhora",
+      "our_lady_aparecida": "Nossa Senhora Aparecida",
+      "all_saints": "Todos os Santos",
+      "all_souls": "Fiéis Defuntos",
+      "christ_the_king": "Cristo Rei",
+      "advent_1": "1º Domingo do Advento",
+      "advent_2": "2º Domingo do Advento",
+      "advent_3": "3º Domingo do Advento (Gaudete)",
+      "advent_4": "4º Domingo do Advento",
+      "immaculate_conception": "Imaculada Conceição",
+      "christmas": "Natal do Senhor"
+    },
+    "liturgical_generated_hint": "Celebração do calendário litúrgico (datas segundo a CNBB). Consulte o Diretório Litúrgico da sua diocese."
   } as const;
 
 export const catecheticalYears_pt_BR_app = {
@@ -1275,7 +1318,20 @@ export const classes_pt_BR_app = {
       "confirm_conclude_btn": "Concluir turma",
       "confirm_remove_catechist_title": "Remover catequista",
       "confirm_remove_catechist_desc": "Tem certeza que deseja remover este catequista da turma?",
-      "error": "Erro"
+      "error": "Erro",
+      "generate_title": "Gerar encontros",
+      "generate_desc": "Crie de uma vez os próximos encontros semanais da turma. Datas que já têm encontro são puladas.",
+      "generate_weekday": "Dia da semana",
+      "generate_count": "Quantidade",
+      "generate_count_option_one": "{{count}} encontro",
+      "generate_count_option_other": "{{count}} encontros",
+      "generate_button": "Gerar",
+      "generate_single": "Encontro avulso",
+      "generated_meeting_title": "Encontro {{number}}",
+      "generate_success_one": "{{count}} encontro criado",
+      "generate_success_other": "{{count}} encontros criados",
+      "generate_error_one": "Parou depois de {{count}} encontro criado",
+      "generate_error_other": "Parou depois de {{count}} encontros criados"
     },
     "no_schedule": "Sem horário",
     "first_classes": "Primeiras turmas",
@@ -1475,7 +1531,16 @@ export const content_pt_BR_app = {
       "error_import_invalid_file": "Ficheiro inválido ou corrompido.",
       "error_import_storage_not_configured": "Armazenamento de ficheiros indisponível. Tente mais tarde.",
       "error_import_parse_failed": "Não foi possível ler o ficheiro.",
-      "error_download_original": "Não foi possível descarregar o original."
+      "error_download_original": "Não foi possível descarregar o original.",
+      "samples": {
+        "title": "Roteiros de exemplo",
+        "desc": "Comece com um roteiro pronto e adapte para a sua turma. Uma cópia é criada na sua biblioteca para você editar.",
+        "use": "Usar este roteiro",
+        "created": "Roteiro copiado para a sua biblioteca",
+        "error": "Não foi possível copiar o roteiro",
+        "minutes_one": "{{count}} minuto",
+        "minutes_other": "{{count}} minutos"
+      }
     },
     "detail": {
       "by_author": "por {{name}}",
@@ -1874,7 +1939,7 @@ export const dashboard_pt_BR_app = {
     "kpi_trial_days_remaining": "Dias para fim do teste gratuito",
     "first_steps": "Primeiros passos",
     "how_to_start": "Como começar",
-    "how_to_start_1": "Crie a turma com etapa, dias de encontro e responsáveis.",
+    "how_to_start_1": "Crie a turma com nome, dia e horário do encontro.",
     "how_to_start_2": "Cadastre ou importe catequizandos e distribua nas turmas.",
     "how_to_start_3": "Faça a chamada do próximo encontro — é o passo que mais importa no dia a dia.",
     "empty_class_card_desc": "Crie sua primeira turma para organizar encontros, presença e acompanhamento.",
@@ -2440,7 +2505,7 @@ export const meetings_pt_BR_app = {
     "generate_ai_activity": "Gerar atividade com assistência",
     "generate_whatsapp": "Gerar WhatsApp",
     "delete_confirm_title": "Remover encontro?",
-    "delete_confirm_desc": "Esta ação não pode ser desfeita. Os registos de presença serão removidos.",
+    "delete_confirm_desc": "Esta ação não pode ser desfeita. Os registros de presença deste encontro também serão removidos.",
     "delete_error": "Erro ao remover encontro.",
     "delete_success": "Encontro removido.",
     "search_content": "Buscar conteúdo...",
@@ -2524,7 +2589,8 @@ export const meetings_pt_BR_app = {
       },
       "next_label": "Próximo encontro",
       "empty_mobile": "Nenhum encontro agendado."
-    }
+    },
+    "delete_confirm_button": "Remover encontro"
   } as const;
 
 export const messages_pt_BR_app = {
@@ -2632,7 +2698,7 @@ export const messages_pt_BR_app = {
     "pending_send": "Pendente",
     "retry_send": "Reenviar",
     "draft_saved": "Rascunho guardado neste dispositivo",
-    "offline_banner": "Está offline. As mensagens serão enviadas quando a ligação voltar.",
+    "offline_banner": "Você está offline. As mensagens serão enviadas quando a conexão voltar.",
     "online_again": "Ligação restabelecida",
     "load_error_title": "Não foi possível carregar a conversa",
     "back_to_list": "Voltar às conversas",
@@ -2681,10 +2747,10 @@ export const onboarding_pt_BR_app = {
       "hello_default": "Bem-vindo(a)",
       "question": "Como você vai usar a Catequese Viva?",
       "personal_title": "Sou catequista e cuido da minha turma",
-      "personal_desc": "Criar a turma, incluir catequizandos e usar no dia a dia.",
+      "personal_desc": "Crie sua turma e inclua os catequizandos. Você ganha 7 dias grátis do Plano Catequista, sem cartão.",
       "personal_features": [],
       "manager_title": "Organizo a catequese da paróquia",
-      "manager_desc": "Paróquia, ano catequético e turmas da equipe.",
+      "manager_desc": "Paróquia, ano catequético e turmas da equipe. O teste de 7 dias do Plano Paróquia é iniciado no Stripe e pede cartão.",
       "manager_features": [],
       "helper": "Você pode mudar de caminho depois, se precisar.",
       "launch_question": "Vamos preparar o espaço da sua turma.",
@@ -2692,7 +2758,9 @@ export const onboarding_pt_BR_app = {
       "diocese_title": "Sou da diocese",
       "diocese_desc": "Licença guarda-chuva para várias paróquias. Fale com vendas — não há checkout público.",
       "invite_hint": "Já tem convite para uma paróquia? Entre pelo e-mail do convite. Não crie outro espaço.",
-      "eyebrow": "Primeiros passos"
+      "eyebrow": "Primeiros passos",
+      "skip_explore": "Pular e explorar o app primeiro",
+      "skip_explore_hint": "Criamos seu espaço pessoal com os 7 dias grátis. Você cria a turma quando quiser."
     },
     "personal_setup": {
       "title": "Conta Pessoal",
@@ -2943,7 +3011,9 @@ export const onboarding_pt_BR_app = {
       "personal_people_title": "Quem faz parte da turma",
       "personal_people_subtitle": "Adicione nomes agora ou pule — a chamada já está pronta.",
       "diocese_title": "Licença da diocese",
-      "diocese_subtitle": "Não há checkout público. Fale com vendas e, se quiser, escolha a diocese."
+      "diocese_subtitle": "Não há checkout público. Fale com vendas e, se quiser, escolha a diocese.",
+      "step_current": "Você está aqui",
+      "step_done": "Concluído"
     },
     "back_clean": "Voltar",
     "change_diocese_clean": "Alterar",
@@ -2976,7 +3046,10 @@ export const onboarding_pt_BR_app = {
       "saving": "Criando turma…",
       "continue": "Continuar",
       "transient_error": "O servidor estava ocupado. Espere uns segundos e clique em Continuar de novo.",
-      "plan_limit": "Seu teste ainda não liberou a turma. Aguarde alguns segundos e tente de novo.",
+      "plan_limit": "Seu período de teste não está ativo, então ainda não dá para criar a turma. Assine o Plano Catequista para continuar ou fale com o suporte.",
+      "plan_limit_subscribe": "Assinar o Plano Catequista",
+      "plan_limit_support": "Falar com o suporte",
+      "plan_limit_support_prefill": "Olá! Estou no cadastro do Catequese Viva e não consegui criar minha primeira turma (limite do plano).",
       "start_time_invalid": "Horário de início inválido. Use o formato HH:mm (ex.: 19:00).",
       "end_time_invalid": "Horário de término inválido. Use o formato HH:mm (ex.: 20:30).",
       "default_meeting_title": "Encontro de hoje",
@@ -3587,7 +3660,12 @@ export const settings_pt_BR_app = {
     "email_pref_lifecycle": "Dicas de ativação, teste e retorno à conta",
     "email_pref_product": "Novidades do produto e newsletter",
     "email_pref_pastoral": "Comunicados das turmas e da paróquia",
-    "email_pref_saved": "Preferências de email salvas."
+    "email_pref_saved": "Preferências de email salvas.",
+    "avatar_error": "Não foi possível atualizar a foto. Tente uma imagem menor (JPG, PNG ou WebP).",
+    "avatar_alt": "Foto de perfil",
+    "avatar_change": "Trocar foto",
+    "avatar_add": "Adicionar foto",
+    "avatar_remove": "Remover foto"
   } as const;
 
 export const social_pt_BR_app = {

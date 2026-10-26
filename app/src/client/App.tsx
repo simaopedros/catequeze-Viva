@@ -26,6 +26,9 @@ const AppShell = lazy(() =>
   import("../catequese/AppShell").then((m) => ({ default: m.AppShell })),
 );
 import { InstallPrompt } from "./components/InstallPrompt";
+import { GlobalActivityBar } from "./components/GlobalActivityBar";
+import { api } from "wasp/client/api";
+import { trackAxiosActivity } from "./networkActivity";
 import {
   marketingLandingFromPath,
   rememberLandingOrigin,
@@ -163,6 +166,8 @@ configureQueryClient({
   },
 });
 
+trackAxiosActivity(api);
+
 export default function App() {
   const location = useLocation();
   const isOnline = useOnlineStatus();
@@ -254,6 +259,7 @@ export default function App() {
       "/pricing",
       "/obrigado",
       "/about",
+      "/help",
       "/privacy",
       "/terms",
       "/contact",
@@ -420,6 +426,7 @@ export default function App() {
         </div>
       )}
       <PlatformSessionGuards />
+      <GlobalActivityBar />
       <Toaster position="top-right" />
       <Suspense fallback={null}>
         <CookieConsentBanner />
