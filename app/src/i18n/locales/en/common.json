@@ -497,7 +497,7 @@
     "linked_classes": "{{count}} linked",
     "family_label": "Family",
     "family_unlinked": "Not linked",
-    "next_enroll": "Enroll in a class",
+    "next_enroll": "No class yet · open record to enroll",
     "view_profile": "Open profile"
   },
   "global_search_placeholder": "Search catechumens, classes, content, Bible...",

@@ -414,7 +414,7 @@
     "linked_classes": "{{count}} vinculada(s)",
     "family_label": "Familia",
     "family_unlinked": "Sin vincular",
-    "next_enroll": "Inscribir en un grupo",
+    "next_enroll": "Sin grupo · abrir ficha para inscribir",
     "view_profile": "Abrir perfil"
   },
   "families": {
