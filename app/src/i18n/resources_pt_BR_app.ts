@@ -2632,7 +2632,7 @@ export const messages_pt_BR_app = {
     "pending_send": "Pendente",
     "retry_send": "Reenviar",
     "draft_saved": "Rascunho guardado neste dispositivo",
-    "offline_banner": "Está offline. As mensagens serão enviadas quando a ligação voltar.",
+    "offline_banner": "Você está offline. As mensagens serão enviadas quando a conexão voltar.",
     "online_again": "Ligação restabelecida",
     "load_error_title": "Não foi possível carregar a conversa",
     "back_to_list": "Voltar às conversas",

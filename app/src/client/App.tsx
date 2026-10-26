@@ -254,6 +254,7 @@ export default function App() {
       "/pricing",
       "/obrigado",
       "/about",
+      "/help",
       "/privacy",
       "/terms",
       "/contact",
