@@ -2518,7 +2518,7 @@ action getPedagogicalHooks {
 
 query globalSearch {
   fn: import { globalSearch } from "@src/server/operations/searchOperations",
-  entities: [CatechumenProfile, CatechesisClass, ContentItem, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Household, SacramentalJourney, Document, Parish, Community, Membership]
+  entities: [CatechumenProfile, CatechesisClass, ContentItem, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Household, SacramentalJourney, Document, Parish, Community, Membership, GuardianProfile]
 }
 
 query listCatechismByCategory {
