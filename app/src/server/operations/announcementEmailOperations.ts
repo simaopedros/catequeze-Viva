@@ -62,7 +62,7 @@ export const sendClassAnnouncementByEmail = async (
           household: {
             include: {
               guardians: {
-                include: { user: { select: { email: true } } },
+                include: { user: { select: { id: true, email: true } } },
               },
             },
           },
@@ -73,27 +73,30 @@ export const sendClassAnnouncementByEmail = async (
 
   // Prefer linked User.email; fall back to GuardianProfile.email for
   // responsáveis without an account (or with email only on the profile).
-  const guardianEmails = new Set<string>();
+  // Keep userId when known so List-Unsubscribe / footer always attach.
+  const recipients = new Map<string, string | undefined>();
   for (const e of enrollments) {
     for (const g of e.catechumenProfile?.household?.guardians || []) {
       const raw = (g.user?.email || g.email || '').trim().toLowerCase();
-      if (raw) guardianEmails.add(raw);
+      if (!raw) continue;
+      const userId = g.user?.id || recipients.get(raw);
+      recipients.set(raw, userId);
     }
   }
 
-  if (guardianEmails.size === 0) {
+  if (recipients.size === 0) {
     throw new HttpError(400, 'Nenhum responsável com email encontrado nesta turma.');
   }
 
-  const recipients = [...guardianEmails];
   let sent = 0;
   let failed = 0;
   const batchId = `${args.classId}:${Date.now()}`;
-  for (const to of recipients) {
+  for (const [to, userId] of recipients) {
     try {
       const result = await enqueueEmail({
         messageId: EMAIL_MESSAGE.PASTORAL_ANNOUNCEMENT,
         to,
+        userId,
         payload: {
           subject: args.subject,
           heading: args.subject,
@@ -109,5 +112,5 @@ export const sendClassAnnouncementByEmail = async (
     }
   }
 
-  return { sent, failed, total: recipients.length };
+  return { sent, failed, total: recipients.size };
 };

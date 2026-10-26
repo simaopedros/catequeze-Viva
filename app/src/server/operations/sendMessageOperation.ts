@@ -113,9 +113,23 @@ export const sendMessageEmail = async (
   }
 
   await assertRecipientInWorkspace(context, workspaceId, args.to);
+
+  // Resolve userId so pastoral messages always carry List-Unsubscribe.
+  let userId: string | undefined;
+  try {
+    const user = await context.entities.User.findFirst({
+      where: { email: { equals: args.to.trim(), mode: 'insensitive' } },
+      select: { id: true },
+    });
+    userId = user?.id;
+  } catch {
+    userId = undefined;
+  }
+
   return enqueueEmail({
     messageId: EMAIL_MESSAGE.PASTORAL_MESSAGE,
     to: args.to,
+    userId,
     payload: { subject: args.subject, heading: args.subject, body: args.body },
     idempotencyKey: `pastoral.message:${workspaceId}:${args.to}:${args.subject}:${Date.now()}`,
     context,

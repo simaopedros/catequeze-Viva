@@ -2375,7 +2375,7 @@ action markMessageAsRead {
 
 action sendClassAnnouncementByEmail {
   fn: import { sendClassAnnouncementByEmail } from "@src/server/operations/announcementEmailOperations",
-  entities: [ClassEnrollment, CatechumenProfile, Household, GuardianProfile, CatechesisClass, ClassCatechist, Membership, Parish, EmailMessage, EmailSuppression, EmailPreference]
+  entities: [ClassEnrollment, CatechumenProfile, Household, GuardianProfile, User, CatechesisClass, ClassCatechist, Membership, Parish, EmailMessage, EmailSuppression, EmailPreference]
 }
 
 query getMessageReadReceipts {
