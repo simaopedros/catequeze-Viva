@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  isSubscriptionFreeAppPath,
   getPostCheckoutDestination,
   isMinimalAppPath,
   isPublicOnlyPath,
@@ -68,8 +69,6 @@ describe("shouldRenderGatedRoute", () => {
       shouldRenderGatedRoute({
         userLoaded: true,
         alwaysAccessible: true,
-        hasAccess: false,
-        isBillingManager: true,
         checked: false,
       }),
     ).toBe(true);
@@ -80,20 +79,16 @@ describe("shouldRenderGatedRoute", () => {
       shouldRenderGatedRoute({
         userLoaded: true,
         alwaysAccessible: false,
-        hasAccess: false,
-        isBillingManager: true,
         checked: false,
       }),
     ).toBe(false);
   });
 
-  it("renders the app once access is confirmed", () => {
+  it("renders the app once access is confirmed, and keeps it mounted", () => {
     expect(
       shouldRenderGatedRoute({
         userLoaded: true,
         alwaysAccessible: false,
-        hasAccess: true,
-        isBillingManager: true,
         checked: true,
       }),
     ).toBe(true);
@@ -177,5 +172,28 @@ describe("shouldHoldOnboardingRedirectOnBilling", () => {
         isOnProductTrial: false,
       }),
     ).toBe(false);
+  });
+});
+
+describe("isSubscriptionFreeAppPath", () => {
+  it("keeps help, settings and reference texts open without a subscription", () => {
+    for (const path of [
+      "/app/suporte",
+      "/app/settings",
+      "/app/bible",
+      "/app/bible?book=jo",
+      "/app/catechism",
+      "/app/directory",
+      "/app/billing?plan=single",
+      "/account",
+    ]) {
+      expect(isSubscriptionFreeAppPath(path)).toBe(true);
+    }
+  });
+
+  it("still gates the working areas", () => {
+    for (const path of ["/app", "/app/classes", "/app/calendar", "/app/bibles"]) {
+      expect(isSubscriptionFreeAppPath(path)).toBe(false);
+    }
   });
 });

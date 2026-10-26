@@ -72,7 +72,16 @@
     "error_import_invalid_file": "Archivo inválido o dañado.",
     "error_import_storage_not_configured": "Almacenamiento de archivos no disponible. Intente más tarde.",
     "error_import_parse_failed": "No se pudo leer el archivo.",
-    "error_download_original": "No se pudo descargar el original."
+    "error_download_original": "No se pudo descargar el original.",
+    "samples": {
+      "title": "Guiones de ejemplo",
+      "desc": "Empiece con un guion listo y adáptelo a su grupo. Se crea una copia en su biblioteca para que la edite.",
+      "use": "Usar este guion",
+      "created": "Guion copiado a su biblioteca",
+      "error": "No se pudo copiar el guion",
+      "minutes_one": "{{count}} minuto",
+      "minutes_other": "{{count}} minutos"
+    }
   },
   "detail": {
     "by_author": "por {{name}}",

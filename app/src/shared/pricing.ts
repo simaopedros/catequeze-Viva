@@ -125,6 +125,26 @@ export function isProductTrialWindowOpen(
   return endMs >= now.getTime();
 }
 
+/**
+ * In-app (no-card) product trial, as opposed to a Stripe Checkout trial.
+ * The in-app grant stores trialEndsAt = createdAt + SUBSCRIPTION_TRIAL_DAYS;
+ * Stripe trials start at Checkout, so their trial_end never matches that.
+ * Legacy grandfather rows have no trialEndsAt at all.
+ */
+export function isInAppProductTrial(
+  user: UserSubscriptionFields | null | undefined,
+): boolean {
+  if (!isProductTrialStatus(user?.subscriptionStatus)) return false;
+  const endsAt = coerceDate(user?.trialEndsAt);
+  if (!endsAt) return true;
+  const start = coerceDate(user?.createdAt);
+  if (!start) return false;
+  return (
+    endsAt.getTime() ===
+    start.getTime() + SUBSCRIPTION_TRIAL_DAYS * 24 * 60 * 60 * 1000
+  );
+}
+
 export function getPersonalPlanId(
   user: UserSubscriptionFields | null | undefined,
 ): string {

@@ -26,7 +26,7 @@ import {
   Download,
   List,
   LayoutGrid,
-  X,
+  Loader2,
 } from "lucide-react";
 import {
   useQuery,
@@ -37,6 +37,14 @@ import {
   deleteLiturgicalEvent,
 } from "wasp/client/operations";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../../client/components/ui/dialog";
 import {
   Sheet,
   SheetContent,
@@ -49,6 +57,15 @@ import { toast } from "../../client/hooks/use-toast";
 import { OriginBadge } from "../components/OriginBadge";
 import { findCalendarConflicts } from "../../shared/resourceInheritance";
 import {
+  parseDateParts as dayKeyParts,
+  toAppCalendarDate,
+  todayInAppTimezone,
+} from "../../shared/calendarDate";
+import {
+  LITURGICAL_COLOR_HEX,
+  liturgicalCelebrations,
+} from "../../shared/liturgicalCalendar";
+import {
   Alert,
   AlertDescription,
   AlertTitle,
@@ -57,6 +74,23 @@ import {
 const DEFAULT_COLOR = "#071A2D"; // brand ink — charts/ICS only
 
 const FAMILY_ROLES = new Set(["GUARDIAN", "CATECHUMEN"]);
+
+/** Civil day (YYYY-MM-DD, America/Sao_Paulo) an event falls on. */
+function eventDayKey(e: { date: string | Date }): string {
+  if (typeof e.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(e.date)) {
+    return e.date;
+  }
+  return todayInAppTimezone(toAppCalendarDate(e.date));
+}
+
+/** Matches Tailwind `lg`: the day side panel is visible inline from here up. */
+function isDesktopViewport(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(min-width: 1024px)").matches
+  );
+}
 
 export default function CalendarPage() {
   const { t } = useTranslation("calendar");
@@ -157,6 +191,7 @@ export default function CalendarPage() {
   const [eventDate, setEventDate] = useState("");
   const [color, setColor] = useState(DEFAULT_COLOR);
   const [eventType, setEventType] = useState("liturgical");
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     if (!filteredClasses.length) {
@@ -186,7 +221,23 @@ export default function CalendarPage() {
   }, [classes, activeParishId, filteredClasses, t]);
 
   const loading = loadingLiturgical || loadingClasses || loadingMeetings;
-  const events = [...parishFilteredEvents, ...meetings];
+  const displayedYear = currentDate.getFullYear();
+  const generatedLiturgical = useMemo(
+    () =>
+      [displayedYear - 1, displayedYear, displayedYear + 1].flatMap((y) =>
+        liturgicalCelebrations(y).map((c) => ({
+          id: `lit-${c.date}-${c.key}`,
+          name: t(`liturgical.${c.key}`),
+          date: c.date,
+          type: "liturgical",
+          color: LITURGICAL_COLOR_HEX[c.color],
+          description: t("liturgical_generated_hint"),
+          generated: true,
+        })),
+      ),
+    [displayedYear, t],
+  );
+  const events = [...generatedLiturgical, ...parishFilteredEvents, ...meetings];
   const conflicts = useMemo(
     () =>
       findCalendarConflicts(
@@ -218,60 +269,55 @@ export default function CalendarPage() {
           )
         : events.filter((e) => e.type === typeFilter);
   const upcomingEvents = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = todayInAppTimezone();
     return filteredEvents
-      .filter((e) => {
-        const d =
-          typeof e.date === "string" ? new Date(e.date) : new Date(e.date);
-        return d >= today;
-      })
-      .sort((a, b) => {
-        const da =
-          typeof a.date === "string"
-            ? new Date(a.date).getTime()
-            : new Date(a.date).getTime();
-        const db =
-          typeof b.date === "string"
-            ? new Date(b.date).getTime()
-            : new Date(b.date).getTime();
-        return da - db;
-      });
+      .filter((e) => eventDayKey(e) >= today)
+      .sort((a, b) => eventDayKey(a).localeCompare(eventDayKey(b)));
   }, [filteredEvents]);
-  const monthCount = filteredEvents.filter((e) => {
-    const d =
-      typeof e.date === "string" ? e.date : new Date(e.date).toISOString();
-    return new Date(d).getMonth() === month;
-  }).length;
+  const monthPrefix = `${year}-${String(month + 1).padStart(2, "0")}`;
+  const monthCount = filteredEvents.filter((e) =>
+    eventDayKey(e).startsWith(monthPrefix),
+  ).length;
 
   const getEventsForDay = (day: number) => {
     const ds = `${year}-${String(month + 1).padStart(2, "0")}-${String(
       day,
     ).padStart(2, "0")}`;
-    return filteredEvents.filter((e) => {
-      const d =
-        typeof e.date === "string"
-          ? e.date
-          : new Date(e.date).toISOString().slice(0, 10);
-      return d.startsWith(ds);
-    });
+    return filteredEvents.filter((e) => eventDayKey(e) === ds);
   };
 
   const handleCreate = async () => {
-    if (!name || !eventDate) return;
-    await createLiturgicalEvent({
-      name,
-      date: eventDate,
-      description: desc,
-      color,
-      type: eventType,
-      workspaceId: activeParishId || undefined,
-      parishId: activeParishId || undefined,
-    });
-    setName("");
-    setDesc("");
-    setEventDate("");
-    setShowForm(false);
+    if (!name || !eventDate || creating) return;
+    setCreating(true);
+    try {
+      await createLiturgicalEvent({
+        name,
+        date: eventDate,
+        description: desc,
+        color,
+        type: eventType,
+        workspaceId: activeParishId || undefined,
+        parishId: activeParishId || undefined,
+      });
+      const created = new Date(`${eventDate}T12:00:00`);
+      if (!Number.isNaN(created.getTime())) {
+        setCurrentDate(new Date(created.getFullYear(), created.getMonth(), 1));
+        setSelectedDay(created.getDate());
+      }
+      setName("");
+      setDesc("");
+      setEventDate("");
+      setShowForm(false);
+      toast({ title: t("event_created") });
+    } catch (e: any) {
+      toast({
+        title: t("create_error"),
+        description: e?.message || tc("try_again"),
+        variant: "destructive",
+      });
+    } finally {
+      setCreating(false);
+    }
   };
   const handleDelete = async (id: string) => {
     const ok = await confirm({
@@ -295,7 +341,7 @@ export default function CalendarPage() {
   const handleDayClick = (day: number) => {
     setSelectedDay(day);
     setShowForm(false);
-    setMobilePanelOpen(true);
+    setMobilePanelOpen(!isDesktopViewport());
   };
 
   const openNewEventForm = (day?: number) => {
@@ -305,6 +351,7 @@ export default function CalendarPage() {
         targetDay,
       ).padStart(2, "0")}`,
     );
+    setMobilePanelOpen(false);
     setShowForm(true);
   };
 
@@ -360,16 +407,6 @@ export default function CalendarPage() {
               }
             : undefined
         }
-        secondaryActions={[
-          {
-            label: t("view_agenda"),
-            onClick: () => setViewModeManual("agenda"),
-          },
-          {
-            label: t("view_month"),
-            onClick: () => setViewModeManual("month"),
-          },
-        ]}
       />
 
       {conflicts.length > 0 && (
@@ -479,11 +516,7 @@ export default function CalendarPage() {
             if (e.type === "class" && e.id) {
               openMeeting(e.id);
             } else {
-              setSelectedDay(
-                new Date(
-                  typeof e.date === "string" ? e.date : e.date,
-                ).getDate(),
-              );
+              setSelectedDay(dayKeyParts(eventDayKey(e)).day);
               setMobilePanelOpen(true);
             }
           }}
@@ -512,19 +545,6 @@ export default function CalendarPage() {
               months={months}
               dayEvents={dayEvents}
               upcomingEvents={upcomingEvents}
-              showForm={showForm && !isFamily}
-              name={name}
-              desc={desc}
-              eventDate={eventDate}
-              color={color}
-              eventType={eventType}
-              setName={setName}
-              setDesc={setDesc}
-              setEventDate={setEventDate}
-              setColor={setColor}
-              setEventType={setEventType}
-              setShowForm={setShowForm}
-              handleCreate={handleCreate}
               handleDelete={handleDelete}
               eventTypeLabels={eventTypeLabels}
               openNewEventForm={openNewEventForm}
@@ -568,19 +588,6 @@ export default function CalendarPage() {
               months={months}
               dayEvents={dayEvents}
               upcomingEvents={upcomingEvents}
-              showForm={showForm && !isFamily}
-              name={name}
-              desc={desc}
-              eventDate={eventDate}
-              color={color}
-              eventType={eventType}
-              setName={setName}
-              setDesc={setDesc}
-              setEventDate={setEventDate}
-              setColor={setColor}
-              setEventType={setEventType}
-              setShowForm={setShowForm}
-              handleCreate={handleCreate}
               handleDelete={handleDelete}
               eventTypeLabels={eventTypeLabels}
               openNewEventForm={openNewEventForm}
@@ -592,6 +599,87 @@ export default function CalendarPage() {
           </div>
         </SheetContent>
       </Sheet>
+      <Dialog
+        open={showForm && !isFamily}
+        onOpenChange={(open) => {
+          if (!open && !creating) setShowForm(false);
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("new_event")}</DialogTitle>
+            <DialogDescription>{t("new_event_desc")}</DialogDescription>
+          </DialogHeader>
+          <form
+            className="space-y-3"
+            onSubmit={(ev) => {
+              ev.preventDefault();
+              void handleCreate();
+            }}
+          >
+            <Input
+              placeholder={t("event_name")}
+              aria-label={t("event_name")}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              autoFocus
+            />
+            <Input
+              type="date"
+              aria-label={t("event_date")}
+              value={eventDate}
+              onChange={(e) => setEventDate(e.target.value)}
+            />
+            <Input
+              placeholder={t("description_optional")}
+              aria-label={t("description_optional")}
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+            />
+            <div className="flex gap-2">
+              <Select value={eventType} onValueChange={setEventType}>
+                <SelectTrigger
+                  className="h-9 flex-1"
+                  aria-label={t("event_type")}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="liturgical">
+                    {t("filters.liturgical")}
+                  </SelectItem>
+                  <SelectItem value="parish">{t("filters.parish")}</SelectItem>
+                  <SelectItem value="class">{t("filters.class")}</SelectItem>
+                  <SelectItem value="sacramental">
+                    {t("filters.sacramental")}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <input
+                type="color"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                className="h-9 w-9 cursor-pointer rounded-sm border border-input bg-transparent p-0.5"
+                aria-label={t("event_color")}
+              />
+            </div>
+            <DialogFooter className="gap-2 pt-1">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowForm(false)}
+                disabled={creating}
+              >
+                {tc("cancel")}
+              </Button>
+              <Button type="submit" disabled={!name || !eventDate || creating}>
+                {creating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {t("create_event")}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
       {confirmDialog}
     </div>
   );
@@ -758,13 +846,10 @@ function AgendaView({
 }: AgendaViewProps) {
   const monthEvents = events
     .filter((e) => {
-      const d =
-        typeof e.date === "string" ? e.date : new Date(e.date).toISOString();
-      return (
-        new Date(d).getMonth() === month && new Date(d).getFullYear() === year
-      );
+      const p = dayKeyParts(eventDayKey(e));
+      return p.month === month && p.year === year;
     })
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    .sort((a, b) => eventDayKey(a).localeCompare(eventDayKey(b)));
 
   if (monthEvents.length === 0) {
     return <EmptyState compact icon={Calendar} title={t("no_events_month")} />;
@@ -773,10 +858,7 @@ function AgendaView({
   return (
     <div className="max-h-[calc(100dvh-16rem)] space-y-2 overflow-y-auto scroll-touch pb-4">
       {monthEvents.map((e) => {
-        const eventDate = new Date(
-          typeof e.date === "string" ? e.date : e.date,
-        );
-        const day = eventDate.getDate();
+        const day = dayKeyParts(eventDayKey(e)).day;
         return (
           <button
             key={e.id}
@@ -838,19 +920,6 @@ interface SidePanelProps {
   months: string[];
   dayEvents: any[];
   upcomingEvents: any[];
-  showForm: boolean;
-  name: string;
-  desc: string;
-  eventDate: string;
-  color: string;
-  eventType: string;
-  setName: (v: string) => void;
-  setDesc: (v: string) => void;
-  setEventDate: (v: string) => void;
-  setColor: (v: string) => void;
-  setEventType: (v: string) => void;
-  setShowForm: (v: boolean) => void;
-  handleCreate: () => void;
   handleDelete: (id: string) => void;
   eventTypeLabels: Record<string, string>;
   openNewEventForm: (day?: number) => void;
@@ -867,19 +936,6 @@ function SidePanelContent({
   months,
   dayEvents,
   upcomingEvents,
-  showForm,
-  name,
-  desc,
-  eventDate,
-  color,
-  eventType,
-  setName,
-  setDesc,
-  setEventDate,
-  setColor,
-  setEventType,
-  setShowForm,
-  handleCreate,
   handleDelete,
   eventTypeLabels,
   openNewEventForm,
@@ -906,9 +962,7 @@ function SidePanelContent({
         ) : (
           <div className="space-y-1.5">
             {upcomingEvents.slice(0, 5).map((e: any) => {
-              const eventDate = new Date(
-                typeof e.date === "string" ? e.date : e.date,
-              );
+              const eventDate = dayKeyParts(eventDayKey(e));
               return (
                 <div
                   key={e.id}
@@ -934,10 +988,10 @@ function SidePanelContent({
                 >
                   <div className="flex w-9 shrink-0 flex-col items-center">
                     <span className="text-xs font-semibold tabular-nums text-brand-ink">
-                      {eventDate.getDate()}
+                      {eventDate.day}
                     </span>
                     <span className="text-overline text-muted-foreground">
-                      {months[eventDate.getMonth()].slice(0, 3)}
+                      {months[eventDate.month].slice(0, 3)}
                     </span>
                   </div>
                   <div
@@ -1065,18 +1119,19 @@ function SidePanelContent({
                 <button
                   onClick={() => exportICS(e)}
                   className="text-muted-foreground hover:text-brand-ink p-1.5 rounded-sm hover:bg-muted transition-colors"
-                  aria-label="Exportar .ics"
+                  aria-label={t("export_ics_aria")}
                 >
                   <Download className="h-3.5 w-3.5" />
                 </button>
                 {e.type !== "class" &&
                   allowCreate &&
+                  !e.generated &&
                   !e.inherited &&
                   !e.origin?.inherited && (
                     <button
                       onClick={() => handleDelete(e.id)}
                       className="text-muted-foreground hover:text-destructive p-1.5 rounded-sm hover:bg-destructive/10 transition-colors"
-                      aria-label="Excluir evento"
+                      aria-label={t("delete_event_aria", { name: e.name })}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
@@ -1097,104 +1152,6 @@ function SidePanelContent({
             </Button>
           )}
         </div>
-      )}
-
-      {/* ── Create event form ───────────────────────────────────────────── */}
-      {showForm && allowCreate && (
-        <AppPanel className="space-y-3 p-4" padded={false}>
-          <div className="flex items-start justify-between gap-3">
-            <div className="space-y-1.5">
-              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <Plus className="h-3.5 w-3.5 text-brand-ink" />
-                {t("new_event")}
-              </h3>
-              <div className="h-px w-8 bg-brand-gold" aria-hidden />
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              onClick={() => setShowForm(false)}
-              aria-label={tc("close")}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <div className="space-y-2.5">
-            <Input
-              placeholder={t("event_name")}
-              aria-label={t("event_name")}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <Input
-              type="date"
-              value={eventDate}
-              onChange={(e) => setEventDate(e.target.value)}
-            />
-            <Input
-              placeholder={t("description_optional")}
-              aria-label={t("description_optional")}
-              value={desc}
-              onChange={(e) => setDesc(e.target.value)}
-            />
-          </div>
-
-          <div className="flex gap-2">
-            <Select value={eventType} onValueChange={setEventType}>
-              <SelectTrigger className="flex-1 h-9">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="liturgical">
-                  {t("filters.liturgical")}
-                </SelectItem>
-                <SelectItem value="parish">{t("filters.parish")}</SelectItem>
-                <SelectItem value="class">{t("filters.class")}</SelectItem>
-                <SelectItem value="sacramental">
-                  {t("filters.sacramental")}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Color picker */}
-            <div className="relative">
-              <input
-                type="color"
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-                className="sr-only"
-                id="event-color-picker"
-              />
-              <label
-                htmlFor="event-color-picker"
-                className="flex items-center justify-center h-9 w-9 rounded-sm border border-input cursor-pointer hover:border-brand-ink/40 transition-colors "
-                style={{ background: color }}
-                aria-label="Cor do evento"
-              >
-                <span className="sr-only">Cor do evento</span>
-              </label>
-            </div>
-          </div>
-
-          <div className="flex gap-2 pt-1">
-            <Button
-              size="sm"
-              onClick={handleCreate}
-              disabled={!name || !eventDate}
-            >
-              {t("create_event")}
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setShowForm(false)}
-            >
-              {tc("cancel")}
-            </Button>
-          </div>
-        </AppPanel>
       )}
     </>
   );

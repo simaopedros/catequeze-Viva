@@ -72,7 +72,16 @@
     "error_import_invalid_file": "Invalid or corrupted file.",
     "error_import_storage_not_configured": "File storage is unavailable. Try again later.",
     "error_import_parse_failed": "Could not read the file.",
-    "error_download_original": "Could not download the original file."
+    "error_download_original": "Could not download the original file.",
+    "samples": {
+      "title": "Sample meeting scripts",
+      "desc": "Start from a ready-made script and adapt it to your class. A copy is created in your library for you to edit.",
+      "use": "Use this script",
+      "created": "Script copied to your library",
+      "error": "Could not copy the script",
+      "minutes_one": "{{count}} minute",
+      "minutes_other": "{{count}} minutes"
+    }
   },
   "detail": {
     "by_author": "by {{name}}",

@@ -57,7 +57,7 @@
   },
   "pricing": {
     "title": "Tres caminos: catequista, parroquia y diócesis",
-    "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis; tarjeta ahora, cobro después del trial.",
+    "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis en el Plan Catequista, sin tarjeta.",
     "payment_card": "Tarjeta",
     "annual_savings": "Ahorre 17% en anual",
     "monthly_tab": "Mensual",
@@ -85,7 +85,7 @@
     "faq": [
       {
         "q": "¿Cómo conozco la plataforma antes de suscribirme?",
-        "a": "Pruebas 7 días. Pedimos la tarjeta ahora y solo cobramos después del trial. Úsala con tu grupo de verdad y cancela si no tiene sentido continuar."
+        "a": "Pruebas 7 días, sin tarjeta. Úsalo con tu grupo de verdad; si tiene sentido continuar, suscríbete antes de que termine la prueba."
       },
       {
         "q": "¿Cuál es el precio?",
@@ -93,7 +93,7 @@
       },
       {
         "q": "¿Cómo funciona el pago?",
-        "a": "Empiezas con 7 días de prueba. Stripe pide la tarjeta ahora y solo cobra después del trial. Sin permanencia — cancela cuando quieras."
+        "a": "Empiezas con 7 días de prueba sin tarjeta. Al suscribirte, el pago se hace con Stripe. Sin permanencia — cancela cuando quieras."
       },
       {
         "q": "¿Y el reembolso del plan anual?",

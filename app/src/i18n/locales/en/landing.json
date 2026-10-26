@@ -196,7 +196,7 @@
         "Up to 3 classes",
         "150 catechumens",
         "Attendance and calendar",
-        "Publish in the Community"
+        "Portal for the families in your class"
       ]
     },
     "unlimited": {
@@ -252,7 +252,7 @@
     },
     {
       "q": "Do I need a card to try it?",
-      "a": "Yes. Stripe asks for a card to start the trial; the charge only happens after 7 days. Cancel in time if you do not want to continue."
+      "a": "No. The 7-day Catechist Plan trial starts without a card as soon as you create your first class. We only ask for a card when you decide to subscribe."
     },
     {
       "q": "Can I cancel anytime?",

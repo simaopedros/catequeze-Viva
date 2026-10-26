@@ -127,4 +127,20 @@ describe('Wasp entities for parish onboarding actions', () => {
     expect(entities).toContain('ClassEnrollment');
     expect(entities).toContain('GuardianProfile');
   });
+
+  it('meeting operations that run the class access check declare its entities', () => {
+    for (const [kind, name] of [
+      ['query', 'listMeetings'],
+      ['query', 'listMeetingsForClasses'],
+      ['action', 'createMeeting'],
+      ['action', 'updateMeeting'],
+      ['action', 'saveAttendance'],
+    ] as const) {
+      const entities = entitiesForOperation(waspSource, kind, name);
+      expect(entities, name).toContain('Parish');
+      expect(entities, name).toContain('ClassCatechist');
+      expect(entities, name).toContain('ClassEnrollment');
+      expect(entities, name).toContain('GuardianProfile');
+    }
+  });
 });

@@ -1,0 +1,74 @@
+import {
+  SUBSCRIPTION_TRIAL_DAYS,
+  getInstitutionalTrialDaysLeft,
+  isInAppProductTrial,
+  isProductTrialWindowOpen,
+  isSubscriptionActiveLike,
+  getProductTrialEndsAt,
+  type BillingInfo,
+  type UserSubscriptionFields,
+} from './pricing';
+
+/**
+ * Days of Stripe trial to grant at checkout.
+ *
+ * New commercial subscriptions get SUBSCRIPTION_TRIAL_DAYS. Users who already
+ * consumed a Stripe trial (or a paid subscription) get 0. Grandfathered
+ * in-app trials receive only remaining days so Assinar does not add a second
+ * full week.
+ *
+ * Credits / one-time: always 0.
+ */
+export function resolveStripeCheckoutTrialDays(args: {
+  isCredits?: boolean;
+  user?: UserSubscriptionFields | null;
+  institutionalBilling?: BillingInfo | null;
+  now?: Date;
+}): number {
+  if (args.isCredits) return 0;
+
+  const now = args.now ?? new Date();
+  const user = args.user;
+
+  if (isSubscriptionActiveLike(user?.subscriptionStatus)) return 0;
+
+  // In-app trial (no-card grant or grandfather): remaining window from
+  // createdAt only — never a second full week. Ignore a Stripe customer from
+  // abandoned Checkout.
+  if (isInAppProductTrial(user)) {
+    if (!isProductTrialWindowOpen(user?.createdAt, now)) return 0;
+    const endsAt = getProductTrialEndsAt({
+      createdAt: user?.createdAt,
+      subscriptionStatus: user?.subscriptionStatus,
+    });
+    if (!endsAt) return 0;
+    return clampTrialDays(
+      Math.ceil((endsAt.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)),
+    );
+  }
+
+  if (hasConsumedProductTrial(user)) return 0;
+
+  const instDays = getInstitutionalTrialDaysLeft(
+    args.institutionalBilling,
+    now,
+  );
+  if (instDays != null && instDays > 0) {
+    if (user?.paymentProcessorUserId) return 0;
+    return clampTrialDays(instDays);
+  }
+
+  return SUBSCRIPTION_TRIAL_DAYS;
+}
+
+/** A Stripe trial, or an expired in-app trial, both leave trialEndsAt behind. */
+function hasConsumedProductTrial(
+  user: UserSubscriptionFields | null | undefined,
+): boolean {
+  return Boolean(user?.trialEndsAt);
+}
+
+function clampTrialDays(days: number): number {
+  if (!Number.isFinite(days) || days <= 0) return 0;
+  return Math.min(SUBSCRIPTION_TRIAL_DAYS, Math.ceil(days));
+}

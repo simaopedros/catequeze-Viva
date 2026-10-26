@@ -33,7 +33,10 @@ export const account_es = {
     "manage_workspace_billing": "Gestionar cobro del espacio",
     "no_active_workspace": "Ningún espacio activo",
     "workspace_managed_desc": "Participas en este espacio. Los planes y pagos quedan con quien lo administra.",
-    "workspace_managed_hint": "¿Dudas sobre el plan? Habla con la coordinación."
+    "workspace_managed_hint": "¿Dudas sobre el plan? Habla con la coordinación.",
+    "display_name": "Nombre",
+    "edit_profile_link": "Editar nombre, teléfono, foto y contraseña en Configuración",
+    "credits_hint": "Los créditos se usan en las funciones de IA (generar guiones, actividades y mensajes). Cada generación consume créditos."
   } as const;
 
 export const activities_es = {
@@ -1072,7 +1075,7 @@ export const auth_es = {
     "signup_plan_unlimited": "Plan Parroquia",
     "signup_interval_monthly": "facturación mensual",
     "signup_interval_annual": "facturación anual",
-    "signup_context_no_card": "7 días gratis; tarjeta ahora, cobro después del trial",
+    "signup_context_no_card": "7 días gratis, sin tarjeta",
     "signup_context_change": "Cambiar",
     "signup_success_next_steps": "Próximos pasos",
     "signup_success_step_1": "Revisa tu bandeja de entrada y la carpeta de spam.",
@@ -1448,7 +1451,7 @@ export const billing_es = {
       "headline_trial_other": "Tu prueba termina en {{count}} días",
       "headline_trial_ended": "Tu período de prueba terminó",
       "headline_trial_active": "Tu período de prueba está activo",
-      "headline_no_trial": "Continúa tu catequesis en el espacio personal",
+      "headline_no_trial": "Suscríbete al Plan Catequista para usar tu espacio personal",
       "result_trial": "Suscríbete al Plan Catequista y continúa sin interrupción.",
       "result_no_trial": "El Plan Catequista cubre tu espacio personal: grupos, asistencia y calendario.",
       "usage_aria": "Comparación del uso actual con el Plan Catequista",
@@ -1530,7 +1533,13 @@ export const billing_es = {
       "diocese_sales_desc": "La cobertura de las parroquias es venta asistida.",
       "diocese_cta": "Hablar con ventas sobre la diócesis",
       "diocese_prefill": "Hola! Quisiera hablar sobre el Plan Diócesis para {{name}} en Catequese Viva."
-    }
+    },
+    "checkout_cta_start_trial_one": "Empezar 1 día gratis",
+    "checkout_cta_start_trial_other": "Empezar {{count}} días gratis",
+    "checkout_charge_after_trial_one": "Stripe pide la tarjeta ahora. Tienes 1 día gratis y el primer cobro es el {{date}}. Cancela antes para no pagar.",
+    "checkout_charge_after_trial_other": "Stripe pide la tarjeta ahora. Tienes {{count}} días gratis y el primer cobro es el {{date}}. Cancela antes para no pagar.",
+    "checkout_charge_today": "El cobro se hace en Stripe en cuanto confirmes la suscripción.",
+    "checkout_plan_includes_label": "Qué incluye el plan"
   } as const;
 
 export const birthdays_es = {
@@ -1636,7 +1645,47 @@ export const calendar_es = {
     "confirm_delete_event_desc": "Esta acción no se puede deshacer.",
     "delete_error": "Error al eliminar el evento",
     "conflicts_title": "Posible conflicto en el calendario",
-    "conflicts_desc": "{{count}} encuentro(s) coinciden con un evento obligatorio de la diócesis o de la parroquia."
+    "conflicts_desc": "{{count}} encuentro(s) coinciden con un evento obligatorio de la diócesis o de la parroquia.",
+    "event_created": "Evento creado",
+    "create_error": "No fue posible crear el evento",
+    "new_event_desc": "El evento aparece en el calendario de toda la parroquia o de tu espacio.",
+    "event_date": "Fecha del evento",
+    "event_type": "Tipo de evento",
+    "event_color": "Color del evento",
+    "delete_event_aria": "Eliminar el evento {{name}}",
+    "export_ics_aria": "Exportar a la agenda (.ics)",
+    "liturgical": {
+      "mary_mother_of_god": "Santa María, Madre de Dios",
+      "epiphany": "Epifanía del Señor",
+      "baptism_of_the_lord": "Bautismo del Señor",
+      "presentation_of_the_lord": "Presentación del Señor",
+      "ash_wednesday": "Miércoles de Ceniza",
+      "saint_joseph": "San José, Esposo de María",
+      "annunciation": "Anunciación del Señor",
+      "palm_sunday": "Domingo de Ramos",
+      "holy_thursday": "Jueves Santo",
+      "good_friday": "Viernes Santo",
+      "easter": "Domingo de Pascua",
+      "divine_mercy": "Domingo de la Divina Misericordia",
+      "ascension": "Ascensión del Señor",
+      "pentecost": "Pentecostés",
+      "holy_trinity": "Santísima Trinidad",
+      "corpus_christi": "Corpus Christi",
+      "sacred_heart": "Sagrado Corazón de Jesús",
+      "peter_and_paul": "San Pedro y San Pablo",
+      "assumption": "Asunción de la Virgen",
+      "our_lady_aparecida": "Nuestra Señora Aparecida",
+      "all_saints": "Todos los Santos",
+      "all_souls": "Fieles Difuntos",
+      "christ_the_king": "Cristo Rey",
+      "advent_1": "1.er Domingo de Adviento",
+      "advent_2": "2.º Domingo de Adviento",
+      "advent_3": "3.er Domingo de Adviento (Gaudete)",
+      "advent_4": "4.º Domingo de Adviento",
+      "immaculate_conception": "Inmaculada Concepción",
+      "christmas": "Navidad del Señor"
+    },
+    "liturgical_generated_hint": "Celebración del calendario litúrgico (fechas de la CNBB). Consulta el directorio litúrgico de tu diócesis."
   } as const;
 
 export const catecheticalYears_es = {
@@ -1859,7 +1908,20 @@ export const classes_es = {
       "confirm_conclude_btn": "Concluir grupo",
       "confirm_remove_catechist_title": "Quitar catequista",
       "confirm_remove_catechist_desc": "¿Está seguro de que desea quitar este catequista del grupo?",
-      "error": "Error"
+      "error": "Error",
+      "generate_title": "Generar encuentros",
+      "generate_desc": "Crea de una vez los próximos encuentros semanales del grupo. Las fechas que ya tienen encuentro se omiten.",
+      "generate_weekday": "Día de la semana",
+      "generate_count": "Cantidad",
+      "generate_count_option_one": "{{count}} encuentro",
+      "generate_count_option_other": "{{count}} encuentros",
+      "generate_button": "Generar",
+      "generate_single": "Encuentro suelto",
+      "generated_meeting_title": "Encuentro {{number}}",
+      "generate_success_one": "{{count}} encuentro creado",
+      "generate_success_other": "{{count}} encuentros creados",
+      "generate_error_one": "Se detuvo tras crear {{count}} encuentro",
+      "generate_error_other": "Se detuvo tras crear {{count}} encuentros"
     },
     "no_schedule": "Sin horario",
     "first_classes": "Primeros grupos",
@@ -2398,7 +2460,54 @@ export const common_es = {
       "family_label": "Familia",
       "family_unlinked": "Sin vincular",
       "next_enroll": "Inscribir en un grupo",
-      "view_profile": "Abrir perfil"
+      "view_profile": "Abrir perfil",
+      "family_contact_hint": "El teléfono y los responsables están en la familia: elija o cree la familia arriba.",
+      "danger_zone": "Más opciones",
+      "enroll": {
+        "open": "Inscribir en un grupo",
+        "title": "Inscribir en un grupo",
+        "desc": "Elija el grupo de {{name}}.",
+        "label": "Grupo",
+        "label_optional": "Grupo (opcional)",
+        "none": "Inscribir después",
+        "placeholder": "Seleccione el grupo",
+        "submit": "Inscribir",
+        "success": "Inscripción realizada",
+        "error": "No se pudo inscribir",
+        "no_classes": "No hay otro grupo activo disponible. Cree un grupo primero."
+      },
+      "certificate": {
+        "open": "Generar constancia",
+        "dialog_title": "Generar constancia o certificado",
+        "dialog_desc": "Revise los datos y genere una página lista para imprimir o guardar en PDF.",
+        "kind_label": "Documento",
+        "class_label": "Grupo",
+        "parish_label": "Parroquia o comunidad",
+        "place_label": "Ciudad",
+        "place_placeholder": "Ej.: São Paulo",
+        "date_label": "Fecha",
+        "signer_catechist": "Catequista",
+        "signer_coordinator": "Coordinación de catequesis / Párroco",
+        "generate": "Generar e imprimir",
+        "popup_blocked": "El navegador bloqueó la nueva ventana. Permita las ventanas emergentes para este sitio e intente de nuevo.",
+        "no_attendance": "Todavía no hay asistencias registradas para calcular la frecuencia.",
+        "birth_clause": ", nacido(a) el {{date}},",
+        "place_date": "{{place}}, {{date}}.",
+        "kinds": {
+          "enrollment": {
+            "title": "Constancia de inscripción",
+            "body": "Hacemos constar que {{name}}{{birth}} está inscrito(a) en la catequesis de {{parish}}, en el grupo {{className}}."
+          },
+          "attendance": {
+            "title": "Constancia de asistencia",
+            "body": "Hacemos constar que {{name}}{{birth}} participa en los encuentros de catequesis del grupo {{className}}, en {{parish}}, con una asistencia del {{pct}}% en los encuentros registrados hasta la fecha."
+          },
+          "completion": {
+            "title": "Certificado de conclusión",
+            "body": "Certificamos que {{name}}{{birth}} concluyó la etapa {{stage}} de la catequesis en el grupo {{className}}, de {{parish}}, caminando en la fe con dedicación."
+          }
+        }
+      }
     },
     "families": {
       "subtitle_registered": "{{count}} familias registradas",
@@ -2454,6 +2563,7 @@ export const common_es = {
       "error_remove_guardian": "Error al eliminar responsable.",
       "error_save": "Error al guardar.",
       "relationships": {
+        "guardian": "Responsable (sin especificar)",
         "father": "Padre",
         "mother": "Madre",
         "grandparent": "Abuelo/a",
@@ -2589,12 +2699,18 @@ export const common_es = {
     "clear": "Limpiar",
     "support_inbox": {
       "title": "Central de soporte",
-      "subtitle": "Las respuestas del equipo aparecen aquí y también se envían por correo.",
+      "subtitle": "Envía tu duda abajo. Las respuestas del equipo aparecen aquí y también se envían por correo.",
       "your_message": "Tu mensaje",
       "our_reply": "Respuesta de Catequese Viva",
       "waiting": "Aún a la espera de respuesta.",
       "empty_title": "Sin mensajes de soporte",
-      "empty_desc": "Cuando el equipo responda a un contacto tuyo, la conversación aparece aquí."
+      "empty_desc": "Cuando envíes un mensaje, la conversación con el equipo aparece aquí.",
+      "new_label": "Nuevo mensaje al soporte",
+      "new_placeholder": "Describe tu duda o el problema que encontraste…",
+      "new_hint": "Responderemos a {{email}}.",
+      "new_submit": "Enviar",
+      "new_sent": "Mensaje enviado. Responderemos pronto.",
+      "new_error": "No fue posible enviar ahora. Inténtalo de nuevo en unos minutos."
     },
     "validation": {
       "first_name_required": "Indica el nombre.",
@@ -2608,6 +2724,10 @@ export const common_es = {
       "password_min_length": "La nueva contraseña debe tener al menos 8 caracteres.",
       "phone_invalid": "Teléfono no válido.",
       "too_long": "Texto demasiado largo."
+    },
+    "activity": {
+      "working": "Cargando…",
+      "slow": "Todavía trabajando… la conexión está lenta."
     }
   } as const;
 
@@ -2710,7 +2830,16 @@ export const content_es = {
       "error_import_invalid_file": "Archivo inválido o dañado.",
       "error_import_storage_not_configured": "Almacenamiento de archivos no disponible. Intente más tarde.",
       "error_import_parse_failed": "No se pudo leer el archivo.",
-      "error_download_original": "No se pudo descargar el original."
+      "error_download_original": "No se pudo descargar el original.",
+      "samples": {
+        "title": "Guiones de ejemplo",
+        "desc": "Empiece con un guion listo y adáptelo a su grupo. Se crea una copia en su biblioteca para que la edite.",
+        "use": "Usar este guion",
+        "created": "Guion copiado a su biblioteca",
+        "error": "No se pudo copiar el guion",
+        "minutes_one": "{{count}} minuto",
+        "minutes_other": "{{count}} minutos"
+      }
     },
     "detail": {
       "by_author": "por {{name}}",
@@ -3121,7 +3250,7 @@ export const dashboard_es = {
     "kpi_trial_days_remaining": "Días para fin del trial",
     "first_steps": "Primeros pasos",
     "how_to_start": "Cómo empezar",
-    "how_to_start_1": "Cree el grupo con etapa, días de encuentro y responsables.",
+    "how_to_start_1": "Cree el grupo con nombre, día y horario del encuentro.",
     "how_to_start_2": "Registre o importe catecúmenos y asígnelos a los grupos.",
     "how_to_start_3": "Registra la asistencia y prepara el próximo encuentro del grupo.",
     "empty_class_card_desc": "Cree su primer grupo para organizar encuentros, asistencia y seguimiento.",
@@ -3863,7 +3992,7 @@ export const landing_es = {
           "Hasta 3 grupos",
           "150 catequizandos",
           "Asistencia y calendario",
-          "Publicar en la Comunidad"
+          "Portal para las familias de tu grupo"
         ]
       },
       "unlimited": {
@@ -3919,7 +4048,7 @@ export const landing_es = {
       },
       {
         "q": "¿Necesito informar tarjeta para probar?",
-        "a": "Sí. Stripe pide la tarjeta para empezar el trial; el cobro solo ocurre después de 7 días. Cancela a tiempo si no quieres continuar."
+        "a": "No. La prueba de 7 días del Plan Catequista empieza sin tarjeta en cuanto creas tu primer grupo. Solo pedimos la tarjeta cuando decidas suscribirte."
       },
       {
         "q": "¿Puedo cancelar cuando quiera?",
@@ -5141,7 +5270,8 @@ export const meetings_es = {
       },
       "next_label": "Próximo encuentro",
       "empty_mobile": "No hay encuentros programados."
-    }
+    },
+    "delete_confirm_button": "Eliminar encuentro"
   } as const;
 
 export const messages_es = {
@@ -5340,7 +5470,8 @@ export const navigation_es = {
       "community": "Comunidades"
     },
     "sidebarSection": "Navegación lateral",
-    "community": "Comunidad"
+    "community": "Comunidad",
+    "locked_hint": "requiere suscripción"
   } as const;
 
 export const onboarding_es = {
@@ -5383,10 +5514,10 @@ export const onboarding_es = {
       "hello_default": "Bienvenido/a",
       "question": "¿Cómo vas a usar Catequese Viva?",
       "personal_title": "Soy catequista y cuido mi grupo",
-      "personal_desc": "Crear el grupo, incluir catequizandos y usarlo en el día a día.",
+      "personal_desc": "Crea tu grupo e incluye a los catequizandos. Tienes 7 días gratis del Plan Catequista, sin tarjeta.",
       "personal_features": [],
       "manager_title": "Organizo la catequesis de la parroquia",
-      "manager_desc": "Parroquia, año catequético y grupos del equipo.",
+      "manager_desc": "Parroquia, año catequético y grupos del equipo. La prueba de 7 días del Plan Parroquia empieza en Stripe y pide tarjeta.",
       "manager_features": [],
       "helper": "Puedes cambiar de camino después si lo necesitas.",
       "launch_question": "Vamos a preparar el espacio de tu grupo.",
@@ -5394,7 +5525,9 @@ export const onboarding_es = {
       "diocese_title": "Soy de la diócesis",
       "diocese_desc": "Licencia paraguas para varias parroquias. Hable con ventas — no hay checkout público.",
       "invite_hint": "¿Ya tiene invitación a una parroquia? Entre por el correo. No cree otro espacio.",
-      "eyebrow": "Primeros pasos"
+      "eyebrow": "Primeros pasos",
+      "skip_explore": "Saltar y explorar la app primero",
+      "skip_explore_hint": "Creamos tu espacio personal con los 7 días gratis. Crea tu grupo cuando quieras."
     },
     "personal_setup": {
       "title": "Cuenta Personal",
@@ -5645,7 +5778,9 @@ export const onboarding_es = {
       "personal_people_title": "Quién forma parte del grupo",
       "personal_people_subtitle": "Añade nombres ahora o salta — la llamada ya está lista.",
       "diocese_title": "Licencia de la diócesis",
-      "diocese_subtitle": "No hay checkout público. Hable con ventas y, si quiere, elija la diócesis."
+      "diocese_subtitle": "No hay checkout público. Hable con ventas y, si quiere, elija la diócesis.",
+      "step_current": "Estás aquí",
+      "step_done": "Completado"
     },
     "back_clean": "Volver",
     "change_diocese_clean": "Cambiar",
@@ -5678,7 +5813,10 @@ export const onboarding_es = {
       "saving": "Creando grupo…",
       "continue": "Continuar",
       "transient_error": "El servidor estaba ocupado. Espera unos segundos y pulsa Continuar otra vez.",
-      "plan_limit": "Tu prueba aún no ha liberado el grupo. Espera unos segundos e inténtalo de nuevo.",
+      "plan_limit": "Tu período de prueba no está activo, así que aún no puedes crear el grupo. Suscríbete al Plan Catequista para continuar o contacta con soporte.",
+      "plan_limit_subscribe": "Suscribirme al Plan Catequista",
+      "plan_limit_support": "Contactar con soporte",
+      "plan_limit_support_prefill": "¡Hola! Me estoy registrando en Catequese Viva y no pude crear mi primer grupo (límite del plan).",
       "start_time_invalid": "Horario de inicio inválido. Usa el formato HH:mm (ej.: 19:00).",
       "end_time_invalid": "Horario de fin inválido. Usa el formato HH:mm (ej.: 20:30).",
       "default_meeting_title": "Encuentro de hoy",
@@ -6093,7 +6231,7 @@ export const public_es = {
     },
     "pricing": {
       "title": "Tres caminos: catequista, parroquia y diócesis",
-      "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis; tarjeta ahora, cobro después del trial.",
+      "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis en el Plan Catequista, sin tarjeta.",
       "payment_card": "Tarjeta",
       "annual_savings": "Ahorre 17% en anual",
       "monthly_tab": "Mensual",
@@ -6121,7 +6259,7 @@ export const public_es = {
       "faq": [
         {
           "q": "¿Cómo conozco la plataforma antes de suscribirme?",
-          "a": "Pruebas 7 días. Pedimos la tarjeta ahora y solo cobramos después del trial. Úsala con tu grupo de verdad y cancela si no tiene sentido continuar."
+          "a": "Pruebas 7 días, sin tarjeta. Úsalo con tu grupo de verdad; si tiene sentido continuar, suscríbete antes de que termine la prueba."
         },
         {
           "q": "¿Cuál es el precio?",
@@ -6129,7 +6267,7 @@ export const public_es = {
         },
         {
           "q": "¿Cómo funciona el pago?",
-          "a": "Empiezas con 7 días de prueba. Stripe pide la tarjeta ahora y solo cobra después del trial. Sin permanencia — cancela cuando quieras."
+          "a": "Empiezas con 7 días de prueba sin tarjeta. Al suscribirte, el pago se hace con Stripe. Sin permanencia — cancela cuando quieras."
         },
         {
           "q": "¿Y el reembolso del plan anual?",
@@ -6606,7 +6744,12 @@ export const settings_es = {
     "email_pref_lifecycle": "Consejos de activación, prueba y retorno a la cuenta",
     "email_pref_product": "Novedades del producto y boletín",
     "email_pref_pastoral": "Comunicados de los grupos y de la parroquia",
-    "email_pref_saved": "Preferencias de correo guardadas."
+    "email_pref_saved": "Preferencias de correo guardadas.",
+    "avatar_error": "No fue posible actualizar la foto. Prueba una imagen más pequeña (JPG, PNG o WebP).",
+    "avatar_alt": "Foto de perfil",
+    "avatar_change": "Cambiar foto",
+    "avatar_add": "Añadir foto",
+    "avatar_remove": "Quitar foto"
   } as const;
 
 export const social_es = {

@@ -895,17 +895,17 @@ page AppAttendancePage {
 
 query listMeetings {
   fn: import { listMeetings } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, CatechesisClass, Membership]
+  entities: [Meeting, CatechesisClass, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
 }
 
 action createMeeting {
   fn: import { createMeeting } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, Membership, CatechesisClass]
+  entities: [Meeting, Membership, CatechesisClass, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
 }
 
 action updateMeeting {
   fn: import { updateMeeting } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, CatechesisClass, Membership, ContentItem]
+  entities: [Meeting, CatechesisClass, Membership, ContentItem, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
 }
 
 action deleteMeeting {
@@ -957,12 +957,12 @@ query getMeetingAttendanceSheet {
 
 query listMeetingsForClasses {
   fn: import { listMeetingsForClasses } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, CatechesisClass, Membership]
+  entities: [Meeting, CatechesisClass, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
 }
 
 action saveAttendance {
   fn: import { saveAttendance } from "@src/server/operations/meetingOperations",
-  entities: [AttendanceRecord, Membership, Meeting, CatechesisClass, ClassEnrollment, EmailMessage, EmailSuppression, EmailPreference]
+  entities: [AttendanceRecord, Membership, Meeting, CatechesisClass, ClassEnrollment, EmailMessage, EmailSuppression, EmailPreference, Parish, ClassCatechist, GuardianProfile]
 }
 
 action saveAttendanceBatch {

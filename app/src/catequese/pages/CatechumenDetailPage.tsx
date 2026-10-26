@@ -23,8 +23,12 @@ import {
   Trash2,
   BarChart3,
   Mail,
+  Printer,
+  Plus,
 } from "lucide-react";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
+import { EnrollInClassDialog } from "../components/EnrollInClassDialog";
+import { CertificateDialog } from "../components/CertificateDialog";
 import { DetailTabs } from "../../client/components/DetailTabs";
 import { useDetailTab } from "../../client/hooks/useDetailTab";
 import { PastoralAnalysisInline } from "../components/PastoralAnalysisInline";
@@ -95,6 +99,7 @@ export default function CatechumenDetailPage() {
     data: profile,
     isLoading: loading,
     error: queryError,
+    refetch: refetchProfile,
   } = useQuery(getCatechumenProfile, { id: id! }, { enabled: !!id });
   const canEdit = [
     "SUPER_ADMIN",
@@ -122,6 +127,8 @@ export default function CatechumenDetailPage() {
     expires: string;
   } | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [enrollOpen, setEnrollOpen] = useState(false);
+  const [certificateOpen, setCertificateOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [selectedAnalysisClassId, setSelectedAnalysisClassId] = useState<
     string | null
@@ -439,6 +446,17 @@ export default function CatechumenDetailPage() {
                       {tf("portal_invites.context_catechumen")}
                     </Link>
                   </Button>
+                  {profile.enrollments?.length > 0 && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-10 rounded-sm"
+                      onClick={() => setCertificateOpen(true)}
+                    >
+                      <Printer className="mr-1 h-3 w-3" />
+                      {t("catechumens.certificate.open")}
+                    </Button>
+                  )}
                   <Button
                     size="sm"
                     variant="outline"
@@ -577,19 +595,32 @@ export default function CatechumenDetailPage() {
                 </h3>
                 <div className="h-px w-8 bg-brand-gold" aria-hidden />
               </div>
-              {profile.enrollments?.map((e: any) => (
-                <Link
-                  key={e.id}
-                  to={`/app/classes/${e.class?.id}`}
-                  className="block py-0.5 text-sm font-semibold tracking-tight text-brand-ink hover:underline"
-                >
-                  {e.class?.name}{" "}
-                  {e.class?.stage?.name && `· ${e.class.stage.name}`}
-                </Link>
-              )) || (
+              {profile.enrollments?.length > 0 ? (
+                profile.enrollments.map((e: any) => (
+                  <Link
+                    key={e.id}
+                    to={`/app/classes/${e.class?.id}`}
+                    className="block py-0.5 text-sm font-semibold tracking-tight text-brand-ink hover:underline"
+                  >
+                    {e.class?.name}{" "}
+                    {e.class?.stage?.name && `· ${e.class.stage.name}`}
+                  </Link>
+                ))
+              ) : (
                 <p className="text-sm text-muted-foreground">
                   {t("catechumens.detail_none")}
                 </p>
+              )}
+              {canEdit && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-3 h-10 rounded-sm"
+                  onClick={() => setEnrollOpen(true)}
+                >
+                  <Plus className="mr-1 h-3.5 w-3.5" />
+                  {t("catechumens.enroll.open")}
+                </Button>
               )}
             </div>
           </div>
@@ -810,7 +841,10 @@ export default function CatechumenDetailPage() {
                   <option key={enr.id} value={enr.classId}>
                     {enr.class?.name || enr.classId}{" "}
                     {enr.status !== "ENROLLED"
-                      ? `(${t(`catechumens.detail_enrollment_status.${enr.status}`, { defaultValue: enr.status })})`
+                      ? `(${t(
+                          `catechumens.detail_enrollment_status.${enr.status}`,
+                          { defaultValue: enr.status },
+                        )})`
                       : ""}
                   </option>
                 ))}
@@ -1065,22 +1099,23 @@ export default function CatechumenDetailPage() {
         )}
 
         {canEdit && (
-          <div className="rounded-sm border border-destructive/30 bg-destructive/5 p-4">
-            <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-destructive">
-              {t("catechumens.delete_title")}
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
+          <details className="group rounded-sm border border-border/70 bg-white p-4">
+            <summary className="cursor-pointer list-none text-xs font-medium text-muted-foreground marker:hidden">
+              {t("catechumens.danger_zone")}
+            </summary>
+            <p className="mt-3 mb-4 text-sm text-muted-foreground">
               {t("catechumens.delete_confirm_desc")}
             </p>
             <Button
-              variant="destructive"
+              variant="outline"
               size="sm"
+              className="border-destructive/40 text-destructive hover:bg-destructive/5"
               onClick={() => setDeleteOpen(true)}
             >
               <Trash2 className="mr-1 h-4 w-4" />
-              {t("delete")}
+              {t("catechumens.delete_title")}
             </Button>
-          </div>
+          </details>
         )}
       </div>
       <ConfirmDialog
@@ -1092,7 +1127,34 @@ export default function CatechumenDetailPage() {
         title={t("catechumens.delete_title")}
         description={t("catechumens.delete_confirm_desc")}
         confirmLabel={t("delete")}
+        confirmPhrase={profile.firstName}
       />
+
+      {canEdit && (
+        <EnrollInClassDialog
+          open={enrollOpen}
+          onOpenChange={setEnrollOpen}
+          catechumenId={profile.id}
+          catechumenName={`${profile.firstName} ${profile.lastName}`}
+          enrolledClassIds={(profile.enrollments ?? [])
+            .map((e: any) => e.class?.id)
+            .filter(Boolean)}
+          onEnrolled={() => refetchProfile()}
+        />
+      )}
+
+      {profile.enrollments?.length > 0 && (
+        <CertificateDialog
+          open={certificateOpen}
+          onOpenChange={setCertificateOpen}
+          locale={currentLocale}
+          catechumenName={`${profile.firstName} ${profile.lastName}`}
+          birthDate={profile.birthDate}
+          parishName={profile.parish?.name ?? ""}
+          enrollments={profile.enrollments}
+          attendancePct={attendancePct}
+        />
+      )}
     </>
   );
 }

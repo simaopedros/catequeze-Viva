@@ -10,6 +10,7 @@ import {
   AppPanel,
 } from "../client/components/brand/AppChrome";
 import { useUserContext } from "../client/hooks/useUserContext";
+import { AI_FEATURES_ENABLED } from "../shared/aiFeatures";
 import { Button } from "../client/components/ui/button";
 import { Card, CardContent, CardHeader } from "../client/components/ui/card";
 import { Separator } from "../client/components/ui/separator";
@@ -61,7 +62,7 @@ export default function AccountPage() {
         subtitle={user.email || ""}
       />
 
-      {ctxParishName && (
+      {ctxParishName && !isPersonal && (
         <AppPanel className="flex items-center gap-3">
           <div className="rounded-sm border border-border/70 bg-muted/30 p-2 text-brand-ink">
             <Church className="h-5 w-5" />
@@ -100,7 +101,22 @@ export default function AccountPage() {
                 </div>
               </div>
             )}
-            {user.username && (
+            {(user.firstName || user.lastName) && (
+              <>
+                <Separator />
+                <div className="px-6 py-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
+                    <div className="text-muted-foreground text-sm font-medium">
+                      {t("display_name")}
+                    </div>
+                    <div className="mt-1 text-sm font-semibold tracking-tight text-brand-ink sm:col-span-2 sm:mt-0">
+                      {[user.firstName, user.lastName].filter(Boolean).join(" ")}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+            {user.username && user.username !== user.email && (
               <>
                 <Separator />
                 <div className="px-6 py-4">
@@ -115,18 +131,29 @@ export default function AccountPage() {
                 </div>
               </>
             )}
+            <Separator />
+            <div className="px-6 py-4">
+              <Link
+                to="/app/settings"
+                className="text-sm font-medium text-brand-ink hover:underline"
+              >
+                {t("edit_profile_link")}
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      <div className="space-y-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-          {t("scopes_title")}
-        </p>
-        <p className="text-sm text-muted-foreground">{t("scopes_hint")}</p>
-      </div>
+      {!isPersonal && (
+        <div className="space-y-2">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            {t("scopes_title")}
+          </p>
+          <p className="text-sm text-muted-foreground">{t("scopes_hint")}</p>
+        </div>
+      )}
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className={isPersonal ? "grid gap-4" : "grid gap-4 sm:grid-cols-2"}>
         <Card
           className="rounded-sm border-border/70"
           data-testid="account-personal-scope"
@@ -147,14 +174,13 @@ export default function AccountPage() {
               subscriptionStatus={user.subscriptionStatus}
               datePaid={user.datePaid}
               createdAt={user.createdAt}
-              trialEndsAt={
-                (user as { trialEndsAt?: Date | null }).trialEndsAt
-              }
+              trialEndsAt={(user as { trialEndsAt?: Date | null }).trialEndsAt}
               paymentProcessorUserId={user.paymentProcessorUserId}
             />
           </CardContent>
         </Card>
 
+        {!isPersonal && (
         <Card
           className="rounded-sm border-border/70"
           data-testid="account-workspace-scope"
@@ -215,26 +241,29 @@ export default function AccountPage() {
             )}
           </CardContent>
         </Card>
+        )}
       </div>
 
-      {/* Credits */}
-      <Card className="rounded-sm border-border/70">
-        <CardHeader className="space-y-1.5">
-          <AppEyebrow className="flex items-center gap-2">
-            <Coins className="h-3.5 w-3.5" />
-            {t("credits")}
-          </AppEyebrow>
-          <AppGoldRule className="w-8" />
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold tracking-tight text-brand-ink">
-              {t("credits_value", { count: user.credits })}
-            </span>
-            <BuyMoreButton subscriptionStatus={user.subscriptionStatus} />
-          </div>
-        </CardContent>
-      </Card>
+      {AI_FEATURES_ENABLED && (
+        <Card className="rounded-sm border-border/70">
+          <CardHeader className="space-y-1.5">
+            <AppEyebrow className="flex items-center gap-2">
+              <Coins className="h-3.5 w-3.5" />
+              {t("credits")}
+            </AppEyebrow>
+            <AppGoldRule className="w-8" />
+            <p className="text-xs text-muted-foreground">{t("credits_hint")}</p>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold tracking-tight text-brand-ink">
+                {t("credits_value", { count: user.credits })}
+              </span>
+              <BuyMoreButton subscriptionStatus={user.subscriptionStatus} />
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

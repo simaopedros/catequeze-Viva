@@ -196,7 +196,7 @@
         "Hasta 3 grupos",
         "150 catequizandos",
         "Asistencia y calendario",
-        "Publicar en la Comunidad"
+        "Portal para las familias de tu grupo"
       ]
     },
     "unlimited": {
@@ -252,7 +252,7 @@
     },
     {
       "q": "¿Necesito informar tarjeta para probar?",
-      "a": "Sí. Stripe pide la tarjeta para empezar el trial; el cobro solo ocurre después de 7 días. Cancela a tiempo si no quieres continuar."
+      "a": "No. La prueba de 7 días del Plan Catequista empieza sin tarjeta en cuanto creas tu primer grupo. Solo pedimos la tarjeta cuando decidas suscribirte."
     },
     {
       "q": "¿Puedo cancelar cuando quiera?",
