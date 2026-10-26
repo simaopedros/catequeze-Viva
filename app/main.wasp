@@ -2553,6 +2553,13 @@ action changePassword {
   entities: [User]
 }
 
+// Public (token-gated): reset password and cut all Lucia sessions.
+action resetPasswordAndInvalidateSessions {
+  fn: import { resetPasswordAndInvalidateSessions } from "@src/server/operations/userOperations",
+  entities: [User],
+  auth: false
+}
+
 query searchUsers {
   fn: import { searchUsers } from "@src/server/operations/userOperations",
   entities: [User]
