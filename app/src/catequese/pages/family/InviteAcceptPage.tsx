@@ -29,6 +29,7 @@ import {
   inviteErrorTitleKey,
   type InviteAcceptErrorKind,
 } from "../../../shared/inviteAcceptErrors";
+import { shouldRetryQueryFailure } from "../../../client/lib/queryRetry";
 
 const getInvitationByToken = (ops as any).getInvitationByToken;
 const acceptInvitationByTokenAction = (ops as any).acceptInvitationByToken;
@@ -141,7 +142,14 @@ export default function InviteAcceptPage() {
   } = useQuery(
     getInvitationByToken,
     { token: token || "" },
-    { enabled: !!token },
+    {
+      enabled: !!token,
+      // Invalid/expired invites are 4xx — show the message immediately.
+      // Retry at most once only on network / 5xx (never on 404/410/400/429).
+      retry: shouldRetryQueryFailure,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    },
   );
   const invitation = rawInvitation as InvitationData | null | undefined;
   const isStaffPortal = invitation?.portal === "staff";

@@ -5,6 +5,7 @@ import { Navigate, Outlet, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { routes } from "wasp/client/router";
 import { configureQueryClient } from "wasp/client/operations";
+import { shouldRetryQueryFailure } from "./lib/queryRetry";
 import { Toaster } from "../client/components/ui/toaster";
 import { RouteFallback } from "./components/Skeletons";
 import "./Main.css";
@@ -165,6 +166,8 @@ configureQueryClient({
       staleTime: 5 * 60 * 1000,
       cacheTime: 30 * 60 * 1000,
       refetchOnWindowFocus: false,
+      // Avoid RQ's default 3 retries on 4xx (e.g. invite 404 → rate-limit 429).
+      retry: shouldRetryQueryFailure,
     },
   },
 });
