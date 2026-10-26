@@ -57,6 +57,15 @@ import { toast } from "../../client/hooks/use-toast";
 import { OriginBadge } from "../components/OriginBadge";
 import { findCalendarConflicts } from "../../shared/resourceInheritance";
 import {
+  parseDateParts as dayKeyParts,
+  toAppCalendarDate,
+  todayInAppTimezone,
+} from "../../shared/calendarDate";
+import {
+  LITURGICAL_COLOR_HEX,
+  liturgicalCelebrations,
+} from "../../shared/liturgicalCalendar";
+import {
   Alert,
   AlertDescription,
   AlertTitle,
@@ -65,6 +74,14 @@ import {
 const DEFAULT_COLOR = "#071A2D"; // brand ink — charts/ICS only
 
 const FAMILY_ROLES = new Set(["GUARDIAN", "CATECHUMEN"]);
+
+/** Civil day (YYYY-MM-DD, America/Sao_Paulo) an event falls on. */
+function eventDayKey(e: { date: string | Date }): string {
+  if (typeof e.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(e.date)) {
+    return e.date;
+  }
+  return todayInAppTimezone(toAppCalendarDate(e.date));
+}
 
 /** Matches Tailwind `lg`: the day side panel is visible inline from here up. */
 function isDesktopViewport(): boolean {
@@ -204,7 +221,23 @@ export default function CalendarPage() {
   }, [classes, activeParishId, filteredClasses, t]);
 
   const loading = loadingLiturgical || loadingClasses || loadingMeetings;
-  const events = [...parishFilteredEvents, ...meetings];
+  const displayedYear = currentDate.getFullYear();
+  const generatedLiturgical = useMemo(
+    () =>
+      [displayedYear - 1, displayedYear, displayedYear + 1].flatMap((y) =>
+        liturgicalCelebrations(y).map((c) => ({
+          id: `lit-${c.date}-${c.key}`,
+          name: t(`liturgical.${c.key}`),
+          date: c.date,
+          type: "liturgical",
+          color: LITURGICAL_COLOR_HEX[c.color],
+          description: t("liturgical_generated_hint"),
+          generated: true,
+        })),
+      ),
+    [displayedYear, t],
+  );
+  const events = [...generatedLiturgical, ...parishFilteredEvents, ...meetings];
   const conflicts = useMemo(
     () =>
       findCalendarConflicts(
@@ -236,43 +269,21 @@ export default function CalendarPage() {
           )
         : events.filter((e) => e.type === typeFilter);
   const upcomingEvents = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = todayInAppTimezone();
     return filteredEvents
-      .filter((e) => {
-        const d =
-          typeof e.date === "string" ? new Date(e.date) : new Date(e.date);
-        return d >= today;
-      })
-      .sort((a, b) => {
-        const da =
-          typeof a.date === "string"
-            ? new Date(a.date).getTime()
-            : new Date(a.date).getTime();
-        const db =
-          typeof b.date === "string"
-            ? new Date(b.date).getTime()
-            : new Date(b.date).getTime();
-        return da - db;
-      });
+      .filter((e) => eventDayKey(e) >= today)
+      .sort((a, b) => eventDayKey(a).localeCompare(eventDayKey(b)));
   }, [filteredEvents]);
-  const monthCount = filteredEvents.filter((e) => {
-    const d =
-      typeof e.date === "string" ? e.date : new Date(e.date).toISOString();
-    return new Date(d).getMonth() === month;
-  }).length;
+  const monthPrefix = `${year}-${String(month + 1).padStart(2, "0")}`;
+  const monthCount = filteredEvents.filter((e) =>
+    eventDayKey(e).startsWith(monthPrefix),
+  ).length;
 
   const getEventsForDay = (day: number) => {
     const ds = `${year}-${String(month + 1).padStart(2, "0")}-${String(
       day,
     ).padStart(2, "0")}`;
-    return filteredEvents.filter((e) => {
-      const d =
-        typeof e.date === "string"
-          ? e.date
-          : new Date(e.date).toISOString().slice(0, 10);
-      return d.startsWith(ds);
-    });
+    return filteredEvents.filter((e) => eventDayKey(e) === ds);
   };
 
   const handleCreate = async () => {
@@ -505,11 +516,7 @@ export default function CalendarPage() {
             if (e.type === "class" && e.id) {
               openMeeting(e.id);
             } else {
-              setSelectedDay(
-                new Date(
-                  typeof e.date === "string" ? e.date : e.date,
-                ).getDate(),
-              );
+              setSelectedDay(dayKeyParts(eventDayKey(e)).day);
               setMobilePanelOpen(true);
             }
           }}
@@ -839,13 +846,10 @@ function AgendaView({
 }: AgendaViewProps) {
   const monthEvents = events
     .filter((e) => {
-      const d =
-        typeof e.date === "string" ? e.date : new Date(e.date).toISOString();
-      return (
-        new Date(d).getMonth() === month && new Date(d).getFullYear() === year
-      );
+      const p = dayKeyParts(eventDayKey(e));
+      return p.month === month && p.year === year;
     })
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    .sort((a, b) => eventDayKey(a).localeCompare(eventDayKey(b)));
 
   if (monthEvents.length === 0) {
     return <EmptyState compact icon={Calendar} title={t("no_events_month")} />;
@@ -854,10 +858,7 @@ function AgendaView({
   return (
     <div className="max-h-[calc(100dvh-16rem)] space-y-2 overflow-y-auto scroll-touch pb-4">
       {monthEvents.map((e) => {
-        const eventDate = new Date(
-          typeof e.date === "string" ? e.date : e.date,
-        );
-        const day = eventDate.getDate();
+        const day = dayKeyParts(eventDayKey(e)).day;
         return (
           <button
             key={e.id}
@@ -961,9 +962,7 @@ function SidePanelContent({
         ) : (
           <div className="space-y-1.5">
             {upcomingEvents.slice(0, 5).map((e: any) => {
-              const eventDate = new Date(
-                typeof e.date === "string" ? e.date : e.date,
-              );
+              const eventDate = dayKeyParts(eventDayKey(e));
               return (
                 <div
                   key={e.id}
@@ -989,10 +988,10 @@ function SidePanelContent({
                 >
                   <div className="flex w-9 shrink-0 flex-col items-center">
                     <span className="text-xs font-semibold tabular-nums text-brand-ink">
-                      {eventDate.getDate()}
+                      {eventDate.day}
                     </span>
                     <span className="text-overline text-muted-foreground">
-                      {months[eventDate.getMonth()].slice(0, 3)}
+                      {months[eventDate.month].slice(0, 3)}
                     </span>
                   </div>
                   <div
@@ -1126,6 +1125,7 @@ function SidePanelContent({
                 </button>
                 {e.type !== "class" &&
                   allowCreate &&
+                  !e.generated &&
                   !e.inherited &&
                   !e.origin?.inherited && (
                     <button

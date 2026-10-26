@@ -1644,7 +1644,39 @@ export const calendar_pt_BR = {
     "event_type": "Tipo de evento",
     "event_color": "Cor do evento",
     "delete_event_aria": "Excluir o evento {{name}}",
-    "export_ics_aria": "Exportar para agenda (.ics)"
+    "export_ics_aria": "Exportar para agenda (.ics)",
+    "liturgical": {
+      "mary_mother_of_god": "Santa Maria, Mãe de Deus",
+      "epiphany": "Epifania do Senhor",
+      "baptism_of_the_lord": "Batismo do Senhor",
+      "presentation_of_the_lord": "Apresentação do Senhor",
+      "ash_wednesday": "Quarta-feira de Cinzas",
+      "saint_joseph": "São José, Esposo de Maria",
+      "annunciation": "Anunciação do Senhor",
+      "palm_sunday": "Domingo de Ramos",
+      "holy_thursday": "Quinta-feira Santa",
+      "good_friday": "Sexta-feira da Paixão",
+      "easter": "Páscoa do Senhor",
+      "divine_mercy": "Domingo da Divina Misericórdia",
+      "ascension": "Ascensão do Senhor",
+      "pentecost": "Pentecostes",
+      "holy_trinity": "Santíssima Trindade",
+      "corpus_christi": "Corpus Christi",
+      "sacred_heart": "Sagrado Coração de Jesus",
+      "peter_and_paul": "São Pedro e São Paulo",
+      "assumption": "Assunção de Nossa Senhora",
+      "our_lady_aparecida": "Nossa Senhora Aparecida",
+      "all_saints": "Todos os Santos",
+      "all_souls": "Fiéis Defuntos",
+      "christ_the_king": "Cristo Rei",
+      "advent_1": "1º Domingo do Advento",
+      "advent_2": "2º Domingo do Advento",
+      "advent_3": "3º Domingo do Advento (Gaudete)",
+      "advent_4": "4º Domingo do Advento",
+      "immaculate_conception": "Imaculada Conceição",
+      "christmas": "Natal do Senhor"
+    },
+    "liturgical_generated_hint": "Celebração do calendário litúrgico (datas segundo a CNBB). Consulte o Diretório Litúrgico da sua diocese."
   } as const;
 
 export const catecheticalYears_pt_BR = {
