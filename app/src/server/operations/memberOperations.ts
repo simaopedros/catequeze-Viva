@@ -28,6 +28,7 @@ import {
   type InviteEmailDelivery,
 } from '../../shared/teamInvitePolicy';
 import { deliverInviteEmail, roleLabel } from '../jobs/inviteEmailUtils';
+import { rememberFamilyAuthEmail } from '../../auth/email-and-pass/familyAuthEmailHints';
 
 // ── Simple rate limiter for public invite token endpoint ───────────────────
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -411,6 +412,10 @@ export const inviteUserToParish = async (
           ...pendingData,
         },
       });
+
+  if (isFamilyPortalRole(args.role)) {
+    rememberFamilyAuthEmail(email);
+  }
 
   // Pre-create family profiles when householdId is provided
   if (args.householdId && (args.role === 'GUARDIAN' || args.role === 'CATECHUMEN')) {

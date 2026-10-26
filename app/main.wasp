@@ -97,6 +97,8 @@ app OpenSaaS {
   server: {
     envValidationSchema: import { serverEnvValidationSchema } from "@src/env",
     setupFn: import { serverSetup } from "@src/server/setup",
+    // Early ALS for request host — setupFn middleware is too late for auth routes.
+    middlewareConfigFn: import { serverMiddlewareConfigFn } from "@src/server/globalMiddleware",
   },
 
   emailSender: {
