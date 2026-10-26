@@ -1103,6 +1103,7 @@ export const common_pt_BR_core = {
       "error_remove_guardian": "Falha ao remover responsável.",
       "error_save": "Falha ao salvar.",
       "relationships": {
+        "guardian": "Responsável (sem especificar)",
         "father": "Pai",
         "mother": "Mãe",
         "grandparent": "Avô/Avó",

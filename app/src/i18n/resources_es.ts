@@ -2501,6 +2501,7 @@ export const common_es = {
       "error_remove_guardian": "Error al eliminar responsable.",
       "error_save": "Error al guardar.",
       "relationships": {
+        "guardian": "Responsable (sin especificar)",
         "father": "Padre",
         "mother": "Madre",
         "grandparent": "Abuelo/a",
@@ -2757,7 +2758,16 @@ export const content_es = {
       "error_import_invalid_file": "Archivo inválido o dañado.",
       "error_import_storage_not_configured": "Almacenamiento de archivos no disponible. Intente más tarde.",
       "error_import_parse_failed": "No se pudo leer el archivo.",
-      "error_download_original": "No se pudo descargar el original."
+      "error_download_original": "No se pudo descargar el original.",
+      "samples": {
+        "title": "Guiones de ejemplo",
+        "desc": "Empiece con un guion listo y adáptelo a su grupo. Se crea una copia en su biblioteca para que la edite.",
+        "use": "Usar este guion",
+        "created": "Guion copiado a su biblioteca",
+        "error": "No se pudo copiar el guion",
+        "minutes_one": "{{count}} minuto",
+        "minutes_other": "{{count}} minutos"
+      }
     },
     "detail": {
       "by_author": "por {{name}}",
@@ -3168,7 +3178,7 @@ export const dashboard_es = {
     "kpi_trial_days_remaining": "Días para fin del trial",
     "first_steps": "Primeros pasos",
     "how_to_start": "Cómo empezar",
-    "how_to_start_1": "Cree el grupo con etapa, días de encuentro y responsables.",
+    "how_to_start_1": "Cree el grupo con nombre, día y horario del encuentro.",
     "how_to_start_2": "Registre o importe catecúmenos y asígnelos a los grupos.",
     "how_to_start_3": "Registra la asistencia y prepara el próximo encuentro del grupo.",
     "empty_class_card_desc": "Cree su primer grupo para organizar encuentros, asistencia y seguimiento.",
