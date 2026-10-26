@@ -1,8 +1,16 @@
 import { HttpError } from "wasp/server";
 import { z } from "zod";
-import { defaultPolicyFor } from "../../shared/resourceInheritance";
+import {
+  canPublishAt,
+  defaultPolicyFor,
+} from "../../shared/resourceInheritance";
+import {
+  isCatechistOrAboveRole,
+  isCoordinatorOrAboveRole,
+} from "../auth/helpers";
 import { validateOrThrow } from "../validation";
 import {
+  actorCanViewOfficialResource,
   assertCanPublish,
   resolveActorForResource,
   resolveResourceActor,
@@ -24,6 +32,22 @@ const createAnnouncementSchema = z.object({
     .optional(),
 });
 
+/** Whether a published announcement's audience includes this membership role. */
+export function audienceAllowsRole(audience: string, role: string): boolean {
+  switch (audience) {
+    case "all":
+      return true;
+    case "families":
+      return role === "GUARDIAN" || role === "CATECHUMEN";
+    case "catechists":
+      return isCatechistOrAboveRole(role);
+    case "coordinators":
+      return isCoordinatorOrAboveRole(role);
+    default:
+      return false;
+  }
+}
+
 export const listPastoralAnnouncements = async (
   args: { workspaceId?: string } | void,
   context: any,
@@ -33,9 +57,18 @@ export const listPastoralAnnouncements = async (
     context,
     args && typeof args === "object" ? args.workspaceId : undefined,
   );
+  const canManage = canPublishAt(
+    actor.role,
+    actor.ownerType,
+    actor.isPlatformAdmin,
+  );
 
   const or: any[] = [
-    { parishId: actor.parishId, ownerType: "PARISH" },
+    {
+      parishId: actor.parishId,
+      ownerType: "PARISH",
+      ...(canManage ? {} : { status: "PUBLISHED" }),
+    },
   ];
   if (actor.dioceseId) {
     or.push({
@@ -46,10 +79,17 @@ export const listPastoralAnnouncements = async (
     });
   }
   if (actor.communityId) {
-    or.push({ communityId: actor.communityId });
+    or.push({
+      communityId: actor.communityId,
+      ...(canManage ? {} : { status: "PUBLISHED" }),
+    });
   }
   if (actor.ownerType === "DIOCESE") {
-    or.push({ dioceseId: actor.dioceseId, ownerType: "DIOCESE" });
+    or.push({
+      dioceseId: actor.dioceseId,
+      ownerType: "DIOCESE",
+      ...(canManage ? {} : { status: "PUBLISHED" }),
+    });
   }
 
   const rows = await context.entities.PastoralAnnouncement.findMany({
@@ -66,7 +106,15 @@ export const listPastoralAnnouncements = async (
     },
   });
 
-  return rows.map((row: any) => ({
+  const visible = canManage
+    ? rows
+    : rows.filter(
+        (row: any) =>
+          row.status === "PUBLISHED" &&
+          audienceAllowsRole(row.audience, actor.role),
+      );
+
+  return visible.map((row: any) => ({
     ...withOrigin(row, actor),
     inherited: row.ownerType !== actor.ownerType,
     acknowledged: Boolean(row.acknowledgements?.[0]),
@@ -129,6 +177,15 @@ export const acknowledgePastoralAnnouncement = async (
   if (row.status !== "PUBLISHED") {
     throw new HttpError(400, "Comunicado ainda não publicado.");
   }
+  const actor = await resolveActorForResource(context, row);
+  const canManage = canPublishAt(
+    actor.role,
+    actor.ownerType,
+    actor.isPlatformAdmin,
+  );
+  if (!canManage && !audienceAllowsRole(row.audience, actor.role)) {
+    throw new HttpError(403, "Este comunicado não é destinado ao seu papel.");
+  }
   return context.entities.PastoralAnnouncementAck.upsert({
     where: {
       announcementId_userId: { announcementId: id, userId: context.user.id },
@@ -153,6 +210,12 @@ export const republishPastoralAnnouncement = async (
   if (!source) throw new HttpError(404, "Comunicado não encontrado.");
   const actor = await resolveResourceActor(context, validated.workspaceId);
   assertCanPublish(actor);
+  if (!actorCanViewOfficialResource(actor, source)) {
+    throw new HttpError(
+      403,
+      "Você não pode republicar um comunicado fora do seu escopo.",
+    );
+  }
   return context.entities.PastoralAnnouncement.create({
     data: {
       title: source.title,
