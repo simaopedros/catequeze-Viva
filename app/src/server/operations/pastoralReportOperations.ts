@@ -277,6 +277,18 @@ export const getCatechumenPastoralAnalysis = async (args: { catechumenId: string
   void (context.entities.Membership as unknown); // Required by assertCanAccessClass
   void (context.entities.Parish as unknown); // Required by resolveWorkspaceAccess
 
+  // Family can reach the class via a child's enrollment — still must get 403,
+  // never a 500 from a later missing-entity path.
+  if (!context.user.isAdmin) {
+    const access = await requireWorkspaceAccess(context, parishId);
+    if (!access.isCoordinatorOrAbove && !access.isCatechist) {
+      throw new HttpError(
+        403,
+        'Apenas coordenadores e catequistas podem aceder à análise pastoral.',
+      );
+    }
+  }
+
   const canSeeSensitiveSignals = await canViewSensitiveCatechumenSignals(context, parishId);
 
   const enrollment = await context.entities.ClassEnrollment.findFirst({
