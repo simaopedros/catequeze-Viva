@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { routes } from "wasp/client/router";
 import { configureQueryClient } from "wasp/client/operations";
 import { Toaster } from "../client/components/ui/toaster";
+import { RouteFallback } from "./components/Skeletons";
 import "./Main.css";
 import {
   getDemoNavigationItems,
@@ -351,15 +352,7 @@ export default function App() {
   }
 
   if (!i18nReady) {
-    return (
-      <div
-        className="flex min-h-screen items-center justify-center bg-background"
-        aria-busy="true"
-        aria-live="polite"
-      >
-        <div className="h-8 w-8 animate-pulse rounded-sm bg-muted" />
-      </div>
-    );
+    return <RouteFallback />;
   }
 
   return (
@@ -383,16 +376,7 @@ export default function App() {
       {isFamilyPortal && location.pathname === "/" ? (
         <div className="min-h-screen bg-background text-brand-ink">
           <ErrorBoundary>
-            <Suspense
-              fallback={
-                <div
-                  className="flex min-h-screen items-center justify-center"
-                  aria-busy="true"
-                >
-                  <div className="h-8 w-8 animate-pulse rounded-sm bg-muted" />
-                </div>
-              }
-            >
+            <Suspense fallback={<RouteFallback />}>
               <FamilyLandingPage />
             </Suspense>
           </ErrorBoundary>
@@ -401,16 +385,7 @@ export default function App() {
         <div className="min-h-screen bg-background text-brand-ink">
           <ErrorBoundary>
             {isAppRoute ? (
-              <Suspense
-                fallback={
-                  <div
-                    className="flex min-h-screen items-center justify-center"
-                    aria-busy="true"
-                  >
-                    <div className="h-8 w-8 animate-pulse rounded-sm bg-muted" />
-                  </div>
-                }
-              >
+              <Suspense fallback={<RouteFallback />}>
                 <AppShell>
                   <Outlet />
                 </AppShell>
@@ -425,7 +400,11 @@ export default function App() {
                   </Suspense>
                 )}
                 <div className="mx-auto max-w-(--breakpoint-2xl)">
-                  <Outlet />
+                  <Suspense
+                    fallback={<RouteFallback className="min-h-[60vh] py-6" />}
+                  >
+                    <Outlet />
+                  </Suspense>
                 </div>
               </>
             )}
