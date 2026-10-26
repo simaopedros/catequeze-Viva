@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 import {
   SUBSCRIPTION_TRIAL_DAYS,
   getInstitutionalTrialDaysLeft,
-  isProductTrialStatus,
+  isInAppProductTrial,
   isProductTrialWindowOpen,
   isSubscriptionActiveLike,
   getProductTrialEndsAt,
@@ -33,11 +33,10 @@ export function resolveStripeCheckoutTrialDays(args: {
 
   if (isSubscriptionActiveLike(user?.subscriptionStatus)) return 0;
 
-  if (hasConsumedStripeTrial(user)) return 0;
-
-  // In-app grandfather: remaining window from createdAt only — never a second
-  // full week. Ignore a Stripe customer from abandoned Checkout (no trialEndsAt).
-  if (isProductTrialStatus(user?.subscriptionStatus) && !user?.trialEndsAt) {
+  // In-app trial (no-card grant or grandfather): remaining window from
+  // createdAt only — never a second full week. Ignore a Stripe customer from
+  // abandoned Checkout.
+  if (isInAppProductTrial(user)) {
     if (!isProductTrialWindowOpen(user?.createdAt, now)) return 0;
     const endsAt = getProductTrialEndsAt({
       createdAt: user?.createdAt,
@@ -48,6 +47,8 @@ export function resolveStripeCheckoutTrialDays(args: {
       Math.ceil((endsAt.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)),
     );
   }
+
+  if (hasConsumedProductTrial(user)) return 0;
 
   const instDays = getInstitutionalTrialDaysLeft(
     args.institutionalBilling,
@@ -61,11 +62,11 @@ export function resolveStripeCheckoutTrialDays(args: {
   return SUBSCRIPTION_TRIAL_DAYS;
 }
 
-function hasConsumedStripeTrial(
+/** A Stripe trial, or an expired in-app trial, both leave trialEndsAt behind. */
+function hasConsumedProductTrial(
   user: UserSubscriptionFields | null | undefined,
 ): boolean {
-  if (!user?.paymentProcessorUserId) return false;
-  return Boolean(user.trialEndsAt);
+  return Boolean(user?.trialEndsAt);
 }
 
 function clampTrialDays(days: number): number {
