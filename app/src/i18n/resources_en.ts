@@ -1448,7 +1448,7 @@ export const billing_en = {
       "headline_trial_other": "Your trial ends in {{count}} days",
       "headline_trial_ended": "Your trial has ended",
       "headline_trial_active": "Your trial is active",
-      "headline_no_trial": "Keep your catechesis in the personal workspace",
+      "headline_no_trial": "Subscribe to the Catechist Plan to use your personal space",
       "result_trial": "Subscribe to the Catechist Plan and continue without interruption.",
       "result_no_trial": "The Catechist Plan covers your personal workspace: classes, attendance, and calendar.",
       "usage_aria": "Current usage compared with the Catechist Plan",
@@ -1530,7 +1530,13 @@ export const billing_en = {
       "diocese_sales_desc": "Parish coverage is assisted sales.",
       "diocese_cta": "Talk to sales about the diocese",
       "diocese_prefill": "Hi! I would like to talk about the Diocese Plan for {{name}} on Catequese Viva."
-    }
+    },
+    "checkout_cta_start_trial_one": "Start 1 free day",
+    "checkout_cta_start_trial_other": "Start {{count}} free days",
+    "checkout_charge_after_trial_one": "Stripe asks for your card now. You get 1 free day and the first charge is on {{date}}. Cancel before then to avoid being charged.",
+    "checkout_charge_after_trial_other": "Stripe asks for your card now. You get {{count}} free days and the first charge is on {{date}}. Cancel before then to avoid being charged.",
+    "checkout_charge_today": "You are charged on Stripe as soon as you confirm the subscription.",
+    "checkout_plan_includes_label": "What the plan includes"
   } as const;
 
 export const birthdays_en = {

@@ -480,7 +480,7 @@ export const billing_pt_BR_core = {
       "headline_trial_other": "Seu teste termina em {{count}} dias",
       "headline_trial_ended": "Seu período de teste terminou",
       "headline_trial_active": "Seu período de teste está ativo",
-      "headline_no_trial": "Continue sua catequese no espaço pessoal",
+      "headline_no_trial": "Assine o Plano Catequista para usar seu espaço pessoal",
       "result_trial": "Assine o Plano Catequista e continue sem interrupção.",
       "result_no_trial": "O Plano Catequista cobre o seu espaço pessoal: turmas, presença e calendário.",
       "usage_aria": "Comparação do uso atual com o Plano Catequista",
@@ -562,7 +562,13 @@ export const billing_pt_BR_core = {
       "diocese_sales_desc": "A cobertura das paróquias é venda assistida.",
       "diocese_cta": "Falar com vendas sobre a diocese",
       "diocese_prefill": "Olá! Gostaria de falar sobre o Plano Diocese para {{name}} na Catequese Viva."
-    }
+    },
+    "checkout_cta_start_trial_one": "Começar 1 dia grátis",
+    "checkout_cta_start_trial_other": "Começar {{count}} dias grátis",
+    "checkout_charge_after_trial_one": "O Stripe pede o cartão agora. Você tem 1 dia grátis e a primeira cobrança é em {{date}}. Cancele antes para não ser cobrado(a).",
+    "checkout_charge_after_trial_other": "O Stripe pede o cartão agora. Você tem {{count}} dias grátis e a primeira cobrança é em {{date}}. Cancele antes para não ser cobrado(a).",
+    "checkout_charge_today": "A cobrança é feita no Stripe assim que você confirmar a assinatura.",
+    "checkout_plan_includes_label": "O que o plano inclui"
   } as const;
 
 export const blog_pt_BR_core = {
