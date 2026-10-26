@@ -1,24 +1,18 @@
-import { ForgotPasswordForm } from "wasp/client/auth";
-import { Link as WaspRouterLink, routes } from "wasp/client/router";
 import { useTranslation } from "react-i18next";
 import { AuthPageLayout } from "../AuthPageLayout";
+import CustomForgotPasswordForm from "./CustomForgotPasswordForm";
 
 export function RequestPasswordResetPage() {
   const { t } = useTranslation("auth");
   return (
-    <AuthPageLayout>
-      <ForgotPasswordForm />
-      <br />
-      <span className="text-sm font-medium text-brand-ink">
-        {t("remember_password")}{" "}
-        <WaspRouterLink
-          to={routes.LoginRoute.to}
-          className="font-semibold text-brand-ink underline underline-offset-2"
-        >
-          {t("login_link")}
-        </WaspRouterLink>
-        .
-      </span>
+    <AuthPageLayout
+      panel={{
+        eyebrow: t("forgot_panel_eyebrow"),
+        title: t("forgot_panel_title"),
+        subtitle: t("forgot_panel_subtitle"),
+      }}
+    >
+      <CustomForgotPasswordForm />
     </AuthPageLayout>
   );
 }
