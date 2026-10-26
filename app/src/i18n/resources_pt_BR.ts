@@ -2623,6 +2623,10 @@ export const common_pt_BR = {
       "password_min_length": "A nova senha precisa ter pelo menos 8 caracteres.",
       "phone_invalid": "Telefone inválido.",
       "too_long": "Texto muito longo."
+    },
+    "activity": {
+      "working": "Carregando…",
+      "slow": "Ainda trabalhando… a conexão está lenta."
     }
   } as const;
 
