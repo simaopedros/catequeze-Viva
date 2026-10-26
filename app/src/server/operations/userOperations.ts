@@ -167,6 +167,15 @@ export const changePassword = async (args: unknown, context: any) => {
     { hashedPassword: newPassword },
   );
 
+  // Invalidate all Lucia sessions for this account so other devices are logged out.
+  const authRow = await prisma.auth.findUnique({
+    where: { userId: context.user.id },
+    select: { id: true },
+  });
+  if (authRow) {
+    await prisma.session.deleteMany({ where: { userId: authRow.id } });
+  }
+
   await writeAuditLog(context, 'UPDATE', 'User', context.user.id, { operation: 'PASSWORD_CHANGE' });
 
   return { success: true };

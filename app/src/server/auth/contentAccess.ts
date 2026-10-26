@@ -21,13 +21,27 @@ export function canReviewContent(role: string): boolean {
   return isCoordinatorOrAbove(role) || role === 'CONTENT_REVIEWER';
 }
 
-export async function getUserRoleAndParish(context: any): Promise<{ role: string; parishId: string | null }> {
-  if (context.user?.isAdmin) return { role: 'SUPER_ADMIN', parishId: null };
+export async function getUserRoleAndParish(
+  context: any,
+  parishId?: string | null,
+): Promise<{ role: string; parishId: string | null }> {
+  if (context.user?.isAdmin) return { role: 'SUPER_ADMIN', parishId: parishId ?? null };
   const m = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
+    where: {
+      userId: context.user.id,
+      status: MembershipStatus.ACTIVE,
+      ...(parishId ? { parishId } : {}),
+    },
     select: { role: true, parishId: true },
   });
   return { role: m?.role || '', parishId: m?.parishId || null };
+}
+
+const PUBLISHED_STATUSES = new Set(['APPROVED', 'PUBLISHED']);
+
+/** True when the item is still private draft/review work. */
+export function isUnpublishedContentStatus(status?: string | null): boolean {
+  return !PUBLISHED_STATUSES.has(status || '');
 }
 
 export async function getParishIds(context: any): Promise<string[]> {
@@ -80,6 +94,14 @@ export async function assertCanAccessContent(
     if (!parishIds.includes(item.parishId)) {
       throw new HttpError(403, 'Você não tem acesso a este conteúdo.');
     }
+    // Family / any ACTIVE member may only read published parish content.
+    // Drafts stay with creators and pastoral content roles in that parish.
+    if (isUnpublishedContentStatus(item.status)) {
+      const { role } = await getUserRoleAndParish(context, item.parishId);
+      if (!canCreateContent(role) && !canReviewContent(role)) {
+        throw new HttpError(403, 'Você não tem acesso a este rascunho.');
+      }
+    }
     return;
   }
 
@@ -90,9 +112,9 @@ export async function assertCanAccessContent(
     if (!dioceseIds.includes(item.dioceseId)) {
       throw new HttpError(403, 'Você não tem acesso a este conteúdo.');
     }
-    if (['APPROVED', 'PUBLISHED'].includes(item.status || '')) return;
-    const { role } = await getUserRoleAndParish(context);
-    if (canReviewContent(role)) return;
+    if (PUBLISHED_STATUSES.has(item.status || '')) return;
+    const { role } = await getUserRoleAndParish(context, item.parishId);
+    if (canReviewContent(role) || canCreateContent(role)) return;
   }
 
   throw new HttpError(403, 'Você não tem acesso a este conteúdo.');
@@ -111,7 +133,7 @@ export async function assertCanModifyContent(
   if (context.user?.isAdmin) return;
   if (item.createdById === context.user.id) {
     if (item.ownerType === 'DIOCESE') {
-      const { role } = await getUserRoleAndParish(context);
+      const { role } = await getUserRoleAndParish(context, item.parishId);
       if (!canPublishAt(role, 'DIOCESE', Boolean(context.user.isAdmin))) {
         throw new HttpError(403, 'Sem permissão para alterar este conteúdo.');
       }
@@ -119,7 +141,7 @@ export async function assertCanModifyContent(
     return;
   }
 
-  const { role } = await getUserRoleAndParish(context);
+  const { role } = await getUserRoleAndParish(context, item.parishId);
   if (!canCreateContent(role)) throw new HttpError(403, 'Sem permissão.');
 
   if (item.ownerType === 'DIOCESE') {

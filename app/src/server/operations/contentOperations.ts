@@ -7,6 +7,7 @@ import {
   getParishIds,
   assertCanAccessContent,
   assertCanModifyContent,
+  isUnpublishedContentStatus,
 } from "../auth/contentAccess";
 import { requireWorkspaceAccess } from "./sharedScope";
 import {
@@ -78,7 +79,7 @@ export const listContentItems = async (
   };
   const orderBy = [{ updatedAt: "desc" as const }, { id: "desc" as const }];
 
-  const buildWhere = (base: any) => {
+  const buildWhere = (base: any, opts?: { staffCanSeeDrafts?: boolean }) => {
     let where = mergeWhere(base, dateIdCursorWhere(args.cursor, "updatedAt"));
     const and: any[] = [];
     if (where && Object.keys(where).length) and.push(where);
@@ -91,7 +92,17 @@ export const listContentItems = async (
       });
     }
     if (args.status && args.status !== "all") {
-      and.push({ status: args.status });
+      // Non-staff cannot request drafts/pending even with an explicit status.
+      if (
+        !opts?.staffCanSeeDrafts &&
+        isUnpublishedContentStatus(args.status)
+      ) {
+        and.push({ status: { in: ["APPROVED", "PUBLISHED"] } });
+      } else {
+        and.push({ status: args.status });
+      }
+    } else if (!opts?.staffCanSeeDrafts) {
+      and.push({ status: { in: ["APPROVED", "PUBLISHED"] } });
     }
     if (and.length === 0) return {};
     if (and.length === 1) return and[0];
@@ -100,7 +111,7 @@ export const listContentItems = async (
 
   if (context.user.isAdmin && !args.workspaceId) {
     const rows = await context.entities.ContentItem.findMany({
-      where: buildWhere({}),
+      where: buildWhere({}, { staffCanSeeDrafts: true }),
       orderBy,
       take: take ?? 50,
       skip,
@@ -112,9 +123,15 @@ export const listContentItems = async (
   // Prefer explicit workspace; fall back to all accessible parishes
   let parishFilter: any;
   let actor: Awaited<ReturnType<typeof resolveResourceActor>> | null = null;
+  let staffCanSeeDrafts = false;
   if (args.workspaceId?.trim()) {
     await requireWorkspaceAccess(context, args.workspaceId.trim());
     actor = await resolveResourceActor(context, args.workspaceId.trim());
+    const { role } = await getUserRoleAndParish(
+      context,
+      args.workspaceId.trim(),
+    );
+    staffCanSeeDrafts = canCreateContent(role) || canReviewContent(role);
     const or: any[] = [{ parishId: args.workspaceId.trim() }];
     if (actor.dioceseId) {
       if (actor.ownerType === "DIOCESE") {
@@ -134,10 +151,14 @@ export const listContentItems = async (
     const parishIds = await getParishIds(context);
     if (parishIds.length === 0) return emptyPage(useCursorPage);
     parishFilter = { parishId: { in: parishIds } };
+    // Without a workspace, only show drafts if the user has content staff
+    // role in at least one parish (role resolved for first membership).
+    const { role } = await getUserRoleAndParish(context);
+    staffCanSeeDrafts = canCreateContent(role) || canReviewContent(role);
   }
 
   const rows = await context.entities.ContentItem.findMany({
-    where: buildWhere(parishFilter),
+    where: buildWhere(parishFilter, { staffCanSeeDrafts }),
     orderBy,
     take: take ?? 50,
     skip,
