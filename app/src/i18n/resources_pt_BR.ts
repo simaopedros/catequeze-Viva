@@ -1645,7 +1645,47 @@ export const calendar_pt_BR = {
     "confirm_delete_event_desc": "Esta ação não pode ser desfeita.",
     "delete_error": "Erro ao excluir o evento",
     "conflicts_title": "Possível conflito no calendário",
-    "conflicts_desc": "{{count}} encontro(s) coincidem com um evento obrigatório da diocese ou da paróquia."
+    "conflicts_desc": "{{count}} encontro(s) coincidem com um evento obrigatório da diocese ou da paróquia.",
+    "event_created": "Evento criado",
+    "create_error": "Não foi possível criar o evento",
+    "new_event_desc": "O evento aparece no calendário de toda a paróquia ou do seu espaço.",
+    "event_date": "Data do evento",
+    "event_type": "Tipo de evento",
+    "event_color": "Cor do evento",
+    "delete_event_aria": "Excluir o evento {{name}}",
+    "export_ics_aria": "Exportar para agenda (.ics)",
+    "liturgical": {
+      "mary_mother_of_god": "Santa Maria, Mãe de Deus",
+      "epiphany": "Epifania do Senhor",
+      "baptism_of_the_lord": "Batismo do Senhor",
+      "presentation_of_the_lord": "Apresentação do Senhor",
+      "ash_wednesday": "Quarta-feira de Cinzas",
+      "saint_joseph": "São José, Esposo de Maria",
+      "annunciation": "Anunciação do Senhor",
+      "palm_sunday": "Domingo de Ramos",
+      "holy_thursday": "Quinta-feira Santa",
+      "good_friday": "Sexta-feira da Paixão",
+      "easter": "Páscoa do Senhor",
+      "divine_mercy": "Domingo da Divina Misericórdia",
+      "ascension": "Ascensão do Senhor",
+      "pentecost": "Pentecostes",
+      "holy_trinity": "Santíssima Trindade",
+      "corpus_christi": "Corpus Christi",
+      "sacred_heart": "Sagrado Coração de Jesus",
+      "peter_and_paul": "São Pedro e São Paulo",
+      "assumption": "Assunção de Nossa Senhora",
+      "our_lady_aparecida": "Nossa Senhora Aparecida",
+      "all_saints": "Todos os Santos",
+      "all_souls": "Fiéis Defuntos",
+      "christ_the_king": "Cristo Rei",
+      "advent_1": "1º Domingo do Advento",
+      "advent_2": "2º Domingo do Advento",
+      "advent_3": "3º Domingo do Advento (Gaudete)",
+      "advent_4": "4º Domingo do Advento",
+      "immaculate_conception": "Imaculada Conceição",
+      "christmas": "Natal do Senhor"
+    },
+    "liturgical_generated_hint": "Celebração do calendário litúrgico (datas segundo a CNBB). Consulte o Diretório Litúrgico da sua diocese."
   } as const;
 
 export const catecheticalYears_pt_BR = {
@@ -1868,7 +1908,20 @@ export const classes_pt_BR = {
       "confirm_conclude_btn": "Concluir turma",
       "confirm_remove_catechist_title": "Remover catequista",
       "confirm_remove_catechist_desc": "Tem certeza que deseja remover este catequista da turma?",
-      "error": "Erro"
+      "error": "Erro",
+      "generate_title": "Gerar encontros",
+      "generate_desc": "Crie de uma vez os próximos encontros semanais da turma. Datas que já têm encontro são puladas.",
+      "generate_weekday": "Dia da semana",
+      "generate_count": "Quantidade",
+      "generate_count_option_one": "{{count}} encontro",
+      "generate_count_option_other": "{{count}} encontros",
+      "generate_button": "Gerar",
+      "generate_single": "Encontro avulso",
+      "generated_meeting_title": "Encontro {{number}}",
+      "generate_success_one": "{{count}} encontro criado",
+      "generate_success_other": "{{count}} encontros criados",
+      "generate_error_one": "Parou depois de {{count}} encontro criado",
+      "generate_error_other": "Parou depois de {{count}} encontros criados"
     },
     "no_schedule": "Sem horário",
     "first_classes": "Primeiras turmas",
@@ -5022,7 +5075,7 @@ export const meetings_pt_BR = {
     "generate_ai_activity": "Gerar atividade com assistência",
     "generate_whatsapp": "Gerar WhatsApp",
     "delete_confirm_title": "Remover encontro?",
-    "delete_confirm_desc": "Esta ação não pode ser desfeita. Os registos de presença serão removidos.",
+    "delete_confirm_desc": "Esta ação não pode ser desfeita. Os registros de presença deste encontro também serão removidos.",
     "delete_error": "Erro ao remover encontro.",
     "delete_success": "Encontro removido.",
     "search_content": "Buscar conteúdo...",
@@ -5106,7 +5159,8 @@ export const meetings_pt_BR = {
       },
       "next_label": "Próximo encontro",
       "empty_mobile": "Nenhum encontro agendado."
-    }
+    },
+    "delete_confirm_button": "Remover encontro"
   } as const;
 
 export const messages_pt_BR = {

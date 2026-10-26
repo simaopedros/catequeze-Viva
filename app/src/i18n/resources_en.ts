@@ -1645,7 +1645,47 @@ export const calendar_en = {
     "confirm_delete_event_desc": "This action cannot be undone.",
     "delete_error": "Could not delete the event",
     "conflicts_title": "Possible calendar conflict",
-    "conflicts_desc": "{{count}} meeting(s) fall on the same day as a required diocesan or parish event."
+    "conflicts_desc": "{{count}} meeting(s) fall on the same day as a required diocesan or parish event.",
+    "event_created": "Event created",
+    "create_error": "Could not create the event",
+    "new_event_desc": "The event shows on the calendar for the whole parish or your space.",
+    "event_date": "Event date",
+    "event_type": "Event type",
+    "event_color": "Event color",
+    "delete_event_aria": "Delete the event {{name}}",
+    "export_ics_aria": "Export to calendar (.ics)",
+    "liturgical": {
+      "mary_mother_of_god": "Mary, Mother of God",
+      "epiphany": "Epiphany of the Lord",
+      "baptism_of_the_lord": "Baptism of the Lord",
+      "presentation_of_the_lord": "Presentation of the Lord",
+      "ash_wednesday": "Ash Wednesday",
+      "saint_joseph": "Saint Joseph, Spouse of Mary",
+      "annunciation": "Annunciation of the Lord",
+      "palm_sunday": "Palm Sunday",
+      "holy_thursday": "Holy Thursday",
+      "good_friday": "Good Friday",
+      "easter": "Easter Sunday",
+      "divine_mercy": "Divine Mercy Sunday",
+      "ascension": "Ascension of the Lord",
+      "pentecost": "Pentecost",
+      "holy_trinity": "Most Holy Trinity",
+      "corpus_christi": "Corpus Christi",
+      "sacred_heart": "Sacred Heart of Jesus",
+      "peter_and_paul": "Saints Peter and Paul",
+      "assumption": "Assumption of Mary",
+      "our_lady_aparecida": "Our Lady of Aparecida",
+      "all_saints": "All Saints",
+      "all_souls": "All Souls",
+      "christ_the_king": "Christ the King",
+      "advent_1": "1st Sunday of Advent",
+      "advent_2": "2nd Sunday of Advent",
+      "advent_3": "3rd Sunday of Advent (Gaudete)",
+      "advent_4": "4th Sunday of Advent",
+      "immaculate_conception": "Immaculate Conception",
+      "christmas": "Christmas"
+    },
+    "liturgical_generated_hint": "Liturgical calendar celebration (Brazilian bishops' conference dates). Check your diocese's liturgical directory."
   } as const;
 
 export const catecheticalYears_en = {
@@ -1868,7 +1908,20 @@ export const classes_en = {
       "confirm_conclude_btn": "Conclude class",
       "confirm_remove_catechist_title": "Remove catechist",
       "confirm_remove_catechist_desc": "Are you sure you want to remove this catechist from the class?",
-      "error": "Error"
+      "error": "Error",
+      "generate_title": "Generate meetings",
+      "generate_desc": "Create the class's next weekly meetings at once. Dates that already have a meeting are skipped.",
+      "generate_weekday": "Weekday",
+      "generate_count": "How many",
+      "generate_count_option_one": "{{count}} meeting",
+      "generate_count_option_other": "{{count}} meetings",
+      "generate_button": "Generate",
+      "generate_single": "Single meeting",
+      "generated_meeting_title": "Meeting {{number}}",
+      "generate_success_one": "{{count}} meeting created",
+      "generate_success_other": "{{count}} meetings created",
+      "generate_error_one": "Stopped after {{count}} meeting was created",
+      "generate_error_other": "Stopped after {{count}} meetings were created"
     },
     "no_schedule": "No schedule",
     "first_classes": "First classes",
@@ -5106,7 +5159,8 @@ export const meetings_en = {
       },
       "next_label": "Next meeting",
       "empty_mobile": "No meeting scheduled."
-    }
+    },
+    "delete_confirm_button": "Delete meeting"
   } as const;
 
 export const messages_en = {

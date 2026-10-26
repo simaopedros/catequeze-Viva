@@ -110,3 +110,26 @@ export function formatClassSchedule(
   if (time) return time;
   return noScheduleLabel;
 }
+
+/**
+ * Next `count` dates (YYYY-MM-DD) falling on `dayOfWeek` (0=Sunday), starting
+ * on `startKey` inclusive, skipping days that already have a meeting.
+ */
+export function weeklyMeetingDates(
+  startKey: string,
+  dayOfWeek: number,
+  count: number,
+  existingKeys: Iterable<string> = [],
+): string[] {
+  const taken = new Set(existingKeys);
+  const [y, m, d] = startKey.slice(0, 10).split('-').map(Number);
+  const cursor = new Date(Date.UTC(y, m - 1, d, 12));
+  cursor.setUTCDate(cursor.getUTCDate() + ((dayOfWeek - cursor.getUTCDay() + 7) % 7));
+  const result: string[] = [];
+  for (let guard = 0; result.length < count && guard < count + 52; guard++) {
+    const key = cursor.toISOString().slice(0, 10);
+    if (!taken.has(key)) result.push(key);
+    cursor.setUTCDate(cursor.getUTCDate() + 7);
+  }
+  return result;
+}

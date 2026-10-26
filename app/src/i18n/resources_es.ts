@@ -1645,7 +1645,47 @@ export const calendar_es = {
     "confirm_delete_event_desc": "Esta acción no se puede deshacer.",
     "delete_error": "Error al eliminar el evento",
     "conflicts_title": "Posible conflicto en el calendario",
-    "conflicts_desc": "{{count}} encuentro(s) coinciden con un evento obligatorio de la diócesis o de la parroquia."
+    "conflicts_desc": "{{count}} encuentro(s) coinciden con un evento obligatorio de la diócesis o de la parroquia.",
+    "event_created": "Evento creado",
+    "create_error": "No fue posible crear el evento",
+    "new_event_desc": "El evento aparece en el calendario de toda la parroquia o de tu espacio.",
+    "event_date": "Fecha del evento",
+    "event_type": "Tipo de evento",
+    "event_color": "Color del evento",
+    "delete_event_aria": "Eliminar el evento {{name}}",
+    "export_ics_aria": "Exportar a la agenda (.ics)",
+    "liturgical": {
+      "mary_mother_of_god": "Santa María, Madre de Dios",
+      "epiphany": "Epifanía del Señor",
+      "baptism_of_the_lord": "Bautismo del Señor",
+      "presentation_of_the_lord": "Presentación del Señor",
+      "ash_wednesday": "Miércoles de Ceniza",
+      "saint_joseph": "San José, Esposo de María",
+      "annunciation": "Anunciación del Señor",
+      "palm_sunday": "Domingo de Ramos",
+      "holy_thursday": "Jueves Santo",
+      "good_friday": "Viernes Santo",
+      "easter": "Domingo de Pascua",
+      "divine_mercy": "Domingo de la Divina Misericordia",
+      "ascension": "Ascensión del Señor",
+      "pentecost": "Pentecostés",
+      "holy_trinity": "Santísima Trinidad",
+      "corpus_christi": "Corpus Christi",
+      "sacred_heart": "Sagrado Corazón de Jesús",
+      "peter_and_paul": "San Pedro y San Pablo",
+      "assumption": "Asunción de la Virgen",
+      "our_lady_aparecida": "Nuestra Señora Aparecida",
+      "all_saints": "Todos los Santos",
+      "all_souls": "Fieles Difuntos",
+      "christ_the_king": "Cristo Rey",
+      "advent_1": "1.er Domingo de Adviento",
+      "advent_2": "2.º Domingo de Adviento",
+      "advent_3": "3.er Domingo de Adviento (Gaudete)",
+      "advent_4": "4.º Domingo de Adviento",
+      "immaculate_conception": "Inmaculada Concepción",
+      "christmas": "Navidad del Señor"
+    },
+    "liturgical_generated_hint": "Celebración del calendario litúrgico (fechas de la CNBB). Consulta el directorio litúrgico de tu diócesis."
   } as const;
 
 export const catecheticalYears_es = {
@@ -1868,7 +1908,20 @@ export const classes_es = {
       "confirm_conclude_btn": "Concluir grupo",
       "confirm_remove_catechist_title": "Quitar catequista",
       "confirm_remove_catechist_desc": "¿Está seguro de que desea quitar este catequista del grupo?",
-      "error": "Error"
+      "error": "Error",
+      "generate_title": "Generar encuentros",
+      "generate_desc": "Crea de una vez los próximos encuentros semanales del grupo. Las fechas que ya tienen encuentro se omiten.",
+      "generate_weekday": "Día de la semana",
+      "generate_count": "Cantidad",
+      "generate_count_option_one": "{{count}} encuentro",
+      "generate_count_option_other": "{{count}} encuentros",
+      "generate_button": "Generar",
+      "generate_single": "Encuentro suelto",
+      "generated_meeting_title": "Encuentro {{number}}",
+      "generate_success_one": "{{count}} encuentro creado",
+      "generate_success_other": "{{count}} encuentros creados",
+      "generate_error_one": "Se detuvo tras crear {{count}} encuentro",
+      "generate_error_other": "Se detuvo tras crear {{count}} encuentros"
     },
     "no_schedule": "Sin horario",
     "first_classes": "Primeros grupos",
@@ -5106,7 +5159,8 @@ export const meetings_es = {
       },
       "next_label": "Próximo encuentro",
       "empty_mobile": "No hay encuentros programados."
-    }
+    },
+    "delete_confirm_button": "Eliminar encuentro"
   } as const;
 
 export const messages_es = {
