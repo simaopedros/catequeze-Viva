@@ -16,6 +16,12 @@ import {
 } from "lucide-react";
 import { EmptyState } from "../../client/components/EmptyState";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../client/components/ui/dropdown-menu";
+import {
   useQuery,
   getClassDetails,
   getClassAttendanceMatrix,
@@ -95,19 +101,6 @@ function StatusCell({
   isSaving: boolean;
   notFilledLabel: string;
 }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node))
-        setOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [open]);
-
   const st = status ? statusOptions.find((o) => o.key === status) : null;
   const currentLabel = st ? st.fullLabel : notFilledLabel;
 
@@ -120,46 +113,40 @@ function StatusCell({
   }
 
   return (
-    <div ref={ref} className="relative inline-block">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className={`flex min-h-[44px] min-w-[44px] h-8 w-10 cursor-pointer items-center justify-center rounded-sm border text-xs font-semibold transition-colors ${
-          st
-            ? st.color
-            : "bg-muted text-muted-foreground border-border hover:border-foreground/30"
-        }`}
-        title={currentLabel}
-        aria-label={describe ? describe(currentLabel) : currentLabel}
-        aria-haspopup="menu"
-        aria-expanded={open}
-      >
-        {st ? st.label : <Minus className="h-3 w-3" />}
-      </button>
-      {open && (
-        <AppPanel
-          className="absolute z-50 left-1/2 -translate-x-1/2 mt-1 p-1 shadow-sm flex flex-col gap-0.5 min-w-[100px]"
-          padded={false}
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className={`flex min-h-[44px] min-w-[44px] h-8 w-10 cursor-pointer items-center justify-center rounded-sm border text-xs font-semibold transition-colors ${
+            st
+              ? st.color
+              : "bg-muted text-muted-foreground border-border hover:border-foreground/30"
+          }`}
+          title={currentLabel}
+          aria-label={describe ? describe(currentLabel) : currentLabel}
         >
-          {statusOptions.map((opt) => (
-            <button
-              type="button"
-              key={opt.key}
-              onClick={() => {
-                onMark(opt.key);
-                setOpen(false);
-              }}
-              className={`flex items-center gap-2 px-2.5 py-1.5 rounded text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors hover:brightness-95 ${opt.color}`}
-            >
-              <span className="flex items-center justify-center w-4 h-4">
-                {opt.icon}
-              </span>
-              <span className="tabular-nums">{opt.fullLabel}</span>
-            </button>
-          ))}
-        </AppPanel>
-      )}
-    </div>
+          {st ? st.label : <Minus className="h-3 w-3" />}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="center"
+        collisionPadding={8}
+        className="flex min-w-[120px] flex-col gap-0.5 p-1"
+      >
+        {statusOptions.map((opt) => (
+          <DropdownMenuItem
+            key={opt.key}
+            onSelect={() => onMark(opt.key)}
+            className={`flex cursor-pointer items-center gap-2 rounded px-2.5 py-1.5 text-xs font-semibold whitespace-nowrap ${opt.color}`}
+          >
+            <span className="flex h-4 w-4 items-center justify-center">
+              {opt.icon}
+            </span>
+            <span className="tabular-nums">{opt.fullLabel}</span>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -194,6 +181,7 @@ export default function AttendancePage() {
     data: meetings = [],
     refetch: refetchMeetings,
     error: matrixError,
+    isLoading: matrixLoading,
   } = useQuery(getClassAttendanceMatrix, matrixArgs as any, {
     enabled: Boolean(classId) && loadMatrix,
   });
@@ -201,6 +189,7 @@ export default function AttendancePage() {
     data: cls,
     error: classError,
     refetch: refetchClass,
+    isLoading: classLoading,
   } = useQuery(getClassDetails, { id: classId! });
   const catechumens =
     cls?.enrollments
@@ -442,6 +431,28 @@ export default function AttendancePage() {
     }
   };
 
+  const [creatingToday, setCreatingToday] = useState(false);
+  const handleCreateTodayMeeting = async () => {
+    setCreatingToday(true);
+    try {
+      await createMeetingAction({
+        classId: classId!,
+        title: t("sheet.default_meeting_title"),
+        date: defaultMeetingDateIso(),
+      });
+      await refetchMeetings();
+      toast({ title: t("sheet.create_meeting_ok") });
+    } catch (e: any) {
+      toast({
+        title: t("sheet.create_meeting_error"),
+        description: e?.message,
+        variant: "destructive",
+      });
+    } finally {
+      setCreatingToday(false);
+    }
+  };
+
   const handleCreateMeeting = async () => {
     if (!newTitle) return;
     try {
@@ -550,17 +561,23 @@ export default function AttendancePage() {
             className="min-w-0 flex-1 border-0 pb-0"
             eyebrow={t("matrix.eyebrow", { defaultValue: "Presença" })}
             title={t("matrix.title")}
-            subtitle={t("matrix.subtitle", {
-              catechumens: tcl("catechumens_count", {
-                count: catechumens.length,
-              }),
-              meetings:
-                meetings.length === 1
-                  ? t("matrix.meetings_count_one", { count: meetings.length })
-                  : t("matrix.meetings_count_plural", {
-                      count: meetings.length,
+            subtitle={
+              classLoading || matrixLoading
+                ? tc("loading")
+                : t("matrix.subtitle", {
+                    catechumens: tcl("catechumens_count", {
+                      count: catechumens.length,
                     }),
-            })}
+                    meetings:
+                      meetings.length === 1
+                        ? t("matrix.meetings_count_one", {
+                            count: meetings.length,
+                          })
+                        : t("matrix.meetings_count_plural", {
+                            count: meetings.length,
+                          }),
+                  })
+            }
             actions={
               <Button
                 className="h-10 rounded-md"
@@ -669,13 +686,35 @@ export default function AttendancePage() {
               void refetchMeetings();
             }}
           />
+        ) : classLoading || matrixLoading ? (
+          <div
+            className="flex justify-center py-12"
+            role="status"
+            aria-label={tc("loading")}
+          >
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground motion-reduce:animate-none" />
+          </div>
         ) : meetings.length === 0 ? (
           <EmptyState
             icon={ClipboardList}
             title={t("matrix.empty")}
             description={t("matrix.empty_desc")}
             compact
-          />
+          >
+            <Button
+              type="button"
+              className="mt-4 h-10 rounded-md"
+              disabled={creatingToday}
+              onClick={() => void handleCreateTodayMeeting()}
+            >
+              {creatingToday ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Plus className="mr-2 h-4 w-4" />
+              )}
+              {t("sheet.create_today_meeting")}
+            </Button>
+          </EmptyState>
         ) : (
           <>
             {/* Bulk actions */}
