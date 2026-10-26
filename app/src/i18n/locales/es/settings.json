@@ -47,7 +47,7 @@
   "migrate_data": "Migrar datos",
   "not_coordinator": "No es coordinador de ninguna parroquia.",
   "different_parishes": "Las parroquias de origen y destino deben ser diferentes.",
-  "migration_success": "¡Migración completada! {{classes}} grupos, {{households}} familias, {{members}} miembros transferidos.",
+  "migration_success": "¡Migración completada! $t(common:counts.classes, {\"count\": {{classes}} }), $t(common:counts.families, {\"count\": {{households}} }), $t(common:counts.members_transferred, {\"count\": {{members}} }).",
   "migration_error": "Error al ejecutar migración.",
   "privacy_notice": "Sus datos están protegidos conforme a la LGPD. Ningún dato se comparte sin consentimiento.",
   "email_preferences": "Preferencias de correo",

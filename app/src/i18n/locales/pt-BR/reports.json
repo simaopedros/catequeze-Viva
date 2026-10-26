@@ -30,7 +30,7 @@
   "attendance_by_class": "Presença por turma",
   "no_classes": "Nenhuma turma",
   "no_classes_desc": "Cadastre turmas para ver os relatórios de presença.",
-  "enrolled_meetings": "{{enrolled}} inscritos · {{meetings}} encontros",
+  "enrolled_meetings": "$t(common:counts.enrolled, {\"count\": {{enrolled}} }) · $t(common:counts.meetings, {\"count\": {{meetings}} })",
   "present_absent": "{{present}}P / {{absent}}A",
   "ranking_title": "Ranking de Frequência",
   "no_data": "Nenhum dado",

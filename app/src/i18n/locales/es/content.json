@@ -29,12 +29,14 @@
   "references": "Referencias",
   "script": "Guion",
   "activities_tab": "Actividades",
-  "used_in_meetings": "Usado en {{count}} encuentro(s)",
+  "used_in_meetings_one": "Usado en {{count}} encuentro",
+  "used_in_meetings_other": "Usado en {{count}} encuentros",
+  "used_in_meetings_zero": "Usado en {{count}} encuentros",
   "meeting_default": "Encuentro",
   "dynamic_activity": "Dinámica / Actividad",
   "not_found": "No encontrado.",
   "library": {
-    "subtitle": "{{scripts}} guiones · {{activities}} actividades",
+    "subtitle": "$t(common:counts.scripts, {\"count\": {{scripts}} }) · $t(common:counts.activities, {\"count\": {{activities}} })",
     "count_badge_one": "{{count}} contenido",
     "count_badge_other": "{{count}} contenidos",
     "generate_ai": "Asistencia editorial",
@@ -86,8 +88,12 @@
       "created": "Guion copiado a su biblioteca",
       "error": "No se pudo copiar el guion",
       "minutes_one": "{{count}} minuto",
-      "minutes_other": "{{count}} minutos"
-    }
+      "minutes_other": "{{count}} minutos",
+      "open_copy": "Abrir copia"
+    },
+    "card_duration": "Duración",
+    "card_activities": "Actividades",
+    "search_title": "Búsqueda"
   },
   "detail": {
     "by_author": "por {{name}}",
@@ -101,7 +107,9 @@
     "create_activity": "Crear actividad",
     "no_activities": "Sin actividades",
     "no_activities_desc": "Agregue cuestionarios, preguntas o dinámicas para que los catecúmenos respondan.",
-    "responses": "{{count}} respuesta(s)",
+    "responses_one": "{{count}} respuesta",
+    "responses_other": "{{count}} respuestas",
+    "responses_zero": "{{count}} respuestas",
     "points": "{{count}} pts"
   },
   "create_page": {

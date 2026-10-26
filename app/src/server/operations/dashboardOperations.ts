@@ -10,6 +10,7 @@ import {
   daysUntilBirthday,
   isLowFrequency,
 } from "../../shared/dashboardActions";
+import { pluralPt } from "../../shared/pluralPt";
 
 const COORDINATOR_OR_ABOVE = [
   "PARISH_COORDINATOR",
@@ -472,8 +473,14 @@ export const getDashboardStats = async (
   // Scoped community coordinator (vice): KPIs over the whole scope (community
   // classes + explicitly linked classes), not only ClassCatechist links.
   const scopedCoordinator = !!workspaceAccess?.isScopedCoordinator;
-  if (scopedCoordinator && workspaceAccess && workspaceAccess.allowedClassIds !== "ALL") {
-    myClassIds = [...new Set([...myClassIds, ...workspaceAccess.allowedClassIds])];
+  if (
+    scopedCoordinator &&
+    workspaceAccess &&
+    workspaceAccess.allowedClassIds !== "ALL"
+  ) {
+    myClassIds = [
+      ...new Set([...myClassIds, ...workspaceAccess.allowedClassIds]),
+    ];
   }
 
   const coordinatorParishIds = requestedWorkspace
@@ -1010,7 +1017,11 @@ export const getDashboardStats = async (
     if (draftCount > 0) {
       recentAlerts.push({
         type: "info",
-        message: `Tens ${draftCount} turma(s) em rascunho. Ativa-as na página de Turmas para começarem a contar.`,
+        message: `Você tem ${pluralPt(
+          draftCount,
+          "turma",
+          "turmas",
+        )} em rascunho. Ative na página de Turmas para começar a contar.`,
       });
     } else {
       recentAlerts.push({

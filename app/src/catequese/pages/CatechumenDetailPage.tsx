@@ -393,39 +393,41 @@ export default function CatechumenDetailPage() {
   return (
     <>
       <div className="mx-auto max-w-2xl space-y-6">
-        <div className="flex items-start gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="mt-1 shrink-0 rounded-sm"
-            asChild
-          >
-            <Link to="/app/catechumens" aria-label={t("back")}>
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div
-            className={`mt-0.5 flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-sm text-xl font-semibold ${
-              !profile.photoUrl
-                ? AVATAR_COLORS[
-                    Math.abs(profile.firstName?.charCodeAt(0) || 0) %
-                      AVATAR_COLORS.length
-                  ]
-                : "border border-border/70"
-            }`}
-          >
-            {profile.photoUrl ? (
-              <img
-                src={profile.photoUrl}
-                alt={profile.firstName}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              `${profile.firstName?.[0] || ""}${profile.lastName?.[0] || ""}`
-            )}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+          <div className="flex shrink-0 items-start gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="mt-1 shrink-0 rounded-sm"
+              asChild
+            >
+              <Link to="/app/catechumens" aria-label={t("back")}>
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
+            </Button>
+            <div
+              className={`mt-0.5 flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-sm text-xl font-semibold ${
+                !profile.photoUrl
+                  ? AVATAR_COLORS[
+                      Math.abs(profile.firstName?.charCodeAt(0) || 0) %
+                        AVATAR_COLORS.length
+                    ]
+                  : "border border-border/70"
+              }`}
+            >
+              {profile.photoUrl ? (
+                <img
+                  src={profile.photoUrl}
+                  alt={profile.firstName}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                `${profile.firstName?.[0] || ""}${profile.lastName?.[0] || ""}`
+              )}
+            </div>
           </div>
           <AppPageHeader
-            className="min-w-0 flex-1 border-0 pb-0"
+            className="min-w-0 flex-1 border-0 pb-0 sm:flex-col sm:items-start sm:justify-start [&_h1]:break-words [&_p]:whitespace-normal"
             eyebrow={t("catechumens.detail", {
               defaultValue: "Catequizando",
             })}
@@ -1019,8 +1021,7 @@ export default function CatechumenDetailPage() {
                         <option key={value} value={value}>
                           {t(`catechumens.doc_types.${i18nKey}`)}
                         </option>
-                      ),
-                    )}
+                      ))}
                   </select>
                 </div>
                 <div className="flex gap-2 items-center">

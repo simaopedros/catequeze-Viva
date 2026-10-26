@@ -5,6 +5,7 @@ import { enqueueEmail } from "../email/service";
 import { emitProductEventSafe } from "../email/events";
 import { appBaseUrl } from "../email/config";
 import { resolveUserLocale } from "../i18n/serverLocale";
+import { pluralPt } from "../../shared/pluralPt";
 
 /**
  * Daily job:
@@ -161,7 +162,7 @@ export const expireSubscriptionsJob = async (
                 : "Restam 3 dias do teste da paróquia",
             body: `O período de teste de ${
               billing.parish.name || "sua paróquia"
-            } termina em ${daysLeft} dia(s).`,
+            } termina em ${pluralPt(daysLeft, "dia", "dias")}.`,
             link: "/app/billing",
             entityType: "TRIAL_REMINDER",
             entityId: marker,

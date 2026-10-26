@@ -16,6 +16,7 @@ import {
   listActivitiesByContent,
 } from "wasp/client/operations";
 import { useActivityTypes } from "../../i18n/useLabels";
+import { getPersonFullName } from "../../shared/displayName";
 import {
   parseContentDocument,
   buildLegacyContentDocument,
@@ -315,10 +316,10 @@ export default function ContentPrintPage() {
                     {t("print_page.minutes", { count: item.estimatedTime })}
                   </span>
                 )}
-                {item.createdBy && (
+                {getPersonFullName(item.createdBy) && (
                   <span>
                     {t("print_page.prepared_by", {
-                      name: `${item.createdBy.firstName} ${item.createdBy.lastName}`,
+                      name: getPersonFullName(item.createdBy),
                     })}
                   </span>
                 )}
@@ -346,7 +347,10 @@ export default function ContentPrintPage() {
                       defaultValue: "Referências vinculadas",
                     })}
                   </h2>
-                  <div className="mt-2 h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
+                  <div
+                    className="mt-2 h-px w-16 bg-gradient-to-r from-brand-gold to-transparent"
+                    aria-hidden
+                  />
                 </div>
 
                 {bibleRefs.length > 0 && (

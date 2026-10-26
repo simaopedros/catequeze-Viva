@@ -29,12 +29,14 @@
   "references": "Referências",
   "script": "Roteiro",
   "activities_tab": "Atividades",
-  "used_in_meetings": "Usado em {{count}} encontro(s)",
+  "used_in_meetings_one": "Usado em {{count}} encontro",
+  "used_in_meetings_other": "Usado em {{count}} encontros",
+  "used_in_meetings_zero": "Usado em {{count}} encontros",
   "meeting_default": "Encontro",
   "dynamic_activity": "Dinâmica / Atividade",
   "not_found": "Não encontrado.",
   "library": {
-    "subtitle": "{{scripts}} roteiros · {{activities}} atividades",
+    "subtitle": "$t(common:counts.scripts, {\"count\": {{scripts}} }) · $t(common:counts.activities, {\"count\": {{activities}} })",
     "count_badge_one": "{{count}} conteúdo",
     "count_badge_other": "{{count}} conteúdos",
     "generate_ai": "Assistência editorial",
@@ -86,8 +88,12 @@
       "created": "Roteiro copiado para a sua biblioteca",
       "error": "Não foi possível copiar o roteiro",
       "minutes_one": "{{count}} minuto",
-      "minutes_other": "{{count}} minutos"
-    }
+      "minutes_other": "{{count}} minutos",
+      "open_copy": "Abrir cópia"
+    },
+    "card_duration": "Duração",
+    "card_activities": "Atividades",
+    "search_title": "Busca"
   },
   "detail": {
     "by_author": "por {{name}}",
@@ -101,7 +107,9 @@
     "create_activity": "Criar atividade",
     "no_activities": "Nenhuma atividade",
     "no_activities_desc": "Adicione quizzes, perguntas ou dinâmicas para os catequizandos responderem.",
-    "responses": "{{count}} resposta(s)",
+    "responses_one": "{{count}} resposta",
+    "responses_other": "{{count}} respostas",
+    "responses_zero": "{{count}} respostas",
     "points": "{{count}} pts"
   },
   "create_page": {

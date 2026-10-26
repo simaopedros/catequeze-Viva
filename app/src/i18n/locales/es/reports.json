@@ -30,7 +30,7 @@
   "attendance_by_class": "Asistencia por grupo",
   "no_classes": "Ningún grupo",
   "no_classes_desc": "Registre grupos para ver los informes de asistencia.",
-  "enrolled_meetings": "{{enrolled}} inscritos · {{meetings}} encuentros",
+  "enrolled_meetings": "$t(common:counts.enrolled, {\"count\": {{enrolled}} }) · $t(common:counts.meetings, {\"count\": {{meetings}} })",
   "present_absent": "{{present}}P / {{absent}}A",
   "ranking_title": "Ranking de Asistencia",
   "no_data": "Sin datos",

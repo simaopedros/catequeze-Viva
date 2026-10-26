@@ -9,8 +9,10 @@
   "unsubscribe_invalid_body": "Este link de descadastro é inválido ou já expirou.",
   "welcome": {
     "subject": "Bem-vindo à Catequese Viva, {{name}}",
+    "subject_no_name": "Bem-vindo à Catequese Viva",
     "heading": "Sua catequese começa aqui",
     "body": "Olá, {{name}}. Sua conta está pronta. Crie a primeira turma para marcar presença e preparar encontros no mesmo lugar.",
+    "body_no_name": "Olá! Sua conta está pronta. Crie a primeira turma para marcar presença e preparar encontros no mesmo lugar.",
     "cta": "Abrir o painel"
   },
   "invite": {

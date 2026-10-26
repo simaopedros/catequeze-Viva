@@ -53,7 +53,9 @@ export function CommunityCard({
             </p>
             {c.type && (
               <Badge variant="outline" className="text-overline">
-                {communityTypeLabels[c.type as keyof typeof communityTypeLabels] || c.type}
+                {communityTypeLabels[
+                  c.type as keyof typeof communityTypeLabels
+                ] || c.type}
               </Badge>
             )}
           </div>
@@ -66,7 +68,7 @@ export function CommunityCard({
           <div className="mt-2 flex items-center gap-3 text-xs">
             <span className="flex items-center gap-1 font-semibold tracking-tight text-brand-ink">
               <Users className="h-3 w-3" />
-              {c._count?.memberships || 0} membros
+              {t("counts.members", { count: c._count?.memberships || 0 })}
             </span>
             {c.phone && (
               <span className="flex items-center gap-1 text-muted-foreground">

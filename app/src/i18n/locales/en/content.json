@@ -29,12 +29,14 @@
   "references": "References",
   "script": "Script",
   "activities_tab": "Activities",
-  "used_in_meetings": "Used in {{count}} meeting(s)",
+  "used_in_meetings_one": "Used in {{count}} meeting",
+  "used_in_meetings_other": "Used in {{count}} meetings",
+  "used_in_meetings_zero": "Used in {{count}} meetings",
   "meeting_default": "Meeting",
   "dynamic_activity": "Dynamic / Activity",
   "not_found": "Not found.",
   "library": {
-    "subtitle": "{{scripts}} scripts · {{activities}} activities",
+    "subtitle": "$t(common:counts.scripts, {\"count\": {{scripts}} }) · $t(common:counts.activities, {\"count\": {{activities}} })",
     "count_badge_one": "{{count}} item",
     "count_badge_other": "{{count}} items",
     "generate_ai": "Editorial assistance",
@@ -86,8 +88,12 @@
       "created": "Script copied to your library",
       "error": "Could not copy the script",
       "minutes_one": "{{count}} minute",
-      "minutes_other": "{{count}} minutes"
-    }
+      "minutes_other": "{{count}} minutes",
+      "open_copy": "Open your copy"
+    },
+    "card_duration": "Duration",
+    "card_activities": "Activities",
+    "search_title": "Search"
   },
   "detail": {
     "by_author": "by {{name}}",
@@ -101,7 +107,9 @@
     "create_activity": "Create activity",
     "no_activities": "No activities",
     "no_activities_desc": "Add quizzes, questions, or dynamics for catechumens to answer.",
-    "responses": "{{count}} response(s)",
+    "responses_one": "{{count}} response",
+    "responses_other": "{{count}} responses",
+    "responses_zero": "{{count}} responses",
     "points": "{{count}} pts"
   },
   "create_page": {

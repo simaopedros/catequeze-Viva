@@ -11,6 +11,11 @@ type SimpleCampaignCopy = {
   cta: string;
 };
 
+type WelcomeCampaignCopy = SimpleCampaignCopy & {
+  subject_no_name: string;
+  body_no_name: string;
+};
+
 type TrialCampaignCopy = {
   subject: string;
   heading: string;
@@ -31,7 +36,7 @@ type EmailsNs = {
   unsubscribed_body: string;
   unsubscribe_invalid_title: string;
   unsubscribe_invalid_body: string;
-  welcome: SimpleCampaignCopy;
+  welcome: WelcomeCampaignCopy;
   invite: {
     family: SimpleCampaignCopy;
     staff: SimpleCampaignCopy;

@@ -144,12 +144,7 @@ export const createLiturgicalEvent = async (
 
   const actor = await resolveResourceActor(context, workspaceId);
   const policy = defaultPolicyFor("CALENDAR", actor.ownerType);
-  const defaultType =
-    actor.ownerType === "DIOCESE"
-      ? "diocese"
-      : actor.ownerType === "PARISH"
-        ? "parish"
-        : "liturgical";
+  const defaultType = actor.ownerType === "DIOCESE" ? "diocese" : "parish";
 
   return context.entities.LiturgicalEvent.create({
     data: {
@@ -164,8 +159,7 @@ export const createLiturgicalEvent = async (
       locale: resolveUserLocale(context.user),
       parishId: actor.ownerType === "DIOCESE" ? null : actor.parishId,
       dioceseId: actor.dioceseId,
-      communityId:
-        actor.ownerType === "COMMUNITY" ? actor.communityId : null,
+      communityId: actor.ownerType === "COMMUNITY" ? actor.communityId : null,
       ownerType: actor.ownerType,
       inheritancePolicy: policy,
     },
@@ -181,7 +175,7 @@ export const deleteLiturgicalEvent = async (
   const event = await context.entities.LiturgicalEvent.findUnique({
     where: { id: args.id },
   });
-  if (!event) throw new HttpError(404, "Evento nao encontrado.");
+  if (!event) throw new HttpError(404, "Evento não encontrado.");
 
   const { assertStaffOperation } = await import("../auth/familySurface");
   await assertStaffOperation(context, {
@@ -242,7 +236,7 @@ export const deleteLiturgicalEvent = async (
       if (!membership && !isPersonalOwner) {
         throw new HttpError(
           403,
-          "Voce nao tem permissao para remover este evento.",
+          "Você não tem permissão para remover este evento.",
         );
       }
     }

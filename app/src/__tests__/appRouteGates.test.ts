@@ -179,6 +179,7 @@ describe("isSubscriptionFreeAppPath", () => {
   it("keeps help, settings and reference texts open without a subscription", () => {
     for (const path of [
       "/app/suporte",
+      "/app/support",
       "/app/settings",
       "/app/bible",
       "/app/bible?book=jo",
@@ -192,7 +193,12 @@ describe("isSubscriptionFreeAppPath", () => {
   });
 
   it("still gates the working areas", () => {
-    for (const path of ["/app", "/app/classes", "/app/calendar", "/app/bibles"]) {
+    for (const path of [
+      "/app",
+      "/app/classes",
+      "/app/calendar",
+      "/app/bibles",
+    ]) {
       expect(isSubscriptionFreeAppPath(path)).toBe(false);
     }
   });

@@ -32,8 +32,9 @@
     "remove": "Remove",
     "uploading": "Uploading {{percent}}%",
     "videoProcessing": "Processing video...",
-    "quotaLeft": "{{count}} post left today",
-    "quotaLeft_plural": "{{count}} posts left today",
+    "quotaLeft_one": "{{count}} post left today",
+    "quotaLeft_other": "{{count}} posts left today",
+    "quotaLeft_zero": "{{count}} posts left today",
     "videoTooLong": "Your plan allows videos up to {{minutes}} minutes.",
     "tooManyMedia": "Your plan allows {{count}} media items per post.",
     "uploadFailed": "Failed to upload the media."

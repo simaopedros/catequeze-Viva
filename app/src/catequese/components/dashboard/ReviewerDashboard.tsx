@@ -8,6 +8,7 @@ import {
 } from "../../../client/components/brand/AppChrome";
 import { EmptyState } from "../../../client/components/EmptyState";
 import { Eye, Library } from "lucide-react";
+import { getPersonFullName } from "../../../shared/displayName";
 
 interface ReviewerDashboardProps {
   stats: any;
@@ -45,7 +46,14 @@ export function ReviewerDashboard({ stats }: ReviewerDashboardProps) {
                   {c.title}
                 </p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  {c.theme} · {t("by")} {c.createdBy?.firstName}
+                  {[
+                    c.theme,
+                    getPersonFullName(c.createdBy)
+                      ? `${t("by")} ${getPersonFullName(c.createdBy)}`
+                      : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
                 </p>
               </div>
               <Badge variant="secondary" className="shrink-0 rounded-sm">

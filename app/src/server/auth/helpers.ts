@@ -1,10 +1,14 @@
-import { HttpError } from 'wasp/server';
-import { MembershipStatus, type AuditAction } from '@prisma/client';
-import { logger } from '../logger';
-import { COORDINATOR_ROLES } from './roles';
+import { HttpError } from "wasp/server";
+import { MembershipStatus, type AuditAction } from "@prisma/client";
+import { logger } from "../logger";
+import { COORDINATOR_ROLES } from "./roles";
 
-export { withRlsContext } from '../middleware/rls';
-export { COORDINATOR_ROLES, ADMIN_ROLES, userHasAdminMembership } from './roles';
+export { withRlsContext } from "../middleware/rls";
+export {
+  COORDINATOR_ROLES,
+  ADMIN_ROLES,
+  userHasAdminMembership,
+} from "./roles";
 
 // ─── Personal Workspace Helpers ────────────────────────────────────────────
 
@@ -14,7 +18,7 @@ export { COORDINATOR_ROLES, ADMIN_ROLES, userHasAdminMembership } from './roles'
 export async function getUserParishIds(context: any): Promise<string[]> {
   const ids: string[] = [];
   const personal = await context.entities.Parish.findFirst({
-    where: { ownerId: context.user.id, type: 'PERSONAL' },
+    where: { ownerId: context.user.id, type: "PERSONAL" },
     select: { id: true },
   });
   if (personal) ids.push(personal.id);
@@ -28,61 +32,83 @@ export async function getUserParishIds(context: any): Promise<string[]> {
   return ids;
 }
 
-export async function getUserParishRoles(context: any): Promise<{ parishId: string; role: string }[]> {
+export async function getUserParishRoles(
+  context: any,
+): Promise<{ parishId: string; role: string }[]> {
   const result: { parishId: string; role: string }[] = [];
   const personal = await context.entities.Parish.findFirst({
-    where: { ownerId: context.user.id, type: 'PERSONAL' },
+    where: { ownerId: context.user.id, type: "PERSONAL" },
     select: { id: true },
   });
-  if (personal) result.push({ parishId: personal.id, role: 'PERSONAL_OWNER' });
+  if (personal) result.push({ parishId: personal.id, role: "PERSONAL_OWNER" });
   const memberships = await context.entities.Membership.findMany({
     where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
     select: { parishId: true, role: true },
   });
   for (const m of memberships) {
-    if (!result.some(r => r.parishId == m.parishId)) {
+    if (!result.some((r) => r.parishId == m.parishId)) {
       result.push({ parishId: m.parishId, role: m.role });
     }
   }
   return result;
 }
 
-export async function getEffectiveParishRole(context: any, parishId: string): Promise<string | null> {
+export async function getEffectiveParishRole(
+  context: any,
+  parishId: string,
+): Promise<string | null> {
   const personal = await context.entities.Parish.findFirst({
-    where: { id: parishId, ownerId: context.user.id, type: 'PERSONAL' },
+    where: { id: parishId, ownerId: context.user.id, type: "PERSONAL" },
     select: { id: true },
   });
-  if (personal) return 'PERSONAL_OWNER';
+  if (personal) return "PERSONAL_OWNER";
   const membership = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, parishId, status: MembershipStatus.ACTIVE },
+    where: {
+      userId: context.user.id,
+      parishId,
+      status: MembershipStatus.ACTIVE,
+    },
     select: { role: true },
   });
   if (membership) return membership.role;
-  if (await requireDioceseAccess(context, parishId)) return 'DIOCESE_ADMIN';
+  if (await requireDioceseAccess(context, parishId)) return "DIOCESE_ADMIN";
   return null;
 }
 
-export async function assertCanAccessParish(context: any, parishId: string): Promise<string> {
+export async function assertCanAccessParish(
+  context: any,
+  parishId: string,
+): Promise<string> {
   const role = await getEffectiveParishRole(context, parishId);
-  if (!role) throw new HttpError(403, 'Voce nao tem acesso a esta paroquia.');
+  if (!role) throw new HttpError(403, "Você não tem acesso a esta paróquia.");
   return role;
 }
 
 export function isCoordinatorOrAboveRole(role: string): boolean {
-  return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(role);
+  return [
+    "SUPER_ADMIN",
+    "DIOCESE_ADMIN",
+    "PARISH_COORDINATOR",
+    "COMMUNITY_COORDINATOR",
+    "PERSONAL_OWNER",
+  ].includes(role);
 }
 
 export function isCatechistOrAboveRole(role: string): boolean {
-  return isCoordinatorOrAboveRole(role) || ['LEAD_CATECHIST', 'ASSISTANT_CATECHIST'].includes(role);
+  return (
+    isCoordinatorOrAboveRole(role) ||
+    ["LEAD_CATECHIST", "ASSISTANT_CATECHIST"].includes(role)
+  );
 }
-
 
 /**
  * Verifica se o usuário está autenticado.
  */
-export function requireAuth(user: any): asserts user is NonNullable<typeof user> {
+export function requireAuth(
+  user: any,
+): asserts user is NonNullable<typeof user> {
   if (!user) {
-    throw new HttpError(401, 'Você precisa estar autenticado.');
+    throw new HttpError(401, "Você precisa estar autenticado.");
   }
 }
 
@@ -90,10 +116,15 @@ export function requireAuth(user: any): asserts user is NonNullable<typeof user>
  * Verifica se o usuário é admin da plataforma (isAdmin).
  * Usar em operações do painel /admin.
  */
-export function requirePlatformAdmin(user: any): asserts user is NonNullable<typeof user> {
+export function requirePlatformAdmin(
+  user: any,
+): asserts user is NonNullable<typeof user> {
   requireAuth(user);
   if (!user.isAdmin) {
-    throw new HttpError(403, 'Apenas administradores da plataforma têm acesso a esta operação.');
+    throw new HttpError(
+      403,
+      "Apenas administradores da plataforma têm acesso a esta operação.",
+    );
   }
 }
 
@@ -103,12 +134,14 @@ export function requirePlatformAdmin(user: any): asserts user is NonNullable<typ
 export function requireTenantAccess(
   user: any,
   parishId: string,
-  membership: { role: string; status: string } | null
+  membership: { role: string; status: string } | null,
 ): void {
   requireAuth(user);
   if (user.isAdmin) return;
-  if (!membership) throw new HttpError(403, 'Você não tem acesso a esta paróquia.');
-  if (membership.status !== 'ACTIVE') throw new HttpError(403, 'Sua vinculação não está ativa.');
+  if (!membership)
+    throw new HttpError(403, "Você não tem acesso a esta paróquia.");
+  if (membership.status !== "ACTIVE")
+    throw new HttpError(403, "Sua vinculação não está ativa.");
 }
 
 /**
@@ -117,12 +150,14 @@ export function requireTenantAccess(
 export function requireParishRole(
   user: any,
   membership: { role: string; status: string } | null,
-  allowedRoles: string[]
+  allowedRoles: string[],
 ): void {
   requireAuth(user);
   if (user.isAdmin) return;
-  if (!membership || membership.status !== 'ACTIVE') throw new HttpError(403, 'Acesso negado.');
-  if (!allowedRoles.includes(membership.role)) throw new HttpError(403, 'Seu papel não tem permissão.');
+  if (!membership || membership.status !== "ACTIVE")
+    throw new HttpError(403, "Acesso negado.");
+  if (!allowedRoles.includes(membership.role))
+    throw new HttpError(403, "Seu papel não tem permissão.");
 }
 
 /**
@@ -133,18 +168,29 @@ export function requireClassAccess(
   membership: { role: string; status: string } | null,
   classCatechists: { userId: string }[],
   classParishId: string,
-  allowedRoles: string[] = ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST']
+  allowedRoles: string[] = [
+    "PARISH_COORDINATOR",
+    "COMMUNITY_COORDINATOR",
+    "LEAD_CATECHIST",
+    "ASSISTANT_CATECHIST",
+  ],
 ): void {
   requireAuth(user);
   if (user.isAdmin) return;
-  if (!membership || membership.status !== 'ACTIVE') throw new HttpError(403, 'Acesso negado.');
+  if (!membership || membership.status !== "ACTIVE")
+    throw new HttpError(403, "Acesso negado.");
 
-  if (['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(membership.role)) return;
+  if (
+    ["PARISH_COORDINATOR", "COMMUNITY_COORDINATOR", "PERSONAL_OWNER"].includes(
+      membership.role,
+    )
+  )
+    return;
 
-  const isClassCatechist = classCatechists.some(cc => cc.userId === user.id);
+  const isClassCatechist = classCatechists.some((cc) => cc.userId === user.id);
   if (isClassCatechist && allowedRoles.includes(membership.role)) return;
 
-  throw new HttpError(403, 'Acesso negado a esta turma.');
+  throw new HttpError(403, "Acesso negado a esta turma.");
 }
 
 /**
@@ -153,12 +199,15 @@ export function requireClassAccess(
 export function assertGuardianCanAccessCatechumen(
   user: any,
   guardianHouseholdId: string | null,
-  catechumenHouseholdId: string
+  catechumenHouseholdId: string,
 ): void {
   requireAuth(user);
   if (user.isAdmin) return;
   if (!guardianHouseholdId || guardianHouseholdId !== catechumenHouseholdId) {
-    throw new HttpError(403, 'Acesso negado. Você não é responsável por este catequizando.');
+    throw new HttpError(
+      403,
+      "Acesso negado. Você não é responsável por este catequizando.",
+    );
   }
 }
 
@@ -168,20 +217,29 @@ export function assertGuardianCanAccessCatechumen(
 export function assertCatechistCanManageClass(
   user: any,
   membership: { role: string; status: string } | null,
-  classCatechists: { userId: string; role: string }[]
+  classCatechists: { userId: string; role: string }[],
 ): void {
   requireAuth(user);
   if (user.isAdmin) return;
-  if (!membership || membership.status !== 'ACTIVE') throw new HttpError(403, 'Acesso negado.');
+  if (!membership || membership.status !== "ACTIVE")
+    throw new HttpError(403, "Acesso negado.");
 
-  if (['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(membership.role)) return;
+  if (
+    ["PARISH_COORDINATOR", "COMMUNITY_COORDINATOR", "PERSONAL_OWNER"].includes(
+      membership.role,
+    )
+  )
+    return;
 
   const isLeadCatechist = classCatechists.some(
-    cc => cc.userId === user.id && cc.role === 'LEAD'
+    (cc) => cc.userId === user.id && cc.role === "LEAD",
   );
   if (isLeadCatechist) return;
 
-  throw new HttpError(403, 'Apenas o catequista responsável pode gerenciar esta turma.');
+  throw new HttpError(
+    403,
+    "Apenas o catequista responsável pode gerenciar esta turma.",
+  );
 }
 
 /**
@@ -197,7 +255,7 @@ export async function writeAuditLog(
   action: AuditAction,
   entityType: string,
   entityId: string,
-  metadata?: Record<string, any>
+  metadata?: Record<string, any>,
 ): Promise<void> {
   try {
     await context.entities.AuditLog.create({
@@ -211,7 +269,9 @@ export async function writeAuditLog(
       },
     });
   } catch (error) {
-    logger.error('Falha ao escrever audit log', { error: error instanceof Error ? error.message : String(error) });
+    logger.error("Falha ao escrever audit log", {
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 }
 
@@ -220,8 +280,12 @@ export async function writeAuditLog(
  */
 export async function getUserMembership(
   context: any,
-  parishId: string
-): Promise<{ role: string; status: string; communityId: string | null } | null> {
+  parishId: string,
+): Promise<{
+  role: string;
+  status: string;
+  communityId: string | null;
+} | null> {
   if (!context.user) return null;
   return context.entities.Membership.findFirst({
     where: { userId: context.user.id, parishId },
@@ -235,14 +299,14 @@ export async function getUserMembership(
  */
 export async function requireDioceseAccess(
   context: any,
-  parishId: string
+  parishId: string,
 ): Promise<boolean> {
   if (!context.user) return false;
   if (context.user.isAdmin) return true;
 
   // Buscar membership do usuário com role DIOCESE_ADMIN
   const membership = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, role: 'DIOCESE_ADMIN', status: 'ACTIVE' },
+    where: { userId: context.user.id, role: "DIOCESE_ADMIN", status: "ACTIVE" },
     select: { parish: { select: { dioceseId: true } } },
   });
 
@@ -285,7 +349,7 @@ export async function assertCanAccessCatechumenProfile(
       household: { select: { parishId: true, communityId: true } },
     },
   });
-  if (!catechumen) throw new HttpError(404, 'Catequizando não encontrado.');
+  if (!catechumen) throw new HttpError(404, "Catequizando não encontrado.");
 
   // Self-access as catechumen
   if (catechumen.userId === context.user.id) return;
@@ -295,7 +359,10 @@ export async function assertCanAccessCatechumenProfile(
     where: { userId: context.user.id },
     select: { householdId: true },
   });
-  if (guardian?.householdId && catechumen.householdId === guardian.householdId) {
+  if (
+    guardian?.householdId &&
+    catechumen.householdId === guardian.householdId
+  ) {
     return;
   }
 
@@ -313,10 +380,10 @@ export async function assertCanAccessCatechumenProfile(
   ];
 
   if (candidateParishIds.length === 0) {
-    throw new HttpError(403, 'Você não tem acesso a este catequizando.');
+    throw new HttpError(403, "Você não tem acesso a este catequizando.");
   }
 
-  const { resolveWorkspaceAccess } = await import('../operations/sharedScope');
+  const { resolveWorkspaceAccess } = await import("../operations/sharedScope");
 
   for (const parishId of candidateParishIds) {
     const access = await resolveWorkspaceAccess(context, parishId, {
@@ -328,7 +395,7 @@ export async function assertCanAccessCatechumenProfile(
     // to the class-scope check below)
     if (
       (access.isCoordinatorOrAbove && !access.isScopedCoordinator) ||
-      access.role === 'PASTORAL_VIEWER'
+      access.role === "PASTORAL_VIEWER"
     ) {
       return;
     }
@@ -337,7 +404,7 @@ export async function assertCanAccessCatechumenProfile(
     // household inside their community
     if (access.isScopedCoordinator) {
       const allowed = new Set(
-        access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds,
+        access.allowedClassIds === "ALL" ? [] : access.allowedClassIds,
       );
       const enrolledInScope = catechumen.enrollments.some(
         (e: { class: { id: string; parishId: string } }) =>
@@ -357,7 +424,7 @@ export async function assertCanAccessCatechumenProfile(
     // Catechist in THIS workspace: must have ClassCatechist on an enrolled class
     if (access.isCatechist) {
       const allowed =
-        access.allowedClassIds === 'ALL'
+        access.allowedClassIds === "ALL"
           ? null
           : new Set(access.allowedClassIds);
       if (allowed === null) return;
@@ -369,7 +436,7 @@ export async function assertCanAccessCatechumenProfile(
     }
   }
 
-  throw new HttpError(403, 'Você não tem acesso a este catequizando.');
+  throw new HttpError(403, "Você não tem acesso a este catequizando.");
 }
 
 /**
@@ -393,7 +460,7 @@ export async function assertCanAccessParishReports(
     },
   });
   if (!membership) {
-    throw new HttpError(403, 'Acesso negado a relatórios desta paróquia.');
+    throw new HttpError(403, "Acesso negado a relatórios desta paróquia.");
   }
 }
 
@@ -410,23 +477,27 @@ export async function assertCanAccessClass(
     where: { id: classId },
     select: { parishId: true, catechists: { select: { userId: true } } },
   });
-  if (!classData) throw new HttpError(404, 'Turma não encontrada.');
+  if (!classData) throw new HttpError(404, "Turma não encontrada.");
 
   if (context.user.isAdmin) return { parishId: classData.parishId };
 
   // Workspace-local role (covers PERSONAL owners and diocese admins without a direct Membership).
-  const { resolveWorkspaceAccess } = await import('../operations/sharedScope');
-  const access = await resolveWorkspaceAccess(context, classData.parishId, { required: false });
+  const { resolveWorkspaceAccess } = await import("../operations/sharedScope");
+  const access = await resolveWorkspaceAccess(context, classData.parishId, {
+    required: false,
+  });
 
-  if (access?.isCoordinatorOrAbove || access?.role === 'PASTORAL_VIEWER') {
+  if (access?.isCoordinatorOrAbove || access?.role === "PASTORAL_VIEWER") {
     if (access.isScopedCoordinator) {
-      const { assertClassInScope } = await import('../operations/sharedScope');
-      assertClassInScope(access, classId, 'Acesso negado a esta turma.');
+      const { assertClassInScope } = await import("../operations/sharedScope");
+      assertClassInScope(access, classId, "Acesso negado a esta turma.");
     }
     return { parishId: classData.parishId };
   }
 
-  const isClassCatechist = classData.catechists.some((cc: { userId: string }) => cc.userId === context.user.id);
+  const isClassCatechist = classData.catechists.some(
+    (cc: { userId: string }) => cc.userId === context.user.id,
+  );
   if (isClassCatechist && access?.isCatechist) {
     return { parishId: classData.parishId };
   }
@@ -453,14 +524,14 @@ export async function assertCanAccessClass(
   });
   if (selfEnrollment) return { parishId: classData.parishId };
 
-  throw new HttpError(403, 'Acesso negado a esta turma.');
+  throw new HttpError(403, "Acesso negado a esta turma.");
 }
 
 export async function getDioceseParishIds(context: any): Promise<string[]> {
   if (!context.user) return [];
 
   const membership = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, role: 'DIOCESE_ADMIN', status: 'ACTIVE' },
+    where: { userId: context.user.id, role: "DIOCESE_ADMIN", status: "ACTIVE" },
     select: { parish: { select: { dioceseId: true } } },
   });
 

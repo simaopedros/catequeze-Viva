@@ -45,6 +45,8 @@ import { ContentDocumentRenderer } from "../components/content/ContentDocumentRe
 import { AppPageHeader } from "../../client/components/brand/AppChrome";
 import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 import { toast } from "../../client/hooks/use-toast";
+import { useBreadcrumbLabel } from "../lib/breadcrumbLabels";
+import { getPersonFullName } from "../../shared/displayName";
 import {
   downloadContentSourceFile,
   triggerBrowserDownload,
@@ -115,6 +117,7 @@ export default function ContentDetailPage() {
   const { data: activities = [] } = useQuery(listActivitiesByContent, {
     contentId: id!,
   });
+  useBreadcrumbLabel(`/app/content-library/${id}`, item?.title);
   const initialTab =
     searchParams.get("tab") === "activities" ? "activities" : "meeting";
   const [tab, setTab] = useState<"meeting" | "activities">(initialTab);
@@ -223,14 +226,14 @@ export default function ContentDetailPage() {
   const document =
     parseContentDocument(item.documentJson) || buildLegacyContentDocument(item);
 
+  const authorName = getPersonFullName(item.createdBy);
+
   const subtitleParts = [
     STATUS_MAP[item.status as keyof typeof STATUS_MAP]?.label,
     item.estimatedTime
       ? t("library.minutes", { count: item.estimatedTime })
       : null,
-    item.createdBy
-      ? t("detail.by_author", { name: item.createdBy.firstName })
-      : null,
+    authorName ? t("detail.by_author", { name: authorName }) : null,
   ].filter(Boolean);
 
   return (

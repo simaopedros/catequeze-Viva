@@ -63,7 +63,8 @@
     "documents": "Document",
     "reports": "Report",
     "catechetical_years": "Catechetical Year",
-    "sacramental_journeys": "Sacrament"
+    "sacramental_journeys": "Sacrament",
+    "content_library": "Script"
   },
   "family_label": "Family",
   "search_module": {

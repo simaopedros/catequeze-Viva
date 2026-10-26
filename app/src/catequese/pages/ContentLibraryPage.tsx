@@ -422,7 +422,11 @@ export default function ContentLibraryPage() {
 
       {filtered.length === 0 ? (
         hasFilters ? (
-          <SurfaceSection title="Busca" icon={Search} tone="soft">
+          <SurfaceSection
+            title={t("library.search_title")}
+            icon={Search}
+            tone="soft"
+          >
             <EmptyState
               compact
               icon={Search}
@@ -643,7 +647,7 @@ export default function ContentLibraryPage() {
                 <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
                     <Clock className="h-3.5 w-3.5" />
-                    Duracao
+                    {t("library.card_duration")}
                   </div>
                   <p className="mt-1 text-sm font-semibold tracking-tight text-brand-ink">
                     {item.estimatedTime
@@ -654,7 +658,7 @@ export default function ContentLibraryPage() {
                 <div className="rounded-sm border border-border/70 bg-white px-4 py-3">
                   <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
                     <Puzzle className="h-3.5 w-3.5" />
-                    Atividades
+                    {t("library.card_activities")}
                   </div>
                   <p className="mt-1 text-sm font-semibold tracking-tight text-brand-ink">
                     {item._count?.activities || 0}
@@ -686,6 +690,10 @@ export default function ContentLibraryPage() {
             {tc("load_more")}
           </Button>
         </div>
+      )}
+
+      {filtered.length > 0 && !hasFilters && (
+        <SampleMeetingsPanel existingItems={items} />
       )}
 
       <ImportContentModal open={importOpen} onOpenChange={setImportOpen} />
