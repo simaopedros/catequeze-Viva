@@ -243,24 +243,9 @@ export const createHousehold = async (
 ) => {
   if (!context.user) throw new HttpError(401);
 
-  let parishId = args.parishId?.trim() || undefined;
-  if (!parishId && !context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, status: 'ACTIVE' },
-      select: { parishId: true },
-    });
-    parishId = membership?.parishId;
-
-    // Fallback to personal workspace
-    if (!parishId) {
-      const personal = await context.entities.Parish.findFirst({
-        where: { ownerId: context.user.id, type: 'PERSONAL' },
-        select: { id: true },
-      });
-      if (personal) parishId = personal.id;
-    }
-  }
-
+  // Require an explicit workspace — do not pick an arbitrary ACTIVE membership
+  // (multi-parish catechists could silently create the family in the wrong tenant).
+  const parishId = args.parishId?.trim() || undefined;
   if (!parishId && !context.user.isAdmin) {
     throw new HttpError(400, 'É necessário especificar uma paróquia para criar a família.');
   }
@@ -336,9 +321,21 @@ export const addGuardianToHousehold = async (
 
     const existing = await context.entities.GuardianProfile.findFirst({
       where: { userId: args.userId },
+      select: {
+        id: true,
+        householdId: true,
+        household: { select: { id: true, parishId: true, name: true } },
+      },
     });
 
     if (existing) {
+      // Never silently steal a guardian already linked to another family.
+      if (existing.householdId && existing.householdId !== args.householdId) {
+        throw new HttpError(
+          409,
+          'Este responsável já está vinculado a outra família. Remova o vínculo anterior antes de transferir.',
+        );
+      }
       return context.entities.GuardianProfile.update({
         where: { id: existing.id },
         data: {
