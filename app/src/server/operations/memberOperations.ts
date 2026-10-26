@@ -1413,11 +1413,35 @@ export const cancelInvitation = async (
     }
 
     await context.entities.PendingInvitation.delete({ where: { id: inv.id } });
+
+    // Also revoke legacy Membership INVITED for the same email+parish so the
+    // invite link cannot be accepted after cancel (token path still finds it).
+    const emailNorm = normalizeInviteEmail(inv.email);
+    const legacyInvites = await context.entities.Membership.findMany({
+      where: {
+        parishId: inv.parishId,
+        status: 'INVITED',
+        user: { email: { equals: emailNorm, mode: 'insensitive' } },
+      },
+      select: { id: true },
+    });
+    if (legacyInvites.length > 0) {
+      await context.entities.Membership.updateMany({
+        where: { id: { in: legacyInvites.map((m: { id: string }) => m.id) } },
+        data: {
+          status: 'INACTIVE',
+          inviteToken: null,
+          inviteTokenExpiresAt: null,
+        },
+      });
+    }
+
     await writeAuditLog(context, 'DELETE', 'PendingInvitation', inv.id, {
       operation: 'MEMBER_INVITE_CANCEL',
       parishId: inv.parishId,
       email: inv.email,
       role: inv.role,
+      revokedMemberships: legacyInvites.length,
     });
     return { success: true };
   }
@@ -1551,9 +1575,19 @@ export const removeMembership = async (
     // Auth/session tables may be unavailable in some test contexts.
   }
 
+  // Drop class assignments in this parish so removed catechists cannot keep
+  // accessing turmas via orphan ClassCatechist rows.
+  const removed = await context.entities.ClassCatechist.deleteMany({
+    where: {
+      userId: membership.userId,
+      class: { parishId: membership.parishId },
+    },
+  });
+
   await writeAuditLog(context, 'DELETE', 'Membership', membership.id, {
     operation: 'MEMBER_REMOVE',
     guardianUnlinked,
+    classAssignmentsRemoved: removed.count,
   });
   return { success: true };
 };

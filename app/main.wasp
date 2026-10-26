@@ -721,7 +721,7 @@ action resendInvitation {
 
 action cancelInvitation {
   fn: import { cancelInvitation } from "@src/server/operations/memberOperations",
-  entities: [PendingInvitation, Membership, Parish, AuditLog]
+  entities: [PendingInvitation, Membership, User, Parish, AuditLog]
 }
 
 query listFamilyPortalInvitations {
