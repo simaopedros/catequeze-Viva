@@ -2,7 +2,16 @@ import { HttpError } from 'wasp/server';
 import { MembershipStatus } from '@prisma/client';
 import { getDioceseParishIds } from '../auth/helpers';
 
-const ALLOWED_ROLES = ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'CONTENT_REVIEWER', 'PERSONAL_OWNER'];
+const STAFF_ROLES = [
+  'SUPER_ADMIN',
+  'DIOCESE_ADMIN',
+  'PARISH_COORDINATOR',
+  'COMMUNITY_COORDINATOR',
+  'LEAD_CATECHIST',
+  'ASSISTANT_CATECHIST',
+  'CONTENT_REVIEWER',
+  'PERSONAL_OWNER',
+];
 
 async function getParishIds(context: any): Promise<string[]> {
   if (context.user?.isAdmin) return [];
@@ -26,60 +35,121 @@ async function getParishIds(context: any): Promise<string[]> {
   return ids;
 }
 
+async function getActiveRoleInParish(
+  context: any,
+  parishId: string | null | undefined,
+): Promise<string | null> {
+  if (!parishId) return null;
+  if (context.user?.isAdmin) return 'SUPER_ADMIN';
+  const member = await context.entities.Membership.findFirst({
+    where: {
+      userId: context.user.id,
+      status: MembershipStatus.ACTIVE,
+      parishId,
+    },
+    select: { role: true },
+  });
+  return member?.role || null;
+}
+
+function isStaffRole(role: string | null | undefined): boolean {
+  return !!role && STAFF_ROLES.includes(role);
+}
+
 async function assertCanModifyActivity(activityId: string, context: any) {
   const activity = await context.entities.Activity.findUnique({
     where: { id: activityId },
-    select: { contentId: true, content: { select: { parishId: true, createdById: true } } },
+    select: {
+      contentId: true,
+      content: { select: { parishId: true, createdById: true } },
+    },
   });
   if (!activity) throw new HttpError(404, 'Atividade não encontrada.');
 
   if (context.user.isAdmin) return activity;
-
   if (activity.content?.createdById === context.user.id) return activity;
 
-  if (activity.content?.parishId) {
-    const parishIds = await getParishIds(context);
-    if (parishIds.length > 0 && parishIds.includes(activity.content.parishId)) {
-      const member = await context.entities.Membership.findFirst({
-        where: { userId: context.user.id, status: MembershipStatus.ACTIVE, parishId: activity.content.parishId },
-        select: { role: true },
-      });
-      if (member && ALLOWED_ROLES.includes(member.role)) return activity;
-    }
-  }
+  const role = await getActiveRoleInParish(
+    context,
+    activity.content?.parishId,
+  );
+  if (isStaffRole(role)) return activity;
 
-  throw new HttpError(403, 'Você não tem permissão para modificar esta atividade.');
+  throw new HttpError(
+    403,
+    'Você não tem permissão para modificar esta atividade.',
+  );
 }
 
-async function assertCanAccessContent(contentId: string, context: any) {
+/** Read published activities: staff, creator, or any ACTIVE parish member. */
+async function assertCanReadContentActivities(
+  contentId: string,
+  context: any,
+): Promise<{ parishId: string | null; createdById: string | null }> {
   const content = await context.entities.ContentItem.findUnique({
     where: { id: contentId },
     select: { parishId: true, createdById: true },
   });
   if (!content) throw new HttpError(404, 'Conteúdo não encontrado.');
 
-  if (context.user.isAdmin) return;
-
-  if (content.createdById === context.user.id) return;
+  if (context.user.isAdmin) return content;
+  if (content.createdById === context.user.id) return content;
 
   if (content.parishId) {
     const parishIds = await getParishIds(context);
-    if (parishIds.includes(content.parishId)) return;
+    if (parishIds.includes(content.parishId)) return content;
   }
 
   throw new HttpError(403, 'Você não tem acesso a este conteúdo.');
 }
 
-export const createActivity = async (args: {
-  contentId: string;
-  title: string;
-  type: string;
-  description?: string;
-  data?: any;
-  points?: number;
-}, context: any) => {
+async function assertCanCreateActivity(contentId: string, context: any) {
+  const content = await assertCanReadContentActivities(contentId, context);
+  if (context.user.isAdmin) return content;
+  if (content.createdById === context.user.id) return content;
+  const role = await getActiveRoleInParish(context, content.parishId);
+  if (isStaffRole(role)) return content;
+  throw new HttpError(
+    403,
+    'Apenas a equipe pastoral pode criar atividades.',
+  );
+}
+
+async function familyCatechumenIds(context: any): Promise<string[]> {
+  const ids = new Set<string>();
+  const self = await context.entities.CatechumenProfile.findMany({
+    where: { userId: context.user.id },
+    select: { id: true },
+  });
+  for (const row of self) ids.add(row.id);
+
+  const guardian = await context.entities.GuardianProfile?.findUnique?.({
+    where: { userId: context.user.id },
+    select: { householdId: true },
+  });
+  if (guardian?.householdId) {
+    const deps = await context.entities.CatechumenProfile.findMany({
+      where: { householdId: guardian.householdId },
+      select: { id: true },
+    });
+    for (const row of deps) ids.add(row.id);
+  }
+  return [...ids];
+}
+
+export const createActivity = async (
+  args: {
+    contentId: string;
+    title: string;
+    type: string;
+    description?: string;
+    data?: any;
+    points?: number;
+  },
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
-  await assertCanAccessContent(args.contentId, context);
+  await assertCanCreateActivity(args.contentId, context);
 
   return context.entities.Activity.create({
     data: {
@@ -93,13 +163,16 @@ export const createActivity = async (args: {
   });
 };
 
-export const updateActivity = async (args: {
-  id: string;
-  title?: string;
-  description?: string;
-  data?: any;
-  points?: number;
-}, context: any) => {
+export const updateActivity = async (
+  args: {
+    id: string;
+    title?: string;
+    description?: string;
+    data?: any;
+    points?: number;
+  },
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
   await assertCanModifyActivity(args.id, context);
 
@@ -107,7 +180,9 @@ export const updateActivity = async (args: {
     where: { id: args.id },
     data: {
       ...(args.title !== undefined ? { title: args.title } : {}),
-      ...(args.description !== undefined ? { description: args.description } : {}),
+      ...(args.description !== undefined
+        ? { description: args.description }
+        : {}),
       ...(args.data !== undefined ? { data: JSON.stringify(args.data) } : {}),
       ...(args.points !== undefined ? { points: args.points } : {}),
     },
@@ -118,27 +193,45 @@ export const deleteActivity = async (args: { id: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
   await assertCanModifyActivity(args.id, context);
 
-  await context.entities.ActivitySubmission.deleteMany({ where: { activityId: args.id } });
+  await context.entities.ActivitySubmission.deleteMany({
+    where: { activityId: args.id },
+  });
   return context.entities.Activity.delete({ where: { id: args.id } });
 };
 
-export const listActivitiesByContent = async (args: { contentId: string }, context: any) => {
+export const listActivitiesByContent = async (
+  args: { contentId: string },
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
-  await assertCanAccessContent(args.contentId, context);
+  const content = await assertCanReadContentActivities(args.contentId, context);
+  const role = await getActiveRoleInParish(context, content.parishId);
+  const staff = context.user.isAdmin || isStaffRole(role);
+
+  const submissionFilter = staff
+    ? undefined
+    : { catechumenProfileId: { in: await familyCatechumenIds(context) } };
 
   return context.entities.Activity.findMany({
     where: { contentId: args.contentId },
-    include: { submissions: true },
+    include: {
+      submissions: submissionFilter
+        ? { where: submissionFilter }
+        : true,
+    },
     orderBy: { createdAt: 'asc' },
   });
 };
 
-export const submitActivity = async (args: {
-  activityId: string;
-  catechumenProfileId: string;
-  answer?: string;
-  score?: number;
-}, context: any) => {
+export const submitActivity = async (
+  args: {
+    activityId: string;
+    catechumenProfileId: string;
+    answer?: string;
+    score?: number;
+  },
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
 
   const activity = await context.entities.Activity.findUnique({
@@ -149,11 +242,16 @@ export const submitActivity = async (args: {
 
   const catechumen = await context.entities.CatechumenProfile.findUnique({
     where: { id: args.catechumenProfileId },
-    select: { userId: true, householdId: true, household: { select: { guardians: { select: { userId: true } } } } },
+    select: {
+      userId: true,
+      householdId: true,
+      household: { select: { guardians: { select: { userId: true } } } },
+    },
   });
   if (!catechumen) throw new HttpError(404, 'Catequizando não encontrado.');
 
   let authorized = false;
+  let staffScorer = false;
 
   // 1. The catechumen themselves
   if (catechumen.userId === context.user.id) {
@@ -168,18 +266,13 @@ export const submitActivity = async (args: {
     }
   }
 
-  // 3. Catechist or coordinator of the catechumen's class/parish
-  if (!authorized && activity.content?.parishId) {
-    const parishIds = await getParishIds(context);
-    if (parishIds.length > 0 && parishIds.includes(activity.content.parishId)) {
-      authorized = true;
-    }
-  }
-
-  // 4. Fallback: user is catechist/coordinator with direct membership
+  // 3. Catechist assigned to an enrolled class of this catechumen
   if (!authorized) {
     const enrollments = await context.entities.ClassEnrollment.findMany({
-      where: { catechumenProfileId: args.catechumenProfileId, status: 'ENROLLED' },
+      where: {
+        catechumenProfileId: args.catechumenProfileId,
+        status: 'ENROLLED',
+      },
       select: { classId: true },
     });
     const classIds = enrollments.map((e: any) => e.classId);
@@ -190,40 +283,77 @@ export const submitActivity = async (args: {
       });
       if (catechistLink) {
         authorized = true;
+        staffScorer = true;
       }
 
       if (!authorized) {
-        const classWithParish = await context.entities.CatechesisClass.findFirst({
-          where: { id: { in: classIds } },
-          select: { parishId: true },
-        });
+        const classWithParish = await context.entities.CatechesisClass.findFirst(
+          {
+            where: { id: { in: classIds } },
+            select: { parishId: true },
+          },
+        );
         if (classWithParish?.parishId) {
           const member = await context.entities.Membership.findFirst({
             where: {
               userId: context.user.id,
               parishId: classWithParish.parishId,
               status: MembershipStatus.ACTIVE,
-              role: { in: ['PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR'] },
+              role: {
+                in: [
+                  'PARISH_COORDINATOR',
+                  'COMMUNITY_COORDINATOR',
+                  'PERSONAL_OWNER',
+                ],
+              },
             },
           });
-          if (member) authorized = true;
+          if (member) {
+            authorized = true;
+            staffScorer = true;
+          }
         }
       }
     }
   }
 
-  if (!authorized) {
-    throw new HttpError(403, 'Você não tem permissão para submeter esta atividade.');
+  // 4. Content parish staff (not any parish member)
+  if (!authorized && activity.content?.parishId) {
+    const role = await getActiveRoleInParish(
+      context,
+      activity.content.parishId,
+    );
+    if (isStaffRole(role)) {
+      authorized = true;
+      staffScorer = true;
+    }
   }
 
+  if (!authorized) {
+    throw new HttpError(
+      403,
+      'Você não tem permissão para submeter esta atividade.',
+    );
+  }
+
+  // Family submitters cannot set their own score.
+  const score = staffScorer ? args.score : undefined;
+
   const existing = await context.entities.ActivitySubmission.findFirst({
-    where: { activityId: args.activityId, catechumenProfileId: args.catechumenProfileId },
+    where: {
+      activityId: args.activityId,
+      catechumenProfileId: args.catechumenProfileId,
+    },
   });
 
   if (existing) {
     return context.entities.ActivitySubmission.update({
       where: { id: existing.id },
-      data: { answer: args.answer, score: args.score, completedAt: new Date() },
+      data: {
+        answer: args.answer,
+        ...(score !== undefined ? { score } : {}),
+        completedAt: new Date(),
+      },
     });
   }
 
@@ -232,7 +362,7 @@ export const submitActivity = async (args: {
       activityId: args.activityId,
       catechumenProfileId: args.catechumenProfileId,
       answer: args.answer,
-      score: args.score,
+      score: score ?? null,
       completedAt: new Date(),
     },
   });
