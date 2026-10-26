@@ -701,7 +701,7 @@ action inviteUserToParish {
 
 action acceptInvitation {
   fn: import { acceptInvitation } from "@src/server/operations/memberOperations",
-  entities: [Membership, AuditLog, GuardianProfile, CatechumenProfile, PendingInvitation, ClassCatechist, CatechesisClass]
+  entities: [Membership, AuditLog, GuardianProfile, CatechumenProfile, PendingInvitation, ClassCatechist, CatechesisClass, Household]
 }
 
 query getInvitationByToken {
@@ -711,7 +711,7 @@ query getInvitationByToken {
 
 action acceptInvitationByToken {
   fn: import { acceptInvitationByToken } from "@src/server/operations/memberOperations",
-  entities: [PendingInvitation, Membership, GuardianProfile, CatechumenProfile, AuditLog, ClassCatechist, CatechesisClass]
+  entities: [PendingInvitation, Membership, GuardianProfile, CatechumenProfile, AuditLog, ClassCatechist, CatechesisClass, Household]
 }
 
 action resendInvitation {
@@ -846,7 +846,7 @@ query getCatechumenProfile {
 
 action createCatechumen {
   fn: import { createCatechumen } from "@src/server/operations/catechumenOperations",
-  entities: [CatechumenProfile, Membership, Parish]
+  entities: [CatechumenProfile, Membership, Parish, Household, ClassCatechist]
 }
 
 action updateCatechumen {

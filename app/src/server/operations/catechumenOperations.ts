@@ -329,6 +329,39 @@ export const createCatechumen = async (args: any, context: any) => {
     }
   }
 
+  if (args.householdId) {
+    const household = await context.entities.Household.findUnique({
+      where: { id: args.householdId },
+      select: { parishId: true },
+    });
+    if (!household) {
+      throw new HttpError(404, "Família não encontrada.");
+    }
+    if (
+      !context.user.isAdmin &&
+      household.parishId &&
+      parishId &&
+      household.parishId !== parishId
+    ) {
+      throw new HttpError(
+        403,
+        "A família deve pertencer à mesma paróquia do catequizando.",
+      );
+    }
+    if (!context.user.isAdmin && household.parishId) {
+      const access = await requireWorkspaceAccess(
+        context,
+        household.parishId,
+      ).catch(() => null);
+      if (!access || (!access.isCoordinatorOrAbove && !access.isCatechist)) {
+        throw new HttpError(
+          403,
+          "Apenas coordenadores e catequistas podem vincular a família.",
+        );
+      }
+    }
+  }
+
   return context.entities.CatechumenProfile.create({
     data: {
       firstName: args.firstName,
@@ -383,6 +416,88 @@ export const updateCatechumen = async (args: any, context: any) => {
   }
   if (Object.keys(data).length === 0) {
     throw new HttpError(400, "Nenhum campo para atualizar.");
+  }
+
+  if (Object.prototype.hasOwnProperty.call(data, "householdId")) {
+    const current = await context.entities.CatechumenProfile.findUnique({
+      where: { id: args.id },
+      select: {
+        userId: true,
+        parishId: true,
+        householdId: true,
+        household: { select: { parishId: true } },
+      },
+    });
+    if (!current) {
+      throw new HttpError(404, "Catequizando não encontrado.");
+    }
+    // Self-service and family surfaces must not re-link households.
+    if (
+      !context.user.isAdmin &&
+      current.userId &&
+      current.userId === context.user.id
+    ) {
+      throw new HttpError(
+        403,
+        "Não é possível alterar a família deste perfil.",
+      );
+    }
+
+    const nextHouseholdId = data.householdId as string | null;
+    if (nextHouseholdId) {
+      const household = await context.entities.Household.findUnique({
+        where: { id: nextHouseholdId },
+        select: { id: true, parishId: true },
+      });
+      if (!household) {
+        throw new HttpError(404, "Família não encontrada.");
+      }
+      if (!context.user.isAdmin) {
+        if (!household.parishId) {
+          throw new HttpError(
+            403,
+            "Esta família não pertence à sua paróquia.",
+          );
+        }
+        const access = await requireWorkspaceAccess(
+          context,
+          household.parishId,
+        ).catch(() => null);
+        if (!access || (!access.isCoordinatorOrAbove && !access.isCatechist)) {
+          throw new HttpError(
+            403,
+            "Apenas coordenadores e catequistas podem alterar a família do catequizando.",
+          );
+        }
+        const catechumenParish =
+          current.parishId || current.household?.parishId || null;
+        if (catechumenParish && catechumenParish !== household.parishId) {
+          throw new HttpError(
+            403,
+            "A família deve pertencer à mesma paróquia do catequizando.",
+          );
+        }
+      }
+    } else if (!context.user.isAdmin) {
+      // Clearing the link still requires pastoral manage rights.
+      const parishId =
+        current.parishId || current.household?.parishId || null;
+      if (!parishId) {
+        throw new HttpError(
+          403,
+          "Apenas coordenadores e catequistas podem alterar a família do catequizando.",
+        );
+      }
+      const access = await requireWorkspaceAccess(context, parishId).catch(
+        () => null,
+      );
+      if (!access || (!access.isCoordinatorOrAbove && !access.isCatechist)) {
+        throw new HttpError(
+          403,
+          "Apenas coordenadores e catequistas podem alterar a família do catequizando.",
+        );
+      }
+    }
   }
 
   return context.entities.CatechumenProfile.update({
