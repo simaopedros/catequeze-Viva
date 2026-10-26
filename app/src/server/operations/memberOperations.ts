@@ -414,6 +414,16 @@ export const inviteUserToParish = async (
 
   // Pre-create family profiles when householdId is provided
   if (args.householdId && (args.role === 'GUARDIAN' || args.role === 'CATECHUMEN')) {
+    const inviteHousehold = await context.entities.Household.findUnique({
+      where: { id: args.householdId },
+      select: { id: true, parishId: true },
+    });
+    if (!inviteHousehold || inviteHousehold.parishId !== args.parishId) {
+      throw new HttpError(
+        400,
+        'A família do convite deve pertencer à mesma paróquia.',
+      );
+    }
     try {
       if (args.role === 'GUARDIAN') {
         let existingG = await context.entities.GuardianProfile.findFirst({
@@ -978,7 +988,7 @@ export const acceptInvitation = async (
     });
   }
 
-  await linkProfile(context, membership.role);
+  await linkProfile(context, membership.role, membership.parishId);
   await writeAuditLog(context, 'CREATE', 'Membership', membership.id, {
     operation: 'MEMBER_ACCEPT',
   });
@@ -1144,7 +1154,7 @@ export const acceptInvitationByToken = async (
       }
     }
 
-    await linkProfile(context, invitation.role);
+    await linkProfile(context, invitation.role, invitation.parishId);
     await context.entities.PendingInvitation.delete({
       where: { id: invitation.id },
     });
@@ -1184,22 +1194,45 @@ export const acceptInvitationByToken = async (
       where: { email: userEmail, parishId: m.parishId },
     });
   }
-  await linkProfile(context, m.role);
+  await linkProfile(context, m.role, m.parishId);
   await writeAuditLog(context, 'CREATE', 'Membership', m.id, {
     operation: 'MEMBER_ACCEPT_TOKEN',
   });
   return updated;
 };
 
-async function linkProfile(context: any, role: string) {
+async function linkProfile(
+  context: any,
+  role: string,
+  parishId?: string | null,
+) {
   const userEmail = normalizeInviteEmail(context.user.email || '');
   if (role === 'GUARDIAN') {
     let guardianProfile: any = null;
     if (userEmail) {
+      // Prefer a pre-created profile in the invitation parish / household.
       guardianProfile = await context.entities.GuardianProfile.findFirst({
-        where: { email: userEmail },
+        where: parishId
+          ? {
+              email: userEmail,
+              OR: [
+                { household: { parishId } },
+                { householdId: null },
+              ],
+            }
+          : { email: userEmail },
+        orderBy: { createdAt: 'desc' },
       } as any);
       if (guardianProfile) {
+        if (
+          guardianProfile.userId &&
+          guardianProfile.userId !== context.user.id
+        ) {
+          throw new HttpError(
+            409,
+            'Este e-mail de responsável já está vinculado a outra conta.',
+          );
+        }
         await context.entities.GuardianProfile.update({
           where: { id: guardianProfile.id },
           data: { userId: context.user.id },
@@ -1223,7 +1256,13 @@ async function linkProfile(context: any, role: string) {
   } else if (role === 'CATECHUMEN') {
     if (userEmail) {
       await (context.entities.CatechumenProfile as any).updateMany({
-        where: { email: userEmail, userId: null },
+        where: parishId
+          ? {
+              email: userEmail,
+              userId: null,
+              OR: [{ parishId }, { household: { parishId } }],
+            }
+          : { email: userEmail, userId: null },
         data: { userId: context.user.id },
       });
     }
