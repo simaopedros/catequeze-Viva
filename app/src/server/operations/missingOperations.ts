@@ -146,8 +146,15 @@ export const listMessageCampaigns = async (
     throw new HttpError(400, 'workspaceId é obrigatório.');
   }
 
+  // Membership in the workspace + block family-only roles (catechists may list;
+  // createMessageCampaign remains coordinator-write via assertCanWriteParish).
   if (!context.user.isAdmin) {
     await requireWorkspaceAccess(context, workspaceId);
+    const { assertStaffOperation } = await import('../auth/familySurface');
+    await assertStaffOperation(context, {
+      parishId: workspaceId,
+      message: 'Apenas a equipe pastoral pode listar campanhas de mensagem.',
+    });
   }
 
   return context.entities.MessageCampaign.findMany({
