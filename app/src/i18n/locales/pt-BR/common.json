@@ -534,7 +534,7 @@
   "offline_banner": "Sem conexão à internet. Algumas funcionalidades podem estar indisponíveis.",
   "skip_to_content": "Ir para o conteúdo principal",
   "install_title": "Instalar App",
-  "install_description": "Adicione à tela inicial para acesso rápido e offline.",
+  "install_description": "Adicione um atalho à tela inicial para abrir mais rápido.",
   "install_button": "Instalar",
   "offline_title": "Sem conexão",
   "offline_description": "Você está offline. Verifique sua conexão e tente novamente.",
