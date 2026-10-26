@@ -851,7 +851,9 @@ action createCatechumen {
 
 action updateCatechumen {
   fn: import { updateCatechumen } from "@src/server/operations/catechumenOperations",
-  entities: [CatechumenProfile, Membership, Parish]
+  // Must match assertCanAccessCatechumenProfile / resolveWorkspaceAccess:
+  // missing GuardianProfile previously 500'd every non-self edit.
+  entities: [CatechumenProfile, Membership, Parish, GuardianProfile, ClassEnrollment, ClassCatechist, CatechesisClass, Household]
 }
 
 action deleteCatechumen {

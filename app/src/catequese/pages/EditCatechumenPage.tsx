@@ -59,6 +59,10 @@ export default function EditCatechumenPage() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [saveFeedback, setSaveFeedback] = useState<{
+    tone: "success" | "error";
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -113,6 +117,7 @@ export default function EditCatechumenPage() {
     e?.preventDefault();
     if (!firstName || !lastName) return;
     setSaving(true);
+    setSaveFeedback(null);
     try {
       await updateCatechumen({
         id: id!,
@@ -122,16 +127,27 @@ export default function EditCatechumenPage() {
         photoUrl: photo || undefined,
       });
       setBaseline({ firstName, lastName, birthDate, photo });
-      toast({ title: t("catechumens.updated_success") });
-      navigate(`/app/catechumens/${id}`);
+      const successMessage = t("catechumens.updated_success");
+      setSaveFeedback({ tone: "success", message: successMessage });
+      toast({ title: successMessage });
+      // Let the toast mount before the route change; App-level Toaster keeps it.
+      window.setTimeout(() => {
+        navigate(`/app/catechumens/${id}`);
+      }, 50);
     } catch (e: any) {
+      const message =
+        (typeof e?.data?.message === "string" && e.data.message) ||
+        (typeof e?.message === "string" && e.message) ||
+        t("error_generic");
+      setSaveFeedback({ tone: "error", message });
       toast({
         title: t("error"),
-        description: e.message || t("error_generic"),
+        description: message,
         variant: "destructive",
       });
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   };
 
   const goBack = () =>
@@ -167,6 +183,17 @@ export default function EditCatechumenPage() {
 
           {/* <form> para Enter enviar — a tela era um div com botão onClick */}
           <form onSubmit={handleSave}>
+            {saveFeedback && (
+              <Alert
+                variant={
+                  saveFeedback.tone === "error" ? "destructive" : "default"
+                }
+                className="mb-4"
+                role="status"
+              >
+                {saveFeedback.message}
+              </Alert>
+            )}
             <AppPanel className="space-y-6">
               <div className="flex flex-col items-center gap-3">
                 <div
