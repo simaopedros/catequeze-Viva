@@ -1,4 +1,4 @@
-import { HttpError } from 'wasp/server';
+import { HttpError, prisma } from 'wasp/server';
 import { verifyPassword, hashPassword } from 'wasp/auth/password';
 import { createProviderId, findAuthIdentity, getProviderDataWithPassword, updateAuthIdentityProviderData } from 'wasp/auth/utils';
 import type { EmailProviderData } from 'wasp/auth/utils';
@@ -165,6 +165,15 @@ export const changePassword = async (args: unknown, context: any) => {
     providerData,
     { hashedPassword: newPassword },
   );
+
+  // Invalidate all Lucia sessions for this account so other devices are logged out.
+  const authRow = await prisma.auth.findUnique({
+    where: { userId: context.user.id },
+    select: { id: true },
+  });
+  if (authRow) {
+    await prisma.session.deleteMany({ where: { userId: authRow.id } });
+  }
 
   await writeAuditLog(context, 'UPDATE', 'User', context.user.id, { operation: 'PASSWORD_CHANGE' });
 
