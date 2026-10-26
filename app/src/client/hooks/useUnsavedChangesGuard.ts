@@ -20,6 +20,22 @@ export type UnsavedChangesGuard = {
   onConfirmLeave: () => void;
 };
 
+type GuardLocation = { pathname: string; state?: unknown };
+
+/** Navigations that carry this state flag (e.g. an editor swapping /new for /:id/edit) are never blocked. */
+export const SKIP_UNSAVED_GUARD_STATE = { skipUnsavedGuard: true } as const;
+
+export function shouldBlockNavigation(
+  when: boolean,
+  current: GuardLocation,
+  next: GuardLocation,
+): boolean {
+  if (!when) return false;
+  if (current.pathname === next.pathname) return false;
+  const state = next.state as { skipUnsavedGuard?: boolean } | null | undefined;
+  return !state?.skipUnsavedGuard;
+}
+
 /**
  * Guard against accidental leave when a form or offline queue is dirty.
  * - `beforeunload` for tab close / refresh
@@ -27,7 +43,9 @@ export type UnsavedChangesGuard = {
  * - `confirmLeave` for explicit Cancel / Back controls
  */
 export function useUnsavedChangesGuard(when: boolean): UnsavedChangesGuard {
-  const blocker = useBlocker(when);
+  const blocker = useBlocker(({ currentLocation, nextLocation }) =>
+    shouldBlockNavigation(when, currentLocation, nextLocation),
+  );
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
   const [manualOpen, setManualOpen] = useState(false);
 
