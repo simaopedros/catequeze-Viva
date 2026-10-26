@@ -17,6 +17,7 @@ import {
   isSubscriptionActiveLike,
   isProductTrialStatus,
   isProductTrialWindowOpen,
+  getProductTrialEndsAt,
   PRODUCT_TRIAL_PLAN_ID,
   type PlanLimits,
 } from "../../shared/planLimits";
@@ -331,29 +332,59 @@ export async function resolveNewParishBilling(
   };
 }
 
-/**
- * Load the user billing row. Does not grant in-app trial to new accounts.
- * Grandfather: keep existing in-app `trialing` (no Stripe customer) inside the
- * original signup window, and heal a missing personal plan id.
- * Never touches users already managed by Stripe (paymentProcessorUserId set).
- */
-export async function ensureProductTrial(
-  context: any,
-  userId: string,
-): Promise<{
+const PRODUCT_TRIAL_USER_SELECT = {
+  subscriptionStatus: true,
+  subscriptionPlan: true,
+  createdAt: true,
+  paymentProcessorUserId: true,
+  trialEndsAt: true,
+  datePaid: true,
+} as const;
+
+type ProductTrialUser = {
   subscriptionStatus: string | null;
   subscriptionPlan: string | null;
   createdAt: Date;
   paymentProcessorUserId: string | null;
-}> {
-  const user = await context.entities.User.findUnique({
+  trialEndsAt: Date | null;
+  datePaid: Date | null;
+};
+
+/**
+ * A brand-new account that never touched billing: no Stripe customer, no
+ * subscription status, no previous trial, never paid, on the free sentinel,
+ * and still inside the 7-day signup window.
+ */
+export function isEligibleForNoCardProductTrial(
+  user: Partial<ProductTrialUser> | null | undefined,
+  now: Date = new Date(),
+): boolean {
+  if (!user) return false;
+  if (user.paymentProcessorUserId) return false;
+  if (user.subscriptionStatus) return false;
+  if (user.trialEndsAt) return false;
+  if (user.datePaid) return false;
+  const plan = (user.subscriptionPlan || '').toLowerCase();
+  if (plan && plan !== 'catechist_free') return false;
+  return isProductTrialWindowOpen(user.createdAt, now);
+}
+
+/**
+ * Load the user billing row and keep the in-app 7-day product trial healthy.
+ * - New accounts (see isEligibleForNoCardProductTrial) get `trialing` on
+ *   PRODUCT_TRIAL_PLAN_ID until createdAt + 7 days, without a card.
+ * - Existing in-app `trialing` inside the signup window gets a missing
+ *   personal plan id healed.
+ * Never touches users already managed by Stripe (paymentProcessorUserId set)
+ * and never re-grants once a trial or subscription status was recorded.
+ */
+export async function ensureProductTrial(
+  context: any,
+  userId: string,
+): Promise<ProductTrialUser> {
+  const user: ProductTrialUser | null = await context.entities.User.findUnique({
     where: { id: userId },
-    select: {
-      subscriptionStatus: true,
-      subscriptionPlan: true,
-      createdAt: true,
-      paymentProcessorUserId: true,
-    },
+    select: PRODUCT_TRIAL_USER_SELECT,
   });
   if (!user) {
     throw new HttpError(401);
@@ -362,18 +393,38 @@ export async function ensureProductTrial(
   // Stripe-managed or already paid — leave alone.
   if (user.paymentProcessorUserId) return user;
   if (isSubscriptionActiveLike(user.subscriptionStatus)) return user;
+
+  if (isEligibleForNoCardProductTrial(user)) {
+    // Conditional write so concurrent requests (or a Stripe webhook landing
+    // in between) cannot double-grant or clobber a real subscription.
+    await context.entities.User.updateMany({
+      where: {
+        id: userId,
+        subscriptionStatus: null,
+        paymentProcessorUserId: null,
+        trialEndsAt: null,
+        datePaid: null,
+      },
+      data: {
+        subscriptionStatus: 'trialing',
+        subscriptionPlan: PRODUCT_TRIAL_PLAN_ID,
+        trialEndsAt: getProductTrialEndsAt(user.createdAt),
+      },
+    });
+    const refreshed: ProductTrialUser | null = await context.entities.User.findUnique({
+      where: { id: userId },
+      select: PRODUCT_TRIAL_USER_SELECT,
+    });
+    return refreshed ?? user;
+  }
+
   if (isProductTrialStatus(user.subscriptionStatus) && isProductTrialWindowOpen(user.createdAt)) {
     // Ensure plan id is a real personal plan during grandfather trial.
     if ((user.subscriptionPlan || '').toLowerCase() === 'catechist_free' || !user.subscriptionPlan) {
       return context.entities.User.update({
         where: { id: userId },
         data: { subscriptionPlan: PRODUCT_TRIAL_PLAN_ID },
-        select: {
-          subscriptionStatus: true,
-          subscriptionPlan: true,
-          createdAt: true,
-          paymentProcessorUserId: true,
-        },
+        select: PRODUCT_TRIAL_USER_SELECT,
       });
     }
     return user;

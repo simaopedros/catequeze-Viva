@@ -17,6 +17,7 @@ import { validateOrThrow } from "../server/validation";
 import { paymentProcessor } from "./paymentProcessor";
 import { stripeClient } from "./stripe/stripeClient";
 import {
+  isInAppProductTrial,
   isProductTrialStatus,
   isSubscriptionActiveLike,
   resolvePlanIdOrFree,
@@ -167,7 +168,8 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     Boolean(freshUser?.paymentProcessorUserId) &&
     (isSubscriptionActiveLike(freshUser?.subscriptionStatus) ||
       (isProductTrialStatus(freshUser?.subscriptionStatus) &&
-        Boolean(freshUser?.trialEndsAt)));
+        Boolean(freshUser?.trialEndsAt) &&
+        !isInAppProductTrial(freshUser)));
   if (alreadyOnStripePersonal && !isInstitutionalPlan) {
     throw new HttpError(
       409,

@@ -74,6 +74,12 @@ const updateProfileSchema = z.object({
   firstName: z.string().min(1).max(100).optional(),
   lastName: z.string().min(1).max(100).optional(),
   phone: z.string().max(20).optional(),
+  avatarUrl: z
+    .string()
+    .max(200_000)
+    .regex(/^data:image\/(jpeg|png|webp);base64,/)
+    .nullable()
+    .optional(),
 });
 
 export const updateUserProfile = async (args: any, context: any) => {
@@ -84,6 +90,7 @@ export const updateUserProfile = async (args: any, context: any) => {
   if (args.firstName !== undefined) data.firstName = args.firstName;
   if (args.lastName !== undefined) data.lastName = args.lastName;
   if (args.phone !== undefined) data.phone = args.phone;
+  if (args.avatarUrl !== undefined) data.avatarUrl = args.avatarUrl;
 
   if (Object.keys(data).length === 0) {
     throw new HttpError(400, 'Nenhum campo para atualizar.');
@@ -92,7 +99,7 @@ export const updateUserProfile = async (args: any, context: any) => {
   const updated = await context.entities.User.update({
     where: { id: context.user.id },
     data,
-    select: { id: true, firstName: true, lastName: true, phone: true },
+    select: { id: true, firstName: true, lastName: true, phone: true, avatarUrl: true },
   });
 
   await writeAuditLog(context, 'UPDATE', 'User', context.user.id, { operation: 'PROFILE_UPDATE' });

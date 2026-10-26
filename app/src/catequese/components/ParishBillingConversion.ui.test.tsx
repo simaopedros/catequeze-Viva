@@ -95,7 +95,7 @@ describe("ParishBillingConversion", () => {
     });
 
     const usage = screen.getByTestId("parish-conversion-usage");
-    expect(usage).toHaveTextContent("parish_offer.usage_benefits_label");
+    expect(usage).toHaveTextContent("checkout_plan_includes_label");
     expect(usage).toHaveTextContent("parish_offer.usage_unlimited_classes");
     expect(usage).toHaveTextContent("parish_offer.usage_unlimited_catechumens");
     expect(usage).not.toHaveTextContent("parish_offer.usage_trial_label");
@@ -154,7 +154,7 @@ describe("ParishBillingConversion", () => {
     });
 
     const usage = screen.getByTestId("personal-conversion-usage");
-    expect(usage).toHaveTextContent("catechist_offer.usage_benefits_label");
+    expect(usage).toHaveTextContent("checkout_plan_includes_label");
     expect(usage).toHaveTextContent(
       "catechist_offer.usage_plan_classes|count=3",
     );
@@ -165,6 +165,44 @@ describe("ParishBillingConversion", () => {
     expect(usage).not.toHaveTextContent("catechist_offer.usage_class|count=0");
     expect(usage).not.toHaveTextContent(
       "catechist_offer.usage_catechumen|count=0",
+    );
+  });
+
+  it("names the free days and the first charge date when Checkout grants a trial", () => {
+    renderConversion({
+      variant: "catechist",
+      isTrial: false,
+      trialDaysLeft: null,
+      trialEndsLabel: null,
+      classesUsed: 0,
+      catechumensUsed: 0,
+      checkoutTrialDays: 7,
+    });
+
+    expect(screen.getByTestId("billing-offer-cta")).toHaveTextContent(
+      "checkout_cta_start_trial|count=7",
+    );
+    expect(screen.getByTestId("billing-charge-note")).toHaveTextContent(
+      "checkout_charge_after_trial",
+    );
+  });
+
+  it("says the charge is immediate when no trial days are left", () => {
+    renderConversion({
+      variant: "catechist",
+      isTrial: false,
+      trialDaysLeft: null,
+      trialEndsLabel: null,
+      classesUsed: 0,
+      catechumensUsed: 0,
+      checkoutTrialDays: 0,
+    });
+
+    expect(screen.getByTestId("billing-offer-cta")).toHaveTextContent(
+      "catechist_offer.cta",
+    );
+    expect(screen.getByTestId("billing-charge-note")).toHaveTextContent(
+      "checkout_charge_today",
     );
   });
 });

@@ -12,14 +12,10 @@ import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { buildBillingJourneyHref } from "../lib/upgradeJourney";
 import { PaymentPlanId } from "../../payment/plans";
-import { shouldRenderGatedRoute } from "../../client/appRouteGates";
-
-const ALWAYS_ACCESSIBLE = [
-  "/app/billing",
-  "/account",
-  "/app/onboarding",
-  "/app/select-workspace",
-];
+import {
+  isSubscriptionFreeAppPath,
+  shouldRenderGatedRoute,
+} from "../../client/appRouteGates";
 
 interface WorkspaceBilling {
   plan?: string | null;
@@ -79,17 +75,11 @@ function workspaceHasAccess(
   return effective.plan !== "catechist_free";
 }
 
-export function SubscriptionGate({ children }: { children: ReactNode }) {
+/** Whether the active workspace is paid/trialing for the current user. */
+export function useWorkspaceSubscriptionAccess() {
   const { data: user } = useAuth();
   const { isPersonal, workspace } = useActiveWorkspace();
   const { userRole, isAdmin } = useUserContext();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [checked, setChecked] = useState(false);
-
-  const alwaysAccessible = ALWAYS_ACCESSIBLE.some((p) =>
-    location.pathname.startsWith(p),
-  );
 
   const isBillingManager = canManageWorkspaceBilling(
     workspace?.role || userRole,
@@ -112,6 +102,24 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
     workspace?.type ?? (isPersonal ? "PERSONAL" : "PARISH"),
     { isBillingManager },
   );
+
+  return {
+    user,
+    userLoaded: user !== undefined,
+    isPersonal,
+    isBillingManager,
+    hasAccess,
+  };
+}
+
+export function SubscriptionGate({ children }: { children: ReactNode }) {
+  const { user, isPersonal, isBillingManager, hasAccess } =
+    useWorkspaceSubscriptionAccess();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [checked, setChecked] = useState(false);
+
+  const alwaysAccessible = isSubscriptionFreeAppPath(location.pathname);
 
   useEffect(() => {
     if (user === undefined) return;

@@ -12,6 +12,7 @@ interface WelcomeStepProps {
   onPersonal: () => void;
   onManager: () => void;
   onDiocese?: () => void;
+  onSkipExplore?: () => void;
   launchCatequistaOnly?: boolean;
 }
 
@@ -19,6 +20,7 @@ export function WelcomeStep({
   onPersonal,
   onManager,
   onDiocese,
+  onSkipExplore,
   launchCatequistaOnly = false,
 }: WelcomeStepProps) {
   const { t } = useTranslation("onboarding");
@@ -74,6 +76,20 @@ export function WelcomeStep({
         <p className="text-xs text-muted-foreground">
           {t("welcome.invite_hint")}
         </p>
+      )}
+      {onSkipExplore && (
+        <div className="space-y-1 border-t border-border/70 pt-5">
+          <button
+            type="button"
+            onClick={onSkipExplore}
+            className="min-h-11 text-sm font-medium text-brand-ink underline-offset-4 hover:underline"
+          >
+            {t("welcome.skip_explore")}
+          </button>
+          <p className="text-xs text-muted-foreground">
+            {t("welcome.skip_explore_hint")}
+          </p>
+        </div>
       )}
     </div>
   );
