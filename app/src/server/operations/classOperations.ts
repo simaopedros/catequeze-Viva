@@ -399,6 +399,8 @@ export const getClassDetails = async (args: { id: string }, context: any) => {
   if (!classData) throw new HttpError(404, "Turma não encontrada.");
 
   // RBAC: verify user has access to this class
+  let familyEnrollmentFilter: { householdId?: string; userId?: string } | null =
+    null;
   if (!context.user.isAdmin) {
     // Use effective role which works for personal workspace owners too
     const role = await getEffectiveParishRole(context, classData.parishId);
@@ -415,21 +417,35 @@ export const getClassDetails = async (args: { id: string }, context: any) => {
       }
     }
 
-    // Catechists: only classes they're assigned to
+    // Catechists: assigned to class AND still ACTIVE in this parish
     let isCatechistOfClass = false;
     if (!isCoordinator) {
-      isCatechistOfClass = !!(await context.entities.ClassCatechist.findFirst({
+      const assignment = await context.entities.ClassCatechist.findFirst({
         where: { userId: context.user.id, classId: args.id },
-      }));
+        select: { id: true },
+      });
+      if (assignment) {
+        const active = await context.entities.Membership.findFirst({
+          where: {
+            userId: context.user.id,
+            parishId: classData.parishId,
+            status: "ACTIVE",
+          },
+          select: { id: true },
+        });
+        isCatechistOfClass = !!active;
+      }
     }
 
     // Guardians: only classes where their dependents are enrolled
     let isGuardianOfEnrolled = false;
+    let guardianHouseholdId: string | null = null;
     if (!isCoordinator && !isCatechistOfClass) {
       const guardian = await context.entities.GuardianProfile.findUnique({
         where: { userId: context.user.id },
       });
       if (guardian?.householdId) {
+        guardianHouseholdId = guardian.householdId;
         const enrolled = await context.entities.ClassEnrollment.findFirst({
           where: {
             classId: args.id,
@@ -460,7 +476,29 @@ export const getClassDetails = async (args: { id: string }, context: any) => {
     ) {
       throw new HttpError(403, "Você não tem acesso a esta turma.");
     }
+
+    // Family surfaces must not receive the full class roster.
+    if (!isCoordinator && !isCatechistOfClass) {
+      if (isGuardianOfEnrolled && guardianHouseholdId) {
+        familyEnrollmentFilter = { householdId: guardianHouseholdId };
+      } else if (isCatechumenOfClass) {
+        familyEnrollmentFilter = { userId: context.user.id };
+      }
+    }
   }
+
+  const enrollmentWhere: any = {
+    status: EnrollmentStatus.ENROLLED,
+    ...(familyEnrollmentFilter?.householdId
+      ? {
+          catechumenProfile: {
+            householdId: familyEnrollmentFilter.householdId,
+          },
+        }
+      : familyEnrollmentFilter?.userId
+        ? { catechumenProfile: { userId: familyEnrollmentFilter.userId } }
+        : {}),
+  };
 
   const [details, aggregates] = await Promise.all([
     context.entities.CatechesisClass.findUnique({
@@ -484,7 +522,7 @@ export const getClassDetails = async (args: { id: string }, context: any) => {
           },
         },
         enrollments: {
-          where: { status: EnrollmentStatus.ENROLLED },
+          where: enrollmentWhere,
           orderBy: { catechumenProfile: { firstName: "asc" } },
           take: MAX_ENROLLMENTS_IN_DETAILS,
           select: {
