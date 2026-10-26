@@ -985,7 +985,8 @@ action saveAttendanceBatch {
     CatechumenProfile,
     Parish,
     ClassCatechist,
-    User
+    User,
+    GuardianProfile
   ]
 }
 

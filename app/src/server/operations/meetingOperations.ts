@@ -565,17 +565,11 @@ export const saveAttendanceBatch = async (
       note?: string | null;
       clientUpdatedAt?: string;
     }>;
+    surface?: string | null;
   },
   context: any,
 ): Promise<any> => {
   if (!context.user) throw new HttpError(401);
-  const role = await getUserRole(context);
-  if (!isCatechistOrAbove(role)) {
-    throw new HttpError(
-      403,
-      "Apenas catequistas e coordenadores podem registrar presença.",
-    );
-  }
 
   const changes = args.changes || [];
   if (changes.length === 0) {
@@ -599,7 +593,7 @@ export const saveAttendanceBatch = async (
       "Não é possível registar presença em encontro cancelado.",
     );
   }
-  await assertUserBelongsToClass(context, meeting.classId);
+  await assertCanTakeAttendance(context, meeting.classId, args.surface);
 
   const serverTime = new Date();
   const profileIds = [
@@ -803,12 +797,6 @@ export const listMeetingsForClasses = async (
 
 export const saveAttendance = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
-  const role = await getUserRole(context);
-  if (!isCatechistOrAbove(role))
-    throw new HttpError(
-      403,
-      "Apenas catequistas e coordenadores podem registrar presença.",
-    );
 
   // Verificar pertencimento à turma através do meeting
   const meeting = await context.entities.Meeting.findUnique({
@@ -822,7 +810,8 @@ export const saveAttendance = async (args: any, context: any) => {
       "Não é possível registar presença em encontro cancelado.",
     );
   }
-  await assertUserBelongsToClass(context, meeting.classId);
+  // Workspace-local staff check (not global best role across tenants).
+  await assertCanTakeAttendance(context, meeting.classId, args.surface);
 
   // Validate catechumen is enrolled in this class
   const isEnrolled = await context.entities.ClassEnrollment.findFirst({
