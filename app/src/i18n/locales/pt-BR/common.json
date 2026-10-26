@@ -628,6 +628,18 @@
     "current_password_required": "Informe a senha atual.",
     "password_min_length": "A nova senha precisa ter pelo menos 8 caracteres.",
     "phone_invalid": "Telefone inválido.",
-    "too_long": "Texto muito longo."
+    "too_long": "Texto muito longo.",
+    "native_required": "Preencha este campo.",
+    "native_required_checkbox": "Marque esta opção para continuar.",
+    "native_required_select": "Escolha uma opção.",
+    "native_email": "Informe um e-mail válido, como nome@exemplo.com.",
+    "native_url": "Informe um endereço válido, começando com https://.",
+    "native_pattern": "Use o formato pedido.",
+    "native_time": "Use o formato 24 horas HH:MM, por exemplo 19:30.",
+    "native_too_short": "Use pelo menos {{min}} caracteres.",
+    "native_too_long": "Use no máximo {{max}} caracteres.",
+    "native_min": "O valor mínimo é {{min}}.",
+    "native_max": "O valor máximo é {{max}}.",
+    "native_invalid": "Valor inválido."
   }
 }
