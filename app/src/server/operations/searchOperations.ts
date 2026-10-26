@@ -1,6 +1,10 @@
 import { HttpError } from 'wasp/server';
 import { MembershipStatus } from '@prisma/client';
 import { getDioceseParishIds } from '../auth/helpers';
+import {
+  loadActiveRoles,
+  rolesAreFamilyOnly,
+} from '../auth/familySurface';
 import { classWhereAcrossWorkspaces } from './sharedScope';
 import {
   isCacheReady,
@@ -81,6 +85,30 @@ export const globalSearch = async (args: { query: string; locale?: string | null
     ? {}
     : await classWhereAcrossWorkspaces(context, parishIds);
 
+  // Family-only accounts must not discover other households via parish-wide search.
+  const roles = isAdmin ? [] : await loadActiveRoles(context);
+  const familyOnly = !isAdmin && rolesAreFamilyOnly(roles);
+  let familyHouseholdIds: string[] = [];
+  if (familyOnly) {
+    const guardians = await context.entities.GuardianProfile.findMany({
+      where: { userId: context.user.id },
+      select: { householdId: true },
+    });
+    familyHouseholdIds = guardians
+      .map((g: { householdId: string | null }) => g.householdId)
+      .filter(Boolean) as string[];
+  }
+  const familyCatechumenFilter = familyOnly
+    ? {
+        OR: [
+          ...(familyHouseholdIds.length
+            ? [{ householdId: { in: familyHouseholdIds } }]
+            : []),
+          { userId: context.user.id },
+        ],
+      }
+    : null;
+
   // Reference data: serve from cache if ready, otherwise trigger background load
   const cacheReady = isCacheReady();
   if (!cacheReady) {
@@ -126,13 +154,15 @@ export const globalSearch = async (args: { query: string; locale?: string | null
                     { lastName: { contains: q, mode: 'insensitive' } },
                   ],
                 },
-                {
-                  OR: [
-                    { enrollments: { some: { class: parishFilter } } },
-                    { household: parishFilter },
-                    { parishId: { in: parishIds } },
-                  ],
-                },
+                familyCatechumenFilter
+                  ? familyCatechumenFilter
+                  : {
+                      OR: [
+                        { enrollments: { some: { class: parishFilter } } },
+                        { household: parishFilter },
+                        { parishId: { in: parishIds } },
+                      ],
+                    },
               ],
             },
         select: { id: true, firstName: true, lastName: true },
@@ -204,11 +234,18 @@ export const globalSearch = async (args: { query: string; locale?: string | null
         ),
 
     safeQuery(() =>
-      context.entities.Household.findMany({
-        where: { name: { contains: q, mode: 'insensitive' }, ...parishFilter },
-        select: { id: true, name: true },
-        take: limit,
-      })
+      familyOnly && familyHouseholdIds.length === 0
+        ? Promise.resolve([])
+        : context.entities.Household.findMany({
+            where: {
+              name: { contains: q, mode: 'insensitive' },
+              ...(familyOnly
+                ? { id: { in: familyHouseholdIds } }
+                : parishFilter),
+            },
+            select: { id: true, name: true },
+            take: limit,
+          })
     ),
 
     // SacramentalJourney — filter via catechumenProfile relation
@@ -220,9 +257,13 @@ export const globalSearch = async (args: { query: string; locale?: string | null
               { firstName: { contains: q, mode: 'insensitive' } },
               { lastName: { contains: q, mode: 'insensitive' } },
             ],
-            ...(isAdmin ? {} : {
-              enrollments: { some: { class: parishFilter } },
-            }),
+            ...(isAdmin
+              ? {}
+              : familyCatechumenFilter
+                ? familyCatechumenFilter
+                : {
+                    enrollments: { some: { class: parishFilter } },
+                  }),
           },
         },
         select: {
@@ -245,9 +286,11 @@ export const globalSearch = async (args: { query: string; locale?: string | null
         : context.entities.Document.findMany({
             where: {
               name: { contains: q, mode: 'insensitive' },
-              catechumenProfile: {
-                enrollments: { some: { class: parishFilter } },
-              },
+              catechumenProfile: familyCatechumenFilter
+                ? familyCatechumenFilter
+                : {
+                    enrollments: { some: { class: parishFilter } },
+                  },
             },
             select: { id: true, name: true, type: true },
             take: limit,
