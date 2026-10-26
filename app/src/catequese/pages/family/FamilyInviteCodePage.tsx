@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Button } from "../../../client/components/ui/button";
 import { Input } from "../../../client/components/ui/input";
 import { Label } from "../../../client/components/ui/label";
+import { Alert } from "../../../client/components/ui/alert";
 import { Mail } from "lucide-react";
 import {
   AppEyebrow,
@@ -16,11 +17,16 @@ export default function FamilyInviteCodePage() {
   const { t } = useTranslation("family");
   const navigate = useNavigate();
   const [code, setCode] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = code.trim();
-    if (!trimmed) return;
+    if (!trimmed) {
+      setError(t("invite_code.empty_error"));
+      return;
+    }
+    setError("");
     navigate(`/convite/${encodeURIComponent(trimmed)}`);
   };
 
@@ -33,34 +39,56 @@ export default function FamilyInviteCodePage() {
           </div>
           <AppEyebrow className="text-center">{t("portal_badge")}</AppEyebrow>
           <AppDisplayTitle className="text-center">
-            {t("landing.insert_code")}
+            {t("invite_code.title")}
           </AppDisplayTitle>
           <AppGoldRule className="mx-auto" />
           <p className="text-sm text-muted-foreground">
-            {t("signup.requires_invite")}
+            {t("invite_code.subtitle")}
           </p>
         </div>
 
         <form onSubmit={handleSubmit}>
           <AppPanel className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="invite-code">{t("landing.insert_code")}</Label>
+              <Label htmlFor="invite-code">{t("invite_code.label")}</Label>
               <Input
                 id="invite-code"
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="abc123..."
+                onChange={(e) => {
+                  setCode(e.target.value);
+                  if (error) setError("");
+                }}
+                placeholder={t("invite_code.placeholder")}
                 autoFocus
-                required
+                aria-invalid={Boolean(error)}
+                aria-describedby={error ? "invite-code-error" : "invite-code-help"}
               />
+              {error ? (
+                <Alert id="invite-code-error" variant="destructive">
+                  {error}
+                </Alert>
+              ) : (
+                <p id="invite-code-help" className="text-xs text-muted-foreground">
+                  {t("invite_code.help_where")}
+                </p>
+              )}
             </div>
             <Button
               type="submit"
               className="h-10 w-full rounded-sm"
               disabled={!code.trim()}
             >
-              {t("invite.accept")}
+              {t("invite_code.submit")}
             </Button>
+            <p className="text-xs text-muted-foreground text-center">
+              {t("invite_code.help_expired")}
+            </p>
+            <Link
+              to="/"
+              className="block text-center text-sm text-brand-ink underline underline-offset-2"
+            >
+              {t("invite.back_home")}
+            </Link>
           </AppPanel>
         </form>
       </div>

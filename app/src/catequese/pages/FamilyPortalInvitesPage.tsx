@@ -425,15 +425,25 @@ export default function FamilyPortalInvitesPage() {
                     </td>
                     <td className="px-3 py-3">
                       {inv.status === "EXPIRED" ? (
-                        <Badge variant="destructive" className="gap-1">
-                          <AlertTriangle className="h-3 w-3" />
-                          {tf("portal_invites.status_expired")}
-                        </Badge>
+                        <div className="space-y-1">
+                          <Badge variant="destructive" className="gap-1">
+                            <AlertTriangle className="h-3 w-3" />
+                            {tf("portal_invites.status_expired")}
+                          </Badge>
+                          <p className="text-xs text-muted-foreground max-w-[14rem]">
+                            {tf("portal_invites.status_expired_hint")}
+                          </p>
+                        </div>
                       ) : (
-                        <Badge variant="outline" className="gap-1">
-                          <Clock className="h-3 w-3" />
-                          {tf("portal_invites.status_pending")}
-                        </Badge>
+                        <div className="space-y-1">
+                          <Badge variant="outline" className="gap-1">
+                            <Clock className="h-3 w-3" />
+                            {tf("portal_invites.status_pending")}
+                          </Badge>
+                          <p className="text-xs text-muted-foreground max-w-[14rem]">
+                            {tf("portal_invites.status_pending_hint")}
+                          </p>
+                        </div>
                       )}
                     </td>
                     <td className="px-3 py-3 text-muted-foreground">
@@ -492,7 +502,9 @@ export default function FamilyPortalInvitesPage() {
                           ) : (
                             <RefreshCw className="mr-1 h-3.5 w-3.5" />
                           )}
-                          {tf("portal_invites.resend")}
+                          {inv.status === "EXPIRED"
+                            ? tf("portal_invites.resend_expired")
+                            : tf("portal_invites.resend")}
                         </Button>
                       </div>
                     </td>
