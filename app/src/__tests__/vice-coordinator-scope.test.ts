@@ -213,11 +213,13 @@ describe('COMMUNITY_COORDINATOR scope resolution', () => {
     expect([...classWhere.id.in].sort()).toEqual([CLASS_A1, CLASS_A2].sort());
 
     const catechumenWhere = catechumenWhereForAccess(access) as any;
-    expect(catechumenWhere.OR).toHaveLength(2);
-    expect(catechumenWhere.OR[0].enrollments.some.classId.in.sort()).toEqual(
+    // Scope is by enrollment in allowed classes — never household parish/community
+    // (cross-parish family links must not leak catechumens into another roster).
+    expect(catechumenWhere.enrollments.some.classId.in.sort()).toEqual(
       [CLASS_A1, CLASS_A2].sort(),
     );
-    expect(catechumenWhere.OR[1].household.communityId).toBe(COMMUNITY_A);
+    expect(catechumenWhere.OR).toBeUndefined();
+    expect(catechumenWhere.household).toBeUndefined();
 
     const memberWhere = memberWhereForAccess(access, 'vice') as any;
     expect(memberWhere.parishId).toBe(PARISH);
@@ -260,9 +262,8 @@ describe('other roles are unchanged', () => {
     expect(memberWhereForAccess(access!, 'coord')).toEqual({ parishId: PARISH });
     expect(catechumenWhereForAccess(access!)).toEqual({
       OR: [
-        { enrollments: { some: { class: { parishId: PARISH } } } },
-        { household: { parishId: PARISH } },
         { parishId: PARISH },
+        { enrollments: { some: { class: { parishId: PARISH } } } },
       ],
     });
   });
@@ -340,6 +341,8 @@ describe('scope helpers on a synthetic access object', () => {
 
   it('catechumen filter without community only includes enrollments in scoped classes', () => {
     const where = catechumenWhereForAccess(scoped) as any;
-    expect(where.OR).toHaveLength(1);
+    expect(where.enrollments?.some?.classId?.in).toEqual([CLASS_A1]);
+    expect(where.OR).toBeUndefined();
+    expect(where.household).toBeUndefined();
   });
 });
