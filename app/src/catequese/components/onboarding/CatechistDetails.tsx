@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { TimeInput } from "../../../client/components/ui/time-input";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../client/components/ui/button";
 import {
@@ -92,9 +93,8 @@ export function CatechistDetails({
             <label className="text-sm font-medium">
               {t("coordinator.start_time")}
             </label>
-            <input
+            <TimeInput
               aria-label={t("coordinator.start_time")}
-              type="time"
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
               className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
@@ -104,9 +104,8 @@ export function CatechistDetails({
             <label className="text-sm font-medium">
               {t("coordinator.end_time")}
             </label>
-            <input
+            <TimeInput
               aria-label={t("coordinator.end_time")}
-              type="time"
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
               className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"

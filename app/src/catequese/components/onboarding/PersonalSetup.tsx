@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { TimeInput } from "../../../client/components/ui/time-input";
 import { useTranslation } from "react-i18next";
 import {
   User,
@@ -59,7 +60,10 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
 
       <div className="max-w-md space-y-2.5">
         <AppDisplayTitle as="h2">{t("personal_setup.title")}</AppDisplayTitle>
-        <div className="mx-auto h-px w-16 bg-gradient-to-r from-brand-gold to-transparent" aria-hidden />
+        <div
+          className="mx-auto h-px w-16 bg-gradient-to-r from-brand-gold to-transparent"
+          aria-hidden
+        />
         <p className="text-sm text-muted-foreground">
           {t("personal_setup.subtitle")}
         </p>
@@ -150,14 +154,12 @@ export function PersonalSetup({ onComplete, loading }: PersonalSetupProps) {
                       </option>
                     ))}
                   </select>
-                  <Input
-                    type="time"
+                  <TimeInput
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
                     className="h-9"
                   />
-                  <Input
-                    type="time"
+                  <TimeInput
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
                     className="h-9"
