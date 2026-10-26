@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { login, signup } from "wasp/client/auth";
+import { login } from "wasp/client/auth";
 import { googleSignInUrl } from "wasp/client/auth";
 import { signOut } from "../client/auth/signOut";
 import { useNavigate, useSearchParams } from "react-router";
@@ -20,6 +20,7 @@ import {
   getTwoFactorStatus,
   verifyTwoFactorLogin,
   beginTwoFactorChallenge,
+  resendVerificationEmail,
 } from "wasp/client/operations";
 import { isFamilyPortalHost } from "../shared/portal";
 import { rememberPendingInviteToken } from "./inviteTokenStorage";
@@ -54,8 +55,9 @@ export default function CustomLoginForm({
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [isUnverified, setIsUnverified] = useState(false);
-  const [pendingEmail, setPendingEmail] = useState("");
+  const [notice, setNotice] = useState("");
+  const [resendEmail, setResendEmail] = useState("");
+  const [isResending, setIsResending] = useState(false);
   const [twoFactorToken, setTwoFactorToken] = useState("");
 
   useEffect(() => {
@@ -80,28 +82,20 @@ export default function CustomLoginForm({
     }
     setIsLoading(true);
     setError("");
-    setIsUnverified(false);
+    setNotice("");
+    setResendEmail("");
     try {
       await login({ email, password });
     } catch (err: any) {
-      // Wasp's login() throws English messages (e.g. "Invalid credentials");
-      // Check if the error is due to unverified email
-      const errorMessage = err?.message || err?.toString() || "";
-      const isEmailNotVerified = 
-        typeof errorMessage === "string" &&
-        /email.*not.*verif|verif.*email|confirm.*email/i.test(errorMessage);
-      
-      if (isEmailNotVerified) {
-        setError(t("login_error_unverified"));
-        setIsUnverified(true);
-        setPendingEmail(email);
+      // Wasp's login() throws English messages (e.g. "Invalid credentials")
+      // and uses the same error for a wrong password and an unconfirmed email,
+      // so the resend option is offered on any credentials error.
+      const status = err?.statusCode ?? err?.response?.status;
+      if (typeof status === "number" && status >= 500) {
+        setError(t("login_error_generic"));
       } else {
-        const status = err?.statusCode ?? err?.response?.status;
-        setError(
-          typeof status === "number" && status >= 500
-            ? t("login_error_generic")
-            : t("login_error_invalid"),
-        );
+        setError(t("login_error_invalid"));
+        setResendEmail(email);
       }
       setIsLoading(false);
       return;
@@ -152,32 +146,18 @@ export default function CustomLoginForm({
   };
 
   const handleResendVerification = async () => {
-    if (!pendingEmail) return;
-    setIsLoading(true);
+    if (!resendEmail) return;
+    setIsResending(true);
     setError("");
-    
+    setNotice("");
     try {
-      // Tenta fazer signup novamente com o mesmo email para triggerar o envio do email
-      // O Wasp detecta que o email já existe mas não verificado e reenvia
-      await signup({ 
-        email: pendingEmail, 
-        password: "temporary-password-for-resend-" + Date.now(),
-        username: pendingEmail,
-        isAdmin: false
-      });
-      setError(t("login_resend_sent"));
-      setIsUnverified(false);
-    } catch (err: any) {
-      // Se o erro diz que o email já existe, provavelmente o email foi enviado
-      const errorMsg = err?.message || "";
-      if (/already|exist|já/i.test(errorMsg)) {
-        setError(t("login_resend_sent"));
-        setIsUnverified(false);
-      } else {
-        setError(t("login_resend_error"));
-      }
+      await resendVerificationEmail({ email: resendEmail });
+      setNotice(t("login_resend_sent"));
+      setResendEmail("");
+    } catch {
+      setError(t("login_resend_error"));
     } finally {
-      setIsLoading(false);
+      setIsResending(false);
     }
   };
 
@@ -290,21 +270,26 @@ export default function CustomLoginForm({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <Alert variant={error === t("login_resend_sent") ? "default" : "destructive"}>
-              {error}
-            </Alert>
-          )}
-          {isUnverified && pendingEmail && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleResendVerification}
-              disabled={isLoading}
-              className="w-full"
-            >
-              {t("login_resend_confirmation")}
-            </Button>
+          {error && <Alert variant="destructive">{error}</Alert>}
+          {notice && <Alert>{notice}</Alert>}
+          {resendEmail && (
+            <div className="space-y-2 rounded-sm border border-border/70 bg-muted/30 px-3 py-3">
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                {t("login_resend_hint")}
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleResendVerification}
+                disabled={isResending || isLoading}
+                className="h-9 w-full"
+              >
+                {isResending && (
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                )}
+                {t("login_resend_confirmation")}
+              </Button>
+            </div>
           )}
 
           <div className="space-y-1.5">

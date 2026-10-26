@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { signup } from "wasp/client/auth";
 import { googleSignInUrl } from "wasp/client/auth";
+import { resendVerificationEmail } from "wasp/client/operations";
 import { useTranslation } from "react-i18next";
 import { Button } from "../client/components/ui/button";
 import { Input } from "../client/components/ui/input";
@@ -178,24 +179,11 @@ export default function CustomSignupForm({
     if (!email) return;
     setResendLoading(true);
     setResendMessage("");
-    
     try {
-      // Tenta fazer signup novamente para triggerar o reenvio do email
-      await signup({ 
-        email, 
-        password: "temporary-for-resend-" + Date.now(),
-        username: email,
-        isAdmin: false
-      });
+      await resendVerificationEmail({ email });
       setResendMessage(t("signup_success_resend_sent"));
-    } catch (err: any) {
-      // Se já existe, provavelmente o email foi enviado
-      const errorMsg = err?.message || "";
-      if (/already|exist|já|verif|sent/i.test(errorMsg)) {
-        setResendMessage(t("signup_success_resend_sent"));
-      } else {
-        setResendMessage(t("signup_success_resend_error"));
-      }
+    } catch {
+      setResendMessage(t("signup_success_resend_error"));
     } finally {
       setResendLoading(false);
     }

@@ -43,9 +43,8 @@ SMTP_PASSWORD=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  # Mesma API key do Resend
 ### 2. Melhorias na UX
 
 #### Login
-- Detecta erro de "email não verificado" (antes mostrava genérico "Email ou senha incorretos")
-- Mostra mensagem clara: "Confirme seu e-mail para entrar. Verifique a caixa de entrada."
-- Adiciona botão "Reenviar e-mail de confirmação" quando detecta conta não verificada
+- O login do Wasp devolve o mesmo erro ("Invalid credentials") para senha errada e para e-mail não confirmado, então não dá para distinguir os dois casos no cliente
+- Depois de qualquer erro de credenciais, oferece "Reenviar e-mail de confirmação", com o aviso de que a senha continua a mesma
 
 #### Signup (tela de sucesso)
 - Adiciona botão "Reenviar" para casos onde o email não chegou
@@ -55,8 +54,8 @@ SMTP_PASSWORD=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  # Mesma API key do Resend
 ### 3. Traduções
 
 Adicionadas em pt-BR, en e es:
-- `login_error_unverified`
 - `login_resend_confirmation`
+- `login_resend_hint`
 - `login_resend_sent`
 - `login_resend_error`
 - `signup_success_wrong_email`
@@ -99,8 +98,8 @@ wasp start
 
 ### Casos de teste
 1. Cadastro novo → Email deve chegar
-2. Tentar login antes de confirmar → Mensagem "Confirme seu e-mail" + botão reenviar
-3. Clicar em reenviar → Email deve ser reenviado
+2. Tentar login antes de confirmar → Mensagem de credenciais + botão reenviar
+3. Clicar em reenviar → Email deve ser reenviado e **a senha original continua funcionando** depois de confirmar
 4. Na tela de sucesso do signup → Botões "Reenviar" e "E-mail errado?" funcionam
 
 ## Arquivos Modificados
@@ -108,7 +107,8 @@ wasp start
 - `src/i18n/locales/pt-BR/auth.json` - Novas traduções
 - `src/i18n/locales/en/auth.json` - Novas traduções
 - `src/i18n/locales/es/auth.json` - Novas traduções
-- `src/auth/CustomLoginForm.tsx` - Detecção de email não verificado + botão reenviar
+- `src/auth/email-and-pass/resendVerificationEmail.ts` + `resendVerificationCore.ts` - action pública `resendVerificationEmail`
+- `src/auth/CustomLoginForm.tsx` - Botão reenviar após erro de credenciais
 - `src/auth/CustomSignupForm.tsx` - Botões reenviar e corrigir email
 - `.env.server.example` - Documentação SMTP
 - `deploy/.env.server.prod.example` - Documentação SMTP
@@ -121,10 +121,12 @@ O Wasp 0.22 ainda não suporta configurar custom email provider para auth emails
 
 ### Reenvio de email
 
-A implementação atual do reenvio usa um "hack" seguro: tenta fazer signup novamente com senha temporária. O Wasp detecta que o email já existe e (se configurado corretamente) reenvia o email de verificação. É uma solução pragmática até que o Wasp exponha uma API oficial de reenvio.
+O reenvio usa a action `resendVerificationEmail` (`auth: false`). Ela procura a identidade de e-mail e, se ela existir e ainda não estiver confirmada, gera um novo link com `createEmailVerificationLink` e envia com `sendEmailVerificationEmail`, as APIs públicas de `wasp/server/auth`. Ela nunca cria, apaga ou altera o usuário nem a senha.
+
+Não use `signup()` para reenviar: para um e-mail não confirmado, o signup do Wasp apaga o usuário e cria outro com a senha enviada, o que trocaria a senha da pessoa por uma senha temporária.
 
 ### Segurança
 
-- Não revelamos se o email existe no banco ao tentar reenviar
+- A action responde `{ ok: true }` em todos os casos (e-mail desconhecido, já confirmado, limite atingido ou enviado), então não revela se o e-mail existe
 - Mensagens de erro são genéricas para evitar user enumeration
-- O fluxo de reenvio tem rate limiting implícito do Wasp
+- Limite de um reenvio por minuto por e-mail, com base em `emailVerificationSentAt`
