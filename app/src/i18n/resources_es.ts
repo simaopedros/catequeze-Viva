@@ -33,7 +33,10 @@ export const account_es = {
     "manage_workspace_billing": "Gestionar cobro del espacio",
     "no_active_workspace": "Ningún espacio activo",
     "workspace_managed_desc": "Participas en este espacio. Los planes y pagos quedan con quien lo administra.",
-    "workspace_managed_hint": "¿Dudas sobre el plan? Habla con la coordinación."
+    "workspace_managed_hint": "¿Dudas sobre el plan? Habla con la coordinación.",
+    "display_name": "Nombre",
+    "edit_profile_link": "Editar nombre, teléfono, foto y contraseña en Configuración",
+    "credits_hint": "Los créditos se usan en las funciones de IA (generar guiones, actividades y mensajes). Cada generación consume créditos."
   } as const;
 
 export const activities_es = {
@@ -6464,7 +6467,12 @@ export const settings_es = {
     "email_pref_lifecycle": "Consejos de activación, prueba y retorno a la cuenta",
     "email_pref_product": "Novedades del producto y boletín",
     "email_pref_pastoral": "Comunicados de los grupos y de la parroquia",
-    "email_pref_saved": "Preferencias de correo guardadas."
+    "email_pref_saved": "Preferencias de correo guardadas.",
+    "avatar_error": "No fue posible actualizar la foto. Prueba una imagen más pequeña (JPG, PNG o WebP).",
+    "avatar_alt": "Foto de perfil",
+    "avatar_change": "Cambiar foto",
+    "avatar_add": "Añadir foto",
+    "avatar_remove": "Quitar foto"
   } as const;
 
 export const social_es = {

@@ -33,7 +33,10 @@ export const account_en = {
     "manage_workspace_billing": "Manage workspace billing",
     "no_active_workspace": "No active workspace",
     "workspace_managed_desc": "You take part in this workspace. Plans and payments stay with whoever administers it.",
-    "workspace_managed_hint": "Questions about the plan? Talk to the coordination."
+    "workspace_managed_hint": "Questions about the plan? Talk to the coordination.",
+    "display_name": "Name",
+    "edit_profile_link": "Edit name, phone, photo and password in Settings",
+    "credits_hint": "Credits are used by the AI features (generating lesson plans, activities and messages). Each generation uses credits."
   } as const;
 
 export const activities_en = {
@@ -6464,7 +6467,12 @@ export const settings_en = {
     "email_pref_lifecycle": "Activation tips, trial, and win-back emails",
     "email_pref_product": "Product news and newsletter",
     "email_pref_pastoral": "Class and parish announcements",
-    "email_pref_saved": "Email preferences saved."
+    "email_pref_saved": "Email preferences saved.",
+    "avatar_error": "Could not update the photo. Try a smaller image (JPG, PNG or WebP).",
+    "avatar_alt": "Profile photo",
+    "avatar_change": "Change photo",
+    "avatar_add": "Add photo",
+    "avatar_remove": "Remove photo"
   } as const;
 
 export const social_en = {
