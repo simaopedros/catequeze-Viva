@@ -35,7 +35,8 @@
   "not_found": "No encontrado.",
   "library": {
     "subtitle": "{{scripts}} guiones · {{activities}} actividades",
-    "count_badge": "{{count}} contenidos",
+    "count_badge_one": "{{count}} contenido",
+    "count_badge_other": "{{count}} contenidos",
     "generate_ai": "Asistencia editorial",
     "diocese": "Diócesis",
     "with_activities": "Con actividades",
@@ -72,7 +73,12 @@
     "error_import_invalid_file": "Archivo inválido o dañado.",
     "error_import_storage_not_configured": "Almacenamiento de archivos no disponible. Intente más tarde.",
     "error_import_parse_failed": "No se pudo leer el archivo.",
-    "error_download_original": "No se pudo descargar el original."
+    "error_download_original": "No se pudo descargar el original.",
+    "first_contents_title": "Primeros contenidos",
+    "suggested_flow_title": "Flujo sugerido",
+    "suggested_flow_step_1": "Crea guiones base para organizar temas, tiempo estimado y público.",
+    "suggested_flow_step_2": "Agrega actividades para convertir el contenido en un encuentro listo para usar.",
+    "suggested_flow_step_3": "Combina la creación manual con la asistencia editorial cuando necesites preparar más rápido."
   },
   "detail": {
     "by_author": "por {{name}}",

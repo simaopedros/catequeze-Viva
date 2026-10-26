@@ -35,7 +35,8 @@
   "not_found": "Not found.",
   "library": {
     "subtitle": "{{scripts}} scripts · {{activities}} activities",
-    "count_badge": "{{count}} items",
+    "count_badge_one": "{{count}} item",
+    "count_badge_other": "{{count}} items",
     "generate_ai": "Editorial assistance",
     "diocese": "Diocese",
     "with_activities": "With activities",
@@ -72,7 +73,12 @@
     "error_import_invalid_file": "Invalid or corrupted file.",
     "error_import_storage_not_configured": "File storage is unavailable. Try again later.",
     "error_import_parse_failed": "Could not read the file.",
-    "error_download_original": "Could not download the original file."
+    "error_download_original": "Could not download the original file.",
+    "first_contents_title": "First contents",
+    "suggested_flow_title": "Suggested flow",
+    "suggested_flow_step_1": "Create base guides to organize topics, estimated time and audience.",
+    "suggested_flow_step_2": "Add activities to turn the content into a meeting ready to use.",
+    "suggested_flow_step_3": "Combine manual writing with editorial assistance when you need to prepare faster."
   },
   "detail": {
     "by_author": "by {{name}}",

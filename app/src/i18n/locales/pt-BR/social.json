@@ -2,10 +2,10 @@
   "title": "Comunidade",
   "eyebrow": "Rede pastoral",
   "subtitle": "Partilhe a vida da catequese com imagens e vídeos.",
-  "publicSubtitle": "Testemunhos, catequese e vida paroquial partilhados por catequistas de todo o Brasil.",
+  "publicSubtitle": "Testemunhos, catequese e vida paroquial compartilhados por catequistas de todo o Brasil.",
   "feed": {
     "empty": "Ainda não há publicações",
-    "emptyDescription": "Seja o primeiro a partilhar um momento da sua catequese.",
+    "emptyDescription": "Seja o primeiro a compartilhar um momento da sua catequese.",
     "emptyTopic": "Nenhuma publicação neste tema ainda",
     "loadMore": "Carregar mais",
     "loading": "A carregar publicações...",

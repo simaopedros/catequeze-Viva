@@ -49,13 +49,15 @@
     },
     "register_attendance": {
       "title": "Registrar presença",
-      "subtitle": "{{className}} · {{count}} catequizandos",
+      "subtitle_one": "{{className}} · {{count}} catequizando",
+      "subtitle_other": "{{className}} · {{count}} catequizandos",
       "context": "A presença do último encontro ainda não foi registrada.",
       "cta": "Registrar presença"
     },
     "low_frequency": {
       "title": "Frequência baixa",
-      "subtitle": "{{count}} catequizandos",
+      "subtitle_one": "{{count}} catequizando",
+      "subtitle_other": "{{count}} catequizandos",
       "context": "Com menos de {{threshold}}% de presença. Acompanhe e converse com as famílias para incentivar.",
       "cta": "Ver detalhes"
     },
@@ -67,7 +69,8 @@
     },
     "pending_sacraments": {
       "title": "Pendências sacramentais",
-      "subtitle": "{{count}} pendências",
+      "subtitle_one": "{{count}} pendência",
+      "subtitle_other": "{{count}} pendências",
       "context": "Há marcos sacramentais aguardando acompanhamento.",
       "cta": "Ver pendências"
     }
@@ -80,7 +83,8 @@
   },
   "birthday_today": "Hoje",
   "birthday_tomorrow": "Amanhã",
-  "in_days": "Em {{count}} dias",
+  "in_days_one": "Em {{count}} dia",
+  "in_days_other": "Em {{count}} dias",
   "my_catechesis": "Minha catequese",
   "see_full_report": "Ver relatório completo",
   "see_classes": "Ver turmas",
@@ -236,7 +240,7 @@
   "import_catechumens": "Importar catequizandos",
   "mobile": {
     "none_registered": "Nenhum",
-    "no_attendance": "Sem registros",
+    "no_attendance": "Nenhuma chamada ainda",
     "all_clear": "Tudo em dia",
     "no_catechumens": "Sem catequizandos"
   }

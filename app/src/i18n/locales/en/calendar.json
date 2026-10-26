@@ -1,7 +1,9 @@
 {
   "title": "Calendar",
-  "month_events": "{{month}} {{year}} · {{count}} events",
-  "event_count": "{{count}} events",
+  "month_events_one": "{{month}} {{year}} · {{count}} event",
+  "month_events_other": "{{month}} {{year}} · {{count}} events",
+  "event_count_one": "{{count}} event",
+  "event_count_other": "{{count}} events",
   "today": "Today",
   "add_event": "Event",
   "filters": {

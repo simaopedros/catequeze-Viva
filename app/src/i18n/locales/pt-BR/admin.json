@@ -82,9 +82,9 @@
       "field_seo_title": "Título SEO",
       "field_seo_desc": "Descrição SEO",
       "save": "Guardar rascunho",
-      "saving": "A guardar…",
-      "saved": "Rascunho guardado.",
-      "save_error": "Não foi possível guardar o artigo.",
+      "saving": "Salvando…",
+      "saved": "Rascunho salvo.",
+      "save_error": "Não foi possível salvar o artigo.",
       "publish": "Publicar",
       "publishing": "A publicar…",
       "published": "Artigo publicado.",
@@ -224,7 +224,7 @@
     },
     "parishes": {
       "title": "Paróquias",
-      "subtitle": "Gerir todas as paróquias da plataforma.",
+      "subtitle": "Gerenciar todas as paróquias da plataforma.",
       "empty_title": "Nenhuma paróquia",
       "empty_desc": "As paróquias aparecerão aqui quando forem criadas.",
       "col_name": "Nome",
@@ -278,7 +278,7 @@
       "save_diocese": "Guardar diocese",
       "cannot_archive_personal": "O espaço pessoal não pode ser arquivado.",
       "action_error": "Não foi possível concluir a ação.",
-      "manage_license": "Gerir licença →"
+      "manage_license": "Gerenciar licença →"
     },
     "user": {
       "not_found": "Usuário não encontrado.",
@@ -317,11 +317,11 @@
       "save_credits": "Guardar créditos",
       "cancel_stripe": "Cancelar no Stripe",
       "action_error": "Não foi possível concluir a ação.",
-      "suspend_title": "Suspender utilizador",
+      "suspend_title": "Suspender usuário",
       "suspend_desc": "O login fica bloqueado. Pode impersonar a conta para suporte.",
       "suspend_reason": "Motivo (opcional)",
-      "impersonate_title": "Impersonar utilizador",
-      "impersonate_desc": "Vai ver a aplicação como este utilizador. A sua sessão de admin fica guardada para sair depois.",
+      "impersonate_title": "Impersonar usuário",
+      "impersonate_desc": "Você verá o aplicativo como este usuário. Sua sessão de admin fica salva para você voltar depois.",
       "cancel_stripe_title": "Cancelar assinatura Stripe",
       "cancel_stripe_desc": "Cancela imediatamente todas as assinaturas ativas deste cliente no Stripe. Esta ação não tem reembolso."
     },
@@ -343,7 +343,7 @@
       "alert_trials_expiring": "{{count}} trial(s) a expirar em 7 dias",
       "alert_archived_parishes": "{{count}} paróquia(s) arquivada(s)",
       "alert_archived_with_members": "{{count}} paróquia(s) arquivada(s) com membros ativos",
-      "alert_no_new_users": "Nenhum utilizador novo nos últimos 30 dias"
+      "alert_no_new_users": "Nenhum usuário novo nos últimos 30 dias"
     },
     "analytics": {
       "title": "Analytics",
@@ -383,20 +383,20 @@
     },
     "support": {
       "title": "Suporte",
-      "subtitle": "Mensagens do formulário de contacto.",
+      "subtitle": "Mensagens do formulário de contato.",
       "subtitle_unread": "{{count}} mensagem(ns) por ler",
       "empty_title": "Caixa vazia",
-      "empty_desc": "As mensagens do contacto público aparecem aqui.",
+      "empty_desc": "As mensagens do contato público aparecem aqui.",
       "new": "Nova",
       "replied": "Respondida",
       "reply": "Responder",
-      "reply_placeholder": "Escreva a resposta. O utilizador vê na central e recebe por email.",
+      "reply_placeholder": "Escreva a resposta. O usuário vê na central e recebe por email.",
       "send": "Enviar",
       "sending": "A enviar…",
       "mark_read": "Marcar como lida",
       "reply_error": "Não foi possível enviar a resposta.",
       "sent_reply": "Resposta enviada",
-      "email_failed": "A resposta ficou na central do utilizador, mas o email não foi enviado."
+      "email_failed": "A resposta ficou na central do usuário, mas o email não foi enviado."
     },
     "audit": {
       "title": "Auditoria",
@@ -404,9 +404,9 @@
       "export": "Exportar CSV",
       "all_actions": "Todas as ações",
       "entity_placeholder": "Tipo de entidade",
-      "user_placeholder": "ID do utilizador",
+      "user_placeholder": "ID do usuário",
       "parish_placeholder": "ID da paróquia",
-      "count": "{{count}} registo(s)",
+      "count": "{{count}} registro(s)",
       "empty_title": "Sem eventos",
       "empty_desc": "Os eventos de auditoria aparecem aqui.",
       "col_date": "Data",
@@ -420,7 +420,7 @@
     },
     "users": {
       "title": "Utilizadores",
-      "subtitle": "Gerir todos os utilizadores da plataforma.",
+      "subtitle": "Gerenciar todos os usuários da plataforma.",
       "col_plan": "Plano pessoal",
       "col_workspaces": "Espaços",
       "col_roles": "Papéis",
