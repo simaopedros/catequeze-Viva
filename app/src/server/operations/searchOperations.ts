@@ -253,17 +253,23 @@ export const globalSearch = async (args: { query: string; locale?: string | null
       context.entities.SacramentalJourney.findMany({
         where: {
           catechumenProfile: {
-            OR: [
-              { firstName: { contains: q, mode: 'insensitive' } },
-              { lastName: { contains: q, mode: 'insensitive' } },
+            AND: [
+              {
+                OR: [
+                  { firstName: { contains: q, mode: 'insensitive' } },
+                  { lastName: { contains: q, mode: 'insensitive' } },
+                ],
+              },
+              ...(isAdmin
+                ? []
+                : [
+                    familyCatechumenFilter
+                      ? familyCatechumenFilter
+                      : {
+                          enrollments: { some: { class: parishFilter } },
+                        },
+                  ]),
             ],
-            ...(isAdmin
-              ? {}
-              : familyCatechumenFilter
-                ? familyCatechumenFilter
-                : {
-                    enrollments: { some: { class: parishFilter } },
-                  }),
           },
         },
         select: {
