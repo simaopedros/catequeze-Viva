@@ -161,6 +161,7 @@ export default function OnboardingPage() {
     useState<CompletionSummary | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [classPlanLimitBlocked, setClassPlanLimitBlocked] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("checkout") !== "success") return;
@@ -359,6 +360,7 @@ export default function OnboardingPage() {
   const handlePersonalClass = async (details: ClassSetupDetails) => {
     setSaving(true);
     setError("");
+    setClassPlanLimitBlocked(false);
     try {
       await withTransientRetry(async () => {
         const personalParish = await ensurePersonalWorkspace();
@@ -440,6 +442,7 @@ export default function OnboardingPage() {
         setError(t("class_setup.transient_error"));
       } else if (isPlanLimitError(e)) {
         setError(t("class_setup.plan_limit"));
+        setClassPlanLimitBlocked(true);
       } else {
         const message = e instanceof Error ? e.message : t("finish_error");
         setError(
@@ -726,6 +729,31 @@ export default function OnboardingPage() {
           onComplete={handlePersonalClass}
         />
       )}
+
+      {step === "class" &&
+        accountType === "personal" &&
+        classPlanLimitBlocked && (
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <Button
+              type="button"
+              className="min-h-11"
+              onClick={() => navigate("/app/billing?plan=single")}
+            >
+              {t("class_setup.plan_limit_subscribe")}
+            </Button>
+            <Button asChild variant="outline" className="min-h-11">
+              <a
+                href={getSalesWhatsAppUrl(
+                  t("class_setup.plan_limit_support_prefill"),
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t("class_setup.plan_limit_support")}
+              </a>
+            </Button>
+          </div>
+        )}
 
       {step === "catechumens" && classId && className && (
         <CatechumensSetupStep
