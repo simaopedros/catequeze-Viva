@@ -1541,6 +1541,40 @@ export const removeMembership = async (
     data: { status: 'INACTIVE' },
   });
 
+  // Unlink guardian profile for households in this parish so removed
+  // responsáveis cannot keep accessing catechumens via household alone.
+  let guardianUnlinked = 0;
+  if (context.entities.GuardianProfile) {
+    const guardians = await context.entities.GuardianProfile.findMany({
+      where: {
+        userId: membership.userId,
+        household: { parishId: membership.parishId },
+      },
+      select: { id: true },
+    });
+    for (const g of guardians) {
+      await context.entities.GuardianProfile.update({
+        where: { id: g.id },
+        data: { userId: null, householdId: null },
+      });
+      guardianUnlinked += 1;
+    }
+  }
+
+  // Cut live sessions so the removed member cannot keep using an open browser.
+  try {
+    const { prisma } = await import('wasp/server');
+    const authRow = await (prisma as any).auth.findUnique({
+      where: { userId: membership.userId },
+      select: { id: true },
+    });
+    if (authRow) {
+      await (prisma as any).session.deleteMany({ where: { userId: authRow.id } });
+    }
+  } catch {
+    // Auth/session tables may be unavailable in some test contexts.
+  }
+
   // Drop class assignments in this parish so removed catechists cannot keep
   // accessing turmas via orphan ClassCatechist rows.
   const removed = await context.entities.ClassCatechist.deleteMany({
@@ -1552,6 +1586,7 @@ export const removeMembership = async (
 
   await writeAuditLog(context, 'DELETE', 'Membership', membership.id, {
     operation: 'MEMBER_REMOVE',
+    guardianUnlinked,
     classAssignmentsRemoved: removed.count,
   });
   return { success: true };
