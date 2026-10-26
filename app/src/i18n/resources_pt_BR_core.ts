@@ -1340,7 +1340,9 @@ export const common_pt_BR_core = {
       "native_too_long": "Use no máximo {{max}} caracteres.",
       "native_min": "O valor mínimo é {{min}}.",
       "native_max": "O valor máximo é {{max}}.",
-      "native_invalid": "Valor inválido."
+      "native_invalid": "Valor inválido.",
+      "birth_date_future": "A data de nascimento não pode ser no futuro.",
+      "birth_date_invalid": "Data de nascimento inválida."
     },
     "activity": {
       "working": "Carregando…",

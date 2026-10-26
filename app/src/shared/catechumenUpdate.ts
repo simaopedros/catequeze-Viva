@@ -1,3 +1,5 @@
+import { isBirthDateAllowed } from "./personFields";
+
 /** Client/server-safe validation for CatechumenProfile updates. */
 export class CatechumenUpdateValidationError extends Error {
   readonly statusCode = 400;
@@ -5,6 +7,24 @@ export class CatechumenUpdateValidationError extends Error {
     super(message);
     this.name = "CatechumenUpdateValidationError";
   }
+}
+
+/** Parse YYYY-MM-DD birth dates; reject future dates. */
+export function parseBirthDateOrThrow(raw: unknown): Date | null {
+  if (!raw) return null;
+  if (typeof raw !== "string") {
+    throw new CatechumenUpdateValidationError("Data de nascimento inválida.");
+  }
+  if (!isBirthDateAllowed(raw)) {
+    throw new CatechumenUpdateValidationError(
+      "A data de nascimento não pode ser no futuro.",
+    );
+  }
+  const [y, m, d] = raw.slice(0, 10).split("-").map(Number);
+  if (!y || !m || !d) {
+    throw new CatechumenUpdateValidationError("Data de nascimento inválida.");
+  }
+  return new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
 }
 
 /** Whitelist + normalize fields so unknown client keys never hit Prisma. */
@@ -42,19 +62,7 @@ export function buildCatechumenUpdateData(args: Record<string, unknown>) {
         : null;
   }
   if (args.birthDate !== undefined) {
-    if (!args.birthDate) {
-      data.birthDate = null;
-    } else if (typeof args.birthDate === "string") {
-      const [y, m, d] = args.birthDate.slice(0, 10).split("-").map(Number);
-      if (!y || !m || !d) {
-        throw new CatechumenUpdateValidationError(
-          "Data de nascimento inválida.",
-        );
-      }
-      data.birthDate = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
-    } else {
-      throw new CatechumenUpdateValidationError("Data de nascimento inválida.");
-    }
+    data.birthDate = parseBirthDateOrThrow(args.birthDate);
   }
 
   return data;

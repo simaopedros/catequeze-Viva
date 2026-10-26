@@ -81,6 +81,11 @@ export default function CreateHouseholdModal({
       setError(t("families.name_required"));
       return;
     }
+    const phoneDigits = phone.replace(/\D/g, "");
+    if (phone.trim() && (phoneDigits.length < 10 || phoneDigits.length > 15)) {
+      setError(t("validation.phone_invalid"));
+      return;
+    }
     setSaving(true);
     setError("");
     try {

@@ -1,25 +1,44 @@
-import { z } from 'zod';
+import { z } from "zod";
+import { isBirthDateAllowed, isPhoneAllowed } from "../../shared/personFields";
 
 const emptyToUndefined = (value: unknown) => {
   if (value === null || value === undefined) return undefined;
-  if (typeof value === 'string' && value.trim() === '') return undefined;
+  if (typeof value === "string" && value.trim() === "") return undefined;
   return value;
 };
 
+const optionalBirthDate = z
+  .string()
+  .optional()
+  .refine(
+    (v) => !v || /^\d{4}-\d{2}-\d{2}$/.test(v),
+    "birth_date_invalid",
+  )
+  .refine((v) => isBirthDateAllowed(v), "birth_date_future");
+
+const phoneField = z
+  .string()
+  .trim()
+  .max(20, "too_long")
+  .refine((v) => isPhoneAllowed(v), "phone_invalid");
+
 const normalizeHhMm = (value: unknown) => {
   const normalized = emptyToUndefined(value);
-  if (typeof normalized !== 'string') return normalized;
+  if (typeof normalized !== "string") return normalized;
   const match = normalized.match(/^(\d{2}:\d{2})(:\d{2})?$/);
   return match ? match[1] : normalized;
 };
 
 const optionalHhMm = z.preprocess(
   normalizeHhMm,
-  z.string().regex(/^\d{2}:\d{2}$/, 'Formato inválido (HH:mm)').optional(),
+  z
+    .string()
+    .regex(/^\d{2}:\d{2}$/, "Formato inválido (HH:mm)")
+    .optional(),
 );
 
 export const createClassSchema = z.object({
-  name: z.string().min(3, 'name_min').max(100),
+  name: z.string().min(3, "name_min").max(100),
   location: z.preprocess(emptyToUndefined, z.string().max(200).optional()),
   dayOfWeek: z.preprocess(emptyToUndefined, z.string().optional()),
   startTime: optionalHhMm,
@@ -30,28 +49,28 @@ export const createClassSchema = z.object({
 export type CreateClassValues = z.infer<typeof createClassSchema>;
 
 export const createCatechumenSchema = z.object({
-  firstName: z.string().min(1, 'first_name_required').max(100),
-  lastName: z.string().min(1, 'last_name_required').max(100),
-  birthDate: z.string().optional(),
-  email: z.string().email('email_invalid').optional().or(z.literal('')),
+  firstName: z.string().min(1, "first_name_required").max(100),
+  lastName: z.string().min(1, "last_name_required").max(100),
+  birthDate: optionalBirthDate,
+  email: z.string().email("email_invalid").optional().or(z.literal("")),
   householdId: z.string().optional(),
 });
 
 export type CreateCatechumenValues = z.infer<typeof createCatechumenSchema>;
 
 export const createHouseholdSchema = z.object({
-  name: z.string().min(1, 'name_required').max(200),
+  name: z.string().min(1, "name_required").max(200),
   address: z.string().max(300).optional(),
-  phone: z.string().max(20).optional(),
+  phone: phoneField.optional().or(z.literal("")),
 });
 
 export type CreateHouseholdValues = z.infer<typeof createHouseholdSchema>;
 
 export const createContentSchema = z.object({
-  title: z.string().min(3, 'title_min').max(200),
+  title: z.string().min(3, "title_min").max(200),
   theme: z.string().max(500).optional(),
   pastoralObjective: z.string().max(2000).optional(),
-  mainContent: z.string().min(1, 'content_required').max(100000),
+  mainContent: z.string().min(1, "content_required").max(100000),
   activity: z.string().max(10000).optional(),
   estimatedTime: z.coerce.number().int().min(1).max(480).default(60),
   tags: z.string().optional(),
@@ -60,20 +79,20 @@ export const createContentSchema = z.object({
 export type CreateContentValues = z.infer<typeof createContentSchema>;
 
 export const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, 'current_password_required'),
-  newPassword: z.string().min(8, 'password_min_length'),
+  currentPassword: z.string().min(1, "current_password_required"),
+  newPassword: z.string().min(8, "password_min_length"),
 });
 
 export type ChangePasswordValues = z.infer<typeof changePasswordSchema>;
 
 export const updateProfileSchema = z.object({
-  firstName: z.string().trim().min(1, 'first_name_required').max(100, 'too_long'),
-  lastName: z.string().trim().max(100, 'too_long'),
-  phone: z
+  firstName: z
     .string()
     .trim()
-    .max(20, 'too_long')
-    .refine((v) => v === '' || v.replace(/\D/g, '').length >= 10, 'phone_invalid'),
+    .min(1, "first_name_required")
+    .max(100, "too_long"),
+  lastName: z.string().trim().max(100, "too_long"),
+  phone: phoneField,
 });
 
 export type UpdateProfileValues = z.infer<typeof updateProfileSchema>;
