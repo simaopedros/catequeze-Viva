@@ -59,6 +59,7 @@
     "error_remove_guardian": "Failed to remove guardian.",
     "error_save": "Failed to save.",
     "relationships": {
+      "guardian": "Guardian (not specified)",
       "father": "Father",
       "mother": "Mother",
       "grandparent": "Grandparent",

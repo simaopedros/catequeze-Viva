@@ -514,6 +514,7 @@
     "error_remove_guardian": "Error al eliminar responsable.",
     "error_save": "Error al guardar.",
     "relationships": {
+      "guardian": "Responsable (sin especificar)",
       "father": "Padre",
       "mother": "Madre",
       "grandparent": "Abuelo/a",

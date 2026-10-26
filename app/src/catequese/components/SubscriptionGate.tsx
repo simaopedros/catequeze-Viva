@@ -81,7 +81,11 @@ function workspaceHasAccess(
 
 export function SubscriptionGate({ children }: { children: ReactNode }) {
   const { data: user } = useAuth();
-  const { isPersonal, workspace } = useActiveWorkspace();
+  const {
+    isPersonal,
+    workspace,
+    isLoading: workspaceLoading,
+  } = useActiveWorkspace();
   const { userRole, isAdmin } = useUserContext();
   const location = useLocation();
   const navigate = useNavigate();
@@ -115,6 +119,7 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (user === undefined) return;
+    if (workspaceLoading && !alwaysAccessible) return;
     if (alwaysAccessible) {
       setChecked(true);
       return;
@@ -140,14 +145,13 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
     navigate,
     isPersonal,
     isBillingManager,
+    workspaceLoading,
   ]);
 
   if (
     !shouldRenderGatedRoute({
       userLoaded: user !== undefined,
       alwaysAccessible,
-      hasAccess,
-      isBillingManager,
       checked,
     })
   ) {
