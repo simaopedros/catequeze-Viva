@@ -2062,7 +2062,7 @@ action deleteActivity {
 
 action submitActivity {
   fn: import { submitActivity } from "@src/server/operations/activityOperations",
-  entities: [ActivitySubmission, Activity, ContentItem, CatechumenProfile, Membership, Parish, ClassEnrollment, ClassCatechist, CatechesisClass]
+  entities: [ActivitySubmission, Activity, ContentItem, CatechumenProfile, GuardianProfile, Membership, Parish, ClassEnrollment, ClassCatechist, CatechesisClass]
 }
 
 // ⚠️ Deprecated — guardian dashboard uses getDashboardStats instead. Remove after 2026-12.
