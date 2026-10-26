@@ -1,5 +1,7 @@
 import { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+import { Check, Loader2 } from "lucide-react";
 import { BrandLockup } from "../../../client/components/brand/Brand";
 import { cn } from "../../../client/utils";
 import {
@@ -36,6 +38,7 @@ export function OnboardingShell({
   savingLabel,
   resumedLabel,
 }: OnboardingShellProps) {
+  const { t } = useTranslation("onboarding");
   const currentIdx = Math.max(
     0,
     steps.findIndex((s) => s.id === currentStepId),
@@ -96,7 +99,11 @@ export function OnboardingShell({
                 const done = index < currentIdx;
                 const current = index === currentIdx;
                 return (
-                  <li key={step.id} className="flex gap-3 py-2.5">
+                  <li
+                    key={step.id}
+                    className="flex gap-3 py-2.5"
+                    aria-current={current ? "step" : undefined}
+                  >
                     <div className="flex flex-col items-center">
                       <span
                         className={cn(
@@ -108,7 +115,11 @@ export function OnboardingShell({
                             "border border-white/25 text-white/50",
                         )}
                       >
-                        {String(index + 1).padStart(2, "0")}
+                        {done ? (
+                          <Check className="h-3.5 w-3.5" aria-hidden />
+                        ) : (
+                          String(index + 1).padStart(2, "0")
+                        )}
                       </span>
                       {index < steps.length - 1 && (
                         <span
@@ -128,6 +139,18 @@ export function OnboardingShell({
                       )}
                     >
                       {step.label}
+                      {(done || current) && (
+                        <span
+                          className={cn(
+                            "mt-0.5 block text-[11px] font-normal",
+                            current ? "text-brand-gold" : "text-[#8FA1B5]",
+                          )}
+                        >
+                          {current
+                            ? t("shell.step_current")
+                            : t("shell.step_done")}
+                        </span>
+                      )}
                     </span>
                   </li>
                 );
@@ -176,7 +199,11 @@ export function OnboardingShell({
           aria-label={savingLabel}
           className="fixed inset-0 z-50 flex items-center justify-center bg-brand-ink/40 backdrop-blur-[2px]"
         >
-          <div className="rounded-sm border border-border/70 bg-white px-8 py-6 text-center">
+          <div className="flex items-center gap-3 rounded-sm border border-border/70 bg-white px-8 py-6 text-center">
+            <Loader2
+              className="h-5 w-5 animate-spin text-brand-ink motion-reduce:animate-none"
+              aria-hidden
+            />
             <p className="text-sm font-semibold tracking-tight text-brand-ink">
               {savingLabel || "…"}
             </p>

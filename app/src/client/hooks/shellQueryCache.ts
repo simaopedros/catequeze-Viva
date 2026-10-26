@@ -9,6 +9,7 @@ import {
   listWorkspaces,
   getDashboardStats,
 } from "wasp/client/operations";
+import { getMe } from "wasp/client/auth";
 
 /** Shared stale window for shell context (user memberships + workspaces). */
 export const SHELL_CONTEXT_STALE_MS = 2 * 60 * 1000;
@@ -39,6 +40,9 @@ export async function invalidateShellContext(): Promise<void> {
       queryKeyOf(getCurrentUserContext as { queryCacheKey?: string[] }),
       queryKeyOf(listWorkspaces as { queryCacheKey?: string[] }),
       queryKeyOf(getDashboardStats as { queryCacheKey?: string[] }),
+      // Billing gates read subscriptionStatus from useAuth(); a server-side
+      // trial grant must refresh it too.
+      queryKeyOf(getMe as { queryCacheKey?: string[] }),
     ].filter((k) => k.length > 0);
 
     await Promise.all(
