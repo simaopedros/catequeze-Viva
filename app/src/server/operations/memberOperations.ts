@@ -1540,8 +1540,19 @@ export const removeMembership = async (
     where: { id: args.membershipId },
     data: { status: 'INACTIVE' },
   });
+
+  // Drop class assignments in this parish so removed catechists cannot keep
+  // accessing turmas via orphan ClassCatechist rows.
+  const removed = await context.entities.ClassCatechist.deleteMany({
+    where: {
+      userId: membership.userId,
+      class: { parishId: membership.parishId },
+    },
+  });
+
   await writeAuditLog(context, 'DELETE', 'Membership', membership.id, {
     operation: 'MEMBER_REMOVE',
+    classAssignmentsRemoved: removed.count,
   });
   return { success: true };
 };
