@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 import { AI_FEATURES_ENABLED } from "../../../shared/aiFeatures";
 import { Button } from "../../../client/components/ui/button";
 import { Card } from "../../../client/components/ui/card";
@@ -452,6 +453,7 @@ function ReferencesSidebar({ contentId }: { contentId: string }) {
 }
 
 function ContentLibrarySidebar() {
+  const { t } = useTranslation("content");
   const [search, setSearch] = useState("");
   const { data: items = [], isLoading } = useQuery(listContentItems, {
     take: 4,
@@ -464,6 +466,8 @@ function ContentLibrarySidebar() {
           .includes(search.toLowerCase()),
       )
     : items;
+
+  const searchLabel = t("library.search_placeholder");
 
   return (
     <div className="space-y-4">
@@ -486,8 +490,8 @@ function ContentLibrarySidebar() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar conteúdos..."
-            aria-label="Buscar conteúdos..."
+            placeholder={searchLabel}
+            aria-label={searchLabel}
             className="pl-9"
           />
         </div>

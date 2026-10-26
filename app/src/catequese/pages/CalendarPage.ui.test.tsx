@@ -13,6 +13,7 @@ import {
   renderPage,
   stubUseQuery,
 } from "../../__tests__/ui/hierarchyTestUtils";
+import { isoToDisplayDate } from "../../shared/displayDate";
 
 const userCtx = vi.hoisted(() => ({
   current: { userRole: "PARISH_COORDINATOR", userId: "user-coord" },
@@ -24,8 +25,13 @@ vi.mock("react-i18next", async () => {
   );
   return {
     useTranslation: (ns?: string) => mockUseTranslation(ns),
+    initReactI18next: { type: "3rdParty", init: () => undefined },
   };
 });
+
+vi.mock("../../i18n/useLocale", () => ({
+  useLocale: () => ({ currentLocale: "pt-BR", setLocale: vi.fn() }),
+}));
 
 vi.mock("../../client/hooks/useActiveParish", () => ({
   useActiveParish: () => ({ activeParishId: "parish-1" }),
@@ -127,11 +133,11 @@ describe("CalendarPage — origem e conflitos", () => {
     const dialog = await screen.findByRole("dialog");
     expect(dialog).toHaveTextContent("Novo evento");
     const now = new Date();
-    const todayKey = `${now.getFullYear()}-${String(
+    const todayIso = `${now.getFullYear()}-${String(
       now.getMonth() + 1,
     ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
     expect(
       (screen.getByLabelText("Data do evento") as HTMLInputElement).value,
-    ).toBe(todayKey);
+    ).toBe(isoToDisplayDate(todayIso, "pt-BR"));
   });
 });

@@ -6,6 +6,7 @@
   "open_main_menu": "Open main menu",
   "parish": "Parish",
   "families": {
+    "subtitle_registered_zero": "No families registered",
     "subtitle_registered_one": "{{count}} family registered",
     "subtitle_registered_other": "{{count}} families registered",
     "count_badge_one": "{{count}} family",
@@ -309,6 +310,8 @@
     "emptyDesc": "Register certificates and authorizations for catechumens.",
     "pending": "Pending",
     "verified": "Verified",
+    "rejected": "Rejected",
+    "missing": "Missing",
     "verify": "Verify",
     "verifiedLabel": "Verified",
     "uploadedBy": "by",
@@ -361,6 +364,7 @@
   "not_found": "Not found.",
   "error": "Error",
   "catechumens": {
+    "subtitle_registered_zero": "No catechumens registered",
     "subtitle_registered_one": "{{count}} catechumen registered",
     "subtitle_registered_other": "{{count}} catechumens registered",
     "count_short_one": "{{count}} catechumen",

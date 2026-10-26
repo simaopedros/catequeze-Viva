@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   formatDashboardAvgAttendance,
+  getPersonFullName,
   getUserDisplayFirstName,
 } from "../shared/displayName";
 
@@ -24,6 +25,19 @@ describe("getUserDisplayFirstName", () => {
     expect(getUserDisplayFirstName({ username: "maria@catequista.com" })).toBe(
       null,
     );
+  });
+});
+
+describe("getPersonFullName", () => {
+  it("joins first and last name for author bylines", () => {
+    expect(
+      getPersonFullName({ firstName: "Ana", lastName: "Silva" }),
+    ).toBe("Ana Silva");
+  });
+
+  it("returns null when no printable name is stored", () => {
+    expect(getPersonFullName({ firstName: "  ", lastName: null })).toBe(null);
+    expect(getPersonFullName(null)).toBe(null);
   });
 });
 

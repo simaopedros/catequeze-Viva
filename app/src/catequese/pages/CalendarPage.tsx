@@ -74,6 +74,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "../../client/components/ui/alert";
+import { LocalizedDateInput } from "../../client/components/LocalizedDateInput";
 
 const DEFAULT_COLOR = "#071A2D"; // brand ink — charts/ICS only
 
@@ -624,11 +625,11 @@ export default function CalendarPage() {
               onChange={(e) => setName(e.target.value)}
               autoFocus
             />
-            <Input
-              type="date"
+            <LocalizedDateInput
               aria-label={t("event_date")}
               value={eventDate}
-              onChange={(e) => setEventDate(e.target.value)}
+              onChange={setEventDate}
+              className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm"
             />
             <Input
               placeholder={t("description_optional")}

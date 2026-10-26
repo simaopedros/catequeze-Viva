@@ -2164,6 +2164,7 @@ export const common_en = {
     "open_main_menu": "Open main menu",
     "parish": "Parish",
     "families": {
+      "subtitle_registered_zero": "No families registered",
       "subtitle_registered_one": "{{count}} family registered",
       "subtitle_registered_other": "{{count}} families registered",
       "count_badge_one": "{{count}} family",
@@ -2467,6 +2468,8 @@ export const common_en = {
       "emptyDesc": "Register certificates and authorizations for catechumens.",
       "pending": "Pending",
       "verified": "Verified",
+      "rejected": "Rejected",
+      "missing": "Missing",
       "verify": "Verify",
       "verifiedLabel": "Verified",
       "uploadedBy": "by",
@@ -2519,6 +2522,7 @@ export const common_en = {
     "not_found": "Not found.",
     "error": "Error",
     "catechumens": {
+      "subtitle_registered_zero": "No catechumens registered",
       "subtitle_registered_one": "{{count}} catechumen registered",
       "subtitle_registered_other": "{{count}} catechumens registered",
       "count_short_one": "{{count}} catechumen",
@@ -3203,6 +3207,8 @@ export const content_en = {
       "status_local_draft": "Local draft",
       "back_to_library": "Back to library",
       "title_placeholder": "Meeting title",
+      "title_label": "Title",
+      "more_actions": "More actions",
       "theme_placeholder": "Theme",
       "duration_minutes": "Duration in minutes",
       "tags_placeholder": "Tags",
@@ -3234,6 +3240,7 @@ export const content_en = {
       "blockquote": "Quote",
       "divider": "Divider",
       "link": "Link",
+      "link_url": "Link URL",
       "table": "Table",
       "image": "Image",
       "undo": "Undo",
@@ -6755,7 +6762,8 @@ export const publicNav_en = {
     "footer_start": "Try it",
     "footer_start_desc": "More presence in the meeting, less weight in the week. Start your 7 days.",
     "language": "Language",
-    "help": "Help"
+    "help": "Help",
+    "main_nav": "Main navigation"
   } as const;
 
 export const reports_en = {

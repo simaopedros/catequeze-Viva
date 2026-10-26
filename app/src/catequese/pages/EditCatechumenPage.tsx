@@ -19,7 +19,8 @@ import { useUnsavedChangesGuard } from "../../client/hooks/useUnsavedChangesGuar
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { Alert } from "../../client/components/ui/alert";
 import CreateHouseholdModal from "../components/CreateHouseholdModal";
-import { isBirthDateAllowed, todayDateKey } from "../../shared/personFields";
+import { LocalizedDateInput } from "../../client/components/LocalizedDateInput";
+import { isBirthDateAllowed } from "../../shared/personFields";
 
 function compressImage(file: File): Promise<string> {
   return new Promise((resolve) => {
@@ -87,7 +88,6 @@ export default function EditCatechumenPage() {
     tone: "success" | "error";
     message: string;
   } | null>(null);
-  const maxBirthDate = todayDateKey();
 
   useEffect(() => {
     if (!id) return;
@@ -308,13 +308,11 @@ export default function EditCatechumenPage() {
                   <label className="text-xs font-medium">
                     {t("catechumens.birth_short")}
                   </label>
-                  <input
+                  <LocalizedDateInput
                     aria-label={t("catechumens.birth_short")}
-                    type="date"
-                    max={maxBirthDate}
                     value={birthDate}
-                    onChange={(e) => setBirthDate(e.target.value)}
-                    className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
+                    onChange={setBirthDate}
+                    className="mt-1 flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm"
                   />
                 </div>
                 <div>
