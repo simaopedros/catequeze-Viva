@@ -1683,7 +1683,8 @@ export const catechism_es = {
       "prayer": "La Oración",
       "virtues": "Las Virtudes",
       "sin": "El Pecado"
-    }
+    },
+    "showMore": "Mostrar más ({{shown}} de {{total}})"
   } as const;
 
 export const classes_es = {

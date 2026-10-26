@@ -16,5 +16,6 @@
     "prayer": "A Oração",
     "virtues": "As Virtudes",
     "sin": "O Pecado"
-  }
+  },
+  "showMore": "Mostrar mais ({{shown}} de {{total}})"
 }

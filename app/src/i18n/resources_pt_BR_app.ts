@@ -1096,7 +1096,8 @@ export const catechism_pt_BR_app = {
       "prayer": "A Oração",
       "virtues": "As Virtudes",
       "sin": "O Pecado"
-    }
+    },
+    "showMore": "Mostrar mais ({{shown}} de {{total}})"
   } as const;
 
 export const classes_pt_BR_app = {
