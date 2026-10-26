@@ -75,6 +75,7 @@ import { useClassStatusMap } from "../../i18n/useLabels";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
 import { formatClassSchedule } from "../../shared/classSchedule";
+import { GenerateMeetingsPanel } from "../components/GenerateMeetingsPanel";
 
 export default function ClassDetailPage() {
   const { t } = useTranslation("classes");
@@ -388,6 +389,14 @@ export default function ClassDetailPage() {
       });
     }
     setLoadingPlan(false);
+  };
+
+  const reloadMonthlyPlan = async () => {
+    try {
+      setMonthlyPlan(await getMonthlyPlan({ classId: id! }));
+    } catch {
+      // the planning tab already shows its own load error
+    }
   };
 
   const handleAddCatechist = async () => {
@@ -1291,7 +1300,17 @@ export default function ClassDetailPage() {
         )}
 
         {tab === "planejamento" && (
-          <div>
+          <div className="space-y-4">
+            {canManageClass && (
+              <GenerateMeetingsPanel
+                classId={id!}
+                cls={cls}
+                onCreated={() => {
+                  void refetchClass();
+                  void reloadMonthlyPlan();
+                }}
+              />
+            )}
             {loadingPlan ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground py-8 justify-center">
                 <Clock className="h-4 w-4 animate-spin" />

@@ -78,7 +78,16 @@
     "suggested_flow_title": "Flujo sugerido",
     "suggested_flow_step_1": "Crea guiones base para organizar temas, tiempo estimado y público.",
     "suggested_flow_step_2": "Agrega actividades para convertir el contenido en un encuentro listo para usar.",
-    "suggested_flow_step_3": "Combina la creación manual con la asistencia editorial cuando necesites preparar más rápido."
+    "suggested_flow_step_3": "Combina la creación manual con la asistencia editorial cuando necesites preparar más rápido.",
+    "samples": {
+      "title": "Guiones de ejemplo",
+      "desc": "Empiece con un guion listo y adáptelo a su grupo. Se crea una copia en su biblioteca para que la edite.",
+      "use": "Usar este guion",
+      "created": "Guion copiado a su biblioteca",
+      "error": "No se pudo copiar el guion",
+      "minutes_one": "{{count}} minuto",
+      "minutes_other": "{{count}} minutos"
+    }
   },
   "detail": {
     "by_author": "por {{name}}",

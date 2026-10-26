@@ -239,7 +239,7 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
       'Até 3 turmas',
       '150 catequizandos no total',
       'Presença e calendário litúrgico',
-      'Publicar na Comunidade',
+      'Portal para as famílias da sua turma',
       'Consome calendário e subsídios oficiais da paróquia',
     ],
     translations: {

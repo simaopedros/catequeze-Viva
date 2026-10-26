@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { Link as WaspRouterLink, routes } from "wasp/client/router";
-import { useSearchParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { verifyEmail } from "wasp/client/auth";
 import { CheckCircle2, Loader2, AlertCircle } from "lucide-react";
 import { AuthPageLayout } from "../AuthPageLayout";
 import { Button } from "../../client/components/ui/button";
+import {
+  emailFromVerificationToken,
+  loginPathWithEmail,
+} from "../emailLinkUtils";
 
 type VerifyStatus = "pending" | "ok" | "error";
 
@@ -13,6 +16,7 @@ export function EmailVerificationPage() {
   const { t } = useTranslation("auth");
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token") || "";
+  const loginHref = loginPathWithEmail(emailFromVerificationToken(token));
   const [status, setStatus] = useState<VerifyStatus>(
     token ? "pending" : "error",
   );
@@ -80,9 +84,7 @@ export function EmailVerificationPage() {
           </>
         )}
         <Button asChild className="mt-2 w-full">
-          <WaspRouterLink to={routes.LoginRoute.to}>
-            {t("login_link")}
-          </WaspRouterLink>
+          <Link to={loginHref}>{t("login_link")}</Link>
         </Button>
       </div>
     </AuthPageLayout>

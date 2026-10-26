@@ -78,7 +78,16 @@
     "suggested_flow_title": "Fluxo sugerido",
     "suggested_flow_step_1": "Crie roteiros base para organizar temas, tempo estimado e público.",
     "suggested_flow_step_2": "Adicione atividades para transformar o conteúdo em um encontro pronto para usar.",
-    "suggested_flow_step_3": "Combine criação manual com assistência editorial quando precisar acelerar a preparação."
+    "suggested_flow_step_3": "Combine criação manual com assistência editorial quando precisar acelerar a preparação.",
+    "samples": {
+      "title": "Roteiros de exemplo",
+      "desc": "Comece com um roteiro pronto e adapte para a sua turma. Uma cópia é criada na sua biblioteca para você editar.",
+      "use": "Usar este roteiro",
+      "created": "Roteiro copiado para a sua biblioteca",
+      "error": "Não foi possível copiar o roteiro",
+      "minutes_one": "{{count}} minuto",
+      "minutes_other": "{{count}} minutos"
+    }
   },
   "detail": {
     "by_author": "por {{name}}",

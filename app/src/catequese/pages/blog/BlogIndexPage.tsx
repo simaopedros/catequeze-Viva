@@ -46,6 +46,7 @@ export default function BlogIndexPage() {
     category,
   });
   const items = ((data as any)?.items ?? []) as PublicBlogListItem[];
+  const showFilters = !isLoading && (items.length > 0 || Boolean(category));
 
   const filters = useMemo(
     () =>
@@ -72,33 +73,35 @@ export default function BlogIndexPage() {
           <p className="text-lg text-muted-foreground">{t("intro")}</p>
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => setParams({})}
-            className={`rounded-full border px-3 py-1 text-sm ${
-              !category
-                ? "border-brand-ink bg-brand-ink text-white"
-                : "border-border text-muted-foreground hover:text-brand-ink"
-            }`}
-          >
-            {t("all_categories")}
-          </button>
-          {filters.map((filter) => (
+        {showFilters && (
+          <div className="mt-8 flex flex-wrap gap-2">
             <button
-              key={filter.id}
               type="button"
-              onClick={() => setParams({ categoria: filter.slug })}
+              onClick={() => setParams({})}
               className={`rounded-full border px-3 py-1 text-sm ${
-                category === filter.id
+                !category
                   ? "border-brand-ink bg-brand-ink text-white"
                   : "border-border text-muted-foreground hover:text-brand-ink"
               }`}
             >
-              {filter.label}
+              {t("all_categories")}
             </button>
-          ))}
-        </div>
+            {filters.map((filter) => (
+              <button
+                key={filter.id}
+                type="button"
+                onClick={() => setParams({ categoria: filter.slug })}
+                className={`rounded-full border px-3 py-1 text-sm ${
+                  category === filter.id
+                    ? "border-brand-ink bg-brand-ink text-white"
+                    : "border-border text-muted-foreground hover:text-brand-ink"
+                }`}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {error && !data ? (
           <div className="mt-10">

@@ -40,6 +40,8 @@ import { Switch } from "../../client/components/ui/switch";
 import { EMAIL_TOPIC } from "../../shared/emailCatalog";
 import PhoneMaskInput from "../../client/components/PhoneMaskInput";
 import TwoFactorSetup from "../components/TwoFactorSetup";
+import { ProfileAvatarPicker } from "../components/ProfileAvatarPicker";
+import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import {
   changePasswordSchema,
   updateProfileSchema,
@@ -62,6 +64,7 @@ export default function SettingsPage() {
   const { t: tc } = useTranslation("common");
   const { data: user } = useAuth();
   const { userRole, parishName: ctxParishName } = useUserContext();
+  const { isPersonal } = useActiveWorkspace();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState("");
@@ -202,7 +205,7 @@ export default function SettingsPage() {
         }`}
       />
 
-      {ctxParishName && (
+      {ctxParishName && !isPersonal && (
         <AppPanel>
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {t("linked_parish")}
@@ -217,6 +220,13 @@ export default function SettingsPage() {
 
       <AppPanel className="space-y-4">
         <AppEyebrow>{t("profile")}</AppEyebrow>
+        <ProfileAvatarPicker
+          avatarUrl={user?.avatarUrl}
+          initials={
+            `${user?.firstName?.[0] ?? ""}${user?.lastName?.[0] ?? ""}`.toUpperCase() ||
+            (user?.email?.[0] ?? "?").toUpperCase()
+          }
+        />
         <Form {...profileForm}>
         <form
           className="space-y-4"

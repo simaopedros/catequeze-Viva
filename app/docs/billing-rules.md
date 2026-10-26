@@ -32,7 +32,11 @@ A user's **personal** access is determined solely by `User.subscriptionStatus` a
 | `deleted` | **No** | Subscription fully canceled/expired |
 | `null` / `undefined` | **No** (free plan) | Never subscribed or trial expired |
 
-Product trial is **7 days** via Stripe Checkout (`SUBSCRIPTION_TRIAL_DAYS`), with card required. Signup no longer grants access. Grandfather: in-app `trialing` without `paymentProcessorUserId` still uses `createdAt + 7 days`.
+Product trial is **7 days** (`SUBSCRIPTION_TRIAL_DAYS`).
+
+- **No-card in-app trial**: `ensureProductTrial` (called before creating the personal workspace, a class, or a parish) grants `trialing` + `subscriptionPlan = single` + `trialEndsAt = createdAt + 7 days` when the account has no `subscriptionStatus`, no `paymentProcessorUserId`, no `trialEndsAt`, no `datePaid`, is on `catechist_free`, and is less than 7 days old. The write is conditional (`updateMany`), so it is idempotent and never overrides a Stripe subscription or re-grants a previous trial.
+- **Stripe Checkout trial**: card collected at checkout. Users still inside the in-app trial only get the remaining days (`isInAppProductTrial`); users whose trial already ended (any `trialEndsAt` left behind) get 0 days.
+- Grandfather: in-app `trialing` without `trialEndsAt` still uses `createdAt + 7 days`.
 
 ### 2.2. Personal plan resolution
 
@@ -44,6 +48,7 @@ Product trial is **7 days** via Stripe Checkout (`SUBSCRIPTION_TRIAL_DAYS`), wit
 ### 2.3. Personal transitions
 
 ```
+null → trialing (no-card in-app grant by ensureProductTrial; trialEndsAt = createdAt + 7 days)
 null → trialing (Stripe Checkout with trial_period_days; webhook sets trialing + trialEndsAt)
 trialing → active (trial ends and Stripe charges; invoice.paid / subscription.updated)
 null → active (checkout without remaining trial days)

@@ -11,6 +11,7 @@ const PUBLIC_PATH_PREFIXES = [
   "/pricing",
   "/obrigado",
   "/about",
+  "/help",
   "/privacy",
   "/terms",
   "/contact",
@@ -61,17 +62,42 @@ export function isMinimalAppPath(
   return Boolean(opts?.needsOnboarding);
 }
 
+/**
+ * App routes that stay open without a subscription: billing/onboarding (the
+ * way in), account settings, support (so a blocked user can still ask for
+ * help) and the public-domain reference texts.
+ */
+export const SUBSCRIPTION_FREE_APP_PATHS = [
+  "/app/billing",
+  "/account",
+  "/app/onboarding",
+  "/app/select-workspace",
+  "/app/settings",
+  "/app/suporte",
+  "/app/bible",
+  "/app/catechism",
+  "/app/directory",
+] as const;
+
+export function isSubscriptionFreeAppPath(pathname: string): boolean {
+  const path = pathname.split("?")[0];
+  return SUBSCRIPTION_FREE_APP_PATHS.some(
+    (prefix) => path === prefix || path.startsWith(`${prefix}/`),
+  );
+}
+
 /** SubscriptionGate: never hold an always-accessible route on `checked`. */
 export function shouldRenderGatedRoute(opts: {
   userLoaded: boolean;
   alwaysAccessible: boolean;
-  hasAccess: boolean;
-  isBillingManager: boolean;
   checked: boolean;
 }): boolean {
   if (!opts.userLoaded) return false;
   if (opts.alwaysAccessible) return true;
-  if (!opts.hasAccess && opts.isBillingManager) return false;
+  // `checked` only flips to true once access was confirmed, and stays true for
+  // the page's lifetime: transient context refetches must not unmount the page
+  // (and wipe what the user was typing). The gate's effect still redirects
+  // when access is really gone.
   return opts.checked;
 }
 

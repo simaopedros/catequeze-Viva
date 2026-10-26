@@ -70,6 +70,7 @@ const FAMILY_DETAIL_TABS = [
 ] as const;
 
 const RELATIONSHIP_KEYS = [
+  { value: "Responsável", key: "guardian" },
   { value: "Pai", key: "father" },
   { value: "Mãe", key: "mother" },
   { value: "Avô/Avó", key: "grandparent" },

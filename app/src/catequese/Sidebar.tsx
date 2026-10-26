@@ -33,7 +33,10 @@ import {
   Sparkles,
   Landmark,
   Megaphone,
+  Lock,
 } from "lucide-react";
+import { useWorkspaceSubscriptionAccess } from "./components/SubscriptionGate";
+import { isSubscriptionFreeAppPath } from "../client/appRouteGates";
 import { useUserContext } from "../client/hooks/useUserContext";
 import {
   getVisibleNavigation,
@@ -93,7 +96,8 @@ function NavItemLink({
   item,
   collapsed,
   badge,
-}: NavItemProps & { badge?: number }) {
+  locked = false,
+}: NavItemProps & { badge?: number; locked?: boolean }) {
   const { t } = useTranslation("navigation");
   const Icon = ICON_MAP[item.iconKey];
 
@@ -110,6 +114,8 @@ function NavItemLink({
       end={item.to === "/app"}
       prefetch="intent"
       data-tour={tourMap[item.iconKey] || undefined}
+      aria-label={locked ? `${t(item.labelKey)} — ${t("locked_hint")}` : undefined}
+      title={locked && !collapsed ? t("locked_hint") : undefined}
       className={({ isActive }) =>
         cn(
           "relative flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150",
@@ -128,7 +134,10 @@ function NavItemLink({
         {Icon && <Icon className="h-5 w-5 flex-shrink-0" />}
         {!collapsed && <span>{t(item.labelKey)}</span>}
       </div>
-      {!collapsed && badge !== undefined && badge > 0 && (
+      {!collapsed && locked && (
+        <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground/70" aria-hidden />
+      )}
+      {!collapsed && !locked && badge !== undefined && badge > 0 && (
         <span className="h-4.5 min-w-[18px] flex items-center justify-center rounded-full bg-brand-ink text-white text-overline font-semibold tabular-nums px-1.5">
           {badge > 99 ? "99+" : badge}
         </span>
@@ -146,6 +155,7 @@ function NavItemLink({
           <TooltipTrigger asChild>{link}</TooltipTrigger>
           <TooltipContent side="right">
             <span>{t(item.labelKey)}</span>
+            {locked && <span className="ml-1.5 opacity-70">({t("locked_hint")})</span>}
             {badge !== undefined && badge > 0 && (
               <span className="ml-1.5 opacity-70">
                 ({badge > 99 ? "99+" : badge})
@@ -166,12 +176,14 @@ function NavGroupBlock({
   expanded,
   onToggle,
   unreadMessagesCount,
+  subscriptionLocked,
 }: {
   group: VisibleNavGroup;
   collapsed: boolean;
   expanded: boolean;
   onToggle: () => void;
   unreadMessagesCount: number;
+  subscriptionLocked: boolean;
 }) {
   const { t } = useTranslation("navigation");
   const showHeader = group.collapsible && !collapsed;
@@ -221,6 +233,7 @@ function NavGroupBlock({
               badge={
                 item.iconKey === "messages" ? unreadMessagesCount : undefined
               }
+              locked={subscriptionLocked && !isSubscriptionFreeAppPath(item.to)}
             />
           ))}
         </div>
@@ -253,6 +266,9 @@ export function Sidebar() {
   );
 
   const unreadMessagesCount = unreadMessages?.count || 0;
+  const access = useWorkspaceSubscriptionAccess();
+  const subscriptionLocked =
+    access.userLoaded && access.isBillingManager && !access.hasAccess;
 
   const { groups } = getVisibleNavigation({
     role: userRole,
@@ -296,6 +312,7 @@ export function Sidebar() {
             expanded={!group.collapsible || expandedSections.has(group.id)}
             onToggle={() => toggleSection(group.id)}
             unreadMessagesCount={unreadMessagesCount}
+            subscriptionLocked={subscriptionLocked}
           />
         ))}
       </nav>

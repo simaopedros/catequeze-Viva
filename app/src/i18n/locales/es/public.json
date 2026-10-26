@@ -12,12 +12,32 @@
       "content": "Biblioteca de contenido — cree, revise y publique planes de encuentro.",
       "communication": "Comunicación pastoral — envíe mensajes segmentados a familias y catequistas.",
       "reports": "Informes e indicadores — siga la salud de la catequesis con KPIs."
-    }
+    },
+    "audience_title": "Para quién es",
+    "audience": [
+      "Catequistas que quieren preparar el encuentro y registrar la asistencia sin papel ni planillas sueltas.",
+      "Coordinaciones parroquiales que necesitan ver todos los grupos, catequistas y sacramentos en un solo lugar.",
+      "Diócesis que acompañan varias parroquias, cada una cuidando sus propios datos."
+    ],
+    "principles_title": "Cómo trabajamos",
+    "principles": [
+      "Fidelidad a la Iglesia: contenidos y recorridos pensados a partir del Directorio para la Catequesis y del camino de iniciación cristiana.",
+      "Cuidado de los menores: datos de niños y adolescentes tratados con consentimiento del responsable y acceso restringido, según la LGPD.",
+      "Sencillez: el catequista voluntario debe resolver su semana en pocos minutos, también desde el celular.",
+      "La parroquia es dueña de sus datos: expórtelos cuando quiera, sin ataduras."
+    ],
+    "contact_title": "Hable con nosotros",
+    "contact_text": "¿Tiene sugerencias, quiere presentar Catequesis Viva a su parroquia o diócesis, o encontró un problema? Escriba al equipo.",
+    "contact_cta": "Ir a Contacto",
+    "help_cta": "Ver preguntas frecuentes"
   },
   "contact": {
     "title": "Contacto",
     "intro": "Póngase en contacto con el equipo de Catequesis Viva.",
     "location": "São Paulo, Brasil",
+    "phone_label": "Teléfono (soporte y consultas generales)",
+    "subject_prefix": "Asunto",
+    "required_hint": "Complete los campos con * (nombre, email y mensaje). Respondemos por email.",
     "name": "Nombre *",
     "email": "Email *",
     "subject": "Asunto",
@@ -37,7 +57,7 @@
   },
   "pricing": {
     "title": "Tres caminos: catequista, parroquia y diócesis",
-    "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis; tarjeta ahora, cobro después del trial.",
+    "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis en el Plan Catequista, sin tarjeta.",
     "payment_card": "Tarjeta",
     "annual_savings": "Ahorre 17% en anual",
     "monthly_tab": "Mensual",
@@ -65,7 +85,7 @@
     "faq": [
       {
         "q": "¿Cómo conozco la plataforma antes de suscribirme?",
-        "a": "Pruebas 7 días. Pedimos la tarjeta ahora y solo cobramos después del trial. Úsala con tu grupo de verdad y cancela si no tiene sentido continuar."
+        "a": "Pruebas 7 días, sin tarjeta. Úsalo con tu grupo de verdad; si tiene sentido continuar, suscríbete antes de que termine la prueba."
       },
       {
         "q": "¿Cuál es el precio?",
@@ -73,7 +93,7 @@
       },
       {
         "q": "¿Cómo funciona el pago?",
-        "a": "Empiezas con 7 días de prueba. Stripe pide la tarjeta ahora y solo cobra después del trial. Sin permanencia — cancela cuando quieras."
+        "a": "Empiezas con 7 días de prueba sin tarjeta. Al suscribirte, el pago se hace con Stripe. Sin permanencia — cancela cuando quieras."
       },
       {
         "q": "¿Y el reembolso del plan anual?",
@@ -179,5 +199,86 @@
       "OTHER": "Otro"
     }
   },
-  "catechist_free": "Sin suscripción"
+  "catechist_free": "Sin suscripción",
+  "help": {
+    "title": "Ayuda",
+    "intro": "Respuestas rápidas a las dudas más comunes sobre Catequesis Viva. ¿No encontró lo que buscaba? Hable con el equipo al final de la página.",
+    "contact_title": "¿Todavía necesita ayuda?",
+    "contact_text": "Escriba al equipo desde la página de Contacto. Si ya tiene cuenta, también puede usar el Centro de soporte en el menú de su perfil.",
+    "contact_cta": "Hablar con el equipo",
+    "groups": [
+      {
+        "title": "Cuenta y período de prueba",
+        "items": [
+          {
+            "q": "¿Cómo empiezo?",
+            "a": "Cree su cuenta con email y contraseña (o Google), confirme el email y siga los primeros pasos: elija cómo la usará (catequista o parroquia) y cree su primer grupo."
+          },
+          {
+            "q": "¿Necesito tarjeta para probar?",
+            "a": "No. La prueba gratuita de 7 días del Plan Catequista empieza sin tarjeta. La tarjeta solo se pide cuando decida suscribirse."
+          },
+          {
+            "q": "¿Qué pasa cuando termina la prueba?",
+            "a": "Sus datos siguen guardados. Para seguir registrando asistencia y usando las herramientas del grupo, elija un plan en la página Suscripción. La Biblia, el Catecismo, la Configuración y el Centro de soporte siguen disponibles."
+          },
+          {
+            "q": "¿Cómo cambio la tarjeta o cancelo?",
+            "a": "En el menú de su perfil, abra Suscripción y use el botón para gestionar el pago. Allí puede cambiar la tarjeta, ver facturas o cancelar, sin multa."
+          }
+        ]
+      },
+      {
+        "title": "Grupos, encuentros y asistencia",
+        "items": [
+          {
+            "q": "¿Cómo creo un grupo?",
+            "a": "En Grupos, toque Crear grupo e indique el nombre, la etapa y el día y horario del encuentro. Después agregue a los catequizandos."
+          },
+          {
+            "q": "¿Cómo registro la asistencia?",
+            "a": "Abra el grupo y toque Asistencia. Si todavía no hay encuentro para hoy, créelo en la misma pantalla y marque presente, ausente o justificado para cada catequizando."
+          },
+          {
+            "q": "¿Puedo generar los encuentros del año de una vez?",
+            "a": "Sí. En la planificación del grupo, genere los encuentros semanales a partir del día y horario del grupo. Aparecen en el Calendario."
+          },
+          {
+            "q": "¿Funciona en el celular?",
+            "a": "Sí. Funciona directo en el navegador del celular. Si quiere, añada un acceso directo a la pantalla de inicio para abrir más rápido."
+          }
+        ]
+      },
+      {
+        "title": "Familias y catequizandos",
+        "items": [
+          {
+            "q": "¿Cómo registro a un catequizando?",
+            "a": "En Catequizandos, toque Registrar y complete el nombre, la fecha de nacimiento y la familia. Después inscríbalo en un grupo desde su ficha o desde el propio grupo."
+          },
+          {
+            "q": "¿Las familias pueden acompañar?",
+            "a": "Sí. En la ficha del catequizando, invite al responsable al portal de la familia. Verá avisos, asistencia, documentos y consentimientos."
+          },
+          {
+            "q": "¿Puedo importar una lista que ya tengo?",
+            "a": "Sí. En Catequizandos, use Importar para subir una planilla con nombres y fechas de nacimiento."
+          }
+        ]
+      },
+      {
+        "title": "Privacidad y datos de menores",
+        "items": [
+          {
+            "q": "¿Los datos de los niños están protegidos?",
+            "a": "Sí. Seguimos la LGPD de Brasil, incluido el art. 14 sobre datos de niños y adolescentes: recolección mínima, consentimiento del responsable y acceso solo para quienes acompañan el grupo. Vea la Política de Privacidad."
+          },
+          {
+            "q": "¿Cómo exporto o elimino mis datos?",
+            "a": "En Configuración puede exportar sus datos. Para pedir la eliminación, escriba a privacidade@catechis.app."
+          }
+        ]
+      }
+    ]
+  }
 }

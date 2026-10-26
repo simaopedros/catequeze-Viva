@@ -41,6 +41,7 @@ import {
   SUBSCRIPTION_TRIAL_DAYS,
   formatPriceLabel,
 } from "../../shared/pricing";
+import { resolveStripeCheckoutTrialDays } from "../../shared/checkoutTrialDays";
 import { formatPrice } from "../../shared/currency";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import {
@@ -272,6 +273,10 @@ export default function BillingPage() {
   }
 
   const isPaidActive = isActive && !isTrialAccess;
+  const checkoutTrialDays = resolveStripeCheckoutTrialDays({
+    user,
+    institutionalBilling: !isPersonal ? parish?.billing ?? null : null,
+  });
   const hasStripeSubscription = workspaceHasStripeManagedSubscription({
     isPersonal,
     hasUserStripeSubscription: hasStripeManagedSubscription(user),
@@ -814,6 +819,7 @@ export default function BillingPage() {
         onSubscribe={(interval) => handleUpgrade(subscribePlanId, interval)}
         upgrading={!!upgradingPlan}
         error={error}
+        checkoutTrialDays={checkoutTrialDays}
       />
     );
   }
@@ -876,6 +882,7 @@ export default function BillingPage() {
         onSubscribe={(interval) => handleUpgrade(subscribePlanId, interval)}
         upgrading={!!upgradingPlan}
         error={error}
+        checkoutTrialDays={checkoutTrialDays}
       />
     );
   }

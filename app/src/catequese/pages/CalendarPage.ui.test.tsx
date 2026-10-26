@@ -117,4 +117,17 @@ describe("CalendarPage — origem e conflitos", () => {
     });
     expect(screen.getByTestId("calendar-conflicts")).toBeInTheDocument();
   });
+
+  it("abre o formulário de novo evento sem precisar escolher um dia", async () => {
+    const user = userEvent.setup();
+    renderPage(<CalendarPage />);
+    await screen.findByTestId("calendar-conflicts");
+
+    await user.click(screen.getAllByRole("button", { name: /Novo evento/ })[0]);
+    const dialog = await screen.findByRole("dialog");
+    expect(dialog).toHaveTextContent("Novo evento");
+    expect(
+      (screen.getByLabelText("Data do evento") as HTMLInputElement).value,
+    ).toMatch(/^\d{4}-\d{2}-01$/);
+  });
 });

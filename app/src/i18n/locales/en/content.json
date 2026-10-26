@@ -78,7 +78,16 @@
     "suggested_flow_title": "Suggested flow",
     "suggested_flow_step_1": "Create base guides to organize topics, estimated time and audience.",
     "suggested_flow_step_2": "Add activities to turn the content into a meeting ready to use.",
-    "suggested_flow_step_3": "Combine manual writing with editorial assistance when you need to prepare faster."
+    "suggested_flow_step_3": "Combine manual writing with editorial assistance when you need to prepare faster.",
+    "samples": {
+      "title": "Sample meeting scripts",
+      "desc": "Start from a ready-made script and adapt it to your class. A copy is created in your library for you to edit.",
+      "use": "Use this script",
+      "created": "Script copied to your library",
+      "error": "Could not copy the script",
+      "minutes_one": "{{count}} minute",
+      "minutes_other": "{{count}} minutes"
+    }
   },
   "detail": {
     "by_author": "by {{name}}",

@@ -29,5 +29,8 @@
   "manage_workspace_billing": "Gerenciar cobrança do espaço",
   "no_active_workspace": "Nenhum espaço ativo",
   "workspace_managed_desc": "Você participa deste espaço. Planos e pagamentos ficam com quem administra.",
-  "workspace_managed_hint": "Dúvidas de plano? Fale com a coordenação."
+  "workspace_managed_hint": "Dúvidas de plano? Fale com a coordenação.",
+  "display_name": "Nome",
+  "edit_profile_link": "Editar nome, telefone, foto e senha em Configurações",
+  "credits_hint": "Créditos são usados pelos recursos de IA (gerar roteiros, atividades e mensagens). Cada geração consome créditos."
 }

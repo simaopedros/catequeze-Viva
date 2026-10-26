@@ -51,23 +51,26 @@ function makeContext(user: {
   subscriptionPlan: string | null;
   createdAt: Date;
   paymentProcessorUserId?: string | null;
+  trialEndsAt?: Date | null;
 }) {
+  const row = {
+    subscriptionStatus: user.subscriptionStatus,
+    subscriptionPlan: user.subscriptionPlan,
+    createdAt: user.createdAt,
+    paymentProcessorUserId: user.paymentProcessorUserId ?? null,
+    trialEndsAt: user.trialEndsAt ?? null,
+    datePaid: null,
+  };
   return {
     user: { id: user.id, isAdmin: false },
     entities: {
       User: {
-        findUnique: vi.fn(async () => ({
-          subscriptionStatus: user.subscriptionStatus,
-          subscriptionPlan: user.subscriptionPlan,
-          createdAt: user.createdAt,
-          paymentProcessorUserId: user.paymentProcessorUserId ?? null,
-        })),
-        update: vi.fn(async ({ data }: any) => ({
-          subscriptionStatus: data.subscriptionStatus ?? user.subscriptionStatus,
-          subscriptionPlan: data.subscriptionPlan ?? user.subscriptionPlan,
-          createdAt: user.createdAt,
-          paymentProcessorUserId: user.paymentProcessorUserId ?? null,
-        })),
+        findUnique: vi.fn(async () => ({ ...row })),
+        update: vi.fn(async ({ data }: any) => Object.assign(row, data)),
+        updateMany: vi.fn(async ({ data }: any) => {
+          Object.assign(row, data);
+          return { count: 1 };
+        }),
       },
       TenantBilling: {
         findUnique: vi.fn(async () => null),
@@ -111,7 +114,7 @@ describe('assertCanCreateParish — parish trial offer', () => {
     ).resolves.toBeUndefined();
   });
 
-  it('does not grant in-app trial to new users still inside the signup window', async () => {
+  it('grants the no-card in-app trial to new users still inside the signup window', async () => {
     const ctx = makeContext({
       id: 'user-1',
       subscriptionStatus: null,
@@ -119,11 +122,24 @@ describe('assertCanCreateParish — parish trial offer', () => {
       createdAt: new Date(),
     });
 
+    await expect(assertCanCreateParish(ctx, {})).resolves.toBeUndefined();
+    expect(ctx.entities.User.updateMany).toHaveBeenCalledTimes(1);
+  });
+
+  it('offers the parish trial to users whose in-app trial is already used', async () => {
+    const ctx = makeContext({
+      id: 'user-1',
+      subscriptionStatus: null,
+      subscriptionPlan: 'catechist_free',
+      createdAt: new Date(),
+      trialEndsAt: new Date(Date.now() - 60 * 1000),
+    });
+
     await expect(assertCanCreateParish(ctx, {})).rejects.toMatchObject({
       statusCode: 403,
       message: expect.stringContaining(PARISH_TRIAL_AVAILABLE_PREFIX),
     });
-    expect(ctx.entities.User.update).not.toHaveBeenCalled();
+    expect(ctx.entities.User.updateMany).not.toHaveBeenCalled();
   });
 
   it('allows creation for grandfather in-app trial users', async () => {

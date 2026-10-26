@@ -55,5 +55,10 @@
   "email_pref_lifecycle": "Dicas de ativação, teste e retorno à conta",
   "email_pref_product": "Novidades do produto e newsletter",
   "email_pref_pastoral": "Comunicados das turmas e da paróquia",
-  "email_pref_saved": "Preferências de email salvas."
+  "email_pref_saved": "Preferências de email salvas.",
+  "avatar_error": "Não foi possível atualizar a foto. Tente uma imagem menor (JPG, PNG ou WebP).",
+  "avatar_alt": "Foto de perfil",
+  "avatar_change": "Trocar foto",
+  "avatar_add": "Adicionar foto",
+  "avatar_remove": "Remover foto"
 }

@@ -105,5 +105,6 @@
     },
     "next_label": "Próximo encuentro",
     "empty_mobile": "No hay encuentros programados."
-  }
+  },
+  "delete_confirm_button": "Eliminar encuentro"
 }

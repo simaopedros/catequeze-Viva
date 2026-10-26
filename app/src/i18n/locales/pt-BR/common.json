@@ -415,7 +415,54 @@
     "family_label": "Família",
     "family_unlinked": "Não vinculada",
     "next_enroll": "Sem turma · abrir ficha para matricular",
-    "view_profile": "Abrir ficha"
+    "view_profile": "Abrir ficha",
+    "family_contact_hint": "Telefone e responsáveis ficam na família: escolha ou crie a família acima.",
+    "danger_zone": "Mais opções",
+    "enroll": {
+      "open": "Matricular em turma",
+      "title": "Matricular em turma",
+      "desc": "Escolha a turma de {{name}}.",
+      "label": "Turma",
+      "label_optional": "Turma (opcional)",
+      "none": "Matricular depois",
+      "placeholder": "Selecione a turma",
+      "submit": "Matricular",
+      "success": "Matrícula feita",
+      "error": "Não foi possível matricular",
+      "no_classes": "Não há outra turma ativa disponível. Crie uma turma primeiro."
+    },
+    "certificate": {
+      "open": "Gerar declaração",
+      "dialog_title": "Gerar declaração ou certificado",
+      "dialog_desc": "Confira os dados e gere uma página pronta para imprimir ou salvar em PDF.",
+      "kind_label": "Documento",
+      "class_label": "Turma",
+      "parish_label": "Paróquia ou comunidade",
+      "place_label": "Cidade",
+      "place_placeholder": "Ex.: São Paulo",
+      "date_label": "Data",
+      "signer_catechist": "Catequista",
+      "signer_coordinator": "Coordenação da catequese / Pároco",
+      "generate": "Gerar e imprimir",
+      "popup_blocked": "O navegador bloqueou a nova janela. Permita pop-ups para este site e tente de novo.",
+      "no_attendance": "Ainda não há presenças registradas para calcular a frequência.",
+      "birth_clause": ", nascido(a) em {{date}},",
+      "place_date": "{{place}}, {{date}}.",
+      "kinds": {
+        "enrollment": {
+          "title": "Declaração de matrícula",
+          "body": "Declaramos, para os devidos fins, que {{name}}{{birth}} está matriculado(a) na catequese da {{parish}}, na turma {{className}}."
+        },
+        "attendance": {
+          "title": "Declaração de frequência",
+          "body": "Declaramos, para os devidos fins, que {{name}}{{birth}} participa dos encontros de catequese da turma {{className}}, na {{parish}}, com frequência de {{pct}}% nos encontros registrados até esta data."
+        },
+        "completion": {
+          "title": "Certificado de conclusão",
+          "body": "Certificamos que {{name}}{{birth}} concluiu a etapa {{stage}} da catequese na turma {{className}}, da {{parish}}, caminhando na fé com dedicação."
+        }
+      }
+    }
   },
   "families": {
     "subtitle_registered_one": "{{count}} família cadastrada",
@@ -475,6 +522,7 @@
     "error_remove_guardian": "Falha ao remover responsável.",
     "error_save": "Falha ao salvar.",
     "relationships": {
+      "guardian": "Responsável (sem especificar)",
       "father": "Pai",
       "mother": "Mãe",
       "grandparent": "Avô/Avó",
@@ -542,7 +590,7 @@
   "offline_banner": "Sem conexão à internet. Algumas funcionalidades podem estar indisponíveis.",
   "skip_to_content": "Ir para o conteúdo principal",
   "install_title": "Instalar App",
-  "install_description": "Adicione à tela inicial para acesso rápido e offline.",
+  "install_description": "Adicione um atalho à tela inicial para abrir mais rápido.",
   "install_button": "Instalar",
   "offline_title": "Sem conexão",
   "offline_description": "Você está offline. Verifique sua conexão e tente novamente.",
@@ -610,12 +658,18 @@
   "clear": "Limpar",
   "support_inbox": {
     "title": "Central de suporte",
-    "subtitle": "As respostas da equipa aparecem aqui e também são enviadas por email.",
-    "your_message": "A sua mensagem",
+    "subtitle": "Envie sua dúvida abaixo. As respostas da equipe aparecem aqui e também chegam por e-mail.",
+    "your_message": "Sua mensagem",
     "our_reply": "Resposta da Catequese Viva",
-    "waiting": "Ainda à espera de resposta.",
+    "waiting": "Aguardando resposta.",
     "empty_title": "Sem mensagens de suporte",
-    "empty_desc": "Quando a equipa responder a um contacto seu, a conversa aparece aqui."
+    "empty_desc": "Quando você enviar uma mensagem, a conversa com a equipe aparece aqui.",
+    "new_label": "Nova mensagem para o suporte",
+    "new_placeholder": "Descreva sua dúvida ou o problema que encontrou…",
+    "new_hint": "Responderemos para {{email}}.",
+    "new_submit": "Enviar",
+    "new_sent": "Mensagem enviada. Responderemos em breve.",
+    "new_error": "Não foi possível enviar agora. Tente novamente em alguns minutos."
   },
   "validation": {
     "first_name_required": "Informe o nome.",
@@ -640,6 +694,11 @@
     "native_too_long": "Use no máximo {{max}} caracteres.",
     "native_min": "O valor mínimo é {{min}}.",
     "native_max": "O valor máximo é {{max}}.",
-    "native_invalid": "Valor inválido."
+    "native_invalid": "Valor inválido.",
+    "too_long": "Texto muito longo."
+  },
+  "activity": {
+    "working": "Carregando…",
+    "slow": "Ainda trabalhando… a conexão está lenta."
   }
 }
