@@ -506,7 +506,18 @@ export const listUpcomingBirthdays = async (args: { classId?: string; days?: num
   cutoff.setDate(cutoff.getDate() + days);
 
   if (args.classId) {
-    await assertCanAccessClass(context, args.classId);
+    const { parishId } = await assertCanAccessClass(context, args.classId);
+    // Family portal can access the class via a child's enrollment, but must not
+    // receive the full roster's birth dates — staff of that workspace only.
+    if (!context.user.isAdmin) {
+      const access = await requireWorkspaceAccess(context, parishId);
+      if (!access.isCoordinatorOrAbove && !access.isCatechist) {
+        throw new HttpError(
+          403,
+          'Apenas coordenadores e catequistas podem consultar aniversários da turma.',
+        );
+      }
+    }
   }
   void (context.entities.Membership as unknown); // Required by assertCanAccessClass
 

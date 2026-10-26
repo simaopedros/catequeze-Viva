@@ -100,4 +100,19 @@ describe("buildCatechumenUpdateData", () => {
       buildCatechumenUpdateData({ birthDate: "2999-01-01" }),
     ).toThrow(/futuro/i);
   });
+
+  it("rejects invalid email with a Portuguese message", () => {
+    expect(() => buildCatechumenUpdateData({ email: "nao-e-email" })).toThrow(
+      CatechumenUpdateValidationError,
+    );
+    expect(() => buildCatechumenUpdateData({ email: "nao-e-email" })).toThrow(
+      /E-mail inválido/i,
+    );
+    expect(() => buildCatechumenUpdateData({ email: "a@b" })).toThrow(
+      /E-mail inválido/i,
+    );
+    expect(buildCatechumenUpdateData({ email: "  maria@paroquia.org  " })).toEqual(
+      { email: "maria@paroquia.org" },
+    );
+  });
 });
