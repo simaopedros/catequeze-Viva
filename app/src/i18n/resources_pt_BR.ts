@@ -2381,6 +2381,8 @@ export const common_pt_BR = {
       "emptyDesc": "Registre certidões e autorizações dos catequizandos.",
       "pending": "Pendentes",
       "verified": "Verificados",
+      "rejected": "Rejeitados",
+      "missing": "Em falta",
       "verify": "Verificar",
       "verifiedLabel": "Verificado",
       "uploadedBy": "por",
@@ -2433,6 +2435,7 @@ export const common_pt_BR = {
     "not_found": "Não encontrado.",
     "error": "Erro",
     "catechumens": {
+      "subtitle_registered_zero": "Nenhum catequizando cadastrado",
       "subtitle_registered_one": "{{count}} catequizando cadastrado",
       "subtitle_registered_other": "{{count}} catequizandos cadastrados",
       "count_short_one": "{{count}} catequizando",
@@ -2635,6 +2638,7 @@ export const common_pt_BR = {
       }
     },
     "families": {
+      "subtitle_registered_zero": "Nenhuma família cadastrada",
       "subtitle_registered_one": "{{count}} família cadastrada",
       "subtitle_registered_other": "{{count}} famílias cadastradas",
       "count_badge_one": "{{count}} família",
@@ -3203,6 +3207,8 @@ export const content_pt_BR = {
       "status_local_draft": "Rascunho local",
       "back_to_library": "Voltar para a biblioteca",
       "title_placeholder": "Título do encontro",
+      "title_label": "Título",
+      "more_actions": "Mais ações",
       "theme_placeholder": "Tema",
       "duration_minutes": "Duração em minutos",
       "tags_placeholder": "Tags",
@@ -3234,6 +3240,7 @@ export const content_pt_BR = {
       "blockquote": "Citação",
       "divider": "Separador",
       "link": "Link",
+      "link_url": "URL do link",
       "table": "Tabela",
       "image": "Imagem",
       "undo": "Desfazer",
@@ -3267,7 +3274,7 @@ export const dashboard_pt_BR = {
     "hero_subtitle": "Aqui está o que precisa da sua atenção hoje.",
     "search_placeholder": "Buscar...",
     "next_actions": "Próximas ações",
-    "see_all": "Ver todas",
+    "see_all": "Ver todos",
     "fact_catechumens": "Catequizandos",
     "fact_upcoming_meetings": "Próximos encontros",
     "fact_attendance": "Presença",
@@ -5639,7 +5646,7 @@ export const navigation_pt_BR = {
     "dashboard": "Painel",
     "classes": "Turmas",
     "catechumens": "Catequizandos",
-    "catechumens_short": "Quizandos",
+    "catechumens_short": "Cateq.",
     "families": "Famílias",
     "team": "Pessoas e acessos",
     "family_portal_invites": "Convites da família",
@@ -6755,7 +6762,8 @@ export const publicNav_pt_BR = {
     "footer_start": "Experimentar",
     "footer_start_desc": "Mais presença no encontro, menos peso na semana. Comece os 7 dias.",
     "language": "Idioma",
-    "help": "Ajuda"
+    "help": "Ajuda",
+    "main_nav": "Navegação principal"
   } as const;
 
 export const reports_pt_BR = {

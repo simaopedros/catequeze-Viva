@@ -853,6 +853,8 @@ export const common_pt_BR_core = {
       "emptyDesc": "Registre certidões e autorizações dos catequizandos.",
       "pending": "Pendentes",
       "verified": "Verificados",
+      "rejected": "Rejeitados",
+      "missing": "Em falta",
       "verify": "Verificar",
       "verifiedLabel": "Verificado",
       "uploadedBy": "por",
@@ -905,6 +907,7 @@ export const common_pt_BR_core = {
     "not_found": "Não encontrado.",
     "error": "Erro",
     "catechumens": {
+      "subtitle_registered_zero": "Nenhum catequizando cadastrado",
       "subtitle_registered_one": "{{count}} catequizando cadastrado",
       "subtitle_registered_other": "{{count}} catequizandos cadastrados",
       "count_short_one": "{{count}} catequizando",
@@ -1107,6 +1110,7 @@ export const common_pt_BR_core = {
       }
     },
     "families": {
+      "subtitle_registered_zero": "Nenhuma família cadastrada",
       "subtitle_registered_one": "{{count}} família cadastrada",
       "subtitle_registered_other": "{{count}} famílias cadastradas",
       "count_badge_one": "{{count}} família",
@@ -2832,7 +2836,7 @@ export const navigation_pt_BR_core = {
     "dashboard": "Painel",
     "classes": "Turmas",
     "catechumens": "Catequizandos",
-    "catechumens_short": "Quizandos",
+    "catechumens_short": "Cateq.",
     "families": "Famílias",
     "team": "Pessoas e acessos",
     "family_portal_invites": "Convites da família",
@@ -3231,7 +3235,8 @@ export const publicNav_pt_BR_core = {
     "footer_start": "Experimentar",
     "footer_start_desc": "Mais presença no encontro, menos peso na semana. Comece os 7 dias.",
     "language": "Idioma",
-    "help": "Ajuda"
+    "help": "Ajuda",
+    "main_nav": "Navegação principal"
   } as const;
 
 export const topbar_pt_BR_core = {

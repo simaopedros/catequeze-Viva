@@ -6,6 +6,9 @@ type LocalizedDateInputProps = {
   value: string;
   onChange: (isoDate: string) => void;
   className?: string;
+  id?: string;
+  name?: string;
+  disabled?: boolean;
   "aria-label"?: string;
 };
 
@@ -13,6 +16,9 @@ export function LocalizedDateInput({
   value,
   onChange,
   className,
+  id,
+  name,
+  disabled,
   "aria-label": ariaLabel,
 }: LocalizedDateInputProps) {
   const { currentLocale } = useLocale();
@@ -25,7 +31,11 @@ export function LocalizedDateInput({
   return (
     <input
       type="text"
+      id={id}
+      name={name}
+      disabled={disabled}
       inputMode="numeric"
+      autoComplete="bday"
       placeholder={
         currentLocale.startsWith("en") ? "MM/DD/YYYY" : "DD/MM/AAAA"
       }

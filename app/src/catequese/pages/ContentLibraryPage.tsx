@@ -33,6 +33,7 @@ import {
 } from "wasp/client/operations";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
+import { getPersonFullName } from "../../shared/displayName";
 import { cn } from "../../client/utils";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
@@ -667,9 +668,11 @@ export default function ContentLibraryPage() {
               </div>
 
               <div className="mt-4 border-t border-border/60 pt-4 text-sm text-muted-foreground">
-                <span className="inline-flex items-center gap-2">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  {item.createdBy?.firstName || "—"}
+                <span className="inline-flex min-w-0 items-center gap-2">
+                  <User className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <span className="truncate" title={getPersonFullName(item.createdBy) || undefined}>
+                    {getPersonFullName(item.createdBy) || "—"}
+                  </span>
                 </span>
               </div>
             </Link>

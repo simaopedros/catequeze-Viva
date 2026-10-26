@@ -109,12 +109,16 @@ export function Breadcrumbs({ className }: { className?: string }) {
           {item.to ? (
             <Link
               to={item.to}
-              className="-my-1 flex min-h-8 max-w-[160px] items-center truncate transition-colors hover:text-brand-ink"
+              title={item.label}
+              className="-my-1 flex min-h-8 max-w-[220px] items-center truncate transition-colors hover:text-brand-ink sm:max-w-xs"
             >
               {item.label}
             </Link>
           ) : (
-            <span className="max-w-[160px] truncate font-semibold tracking-tight text-brand-ink">
+            <span
+              title={item.label}
+              className="max-w-[220px] truncate font-semibold tracking-tight text-brand-ink sm:max-w-xs"
+            >
               {item.label}
             </span>
           )}

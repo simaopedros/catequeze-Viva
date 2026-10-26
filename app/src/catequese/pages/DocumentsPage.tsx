@@ -293,11 +293,11 @@ export default function DocumentsPage() {
           />
           <AppMetric label={tc("documents.pending")} value={metrics.pending} />
           <AppMetric
-            label={tc("documents.status_rejected")}
+            label={tc("documents.rejected")}
             value={metrics.rejected}
           />
           <AppMetric
-            label={tc("documents.status_missing")}
+            label={tc("documents.missing")}
             value={metrics.missing}
           />
         </div>

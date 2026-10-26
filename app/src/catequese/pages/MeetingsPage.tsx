@@ -30,6 +30,7 @@ import { SkeletonPage } from "../../client/components/Skeletons";
 import { QueryErrorState } from "../../client/components/QueryErrorState";
 import { EmptyState } from "../../client/components/EmptyState";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
+import { LocalizedDateInput } from "../../client/components/LocalizedDateInput";
 import {
   useQuery,
   listMeetings,
@@ -241,12 +242,12 @@ export default function MeetingsPage() {
             </div>
             <div className="space-y-1.5 sm:w-44">
               <Label htmlFor="meetingDate">{t("date")}</Label>
-              <Input
+              <LocalizedDateInput
                 id="meetingDate"
-                type="date"
-                className="h-11 min-h-11"
                 value={date}
-                onChange={(e) => setDate(e.target.value)}
+                onChange={setDate}
+                aria-label={t("date")}
+                className="flex h-11 min-h-11 w-full rounded-sm border border-input bg-background px-3 text-sm"
               />
             </div>
           </div>

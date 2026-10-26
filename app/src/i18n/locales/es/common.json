@@ -223,6 +223,8 @@
     "emptyDesc": "Registre certificados y autorizaciones de los catecúmenos.",
     "pending": "Pendientes",
     "verified": "Verificados",
+    "rejected": "Rechazados",
+    "missing": "Faltantes",
     "verify": "Verificar",
     "verifiedLabel": "Verificado",
     "uploadedBy": "por",
@@ -275,6 +277,7 @@
   "not_found": "No encontrado.",
   "error": "Error",
   "catechumens": {
+    "subtitle_registered_zero": "Ningún catecúmeno registrado",
     "subtitle_registered_one": "{{count}} catecúmeno registrado",
     "subtitle_registered_other": "{{count}} catecúmenos registrados",
     "count_short_one": "{{count}} catecúmeno",
@@ -477,6 +480,7 @@
     }
   },
   "families": {
+    "subtitle_registered_zero": "Ninguna familia registrada",
     "subtitle_registered_one": "{{count}} familia registrada",
     "subtitle_registered_other": "{{count}} familias registradas",
     "count_badge_one": "{{count}} familia",

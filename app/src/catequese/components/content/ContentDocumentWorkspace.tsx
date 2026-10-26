@@ -939,7 +939,7 @@ export function ContentDocumentWorkspace({
                   variant="outline"
                   size="icon"
                   className="h-8 w-8 rounded-sm"
-                  aria-label="Mais ações"
+                  aria-label={t("workspace.more_actions")}
                 >
                   <MoreHorizontal className="h-3.5 w-3.5" />
                 </Button>
@@ -988,7 +988,7 @@ export function ContentDocumentWorkspace({
             onChange={(event) => setTitle(event.target.value)}
             className="h-8 rounded-sm border-border/60 bg-muted/20 px-2.5 text-sm font-semibold tracking-tight text-brand-ink shadow-none focus-visible:ring-1"
             placeholder={t("workspace.title_placeholder")}
-            aria-label="Título"
+            aria-label={t("workspace.title_label")}
           />
           <Input
             value={theme}

@@ -28,6 +28,7 @@ export default function NavBar({
   navigationItems: NavigationItem[];
 }) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { t } = useTranslation("publicNav");
 
   useEffect(() => {
     const throttledHandler = throttleWithTrailingInvocation(() => {
@@ -66,7 +67,7 @@ export default function NavBar({
                 "p-6 lg:px-8": !isScrolled,
               },
             )}
-            aria-label="Global"
+            aria-label={t("main_nav")}
           >
             <div className="flex items-center gap-6">
               <WaspRouterLink

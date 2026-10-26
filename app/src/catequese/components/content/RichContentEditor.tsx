@@ -997,7 +997,7 @@ export function RichContentEditor({
               value={linkHref}
               onChange={(e) => setLinkHref(e.target.value)}
               placeholder="https://"
-              aria-label="URL"
+              aria-label={t("editor.link_url")}
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === "Enter") {

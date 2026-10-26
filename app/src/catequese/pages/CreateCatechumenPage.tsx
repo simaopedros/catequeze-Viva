@@ -38,6 +38,7 @@ import {
 } from "../../client/components/brand/AppChrome";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { MobileActionBar } from "../../client/components/MobileActionBar";
+import { LocalizedDateInput } from "../../client/components/LocalizedDateInput";
 
 function compressImage(file: File): Promise<string> {
   return new Promise((resolve) => {
@@ -291,10 +292,11 @@ export default function CreateCatechumenPage() {
                   <FormItem>
                     <FormLabel>{t("catechumens.birth_date")}</FormLabel>
                     <FormControl>
-                      <Input
-                        type="date"
-                        max={new Date().toISOString().slice(0, 10)}
-                        {...field}
+                      <LocalizedDateInput
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        aria-label={t("catechumens.birth_date")}
+                        className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm"
                       />
                     </FormControl>
                     <FormMessage />

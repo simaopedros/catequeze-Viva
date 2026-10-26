@@ -2381,6 +2381,8 @@ export const common_es = {
       "emptyDesc": "Registre certificados y autorizaciones de los catecúmenos.",
       "pending": "Pendientes",
       "verified": "Verificados",
+      "rejected": "Rechazados",
+      "missing": "Faltantes",
       "verify": "Verificar",
       "verifiedLabel": "Verificado",
       "uploadedBy": "por",
@@ -2433,6 +2435,7 @@ export const common_es = {
     "not_found": "No encontrado.",
     "error": "Error",
     "catechumens": {
+      "subtitle_registered_zero": "Ningún catecúmeno registrado",
       "subtitle_registered_one": "{{count}} catecúmeno registrado",
       "subtitle_registered_other": "{{count}} catecúmenos registrados",
       "count_short_one": "{{count}} catecúmeno",
@@ -2635,6 +2638,7 @@ export const common_es = {
       }
     },
     "families": {
+      "subtitle_registered_zero": "Ninguna familia registrada",
       "subtitle_registered_one": "{{count}} familia registrada",
       "subtitle_registered_other": "{{count}} familias registradas",
       "count_badge_one": "{{count}} familia",
@@ -3203,6 +3207,8 @@ export const content_es = {
       "status_local_draft": "Borrador local",
       "back_to_library": "Volver a la biblioteca",
       "title_placeholder": "Título del encuentro",
+      "title_label": "Título",
+      "more_actions": "Más acciones",
       "theme_placeholder": "Tema",
       "duration_minutes": "Duración en minutos",
       "tags_placeholder": "Etiquetas",
@@ -3234,6 +3240,7 @@ export const content_es = {
       "blockquote": "Cita",
       "divider": "Separador",
       "link": "Enlace",
+      "link_url": "URL del enlace",
       "table": "Tabla",
       "image": "Imagen",
       "undo": "Deshacer",
@@ -3267,7 +3274,7 @@ export const dashboard_es = {
     "hero_subtitle": "Esto es lo que necesita su atención hoy.",
     "search_placeholder": "Buscar...",
     "next_actions": "Próximas acciones",
-    "see_all": "Ver todas",
+    "see_all": "Ver todos",
     "fact_catechumens": "Catecúmenos",
     "fact_upcoming_meetings": "Próximos encuentros",
     "fact_attendance": "Asistencia",
@@ -6755,7 +6762,8 @@ export const publicNav_es = {
     "footer_start": "Probar",
     "footer_start_desc": "Más presencia en el encuentro, menos peso en la semana. Empieza los 7 días.",
     "language": "Idioma",
-    "help": "Ayuda"
+    "help": "Ayuda",
+    "main_nav": "Navegación principal"
   } as const;
 
 export const reports_es = {
