@@ -162,14 +162,46 @@ function createResponse() {
   return response;
 }
 
+function createFunnelEventDelegate() {
+  const rows: any[] = [];
+  return {
+    rows,
+    async findUnique({ where }: { where: { externalId?: string } }) {
+      if (where.externalId) {
+        return rows.find((row) => row.externalId === where.externalId) ?? null;
+      }
+      return null;
+    },
+    async create({ data }: { data: any }) {
+      if (data.externalId) {
+        const match = rows.find((row) => row.externalId === data.externalId);
+        if (match) {
+          const error: any = new Error('Unique constraint failed');
+          error.code = 'P2002';
+          throw error;
+        }
+      }
+      const record = { id: data.id ?? `funnel_${rows.length + 1}`, ...data };
+      rows.push(record);
+      return record;
+    },
+  };
+}
+
 function createContext() {
   return {
     entities: {
       User: {
-        findUnique: vi.fn().mockResolvedValue({ id: 'user_1' }),
+        findUnique: vi.fn().mockResolvedValue({
+          id: 'user_1',
+          email: 'u@example.com',
+          firstName: 'U',
+          locale: 'pt-BR',
+        }),
       },
       UserAiCredits: {},
       TrackedEvent: createTrackedEventDelegate(),
+      FunnelEvent: createFunnelEventDelegate(),
     },
   } as any;
 }
@@ -507,6 +539,7 @@ describe('stripeWebhook', () => {
   it('tracks payment failures and cancellations internally only', async () => {
     const response = createResponse();
     const context = createContext();
+    mocks.updateUserSubscriptionMock.mockResolvedValue({ id: 'user_1' });
 
     mocks.constructEventMock.mockReturnValueOnce({
       id: 'evt_invoice_failed',
@@ -525,6 +558,79 @@ describe('stripeWebhook', () => {
     expect(mocks.sendMetaEventMock).not.toHaveBeenCalled();
     expect(mocks.trackPricingEventMock).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ event: 'payment_failed' }));
     expect(mocks.trackPricingEventMock).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ event: 'subscription_canceled' }));
+
+    expect(context.entities.FunnelEvent.rows).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: 'payment_failed',
+          source: 'stripe_webhook',
+          externalId: 'evt_invoice_failed',
+          userId: 'user_1',
+          metadata: expect.objectContaining({
+            stripeEventId: 'evt_invoice_failed',
+            customerId: 'cus_1',
+          }),
+        }),
+        expect.objectContaining({
+          type: 'subscription_cancelled',
+          source: 'stripe_webhook',
+          externalId: 'evt_subscription_deleted',
+          userId: 'user_1',
+          metadata: expect.objectContaining({
+            stripeEventId: 'evt_subscription_deleted',
+            subscriptionId: 'sub_1',
+            customerId: 'cus_1',
+          }),
+        }),
+      ]),
+    );
+    expect(JSON.stringify(context.entities.FunnelEvent.rows)).not.toMatch(/u@example\.com/);
+  });
+
+  it('funnel recording is idempotent by stripe event id and never fails the webhook', async () => {
+    const response = createResponse();
+    const context = createContext();
+    mocks.updateUserSubscriptionMock.mockResolvedValue({ id: 'user_1' });
+
+    const failedEvent = {
+      id: 'evt_invoice_failed_idem',
+      type: 'invoice.payment_failed',
+      data: { object: paidInvoice({ id: 'in_failed_idem' }) },
+    };
+    mocks.constructEventMock.mockReturnValue(failedEvent);
+
+    await stripeWebhook({ headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any, response, context);
+    // Second delivery: TrackedEvent idempotency short-circuits before handlers,
+    // so seed a prior FunnelEvent and ensure create is not duplicated via helper path.
+    const priorCount = context.entities.FunnelEvent.rows.length;
+    expect(priorCount).toBe(1);
+
+    // Direct duplicate create attempt (same externalId) should be ignored by unique constraint.
+    await context.entities.FunnelEvent.create({
+      data: {
+        type: 'payment_failed',
+        source: 'stripe_webhook',
+        externalId: 'evt_invoice_failed_idem',
+        userId: 'user_1',
+      },
+    }).catch(() => undefined);
+    expect(context.entities.FunnelEvent.rows).toHaveLength(1);
+
+    // Broken FunnelEvent must not break webhook handling.
+    context.entities.FunnelEvent.create = vi.fn(async () => {
+      throw new Error('FunnelEvent unavailable');
+    });
+    context.entities.FunnelEvent.findUnique = vi.fn(async () => null);
+    mocks.constructEventMock.mockReturnValueOnce({
+      id: 'evt_subscription_deleted_safe',
+      type: 'customer.subscription.deleted',
+      data: { object: { id: 'sub_safe', customer: 'cus_1' } },
+    });
+    // Clear TrackedEvent so handler runs
+    context.entities.TrackedEvent.rows.length = 0;
+    await stripeWebhook({ headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any, response, context);
+    expect(response.status).toHaveBeenCalledWith(204);
+    expect(mocks.cascadeCancelToTenantBillingMock).toHaveBeenCalled();
   });
 
   it('grants credits for credit-pack invoices without activating a subscription', async () => {

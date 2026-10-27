@@ -9,6 +9,7 @@ import {
 } from './billingEnforcement';
 import { getPersonalPlanId, isSubscriptionActiveLike } from '../../shared/planLimits';
 import { getDioceseParishIds } from '../auth/helpers';
+import { markOnboardingCompletedOnce } from '../funnel/recordFunnelEvent';
 
 /** Returns the effective PERSONAL plan id (lowercase) for a user's personal workspace. */
 function getPersonalPlan(user: any): string {
@@ -87,6 +88,17 @@ export const ensurePersonalWorkspace = async (_args: void, context: any) => {
       status: 'ACTIVE',
     },
   });
+
+  try {
+    await markOnboardingCompletedOnce({
+      user: context.entities.User,
+      funnelEvent: context.entities.FunnelEvent,
+      userId: context.user.id,
+      metadata: { path: 'personal' },
+    });
+  } catch {
+    /* non-fatal */
+  }
 
   return parish;
 };

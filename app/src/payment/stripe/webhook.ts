@@ -24,6 +24,11 @@ import { stripeClient } from "./stripeClient";
 import { trackPricingEvent } from "../pricingEvents";
 import { sendMetaEvent } from "../meta/metaCapi";
 import { sendPurchaseToMeta } from "../meta/sendPurchaseToMeta";
+import {
+  FUNNEL_EVENT_SOURCE,
+  FUNNEL_EVENT_TYPE,
+  recordFunnelEvent,
+} from "../../server/funnel/recordFunnelEvent";
 
 const STRIPE_PROVIDER = "stripe";
 const META_PROVIDER = "meta";
@@ -71,6 +76,17 @@ export const stripeWebhook: PaymentsWebhook = async (
 
   try {
     const event = constructStripeEvent(request);
+
+    // Funnel history first (idempotent by Stripe event id; never blocks webhook).
+    if (event.type === "invoice.payment_failed") {
+      await recordStripeFunnelEventSafe(context, event, FUNNEL_EVENT_TYPE.PAYMENT_FAILED);
+    } else if (event.type === "customer.subscription.deleted") {
+      await recordStripeFunnelEventSafe(
+        context,
+        event,
+        FUNNEL_EVENT_TYPE.SUBSCRIPTION_CANCELLED,
+      );
+    }
 
     if (await isTrackedEventSent(trackedEventDelegate, STRIPE_PROVIDER, event.type, event.id)) {
       return response.status(204).send();
@@ -581,6 +597,66 @@ async function handleInvoicePaymentFailed(
       locale: resolveUserLocale(user),
       context,
     });
+  }
+}
+
+/**
+ * Additive funnel history for Stripe lifecycle events.
+ * Idempotent by Stripe event id; never fails the webhook.
+ */
+async function recordStripeFunnelEventSafe(
+  context: WebhookContext,
+  event: Stripe.Event,
+  type: typeof FUNNEL_EVENT_TYPE.PAYMENT_FAILED | typeof FUNNEL_EVENT_TYPE.SUBSCRIPTION_CANCELLED,
+): Promise<void> {
+  try {
+    const object = event.data.object as {
+      customer?: string | { id?: string } | null;
+      id?: string;
+      subscription?: string | { id?: string } | null;
+    };
+    const rawCustomer = object.customer;
+    const customerId =
+      typeof rawCustomer === "string"
+        ? rawCustomer
+        : rawCustomer && typeof rawCustomer.id === "string"
+          ? rawCustomer.id
+          : null;
+    let userId: string | null = null;
+    if (customerId) {
+      try {
+        const user = await context.entities.User.findUnique({
+          where: { paymentProcessorUserId: customerId },
+          select: { id: true },
+        });
+        userId = user?.id ?? null;
+      } catch {
+        /* non-fatal */
+      }
+    }
+
+    const subscriptionId =
+      typeof object.subscription === "string"
+        ? object.subscription
+        : object.subscription?.id ??
+          (type === FUNNEL_EVENT_TYPE.SUBSCRIPTION_CANCELLED ? object.id : undefined);
+
+    await recordFunnelEvent({
+      funnelEvent: (context.entities as any).FunnelEvent,
+      userId,
+      type,
+      source: FUNNEL_EVENT_SOURCE.STRIPE_WEBHOOK,
+      externalId: event.id,
+      metadata: {
+        stripeEventId: event.id,
+        stripeEventType: event.type,
+        customerId,
+        subscriptionId: subscriptionId ?? null,
+        objectId: object.id ?? null,
+      },
+    });
+  } catch {
+    // Never fail the webhook because of funnel recording
   }
 }
 

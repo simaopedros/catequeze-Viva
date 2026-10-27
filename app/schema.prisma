@@ -424,6 +424,11 @@ model User {
   lifecycleEmailsOptOutAt DateTime?
   lifecycleEmailLogs      LifecycleEmailLog[]
 
+  // Funnel tracking (additive; recording only)
+  emailVerifiedAt       DateTime?
+  onboardingCompletedAt DateTime?
+  funnelEvents          FunnelEvent[]
+
   // Catequese Viva relations
   memberships         Membership[]
   ownedParishes       Parish[]           @relation("ParishOwner")
@@ -1872,6 +1877,32 @@ model TrackedEvent {
   @@index([provider, eventName])
   @@index([stripeCustomerId])
   @@index([createdAt])
+}
+
+/// Server-side funnel history (checkout, auth, onboarding, Stripe lifecycle).
+/// No PII in metadata. Idempotent via unique externalId when provided.
+model FunnelEvent {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  /// checkout_started | email_verified | onboarding_completed | subscription_cancelled | payment_failed
+  type   String
+  /// checkout | auth | onboarding | stripe_webhook
+  source String
+
+  /// Stripe event id, checkout session id, or stable per-user keys for idempotency
+  externalId String? @unique
+
+  metadata Json?
+
+  @@index([userId])
+  @@index([type])
+  @@index([source])
+  @@index([createdAt])
+  @@index([userId, type])
 }
 model DailyStats {
   id   Int      @id @default(autoincrement())
