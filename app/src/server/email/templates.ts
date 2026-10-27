@@ -4,6 +4,10 @@ import {
   interpolate,
   resolveCampaignCopy,
 } from "../lifecycle/copy";
+import {
+  resolveTrialExtensionCopy,
+  type TrialExtensionVariant,
+} from "../lifecycle/trialExtensionNoticeCopy";
 import type { ServerLocale } from "../i18n/serverLocale";
 import { renderBrandedEmail } from "../../emails/renderEmail";
 import type { LifecycleCampaign } from "../lifecycle/selectCampaign";
@@ -71,6 +75,29 @@ export function renderCatalogEmail(
       body: copy.body,
       ctaLabel: copy.cta,
       ctaUrl: str(payload, "ctaUrl"),
+      footer: `${copy.footerReason} ${copy.unsubscribeLabel}: ${str(
+        payload,
+        "unsubscribeUrl",
+      )}`,
+    });
+    return { ...rendered, subject: copy.subject, heading: copy.heading };
+  }
+
+  if (messageId === EMAIL_MESSAGE.LIFECYCLE_TRIAL_EXTENSION_2026_10) {
+    const variant = (
+      str(payload, "variant") === "B" ? "B" : "A"
+    ) as TrialExtensionVariant;
+    const copy = resolveTrialExtensionCopy(variant, {
+      nome: str(payload, "nome", str(payload, "name")),
+      data: str(payload, "data", str(payload, "trialEndsAt")),
+      turma: str(payload, "turma", str(payload, "className")),
+    });
+    const rendered = renderBrandedEmail({
+      heading: copy.heading,
+      body: copy.body,
+      ctaLabel: copy.cta,
+      ctaUrl: str(payload, "ctaUrl"),
+      preview: copy.preheader,
       footer: `${copy.footerReason} ${copy.unsubscribeLabel}: ${str(
         payload,
         "unsubscribeUrl",
