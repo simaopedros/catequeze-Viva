@@ -13,6 +13,7 @@ import {
 } from '../pricing/planCatalogService';
 import { rotateStripePrice } from '../pricing/stripeCatalogSync';
 import { ensurePricingCatalogSeeded } from '../scripts/seedPricingCatalog';
+import { countPayingForPlan, countTrialForPlan } from '../billing/accountStatusCounts';
 
 const slugSchema = z
   .string()
@@ -125,14 +126,21 @@ export const listPricingPlansAdmin = async (_args: void, context: any) => {
     orderBy: { sortOrder: 'asc' },
   });
 
+  const now = new Date();
   const withCounts = await Promise.all(
     rows.map(async (row: any) => {
-      const subscribers = await countActiveSubscribers(context, row.slug);
+      const [subscribers, paying, trial] = await Promise.all([
+        countActiveSubscribers(context, row.slug),
+        countPayingForPlan(context, row.slug),
+        countTrialForPlan(context, row.slug, now),
+      ]);
       return {
         ...row,
         subscriberCount: subscribers.total,
         subscriberUsers: subscribers.users,
         subscriberTenants: subscribers.tenants,
+        payingCount: paying.total,
+        trialCount: trial.total,
       };
     }),
   );

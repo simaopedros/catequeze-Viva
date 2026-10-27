@@ -403,6 +403,7 @@ model User {
 
   // Payment (Stripe only, BRL)
   paymentProcessorUserId        String?   @unique
+  stripeSubscriptionId          String?
   subscriptionStatus            String?
   subscriptionPlan              String?  @default("catechist_free")
   datePaid                      DateTime?
