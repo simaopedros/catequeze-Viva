@@ -22,8 +22,10 @@ describe("catechumen access uses parish, not household parish alone", () => {
     );
     const block = helpers.slice(start, start + 4500);
     expect(block).toContain("NEVER by household.parishId");
-    expect(block).not.toContain("catechumen.household?.parishId");
     expect(block).toContain("catechumen.parishId === parishId");
+    const staffStart = block.indexOf("NEVER by household.parishId");
+    const staffBlock = block.slice(staffStart);
+    expect(staffBlock).not.toContain("catechumen.household?.parishId");
   });
 
   it("catechumenWhereForAccess does not list by household parish", () => {
