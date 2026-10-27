@@ -8,7 +8,12 @@ import {
   AUTH_LOGIN_RATE_LIMIT,
   consumePersistentRateLimit,
 } from '../security/persistentRateLimit';
+import {
+  getExpressRequestPath,
+  isAuthCredentialPostPath,
+} from '../security/authRateLimitPaths';
 import { getClientIpFromRequest } from '../security/clientIp';
+import { logger } from '../logger';
 
 interface RateLimitEntry {
   count: number;
@@ -65,21 +70,28 @@ export function createRateLimiter(config: RateLimitConfig) {
 }
 
 /**
- * Persistent (Postgres) limiter for Wasp /auth/* login & related POSTs.
- * Fail-open on DB errors. Skips non-auth paths when mounted globally.
+ * Persistent (Postgres) limiter for Wasp /auth/* credential POSTs.
+ * Fail-open only when the DB check fails (see consumePersistentRateLimit).
+ *
+ * IMPORTANT: Wasp mounts this via `router.use('/auth', middleware, auth)`, so
+ * `req.path` is mount-relative (`/email/login`). Use getExpressRequestPath.
  */
 export function authRateLimiter(req: Request, res: Response, next: NextFunction) {
-  const path = req.path || req.url || '';
-  // Wasp email auth lives under /auth/* (family /entrar and staff /login share it).
-  const isAuthSensitive = path.startsWith('/auth/');
+  if (req.method !== 'POST') {
+    return next();
+  }
 
-  if (!isAuthSensitive || req.method === 'GET' || req.method === 'OPTIONS' || req.method === 'HEAD') {
+  const path = getExpressRequestPath(req);
+  if (!isAuthCredentialPostPath(path)) {
     return next();
   }
 
   const ip = getClientIpFromRequest(req);
   void consumePersistentRateLimit(ip, AUTH_LOGIN_RATE_LIMIT)
     .then((result) => {
+      if (result.failedOpen) {
+        return next();
+      }
       if (!result.allowed) {
         if (result.retryAfterSec) {
           res.setHeader('Retry-After', String(result.retryAfterSec));
@@ -91,7 +103,14 @@ export function authRateLimiter(req: Request, res: Response, next: NextFunction)
       }
       next();
     })
-    .catch(() => next()); // fail-open
+    .catch((err) => {
+      // Unexpected middleware failure — fail-open after logging (no PII).
+      logger.warn('[rateLimit] auth middleware fail-open', {
+        scope: AUTH_LOGIN_RATE_LIMIT.scope,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      next();
+    });
 }
 
 export const uploadRateLimiter = createRateLimiter({

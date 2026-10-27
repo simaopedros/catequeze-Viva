@@ -63,10 +63,15 @@ export async function consumePersistentRateLimit(
 
     const row = rows[0];
     if (!row) {
+      logger.warn("[rateLimit] fail-open: empty RETURNING row", {
+        scope: config.scope,
+      });
       return { allowed: true, failedOpen: true };
     }
 
-    if (row.count > config.max) {
+    // PG INTEGER via $queryRaw may arrive as number or bigint
+    const count = Number(row.count);
+    if (count > config.max) {
       const retryAfterSec = Math.max(
         1,
         Math.ceil((new Date(row.resetAt).getTime() - now.getTime()) / 1000),
@@ -78,7 +83,7 @@ export async function consumePersistentRateLimit(
   } catch (err) {
     logger.warn("[rateLimit] fail-open on DB error", {
       scope: config.scope,
-      error: String(err),
+      error: err instanceof Error ? err.message : String(err),
     });
     return { allowed: true, failedOpen: true };
   }
