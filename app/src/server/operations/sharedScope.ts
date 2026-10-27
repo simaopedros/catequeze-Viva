@@ -392,22 +392,22 @@ export function assertClassInScope(
  */
 export function catechumenWhereForAccess(access: WorkspaceAccess): Record<string, unknown> {
   const parishId = access.workspaceId;
+  // Staff lists by catechumen.parishId and/or enrollment in this parish's
+  // classes — not by household.parishId (cross-parish family links must not
+  // leak profiles into another parish's roster).
   if (access.allowedClassIds === 'ALL') {
     return {
       OR: [
-        { enrollments: { some: { class: { parishId } } } },
-        { household: { parishId } },
         { parishId },
+        { enrollments: { some: { class: { parishId } } } },
       ],
     };
   }
-  const or: Record<string, unknown>[] = [
-    { enrollments: { some: { classId: { in: access.allowedClassIds } } } },
-  ];
-  if (access.communityId) {
-    or.push({ household: { parishId, communityId: access.communityId } });
-  }
-  return { OR: or };
+  return {
+    enrollments: {
+      some: { classId: { in: access.allowedClassIds } },
+    },
+  };
 }
 
 /**

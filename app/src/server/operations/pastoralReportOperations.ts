@@ -277,8 +277,9 @@ export const getCatechumenPastoralAnalysis = async (args: { catechumenId: string
   void (context.entities.Membership as unknown); // Required by assertCanAccessClass
   void (context.entities.Parish as unknown); // Required by resolveWorkspaceAccess
 
-  // Family can reach the class via a child's enrollment — still must get 403,
-  // never a 500 from a later missing-entity path.
+  // Family portal can reach the class via a child's enrollment — still must
+  // get 403 (never a 500 from a later missing-entity path), and must not read
+  // classmates' pastoral analytics (name, birth date, attendance counts).
   if (!context.user.isAdmin) {
     const access = await requireWorkspaceAccess(context, parishId);
     if (!access.isCoordinatorOrAbove && !access.isCatechist) {

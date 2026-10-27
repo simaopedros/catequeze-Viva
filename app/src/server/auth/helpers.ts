@@ -356,6 +356,8 @@ export async function assertCanAccessCatechumenProfile(
 
   // Guardian of household. Fall back to Prisma when the operation forgot
   // GuardianProfile in main.wasp entities (that omission used to 500 edits).
+  // Require an ACTIVE membership in the catechumen's parish so removed
+  // responsáveis cannot keep reading profiles via orphan GuardianProfile links.
   const guardianDelegate =
     context.entities?.GuardianProfile ??
     (await import("wasp/server")).prisma.guardianProfile;
@@ -367,15 +369,31 @@ export async function assertCanAccessCatechumenProfile(
     guardian?.householdId &&
     catechumen.householdId === guardian.householdId
   ) {
-    return;
+    const parishIdForGuardian =
+      catechumen.parishId || catechumen.household?.parishId || null;
+    if (parishIdForGuardian) {
+      const membershipDelegate =
+        context.entities?.Membership ??
+        (await import("wasp/server")).prisma.membership;
+      const activeGuardian = await membershipDelegate.findFirst({
+        where: {
+          userId: context.user.id,
+          parishId: parishIdForGuardian,
+          status: "ACTIVE",
+        },
+        select: { id: true },
+      });
+      if (activeGuardian) return;
+    }
   }
 
-  // Candidate workspaces for this catechumen (never trust client parishId)
+  // Staff access is keyed by the catechumen's own parish / class enrollments —
+  // NEVER by household.parishId alone (a dependent linked to another parish's
+  // family must not open profile/uploadToken/reports to that family's staff).
   const candidateParishIds = [
     ...new Set(
       [
         catechumen.parishId,
-        catechumen.household?.parishId,
         ...catechumen.enrollments.map(
           (e: { class: { parishId: string } }) => e.class.parishId,
         ),
@@ -401,11 +419,18 @@ export async function assertCanAccessCatechumenProfile(
       (access.isCoordinatorOrAbove && !access.isScopedCoordinator) ||
       access.role === "PASTORAL_VIEWER"
     ) {
-      return;
+      // Full-parish staff only when the catechumen's parishId matches, or they
+      // are enrolled in a class of this parish.
+      if (catechumen.parishId === parishId) return;
+      const enrolledHere = catechumen.enrollments.some(
+        (e: { class: { parishId: string } }) => e.class.parishId === parishId,
+      );
+      if (enrolledHere) return;
+      continue;
     }
 
-    // Scoped community coordinator: enrolled in a class of their scope, or
-    // household inside their community
+    // Scoped community coordinator: only via enrollment in their class scope
+    // (household parish alone is not enough).
     if (access.isScopedCoordinator) {
       const allowed = new Set(
         access.allowedClassIds === "ALL" ? [] : access.allowedClassIds,
@@ -415,13 +440,6 @@ export async function assertCanAccessCatechumenProfile(
           e.class.parishId === parishId && allowed.has(e.class.id),
       );
       if (enrolledInScope) return;
-      if (
-        access.communityId &&
-        catechumen.household?.parishId === parishId &&
-        catechumen.household?.communityId === access.communityId
-      ) {
-        return;
-      }
       continue;
     }
 
@@ -431,7 +449,14 @@ export async function assertCanAccessCatechumenProfile(
         access.allowedClassIds === "ALL"
           ? null
           : new Set(access.allowedClassIds);
-      if (allowed === null) return;
+      if (allowed === null) {
+        if (catechumen.parishId === parishId) return;
+        const enrolledHere = catechumen.enrollments.some(
+          (e: { class: { parishId: string } }) => e.class.parishId === parishId,
+        );
+        if (enrolledHere) return;
+        continue;
+      }
       const enrolledInAllowed = catechumen.enrollments.some(
         (e: { class: { id: string; parishId: string } }) =>
           e.class.parishId === parishId && allowed.has(e.class.id),
@@ -439,7 +464,6 @@ export async function assertCanAccessCatechumenProfile(
       if (enrolledInAllowed) return;
     }
   }
-
   throw new HttpError(403, "Você não tem acesso a este catequizando.");
 }
 
