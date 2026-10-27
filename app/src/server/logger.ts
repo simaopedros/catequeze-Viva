@@ -1,8 +1,10 @@
 /**
  * Lightweight structured logger.
  * Uses console for simplicity but adds log level prefix and JSON structure.
- * Can be replaced with winston/pino in the future.
+ * Scrubs emails and storage keys before any console output (LGPD).
  */
+
+import { scrubLogContext, scrubLogMessage } from './privacy/maskPii';
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
@@ -16,9 +18,9 @@ interface LogEntry {
 function log(level: LogLevel, message: string, context?: Record<string, unknown>) {
   const entry: LogEntry = {
     level,
-    message,
+    message: scrubLogMessage(message),
     timestamp: new Date().toISOString(),
-    ...(context && { context }),
+    ...(context && { context: scrubLogContext(context) }),
   };
 
   // In production, send to a log aggregator instead of console

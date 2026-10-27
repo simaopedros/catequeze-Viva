@@ -17,6 +17,7 @@ import {
 } from "./listCursor";
 import { meetingDateFromInput } from "../../shared/calendarDate";
 import { resolveWorkspaceAccess, isClassInScope } from "./sharedScope";
+import { assertCanAccessCatechumenProfile } from "../auth/helpers";
 
 /**
  * Coordinator roles pass the class checks below, except a scoped
@@ -888,20 +889,12 @@ export const justifyAbsence = async (
   if (!attendance)
     throw new HttpError(404, "Registro de presença não encontrado.");
 
-  if (!context.user.isAdmin) {
-    const guardian = await context.entities.GuardianProfile.findUnique({
-      where: { userId: context.user.id },
-    });
-    if (!guardian?.householdId) throw new HttpError(403, "Acesso negado.");
-
-    const catechumen = await context.entities.CatechumenProfile.findUnique({
-      where: { id: attendance.catechumenProfileId },
-      select: { householdId: true },
-    });
-    if (catechumen?.householdId !== guardian.householdId) {
-      throw new HttpError(403, "Você não é responsável por este catequizando.");
-    }
-  }
+  // Strong AuthZ: guardian must have ACTIVE membership in the catechumen's parish
+  // (ad-hoc householdId match alone is insufficient after partial removals).
+  await assertCanAccessCatechumenProfile(
+    context,
+    attendance.catechumenProfileId,
+  );
 
   return context.entities.AttendanceRecord.update({
     where: { id: args.attendanceId },
@@ -941,21 +934,8 @@ export const justifyAbsenceByMeeting = async (
 
   await assertUserBelongsToClass(context, meeting.classId);
 
-  if (!context.user.isAdmin) {
-    const guardian = await context.entities.GuardianProfile.findUnique({
-      where: { userId: context.user.id },
-      select: { householdId: true },
-    });
-    if (!guardian?.householdId) throw new HttpError(403, "Acesso negado.");
-
-    const catechumen = await context.entities.CatechumenProfile.findUnique({
-      where: { id: args.catechumenProfileId },
-      select: { householdId: true },
-    });
-    if (!catechumen || catechumen.householdId !== guardian.householdId) {
-      throw new HttpError(403, "Você não é responsável por este catequizando.");
-    }
-  }
+  // Strong AuthZ: ACTIVE family membership required (not householdId alone).
+  await assertCanAccessCatechumenProfile(context, args.catechumenProfileId);
 
   const enrolled = await context.entities.ClassEnrollment.findFirst({
     where: {

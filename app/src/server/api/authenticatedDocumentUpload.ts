@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import type { MiddlewareConfigFn } from 'wasp/server';
+import { HttpError } from 'wasp/server';
 import { singleDocumentUpload } from './multipart';
 import { storeDocumentFile } from '../storage/documentStorage';
 import {
@@ -9,6 +10,7 @@ import {
   validateFileSignature,
 } from '../storage/uploadValidation';
 import { logger } from '../logger';
+import { assertCanAccessCatechumenProfile } from '../auth/helpers';
 
 function runMulter(req: Request, res: Response): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -112,16 +114,14 @@ export async function authenticatedDocumentUpload(
         if (!catechumenProfileId) {
           return res.status(403).json({ error: 'Responsáveis devem selecionar um catequizando da família.' });
         }
-        const guardian = await entities.GuardianProfile.findUnique({
-          where: { userId: user.id },
-          select: { householdId: true },
-        });
-        const catechumen = await entities.CatechumenProfile.findUnique({
-          where: { id: catechumenProfileId },
-          select: { householdId: true },
-        });
-        if (!guardian?.householdId || catechumen?.householdId !== guardian.householdId) {
-          return res.status(403).json({ error: 'Só pode enviar documentos para catequizandos da sua família.' });
+        // ACTIVE membership in the catechumen's parish (not householdId alone).
+        try {
+          await assertCanAccessCatechumenProfile(context, catechumenProfileId);
+        } catch (err) {
+          if (err instanceof HttpError) {
+            return res.status(err.statusCode).json({ error: err.message });
+          }
+          throw err;
         }
       } else {
         return res.status(403).json({ error: 'Sem permissão para enviar documentos.' });
