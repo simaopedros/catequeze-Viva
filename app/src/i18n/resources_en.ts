@@ -501,8 +501,8 @@ export const admin_en = {
         "catechumens_subtitle_one": "{{count}} catechumen",
         "catechumens_subtitle_other": "{{count}} catechumens",
         "catechumens_subtitle_zero": "{{count}} catechumens",
-        "paying": "Paying",
-        "paying_breakdown": "{{users}} users · {{tenants}} tenants",
+        "paying": "Unique payers",
+        "paying_breakdown": "{{unique}} unique · {{users}} users · {{tenants}} tenants",
         "in_trial": "On trial",
         "trial_breakdown": "{{users}} users · {{tenants}} tenants",
         "trials_expiring_7d": "Trials expiring in 7 days",
@@ -674,7 +674,7 @@ export const admin_en = {
         "kpi": {
           "current_month_revenue": "Current month revenue (BRL)",
           "mrr": "MRR now",
-          "paying_accounts": "Paying accounts",
+          "paying_accounts": "Unique payers",
           "payment_failed_30d": "Payment failures (30d)"
         },
         "sections": {
@@ -691,7 +691,7 @@ export const admin_en = {
           "joined_parish": "Joined parish",
           "created_class": "Created class",
           "checkout_started": "Checkout started",
-          "paying": "Paying"
+          "paying": "Unique payers"
         },
         "cols": {
           "month": "Month",

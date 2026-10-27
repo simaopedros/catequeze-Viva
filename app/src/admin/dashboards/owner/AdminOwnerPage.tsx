@@ -224,7 +224,7 @@ const AdminOwnerPage = ({ user }: { user: AuthUser }) => {
               />
               <AppMetric
                 label={t("pages.owner.kpi.paying_accounts")}
-                value={dash.payingAccountsCount}
+                value={dash.uniquePayers ?? dash.payingAccountsCount}
                 className="bg-white"
               />
               <AppMetric

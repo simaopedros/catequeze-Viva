@@ -501,8 +501,8 @@ export const admin_pt_BR = {
         "catechumens_subtitle_one": "{{count}} catequizando",
         "catechumens_subtitle_other": "{{count}} catequizandos",
         "catechumens_subtitle_zero": "{{count}} catequizandos",
-        "paying": "Pagantes",
-        "paying_breakdown": "{{users}} usuários · {{tenants}} tenants",
+        "paying": "Pagantes únicos",
+        "paying_breakdown": "{{unique}} únicos · {{users}} usuários · {{tenants}} tenants",
         "in_trial": "Em trial",
         "trial_breakdown": "{{users}} usuários · {{tenants}} tenants",
         "trials_expiring_7d": "Trials vencendo em 7 dias",
@@ -674,7 +674,7 @@ export const admin_pt_BR = {
         "kpi": {
           "current_month_revenue": "Receita do mês (BRL)",
           "mrr": "MRR agora",
-          "paying_accounts": "Contas pagantes",
+          "paying_accounts": "Pagantes únicos",
           "payment_failed_30d": "Falhas de pagamento (30d)"
         },
         "sections": {
@@ -691,7 +691,7 @@ export const admin_pt_BR = {
           "joined_parish": "Entrou em paróquia",
           "created_class": "Criou turma",
           "checkout_started": "Checkout iniciado",
-          "paying": "Pagantes"
+          "paying": "Pagantes únicos"
         },
         "cols": {
           "month": "Mês",

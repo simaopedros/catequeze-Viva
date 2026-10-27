@@ -30,6 +30,7 @@ import {
   type PaidInvoiceLike,
   type StripeRecurringItemLike,
 } from "./ownerDashboardHelpers";
+import { getAccountStatusCounts } from "../billing/accountStatusCounts";
 
 const DAY_MS = 86_400_000;
 
@@ -38,7 +39,6 @@ const ACTIVE_USER_STATUSES = new Set([
   "cancel_at_period_end",
   "past_due",
 ]);
-const PAYING_USER_STATUSES = new Set(["active", "cancel_at_period_end"]);
 
 const TIMEZONE = "America/Sao_Paulo";
 
@@ -221,8 +221,7 @@ export const getOwnerDashboard = async (_args: void, context: any) => {
     membershipUserIds,
     classOwnerUserIds,
     attendanceUserIds,
-    payingUserCount,
-    payingTenantCount,
+    accountStatusCounts,
     paymentFailedSinceEvents,
   ] = await Promise.all([
     stripePromise,
@@ -369,15 +368,7 @@ export const getOwnerDashboard = async (_args: void, context: any) => {
       distinct: ["recordedById"],
       select: { recordedById: true },
     }),
-    context.entities.User.count({
-      where: { subscriptionStatus: { in: [...PAYING_USER_STATUSES] } },
-    }),
-    context.entities.TenantBilling.count({
-      where: {
-        status: "ACTIVE",
-        plan: { notIn: [...PRISMA_FREE_PLANS] },
-      },
-    }),
+    getAccountStatusCounts(context, now),
     context.entities.FunnelEvent.findMany({
       where: {
         type: "payment_failed",
@@ -624,7 +615,9 @@ export const getOwnerDashboard = async (_args: void, context: any) => {
   const signupCount = users.length;
   const joinedParishCount = membershipSet.size;
   const createdClassCount = usersWhoCreatedClass.size;
-  const payingAccountsCount = payingUserCount + payingTenantCount;
+  // Deduped: solo catechist User + personal TenantBilling count once.
+  const uniquePayers = accountStatusCounts.uniquePayers;
+  const payingAccountsCount = uniquePayers;
 
   return {
     generatedAt: now.toISOString(),
@@ -634,6 +627,7 @@ export const getOwnerDashboard = async (_args: void, context: any) => {
       currentMonthTotalBrl: stripe.currentMonthRevenueBrl,
     },
     mrrNowBrl,
+    uniquePayers,
     payingAccountsCount,
     cancellationsPerMonth,
     newPayingPerMonth,

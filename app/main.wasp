@@ -2711,7 +2711,7 @@ query getSystemHealth {
 
 query listPricingPlansAdmin {
   fn: import { listPricingPlansAdmin } from "@src/server/operations/pricingAdminOperations",
-  entities: [PricingPlan, PricingPlanPrice, User, TenantBilling]
+  entities: [PricingPlan, PricingPlanPrice, User, TenantBilling, Parish]
 }
 
 action upsertPricingPlan {

@@ -4,6 +4,7 @@ import {
   countTrialForPlan,
   getAccountStatusCounts,
   planSlugAliases,
+  uniquePayersFromParts,
 } from '../server/billing/accountStatusCounts';
 
 function mockContext(counts: Record<string, number>) {
@@ -34,6 +35,11 @@ function mockContext(counts: Record<string, number>) {
   });
 
   const tenantCount = vi.fn(async ({ where }: any) => {
+    // Double-counted: ACTIVE paying tenant whose parish owner is a paying user
+    if (where?.parish?.owner?.stripeSubscriptionId?.not === null) {
+      if (where?.plan?.in) return counts.planDoubleCountedTenants ?? 0;
+      return counts.tenantsOwnedByPayingUsers ?? 0;
+    }
     if (where?.status === 'ACTIVE' && where?.plan?.notIn) {
       return counts.payingTenants ?? 0;
     }
@@ -75,11 +81,27 @@ describe('planSlugAliases', () => {
   });
 });
 
+describe('uniquePayersFromParts', () => {
+  it('subtracts tenants owned by already-counted paying users', () => {
+    // 3 paying users + 2 tenants, 1 of which is a solo catechist personal space
+    expect(uniquePayersFromParts(3, 2, 1)).toBe(4);
+  });
+
+  it('does not go below zero', () => {
+    expect(uniquePayersFromParts(0, 1, 2)).toBe(0);
+  });
+
+  it('equals the naive sum when there is no overlap', () => {
+    expect(uniquePayersFromParts(5, 3, 0)).toBe(8);
+  });
+});
+
 describe('getAccountStatusCounts', () => {
   it('aggregates paying, trial, expired, past due and 7d trials', async () => {
     const ctx = mockContext({
       payingTenants: 2,
       payingUsers: 3,
+      tenantsOwnedByPayingUsers: 1,
       manualActiveUsers: 1,
       trialUsers: 4,
       trialTenants: 5,
@@ -97,6 +119,7 @@ describe('getAccountStatusCounts', () => {
     expect(result).toEqual({
       payingTenants: 2,
       payingUsers: 3,
+      uniquePayers: 4, // 3 + 2 - 1
       manualActiveUsers: 1,
       trialUsers: 4,
       trialTenants: 5,
@@ -111,6 +134,7 @@ describe('getAccountStatusCounts', () => {
     const ctx = mockContext({
       payingTenants: 0,
       payingUsers: 5,
+      tenantsOwnedByPayingUsers: 0,
       manualActiveUsers: 2,
       trialUsers: 0,
       trialTenants: 0,
@@ -124,6 +148,7 @@ describe('getAccountStatusCounts', () => {
 
     const result = await getAccountStatusCounts(ctx);
     expect(result.payingUsers).toBe(5);
+    expect(result.uniquePayers).toBe(5);
     expect(result.manualActiveUsers).toBe(2);
 
     expect(
@@ -137,19 +162,48 @@ describe('getAccountStatusCounts', () => {
       ),
     ).toBe(true);
   });
+
+  it('dedupes solo catechist with personal-space TenantBilling ACTIVE', async () => {
+    // 1 paying user + 1 personal TenantBilling owned by that user → 1 unique payer
+    const ctx = mockContext({
+      payingTenants: 1,
+      payingUsers: 1,
+      tenantsOwnedByPayingUsers: 1,
+      manualActiveUsers: 0,
+      trialUsers: 0,
+      trialTenants: 0,
+      expiredTrialUsers: 0,
+      expiredTrialTenants: 0,
+      pastDueUsers: 0,
+      pastDueTenants: 0,
+      trialsExpiringUsers: 0,
+      trialsExpiringTenants: 0,
+    });
+
+    const result = await getAccountStatusCounts(ctx);
+    expect(result.payingUsers + result.payingTenants).toBe(2); // naive sum double-counts
+    expect(result.uniquePayers).toBe(1);
+
+    expect(
+      ctx.tenantCount.mock.calls.some(
+        ([args]: any[]) => args.where?.parish?.owner?.stripeSubscriptionId?.not === null,
+      ),
+    ).toBe(true);
+  });
 });
 
 describe('countPayingForPlan / countTrialForPlan', () => {
-  it('matches plan slugs case-insensitively', async () => {
+  it('matches plan slugs case-insensitively and dedupes uniquePayers', async () => {
     const ctx = mockContext({
       planPayingUsers: 2,
       planPayingTenants: 3,
+      planDoubleCountedTenants: 1,
       planTrialUsers: 4,
       planTrialTenants: 1,
     });
 
     const paying = await countPayingForPlan(ctx, 'SINGLE');
-    expect(paying).toEqual({ users: 2, tenants: 3, total: 5 });
+    expect(paying).toEqual({ users: 2, tenants: 3, total: 4, uniquePayers: 4 });
 
     const payingArgs = ctx.userCount.mock.calls[0][0];
     expect(payingArgs.where.subscriptionPlan.in).toEqual(
