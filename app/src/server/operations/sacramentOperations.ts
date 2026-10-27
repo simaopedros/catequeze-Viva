@@ -16,6 +16,7 @@ import {
   getEffectiveParishRole,
   isCoordinatorOrAboveRole,
   getDioceseParishIds,
+  assertCanAccessCatechumenProfile,
 } from "../auth/helpers";
 import { ensureSacramentalJourneyForCatechumen } from "../sacramentHelpers";
 import { requireWorkspaceAccess } from "./sharedScope";
@@ -241,68 +242,10 @@ export const getSacramentalJourney = async (
 
   if (!journey) throw new HttpError(404, "Jornada sacramental não encontrada.");
 
-  if (context.user.isAdmin) return journey;
-
-  const { parishIds, roles } = await getEffectiveParishScope(context);
-
-  // Coordinator+PersonalOwner: access if catechumen is in their parish
-  if (roles.some((r: string) => isCoordinatorOrAboveRole(r))) {
-    const catechumenClasses = await context.entities.ClassEnrollment.findMany({
-      where: { catechumenProfileId: journey.catechumenProfile.id },
-      select: { class: { select: { parishId: true } } },
-    });
-    const catechumenParishIds = catechumenClasses.map(
-      (e: any) => e.class.parishId,
-    );
-    if (catechumenParishIds.some((pid: string) => parishIds.includes(pid)))
-      return journey;
-    if (
-      journey.catechumenProfile.parishId &&
-      parishIds.includes(journey.catechumenProfile.parishId)
-    )
-      return journey;
-  }
-
-  // Catechist: access if catechumen is in one of their classes
-  if (
-    roles.includes("LEAD_CATECHIST") ||
-    roles.includes("ASSISTANT_CATECHIST")
-  ) {
-    const myClasses = await context.entities.ClassCatechist.findMany({
-      where: { userId: context.user.id },
-      select: { classId: true },
-    });
-    const classIds = myClasses.map((cc: any) => cc.classId);
-    const enrollment = await context.entities.ClassEnrollment.findFirst({
-      where: {
-        catechumenProfileId: journey.catechumenProfile.id,
-        classId: { in: classIds },
-      },
-    });
-    if (enrollment) return journey;
-  }
-
-  // Guardian: access own dependents
-  if (roles.includes("GUARDIAN")) {
-    const guardian = await context.entities.GuardianProfile.findUnique({
-      where: { userId: context.user.id },
-    });
-    if (
-      guardian?.householdId &&
-      guardian.householdId === journey.catechumenProfile.householdId
-    )
-      return journey;
-  }
-
-  // Catechumen: own journey
-  if (roles.includes("CATECHUMEN")) {
-    const catechumen = await context.entities.CatechumenProfile.findFirst({
-      where: { userId: context.user.id },
-    });
-    if (catechumen?.id === journey.catechumenProfile.id) return journey;
-  }
-
-  throw new HttpError(403, "Acesso negado a esta jornada sacramental.");
+  // Strong AuthZ for guardians (ACTIVE membership) and staff/self — never
+  // rely on ad-hoc householdId match alone after partial removals.
+  await assertCanAccessCatechumenProfile(context, journey.catechumenProfile.id);
+  return journey;
 };
 
 // ─── Create Sacramental Journey ───────────────────────────────────────────────

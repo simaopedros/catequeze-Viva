@@ -994,7 +994,7 @@ action saveAttendanceBatch {
 
 action justifyAbsence {
   fn: import { justifyAbsence } from "@src/server/operations/meetingOperations",
-  entities: [AttendanceRecord, Membership, GuardianProfile, CatechumenProfile]
+  entities: [AttendanceRecord, Membership, GuardianProfile, CatechumenProfile, Household, Parish, ClassEnrollment, ClassCatechist, CatechesisClass]
 }
 
 action justifyAbsenceByMeeting {
@@ -1008,7 +1008,8 @@ action justifyAbsenceByMeeting {
     ClassCatechist,
     GuardianProfile,
     CatechumenProfile,
-    ClassEnrollment
+    ClassEnrollment,
+    Household
   ]
 }
 //#endregion
@@ -2281,7 +2282,7 @@ query exportReport {
 
 query getSacramentalJourney {
   fn: import { getSacramentalJourney } from "@src/server/operations/sacramentOperations",
-  entities: [SacramentalJourney, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, SacramentalJourneyTemplate, Sacrament, Parish]
+  entities: [SacramentalJourney, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, SacramentalJourneyTemplate, Sacrament, Parish, Household, CatechesisClass]
 }
 
 

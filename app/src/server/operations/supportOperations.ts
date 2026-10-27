@@ -7,6 +7,7 @@ import { logger } from "../logger";
 import { EMAIL_MESSAGE } from "../../shared/emailCatalog";
 import { enqueueEmail } from "../email/service";
 import { appBaseUrl } from "../email/config";
+import { maskEmail } from "../privacy/maskPii";
 
 async function findUserByContactEmail(context: any, email?: string | null) {
   const trimmed = email?.trim();
@@ -181,7 +182,7 @@ export const replyToContactMessage = async (
   } catch (error) {
     logger.error("[support] failed to send reply email", {
       error: error instanceof Error ? error.message : String(error),
-      to: message.email,
+      to: maskEmail(message.email),
       messageId: message.id,
     });
   }

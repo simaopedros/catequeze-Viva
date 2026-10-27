@@ -39,6 +39,7 @@ import {
   INVITE_RESEND_RATE_LIMIT,
 } from '../security/persistentRateLimit';
 import { maskInviteEmail } from '../security/inviteEmailMask';
+import { maskEmail } from '../privacy/maskPii';
 
 /** Prefer ALS (global middleware) then context.req when present. */
 function clientIpFromContext(context: any): string {
@@ -72,7 +73,7 @@ async function sendInviteEmail(
   }
   if (!process.env.RESEND_API_KEY) {
     logger.warn('[memberOperations] RESEND_API_KEY ausente; convite salvo sem envio de email.', {
-      to,
+      to: maskEmail(to),
     });
     return 'not_configured';
   }

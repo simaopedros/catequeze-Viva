@@ -7,6 +7,7 @@ import { makeAuthUserIfPossible } from 'wasp/auth/user';
 import { HttpError } from 'wasp/server';
 import { assertCanAccessCatechumenProfile } from '../auth/helpers';
 import { resolveWorkspaceAccess } from '../operations/sharedScope';
+import { maskStorageKey } from '../privacy/maskPii';
 
 /**
  * Documents without a catechumen (e.g. uploaded by a staff member) are visible
@@ -131,12 +132,20 @@ export async function serveDocument(req: Request, res: Response, context: any) {
     }
 
     if (!authorized) {
-      logger.warn(`[doc-access] DENIED user=${user?.id} docId=${docId} token=${uploadToken ? 'present' : 'none'}`);
+      logger.warn('[doc-access] DENIED', {
+        userId: user?.id,
+        docId,
+        token: uploadToken ? 'present' : 'none',
+      });
       return res.status(403).json({ error: 'Acesso negado.' });
     }
 
     const stored = await readDocumentFile(doc.s3Key);
-    logger.info(`[doc-access] docId=${docId} s3Key="${doc.s3Key}" found=${!!stored}`);
+    logger.info('[doc-access]', {
+      docId,
+      s3Key: maskStorageKey(doc.s3Key),
+      found: !!stored,
+    });
     if (!stored) {
       return res.status(404).json({ error: 'Arquivo não encontrado.' });
     }
