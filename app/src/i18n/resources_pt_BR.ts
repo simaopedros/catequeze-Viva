@@ -3890,34 +3890,34 @@ export const family_pt_BR = {
     "staff_portal_badge": "Equipe Pastoral",
     "app_name": "Catequese Viva",
     "landing": {
-      "tagline": "Acompanha a jornada de fé dos teus filhos.",
-      "invite_title": "Entrada por Convite",
-      "invite_desc": "O portal da família é acedido através de um convite enviado pela tua paróquia. Se ainda não recebeste um convite, fala com o teu catequista ou coordenador paroquial.",
+      "tagline": "Acompanhe a jornada de fé dos seus filhos.",
+      "invite_title": "Entrada por convite",
+      "invite_desc": "O portal da família é acessado por meio de um convite enviado pela sua paróquia. Se você ainda não recebeu um convite, fale com seu catequista ou coordenador paroquial.",
       "enter": "Entrar",
-      "have_invite": "Já tens um convite?",
+      "have_invite": "Você já tem um convite?",
       "insert_code": "Inserir código",
-      "staff_hint": "És coordenador ou catequista?",
-      "main_portal": "Acede ao portal principal"
+      "staff_hint": "Você é coordenador ou catequista?",
+      "main_portal": "Acesse o portal principal"
     },
     "login": {
       "title": "Entrar",
-      "subtitle": "Acede ao teu painel de família.",
-      "no_account": "Não tens conta?",
+      "subtitle": "Acesse seu painel de família.",
+      "no_account": "Você ainda não tem conta?",
       "create_account": "Criar conta",
-      "token_hint": "Ao criar conta ou entrar, poderás aceitar o convite recebido."
+      "token_hint": "Ao criar conta ou entrar, você poderá aceitar o convite recebido."
     },
     "signup": {
-      "title": "Criar Conta",
-      "requires_invite": "O cadastro no portal da família requer um convite da sua paróquia. Use o link que você recebeu por e-mail.",
+      "title": "Criar conta",
+      "requires_invite": "O cadastro no portal da família precisa de um convite da sua paróquia. Use o link que você recebeu por e-mail.",
       "have_code": "Tenho um código de convite",
-      "already_have": "Já tens conta?",
+      "already_have": "Você já tem conta?",
       "login": "Entrar",
-      "invited_to": "Foste convidado(a) para {{parish}} como {{role}}.",
+      "invited_to": "Você foi convidado(a) para {{parish}} como {{role}}.",
       "email_hint": "Use o mesmo e-mail do convite ({{email}}).",
-      "expired_title": "Convite Expirado",
-      "invalid_title": "Convite Inválido",
-      "expired_desc": "Este convite já expirou. Pede um novo ao teu coordenador.",
-      "invalid_desc": "Token de convite inválido. Verifica o link."
+      "expired_title": "Convite expirado",
+      "invalid_title": "Convite inválido",
+      "expired_desc": "Este convite já expirou. Peça um novo ao seu coordenador.",
+      "invalid_desc": "Token de convite inválido. Verifique o link."
     },
     "invite": {
       "badge": "Convite",
@@ -4010,7 +4010,7 @@ export const family_pt_BR = {
       "resend": "Reenviar",
       "resend_expired": "Gerar novo convite",
       "resent": "Convite reenviado",
-      "tip_context": "Dica: também pode convidar a partir da ficha da família ou do catequizando. Esta página centraliza todos os convites do portal.",
+      "tip_context": "Dica: você também pode convidar a partir da ficha da família ou do catequizando. Esta página centraliza todos os convites do portal.",
       "open_portal": "Ver portal da família",
       "need_parish": "Selecione uma paróquia",
       "need_parish_desc": "Escolha o espaço de trabalho da paróquia para gerenciar os convites da família.",
