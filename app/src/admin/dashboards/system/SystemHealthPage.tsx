@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { type AuthUser } from "wasp/auth";
 import { useQuery, getSystemHealth } from "wasp/client/operations";
 import { useTranslation } from "react-i18next";
@@ -14,6 +15,13 @@ import {
   SkeletonCard,
   SkeletonTable,
 } from "../../../client/components/Skeletons";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../client/components/ui/select";
 
 /** Tasks executed by the daily `/api/internal/maintenance` run (see server/api/maintenance.ts). */
 const MAINTENANCE_TASKS = [
@@ -25,6 +33,9 @@ const MAINTENANCE_TASKS = [
   "dailyStats",
 ] as const;
 
+const ERROR_WINDOW_OPTIONS = [7, 30, 90] as const;
+const QUERY_TIMEOUT_MS = 15_000;
+
 type JobHealthRow = {
   name: string;
   lastRunAt: string | Date | null;
@@ -32,15 +43,37 @@ type JobHealthRow = {
   lastErrorAt: string | Date | null;
 };
 
+type GroupedErrorRow = {
+  id: string;
+  message: string;
+  labelKey: string | null;
+  count: number;
+  firstAt: string;
+  lastAt: string;
+};
+
 const SystemHealthPage = ({ user }: { user: AuthUser }) => {
   const { t } = useTranslation("admin");
   const { currentLocale } = useLocale();
+  const [errorDays, setErrorDays] = useState<number>(7);
+  const [timedOut, setTimedOut] = useState(false);
+
   const {
     data: health,
     isLoading,
+    isFetching,
     error,
     refetch,
-  } = useQuery(getSystemHealth);
+  } = useQuery(getSystemHealth, { days: errorDays }, { retry: 1 });
+
+  useEffect(() => {
+    if (!isLoading && !isFetching) {
+      setTimedOut(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setTimedOut(true), QUERY_TIMEOUT_MS);
+    return () => window.clearTimeout(timer);
+  }, [isLoading, isFetching, errorDays]);
 
   const jobByName = new Map<string, JobHealthRow>(
     ((health?.jobs as JobHealthRow[] | undefined) ?? []).map((job) => [
@@ -56,6 +89,18 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
     return t("pages.system.job_status_never");
   };
 
+  const errorLabel = (err: GroupedErrorRow) => {
+    if (err.labelKey) {
+      return t(`pages.system.error_labels.${err.labelKey}`, {
+        defaultValue: err.message,
+      });
+    }
+    return err.message;
+  };
+
+  const showError = timedOut || (Boolean(error) && !health);
+  const showSkeleton = (isLoading || (isFetching && !health)) && !showError;
+
   return (
     <DefaultLayout user={user}>
       <div className="space-y-6">
@@ -65,7 +110,37 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
           subtitle={t("pages.system.subtitle")}
         />
 
-        {isLoading ? (
+        <div className="flex flex-wrap items-center gap-3">
+          <label
+            htmlFor="system-error-window"
+            className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+          >
+            {t("pages.system.error_window")}
+          </label>
+          <Select
+            value={String(errorDays)}
+            onValueChange={(value) => {
+              setTimedOut(false);
+              setErrorDays(Number(value));
+            }}
+          >
+            <SelectTrigger
+              id="system-error-window"
+              className="h-9 w-[180px] bg-white"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {ERROR_WINDOW_OPTIONS.map((days) => (
+                <SelectItem key={days} value={String(days)}>
+                  {t(`pages.system.error_window_${days}d`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {showSkeleton ? (
           <div className="space-y-4" aria-busy="true">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -74,8 +149,23 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
             </div>
             <SkeletonTable rows={6} />
           </div>
-        ) : error && !health ? (
-          <QueryErrorState error={error} onRetry={refetch} />
+        ) : showError ? (
+          <QueryErrorState
+            error={
+              timedOut && !error
+                ? new Error(t("pages.system.load_timeout"))
+                : error
+            }
+            onRetry={() => {
+              setTimedOut(false);
+              void refetch();
+            }}
+            title={
+              timedOut
+                ? t("pages.system.load_timeout")
+                : undefined
+            }
+          />
         ) : (
           <>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -91,7 +181,12 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
               />
               <AppMetric
                 label={t("pages.system.recent_errors")}
-                value={health?.recentErrors?.length || 0}
+                value={
+                  (health?.recentErrors as GroupedErrorRow[] | undefined)?.reduce(
+                    (sum, row) => sum + (row.count || 1),
+                    0,
+                  ) || 0
+                }
                 className="bg-white"
               />
             </div>
@@ -108,12 +203,27 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
                   <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
                 </div>
                 <div className="divide-y -mx-5">
-                  {health.recentErrors.map((err: any) => (
+                  {(health.recentErrors as GroupedErrorRow[]).map((err) => (
                     <div key={err.id} className="px-5 py-2.5 text-xs">
-                      <p className="text-muted-foreground">
-                        {formatDateTime(err.createdAt, currentLocale)}
+                      <div className="flex flex-wrap items-baseline justify-between gap-2">
+                        <p className="font-medium text-[#071A2D]">
+                          {errorLabel(err)}
+                        </p>
+                        <p className="text-muted-foreground">
+                          {t("pages.system.error_occurrences", {
+                            count: err.count,
+                          })}
+                        </p>
+                      </div>
+                      <p className="mt-0.5 text-muted-foreground">
+                        {t("pages.system.error_last_seen")}:{" "}
+                        {formatDateTime(err.lastAt, currentLocale)}
                       </p>
-                      <p className="mt-0.5 break-all">{err.message}</p>
+                      {err.labelKey && err.message !== errorLabel(err) && (
+                        <p className="mt-0.5 break-all text-[11px] text-muted-foreground/80">
+                          {err.message}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -181,7 +291,9 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
                         <tr key={task} className="border-t">
                           <td className="py-2 pr-4">
                             <p className="font-semibold tracking-tight text-[#071A2D]">
-                              {task}
+                              {t(`pages.system.job_names.${task}`, {
+                                defaultValue: task,
+                              })}
                             </p>
                             <p className="text-muted-foreground">
                               {t(`pages.system.jobs.${task}`)}

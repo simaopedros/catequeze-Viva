@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import {
   addUtcDays,
@@ -137,6 +139,7 @@ describe("calculateDailyStats", () => {
   it("persists first-party users and activity without calling Plausible", async () => {
     vi.mocked(paymentProcessor.fetchTotalRevenue).mockResolvedValue(99.5);
     const context = createContext();
+    // userCount + paidUserCount run in parallel via Promise.all
     context.entities.User.count
       .mockResolvedValueOnce(12)
       .mockResolvedValueOnce(3)
@@ -196,6 +199,15 @@ describe("calculateDailyStats", () => {
       expect.objectContaining({ error: "HTTP error! Status: 401" }),
     );
     expect(context.entities.Logs.create).not.toHaveBeenCalled();
+  });
+
+  it("does not import Plausible or Google Analytics helpers", () => {
+    const source = readFileSync(
+      resolve(__dirname, "../analytics/stats.ts"),
+      "utf8",
+    );
+    expect(source).not.toMatch(/plausibleAnalyticsUtils|googleAnalyticsUtils/);
+    expect(source).toContain("getFirstPartyTraffic");
   });
 
   it("still stores user counts when pricing events are unavailable", async () => {

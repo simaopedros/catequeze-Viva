@@ -226,6 +226,32 @@
       "job_status_ok": "OK",
       "job_status_failed": "Failed",
       "job_status_never": "Never ran",
+      "error_window": "Error window",
+      "error_window_7d": "Last 7 days",
+      "error_window_30d": "Last 30 days",
+      "error_window_90d": "Last 90 days",
+      "error_occurrences_one": "{{count}} occurrence",
+      "error_occurrences_other": "{{count}} occurrences",
+      "error_last_seen": "Last seen",
+      "load_timeout": "The query took too long. Try again.",
+      "error_labels": {
+        "daily_stats": "Failed to calculate daily stats",
+        "daily_stats_401": "Failed to calculate daily stats (external API 401)",
+        "ai_credits_reset": "Editorial credits reset failed",
+        "ai_cache_cleanup": "Editorial cache cleanup failed",
+        "meeting_reminders": "Meeting reminders failed",
+        "social_media_reconcile": "Media reconciliation failed",
+        "lifecycle_nudge": "Lifecycle e-mails failed",
+        "email_outbox": "Email outbox processing failed"
+      },
+      "job_names": {
+        "aiCreditsReset": "Credits reset",
+        "aiCacheCleanup": "Cache cleanup",
+        "meetingReminders": "Meeting reminders",
+        "socialMediaReconcile": "Media reconciliation",
+        "lifecycleNudge": "Lifecycle e-mails",
+        "dailyStats": "Daily stats"
+      },
       "jobs": {
         "dailyStats": "Daily user, activity and revenue metrics",
         "aiCreditsReset": "Monthly reset of editorial assistance credits",

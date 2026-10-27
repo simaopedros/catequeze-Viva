@@ -372,6 +372,32 @@ export const admin_pt_BR = {
         "job_status_ok": "OK",
         "job_status_failed": "Falhou",
         "job_status_never": "Nunca executou",
+        "error_window": "Janela de erros",
+        "error_window_7d": "Últimos 7 dias",
+        "error_window_30d": "Últimos 30 dias",
+        "error_window_90d": "Últimos 90 dias",
+        "error_occurrences_one": "{{count}} ocorrência",
+        "error_occurrences_other": "{{count}} ocorrências",
+        "error_last_seen": "Última ocorrência",
+        "load_timeout": "A consulta demorou demais. Tente novamente.",
+        "error_labels": {
+          "daily_stats": "Falha ao calcular estatísticas diárias",
+          "daily_stats_401": "Falha ao calcular estatísticas diárias (API externa 401)",
+          "ai_credits_reset": "Falha no reset de créditos editoriais",
+          "ai_cache_cleanup": "Falha na limpeza do cache editorial",
+          "meeting_reminders": "Falha nos lembretes de encontros",
+          "social_media_reconcile": "Falha na reconciliação de mídias",
+          "lifecycle_nudge": "Falha nos e-mails de ciclo de vida",
+          "email_outbox": "Falha no envio da fila de e-mails"
+        },
+        "job_names": {
+          "aiCreditsReset": "Reset de créditos",
+          "aiCacheCleanup": "Limpeza de cache",
+          "meetingReminders": "Lembretes de encontros",
+          "socialMediaReconcile": "Reconciliação de mídias",
+          "lifecycleNudge": "E-mails de ciclo de vida",
+          "dailyStats": "Estatísticas diárias"
+        },
         "jobs": {
           "dailyStats": "Métricas diárias de usuários, atividade e receita",
           "aiCreditsReset": "Reset mensal de créditos de assistência editorial",

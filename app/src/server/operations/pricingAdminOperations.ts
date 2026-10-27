@@ -13,7 +13,24 @@ import {
 } from '../pricing/planCatalogService';
 import { rotateStripePrice } from '../pricing/stripeCatalogSync';
 import { ensurePricingCatalogSeeded } from '../scripts/seedPricingCatalog';
-import { countPayingForPlan, countTrialForPlan } from '../billing/accountStatusCounts';
+import {
+  PAYING_USER_WHERE,
+  planSlugAliases,
+  uniquePayersFromParts,
+} from '../billing/accountStatusCounts';
+import { createTtlCache } from '../cache/ttlCache';
+
+const ADMIN_PLANS_TTL_MS = 60_000;
+const adminPlansCache = createTtlCache<any[]>(ADMIN_PLANS_TTL_MS);
+
+export function clearAdminPlansCacheForTests() {
+  adminPlansCache.clear();
+}
+
+function invalidateAdminPlansCache() {
+  adminPlansCache.clear();
+  invalidatePlanCatalogCache();
+}
 
 const slugSchema = z
   .string()
@@ -94,57 +111,300 @@ function limitReduced(previous: number | null | undefined, next: number | null |
 }
 
 async function countActiveSubscribers(context: any, slug: string) {
-  const aliases = [slug, slug.toUpperCase(), slug.toLowerCase()];
-  const users = await context.entities.User.count({
-    where: {
-      subscriptionPlan: { in: aliases },
-      subscriptionStatus: { in: ['active', 'cancel_at_period_end', 'past_due', 'trialing'] },
-    },
-  });
-  const tenants = await context.entities.TenantBilling.count({
-    where: {
-      plan: { in: aliases },
-      status: { in: ['ACTIVE', 'PAST_DUE', 'TRIAL'] },
-    },
-  });
+  const aliases = planSlugAliases(slug);
+  const [users, tenants] = await Promise.all([
+    context.entities.User.count({
+      where: {
+        subscriptionPlan: { in: aliases },
+        subscriptionStatus: { in: ['active', 'cancel_at_period_end', 'past_due', 'trialing'] },
+      },
+    }),
+    context.entities.TenantBilling.count({
+      where: {
+        plan: { in: aliases },
+        status: { in: ['ACTIVE', 'PAST_DUE', 'TRIAL'] },
+      },
+    }),
+  ]);
   return { users, tenants, total: users + tenants };
+}
+
+type CountBucket = { users: number; tenants: number; doubleCounted: number };
+
+function emptyBucket(): CountBucket {
+  return { users: 0, tenants: 0, doubleCounted: 0 };
+}
+
+/**
+ * Batch audience counts for every plan slug (few groupBy queries instead of N×count).
+ * No Stripe calls — DB only.
+ */
+async function loadPlanAudienceCounts(
+  context: any,
+  slugs: string[],
+  now: Date,
+): Promise<
+  Map<
+    string,
+    {
+      subscribers: { users: number; tenants: number; total: number };
+      paying: { users: number; tenants: number; total: number };
+      trial: { users: number; tenants: number; total: number };
+    }
+  >
+> {
+  const aliasToSlug = new Map<string, string>();
+  for (const slug of slugs) {
+    for (const alias of planSlugAliases(slug)) {
+      aliasToSlug.set(alias, slug);
+    }
+  }
+  const allAliases = [...aliasToSlug.keys()];
+
+  const add = (
+    map: Map<string, CountBucket>,
+    planKey: string | null | undefined,
+    field: keyof CountBucket,
+    n: number,
+  ) => {
+    if (!planKey) return;
+    const slug = aliasToSlug.get(planKey);
+    if (!slug) return;
+    const bucket = map.get(slug) ?? emptyBucket();
+    bucket[field] += n;
+    map.set(slug, bucket);
+  };
+
+  const subscriberUsers = new Map<string, CountBucket>();
+  const payingMap = new Map<string, CountBucket>();
+  const trialMap = new Map<string, CountBucket>();
+
+  if (allAliases.length === 0) {
+    return new Map();
+  }
+
+  const [
+    userSubscriberGroups,
+    userPayingGroups,
+    userTrialGroups,
+    tenantSubscriberGroups,
+    tenantPayingGroups,
+    tenantTrialGroups,
+    doubleCountedGroups,
+  ] = await Promise.all([
+    context.entities.User.groupBy({
+      by: ['subscriptionPlan'],
+      where: {
+        subscriptionPlan: { in: allAliases },
+        subscriptionStatus: { in: ['active', 'cancel_at_period_end', 'past_due', 'trialing'] },
+      },
+      _count: { _all: true },
+    }),
+    context.entities.User.groupBy({
+      by: ['subscriptionPlan'],
+      where: {
+        subscriptionPlan: { in: allAliases },
+        ...PAYING_USER_WHERE,
+      },
+      _count: { _all: true },
+    }),
+    context.entities.User.groupBy({
+      by: ['subscriptionPlan'],
+      where: {
+        subscriptionPlan: { in: allAliases },
+        subscriptionStatus: 'trialing',
+        trialEndsAt: { gte: now },
+      },
+      _count: { _all: true },
+    }),
+    context.entities.TenantBilling.groupBy({
+      by: ['plan'],
+      where: {
+        plan: { in: allAliases },
+        status: { in: ['ACTIVE', 'PAST_DUE', 'TRIAL'] },
+      },
+      _count: { _all: true },
+    }),
+    context.entities.TenantBilling.groupBy({
+      by: ['plan'],
+      where: {
+        plan: { in: allAliases },
+        status: 'ACTIVE',
+      },
+      _count: { _all: true },
+    }),
+    context.entities.TenantBilling.groupBy({
+      by: ['plan'],
+      where: {
+        plan: { in: allAliases },
+        status: 'TRIAL',
+        trialEndsAt: { gte: now },
+      },
+      _count: { _all: true },
+    }),
+    context.entities.TenantBilling.groupBy({
+      by: ['plan'],
+      where: {
+        plan: { in: allAliases },
+        status: 'ACTIVE',
+        parish: {
+          owner: {
+            subscriptionPlan: { in: allAliases },
+            ...PAYING_USER_WHERE,
+          },
+        },
+      },
+      _count: { _all: true },
+    }),
+  ]);
+
+  for (const row of userSubscriberGroups) {
+    add(subscriberUsers, row.subscriptionPlan, 'users', row._count._all);
+  }
+  for (const row of tenantSubscriberGroups) {
+    add(subscriberUsers, row.plan, 'tenants', row._count._all);
+  }
+  for (const row of userPayingGroups) {
+    add(payingMap, row.subscriptionPlan, 'users', row._count._all);
+  }
+  for (const row of tenantPayingGroups) {
+    add(payingMap, row.plan, 'tenants', row._count._all);
+  }
+  for (const row of doubleCountedGroups) {
+    add(payingMap, row.plan, 'doubleCounted', row._count._all);
+  }
+  for (const row of userTrialGroups) {
+    add(trialMap, row.subscriptionPlan, 'users', row._count._all);
+  }
+  for (const row of tenantTrialGroups) {
+    add(trialMap, row.plan, 'tenants', row._count._all);
+  }
+
+  const result = new Map<
+    string,
+    {
+      subscribers: { users: number; tenants: number; total: number };
+      paying: { users: number; tenants: number; total: number };
+      trial: { users: number; tenants: number; total: number };
+    }
+  >();
+
+  for (const slug of slugs) {
+    const sub = subscriberUsers.get(slug) ?? emptyBucket();
+    const pay = payingMap.get(slug) ?? emptyBucket();
+    const trial = trialMap.get(slug) ?? emptyBucket();
+    result.set(slug, {
+      subscribers: {
+        users: sub.users,
+        tenants: sub.tenants,
+        total: sub.users + sub.tenants,
+      },
+      paying: {
+        users: pay.users,
+        tenants: pay.tenants,
+        total: uniquePayersFromParts(pay.users, pay.tenants, pay.doubleCounted),
+      },
+      trial: {
+        users: trial.users,
+        tenants: trial.tenants,
+        total: trial.users + trial.tenants,
+      },
+    });
+  }
+
+  return result;
 }
 
 export const listPricingPlansAdmin = async (_args: void, context: any) => {
   requirePlatformAdmin(context.user);
 
-  const seeded = await ensurePricingCatalogSeeded({
-    pricingPlan: context.entities.PricingPlan,
-    pricingPlanPrice: context.entities.PricingPlanPrice,
-  });
-  if (seeded.createdPlans > 0 || seeded.createdPrices > 0) {
-    invalidatePlanCatalogCache();
+  const cached = adminPlansCache.get();
+  if (cached) return cached;
+
+  // Seed only when the catalog table is empty — avoids Stripe price retrieves on every load.
+  const existingCount = await context.entities.PricingPlan.count();
+  if (existingCount === 0) {
+    const seeded = await ensurePricingCatalogSeeded({
+      pricingPlan: context.entities.PricingPlan,
+      pricingPlanPrice: context.entities.PricingPlanPrice,
+    });
+    if (seeded.createdPlans > 0 || seeded.createdPrices > 0) {
+      invalidatePlanCatalogCache();
+    }
   }
 
   const rows = await context.entities.PricingPlan.findMany({
-    include: { prices: { orderBy: { createdAt: 'desc' } } },
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      description: true,
+      kind: true,
+      level: true,
+      creditsAmount: true,
+      isSystem: true,
+      isActive: true,
+      isPublic: true,
+      highlight: true,
+      sortOrder: true,
+      maxClasses: true,
+      maxCatechumens: true,
+      maxCatechists: true,
+      maxParishes: true,
+      aiMonthlyCredits: true,
+      aiDailyLimit: true,
+      aiInitialCredits: true,
+      socialMaxPostsPerDay: true,
+      socialMaxMediaPerPost: true,
+      socialMaxVideoSeconds: true,
+      features: true,
+      translations: true,
+      pricingVersion: true,
+      stripeProductId: true,
+      createdAt: true,
+      updatedAt: true,
+      prices: {
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          interval: true,
+          currency: true,
+          unitAmountCents: true,
+          stripePriceId: true,
+          stripeLookupKey: true,
+          isActive: true,
+          archivedAt: true,
+          createdAt: true,
+        },
+      },
+    },
     orderBy: { sortOrder: 'asc' },
   });
 
   const now = new Date();
-  const withCounts = await Promise.all(
-    rows.map(async (row: any) => {
-      const [subscribers, paying, trial] = await Promise.all([
-        countActiveSubscribers(context, row.slug),
-        countPayingForPlan(context, row.slug),
-        countTrialForPlan(context, row.slug, now),
-      ]);
-      return {
-        ...row,
-        subscriberCount: subscribers.total,
-        subscriberUsers: subscribers.users,
-        subscriberTenants: subscribers.tenants,
-        payingCount: paying.total,
-        trialCount: trial.total,
-      };
-    }),
+  const audience = await loadPlanAudienceCounts(
+    context,
+    rows.map((row: { slug: string }) => row.slug),
+    now,
   );
 
+  const withCounts = rows.map((row: any) => {
+    const counts = audience.get(row.slug) ?? {
+      subscribers: { users: 0, tenants: 0, total: 0 },
+      paying: { users: 0, tenants: 0, total: 0 },
+      trial: { users: 0, tenants: 0, total: 0 },
+    };
+    return {
+      ...row,
+      subscriberCount: counts.subscribers.total,
+      subscriberUsers: counts.subscribers.users,
+      subscriberTenants: counts.subscribers.tenants,
+      payingCount: counts.paying.total,
+      trialCount: counts.trial.total,
+    };
+  });
+
+  adminPlansCache.set(withCounts);
   return withCounts;
 };
 
@@ -214,7 +474,7 @@ export const upsertPricingPlan = async (rawInput: unknown, context: any) => {
     ? await context.entities.PricingPlan.update({ where: { id: existing.id }, data, include: { prices: true } })
     : await context.entities.PricingPlan.create({ data, include: { prices: true } });
 
-  invalidatePlanCatalogCache();
+  invalidateAdminPlansCache();
   await writeAuditLog(context, existing ? 'UPDATE' : 'CREATE', 'PricingPlan', saved.id, {
     operation: existing ? 'PRICING_PLAN_UPDATE' : 'PRICING_PLAN_CREATE',
     before: existing,
@@ -284,7 +544,7 @@ export const setPricingPlanPrice = async (rawInput: unknown, context: any) => {
     },
   });
 
-  invalidatePlanCatalogCache();
+  invalidateAdminPlansCache();
   await writeAuditLog(context, 'UPDATE', 'PricingPlanPrice', created.id, {
     operation: 'PRICING_PLAN_PRICE_ROTATE',
     planId: plan.id,
@@ -326,7 +586,7 @@ export const archivePricingPlan = async (rawInput: unknown, context: any) => {
     data: { isActive: false, isPublic: false },
   });
 
-  invalidatePlanCatalogCache();
+  invalidateAdminPlansCache();
   await writeAuditLog(context, 'UPDATE', 'PricingPlan', saved.id, {
     operation: 'PRICING_PLAN_ARCHIVE',
     slug: plan.slug,
@@ -349,7 +609,7 @@ export const reorderPricingPlans = async (rawInput: unknown, context: any) => {
     ),
   );
 
-  invalidatePlanCatalogCache();
+  invalidateAdminPlansCache();
   await writeAuditLog(context, 'UPDATE', 'PricingPlan', input.orderedIds[0], {
     operation: 'PRICING_PLAN_REORDER',
     orderedIds: input.orderedIds,

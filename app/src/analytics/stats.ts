@@ -20,6 +20,11 @@ const EMPTY_TRAFFIC: FirstPartyTraffic = {
   sources: [],
 };
 
+/**
+ * Computes and upserts today's DailyStats from first-party DB signals.
+ * Does NOT call Plausible/GA (those keys 401 in many envs). Stripe revenue is
+ * best-effort — failures are logged and DB user/activity stats still persist.
+ */
 export const calculateDailyStats = async (_args: unknown, context: any) => {
   const nowUTC = startOfUtcDay(new Date());
 
@@ -27,22 +32,22 @@ export const calculateDailyStats = async (_args: unknown, context: any) => {
   yesterdayUTC.setUTCDate(yesterdayUTC.getUTCDate() - 1);
 
   try {
-    const yesterdaysStats = await context.entities.DailyStats.findFirst({
-      where: {
-        date: {
-          equals: yesterdayUTC,
+    const [yesterdaysStats, userCount, paidUserCount] = await Promise.all([
+      context.entities.DailyStats.findFirst({
+        where: {
+          date: {
+            equals: yesterdayUTC,
+          },
         },
-      },
-    });
-
-    const userCount = await context.entities.User.count({});
-    // users can have paid but canceled subscriptions which terminate at the end of the period
-    // we don't want to count those users as current paying users
-    const paidUserCount = await context.entities.User.count({
-      where: {
-        subscriptionStatus: SubscriptionStatus.Active,
-      },
-    });
+        select: { userCount: true, paidUserCount: true },
+      }),
+      context.entities.User.count({}),
+      context.entities.User.count({
+        where: {
+          subscriptionStatus: SubscriptionStatus.Active,
+        },
+      }),
+    ]);
 
     let userDelta = userCount;
     let paidUserDelta = paidUserCount;
@@ -51,6 +56,7 @@ export const calculateDailyStats = async (_args: unknown, context: any) => {
       paidUserDelta -= yesterdaysStats.paidUserCount;
     }
 
+    // External revenue is optional. Never let Stripe/Plausible/GA abort DB stats.
     let totalRevenue = 0;
     try {
       totalRevenue = await paymentProcessor.fetchTotalRevenue();
@@ -62,6 +68,7 @@ export const calculateDailyStats = async (_args: unknown, context: any) => {
 
     let traffic = EMPTY_TRAFFIC;
     try {
+      // First-party only (PricingEvent + signups) — no Plausible/GA HTTP calls.
       traffic = await getFirstPartyTraffic(context, nowUTC);
     } catch (error: any) {
       logger.warn("[dailyStats] First-party traffic unavailable", {
@@ -109,29 +116,31 @@ export const calculateDailyStats = async (_args: unknown, context: any) => {
       });
     }
 
-    for (const source of sources) {
-      let visitors = source.visitors;
-      if (typeof source.visitors !== "number") {
-        visitors = parseInt(source.visitors);
-      }
-      await context.entities.PageViewSource.upsert({
-        where: {
-          date_name: {
+    await Promise.all(
+      sources.map((source) => {
+        let visitors = source.visitors;
+        if (typeof source.visitors !== "number") {
+          visitors = parseInt(source.visitors);
+        }
+        return context.entities.PageViewSource.upsert({
+          where: {
+            date_name: {
+              date: nowUTC,
+              name: source.source,
+            },
+          },
+          create: {
             date: nowUTC,
             name: source.source,
+            visitors,
+            dailyStatsId: dailyStats.id,
           },
-        },
-        create: {
-          date: nowUTC,
-          name: source.source,
-          visitors,
-          dailyStatsId: dailyStats.id,
-        },
-        update: {
-          visitors,
-        },
-      });
-    }
+          update: {
+            visitors,
+          },
+        });
+      }),
+    );
 
     console.table({ dailyStats });
     return dailyStats;
