@@ -164,7 +164,16 @@ describe("i18n config dual-safe bootstrap", () => {
     expect(coreNs.filter((ns) => appNs.includes(ns))).toEqual([]);
     for (const ns of namespaces) expect(all.has(ns), ns).toBe(true);
     // Public surfaces must not depend on the lazy bundle.
-    for (const ns of ["common", "auth", "landing", "public", "billing", "legal", "cookie"]) {
+    for (const ns of [
+      "common",
+      "auth",
+      "landing",
+      "public",
+      "billing",
+      "legal",
+      "cookie",
+      "family",
+    ]) {
       expect(coreNs, ns).toContain(ns);
     }
   });

@@ -37,6 +37,9 @@ const CORE_NS = new Set([
   'components',
   'topbar',
   'blog',
+  // Family portal public routes (/, /entrar, /convite, /criar-conta) use this
+  // before ensureAppNamespacesLoaded runs — keep it out of the lazy app split.
+  'family',
 ]);
 
 function splitBundleTargets(namespaces) {
