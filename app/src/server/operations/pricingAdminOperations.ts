@@ -230,6 +230,9 @@ async function loadPlanAudienceCounts(
       where: {
         plan: { in: allAliases },
         status: 'ACTIVE',
+        parish: {
+          owner: { ...PAYING_USER_WHERE },
+        },
       },
       _count: { _all: true },
     }),

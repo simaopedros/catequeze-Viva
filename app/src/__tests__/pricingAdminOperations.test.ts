@@ -258,4 +258,65 @@ describe('pricingAdminOperations', () => {
     expect(PricingPlan.create.mock.calls.some((call: any) => call[0].data.slug === 'single')).toBe(false);
     expect(PricingPlan.update).not.toHaveBeenCalled();
   });
+
+  it('excludes manual-courtesy ACTIVE tenants from paying.total (owner without stripe sub)', async () => {
+    const plan = { id: 'p1', slug: 'single', name: 'Single', prices: [] };
+    const PricingPlan = {
+      count: vi.fn().mockResolvedValue(1),
+      findMany: vi.fn().mockResolvedValue([plan]),
+      findUnique: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    };
+
+    // Scenario: 1 Stripe-paying user + 1 ACTIVE courtesy tenant (owner has no stripe sub).
+    // Paying tenants require parish.owner matching PAYING_USER_WHERE — courtesy must not inflate total.
+    const userGroupBy = vi.fn(async ({ where }: any) => {
+      if (where?.stripeSubscriptionId?.not === null) {
+        return [{ subscriptionPlan: 'single', _count: { _all: 1 } }];
+      }
+      if (where?.subscriptionStatus === 'trialing') return [];
+      // subscribers bucket
+      return [{ subscriptionPlan: 'single', _count: { _all: 1 } }];
+    });
+
+    const tenantGroupBy = vi.fn(async ({ where }: any) => {
+      const ownerIsPaying = where?.parish?.owner?.stripeSubscriptionId?.not === null;
+      // Paying / double-counted: only Stripe-payer owners
+      if (where?.status === 'ACTIVE' && ownerIsPaying) {
+        return []; // courtesy tenant filtered out
+      }
+      // Subscriber / trial buckets may still see the ACTIVE courtesy tenant
+      if (where?.status?.in || where?.status === 'ACTIVE') {
+        return [{ plan: 'single', _count: { _all: 1 } }];
+      }
+      return [];
+    });
+
+    const listed = await listPricingPlansAdmin(
+      undefined,
+      context(
+        { isAdmin: true },
+        listEntities({
+          PricingPlan,
+          User: { count: vi.fn().mockResolvedValue(0), groupBy: userGroupBy },
+          TenantBilling: { count: vi.fn().mockResolvedValue(0), groupBy: tenantGroupBy },
+        }),
+      ),
+    );
+
+    expect(listed).toHaveLength(1);
+    expect(listed[0].payingCount).toBe(1);
+
+    const payingTenantCall = tenantGroupBy.mock.calls.find(
+      (call: any[]) =>
+        call[0]?.where?.status === 'ACTIVE' &&
+        call[0]?.where?.parish?.owner?.stripeSubscriptionId?.not === null &&
+        !call[0]?.where?.parish?.owner?.subscriptionPlan,
+    );
+    expect(payingTenantCall).toBeDefined();
+    expect(payingTenantCall![0].where.parish.owner.subscriptionStatus.in).toEqual(
+      expect.arrayContaining(['active', 'past_due']),
+    );
+  });
 });
