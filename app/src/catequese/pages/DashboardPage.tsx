@@ -46,6 +46,8 @@ export default function DashboardPage() {
       userRole: effectiveRole,
     });
 
+  const onFamilySurface = Boolean(isFamilyHost || familySurfaceRole);
+
   // Avoid fetching common dashboard stats when institutional view does not use them.
   const {
     data: stats,
@@ -56,19 +58,21 @@ export default function DashboardPage() {
     getDashboardStats,
     {
       parishId: activeParishId || undefined,
-      ...(isFamilyHost || familySurfaceRole
-        ? { surface: "PORTAL" as const }
-        : {}),
+      ...(onFamilySurface ? { surface: "PORTAL" as const } : {}),
     },
     {
       enabled: !loadingCtx && !isInstitutional,
-      staleTime: 0,
-      refetchOnMount: "always",
+      // Family portal: keep a short cache so remounts don't flash the full-page
+      // skeleton for 2.5s+ while APIs (0.7–2s) refetch every visit.
+      staleTime: onFamilySurface ? 60_000 : 0,
+      refetchOnMount: onFamilySurface ? false : "always",
       refetchOnWindowFocus: false,
     },
   );
 
-  if (loadingCtx || (!isInstitutional && loadingStats)) {
+  // Bootstrap gate only — family dashboards render as soon as memberships are
+  // known; stats fill in without holding the page on SkeletonPage.
+  if (loadingCtx || (!isInstitutional && !onFamilySurface && loadingStats)) {
     return <SkeletonPage />;
   }
 

@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router";
-import { resetPassword } from "wasp/client/auth";
 import { useTranslation } from "react-i18next";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { resetPasswordAndInvalidateSessions } from "wasp/client/operations";
 import { Button } from "../../client/components/ui/button";
 import { Input } from "../../client/components/ui/input";
 import { Label } from "../../client/components/ui/label";
@@ -43,7 +43,7 @@ export default function CustomResetPasswordForm() {
     setLoading(true);
     setError("");
     try {
-      await resetPassword({ token, password });
+      await resetPasswordAndInvalidateSessions({ token, password });
       setDone(true);
     } catch (err: any) {
       const message =
@@ -111,7 +111,7 @@ export default function CustomResetPasswordForm() {
             />
             <button
               type="button"
-              className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground"
+              className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={
                 showPassword ? t("aria_hide_password") : t("aria_show_password")
@@ -140,7 +140,7 @@ export default function CustomResetPasswordForm() {
             disabled={loading || !token}
           />
         </div>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {t("signup_password_help")}
         </p>
         <Button

@@ -3,7 +3,10 @@ import {
   type GetVerificationEmailContentFn,
 } from 'wasp/server/auth';
 import i18n from '../../server/i18n/serverI18n';
-import { rewriteClientLinkForFamilyPortal } from '../emailLinkUtils';
+import {
+  emailFromVerificationToken,
+  rewriteClientLinkForFamilyPortal,
+} from '../emailLinkUtils';
 import {
   FAMILY_PORTAL_HOST,
   isFamilyPortalHost,
@@ -11,6 +14,7 @@ import {
 import { isFamilyPortalRequestContext } from '../../server/requestPortalContext';
 import { renderBrandedEmail } from '../../emails/renderEmail';
 import type { ServerLocale } from '../../server/i18n/serverLocale';
+import { isRememberedFamilyAuthEmail } from './familyAuthEmailHints';
 import { withEmailVerificationTtl } from './verificationTtl';
 
 function authLocale(): ServerLocale {
@@ -39,10 +43,24 @@ function hostnameOf(link: string): string {
   }
 }
 
-/** Resolve portal from request host first, then from the auth link host. */
+function emailFromAuthLink(authLink: string): string | null {
+  try {
+    const token = new URL(authLink).searchParams.get('token');
+    if (!token) return null;
+    return emailFromVerificationToken(token);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Resolve portal from request host first, then link host, then family-invite
+ * hints (email in the JWT was invited as GUARDIAN/CATECHUMEN).
+ */
 export function resolveAuthEmailPortal(authLink: string): AuthEmailPortal {
   if (isFamilyPortalRequestContext()) return 'family';
   if (isFamilyPortalHost(hostnameOf(authLink))) return 'family';
+  if (isRememberedFamilyAuthEmail(emailFromAuthLink(authLink))) return 'family';
   return 'staff';
 }
 

@@ -43,10 +43,20 @@ import {
   buildPasswordResetEmailContent,
   buildVerificationEmailContent,
 } from '../auth/email-and-pass/emails';
+import {
+  clearFamilyAuthEmailHints,
+  rememberFamilyAuthEmail,
+} from '../auth/email-and-pass/familyAuthEmailHints';
+
+function jwtWithEmail(email: string): string {
+  const payload = Buffer.from(JSON.stringify({ email })).toString('base64url');
+  return `hdr.${payload}.sig`;
+}
 
 describe('buildVerificationEmailContent', () => {
   beforeEach(() => {
     isFamilyPortalRequestContext.mockReturnValue(false);
+    clearFamilyAuthEmailHints();
   });
 
   it('builds a staff-only confirmation email by default', () => {
@@ -85,6 +95,18 @@ describe('buildVerificationEmailContent', () => {
 
     expect(content.portal).toBe('family');
     expect(content.subject).toContain('Portal da Família');
+  });
+
+  it('uses family copy when the email was invited as guardian/catechumen', () => {
+    rememberFamilyAuthEmail('mae@familia.test');
+    const content = buildVerificationEmailContent(
+      `https://catechis.app/email-verification?token=${jwtWithEmail('mae@familia.test')}`,
+    );
+
+    expect(content.portal).toBe('family');
+    expect(content.text).toContain('Portal da Família');
+    expect(content.text).not.toContain('painel pastoral');
+    expect(content.link).toContain('familia.');
   });
 });
 
