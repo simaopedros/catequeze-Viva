@@ -1009,6 +1009,7 @@ export const auth_en = {
     "login_continue_with_email": "Continue with email",
     "login_no_account": "Don't have an account?",
     "login_create_account": "Start your 7 days",
+    "login_create_account_family": "Create family account",
     "login_error_fill_all": "Please fill in all fields.",
     "login_error_invalid": "Invalid email or password.",
     "login_error_generic": "We couldn't sign you in right now. Check your connection and try again.",

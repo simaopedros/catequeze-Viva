@@ -1009,6 +1009,7 @@ export const auth_es = {
     "login_continue_with_email": "Continuar con email",
     "login_no_account": "¿Aún no tienes una cuenta?",
     "login_create_account": "Empezar los 7 días",
+    "login_create_account_family": "Crear cuenta familiar",
     "login_error_fill_all": "Complete todos los campos.",
     "login_error_invalid": "Email o contraseña incorrectos.",
     "login_error_generic": "No pudimos iniciar sesión ahora. Verifica tu conexión e inténtalo de nuevo.",

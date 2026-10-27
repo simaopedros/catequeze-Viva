@@ -18,6 +18,7 @@ export const auth_pt_BR_core = {
     "login_continue_with_email": "Continuar com email",
     "login_no_account": "Ainda não tem uma conta?",
     "login_create_account": "Começar os 7 dias",
+    "login_create_account_family": "Criar conta da família",
     "login_error_fill_all": "Preencha todos os campos.",
     "login_error_invalid": "Email ou senha incorretos.",
     "login_error_generic": "Não foi possível entrar agora. Verifique sua conexão e tente novamente.",
