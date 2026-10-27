@@ -15,6 +15,7 @@ import {
 import { useActiveWorkspace } from "../../client/hooks/useActiveWorkspace";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useUserContext } from "../../client/hooks/useUserContext";
+import { SHELL_CONTEXT_STALE_MS } from "../../client/hooks/shellQueryCache";
 import { canManageWorkspaceBilling } from "../../shared/billingAccess";
 import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";
@@ -81,14 +82,15 @@ export function ProductTrialBanner({
   );
   const onTrial = personalTrial || institutionalTrial;
 
-  // First-value signal for mode machine (skip on routes where banner never shows)
+  // First-value signal for mode machine (skip on routes where banner never shows).
+  // Share cache with DashboardPage: same args + 2min stale (no remount refetch).
+  // invalidateShellContext still refreshes getDashboardStats after mutations.
   const { data: stats } = useQuery(
     getDashboardStats,
     { parishId: activeParishId || undefined },
     {
       enabled: onTrial && !onBillingOrOnboarding && Boolean(user),
-      staleTime: 0,
-      refetchOnMount: "always",
+      staleTime: SHELL_CONTEXT_STALE_MS,
       refetchOnWindowFocus: false,
     },
   );
