@@ -5,6 +5,7 @@
   "searchNavigate": "navegar",
   "searchOpen": "abrir",
   "searchFocusHint": "Ctrl+K para enfocar",
+  "searchTypeHint": "Escriba al menos 3 letras para buscar",
   "notifications": "Notificaciones",
   "markAllRead": "Marcar todas como leídas",
   "noNotifications": "Sin notificaciones",

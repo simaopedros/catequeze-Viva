@@ -7234,7 +7234,12 @@ export const sacraments_pt_BR = {
       "error_update_milestone": "Erro ao atualizar marco",
       "error_copy": "Erro ao copiar modelo",
       "error_publish": "Erro ao publicar",
-      "error_restart": "Reinicie o servidor Wasp."
+      "error_restart": "Reinicie o servidor Wasp.",
+      "aria_edit": "Editar modelo",
+      "aria_copy": "Duplicar modelo",
+      "aria_publish": "Publicar modelo",
+      "aria_expand": "Ver marcos",
+      "aria_collapse": "Ocultar marcos"
     }
   } as const;
 
@@ -7453,6 +7458,7 @@ export const topbar_pt_BR = {
     "searchNavigate": "navegar",
     "searchOpen": "abrir",
     "searchFocusHint": "Ctrl+K para focar",
+    "searchTypeHint": "Digite ao menos 3 letras para buscar",
     "notifications": "Notificações",
     "markAllRead": "Marcar todas como lidas",
     "noNotifications": "Nenhuma notificação",

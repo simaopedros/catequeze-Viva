@@ -3386,6 +3386,7 @@ export const topbar_pt_BR_core = {
     "searchNavigate": "navegar",
     "searchOpen": "abrir",
     "searchFocusHint": "Ctrl+K para focar",
+    "searchTypeHint": "Digite ao menos 3 letras para buscar",
     "notifications": "Notificações",
     "markAllRead": "Marcar todas como lidas",
     "noNotifications": "Nenhuma notificação",
