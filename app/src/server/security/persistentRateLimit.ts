@@ -9,7 +9,7 @@ import { logger } from "../logger";
 export { maskInviteEmail } from "./inviteEmailMask";
 
 export type PersistentRateLimitConfig = {
-  /** Logical bucket prefix, e.g. "auth-login" or "invite-accept" */
+  /** Logical bucket prefix, e.g. "auth-fail-ip" or "invite-accept" */
   scope: string;
   /** Max requests allowed in the window */
   max: number;
@@ -28,6 +28,53 @@ export type RateLimitConsumeResult = {
 
 function bucketKey(scope: string, id: string): string {
   return `${scope}:${id || "unknown"}`;
+}
+
+/**
+ * Read-only check for `scope`+`id` (no increment).
+ * Expired windows (resetAt <= now) are treated as empty.
+ * Fail-open on DB errors.
+ */
+export async function peekPersistentRateLimit(
+  id: string,
+  config: PersistentRateLimitConfig,
+): Promise<RateLimitConsumeResult> {
+  const key = bucketKey(config.scope, id);
+  const now = new Date();
+
+  try {
+    const rows = await prisma.$queryRaw<
+      Array<{ count: number; resetAt: Date }>
+    >`
+      SELECT "count", "resetAt"
+      FROM "RateLimitBucket"
+      WHERE "key" = ${key}
+      LIMIT 1
+    `;
+
+    const row = rows[0];
+    if (!row || new Date(row.resetAt) <= now) {
+      return { allowed: true };
+    }
+
+    const count = Number(row.count);
+    // Block when already at/above max so the next attempt is denied without consume.
+    if (count >= config.max) {
+      const retryAfterSec = Math.max(
+        1,
+        Math.ceil((new Date(row.resetAt).getTime() - now.getTime()) / 1000),
+      );
+      return { allowed: false, retryAfterSec };
+    }
+
+    return { allowed: true };
+  } catch (err) {
+    logger.warn("[rateLimit] fail-open on DB error", {
+      scope: config.scope,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return { allowed: true, failedOpen: true };
+  }
 }
 
 /**
@@ -102,11 +149,21 @@ export async function assertPersistentRateLimit(
   );
 }
 
-/** Presets used by auth + invite flows. */
-export const AUTH_LOGIN_RATE_LIMIT: PersistentRateLimitConfig = {
-  scope: "auth-login",
+/**
+ * Auth failure buckets: only incremented on 4xx (except 429) after the request.
+ * Email bucket key is ip + ":" + sha256(normalized identifier), never plaintext.
+ */
+export const AUTH_FAIL_EMAIL_RATE_LIMIT: PersistentRateLimitConfig = {
+  scope: "auth-fail-email",
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: 10,
+  message: "Muitas tentativas. Aguarde 15 minutos.",
+};
+
+export const AUTH_FAIL_IP_RATE_LIMIT: PersistentRateLimitConfig = {
+  scope: "auth-fail-ip",
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: "Muitas tentativas. Aguarde 15 minutos.",
 };
 
@@ -137,4 +194,3 @@ export const INVITE_ACCEPT_RATE_LIMIT: PersistentRateLimitConfig = {
   max: 20,
   message: "Muitas tentativas. Tente novamente em breve.",
 };
-
