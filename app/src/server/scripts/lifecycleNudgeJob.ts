@@ -102,6 +102,15 @@ async function loadActivationForParishes(
   };
 }
 
+const DEFAULT_LIFECYCLE_MAX_PER_RUN = 10;
+
+function lifecycleMaxPerRun(): number {
+  const raw = process.env.LIFECYCLE_MAX_PER_RUN;
+  if (raw == null || raw === "") return DEFAULT_LIFECYCLE_MAX_PER_RUN;
+  const n = Number.parseInt(raw, 10);
+  return Number.isFinite(n) && n > 0 ? n : DEFAULT_LIFECYCLE_MAX_PER_RUN;
+}
+
 export const lifecycleNudgeJob = async (
   _args: unknown,
   context: LifecycleContext,
@@ -110,7 +119,9 @@ export const lifecycleNudgeJob = async (
   const todayStart = startOfDay(now);
   const baseUrl = appBaseUrl();
   const price = formatPrice(PLANS.single.prices.monthlyCents);
+  const maxPerRun = lifecycleMaxPerRun();
 
+  // createdAt asc so the per-run cap rotates fairly across days.
   const candidates = await context.entities.User.findMany({
     where: {
       email: { not: null },
@@ -120,6 +131,7 @@ export const lifecycleNudgeJob = async (
         in: ["trialing", "trial", "deleted", "canceled"],
       },
     },
+    orderBy: { createdAt: "asc" },
     select: {
       id: true,
       email: true,
@@ -147,7 +159,8 @@ export const lifecycleNudgeJob = async (
   let sent = 0;
   let considered = 0;
 
-  for (const user of candidates) {
+  for (let i = 0; i < candidates.length; i++) {
+    const user = candidates[i];
     const membershipRoles = (user.memberships || []).map(
       (m: { role: string }) => m.role,
     );
@@ -189,6 +202,7 @@ export const lifecycleNudgeJob = async (
     const alreadySent = (user.lifecycleEmailLogs || []).map(
       (log: { campaign: string }) => log.campaign,
     );
+    // Any LifecycleEmailLog today skips (incl. campaign "trial_extension_2026_10").
     const alreadySentToday = (user.lifecycleEmailLogs || []).some(
       (log: { sentAt: Date }) => log.sentAt >= todayStart,
     );
@@ -299,6 +313,14 @@ export const lifecycleNudgeJob = async (
       campaign,
       emailed: result.status === "SENT" || result.status === "QUEUED",
     });
+
+    if (sent >= maxPerRun) {
+      const left = candidates.length - i - 1;
+      logger.info(
+        `[lifecycleNudgeJob] hit cap ${maxPerRun}; ${left} candidates left.`,
+      );
+      break;
+    }
   }
 
   logger.info(`[lifecycleNudgeJob] considered ${considered}; sent ${sent}.`);
