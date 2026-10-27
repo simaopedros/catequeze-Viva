@@ -236,7 +236,7 @@ export default function CustomLoginForm({
   return (
     <div className="space-y-7">
       <div className="space-y-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground lg:hidden">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink/70 lg:hidden">
           {t("login_panel_eyebrow")}
         </p>
         <AppDisplayTitle className="text-2xl sm:text-[1.85rem]">
@@ -262,8 +262,8 @@ export default function CustomLoginForm({
           <div className="absolute inset-0 flex items-center" aria-hidden>
             <div className="w-full border-t border-border/70" />
           </div>
-          <div className="relative flex justify-center text-[11px] uppercase tracking-[0.14em]">
-            <span className="bg-white px-3 text-muted-foreground">
+          <div className="relative flex justify-center text-xs uppercase tracking-[0.14em]">
+            <span className="bg-white px-3 text-brand-ink/70">
               {t("login_divider")}
             </span>
           </div>
@@ -274,7 +274,7 @@ export default function CustomLoginForm({
           {notice && <Alert>{notice}</Alert>}
           {resendEmail && (
             <div className="space-y-2 rounded-sm border border-border/70 bg-muted/30 px-3 py-3">
-              <p className="text-xs leading-relaxed text-muted-foreground">
+              <p className="text-sm leading-relaxed text-muted-foreground">
                 {t("login_resend_hint")}
               </p>
               <Button
@@ -295,7 +295,7 @@ export default function CustomLoginForm({
           <div className="space-y-1.5">
             <Label
               htmlFor="email"
-              className="text-xs font-medium text-brand-ink"
+              className="text-sm font-medium text-brand-ink"
             >
               {t("login_email_label")}
             </Label>
@@ -317,13 +317,13 @@ export default function CustomLoginForm({
             <div className="flex items-center justify-between gap-2">
               <Label
                 htmlFor="password"
-                className="text-xs font-medium text-brand-ink"
+                className="text-sm font-medium text-brand-ink"
               >
                 {t("login_password_label")}
               </Label>
               <a
                 href="/request-password-reset"
-                className="text-xs text-muted-foreground transition-colors hover:text-brand-ink"
+                className="text-sm text-muted-foreground underline-offset-2 transition-colors hover:text-brand-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 {t("login_forgot_password")}
               </a>
@@ -344,8 +344,7 @@ export default function CustomLoginForm({
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-1 top-1/2 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center text-muted-foreground hover:text-brand-ink"
-                tabIndex={-1}
+                className="absolute right-1 top-1/2 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-sm text-muted-foreground hover:text-brand-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label={
                   showPassword
                     ? t("aria_hide_password")
@@ -387,24 +386,30 @@ export default function CustomLoginForm({
           href={signupHref}
           className="font-medium text-brand-ink hover:underline"
         >
-          {t("login_create_account")}
+          {t(
+            isFamilyPortalHost()
+              ? "login_create_account_family"
+              : "login_create_account",
+          )}
         </a>
       </p>
 
-      <ul className="space-y-2 border-t border-border/60 pt-5 lg:hidden">
-        {(Array.isArray(t("login_panel_points", { returnObjects: true }))
-          ? (t("login_panel_points", { returnObjects: true }) as string[])
-          : []
-        ).map((point) => (
-          <li
-            key={point}
-            className="flex gap-2 text-xs leading-snug text-muted-foreground"
-          >
-            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-ink/70" />
-            <span>{point}</span>
-          </li>
-        ))}
-      </ul>
+      {!isFamilyPortalHost() && (
+        <ul className="space-y-2 border-t border-border/60 pt-5 lg:hidden">
+          {(Array.isArray(t("login_panel_points", { returnObjects: true }))
+            ? (t("login_panel_points", { returnObjects: true }) as string[])
+            : []
+          ).map((point) => (
+            <li
+              key={point}
+              className="flex gap-2 text-xs leading-snug text-muted-foreground"
+            >
+              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-ink/70" />
+              <span>{point}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

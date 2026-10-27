@@ -42,7 +42,7 @@ export default function FamilyLoginPage() {
             </Link>
           </p>
           {token && (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {t("login.token_hint")}
             </p>
           )}
