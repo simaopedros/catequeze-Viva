@@ -449,6 +449,8 @@ export default function DocumentsPage() {
             const initials = `${c.firstName?.[0] || ""}${
               c.lastName?.[0] || ""
             }`.toUpperCase();
+            const personName =
+              `${c.firstName || ""} ${c.lastName || ""}`.trim() || "?";
 
             return (
               <AppPanel key={c.id} className="p-4 space-y-3" padded={false}>
@@ -563,6 +565,7 @@ export default function DocumentsPage() {
                                   size="icon"
                                   variant="ghost"
                                   className="h-11 w-11 min-h-11 min-w-11 sm:h-7 sm:w-7 sm:min-h-0 sm:min-w-0"
+                                  aria-label={`${tc("documents.tooltip_upload")}: ${label} (${personName})`}
                                   onClick={() =>
                                     setUploadDialog({
                                       catechumenId: c.id,
@@ -586,6 +589,7 @@ export default function DocumentsPage() {
                                     size="icon"
                                     variant="ghost"
                                     className="h-7 w-7"
+                                    aria-label={`${tc("documents.tooltip_approve")}: ${label} (${personName})`}
                                     onClick={() => handleVerify(doc.id)}
                                   >
                                     <CheckCircle className="h-3.5 w-3.5 text-success" />
@@ -601,6 +605,7 @@ export default function DocumentsPage() {
                                     size="icon"
                                     variant="ghost"
                                     className="h-7 w-7"
+                                    aria-label={`${tc("documents.tooltip_reject")}: ${label} (${personName})`}
                                     onClick={() => setRejectingId(doc.id)}
                                   >
                                     <XCircle className="h-3.5 w-3.5 text-destructive" />
@@ -619,6 +624,7 @@ export default function DocumentsPage() {
                                   size="icon"
                                   variant="ghost"
                                   className="h-7 w-7"
+                                  aria-label={`${tc("documents.tooltip_approve")}: ${label} (${personName})`}
                                   onClick={() => handleVerify(doc.id)}
                                 >
                                   <CheckCircle className="h-3.5 w-3.5 text-success" />
@@ -637,6 +643,7 @@ export default function DocumentsPage() {
                                     size="icon"
                                     variant="ghost"
                                     className="h-11 w-11 min-h-11 min-w-11 sm:h-7 sm:w-7 sm:min-h-0 sm:min-w-0"
+                                    aria-label={`${tc("documents.tooltip_replace")}: ${label} (${personName})`}
                                     onClick={() =>
                                       setUploadDialog({
                                         catechumenId: c.id,
@@ -659,6 +666,7 @@ export default function DocumentsPage() {
                                   size="icon"
                                   variant="ghost"
                                   className="h-11 w-11 min-h-11 min-w-11 sm:h-7 sm:w-7 sm:min-h-0 sm:min-w-0"
+                                  aria-label={`${tc("documents.tooltip_delete")}: ${label} (${personName})`}
                                   onClick={() => handleDelete(doc.id)}
                                 >
                                   <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />

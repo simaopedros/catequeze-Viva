@@ -244,6 +244,7 @@ export default function ClassesPage() {
             <div className="min-w-0 flex-1">
               <SearchInput
                 placeholder={t("search_placeholder")}
+                aria-label={t("search_placeholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />

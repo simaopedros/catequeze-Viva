@@ -258,6 +258,7 @@ export default function CatechumensPage() {
             <div className="min-w-0 flex-1">
               <SearchInput
                 placeholder={t("catechumens.search_by_name")}
+                aria-label={t("catechumens.search_by_name")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -266,7 +267,10 @@ export default function CatechumensPage() {
               value={classFilter || "all"}
               onValueChange={(v) => setClassFilter(v)}
             >
-              <SelectTrigger className="h-11 min-h-11 rounded-sm border-border/70 bg-surface-elevated sm:w-48">
+              <SelectTrigger
+                className="h-11 min-h-11 rounded-sm border-border/70 bg-surface-elevated sm:w-48"
+                aria-label={t("catechumens.all_classes")}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
