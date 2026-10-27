@@ -114,6 +114,7 @@ export const stripeWebhook: PaymentsWebhook = async (
       case "invoice.payment_failed":
         await handleInvoicePaymentFailed(event, prismaUserDelegate, context);
         break;
+      case "customer.subscription.created":
       case "customer.subscription.updated":
         await handleCustomerSubscriptionUpdated(event, prismaUserDelegate, context);
         break;
@@ -186,6 +187,7 @@ async function persistStripeSubscriptionToUser(
       paymentPlanId: catalogPlan.slug,
       subscriptionStatus,
       datePaid: extras?.datePaid,
+      stripeSubscriptionId: subscription.id,
       ...(trialEndsAt ? { trialEndsAt } : {}),
     },
     prismaUserDelegate,
@@ -447,6 +449,7 @@ async function processPaidInvoice(
             datePaid: invoicePaidAtDate,
             paymentPlanId,
             subscriptionStatus: SubscriptionStatus.Active,
+            ...(subscriptionId ? { stripeSubscriptionId: subscriptionId } : {}),
           },
           prismaUserDelegate,
         );
@@ -661,7 +664,9 @@ async function recordStripeFunnelEventSafe(
 }
 
 async function handleCustomerSubscriptionUpdated(
-  event: Stripe.CustomerSubscriptionUpdatedEvent,
+  event:
+    | Stripe.CustomerSubscriptionUpdatedEvent
+    | Stripe.CustomerSubscriptionCreatedEvent,
   prismaUserDelegate: PrismaClient["user"],
   context: WebhookContext,
 ): Promise<void> {
@@ -731,6 +736,7 @@ async function handleCustomerSubscriptionDeleted(
     {
       paymentProcessorUserId: customerId,
       subscriptionStatus: SubscriptionStatus.Deleted,
+      stripeSubscriptionId: subscription.id,
     },
     prismaUserDelegate,
   );
@@ -1040,10 +1046,21 @@ function isTrialingSubscription(subscription: Stripe.Subscription): boolean {
   );
 }
 
-function getInvoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
-  const subscription = (invoice as any).subscription;
-  if (!subscription) return null;
-  return typeof subscription === "string" ? subscription : subscription.id;
+/**
+ * Resolve subscription id from an Invoice across Stripe API shapes:
+ * - legacy: invoice.subscription
+ * - newer (parent): invoice.parent.subscription_details.subscription
+ */
+export function getInvoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
+  const legacy = (invoice as { subscription?: string | { id?: string } | null })
+    .subscription;
+  if (legacy) {
+    return typeof legacy === "string" ? legacy : legacy.id ?? null;
+  }
+
+  const fromParent = invoice.parent?.subscription_details?.subscription;
+  if (!fromParent) return null;
+  return typeof fromParent === "string" ? fromParent : fromParent.id ?? null;
 }
 
 async function retrieveSubscription(

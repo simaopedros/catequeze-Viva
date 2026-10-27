@@ -13,7 +13,7 @@ type UserBillingRow = {
 };
 
 export function pickLiveStripeSubscription<
-  T extends { status: string; created?: number },
+  T extends { status: string; created?: number; id?: string },
 >(subscriptions: T[]): T | null {
   const live = subscriptions.filter((subscription) =>
     LIVE_STRIPE_STATUSES.has(subscription.status),
@@ -103,6 +103,7 @@ export async function refreshUserBillingFromStripe(
         paymentPlanId: catalogPlan.slug,
         subscriptionStatus,
         trialEndsAt: stripeTrialEndsAt(live),
+        stripeSubscriptionId: live.id,
       },
       context.entities.User,
     );
