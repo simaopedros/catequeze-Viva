@@ -96,7 +96,7 @@ vi.mock('../../server/pricing/planCatalogService', () => ({
   resolvePlanByStripePriceId: (...args: unknown[]) => mocks.resolvePlanByStripePriceIdMock(...args),
 }));
 
-import { stripeWebhook } from './webhook';
+import { getInvoiceSubscriptionId, stripeWebhook } from './webhook';
 import { DEFAULT_PLANS_BY_SLUG } from '../../shared/planCatalog';
 
 function createTrackedEventDelegate() {
@@ -334,6 +334,7 @@ describe('stripeWebhook', () => {
         subscriptionStatus: 'trialing',
         paymentPlanId: 'single',
         trialEndsAt: new Date(1773500000 * 1000),
+        stripeSubscriptionId: 'sub_1',
       }),
       expect.anything(),
     );
@@ -373,6 +374,7 @@ describe('stripeWebhook', () => {
         subscriptionStatus: 'trialing',
         paymentPlanId: 'unlimited',
         trialEndsAt: new Date(1773500000 * 1000),
+        stripeSubscriptionId: 'sub_unlimited_1',
       }),
       expect.anything(),
     );
@@ -427,13 +429,150 @@ describe('stripeWebhook', () => {
     await stripeWebhook({ headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any, response, createContext());
 
     expect(mocks.updateUserSubscriptionMock).toHaveBeenCalledWith(
-      expect.objectContaining({ subscriptionStatus: 'trialing' }),
+      expect.objectContaining({
+        subscriptionStatus: 'trialing',
+        stripeSubscriptionId: 'sub_1',
+      }),
       expect.anything(),
     );
     expect(mocks.grantSubscriptionAiCreditsMock).not.toHaveBeenCalled();
     expect(mocks.trackPricingEventMock).not.toHaveBeenCalledWith(
       expect.anything(),
       expect.objectContaining({ event: 'purchase_completed' }),
+    );
+    expect(response.status).toHaveBeenCalledWith(204);
+  });
+
+  it('persists stripeSubscriptionId on first paid subscription invoice', async () => {
+    mocks.constructEventMock.mockReturnValue({
+      id: 'evt_invoice_persist_sub',
+      type: 'invoice.paid',
+      data: { object: paidInvoice({ id: 'in_persist_sub' }) },
+    });
+
+    const response = createResponse();
+    await stripeWebhook(
+      { headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any,
+      response,
+      createContext(),
+    );
+
+    expect(mocks.updateUserSubscriptionMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subscriptionStatus: 'active',
+        paymentPlanId: 'single',
+        stripeSubscriptionId: 'sub_1',
+      }),
+      expect.anything(),
+    );
+    expect(response.status).toHaveBeenCalledWith(204);
+  });
+
+  it('persists stripeSubscriptionId from parent.subscription_details when legacy subscription is absent', async () => {
+    mocks.constructEventMock.mockReturnValue({
+      id: 'evt_invoice_parent_sub',
+      type: 'invoice.paid',
+      data: {
+        object: paidInvoice({
+          id: 'in_parent_sub',
+          subscription: null,
+          parent: {
+            subscription_details: {
+              subscription: 'sub_from_parent',
+              metadata: {
+                plan_id: 'single',
+                plan_name: 'Plano Unico',
+              },
+            },
+          },
+        }),
+      },
+    });
+    mocks.retrieveSubscriptionMock.mockResolvedValue({
+      id: 'sub_from_parent',
+      status: 'active',
+      metadata: {},
+      items: { data: [{ price: { id: 'price_single' } }] },
+    });
+
+    const response = createResponse();
+    await stripeWebhook(
+      { headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any,
+      response,
+      createContext(),
+    );
+
+    expect(mocks.updateUserSubscriptionMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        stripeSubscriptionId: 'sub_from_parent',
+        subscriptionStatus: 'active',
+      }),
+      expect.anything(),
+    );
+    expect(response.status).toHaveBeenCalledWith(204);
+  });
+
+  it('persists stripeSubscriptionId on customer.subscription.created', async () => {
+    mocks.constructEventMock.mockReturnValue({
+      id: 'evt_sub_created',
+      type: 'customer.subscription.created',
+      data: {
+        object: {
+          id: 'sub_created_1',
+          status: 'active',
+          customer: 'cus_1',
+          cancel_at_period_end: false,
+          items: { data: [{ price: { id: 'price_single' } }] },
+        },
+      },
+    });
+
+    const response = createResponse();
+    await stripeWebhook(
+      { headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any,
+      response,
+      createContext(),
+    );
+
+    expect(mocks.updateUserSubscriptionMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        stripeSubscriptionId: 'sub_created_1',
+        subscriptionStatus: 'active',
+        paymentPlanId: 'single',
+      }),
+      expect.anything(),
+    );
+    expect(response.status).toHaveBeenCalledWith(204);
+  });
+
+  it('persists stripeSubscriptionId on customer.subscription.updated', async () => {
+    mocks.constructEventMock.mockReturnValue({
+      id: 'evt_sub_updated',
+      type: 'customer.subscription.updated',
+      data: {
+        object: {
+          id: 'sub_updated_1',
+          status: 'active',
+          customer: 'cus_1',
+          cancel_at_period_end: false,
+          items: { data: [{ price: { id: 'price_single' } }] },
+        },
+      },
+    });
+
+    const response = createResponse();
+    await stripeWebhook(
+      { headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any,
+      response,
+      createContext(),
+    );
+
+    expect(mocks.updateUserSubscriptionMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        stripeSubscriptionId: 'sub_updated_1',
+        subscriptionStatus: 'active',
+      }),
+      expect.anything(),
     );
     expect(response.status).toHaveBeenCalledWith(204);
   });
@@ -556,6 +695,13 @@ describe('stripeWebhook', () => {
     await stripeWebhook({ headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any, response, context);
 
     expect(mocks.sendMetaEventMock).not.toHaveBeenCalled();
+    expect(mocks.updateUserSubscriptionMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subscriptionStatus: 'deleted',
+        stripeSubscriptionId: 'sub_1',
+      }),
+      expect.anything(),
+    );
     expect(mocks.trackPricingEventMock).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ event: 'payment_failed' }));
     expect(mocks.trackPricingEventMock).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ event: 'subscription_canceled' }));
 
@@ -684,9 +830,39 @@ describe('stripeWebhook', () => {
     );
 
     expect(mocks.updateUserSubscriptionMock).toHaveBeenCalledWith(
-      expect.objectContaining({ paymentPlanId: 'single' }),
+      expect.objectContaining({
+        paymentPlanId: 'single',
+        stripeSubscriptionId: 'sub_1',
+      }),
       expect.anything(),
     );
     expect(response.status).toHaveBeenCalledWith(204);
+  });
+});
+
+describe('getInvoiceSubscriptionId', () => {
+  it('reads legacy invoice.subscription', () => {
+    expect(
+      getInvoiceSubscriptionId({
+        subscription: 'sub_legacy',
+      } as any),
+    ).toBe('sub_legacy');
+  });
+
+  it('reads parent.subscription_details.subscription when legacy is absent', () => {
+    expect(
+      getInvoiceSubscriptionId({
+        subscription: null,
+        parent: {
+          subscription_details: {
+            subscription: 'sub_parent',
+          },
+        },
+      } as any),
+    ).toBe('sub_parent');
+  });
+
+  it('returns null when neither shape has a subscription', () => {
+    expect(getInvoiceSubscriptionId({ subscription: null, parent: null } as any)).toBeNull();
   });
 });
