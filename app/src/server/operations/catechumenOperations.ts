@@ -181,23 +181,17 @@ export const listCatechumens = async (
       return useCursorPage ? { items: [], nextCursor: null } : [];
     }
 
-    const enrollments = await context.entities.ClassEnrollment.findMany({
-      where: { classId: { in: classIds } },
-      select: { catechumenProfileId: true },
-    });
-    const enrolledIds = [
-      ...new Set(
-        enrollments
-          .map((e: any) => e.catechumenProfileId)
-          .filter(Boolean) as string[],
-      ),
-    ];
-    if (enrolledIds.length === 0) {
-      return useCursorPage ? { items: [], nextCursor: null } : [];
-    }
-
+    // Nested relation filter avoids materializing hundreds of enrollment IDs
+    // into an unbounded `id IN (...)` clause (N+1 / large-parish hotspot).
     const rows = await context.entities.CatechumenProfile.findMany({
-      where: buildWhere({ id: { in: enrolledIds } }),
+      where: buildWhere({
+        enrollments: {
+          some: {
+            classId: { in: classIds },
+            status: "ENROLLED",
+          },
+        },
+      }),
       orderBy,
       take,
       skip,
@@ -244,9 +238,22 @@ export const getCatechumenProfile = async (
   if (!context.user) throw new HttpError(401);
   await assertCanAccessCatechumenProfile(context, args.id);
 
-  return context.entities.CatechumenProfile.findUnique({
+  const profile = await context.entities.CatechumenProfile.findUnique({
     where: { id: args.id },
-    include: {
+    select: {
+      id: true,
+      createdAt: true,
+      updatedAt: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      birthDate: true,
+      photoUrl: true,
+      userId: true,
+      householdId: true,
+      parishId: true,
+      // uploadToken / uploadTokenExpires intentionally omitted — staff of a
+      // linked household parish must never receive them via this query.
       parish: { select: { id: true, name: true } },
       household: {
         include: {
@@ -280,6 +287,7 @@ export const getCatechumenProfile = async (
       documents: true,
     },
   });
+  return profile;
 };
 
 export const createCatechumen = async (args: any, context: any) => {

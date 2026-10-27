@@ -190,13 +190,16 @@ async function assertCanTakeAttendance(
   classId: string,
   surface?: string | null,
 ): Promise<void> {
-  await assertUserBelongsToClass(context, classId);
+  if (!context.user) throw new HttpError(401);
+
   const classData = await context.entities.CatechesisClass.findUnique({
     where: { id: classId },
     select: { parishId: true, catechists: { select: { userId: true } } },
   });
   if (!classData) throw new HttpError(404, "Turma não encontrada.");
 
+  // Reject family surfaces before assertUserBelongsToClass (which needs
+  // GuardianProfile entities and previously 500'd family callers).
   const roles = await loadActiveRoles(context, classData.parishId);
   if (
     isFamilySurface({ context, roles, surface }) ||
@@ -207,6 +210,8 @@ async function assertCanTakeAttendance(
       "Lista de presença completa é exclusiva da equipe pastoral.",
     );
   }
+
+  await assertUserBelongsToClass(context, classId);
 
   if (context.user.isAdmin) return;
   if (
@@ -264,15 +269,8 @@ export const listMeetings = async (
 
 export const createMeeting = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
-  const role = await getUserRole(context);
-  if (!isCatechistOrAbove(role))
-    throw new HttpError(
-      403,
-      "Apenas catequistas e coordenadores podem criar encontros.",
-    );
-
-  // Verificar pertencimento à turma
-  await assertUserBelongsToClass(context, args.classId);
+  // Parish-scoped pastoral staff of this class only (not global role / guardian).
+  await assertCanTakeAttendance(context, args.classId, args.surface);
 
   try {
     return await context.entities.Meeting.create({
@@ -1014,22 +1012,13 @@ export function isAllowedMeetingStatusTransition(
 export const updateMeeting = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
 
-  const role = await getUserRole(context);
-  if (!isCatechistOrAbove(role)) {
-    throw new HttpError(
-      403,
-      "Apenas catequistas e coordenadores podem editar encontros.",
-    );
-  }
-
   const meeting = await context.entities.Meeting.findUnique({
     where: { id: args.id },
     select: { classId: true, status: true },
   });
   if (!meeting) throw new HttpError(404, "Encontro não encontrado.");
 
-  // Check access: must belong to the class (catechist or coordinator)
-  await assertUserBelongsToClass(context, meeting.classId);
+  await assertCanTakeAttendance(context, meeting.classId, args.surface);
 
   if (args.status !== undefined && args.status !== meeting.status) {
     if (!isAllowedMeetingStatusTransition(meeting.status, args.status)) {
@@ -1309,7 +1298,10 @@ export const getMeeting = async (
   return base;
 };
 
-export const deleteMeeting = async (args: { id: string }, context: any) => {
+export const deleteMeeting = async (
+  args: { id: string; surface?: string },
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
 
   const meeting = await context.entities.Meeting.findUnique({
@@ -1318,7 +1310,7 @@ export const deleteMeeting = async (args: { id: string }, context: any) => {
   });
   if (!meeting) throw new HttpError(404, "Encontro não encontrado.");
 
-  await assertUserBelongsToClass(context, meeting.classId);
+  await assertCanTakeAttendance(context, meeting.classId, args.surface);
 
   await context.entities.AttendanceRecord.deleteMany({
     where: { meetingId: args.id },

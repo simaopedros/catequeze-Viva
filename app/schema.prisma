@@ -806,6 +806,8 @@ model ClassEnrollment {
   @@unique([classId, catechumenProfileId])
   @@index([classId])
   @@index([catechumenProfileId])
+  // Hot path: listCatechumens / presença / anúncios filtram ENROLLED por turma.
+  @@index([classId, status])
 }
 
 // ─── Catechumens & Families ───────────────────────────────────────────────────
