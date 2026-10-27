@@ -149,6 +149,7 @@ export const admin_pt_BR = {
       "overview": "Visão Geral",
       "dashboard": "Painel",
       "analytics": "Analytics",
+      "owner": "Visão do dono",
       "governance": "Governança",
       "parishes": "Paróquias",
       "users": "Utilizadores",
@@ -657,6 +658,77 @@ export const admin_pt_BR = {
         "status_cancel_at_period_end": "Cancela no fim do período",
         "status_trial_expired": "Trial vencido",
         "action_error": "Não foi possível concluir a ação."
+      },
+      "owner": {
+        "title": "Visão do dono",
+        "subtitle": "Receita, conversão, inadimplência, trials e saúde de e-mail — calculados ao vivo (sem DailyStats).",
+        "export_csv": "Exportar CSV",
+        "empty": "Sem dados neste período.",
+        "yes": "Sim",
+        "no": "Não",
+        "revenue_error": "Stripe indisponível: {{message}}. As demais métricas continuam disponíveis.",
+        "kpi": {
+          "current_month_revenue": "Receita do mês (BRL)",
+          "mrr": "MRR agora",
+          "paying_accounts": "Contas pagantes",
+          "payment_failed_30d": "Falhas de pagamento (30d)"
+        },
+        "sections": {
+          "signup_funnel": "Funil de cadastro",
+          "revenue": "Receita, novos pagantes e cancelamentos (12 meses)",
+          "cohorts": "Conversão trial → pago por coorte de cadastro",
+          "activation": "Ativação e retenção por mês de cadastro",
+          "delinquency": "Inadimplência ({{users}} usuários · {{tenants}} tenants)",
+          "trials": "Trials a expirar (7d: {{d7}} · 14d: {{d14}})",
+          "email_health": "Saúde de e-mail (30 dias)"
+        },
+        "funnel": {
+          "signups": "Cadastros",
+          "joined_parish": "Entrou em paróquia",
+          "created_class": "Criou turma",
+          "checkout_started": "Checkout iniciado",
+          "paying": "Pagantes"
+        },
+        "cols": {
+          "month": "Mês",
+          "revenue": "Receita",
+          "new_paying": "Novos pagantes",
+          "cancellations": "Cancelamentos",
+          "signups": "Cadastros",
+          "had_trial": "Tiveram trial",
+          "became_paying": "Viraram pagantes",
+          "conversion": "Conversão",
+          "created_class_pct": "% criou turma",
+          "attendance_pct": "% registrou presença",
+          "account": "Conta",
+          "email": "E-mail",
+          "plan": "Plano",
+          "since": "Desde",
+          "ends_at": "Termina em",
+          "has_class": "Tem turma",
+          "day": "Dia"
+        },
+        "email": {
+          "suppressions": "Suppressions",
+          "opt_outs": "Opt-outs",
+          "lifecycle_logs": "Logs de lifecycle"
+        },
+        "csv": {
+          "account": "conta",
+          "email": "email",
+          "ends_at": "termina_em",
+          "window": "janela_dias",
+          "has_class": "tem_turma",
+          "plan": "plano",
+          "since": "desde",
+          "kind": "tipo",
+          "month": "mes",
+          "amount_brl": "valor_brl",
+          "signups": "cadastros",
+          "had_trial": "tiveram_trial",
+          "became_paying": "viraram_pagantes",
+          "conversion": "conversao_pct"
+        }
       }
     },
     "loading": "A carregar…",

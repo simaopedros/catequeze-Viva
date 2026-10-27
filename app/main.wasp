@@ -281,6 +281,12 @@ page AdminAnalyticsPage {
   component: import AdminAnalytics from "@src/admin/dashboards/analytics/AnalyticsPage"
 }
 
+route AdminOwnerRoute { path: "/admin/dono", to: AdminOwnerPage }
+page AdminOwnerPage {
+  authRequired: true,
+  component: import AdminOwnerPage from "@src/admin/dashboards/owner/AdminOwnerPage"
+}
+
 route AdminBillingRoute { path: "/admin/billing", to: AdminBillingPage }
 page AdminBillingPage {
   authRequired: true,
@@ -2583,6 +2589,28 @@ action createCatecheticalYear {
 //#endregion
 
 //#region Platform Admin Operations (Centro de Comando)
+query getOwnerDashboard {
+  fn: import { getOwnerDashboard } from "@src/server/operations/ownerDashboardOperations",
+  entities: [
+    User,
+    Parish,
+    Diocese,
+    TenantBilling,
+    CatechesisClass,
+    ClassCatechist,
+    AttendanceRecord,
+    Membership,
+    FunnelEvent,
+    PricingEvent,
+    EmailMessage,
+    EmailSuppression,
+    EmailPreference,
+    LifecycleEmailLog,
+    PricingPlan,
+    PricingPlanPrice
+  ]
+}
+
 query getPlatformOverview {
   fn: import { getPlatformOverview } from "@src/server/operations/platformOperations",
   entities: [User, Parish, TenantBilling, CatechesisClass, ClassEnrollment, PricingPlan, PricingPlanPrice]
