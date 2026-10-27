@@ -181,23 +181,17 @@ export const listCatechumens = async (
       return useCursorPage ? { items: [], nextCursor: null } : [];
     }
 
-    const enrollments = await context.entities.ClassEnrollment.findMany({
-      where: { classId: { in: classIds } },
-      select: { catechumenProfileId: true },
-    });
-    const enrolledIds = [
-      ...new Set(
-        enrollments
-          .map((e: any) => e.catechumenProfileId)
-          .filter(Boolean) as string[],
-      ),
-    ];
-    if (enrolledIds.length === 0) {
-      return useCursorPage ? { items: [], nextCursor: null } : [];
-    }
-
+    // Nested relation filter avoids materializing hundreds of enrollment IDs
+    // into an unbounded `id IN (...)` clause (N+1 / large-parish hotspot).
     const rows = await context.entities.CatechumenProfile.findMany({
-      where: buildWhere({ id: { in: enrolledIds } }),
+      where: buildWhere({
+        enrollments: {
+          some: {
+            classId: { in: classIds },
+            status: "ENROLLED",
+          },
+        },
+      }),
       orderBy,
       take,
       skip,
