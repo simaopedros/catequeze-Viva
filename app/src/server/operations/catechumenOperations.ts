@@ -238,9 +238,22 @@ export const getCatechumenProfile = async (
   if (!context.user) throw new HttpError(401);
   await assertCanAccessCatechumenProfile(context, args.id);
 
-  return context.entities.CatechumenProfile.findUnique({
+  const profile = await context.entities.CatechumenProfile.findUnique({
     where: { id: args.id },
-    include: {
+    select: {
+      id: true,
+      createdAt: true,
+      updatedAt: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      birthDate: true,
+      photoUrl: true,
+      userId: true,
+      householdId: true,
+      parishId: true,
+      // uploadToken / uploadTokenExpires intentionally omitted — staff of a
+      // linked household parish must never receive them via this query.
       parish: { select: { id: true, name: true } },
       household: {
         include: {
@@ -274,6 +287,7 @@ export const getCatechumenProfile = async (
       documents: true,
     },
   });
+  return profile;
 };
 
 export const createCatechumen = async (args: any, context: any) => {
