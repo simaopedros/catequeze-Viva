@@ -15,8 +15,10 @@ const LOCALE_SHORT: Record<SupportedLocale, string> = {
 
 export function PublicFooter({
   hidePricing = false,
+  brandName = "Catequese Viva",
 }: {
   hidePricing?: boolean;
+  brandName?: string;
 }) {
   const { t } = useTranslation("publicNav");
   const hasBlogPosts = useHasBlogPosts();
@@ -115,7 +117,9 @@ export function PublicFooter({
         </div>
 
         <div className="flex flex-col gap-4 border-t border-white/10 py-5 text-xs text-[#8A9AAB] sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Catequese Viva</p>
+          <p>
+            © {new Date().getFullYear()} {brandName}
+          </p>
 
           <div
             className="flex items-center gap-1 text-[11px] font-medium tracking-wide"

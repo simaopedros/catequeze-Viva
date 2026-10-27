@@ -10,12 +10,12 @@ export const APP_NAME = "Catequese Viva";
  * that does not declare a title never leaves the previous one stale: React
  * runs the outgoing tree's cleanup before the incoming tree's effects.
  */
-export function usePageTitle(title?: string) {
+export function usePageTitle(title?: string, appName: string = APP_NAME) {
   useEffect(() => {
     if (!title) return;
-    document.title = `${title} · ${APP_NAME}`;
+    document.title = `${title} · ${appName}`;
     return () => {
       document.title = APP_NAME;
     };
-  }, [title]);
+  }, [title, appName]);
 }
