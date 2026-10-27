@@ -1,3 +1,4 @@
+// LGPD basis for lifecycle/recovery emails: docs/LGPD_EMAIL_BASIS.md (art. 7, IX).
 import { SUBSCRIPTION_TRIAL_DAYS } from "../../shared/pricing";
 
 export const LIFECYCLE_CAMPAIGNS = [
