@@ -27,11 +27,31 @@ describe("not found page", () => {
       "utf8",
     );
     expect(page).toContain('"noindex"');
-    expect(page).toContain('t("not_found_title")');
+    expect(page).toContain('usePageTitle(t("not_found_title"), "Catechis")');
+    expect(page).toContain('brandName="Catechis"');
     expect(page).toContain("setNotFoundActive(true)");
     const pt = JSON.parse(
       readFileSync(join(root, "i18n/locales/pt-BR/common.json"), "utf8"),
     ) as Record<string, string>;
     expect(pt.not_found_title).toBe("Página não encontrada");
+  });
+
+  it("usePageTitle accepts optional appName and restores APP_NAME on cleanup", () => {
+    const hook = readFileSync(
+      join(root, "client/hooks/usePageTitle.ts"),
+      "utf8",
+    );
+    expect(hook).toContain("appName: string = APP_NAME");
+    expect(hook).toContain("${title} · ${appName}");
+    expect(hook).toContain("document.title = APP_NAME");
+  });
+
+  it("PublicFooter accepts optional brandName defaulting to Catequese Viva", () => {
+    const footer = readFileSync(
+      join(root, "catequese/PublicFooter.tsx"),
+      "utf8",
+    );
+    expect(footer).toContain('brandName = "Catequese Viva"');
+    expect(footer).toContain("{brandName}");
   });
 });

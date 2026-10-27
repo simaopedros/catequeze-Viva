@@ -21,8 +21,8 @@ export function NotFoundPage() {
   const { t } = useTranslation("common");
   const location = useLocation();
 
-  // "Página não encontrada · Catequese Viva" (usePageTitle appends APP_NAME)
-  usePageTitle(t("not_found_title"));
+  // "Página não encontrada · Catechis" (override display brand on 404 only)
+  usePageTitle(t("not_found_title"), "Catechis");
 
   useEffect(() => {
     setNotFoundActive(true);
@@ -90,7 +90,7 @@ export function NotFoundPage() {
           </div>
         </div>
       </main>
-      <PublicFooter />
+      <PublicFooter brandName="Catechis" />
     </div>
   );
 }
