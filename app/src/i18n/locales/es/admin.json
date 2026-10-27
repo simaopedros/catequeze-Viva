@@ -355,8 +355,8 @@
       "catechumens_subtitle_one": "{{count}} catequizando",
       "catechumens_subtitle_other": "{{count}} catequizandos",
       "catechumens_subtitle_zero": "{{count}} catequizandos",
-      "paying": "Pagadores",
-      "paying_breakdown": "{{users}} usuarios · {{tenants}} tenants",
+      "paying": "Pagadores únicos",
+      "paying_breakdown": "{{unique}} únicos · {{users}} usuarios · {{tenants}} tenants",
       "in_trial": "En prueba",
       "trial_breakdown": "{{users}} usuarios · {{tenants}} tenants",
       "trials_expiring_7d": "Pruebas por vencer en 7 días",
@@ -528,7 +528,7 @@
       "kpi": {
         "current_month_revenue": "Ingresos del mes (BRL)",
         "mrr": "MRR ahora",
-        "paying_accounts": "Cuentas pagadoras",
+        "paying_accounts": "Pagadores únicos",
         "payment_failed_30d": "Fallos de pago (30d)"
       },
       "sections": {
@@ -545,7 +545,7 @@
         "joined_parish": "Entró a parroquia",
         "created_class": "Creó clase",
         "checkout_started": "Checkout iniciado",
-        "paying": "Pagadores"
+        "paying": "Pagadores únicos"
       },
       "cols": {
         "month": "Mes",

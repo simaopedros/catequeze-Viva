@@ -3,9 +3,34 @@
  */
 import { PRISMA_FREE_PLANS } from '../../shared/pricing';
 
+/** User rows that count as Stripe-paid subscribers. */
+export const PAYING_USER_WHERE = {
+  subscriptionStatus: 'active',
+  stripeSubscriptionId: { not: null },
+} as const;
+
+/** TenantBilling rows that count as paid tenants (non-free ACTIVE). */
+export const PAYING_TENANT_WHERE = {
+  status: 'ACTIVE',
+  plan: { notIn: [...PRISMA_FREE_PLANS] },
+} as const;
+
+/**
+ * TenantBilling rows whose parish owner is already a paying User — same person
+ * (e.g. solo catechist with personal-space TenantBilling ACTIVE).
+ */
+export const DOUBLE_COUNTED_TENANT_WHERE = {
+  ...PAYING_TENANT_WHERE,
+  parish: {
+    owner: { ...PAYING_USER_WHERE },
+  },
+} as const;
+
 export type AccountStatusCounts = {
   payingTenants: number;
   payingUsers: number;
+  /** Paying users + paying tenants minus tenants owned by an already-counted paying user. */
+  uniquePayers: number;
   manualActiveUsers: number;
   trialUsers: number;
   trialTenants: number;
@@ -22,6 +47,15 @@ export function planSlugAliases(slug: string): string[] {
   return [...new Set([slug, lower, upper])];
 }
 
+/** Deduped payer total: never count a tenant whose owner is already a paying user. */
+export function uniquePayersFromParts(
+  payingUsers: number,
+  payingTenants: number,
+  tenantsOwnedByPayingUsers: number,
+): number {
+  return Math.max(0, payingUsers + payingTenants - tenantsOwnedByPayingUsers);
+}
+
 export async function getAccountStatusCounts(
   context: { entities: any },
   now: Date = new Date(),
@@ -31,6 +65,7 @@ export async function getAccountStatusCounts(
   const [
     payingTenants,
     payingUsers,
+    tenantsOwnedByPayingUsers,
     manualActiveUsers,
     trialUsers,
     trialTenants,
@@ -42,16 +77,13 @@ export async function getAccountStatusCounts(
     trialsExpiringTenants,
   ] = await Promise.all([
     context.entities.TenantBilling.count({
-      where: {
-        status: 'ACTIVE',
-        plan: { notIn: [...PRISMA_FREE_PLANS] },
-      },
+      where: { ...PAYING_TENANT_WHERE },
     }),
     context.entities.User.count({
-      where: {
-        subscriptionStatus: 'active',
-        stripeSubscriptionId: { not: null },
-      },
+      where: { ...PAYING_USER_WHERE },
+    }),
+    context.entities.TenantBilling.count({
+      where: { ...DOUBLE_COUNTED_TENANT_WHERE },
     }),
     context.entities.User.count({
       where: {
@@ -106,6 +138,11 @@ export async function getAccountStatusCounts(
   return {
     payingTenants,
     payingUsers,
+    uniquePayers: uniquePayersFromParts(
+      payingUsers,
+      payingTenants,
+      tenantsOwnedByPayingUsers,
+    ),
     manualActiveUsers,
     trialUsers,
     trialTenants,
@@ -119,12 +156,11 @@ export async function getAccountStatusCounts(
 /** Paying subscribers for a given plan slug (case-insensitive aliases). */
 export async function countPayingForPlan(context: { entities: any }, slug: string) {
   const aliases = planSlugAliases(slug);
-  const [users, tenants] = await Promise.all([
+  const [users, tenants, tenantsOwnedByPayingUsers] = await Promise.all([
     context.entities.User.count({
       where: {
         subscriptionPlan: { in: aliases },
-        subscriptionStatus: 'active',
-        stripeSubscriptionId: { not: null },
+        ...PAYING_USER_WHERE,
       },
     }),
     context.entities.TenantBilling.count({
@@ -133,8 +169,21 @@ export async function countPayingForPlan(context: { entities: any }, slug: strin
         status: 'ACTIVE',
       },
     }),
+    context.entities.TenantBilling.count({
+      where: {
+        plan: { in: aliases },
+        status: 'ACTIVE',
+        parish: {
+          owner: {
+            subscriptionPlan: { in: aliases },
+            ...PAYING_USER_WHERE,
+          },
+        },
+      },
+    }),
   ]);
-  return { users, tenants, total: users + tenants };
+  const uniquePayers = uniquePayersFromParts(users, tenants, tenantsOwnedByPayingUsers);
+  return { users, tenants, total: uniquePayers, uniquePayers };
 }
 
 /** Active (non-expired) trials for a given plan slug (case-insensitive aliases). */

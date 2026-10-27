@@ -55,10 +55,11 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
     },
     {
       label: t("pages.dashboard.paying"),
-      value: overview?.activeSubscriptions,
+      value: overview?.uniquePayers ?? overview?.activeSubscriptions,
       subtitle: t("pages.dashboard.paying_breakdown", {
         users: overview?.payingUsers || 0,
         tenants: overview?.payingTenants || 0,
+        unique: overview?.uniquePayers ?? overview?.activeSubscriptions ?? 0,
       }),
     },
     {

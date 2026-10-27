@@ -96,7 +96,8 @@ export const getPlatformOverview = async (_args: void, context: any) => {
     0,
   );
 
-  const activeSubscriptions = statusCounts.payingUsers + statusCounts.payingTenants;
+  // uniquePayers dedupes solo catechists (User + personal TenantBilling).
+  const activeSubscriptions = statusCounts.uniquePayers;
   const trialActive = statusCounts.trialUsers + statusCounts.trialTenants;
   const expiredTrials = statusCounts.expiredTrialUsers + statusCounts.expiredTrialTenants;
 
@@ -111,6 +112,7 @@ export const getPlatformOverview = async (_args: void, context: any) => {
     totalCatechumens,
     payingTenants: statusCounts.payingTenants,
     payingUsers: statusCounts.payingUsers,
+    uniquePayers: statusCounts.uniquePayers,
     activeSubscriptions,
     trialsExpiring: statusCounts.trialsExpiring7d,
     trialsExpiring7d: statusCounts.trialsExpiring7d,
