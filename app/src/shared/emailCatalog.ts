@@ -20,6 +20,7 @@ export const EMAIL_MESSAGE = {
   LIFECYCLE_WINBACK_D1: "lifecycle.winback_d1",
   LIFECYCLE_WINBACK_D3: "lifecycle.winback_d3",
   LIFECYCLE_WINBACK_D7: "lifecycle.winback_d7",
+  LIFECYCLE_TRIAL_EXTENSION_2026_10: "lifecycle.trial_extension_2026_10",
   PASTORAL_ANNOUNCEMENT: "pastoral.announcement",
   PASTORAL_MESSAGE: "pastoral.message",
   PRODUCT_BROADCAST: "product.broadcast",
