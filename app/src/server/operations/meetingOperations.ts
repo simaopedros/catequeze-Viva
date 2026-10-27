@@ -190,13 +190,16 @@ async function assertCanTakeAttendance(
   classId: string,
   surface?: string | null,
 ): Promise<void> {
-  await assertUserBelongsToClass(context, classId);
+  if (!context.user) throw new HttpError(401);
+
   const classData = await context.entities.CatechesisClass.findUnique({
     where: { id: classId },
     select: { parishId: true, catechists: { select: { userId: true } } },
   });
   if (!classData) throw new HttpError(404, "Turma não encontrada.");
 
+  // Reject family surfaces before assertUserBelongsToClass (which needs
+  // GuardianProfile entities and previously 500'd family callers).
   const roles = await loadActiveRoles(context, classData.parishId);
   if (
     isFamilySurface({ context, roles, surface }) ||
@@ -207,6 +210,8 @@ async function assertCanTakeAttendance(
       "Lista de presença completa é exclusiva da equipe pastoral.",
     );
   }
+
+  await assertUserBelongsToClass(context, classId);
 
   if (context.user.isAdmin) return;
   if (

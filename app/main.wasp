@@ -946,7 +946,7 @@ query getMeetingAttendance {
 
 query getClassAttendanceMatrix {
   fn: import { getClassAttendanceMatrix } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, AttendanceRecord, CatechumenProfile, CatechesisClass, Membership, Parish, ClassCatechist]
+  entities: [Meeting, AttendanceRecord, CatechumenProfile, CatechesisClass, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
 }
 
 query getMeetingAttendanceSheet {
@@ -1229,7 +1229,7 @@ query getCatechumenPastoralAnalysis {
 
 query listUpcomingBirthdays {
   fn: import { listUpcomingBirthdays } from "@src/server/operations/pastoralReportOperations",
-  entities: [ClassEnrollment, CatechumenProfile, CatechesisClass, CatechumenBirthdayGift]
+  entities: [ClassEnrollment, CatechumenProfile, CatechesisClass, CatechumenBirthdayGift, Membership, Parish, GuardianProfile, ClassCatechist]
 }
 
 action toggleBirthdayGift {

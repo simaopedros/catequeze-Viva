@@ -2,7 +2,18 @@
  * pastoral-privacy.test.ts — Ensures sensitive pastoral signals stay hidden
  * for non-catechist viewers that can still access the catechumen profile.
  */
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+
+vi.mock('wasp/server', () => ({
+  HttpError: class HttpError extends Error {
+    statusCode: number;
+    constructor(statusCode: number, message?: string) {
+      super(message);
+      this.statusCode = statusCode;
+    }
+  },
+}));
+
 import { prisma, USERS, makeContext } from './setup';
 import { getCatechumenAttendanceReport } from '../server/operations/catechumenReportOperations';
 
