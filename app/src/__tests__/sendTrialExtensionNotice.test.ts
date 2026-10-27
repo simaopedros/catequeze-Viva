@@ -277,10 +277,10 @@ describe("sendTrialExtensionNotice seed", () => {
     expect(enqueueMock.mock.calls[0][0].messageId).toBe(
       "lifecycle.trial_extension_2026_10",
     );
-    expect(enqueueMock.mock.calls[0][0].idempotencyKey).toBe(
+    expect((enqueueMock.mock.calls[0][0] as any).idempotencyKey).toBe(
       `lifecycle.${TRIAL_EXTENSION_CAMPAIGN}:user-b`,
     );
-    expect(enqueueMock.mock.calls[0][0].payload.variant).toBe("B");
+    expect((enqueueMock.mock.calls[0][0] as any).payload.variant).toBe("B");
     expect(deliverMock).toHaveBeenCalledWith(
       ["msg-1"],
       { pauseMs: 0 },
