@@ -81,4 +81,36 @@ describe("family landing i18n (public portal)", () => {
       expect(String(cursor), key).not.toMatch(/^landing\./);
     }
   });
+
+  it("pt-BR family copy avoids European Portuguese tu/acesse forms", () => {
+    const locale = JSON.parse(
+      readFileSync(
+        resolve(__dirname, "../i18n/locales/pt-BR/family.json"),
+        "utf8",
+      ),
+    ) as unknown;
+
+    const strings: string[] = [];
+    const walk = (value: unknown) => {
+      if (typeof value === "string") {
+        strings.push(value);
+        return;
+      }
+      if (value && typeof value === "object") {
+        for (const child of Object.values(value as Record<string, unknown>)) {
+          walk(child);
+        }
+      }
+    };
+    walk(locale);
+
+    const banned =
+      /\b(tens|teu|teus|tua|tuas|acede|acedido|recebeste|foste|pede|verifica|és)\b/giu;
+
+    for (const text of strings) {
+      const withoutPlaceholders = text.replace(/\{\{[^}]+\}\}/g, " ");
+      expect(withoutPlaceholders, text).not.toMatch(banned);
+      expect(withoutPlaceholders, text).not.toMatch(/Já tens/i);
+    }
+  });
 });
