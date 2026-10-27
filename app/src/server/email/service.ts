@@ -32,6 +32,28 @@ export type EnqueueResult = {
   skipped?: "suppressed" | "opted_out" | "duplicate";
 };
 
+export type DeliverOutboxOutcome =
+  | "SENT"
+  | "SUPPRESSED"
+  | "FAILED"
+  | "SKIPPED";
+
+export type DeliverOutboxRowResult = {
+  id: string;
+  outcome: DeliverOutboxOutcome;
+  error?: string;
+};
+
+export type DeliverOutboxRowOpts = {
+  /** When true, deliver even if scheduledAt is in the future (ops flush by id). */
+  ignoreScheduledAt?: boolean;
+};
+
+function sleep(ms: number): Promise<void> {
+  if (ms <= 0) return Promise.resolve();
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function resolveUserIdForEmail(
   db: ReturnType<typeof resolveEmailDb>,
   email: string,
@@ -134,18 +156,27 @@ export async function enqueueEmailBatch(
 async function deliverOutboxRow(
   id: string,
   context?: { entities?: any },
-): Promise<boolean> {
+  opts?: DeliverOutboxRowOpts,
+): Promise<DeliverOutboxRowResult> {
   const db = resolveEmailDb(context);
   const row = await db.emailMessage.findUnique({ where: { id } });
-  if (!row || row.status !== "QUEUED") return false;
-  if (row.scheduledAt && new Date(row.scheduledAt) > new Date()) return false;
+  if (!row || row.status !== "QUEUED") {
+    return { id, outcome: "SKIPPED" };
+  }
+  if (
+    !opts?.ignoreScheduledAt &&
+    row.scheduledAt &&
+    new Date(row.scheduledAt) > new Date()
+  ) {
+    return { id, outcome: "SKIPPED" };
+  }
 
   if (await isEmailSuppressed(row.to, context)) {
     await db.emailMessage.update({
       where: { id },
       data: { status: "SUPPRESSED", lastError: "suppressed" },
     });
-    return false;
+    return { id, outcome: "SUPPRESSED", error: "suppressed" };
   }
 
   const messageId = row.messageId as EmailMessageId;
@@ -155,7 +186,7 @@ async function deliverOutboxRow(
       where: { id },
       data: { status: "SUPPRESSED", lastError: "opted_out" },
     });
-    return false;
+    return { id, outcome: "SUPPRESSED", error: "opted_out" };
   }
 
   await db.emailMessage.update({
@@ -194,19 +225,20 @@ async function deliverOutboxRow(
   });
 
   if (!result.ok) {
+    const error = result.error || "send_failed";
     logger.warn("[email] send failed", {
       id,
       messageId,
-      error: result.error,
+      error,
     });
     await db.emailMessage.update({
       where: { id },
       data: {
         status: (row.attempts || 0) + 1 >= 5 ? "FAILED" : "QUEUED",
-        lastError: result.error || "send_failed",
+        lastError: error,
       },
     });
-    return false;
+    return { id, outcome: "FAILED", error };
   }
 
   await db.emailMessage.update({
@@ -220,7 +252,40 @@ async function deliverOutboxRow(
       lastError: null,
     },
   });
-  return true;
+  return { id, outcome: "SENT" };
+}
+
+/**
+ * Deliver specific outbox rows by id, sequentially, through the normal
+ * deliverOutboxRow path (suppression + opt-out + catalog render).
+ * Temporarily ignores scheduledAt for these explicit ids only.
+ * Never returns recipient emails.
+ */
+export async function deliverOutboxRowsByIds(
+  ids: string[],
+  opts: { pauseMs: number },
+  context?: { entities?: any },
+): Promise<DeliverOutboxRowResult[]> {
+  const db = resolveEmailDb(context);
+  const results: DeliverOutboxRowResult[] = [];
+  const pauseMs = Math.max(0, opts.pauseMs || 0);
+
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i];
+    const row = await db.emailMessage.findUnique({ where: { id } });
+    if (!row || row.status !== "QUEUED") {
+      results.push({ id, outcome: "SKIPPED" });
+    } else {
+      results.push(
+        await deliverOutboxRow(id, context, { ignoreScheduledAt: true }),
+      );
+    }
+    if (i < ids.length - 1 && pauseMs > 0) {
+      await sleep(pauseMs);
+    }
+  }
+
+  return results;
 }
 
 export async function processEmailOutbox(
@@ -237,8 +302,8 @@ export async function processEmailOutbox(
   });
   let sent = 0;
   for (const row of due) {
-    const ok = await deliverOutboxRow(row.id, context);
-    if (ok) sent++;
+    const result = await deliverOutboxRow(row.id, context);
+    if (result.outcome === "SENT") sent++;
   }
   return { processed: due.length, sent };
 }

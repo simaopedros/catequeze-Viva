@@ -1,4 +1,13 @@
-export { enqueueEmail, enqueueEmailBatch, processEmailOutbox } from "./service";
+export {
+  enqueueEmail,
+  enqueueEmailBatch,
+  processEmailOutbox,
+  deliverOutboxRowsByIds,
+} from "./service";
+export type {
+  DeliverOutboxOutcome,
+  DeliverOutboxRowResult,
+} from "./service";
 export { emitProductEvent, emitProductEventSafe } from "./events";
 export { getEmailProvider } from "./factory";
 export { resetEmailMemory } from "./db";

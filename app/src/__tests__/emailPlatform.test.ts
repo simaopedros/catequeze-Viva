@@ -21,6 +21,7 @@ import {
   getFakeEvents,
   getFakeSentEmails,
   processEmailOutbox,
+  deliverOutboxRowsByIds,
   resetEmailMemory,
   resetFakeEmailAdapter,
   enqueueProductBroadcast,
@@ -297,5 +298,111 @@ describe("outbox drain", () => {
     expect(getFakeSentEmails().some((email) => email.to === "pay@x.com")).toBe(
       true,
     );
+  });
+});
+
+describe("deliverOutboxRowsByIds", () => {
+  it("sends future-scheduled QUEUED rows and skips non-QUEUED", async () => {
+    const future = new Date(Date.now() + 60 * 60 * 1000);
+    const queued = await enqueueEmail({
+      messageId: EMAIL_MESSAGE.SUPPORT_REPLY,
+      to: "flush@x.com",
+      payload: {
+        name: "Flush",
+        body: "ops flush",
+        ctaUrl: "https://catechis.app/app",
+      },
+      idempotencyKey: "flush:future-1",
+      scheduledAt: future,
+    });
+    expect(queued.status).toBe("QUEUED");
+    expect(getFakeSentEmails()).toHaveLength(0);
+
+    const alreadySent = await enqueueEmail({
+      messageId: EMAIL_MESSAGE.SUPPORT_REPLY,
+      to: "done@x.com",
+      payload: {
+        name: "Done",
+        body: "already",
+        ctaUrl: "https://catechis.app/app",
+      },
+      idempotencyKey: "flush:already-sent",
+    });
+    expect(alreadySent.status).toBe("SENT");
+
+    const results = await deliverOutboxRowsByIds(
+      [queued.id, alreadySent.id, "missing-id"],
+      { pauseMs: 0 },
+    );
+
+    expect(results).toEqual([
+      { id: queued.id, outcome: "SENT" },
+      { id: alreadySent.id, outcome: "SKIPPED" },
+      { id: "missing-id", outcome: "SKIPPED" },
+    ]);
+    for (const row of results) {
+      expect(row).not.toHaveProperty("to");
+      expect(JSON.stringify(row)).not.toMatch(/@/);
+    }
+    expect(
+      getFakeSentEmails().some((email) => email.to === "flush@x.com"),
+    ).toBe(true);
+  });
+
+  it("re-checks suppression on flush by id", async () => {
+    const future = new Date(Date.now() + 60 * 60 * 1000);
+    const queued = await enqueueEmail({
+      messageId: EMAIL_MESSAGE.SUPPORT_REPLY,
+      to: "later-bounce@x.com",
+      payload: {
+        name: "X",
+        body: "y",
+        ctaUrl: "https://catechis.app/app",
+      },
+      idempotencyKey: "flush:suppress-later",
+      scheduledAt: future,
+    });
+    expect(queued.status).toBe("QUEUED");
+
+    await suppressEmail({
+      email: "later-bounce@x.com",
+      reason: "HARD_BOUNCE",
+      source: "test",
+    });
+
+    const results = await deliverOutboxRowsByIds([queued.id], { pauseMs: 0 });
+    expect(results).toEqual([
+      { id: queued.id, outcome: "SUPPRESSED", error: "suppressed" },
+    ]);
+    expect(
+      getFakeSentEmails().some((email) => email.to === "later-bounce@x.com"),
+    ).toBe(false);
+  });
+
+  it("pauses between sequential ids", async () => {
+    const future = new Date(Date.now() + 60 * 60 * 1000);
+    const a = await enqueueEmail({
+      messageId: EMAIL_MESSAGE.SUPPORT_REPLY,
+      to: "a-pause@x.com",
+      payload: { name: "A", body: "1", ctaUrl: "/" },
+      idempotencyKey: "flush:pause-a",
+      scheduledAt: future,
+    });
+    const b = await enqueueEmail({
+      messageId: EMAIL_MESSAGE.SUPPORT_REPLY,
+      to: "b-pause@x.com",
+      payload: { name: "B", body: "2", ctaUrl: "/" },
+      idempotencyKey: "flush:pause-b",
+      scheduledAt: future,
+    });
+
+    const started = Date.now();
+    const results = await deliverOutboxRowsByIds([a.id, b.id], {
+      pauseMs: 40,
+    });
+    const elapsed = Date.now() - started;
+
+    expect(results.map((r) => r.outcome)).toEqual(["SENT", "SENT"]);
+    expect(elapsed).toBeGreaterThanOrEqual(35);
   });
 });
