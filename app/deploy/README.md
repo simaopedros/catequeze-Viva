@@ -40,12 +40,14 @@ deploy/
 
 Os domínios SPA (`catechis.app`, `familia.catechis.app`) **devem** ter `handle /api/*` a encaminhar para `server:3001` **antes** do fallback da SPA. Sem isto, `POST /api/chat-stream` devolve `index.html` e o Assistente Teológico falha com resposta vazia.
 
+Os mesmos hosts **devem** ter `handle /assets/*` **sem** `try_files … /index.html`, para chunks em falta devolverem 404 em vez de HTML (MIME `text/html`).
+
 Após alterar o Caddyfile em produção:
 
 ```bash
 docker compose -f docker-compose.yml up -d --force-recreate caddy
 ```
 
-O `scripts/deploy.sh` recusa deploy se o Caddyfile ativo não contiver `handle /api/*`.
+O `scripts/deploy.sh` recusa deploy se o Caddyfile ativo não contiver `handle /api/*` (e, em produção, `handle /assets/*`).
 
 Ver também: `docs/PROVISIONING.md`, `docs/HOMOLOG.md`, `docs/BACKUP.md`
