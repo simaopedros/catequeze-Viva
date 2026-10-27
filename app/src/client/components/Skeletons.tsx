@@ -17,7 +17,10 @@ function Skeleton({ className }: SkeletonProps) {
   );
 }
 
-export function SkeletonCard({ className }: SkeletonProps) {
+export function SkeletonCard({
+  className,
+  label,
+}: SkeletonProps & { label?: string }) {
   return (
     <AppPanel
       role="status"
@@ -25,6 +28,7 @@ export function SkeletonCard({ className }: SkeletonProps) {
       className={cn("p-5 space-y-3", className)}
       padded={false}
     >
+      {label ? <span className="sr-only">{label}</span> : null}
       <Skeleton className="h-4 w-3/4" />
       <Skeleton className="h-3 w-1/2" />
       <Skeleton className="h-8 w-full mt-4" />
@@ -104,9 +108,13 @@ export function SkeletonForm({
   );
 }
 
-export function SkeletonPage({ className }: SkeletonProps) {
+export function SkeletonPage({
+  className,
+  label = "Carregando",
+}: SkeletonProps & { label?: string }) {
   return (
     <div role="status" aria-busy="true" className={cn("space-y-6", className)}>
+      <span className="sr-only">{label}</span>
       <Skeleton className="h-8 w-48" />
       <div className="grid gap-4 md:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (

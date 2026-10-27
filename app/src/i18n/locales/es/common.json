@@ -12,6 +12,7 @@
   "create": "Crear",
   "search": "Buscar...",
   "loading": "Un momento…",
+  "loading_sr": "Cargando",
   "error_generic": "Algo salió mal. Intente nuevamente.",
   "success_save": "Guardado con éxito.",
   "confirm_delete": "¿Está seguro de que desea eliminar?",

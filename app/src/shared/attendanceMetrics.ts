@@ -81,6 +81,23 @@ export function computeAttendanceRate(counts: AttendanceCounts): number {
   return total > 0 ? Math.round((attendedTotal(counts) / total) * 100) : 0;
 }
 
+/** Marked encounters that contribute to a rate (present/late/justified/absent). */
+export function markedAttendanceTotal(counts: AttendanceCounts): number {
+  return attendedTotal(counts) + counts.absent;
+}
+
+/**
+ * Display helper for per-person attendance %.
+ * Unmarked catechumens show an em dash (not "0%"), which would look like absence.
+ */
+export function formatAttendancePercentDisplay(
+  counts: AttendanceCounts,
+  emptyLabel = "—",
+): string {
+  if (markedAttendanceTotal(counts) === 0) return emptyLabel;
+  return `${computeAttendanceRate(counts)}%`;
+}
+
 export function riskLevelFromRate(rate: number): AttendanceRiskLevel {
   if (rate < 50) return "ALTO";
   if (rate < 75) return "MÉDIO";

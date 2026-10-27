@@ -6,8 +6,10 @@ import {
   computeAttendanceRate,
   countStatuses,
   emptyAttendanceCounts,
+  formatAttendancePercentDisplay,
   isAttendedStatus,
   isCountableMeeting,
+  markedAttendanceTotal,
   reportPeriodStart,
   resolveMeetingStatus,
   riskLevelFromRate,
@@ -86,6 +88,26 @@ describe("computeAttendanceRate", () => {
 
   it("returns 0 without records", () => {
     expect(computeAttendanceRate(emptyAttendanceCounts())).toBe(0);
+  });
+});
+
+describe("formatAttendancePercentDisplay", () => {
+  it("shows an em dash when nothing was marked yet", () => {
+    expect(formatAttendancePercentDisplay(emptyAttendanceCounts())).toBe("—");
+    expect(markedAttendanceTotal(emptyAttendanceCounts())).toBe(0);
+  });
+
+  it("shows a percent once there are marked encounters", () => {
+    const counts = countStatuses(["PRESENT", "ABSENT"]);
+    expect(formatAttendancePercentDisplay(counts)).toBe("50%");
+  });
+
+  it("does not confuse unmarked with 0% absence", () => {
+    expect(formatAttendancePercentDisplay(emptyAttendanceCounts())).not.toBe(
+      "0%",
+    );
+    const allAbsent = countStatuses(["ABSENT", "ABSENT"]);
+    expect(formatAttendancePercentDisplay(allAbsent)).toBe("0%");
   });
 });
 

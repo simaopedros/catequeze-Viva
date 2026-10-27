@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { TimeInput } from "../../client/components/ui/time-input";
-import { useParams, Link, useNavigate } from "react-router";
+import { useParams, Link, useNavigate, useSearchParams } from "react-router";
 import { AI_FEATURES_ENABLED } from "../../shared/aiFeatures";
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "../../client/components/ui/button";
@@ -10,25 +10,21 @@ import {
   AppPageHeader,
   AppPanel,
 } from "../../client/components/brand/AppChrome";
+import { SkeletonPage } from "../../client/components/Skeletons";
 import {
   ArrowLeft,
   UserPlus,
   Users,
-  MapPin,
   Clock,
   ClipboardList,
-  TrendingUp,
   XCircle,
   Calendar,
-  MessageCircle,
   BookOpen,
-  Building2,
   Pencil,
   Check,
   X,
   Trash2,
   Cross,
-  BarChart3,
 } from "lucide-react";
 import {
   useQuery,
@@ -87,6 +83,7 @@ export default function ClassDetailPage() {
   const classStatusMap = useClassStatusMap();
   const { currentLocale } = useLocale();
   const { id } = useParams<{ id: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const {
     data: cls,
@@ -95,7 +92,7 @@ export default function ClassDetailPage() {
     refetch: refetchClass,
   } = useQuery(getClassDetails, { id: id! });
   const { data: user } = useAuth();
-  const { userRole, parishId, isAdmin } = useUserContext();
+  const { userRole, isAdmin } = useUserContext();
   const { getBySlug } = usePlanCatalog();
   const [tab, setTab] = useDetailTab(CLASS_DETAIL_TABS, "inscritos");
 
@@ -226,6 +223,16 @@ export default function ClassDetailPage() {
       setEditCommunityId(cls.community?.id || "");
     }
   }, [cls]);
+
+  // Open edit form from ?edit=1 (card menu / deep link)
+  useEffect(() => {
+    if (!cls || !(isCoordinator || isLeadCatechist)) return;
+    if (searchParams.get("edit") !== "1") return;
+    setEditing(true);
+    const next = new URLSearchParams(searchParams);
+    next.delete("edit");
+    setSearchParams(next, { replace: true });
+  }, [cls, isCoordinator, isLeadCatechist, searchParams, setSearchParams]);
 
   const handleSaveEdit = async () => {
     if (!id || !editName.trim()) return;
@@ -499,17 +506,7 @@ export default function ClassDetailPage() {
     return t("detail.role_coordinator");
   };
 
-  if (loading)
-    return (
-      <div className="space-y-6 animate-pulse">
-        <div className="h-8 w-48 bg-muted rounded" />
-        <div className="grid gap-4 md:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-20 rounded-sm bg-muted" />
-          ))}
-        </div>
-      </div>
-    );
+  if (loading) return <SkeletonPage label={tc("loading_sr")} />;
   if (!cls) {
     const errMsg = classError
       ? (classError as any)?.message || String(classError)
@@ -562,6 +559,16 @@ export default function ClassDetailPage() {
               href: `/app/classes/${id}/attendance`,
             }}
             secondaryActions={[
+              // Status first so Pausar/Concluir never sit next to Presença
+              ...(canManageClass
+                ? statusOpts
+                    .filter((s) => s.status !== cls.status)
+                    .map((s) => ({
+                      label: s.label,
+                      onClick: () => handleStatus(s.status),
+                      destructive: s.status === "CONCLUDED",
+                    }))
+                : []),
               {
                 label: t("detail.tabs.meetings"),
                 href: `/app/classes/${id}/meetings`,
@@ -576,12 +583,12 @@ export default function ClassDetailPage() {
                 disabled: chatting,
               },
               ...(canManageClass
-                ? statusOpts
-                    .filter((s) => s.status !== cls.status)
-                    .map((s) => ({
-                      label: s.label,
-                      onClick: () => handleStatus(s.status),
-                    }))
+                ? [
+                    {
+                      label: t("detail.edit"),
+                      onClick: () => setEditing(true),
+                    },
+                  ]
                 : []),
             ]}
           />
@@ -750,20 +757,7 @@ export default function ClassDetailPage() {
               </Button>
             </div>
           </AppPanel>
-        ) : (
-          canManageClass && (
-            <div className="flex justify-end">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setEditing(true)}
-              >
-                <Pencil className="mr-1 h-3 w-3" />
-                {t("detail.edit_class_btn")}
-              </Button>
-            </div>
-          )
-        )}
+        ) : null}
 
         <DetailTabs
           tabs={[
