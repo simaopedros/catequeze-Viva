@@ -55,10 +55,31 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
     },
     {
       label: t("pages.dashboard.paying"),
-      value: overview?.payingTenants,
-      subtitle: t("pages.dashboard.active_subs_subtitle", {
-        count: overview?.activeSubscriptions || 0,
+      value: overview?.activeSubscriptions,
+      subtitle: t("pages.dashboard.paying_breakdown", {
+        users: overview?.payingUsers || 0,
+        tenants: overview?.payingTenants || 0,
       }),
+    },
+    {
+      label: t("pages.dashboard.in_trial"),
+      value: overview?.trialActive,
+      subtitle: t("pages.dashboard.trial_breakdown", {
+        users: overview?.trialUsers || 0,
+        tenants: overview?.trialTenants || 0,
+      }),
+    },
+    {
+      label: t("pages.dashboard.trials_expiring_7d"),
+      value: overview?.trialsExpiring7d ?? overview?.trialsExpiring,
+    },
+    {
+      label: t("pages.dashboard.expired_trials"),
+      value: overview?.expiredTrials,
+    },
+    {
+      label: t("pages.dashboard.manual_active"),
+      value: overview?.manualActiveUsers,
     },
     {
       label: t("pages.dashboard.mrr"),
@@ -66,9 +87,12 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
         overview?.mrr != null
           ? formatCurrency(overview.mrr, currentLocale)
           : "—",
-      subtitle: t("pages.dashboard.trials_subtitle", {
-        count: overview?.trialsExpiring || 0,
-      }),
+      subtitle:
+        overview?.pastDue != null
+          ? t("pages.dashboard.past_due_subtitle", {
+              count: overview.pastDue,
+            })
+          : undefined,
     },
   ];
 
@@ -88,7 +112,7 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
           subtitle={t("pages.dashboard.subtitle")}
         />
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {kpiCards.map((card) => (
             <div key={card.label} className="space-y-1">
               <AppMetric
@@ -163,7 +187,7 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
                         : "bg-muted/30 font-medium tracking-tight text-[#071A2D]"
                   }`}
                 >
-                  <CircleDot className="h-3 w-3 shrink-0" />
+                  <CircleDot className="h-3.5 w-3 shrink-0" />
                   {t(`pages.dashboard.alert_${alert.code}`, {
                     count: alert.count ?? 0,
                   })}

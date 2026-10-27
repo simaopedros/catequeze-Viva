@@ -64,6 +64,8 @@ export type AdminPricingPlan = {
   subscriberCount: number;
   subscriberUsers?: number;
   subscriberTenants?: number;
+  payingCount?: number;
+  trialCount?: number;
 };
 
 function activePrice(plan: AdminPricingPlan, interval: AdminPricingPlanPrice["interval"]) {
@@ -202,7 +204,8 @@ const PlansPage = ({ user }: { user: AuthUser }) => {
                   <th className="px-4 py-3">{t("pages.plans.col_type")}</th>
                   <th className="px-4 py-3">{t("pages.plans.col_prices")}</th>
                   <th className="px-4 py-3">{t("pages.plans.col_status")}</th>
-                  <th className="px-4 py-3">{t("pages.plans.col_subscribers")}</th>
+                  <th className="px-4 py-3">{t("pages.plans.col_paying")}</th>
+                  <th className="px-4 py-3">{t("pages.plans.col_trial")}</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
@@ -253,7 +256,8 @@ const PlansPage = ({ user }: { user: AuthUser }) => {
                             )}
                           </div>
                         </td>
-                        <td className="px-4 py-3">{plan.subscriberCount}</td>
+                        <td className="px-4 py-3">{plan.payingCount ?? 0}</td>
+                        <td className="px-4 py-3">{plan.trialCount ?? 0}</td>
                         <td className="px-4 py-3">
                           <div className="flex justify-end gap-1">
                             <Button
@@ -301,7 +305,7 @@ const PlansPage = ({ user }: { user: AuthUser }) => {
                       </tr>
                       {expandedId === plan.id && (
                         <tr>
-                          <td colSpan={6} className="bg-muted/20 px-4 py-4">
+                          <td colSpan={7} className="bg-muted/20 px-4 py-4">
                             <PlanPricesCard
                               plan={plan}
                               changing={saving}

@@ -79,6 +79,36 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
     (plan) => plan.isActive && plan.kind !== "CREDITS",
   );
 
+  const planNameBySlug = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const plan of plans as Array<{ slug: string; name: string }>) {
+      if (!plan?.slug) continue;
+      map.set(plan.slug.toLowerCase(), plan.name);
+    }
+    return map;
+  }, [plans]);
+
+  const resolvePlanName = (plan: string | null) => {
+    if (!plan) return t("pages.licenses.no_plan");
+    return planNameBySlug.get(plan.toLowerCase()) ?? t("pages.licenses.no_plan");
+  };
+
+  const resolveStatusLabel = (row: LicenseRow) => {
+    if (!row.status) return "—";
+    const isTrial =
+      row.status === "TRIAL" || row.status === "trialing";
+    if (
+      isTrial &&
+      row.trialEndsAt &&
+      new Date(row.trialEndsAt).getTime() < Date.now()
+    ) {
+      return t("pages.licenses.status_trial_expired");
+    }
+    const key = `pages.licenses.status_${row.status}`;
+    const translated = t(key);
+    return translated === key ? row.status : translated;
+  };
+
   const filteredLicenses = useMemo(() => {
     const needle = search.trim().toLowerCase();
     if (!needle) return licenses as LicenseRow[];
@@ -268,12 +298,12 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
                           : row.type || t("pages.licenses.parish")}
                       </td>
                       <td className="px-4 py-3 text-xs font-semibold tracking-tight text-[#071A2D]">
-                        {row.plan || t("pages.licenses.no_plan")}
+                        {resolvePlanName(row.plan)}
                       </td>
                       <td className="px-4 py-3">
                         <span className="flex items-center gap-1">
                           {statusIcon(row.status)}
-                          <span className="text-xs">{row.status || "—"}</span>
+                          <span className="text-xs">{resolveStatusLabel(row)}</span>
                           {row.trialEndsAt && (
                             <span className="text-xs text-muted-foreground ml-2">
                               {t("pages.licenses.until")}{" "}

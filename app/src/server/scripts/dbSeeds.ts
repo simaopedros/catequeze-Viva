@@ -54,6 +54,13 @@ function generateMockUserData(): MockUserData {
     paymentProcessorUserId: hasUserPaidOnStripe
       ? `cus_test_${faker.string.uuid()}`
       : null,
+    stripeSubscriptionId:
+      subscriptionStatus === SubscriptionStatus.Active ||
+      subscriptionStatus === SubscriptionStatus.CancelAtPeriodEnd ||
+      subscriptionStatus === SubscriptionStatus.PastDue ||
+      subscriptionStatus === SubscriptionStatus.Trialing
+        ? `sub_test_${faker.string.uuid()}`
+        : null,
     datePaid: hasUserPaidOnStripe
       ? faker.date.between({ from: createdAt, to: timePaid })
       : null,
