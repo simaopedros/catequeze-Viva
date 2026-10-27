@@ -162,13 +162,20 @@ jobs:
 
             docker compose -f docker-compose.yml pull
             CID=$(docker create "${IMAGE}")
-            rm -rf /opt/catechis/web-app/*
+            # Overlay new SPA files without wiping prior hashed /assets/* so open
+            # tabs keep working across deploys. index.html / sw.js are overwritten.
+            mkdir -p /opt/catechis/web-app
             docker cp "${CID}:/app/web-app/." /opt/catechis/web-app/
             docker rm "${CID}"
             if [ ! -f /opt/catechis/web-app/index.html ]; then
               echo "ERROR: web-app/index.html ausente — extração do SPA falhou"
               df -h /
               exit 1
+            fi
+            # Drop hashed assets older than ~7 days to bound disk growth.
+            if [ -d /opt/catechis/web-app/assets ]; then
+              find /opt/catechis/web-app/assets -type f -mtime +7 -delete || true
+              find /opt/catechis/web-app/assets -type d -empty -delete || true
             fi
             # --force-recreate: o Caddyfile é bind-mount. Sem recreate, um
             # `up -d` deixa o Caddy antigo em memória e rotas novas (ex.:
@@ -197,5 +204,14 @@ jobs:
               exit 1
             }
             echo "✅ blog sitemap xml ok"
+            # Missing hashed assets must 404 (not SPA index.html as 200 text/html).
+            missing_status=$(curl -s -o /tmp/missing-asset.body -w '%{http_code}' \
+              --max-time 15 "https://catechis.app/assets/__missing-chunk-probe__.js" || echo "000")
+            if [ "$missing_status" != "404" ]; then
+              echo "ERROR: /assets/* em falta deveria ser 404 (got HTTP $missing_status)"
+              head -c 240 /tmp/missing-asset.body || true
+              exit 1
+            fi
+            echo "✅ missing /assets/* returns 404"
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}

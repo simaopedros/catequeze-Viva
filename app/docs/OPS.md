@@ -226,6 +226,16 @@ docker compose -f docker-compose.homolog.yml logs -f --tail=100 server worker
 
 ---
 
+## SPA estático (`/opt/catechis/web-app`)
+
+Caddy serve o build Vite a partir do bind-mount `./web-app` → `/srv/web-app` (em `catechis.app` e `familia.catechis.app`).
+
+- **`/assets/*`**: só `file_server` — ficheiro em falta → **404** (não `index.html`).
+- **Deploy**: copia o SPA por cima do diretório existente (não faz `rm -rf web-app/*`), para tabs abertas ainda encontrarem chunks da versão anterior; ficheiros em `/assets` com mais de ~7 dias são podados.
+- O cliente faz **um** reload automático em falha de chunk (`vite:preloadError` / error boundary), com cooldown de ~30s em `sessionStorage`.
+
+Após o primeiro deploy com este comportamento, o Caddy precisa do `Caddyfile` atualizado (`up -d --force-recreate caddy` ou o passo já incluído no workflow).
+
 ## Manutenção
 
 ### Atualizar `.env.server`

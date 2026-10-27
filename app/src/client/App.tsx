@@ -60,6 +60,10 @@ import i18n, {
 import { needsFullAppNamespaces } from "./appRouteGates";
 import { installNativeValidationMessages } from "./nativeValidation";
 import { configureZodLocale } from "./zodLocale";
+import { installChunkLoadRecovery } from "./chunkLoadRecovery";
+
+// Stale hashed chunks after deploy → reload once (vite:preloadError + SW miss).
+installChunkLoadRecovery();
 
 /**
  * Runs `cb` once on the first user interaction (or after a long idle) so
@@ -119,18 +123,7 @@ function registerServiceWorker() {
     return;
   }
 
-  // One-time reload when a JS chunk 404s after deploy (stale SW cache)
-  navigator.serviceWorker.addEventListener("message", (event) => {
-    if (event.data?.type !== "CHUNK_CACHE_MISS") return;
-    const key = "sw-chunk-reload";
-    try {
-      if (sessionStorage.getItem(key)) return;
-      sessionStorage.setItem(key, "1");
-      window.location.reload();
-    } catch {
-      window.location.reload();
-    }
-  });
+  // CHUNK_CACHE_MISS → installChunkLoadRecovery() (module load)
 
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js", { scope: "/" }).then(
