@@ -91,6 +91,10 @@ export function resolveClassDayOfWeek(cls: {
   return normalizeDayOfWeek(cls.dayOfWeek) ?? inferDayOfWeekFromMeetings(cls.meetings);
 }
 
+/**
+ * Display label for the class's *stored* schedule only.
+ * Does not infer weekday from meetings — list and detail must stay consistent.
+ */
 export function formatClassSchedule(
   cls: {
     dayOfWeek?: unknown;
@@ -101,7 +105,7 @@ export function formatClassSchedule(
   dayLabel: (index: number) => string,
   noScheduleLabel: string,
 ): string {
-  const dayIndex = resolveClassDayOfWeek(cls);
+  const dayIndex = normalizeDayOfWeek(cls.dayOfWeek);
   const start = (cls.startTime || '').trim();
   const end = (cls.endTime || '').trim();
   const time = start && end ? `${start}-${end}` : start || end;
@@ -109,6 +113,49 @@ export function formatClassSchedule(
   if (dayIndex != null) return dayLabel(dayIndex);
   if (time) return time;
   return noScheduleLabel;
+}
+
+export type ClassScheduleFormValues = {
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+};
+
+/**
+ * Defaults for create/edit schedule fields from stored class data.
+ * Never invents Sábado 09:00 — blank means "sem horário".
+ */
+export function classScheduleFormDefaults(cls?: {
+  dayOfWeek?: unknown;
+  startTime?: string | null;
+  endTime?: string | null;
+} | null): ClassScheduleFormValues {
+  const dayIndex = normalizeDayOfWeek(cls?.dayOfWeek);
+  return {
+    dayOfWeek: dayIndex == null ? '' : String(dayIndex),
+    startTime: (cls?.startTime || '').trim(),
+    endTime: (cls?.endTime || '').trim(),
+  };
+}
+
+/** Normalize blank edit fields to null so a no-op save does not invent a schedule. */
+export function classSchedulePayload(values: {
+  dayOfWeek?: string | null;
+  startTime?: string | null;
+  endTime?: string | null;
+}): {
+  dayOfWeek: string | null;
+  startTime: string | null;
+  endTime: string | null;
+} {
+  const day = (values.dayOfWeek ?? '').trim();
+  const start = (values.startTime ?? '').trim();
+  const end = (values.endTime ?? '').trim();
+  return {
+    dayOfWeek: day || null,
+    startTime: start || null,
+    endTime: end || null,
+  };
 }
 
 /**

@@ -74,7 +74,11 @@ import { EmptyState } from "../../client/components/EmptyState";
 import { useClassStatusMap } from "../../i18n/useLabels";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
-import { formatClassSchedule } from "../../shared/classSchedule";
+import {
+  classScheduleFormDefaults,
+  classSchedulePayload,
+  formatClassSchedule,
+} from "../../shared/classSchedule";
 import { GenerateMeetingsPanel } from "../components/GenerateMeetingsPanel";
 
 export default function ClassDetailPage() {
@@ -156,9 +160,9 @@ export default function ClassDetailPage() {
 
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState("");
-  const [editDay, setEditDay] = useState("6");
-  const [editStart, setEditStart] = useState("09:00");
-  const [editEnd, setEditEnd] = useState("10:30");
+  const [editDay, setEditDay] = useState("");
+  const [editStart, setEditStart] = useState("");
+  const [editEnd, setEditEnd] = useState("");
   const [editLocation, setEditLocation] = useState("");
   const [editCapacity, setEditCapacity] = useState(30);
   const [editCommunityId, setEditCommunityId] = useState("");
@@ -212,10 +216,11 @@ export default function ClassDetailPage() {
 
   useEffect(() => {
     if (cls) {
+      const schedule = classScheduleFormDefaults(cls);
       setEditName(cls.name || "");
-      setEditDay(cls.dayOfWeek || "6");
-      setEditStart(cls.startTime || "09:00");
-      setEditEnd(cls.endTime || "10:30");
+      setEditDay(schedule.dayOfWeek);
+      setEditStart(schedule.startTime);
+      setEditEnd(schedule.endTime);
       setEditLocation(cls.location || "");
       setEditCapacity(cls.maxCapacity || 30);
       setEditCommunityId(cls.community?.id || "");
@@ -226,12 +231,17 @@ export default function ClassDetailPage() {
     if (!id || !editName.trim()) return;
     setSavingEdit(true);
     try {
-      await updateClass({
-        id,
-        name: editName.trim(),
+      const schedule = classSchedulePayload({
         dayOfWeek: editDay,
         startTime: editStart,
         endTime: editEnd,
+      });
+      await updateClass({
+        id,
+        name: editName.trim(),
+        dayOfWeek: schedule.dayOfWeek,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
         location: editLocation || undefined,
         maxCapacity: editCapacity,
         communityId: editCommunityId || null,
@@ -644,6 +654,7 @@ export default function ClassDetailPage() {
                   onChange={(e) => setEditDay(e.target.value)}
                   className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
                 >
+                  <option value="">{t("no_schedule")}</option>
                   {dayOptions.map((d) => (
                     <option key={d.value} value={d.value}>
                       {d.label}

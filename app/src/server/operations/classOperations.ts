@@ -628,6 +628,11 @@ export const updateClass = async (args: any, context: any) => {
 
   const { id, parishId: _ignoredParishId, ...data } = args;
 
+  // Blank schedule fields clear to null so a no-op edit cannot invent defaults.
+  if ("dayOfWeek" in data) data.dayOfWeek = data.dayOfWeek || null;
+  if ("startTime" in data) data.startTime = data.startTime || null;
+  if ("endTime" in data) data.endTime = data.endTime || null;
+
   // Validate communityId belongs to the same parish if provided.
   // null unlinks the class from any community (stays on the parish).
   if (data.communityId) {

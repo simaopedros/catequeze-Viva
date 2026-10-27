@@ -69,6 +69,16 @@ describe("class schedule", () => {
       inferDayOfWeekFromMeetings([{ date: "2026-03-14" }]), // Saturday UTC noon
     ).toBe(6);
   });
+
+  it("formats stored schedule without inventing a day from meetings", () => {
+    expect(
+      formatClassSchedule(
+        { meetings: [{ date: "2026-03-14" }] },
+        () => "Sábado",
+        "Sem horário",
+      ),
+    ).toBe("Sem horário");
+  });
 });
 
 describe("dashboard counts", () => {
