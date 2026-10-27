@@ -121,7 +121,9 @@ describe("familia audit alta — persistent rate limit fail-open", () => {
     expect(src).toContain("fail-open");
     expect(src).toContain("failedOpen: true");
     expect(src).toContain("RateLimitBucket");
-    expect(src).toContain("AUTH_LOGIN_RATE_LIMIT");
+    expect(src).toContain("AUTH_FAIL_EMAIL_RATE_LIMIT");
+    expect(src).toContain("AUTH_FAIL_IP_RATE_LIMIT");
+    expect(src).toContain("peekPersistentRateLimit");
   });
 });
 
