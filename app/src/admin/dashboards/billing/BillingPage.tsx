@@ -45,6 +45,10 @@ import { ConfirmDialog } from "../../../client/components/ConfirmDialog";
 import { SkeletonTable } from "../../../client/components/Skeletons";
 import { formatDate } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
+import {
+  resolveAdminCodeLabel,
+  resolveAdminPlanLabel,
+} from "../../../shared/adminLabels";
 
 type LicenseRow = {
   id: string;
@@ -99,15 +103,11 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
 
   const resolvePlanName = (plan: string | null) => {
     if (!plan) return t("pages.licenses.no_plan");
-    return planNameBySlug.get(plan.toLowerCase()) ?? t("pages.licenses.no_plan");
+    return resolveAdminPlanLabel(plan, { nameBySlug: planNameBySlug });
   };
 
-  const resolveStatusLabel = (row: LicenseRow) => {
-    if (!row.status) return "—";
-    const key = `pages.licenses.status_${row.status}`;
-    const translated = t(key);
-    return translated === key ? row.status : translated;
-  };
+  const resolveStatusLabel = (row: LicenseRow) =>
+    resolveAdminCodeLabel("status", row.status, t);
 
   const filteredLicenses = useMemo(() => {
     const needle = search.trim().toLowerCase();
@@ -303,10 +303,11 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
                       <td className="px-4 py-3 text-muted-foreground text-xs">
                         {row.kind === "diocese"
                           ? t("pages.licenses.diocese")
-                          : t(`pages.parishes.type_${row.type || "PARISH"}`, {
-                              defaultValue:
-                                row.type || t("pages.licenses.parish"),
-                            })}
+                          : resolveAdminCodeLabel(
+                              "parishType",
+                              row.type || "PARISH",
+                              t,
+                            )}
                       </td>
                       <td className="px-4 py-3 text-xs font-semibold tracking-tight text-[#071A2D]">
                         {resolvePlanName(row.plan)}

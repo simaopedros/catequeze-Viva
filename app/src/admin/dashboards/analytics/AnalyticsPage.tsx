@@ -21,6 +21,10 @@ import {
   SkeletonCard,
   SkeletonTable,
 } from "../../../client/components/Skeletons";
+import {
+  humanizeAdminCode,
+  resolveAdminPlanLabel,
+} from "../../../shared/adminLabels";
 
 type Counts = {
   landing_viewed: number;
@@ -65,7 +69,12 @@ function percent(value: number | null, locale: string): string {
 
 function pretty(value: string | null | undefined): string {
   if (!value) return "—";
-  return value.replaceAll("_", " ");
+  return humanizeAdminCode(value);
+}
+
+function planLabel(value: string | null | undefined): string {
+  if (!value) return "—";
+  return resolveAdminPlanLabel(value);
 }
 
 const AnalyticsPage = ({ user }: { user: AuthUser }) => {
@@ -270,8 +279,8 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                           key={item.plan}
                           className="flex items-center justify-between"
                         >
-                          <span className="uppercase text-muted-foreground">
-                            {pretty(item.plan)}
+                          <span className="text-muted-foreground">
+                            {planLabel(item.plan)}
                           </span>
                           <strong>{item.count}</strong>
                         </div>
@@ -353,7 +362,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                             {formatDateTime(item.createdAt, currentLocale)}
                           </td>
                           <td className="py-3 pr-4 uppercase">
-                            {pretty(item.toPlan)}
+                            {planLabel(item.toPlan)}
                           </td>
                           <td className="py-3 pr-4 uppercase">
                             {pretty(item.processor)}

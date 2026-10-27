@@ -57,17 +57,28 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
       label: t("pages.dashboard.paying"),
       value: overview?.uniquePayers ?? overview?.activeSubscriptions,
       subtitle: t("pages.dashboard.paying_breakdown", {
-        users: overview?.payingUsers || 0,
-        tenants: overview?.payingTenants || 0,
-        unique: overview?.uniquePayers ?? overview?.activeSubscriptions ?? 0,
+        users: t("pages.dashboard.users_count", {
+          count: overview?.payingUsers || 0,
+        }),
+        tenants: t("pages.dashboard.tenants_count", {
+          count: overview?.payingTenants || 0,
+        }),
+        unique: t("pages.dashboard.unique_count", {
+          count:
+            overview?.uniquePayers ?? overview?.activeSubscriptions ?? 0,
+        }),
       }),
     },
     {
       label: t("pages.dashboard.in_trial"),
       value: overview?.trialActive,
       subtitle: t("pages.dashboard.trial_breakdown", {
-        users: overview?.trialUsers || 0,
-        tenants: overview?.trialTenants || 0,
+        users: t("pages.dashboard.users_count", {
+          count: overview?.trialUsers || 0,
+        }),
+        tenants: t("pages.dashboard.tenants_count", {
+          count: overview?.trialTenants || 0,
+        }),
       }),
     },
     {
@@ -82,8 +93,12 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
       label: t("pages.dashboard.manual_active"),
       value: overview?.manualActiveUsers,
       subtitle: t("pages.dashboard.manual_breakdown", {
-        users: overview?.manualActiveUsers || 0,
-        tenants: overview?.manualActiveTenants || 0,
+        users: t("pages.dashboard.users_count", {
+          count: overview?.manualActiveUsers || 0,
+        }),
+        tenants: t("pages.dashboard.tenants_count", {
+          count: overview?.manualActiveTenants || 0,
+        }),
       }),
     },
     {

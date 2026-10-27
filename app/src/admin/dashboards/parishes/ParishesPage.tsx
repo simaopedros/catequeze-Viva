@@ -20,28 +20,70 @@ import {
   CircleDot,
 } from "lucide-react";
 import { SkeletonTable } from "../../../client/components/Skeletons";
+import { Badge } from "../../../client/components/ui/badge";
+import {
+  resolveAdminCodeLabel,
+  resolveAdminPlanLabel,
+} from "../../../shared/adminLabels";
+import { getPersonFullName } from "../../../shared/displayName";
+
+const PARISH_TYPES = ["PERSONAL", "PARISH", "DIOCESE", "COMMUNITY"] as const;
 
 const ParishesPage = ({ user }: { user: AuthUser }) => {
   const { t } = useTranslation("admin");
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const dioceseFilter = searchParams.get("dioceseId") || "";
+  const typeFilter = searchParams.get("type") || "";
   const {
     data: allParishes = [],
     isLoading,
     error,
     refetch,
   } = useQuery(listParishesAdmin);
-  const parishes = dioceseFilter
-    ? allParishes.filter(
-        (p: any) =>
-          p.dioceseId === dioceseFilter || p.diocese?.id === dioceseFilter,
-      )
-    : allParishes;
+
+  const parishes = allParishes.filter((p: any) => {
+    if (
+      dioceseFilter &&
+      p.dioceseId !== dioceseFilter &&
+      p.diocese?.id !== dioceseFilter
+    ) {
+      return false;
+    }
+    if (typeFilter && (p.type || "PARISH") !== typeFilter) {
+      return false;
+    }
+    return true;
+  });
+
   const filterName =
     parishes.find((p: any) => p.diocese?.id === dioceseFilter)?.diocese?.name ||
     allParishes.find((p: any) => p.diocese?.id === dioceseFilter)?.diocese
       ?.name;
+
+  const typeLabel = (type: string) =>
+    resolveAdminCodeLabel("parishType", type, t);
+
+  const subtitle = (() => {
+    if (dioceseFilter && filterName) {
+      return t("pages.parishes.filtered_by", { name: filterName });
+    }
+    if (typeFilter) {
+      return t("pages.parishes.filtered_by_type", {
+        type: typeLabel(typeFilter),
+      });
+    }
+    return t("pages.parishes.subtitle");
+  })();
+
+  const clearFilters = () => setSearchParams({});
+
+  const setTypeFilter = (value: string) => {
+    const next = new URLSearchParams(searchParams);
+    if (value) next.set("type", value);
+    else next.delete("type");
+    setSearchParams(next);
+  };
 
   const statusIcon = (status: string) => {
     switch (status) {
@@ -58,29 +100,47 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
     }
   };
 
+  const ownerName = (owner: any) => getPersonFullName(owner);
+  const ownerEmail = (owner: any) => owner?.email || null;
+
   return (
     <DefaultLayout user={user}>
       <div className="space-y-6">
         <AppPageHeader
           eyebrow={t("pages.admin")}
           title={t("pages.parishes.title")}
-          subtitle={
-            dioceseFilter && filterName
-              ? t("pages.parishes.filtered_by", { name: filterName })
-              : t("pages.parishes.subtitle")
-          }
+          subtitle={subtitle}
           actions={
-            dioceseFilter ? (
+            dioceseFilter || typeFilter ? (
               <button
                 type="button"
                 className="text-xs text-muted-foreground hover:text-[#071A2D]"
-                onClick={() => setSearchParams({})}
+                onClick={clearFilters}
               >
                 {t("pages.parishes.clear_filter")}
               </button>
             ) : null
           }
         />
+
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="sr-only" htmlFor="parish-type-filter">
+            {t("pages.parishes.filter_by_type")}
+          </label>
+          <select
+            id="parish-type-filter"
+            className="h-9 rounded-sm border border-input bg-background px-3 text-sm"
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+          >
+            <option value="">{t("pages.parishes.filter_all_types")}</option>
+            {PARISH_TYPES.map((type) => (
+              <option key={type} value={type}>
+                {typeLabel(type)}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {isLoading ? (
           <div className="space-y-4" aria-busy="true">
@@ -128,87 +188,114 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
                 </tr>
               </thead>
               <tbody>
-                {parishes.map((p: any) => (
-                  <tr
-                    key={p.id}
-                    className="border-b last:border-0 hover:bg-muted/30 cursor-pointer focus-within:bg-muted/30"
-                    onClick={() => navigate(`/admin/parishes/${p.id}`)}
-                  >
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <Church className="h-4 w-4 text-[#071A2D] shrink-0" />
-                        <div>
-                          <NavLink
-                            to={`/admin/parishes/${p.id}`}
-                            className="font-semibold tracking-tight text-[#071A2D] hover:underline"
-                            aria-label={t("pages.parishes.open_row", {
-                              name: p.name,
-                            })}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {p.name}
-                          </NavLink>
-                          {!p.active && (
-                            <span className="ml-2 rounded-sm bg-[#D39A2B]/15 px-1.5 py-0.5 text-xs text-[#8A6418]">
-                              {t("pages.parishes.archived")}
-                            </span>
-                          )}
+                {parishes.map((p: any) => {
+                  const isPersonal = p.type === "PERSONAL";
+                  const name = ownerName(p.owner);
+                  const email = ownerEmail(p.owner);
+                  return (
+                    <tr
+                      key={p.id}
+                      className="border-b last:border-0 hover:bg-muted/30 cursor-pointer focus-within:bg-muted/30"
+                      onClick={() => navigate(`/admin/parishes/${p.id}`)}
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <Church className="h-4 w-4 text-[#071A2D] shrink-0" />
+                          <div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <NavLink
+                                to={`/admin/parishes/${p.id}`}
+                                className="font-semibold tracking-tight text-[#071A2D] hover:underline"
+                                aria-label={t("pages.parishes.open_row", {
+                                  name: p.name,
+                                })}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {p.name}
+                              </NavLink>
+                              {!p.active && (
+                                <span className="rounded-sm bg-[#D39A2B]/15 px-1.5 py-0.5 text-xs text-[#8A6418]">
+                                  {t("pages.parishes.archived")}
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground hidden md:table-cell">
-                      {t(`pages.parishes.type_${p.type || "PARISH"}`, {
-                        defaultValue: p.type || "PARISH",
-                      })}
-                      {p.coveredByName ? (
-                        <span className="mt-0.5 block text-[11px] text-brand-ink">
-                          {t("pages.parishes.covered_by", {
-                            name: p.coveredByName,
+                      </td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground hidden md:table-cell">
+                        {isPersonal ? (
+                          <Badge variant="secondary" size="sm">
+                            {t("pages.parishes.personal_badge")}
+                          </Badge>
+                        ) : (
+                          typeLabel(p.type || "PARISH")
+                        )}
+                        {p.coveredByName ? (
+                          <span className="mt-0.5 block text-[11px] text-brand-ink">
+                            {t("pages.parishes.covered_by", {
+                              name: p.coveredByName,
+                            })}
+                          </span>
+                        ) : null}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
+                        <span className="flex items-center gap-1">
+                          <Building2 className="h-3 w-3" />
+                          {p.diocese?.name || "—"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-3 w-3" />
+                          {p.city || "—"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 hidden lg:table-cell">
+                        {p.billing?.plan ? (
+                          <span className="flex items-center gap-1">
+                            {statusIcon(p.billing.status)}
+                            <span className="text-xs font-semibold tracking-tight text-[#071A2D]">
+                              {resolveAdminPlanLabel(p.billing.plan)}
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs hidden lg:table-cell">
+                        {email || name ? (
+                          <div className="min-w-0">
+                            {email ? (
+                              <div className="truncate font-semibold tracking-tight text-[#071A2D]">
+                                {email}
+                              </div>
+                            ) : null}
+                            {name ? (
+                              <div className="truncate text-muted-foreground">
+                                {name}
+                              </div>
+                            ) : null}
+                          </div>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
+                        <span className="flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          {t("pages.parishes.members_count", {
+                            count: p._count?.memberships || 0,
                           })}
                         </span>
-                      ) : null}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
-                      <span className="flex items-center gap-1">
-                        <Building2 className="h-3 w-3" />
-                        {p.diocese?.name || "—"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        {p.city || "—"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 hidden lg:table-cell">
-                      {p.billing?.plan ? (
-                        <span className="flex items-center gap-1">
-                          {statusIcon(p.billing.status)}
-                          <span className="text-xs font-semibold tracking-tight text-[#071A2D]">
-                            {p.billing.plan}
-                          </span>
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground text-xs hidden lg:table-cell">
-                      {p.owner?.email || "—"}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
-                      <span className="flex items-center gap-1">
-                        <Users className="h-3 w-3" />
-                        {p._count?.memberships || 0}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
 
-        {/* Summary cards */}
         {parishes.length > 0 && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <AppMetric
