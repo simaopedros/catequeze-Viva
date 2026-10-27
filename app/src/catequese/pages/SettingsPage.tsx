@@ -551,6 +551,7 @@ export default function SettingsPage() {
           <div key={topic} className="flex items-center justify-between gap-3">
             <p className="text-sm text-brand-ink">{t(labelKey)}</p>
             <Switch
+              aria-label={t(labelKey)}
               checked={emailPrefs?.[topic] !== false}
               disabled={prefSaving === topic}
               onCheckedChange={async (checked) => {

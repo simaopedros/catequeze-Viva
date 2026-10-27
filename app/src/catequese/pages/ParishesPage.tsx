@@ -210,6 +210,7 @@ export default function ParishesPage() {
       <div className="flex flex-col sm:flex-row gap-3">
         <SearchInput
           placeholder={tp("search_parishes")}
+          aria-label={tp("search_parishes")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
