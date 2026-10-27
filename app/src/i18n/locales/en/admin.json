@@ -339,7 +339,8 @@
       "impersonate_title": "Impersonate user",
       "impersonate_desc": "You will see the app as this user. Your admin session is stored so you can exit later.",
       "cancel_stripe_title": "Cancel Stripe subscription",
-      "cancel_stripe_desc": "Immediately cancels every active subscription for this customer on Stripe. This does not issue a refund."
+      "cancel_stripe_desc": "Immediately cancels every active subscription for this customer on Stripe. This does not issue a refund.",
+      "more_actions": "More actions"
     },
     "dashboard": {
       "title": "Command center",
@@ -511,7 +512,10 @@
       "status_canceled": "Canceled",
       "status_cancel_at_period_end": "Cancels at period end",
       "status_trial_expired": "Expired trial",
-      "action_error": "Could not complete the action."
+      "action_error": "Could not complete the action.",
+      "more_actions": "More actions",
+      "status_ARCHIVED": "Archived",
+      "status_deleted": "Deleted"
     },
     "owner": {
       "title": "Owner view",

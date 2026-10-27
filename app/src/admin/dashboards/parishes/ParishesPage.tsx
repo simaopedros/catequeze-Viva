@@ -19,6 +19,7 @@ import {
   AlertTriangle,
   CircleDot,
 } from "lucide-react";
+import { SkeletonTable } from "../../../client/components/Skeletons";
 
 const ParishesPage = ({ user }: { user: AuthUser }) => {
   const { t } = useTranslation("admin");
@@ -82,8 +83,8 @@ const ParishesPage = ({ user }: { user: AuthUser }) => {
         />
 
         {isLoading ? (
-          <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+          <div className="space-y-4" aria-busy="true">
+            <SkeletonTable rows={8} />
           </div>
         ) : error && parishes.length === 0 ? (
           <QueryErrorState error={error} onRetry={refetch} />

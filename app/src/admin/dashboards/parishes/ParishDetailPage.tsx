@@ -24,12 +24,27 @@ import {
 } from "lucide-react";
 import { Button } from "../../../client/components/ui/button";
 import { ConfirmDialog } from "../../../client/components/ConfirmDialog";
+import { SkeletonPage } from "../../../client/components/Skeletons";
 import { setActiveWorkspaceId } from "../../../client/hooks/workspaceStore";
 
 const ParishDetailPage = ({ user }: { user: AuthUser }) => {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation("admin");
+  const { t: tCommon } = useTranslation("common");
   const { currentLocale } = useLocale();
+
+  const statusLabel = (status: string | null | undefined) => {
+    if (!status) return "—";
+    const key = `pages.licenses.status_${status}`;
+    const translated = t(key);
+    return translated === key ? status : translated;
+  };
+
+  const roleLabel = (role: string) => {
+    const key = `roles.${role}`;
+    const translated = tCommon(key);
+    return translated === key ? role : translated;
+  };
   const {
     data: parish,
     isLoading,
@@ -78,9 +93,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
   if (isLoading) {
     return (
       <DefaultLayout user={user}>
-        <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
-        </div>
+        <SkeletonPage />
       </DefaultLayout>
     );
   }
@@ -250,7 +263,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                 </p>
                 <p className="flex items-center gap-1 font-semibold tracking-tight text-[#071A2D]">
                   {statusIcon(parish.billing.status)}
-                  {parish.billing.status}
+                  {statusLabel(parish.billing.status)}
                 </p>
               </div>
               <div>
@@ -324,7 +337,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                     </p>
                   </div>
                   <span className="rounded-sm bg-muted px-2 py-0.5 text-xs">
-                    {m.role}
+                    {roleLabel(m.role)}
                   </span>
                 </div>
               ))

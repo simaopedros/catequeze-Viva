@@ -17,6 +17,10 @@ import {
 } from "lucide-react";
 import { formatDateTime } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
+import {
+  SkeletonCard,
+  SkeletonTable,
+} from "../../../client/components/Skeletons";
 
 type Counts = {
   landing_viewed: number;
@@ -159,8 +163,13 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
         />
 
         {isLoading ? (
-          <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+          <div className="space-y-4" aria-busy="true">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+            <SkeletonTable rows={6} />
           </div>
         ) : (
           <>

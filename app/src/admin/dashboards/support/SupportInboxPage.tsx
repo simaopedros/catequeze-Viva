@@ -18,6 +18,7 @@ import { Button } from "../../../client/components/ui/button";
 import { Textarea } from "../../../client/components/ui/textarea";
 import { formatDateTime } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
+import { SkeletonList } from "../../../client/components/Skeletons";
 
 const SupportInboxPage = ({ user }: { user: AuthUser }) => {
   const { t } = useTranslation("admin");
@@ -72,8 +73,8 @@ const SupportInboxPage = ({ user }: { user: AuthUser }) => {
         )}
 
         {isLoading ? (
-          <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+          <div className="space-y-4" aria-busy="true">
+            <SkeletonList items={6} />
           </div>
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-sm border border-border/70 bg-white p-12 text-center">

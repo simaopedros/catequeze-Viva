@@ -10,6 +10,10 @@ import { QueryErrorState } from "../../../client/components/QueryErrorState";
 import { Activity, AlertTriangle, TrendingUp } from "lucide-react";
 import { formatDate, formatDateTime } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
+import {
+  SkeletonCard,
+  SkeletonTable,
+} from "../../../client/components/Skeletons";
 
 /** Tasks executed by the daily `/api/internal/maintenance` run (see server/api/maintenance.ts). */
 const MAINTENANCE_TASKS = [
@@ -62,8 +66,13 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
         />
 
         {isLoading ? (
-          <div className="flex justify-center py-12" aria-busy="true">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+          <div className="space-y-4" aria-busy="true">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+            <SkeletonTable rows={6} />
           </div>
         ) : error && !health ? (
           <QueryErrorState error={error} onRetry={refetch} />
