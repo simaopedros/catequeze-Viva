@@ -116,7 +116,7 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
                 }).replace(/&copy;|©/g, "©")}
               </p>
               <div
-                className="flex items-center gap-1 text-[11px] font-medium tracking-wide text-muted-foreground"
+                className="flex items-center gap-1 text-xs font-medium tracking-wide text-muted-foreground"
                 role="group"
                 aria-label={t("language_label")}
               >
