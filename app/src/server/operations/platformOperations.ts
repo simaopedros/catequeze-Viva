@@ -4,10 +4,14 @@
  */
 import { requirePlatformAdmin } from '../auth/helpers';
 import { formatServerDate, resolveUserLocale } from '../i18n/serverLocale';
-import { getPlanPriceCents, resolvePlanIdOrFree, PRISMA_FREE_PLANS } from '../../shared/pricing';
+import { getPlanPriceCents, resolvePlanIdOrFree } from '../../shared/pricing';
 import { loadPlanCatalog } from '../pricing/planCatalogService';
 import type { CatalogBySlug } from '../../shared/planCatalog';
-import { getAccountStatusCounts } from '../billing/accountStatusCounts';
+import {
+  getAccountStatusCounts,
+  PAYING_TENANT_WHERE,
+  PAYING_USER_WHERE,
+} from '../billing/accountStatusCounts';
 import { createTtlCache } from '../cache/ttlCache';
 
 const PLATFORM_OVERVIEW_TTL_MS = 60_000;
@@ -88,6 +92,7 @@ export const getPlatformOverview = async (_args: void, context: any) => {
     statusCounts,
     activeBillings,
     catalogSnapshot,
+    payingUsersForMrr,
   ] = await Promise.all([
     context.entities.User.count(),
     context.entities.User.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
@@ -99,17 +104,33 @@ export const getPlatformOverview = async (_args: void, context: any) => {
     context.entities.ClassEnrollment.count({ where: { status: 'ENROLLED' } }),
     getAccountStatusCounts(context, now),
     context.entities.TenantBilling.findMany({
-      where: { status: 'ACTIVE', plan: { notIn: [...PRISMA_FREE_PLANS] } },
+      where: { ...PAYING_TENANT_WHERE },
       select: { plan: true },
     }),
     loadPlanCatalog(context),
+    context.entities.User.findMany({
+      where: { ...PAYING_USER_WHERE },
+      select: { subscriptionPlan: true },
+    }),
   ]);
 
   const catalog = catalogSnapshot.bySlug;
-  const mrr = activeBillings.reduce(
+  // MRR from real Stripe payers only (not courtesy TenantBilling).
+  const mrrFromUsers = payingUsersForMrr.reduce(
+    (sum: number, u: { subscriptionPlan: string | null }) =>
+      sum + planPrice(u.subscriptionPlan, catalog),
+    0,
+  );
+  const mrrFromTenants = activeBillings.reduce(
     (sum: number, b: { plan: string }) => sum + planPrice(b.plan, catalog),
     0,
   );
+  // Prefer user-level Stripe plans; add tenant MRR only when tenant isn't already covered
+  // by a paying owner counted above (owner-linked tenants are the same wallet).
+  const mrr =
+    mrrFromUsers > 0
+      ? mrrFromUsers
+      : mrrFromTenants;
 
   // uniquePayers dedupes solo catechists (User + personal TenantBilling).
   const activeSubscriptions = statusCounts.uniquePayers;
@@ -132,6 +153,7 @@ export const getPlatformOverview = async (_args: void, context: any) => {
     trialsExpiring: statusCounts.trialsExpiring7d,
     trialsExpiring7d: statusCounts.trialsExpiring7d,
     manualActiveUsers: statusCounts.manualActiveUsers,
+    manualActiveTenants: statusCounts.manualActiveTenants,
     trialUsers: statusCounts.trialUsers,
     trialTenants: statusCounts.trialTenants,
     trialActive,

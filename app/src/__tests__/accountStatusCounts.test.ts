@@ -10,10 +10,13 @@ import {
 function mockContext(counts: Record<string, number>) {
   const userCount = vi.fn(async ({ where }: any) => {
     if (where?.subscriptionPlan?.in) {
-      if (where.subscriptionStatus === 'active') return counts.planPayingUsers ?? 0;
+      if (where.subscriptionStatus?.in) return counts.planPayingUsers ?? 0;
       if (where.subscriptionStatus === 'trialing') return counts.planTrialUsers ?? 0;
     }
-    if (where?.subscriptionStatus === 'active' && where?.stripeSubscriptionId?.not === null) {
+    if (
+      where?.subscriptionStatus?.in &&
+      where?.stripeSubscriptionId?.not === null
+    ) {
       return counts.payingUsers ?? 0;
     }
     if (where?.subscriptionStatus === 'active' && where?.stripeSubscriptionId === null) {
@@ -35,16 +38,17 @@ function mockContext(counts: Record<string, number>) {
   });
 
   const tenantCount = vi.fn(async ({ where }: any) => {
-    // Double-counted: ACTIVE paying tenant whose parish owner is a paying user
+    // Manual courtesy tenants (OR clause)
+    if (where?.OR) {
+      return counts.manualActiveTenants ?? 0;
+    }
+    // Paying / double-counted: ACTIVE non-free with parish.owner stripe payer
     if (where?.parish?.owner?.stripeSubscriptionId?.not === null) {
-      if (where?.plan?.in) return counts.planDoubleCountedTenants ?? 0;
-      return counts.tenantsOwnedByPayingUsers ?? 0;
-    }
-    if (where?.status === 'ACTIVE' && where?.plan?.notIn) {
-      return counts.payingTenants ?? 0;
-    }
-    if (where?.status === 'ACTIVE' && where?.plan?.in) {
-      return counts.planPayingTenants ?? 0;
+      if (where?.plan?.in && where?.parish?.owner?.subscriptionPlan?.in) {
+        return counts.planDoubleCountedTenants ?? 0;
+      }
+      if (where?.plan?.in) return counts.planPayingTenants ?? 0;
+      return counts.payingTenants ?? counts.tenantsOwnedByPayingUsers ?? 0;
     }
     if (where?.status === 'TRIAL' && where?.trialEndsAt?.gte && where?.trialEndsAt?.lte) {
       return counts.trialsExpiringTenants ?? 0;
@@ -83,7 +87,6 @@ describe('planSlugAliases', () => {
 
 describe('uniquePayersFromParts', () => {
   it('subtracts tenants owned by already-counted paying users', () => {
-    // 3 paying users + 2 tenants, 1 of which is a solo catechist personal space
     expect(uniquePayersFromParts(3, 2, 1)).toBe(4);
   });
 
@@ -97,12 +100,13 @@ describe('uniquePayersFromParts', () => {
 });
 
 describe('getAccountStatusCounts', () => {
-  it('aggregates paying, trial, expired, past due and 7d trials', async () => {
+  it('aggregates paying, trial, expired, past due, manual tenants and 7d trials', async () => {
     const ctx = mockContext({
-      payingTenants: 2,
+      payingTenants: 1,
       payingUsers: 3,
       tenantsOwnedByPayingUsers: 1,
-      manualActiveUsers: 1,
+      manualActiveUsers: 2,
+      manualActiveTenants: 1,
       trialUsers: 4,
       trialTenants: 5,
       expiredTrialUsers: 6,
@@ -117,10 +121,11 @@ describe('getAccountStatusCounts', () => {
     const result = await getAccountStatusCounts(ctx, now);
 
     expect(result).toEqual({
-      payingTenants: 2,
+      payingTenants: 1,
       payingUsers: 3,
-      uniquePayers: 4, // 3 + 2 - 1
-      manualActiveUsers: 1,
+      uniquePayers: 3, // 3 + 1 - 1
+      manualActiveUsers: 2,
+      manualActiveTenants: 1,
       trialUsers: 4,
       trialTenants: 5,
       expiredTrialUsers: 6,
@@ -130,12 +135,49 @@ describe('getAccountStatusCounts', () => {
     });
   });
 
-  it('queries paying users with stripeSubscriptionId and manual without it', async () => {
+  it('prod scenario: 1 stripe payer + manual courtesy tenant → uniquePayers 1', async () => {
+    // Real Stripe payer (user); courtesy user owns PERSONAL TenantBilling ACTIVE single
+    // → tenant is manual, not paying.
+    const ctx = mockContext({
+      payingTenants: 0,
+      payingUsers: 1,
+      tenantsOwnedByPayingUsers: 0,
+      manualActiveUsers: 2,
+      manualActiveTenants: 1,
+      trialUsers: 0,
+      trialTenants: 0,
+      expiredTrialUsers: 0,
+      expiredTrialTenants: 0,
+      pastDueUsers: 0,
+      pastDueTenants: 0,
+      trialsExpiringUsers: 0,
+      trialsExpiringTenants: 0,
+    });
+
+    const result = await getAccountStatusCounts(ctx);
+    expect(result.uniquePayers).toBe(1);
+    expect(result.payingUsers).toBe(1);
+    expect(result.payingTenants).toBe(0);
+    expect(result.manualActiveUsers).toBe(2);
+    expect(result.manualActiveTenants).toBe(1);
+
+    expect(
+      ctx.tenantCount.mock.calls.some(
+        ([args]: any[]) => args.where?.parish?.owner?.stripeSubscriptionId?.not === null,
+      ),
+    ).toBe(true);
+    expect(
+      ctx.tenantCount.mock.calls.some(([args]: any[]) => Array.isArray(args.where?.OR)),
+    ).toBe(true);
+  });
+
+  it('queries paying users with stripeSubscriptionId and status in active/past_due', async () => {
     const ctx = mockContext({
       payingTenants: 0,
       payingUsers: 5,
       tenantsOwnedByPayingUsers: 0,
       manualActiveUsers: 2,
+      manualActiveTenants: 0,
       trialUsers: 0,
       trialTenants: 0,
       expiredTrialUsers: 0,
@@ -149,65 +191,35 @@ describe('getAccountStatusCounts', () => {
     const result = await getAccountStatusCounts(ctx);
     expect(result.payingUsers).toBe(5);
     expect(result.uniquePayers).toBe(5);
-    expect(result.manualActiveUsers).toBe(2);
 
-    expect(
-      ctx.userCount.mock.calls.some(
-        ([args]: any[]) => args.where?.stripeSubscriptionId?.not === null,
-      ),
-    ).toBe(true);
-    expect(
-      ctx.userCount.mock.calls.some(
-        ([args]: any[]) => args.where?.stripeSubscriptionId === null,
-      ),
-    ).toBe(true);
-  });
-
-  it('dedupes solo catechist with personal-space TenantBilling ACTIVE', async () => {
-    // 1 paying user + 1 personal TenantBilling owned by that user → 1 unique payer
-    const ctx = mockContext({
-      payingTenants: 1,
-      payingUsers: 1,
-      tenantsOwnedByPayingUsers: 1,
-      manualActiveUsers: 0,
-      trialUsers: 0,
-      trialTenants: 0,
-      expiredTrialUsers: 0,
-      expiredTrialTenants: 0,
-      pastDueUsers: 0,
-      pastDueTenants: 0,
-      trialsExpiringUsers: 0,
-      trialsExpiringTenants: 0,
-    });
-
-    const result = await getAccountStatusCounts(ctx);
-    expect(result.payingUsers + result.payingTenants).toBe(2); // naive sum double-counts
-    expect(result.uniquePayers).toBe(1);
-
-    expect(
-      ctx.tenantCount.mock.calls.some(
-        ([args]: any[]) => args.where?.parish?.owner?.stripeSubscriptionId?.not === null,
-      ),
-    ).toBe(true);
+    const payingCall = ctx.userCount.mock.calls.find(
+      ([args]: any[]) => args.where?.stripeSubscriptionId?.not === null,
+    );
+    expect(payingCall?.[0].where.subscriptionStatus.in).toEqual(
+      expect.arrayContaining(['active', 'past_due']),
+    );
   });
 });
 
 describe('countPayingForPlan / countTrialForPlan', () => {
-  it('matches plan slugs case-insensitively and dedupes uniquePayers', async () => {
+  it('only counts tenants whose owner is a Stripe payer and dedupes uniquePayers', async () => {
     const ctx = mockContext({
-      planPayingUsers: 2,
-      planPayingTenants: 3,
-      planDoubleCountedTenants: 1,
+      planPayingUsers: 1,
+      planPayingTenants: 0, // courtesy ACTIVE tenant must not count
+      planDoubleCountedTenants: 0,
       planTrialUsers: 4,
       planTrialTenants: 1,
     });
 
     const paying = await countPayingForPlan(ctx, 'SINGLE');
-    expect(paying).toEqual({ users: 2, tenants: 3, total: 4, uniquePayers: 4 });
+    expect(paying).toEqual({ users: 1, tenants: 0, total: 1, uniquePayers: 1 });
 
     const payingArgs = ctx.userCount.mock.calls[0][0];
     expect(payingArgs.where.subscriptionPlan.in).toEqual(
       expect.arrayContaining(['SINGLE', 'single']),
+    );
+    expect(payingArgs.where.subscriptionStatus.in).toEqual(
+      expect.arrayContaining(['active', 'past_due']),
     );
 
     const trial = await countTrialForPlan(ctx, 'single', new Date('2026-10-27T12:00:00.000Z'));

@@ -13,7 +13,12 @@ import {
   SkeletonTable,
 } from "../../../client/components/Skeletons";
 import { Button } from "../../../client/components/ui/button";
-import { formatCurrency, formatDate } from "../../../i18n/format";
+import {
+  formatCurrency,
+  formatDate,
+  formatMonthLabel,
+  formatPercent,
+} from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
 import { Download } from "lucide-react";
 import { downloadCsv } from "./csvExport";
@@ -86,8 +91,8 @@ function SimpleTable({
 }
 
 function formatPct(value: number | null | undefined, locale: string): string {
-  if (value == null) return "—";
-  return `${value.toLocaleString(locale)}%`;
+  // Cohort/activation: show 0,0% when there are no signups/trials (not "—").
+  return formatPercent(value, locale, { digits: 1, nullAsZero: true });
 }
 
 const AdminOwnerPage = ({ user }: { user: AuthUser }) => {
@@ -207,6 +212,14 @@ const AdminOwnerPage = ({ user }: { user: AuthUser }) => {
                 {t("pages.owner.revenue_error", { message: dash.revenueError })}
               </p>
             ) : null}
+            {dash.revenueNote === "excluded_non_live_or_zero" ? (
+              <p
+                role="status"
+                className="rounded-sm border border-border/70 bg-muted/40 px-3 py-2 text-sm text-muted-foreground"
+              >
+                {t("pages.owner.revenue_note_filtered")}
+              </p>
+            ) : null}
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <AppMetric
@@ -277,7 +290,7 @@ const AdminOwnerPage = ({ user }: { user: AuthUser }) => {
                 ]}
                 empty={t("pages.owner.empty")}
                 rows={dash.revenue.byMonth.map((row, i) => [
-                  row.month,
+                  formatMonthLabel(row.month, currentLocale),
                   formatCurrency(row.amountBrl, currentLocale),
                   dash.newPayingPerMonth[i]?.count ?? 0,
                   dash.cancellationsPerMonth[i]?.count ?? 0,
@@ -304,7 +317,7 @@ const AdminOwnerPage = ({ user }: { user: AuthUser }) => {
                 ]}
                 empty={t("pages.owner.empty")}
                 rows={dash.trialToPaidCohorts.map((row) => [
-                  row.month,
+                  formatMonthLabel(row.month, currentLocale),
                   row.signups,
                   row.hadTrial,
                   row.becamePaying,
@@ -325,7 +338,7 @@ const AdminOwnerPage = ({ user }: { user: AuthUser }) => {
                 ]}
                 empty={t("pages.owner.empty")}
                 rows={dash.activationRetention.map((row) => [
-                  row.month,
+                  formatMonthLabel(row.month, currentLocale),
                   row.signups,
                   formatPct(row.createdClassPct, currentLocale),
                   formatPct(row.recordedAttendancePct, currentLocale),

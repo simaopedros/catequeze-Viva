@@ -6,6 +6,7 @@ import {
   buildActivationRetention,
   buildTrialToPaidCohorts,
   displayAccountName,
+  isLiveRevenueInvoice,
   isWithinDaysForward,
   lastNMonthKeys,
   mergeMonthlyCounts,
@@ -14,6 +15,7 @@ import {
   pct,
   sumStripeMrrBrl,
 } from "../server/operations/ownerDashboardHelpers";
+import { formatMonthLabel, formatPercent } from "../i18n/format";
 
 describe("ownerDashboardHelpers", () => {
   it("monthKey formats YYYY-MM in America/Sao_Paulo", () => {
@@ -29,39 +31,72 @@ describe("ownerDashboardHelpers", () => {
 
   it("aggregatePaidInvoicesByMonth sums BRL paid invoices and current month", () => {
     const months = ["2024-01", "2024-02", "2024-03"];
-    const { byMonth, currentMonthTotalBrl } = aggregatePaidInvoicesByMonth(
-      [
-        {
-          amountPaidCents: 990,
-          currency: "brl",
-          paidAt: "2024-01-10T12:00:00.000Z",
-          status: "paid",
-        },
-        {
-          amountPaidCents: 1980,
-          currency: "brl",
-          paidAt: "2024-03-05T12:00:00.000Z",
-          status: "paid",
-        },
-        {
-          amountPaidCents: 5000,
-          currency: "usd",
-          paidAt: "2024-03-05T12:00:00.000Z",
-          status: "paid",
-        },
-        {
-          amountPaidCents: 100,
-          currency: "brl",
-          paidAt: "2024-03-08T12:00:00.000Z",
-          status: "open",
-        },
-      ],
-      months,
-    );
+    const { byMonth, currentMonthTotalBrl, skippedNonLive } =
+      aggregatePaidInvoicesByMonth(
+        [
+          {
+            amountPaidCents: 990,
+            currency: "brl",
+            paidAt: "2024-01-10T12:00:00.000Z",
+            status: "paid",
+            livemode: true,
+          },
+          {
+            amountPaidCents: 1980,
+            currency: "brl",
+            paidAt: "2024-03-05T12:00:00.000Z",
+            status: "paid",
+            livemode: true,
+          },
+          {
+            amountPaidCents: 5000,
+            currency: "usd",
+            paidAt: "2024-03-05T12:00:00.000Z",
+            status: "paid",
+            livemode: true,
+          },
+          {
+            amountPaidCents: 100,
+            currency: "brl",
+            paidAt: "2024-03-08T12:00:00.000Z",
+            status: "open",
+          },
+          {
+            amountPaidCents: 90,
+            currency: "brl",
+            paidAt: "2024-01-15T12:00:00.000Z",
+            status: "paid",
+            livemode: false,
+          },
+          {
+            amountPaidCents: 0,
+            currency: "brl",
+            paidAt: "2024-02-01T12:00:00.000Z",
+            status: "paid",
+            livemode: true,
+          },
+        ],
+        months,
+      );
     expect(byMonth[0].amountBrl).toBe(9.9);
     expect(byMonth[1].amountBrl).toBe(0);
     expect(byMonth[2].amountBrl).toBe(19.8);
     expect(currentMonthTotalBrl).toBe(19.8);
+    expect(skippedNonLive).toBe(2);
+    expect(
+      isLiveRevenueInvoice({
+        amountPaidCents: 90,
+        status: "paid",
+        livemode: false,
+        paidAt: "2024-01-01",
+      }),
+    ).toBe(false);
+  });
+
+  it("formatMonthLabel and formatPercent use pt-BR", () => {
+    expect(formatMonthLabel("2025-11", "pt-BR")).toBe("nov/2025");
+    expect(formatPercent(0, "pt-BR")).toBe("0,0%");
+    expect(formatPercent(null, "pt-BR", { nullAsZero: true })).toBe("0,0%");
   });
 
   it("normalizeRecurringAmountToMonthlyBrl handles month and year intervals", () => {
@@ -184,6 +219,9 @@ describe("ownerDashboardHelpers", () => {
       displayAccountName({ firstName: "Ana", lastName: "Silva", email: "a@b.c" }),
     ).toBe("Ana Silva");
     expect(displayAccountName({ email: "a@b.c" })).toBe("a@b.c");
+    expect(
+      displayAccountName({ email: "a@b.c" }, { allowEmailFallback: false }),
+    ).toBe("");
     const now = new Date("2024-03-01T12:00:00.000Z");
     expect(isWithinDaysForward("2024-03-05T12:00:00.000Z", now, 7)).toBe(true);
     expect(isWithinDaysForward("2024-03-20T12:00:00.000Z", now, 7)).toBe(false);

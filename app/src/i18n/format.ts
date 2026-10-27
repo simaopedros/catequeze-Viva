@@ -90,6 +90,54 @@ export function formatCurrency(
   }).format(value);
 }
 
+/** Percent with locale decimal separator (pt-BR → "0,0%"). */
+export function formatPercent(
+  value: number | null | undefined,
+  locale: SupportedLocale | string,
+  options?: { digits?: number; nullAsZero?: boolean },
+): string {
+  const digits = options?.digits ?? 1;
+  if (value == null) {
+    if (options?.nullAsZero) {
+      return `${new Intl.NumberFormat(resolveIntlLocale(locale as SupportedLocale), {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+      }).format(0)}%`;
+    }
+    return "—";
+  }
+  return `${new Intl.NumberFormat(resolveIntlLocale(locale as SupportedLocale), {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }).format(value)}%`;
+}
+
+/**
+ * Format YYYY-MM as a short locale month label (e.g. pt-BR → "nov/2025").
+ * Mid-month UTC anchor keeps month/year mapping stable across timezones.
+ */
+export function formatMonthLabel(
+  yyyyMm: string,
+  locale: SupportedLocale | string = "pt-BR",
+): string {
+  const match = /^(\d{4})-(\d{2})$/.exec(yyyyMm);
+  if (!match) return yyyyMm;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  if (!year || month < 1 || month > 12) return yyyyMm;
+  const anchor = new Date(Date.UTC(year, month - 1, 15, 12));
+  const parts = new Intl.DateTimeFormat(
+    resolveIntlLocale(locale as SupportedLocale),
+    { month: "short", year: "numeric", timeZone: "UTC" },
+  ).formatToParts(anchor);
+  const monthPart = (parts.find((p) => p.type === "month")?.value ?? "")
+    .replace(/\.$/, "")
+    .toLowerCase();
+  const yearPart = parts.find((p) => p.type === "year")?.value ?? String(year);
+  if (!monthPart) return yyyyMm;
+  return `${monthPart}/${yearPart}`;
+}
+
 export function formatRelativeTime(
   dateStr: string,
   locale: SupportedLocale,

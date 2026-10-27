@@ -10,6 +10,9 @@ export type PaidInvoiceLike = {
   currency?: string | null;
   paidAt: Date | string | number | null;
   status?: string | null;
+  /** When false, invoice is excluded from live revenue totals. */
+  livemode?: boolean | null;
+  amountRefundedCents?: number | null;
 };
 
 export type StripeRecurringItemLike = {
@@ -129,21 +132,41 @@ export function emptyMonthlyCounts(months: string[]): MonthlyCount[] {
   return months.map((month) => ({ month, count: 0 }));
 }
 
-/** Sum paid invoice amounts (BRL) per month. Non-BRL currencies are skipped. */
+/** Whether a paid invoice should count toward live revenue (excludes test/zero/refunded). */
+export function isLiveRevenueInvoice(invoice: PaidInvoiceLike): boolean {
+  if (invoice.status && invoice.status !== "paid") return false;
+  if (invoice.livemode === false) return false;
+  const paid = Math.max(0, invoice.amountPaidCents ?? 0);
+  if (paid <= 0) return false;
+  const refunded = Math.max(0, invoice.amountRefundedCents ?? 0);
+  if (refunded > 0 && refunded >= paid) return false;
+  return true;
+}
+
+/** Sum paid invoice amounts (BRL) per month. Non-BRL / test / zero / refunded skipped. */
 export function aggregatePaidInvoicesByMonth(
   invoices: PaidInvoiceLike[],
   months: string[],
   options?: { timeZone?: string; currency?: string },
-): { byMonth: MonthBucket[]; currentMonthTotalBrl: number } {
+): {
+  byMonth: MonthBucket[];
+  currentMonthTotalBrl: number;
+  skippedNonLive: number;
+} {
   const currency = (options?.currency ?? "brl").toLowerCase();
   const timeZone = options?.timeZone ?? "America/Sao_Paulo";
   const map = new Map(months.map((m) => [m, 0]));
   const currentMonth = months[months.length - 1];
+  let skippedNonLive = 0;
 
   for (const invoice of invoices) {
     if (invoice.status && invoice.status !== "paid") continue;
     const invCurrency = (invoice.currency ?? "brl").toLowerCase();
     if (invCurrency !== currency) continue;
+    if (!isLiveRevenueInvoice(invoice)) {
+      skippedNonLive += 1;
+      continue;
+    }
     const paidAt = toDate(invoice.paidAt);
     if (!paidAt) continue;
     const key = monthKey(paidAt, timeZone);
@@ -157,8 +180,10 @@ export function aggregatePaidInvoicesByMonth(
   }));
   const currentMonthTotalBrl =
     Math.round((map.get(currentMonth) ?? 0) * 100) / 100;
-  return { byMonth, currentMonthTotalBrl };
+  return { byMonth, currentMonthTotalBrl, skippedNonLive };
 }
+
+// formatMonthLabel lives in src/i18n/format.ts (client-safe).
 
 /** Normalize a recurring Stripe price amount to monthly BRL (reais). */
 export function normalizeRecurringAmountToMonthlyBrl(
@@ -350,19 +375,25 @@ export function aggregateEmailHealthByDay(
   });
 }
 
-export function displayAccountName(parts: {
-  firstName?: string | null;
-  lastName?: string | null;
-  username?: string | null;
-  email?: string | null;
-  fallback?: string | null;
-}): string {
+export function displayAccountName(
+  parts: {
+    firstName?: string | null;
+    lastName?: string | null;
+    username?: string | null;
+    email?: string | null;
+    fallback?: string | null;
+  },
+  options?: { allowEmailFallback?: boolean },
+): string {
+  const allowEmailFallback = options?.allowEmailFallback !== false;
   const name = [parts.firstName, parts.lastName].filter(Boolean).join(" ").trim();
   if (name) return name;
-  if (parts.username?.trim()) return parts.username.trim();
-  if (parts.email?.trim()) return parts.email.trim();
+  const username = parts.username?.trim();
+  const email = parts.email?.trim();
+  if (username && username !== email) return username;
+  if (allowEmailFallback && email) return email;
   if (parts.fallback?.trim()) return parts.fallback.trim();
-  return "—";
+  return allowEmailFallback ? "—" : "";
 }
 
 export function isWithinDaysForward(
