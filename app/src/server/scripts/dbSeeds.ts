@@ -6,7 +6,7 @@ import {
   SubscriptionStatus,
 } from "../../payment/plans";
 
-type MockUserData = Omit<User, "id" | "lifecycleEmailLogs">;
+type MockUserData = Omit<User, "id" | "lifecycleEmailLogs" | "funnelEvents">;
 
 /**
  * This function, which we've imported in `app.db.seeds` in the `main.wasp` file,
@@ -70,5 +70,7 @@ function generateMockUserData(): MockUserData {
     suspendedAt: null,
     suspendedReason: null,
     lifecycleEmailsOptOutAt: null,
+    emailVerifiedAt: null,
+    onboardingCompletedAt: null,
   };
 }

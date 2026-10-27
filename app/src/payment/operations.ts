@@ -33,6 +33,11 @@ import {
   loadPlanCatalog,
   requireActiveStripePriceId,
 } from "../server/pricing/planCatalogService";
+import {
+  FUNNEL_EVENT_SOURCE,
+  FUNNEL_EVENT_TYPE,
+  recordFunnelEvent,
+} from "../server/funnel/recordFunnelEvent";
 
 export type CheckoutSession = {
   sessionUrl: string | null;
@@ -300,6 +305,20 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     toPlan: paymentPlanId,
     processor: paymentProcessor.id ?? "stripe",
     interval,
+  });
+
+  await recordFunnelEvent({
+    funnelEvent: (context.entities as any).FunnelEvent,
+    userId,
+    type: FUNNEL_EVENT_TYPE.CHECKOUT_STARTED,
+    source: FUNNEL_EVENT_SOURCE.CHECKOUT,
+    externalId: `checkout_started_${session.id}`,
+    metadata: {
+      sessionId: session.id,
+      planId: paymentPlanId,
+      processor: paymentProcessor.id ?? "stripe",
+      interval: interval ?? null,
+    },
   });
 
   return {

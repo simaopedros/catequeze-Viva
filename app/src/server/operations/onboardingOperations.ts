@@ -5,6 +5,20 @@ import {
   canOnboardingReactivateMembership,
 } from './parishOperations';
 import { resolveNewParishBilling } from './billingEnforcement';
+import { markOnboardingCompletedOnce } from '../funnel/recordFunnelEvent';
+
+async function markCoordinatorOnboardingComplete(context: any): Promise<void> {
+  try {
+    await markOnboardingCompletedOnce({
+      user: context.entities.User,
+      funnelEvent: context.entities.FunnelEvent,
+      userId: context.user.id,
+      metadata: { path: 'coordinator' },
+    });
+  } catch {
+    /* non-fatal */
+  }
+}
 
 export const completeCoordinatorOnboarding = async (
   args: {
@@ -110,6 +124,7 @@ export const completeCoordinatorOnboarding = async (
       classId = cls.id;
     }
 
+    await markCoordinatorOnboardingComplete(context);
     return { parishId: existing.id, yearId: year.id, classId, existingParishId: existing.id };
   }
 
@@ -176,5 +191,6 @@ export const completeCoordinatorOnboarding = async (
     classId = cls.id;
   }
 
+  await markCoordinatorOnboardingComplete(context);
   return { parishId: parish.id, yearId: year.id, classId };
 };

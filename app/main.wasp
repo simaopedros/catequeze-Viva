@@ -212,7 +212,7 @@ query getPlanCatalog {
 
 action generateCheckoutSession {
   fn: import { generateCheckoutSession } from "@src/payment/operations",
-  entities: [User, Parish, Membership, PricingEvent, TrackedEvent, PricingPlan, PricingPlanPrice]
+  entities: [User, Parish, Membership, PricingEvent, TrackedEvent, FunnelEvent, PricingPlan, PricingPlanPrice]
 }
 
 action cancelSubscription {
@@ -227,7 +227,7 @@ action changeSubscriptionPlan {
 
 api paymentsWebhook {
   fn: import { paymentsWebhook } from "@src/payment/webhook",
-  entities: [User, UserAiCredits, TenantBilling, Diocese, Parish, Membership, PricingEvent, TrackedEvent, PricingPlan, PricingPlanPrice, EmailMessage, EmailSuppression, EmailPreference],
+  entities: [User, UserAiCredits, TenantBilling, Diocese, Parish, Membership, PricingEvent, TrackedEvent, FunnelEvent, PricingPlan, PricingPlanPrice, EmailMessage, EmailSuppression, EmailPreference],
   middlewareConfigFn: import { paymentsMiddlewareConfigFn } from "@src/payment/webhook",
   httpRoute: (POST, "/payments-webhook")
 }
@@ -633,7 +633,7 @@ action createParish {
 action completeCoordinatorOnboarding {
   fn: import { completeCoordinatorOnboarding } from "@src/server/operations/onboardingOperations",
   // User is required by resolveNewParishBilling (fresh subscription lookup).
-  entities: [Parish, Membership, TenantBilling, CatecheticalYear, CatechesisClass, PricingPlan, PricingPlanPrice, User]
+  entities: [Parish, Membership, TenantBilling, CatecheticalYear, CatechesisClass, PricingPlan, PricingPlanPrice, User, FunnelEvent]
 }
 
 action updateParish {
@@ -753,7 +753,7 @@ action joinParish {
 
 action ensurePersonalWorkspace {
   fn: import { ensurePersonalWorkspace } from "@src/server/operations/workspaceOperations",
-  entities: [Parish, User, Membership, TenantBilling, PricingPlan, PricingPlanPrice]
+  entities: [Parish, User, Membership, TenantBilling, PricingPlan, PricingPlanPrice, FunnelEvent]
 }
 
 query listWorkspaces {

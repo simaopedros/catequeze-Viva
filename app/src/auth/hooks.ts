@@ -7,6 +7,7 @@ import { isMetaCapiConfigured, sendMetaEvent } from "../payment/meta/metaCapi";
 import { logger } from "../server/logger";
 import { emitProductEventSafe } from "../server/email/events";
 import { PRODUCT_EVENT } from "../shared/emailCatalog";
+import { markEmailVerifiedOnce } from "../server/funnel/recordFunnelEvent";
 
 interface AuthUserLite {
   id: string;
@@ -163,6 +164,13 @@ export const onAfterSignup = async ({
         locale,
         context: emailEventContext(prisma),
       });
+      // OAuth emails are already verified at signup.
+      await markEmailVerifiedOnce({
+        user: prisma.user,
+        funnelEvent: prisma.funnelEvent,
+        userId: user.id,
+        metadata: { provider: providerName },
+      });
     }
   }
 
@@ -277,6 +285,13 @@ export const onAfterEmailVerified = async ({
     isFamilyPortal: false,
     locale,
     context: emailEventContext(prisma),
+  });
+
+  await markEmailVerifiedOnce({
+    user: prisma.user,
+    funnelEvent: prisma.funnelEvent,
+    userId: user.id,
+    metadata: { provider: "email" },
   });
 };
 
