@@ -314,7 +314,7 @@ export const billing_pt_BR_core = {
     "checkout_redirect": "Será redirecionado para a sua conta em {{seconds}} segundos...",
     "go_to_account": "Ir para Minha Conta",
     "trial_started_title": "Seu teste de 7 dias começou",
-    "trial_started_description": "O cartão já está cadastrado. A cobrança começa depois dos 7 dias de teste. Vamos preparar seu espaço.",
+    "trial_started_description": "Seu teste começou sem cartão. Adicione um cartão antes do fim dos 7 dias para continuar; senão a assinatura é cancelada sem cobrança. Vamos preparar seu espaço.",
     "trial_started_redirect": "Você será levado à assinatura em {{seconds}} segundos...",
     "trial_started_redirect_onboarding": "Vamos continuar a configuração em {{seconds}} segundos...",
     "go_to_billing": "Ir para a assinatura",
@@ -601,8 +601,8 @@ export const billing_pt_BR_core = {
     },
     "checkout_cta_start_trial_one": "Começar 1 dia grátis",
     "checkout_cta_start_trial_other": "Começar {{count}} dias grátis",
-    "checkout_charge_after_trial_one": "O Stripe pede o cartão agora. Você tem 1 dia grátis e a primeira cobrança é em {{date}}. Cancele antes para não ser cobrado(a).",
-    "checkout_charge_after_trial_other": "O Stripe pede o cartão agora. Você tem {{count}} dias grátis e a primeira cobrança é em {{date}}. Cancele antes para não ser cobrado(a).",
+    "checkout_charge_after_trial_one": "Não precisa de cartão agora. Você tem 1 dia grátis; a primeira cobrança é em {{date}} se houver cartão cadastrado. Sem cartão até lá, a assinatura é cancelada sem cobrança.",
+    "checkout_charge_after_trial_other": "Não precisa de cartão agora. Você tem {{count}} dias grátis; a primeira cobrança é em {{date}} se houver cartão cadastrado. Sem cartão até lá, a assinatura é cancelada sem cobrança.",
     "checkout_charge_today": "A cobrança é feita no Stripe assim que você confirmar a assinatura.",
     "checkout_plan_includes_label": "O que o plano inclui"
   } as const;

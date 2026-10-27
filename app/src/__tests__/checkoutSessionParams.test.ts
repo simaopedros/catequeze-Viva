@@ -54,8 +54,11 @@ describe("buildStripeCheckoutSessionCreateParams", () => {
     expect(params.invoice_creation).toBeUndefined();
     expect(params.locale).toBe("pt-BR");
     expect(params.adaptive_pricing).toEqual({ enabled: false });
-    expect(params.payment_method_collection).toBe("always");
+    expect(params.payment_method_collection).toBe("if_required");
     expect(params.subscription_data?.trial_period_days).toBe(7);
+    expect(params.subscription_data?.trial_settings).toEqual({
+      end_behavior: { missing_payment_method: "cancel" },
+    });
     expect(params.metadata?.currency).toBe("BRL");
     expect(params.metadata?.value).toBe("9.9");
     expect(params.metadata?.trial_days).toBe("7");

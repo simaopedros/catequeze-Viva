@@ -22,6 +22,13 @@ export function getCheckoutTrialConfig(
 
   if (trialPeriodDays > 0) {
     subscriptionData.trial_period_days = trialPeriodDays;
+    subscriptionData.trial_settings = {
+      end_behavior: { missing_payment_method: 'cancel' },
+    };
+    return {
+      payment_method_collection: 'if_required',
+      subscription_data: subscriptionData,
+    };
   }
 
   if (Object.keys(subscriptionData).length > 0) {

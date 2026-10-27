@@ -120,7 +120,7 @@
   "checkout_redirect": "You will be redirected to your account page in {{seconds}} seconds...",
   "go_to_account": "Go to My Account",
   "trial_started_title": "Your 7-day trial has started",
-  "trial_started_description": "Your card is on file. You will be charged after the 7-day trial. Let's set up your workspace.",
+  "trial_started_description": "Your trial started with no card required. Add a card before the 7 days end to keep access; otherwise the subscription is canceled with no charge. Let's set up your workspace.",
   "trial_started_redirect": "You will be taken to billing in {{seconds}} seconds...",
   "trial_started_redirect_onboarding": "We'll continue setup in {{seconds}} seconds...",
   "go_to_billing": "Go to billing",
@@ -407,8 +407,8 @@
   },
   "checkout_cta_start_trial_one": "Start 1 free day",
   "checkout_cta_start_trial_other": "Start {{count}} free days",
-  "checkout_charge_after_trial_one": "Stripe asks for your card now. You get 1 free day and the first charge is on {{date}}. Cancel before then to avoid being charged.",
-  "checkout_charge_after_trial_other": "Stripe asks for your card now. You get {{count}} free days and the first charge is on {{date}}. Cancel before then to avoid being charged.",
+  "checkout_charge_after_trial_one": "No card needed now. You get 1 free day; the first charge is on {{date}} if a card is on file. Without a card by then, the subscription is canceled with no charge.",
+  "checkout_charge_after_trial_other": "No card needed now. You get {{count}} free days; the first charge is on {{date}} if a card is on file. Without a card by then, the subscription is canceled with no charge.",
   "checkout_charge_today": "You are charged on Stripe as soon as you confirm the subscription.",
   "checkout_plan_includes_label": "What the plan includes"
 }
