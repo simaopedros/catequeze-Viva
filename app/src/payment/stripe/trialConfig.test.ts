@@ -175,10 +175,13 @@ describe('resolveStripeCheckoutTrialDays', () => {
 });
 
 describe('getCheckoutTrialConfig', () => {
-  it('sets trial_period_days when days are granted', () => {
+  it('sets if_required + trial_settings when days are granted', () => {
     const config = getCheckoutTrialConfig('subscription', { plan_id: 'single' }, 7);
-    expect(config.payment_method_collection).toBe('always');
+    expect(config.payment_method_collection).toBe('if_required');
     expect(config.subscription_data?.trial_period_days).toBe(7);
+    expect(config.subscription_data?.trial_settings).toEqual({
+      end_behavior: { missing_payment_method: 'cancel' },
+    });
     expect(config.subscription_data?.metadata).toEqual({ plan_id: 'single' });
   });
 
@@ -186,6 +189,7 @@ describe('getCheckoutTrialConfig', () => {
     const config = getCheckoutTrialConfig('subscription', { plan_id: 'single' }, 0);
     expect(config.payment_method_collection).toBe('always');
     expect(config.subscription_data?.trial_period_days).toBeUndefined();
+    expect(config.subscription_data?.trial_settings).toBeUndefined();
     expect(JSON.stringify(config)).not.toMatch(/trial_period_days/);
   });
 
