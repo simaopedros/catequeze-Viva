@@ -32,4 +32,11 @@ describe("ProductTrialBanner query cache", () => {
     expect(banner).toContain("computeActivationFlags");
     expect(banner).toContain("firstValueReached");
   });
+
+  it("waits for the workspace so the query key is stable (no duplicate fetch)", () => {
+    expect(banner).toContain("!workspaceLoading");
+    expect(banner).toContain(
+      "Boolean(activeParishId) || availableWorkspaces.length === 0",
+    );
+  });
 });

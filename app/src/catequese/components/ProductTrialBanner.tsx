@@ -43,7 +43,13 @@ export function ProductTrialBanner({
 }) {
   const { t, i18n } = useTranslation("billing");
   const { data: user } = useAuth();
-  const { isPersonal, workspace, workspacePlan } = useActiveWorkspace();
+  const {
+    isPersonal,
+    workspace,
+    workspacePlan,
+    isLoading: workspaceLoading,
+    availableWorkspaces,
+  } = useActiveWorkspace();
   const { userRole, isAdmin } = useUserContext();
   const { activeParishId } = useActiveParish();
   const location = useLocation();
@@ -89,7 +95,14 @@ export function ProductTrialBanner({
     getDashboardStats,
     { parishId: activeParishId || undefined },
     {
-      enabled: onTrial && !onBillingOrOnboarding && Boolean(user),
+      // Wait for the workspace so the query key is stable ({parishId: undefined}
+      // then {parishId: id} used to fire two ~3s requests on every screen).
+      enabled:
+        onTrial &&
+        !onBillingOrOnboarding &&
+        Boolean(user) &&
+        !workspaceLoading &&
+        (Boolean(activeParishId) || availableWorkspaces.length === 0),
       staleTime: SHELL_CONTEXT_STALE_MS,
       refetchOnWindowFocus: false,
     },
