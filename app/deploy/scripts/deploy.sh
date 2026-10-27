@@ -19,6 +19,14 @@ if [[ -f "$CADDYFILE" ]]; then
     exit 1
   fi
   echo "Caddyfile OK: /api/* is routed to the backend."
+  # Prod only: missing /assets/* must 404, not fall through to index.html.
+  if [[ "$CADDYFILE" == "Caddyfile" ]]; then
+    if ! grep -qE 'handle[[:space:]]+/assets/\*' "$CADDYFILE"; then
+      echo "ERROR: $CADDYFILE is missing 'handle /assets/*' — stale chunk URLs would get MIME text/html."
+      exit 1
+    fi
+    echo "Caddyfile OK: /assets/* is served without SPA fallback."
+  fi
 else
   echo "WARN: $CADDYFILE not found in $(pwd); skipping /api/* proxy check."
 fi
