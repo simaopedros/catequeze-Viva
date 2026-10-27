@@ -1453,7 +1453,7 @@ page AppDocumentsPage {
 
 query listDocuments {
   fn: import { listDocuments } from "@src/server/operations/documentOperations",
-  entities: [Document, Membership, CatechesisClass, ClassEnrollment]
+  entities: [Document, Membership, CatechesisClass, ClassEnrollment, ClassCatechist, GuardianProfile, CatechumenProfile, Household, Parish]
 }
 
 action uploadDocument {
