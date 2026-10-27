@@ -70,7 +70,10 @@ function overviewContext() {
   return {
     user: ADMIN,
     entities: {
-      User: { count: vi.fn().mockResolvedValue(5) },
+      User: {
+        count: vi.fn().mockResolvedValue(5),
+        findMany: vi.fn().mockResolvedValue([{ subscriptionPlan: "single" }]),
+      },
       Parish: { count: vi.fn().mockResolvedValue(5) },
       CatechesisClass: { count: vi.fn().mockResolvedValue(5) },
       ClassEnrollment: { count: vi.fn().mockResolvedValue(5) },
@@ -109,6 +112,7 @@ describe("getPlatformOverview cache", () => {
     expect(getAccountStatusCounts).toHaveBeenCalledTimes(1);
     // 3 User.count calls on first load only (total / 7d / 30d) — second hit is cached.
     expect(ctx.entities.User.count).toHaveBeenCalledTimes(3);
+    expect(ctx.entities.User.findMany).toHaveBeenCalledTimes(1);
     expect(ctx.entities.TenantBilling.findMany).toHaveBeenCalledTimes(1);
   });
 });

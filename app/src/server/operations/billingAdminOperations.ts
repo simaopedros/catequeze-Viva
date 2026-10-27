@@ -11,6 +11,10 @@ import { getPlanLimits } from "../../shared/planCatalog";
 import { BILLING_MANAGER_ROLES } from "../../shared/billingAccess";
 import { stripeClient } from "../../payment/stripe/stripeClient";
 import { SubscriptionStatus } from "../../payment/plans";
+import {
+  deriveLicenseStatus,
+  resolveLicensePlanSlug,
+} from "../billing/licenseDisplay";
 
 const MANAGEABLE = new Set(["trialing", "active", "past_due"]);
 
@@ -44,6 +48,10 @@ const OWNER_USER_SELECT = {
   firstName: true,
   lastName: true,
   paymentProcessorUserId: true,
+  subscriptionPlan: true,
+  subscriptionStatus: true,
+  stripeSubscriptionId: true,
+  trialEndsAt: true,
 } as const;
 
 const BILLING_MANAGER_ROLE_PRIORITY: Record<string, number> = {
@@ -61,6 +69,10 @@ export type LicenseOwnerUser = {
   firstName?: string | null;
   lastName?: string | null;
   paymentProcessorUserId?: string | null;
+  subscriptionPlan?: string | null;
+  subscriptionStatus?: string | null;
+  stripeSubscriptionId?: string | null;
+  trialEndsAt?: Date | string | null;
 };
 
 export function toLicenseOwnerFields(
@@ -202,6 +214,17 @@ export const listAdminLicenses = async (_args: void, context: any) => {
   const parishRows = (parishes as any[]).map((parish) => {
     const owner =
       parish.owner ?? pickBestBillingManager(parish.memberships ?? []);
+    const plan = resolveLicensePlanSlug({
+      billingPlan: parish.billing?.plan ?? null,
+      ownerPlan: owner?.subscriptionPlan ?? null,
+    });
+    const status = deriveLicenseStatus({
+      ownerSubscriptionStatus: owner?.subscriptionStatus,
+      ownerStripeSubscriptionId: owner?.stripeSubscriptionId,
+      ownerTrialEndsAt: owner?.trialEndsAt,
+      billingStatus: parish.billing?.status ?? null,
+      billingTrialEndsAt: parish.billing?.trialEndsAt ?? null,
+    });
     return {
       id: parish.billing?.id ?? `parish:${parish.id}`,
       billingId: parish.billing?.id ?? null,
@@ -209,27 +232,44 @@ export const listAdminLicenses = async (_args: void, context: any) => {
       entityId: parish.id,
       name: parish.name,
       type: parish.type,
-      plan: parish.billing?.plan ?? null,
-      status: parish.billing?.status ?? null,
-      trialEndsAt: parish.billing?.trialEndsAt ?? null,
+      plan,
+      status,
+      billingStatus: parish.billing?.status ?? null,
+      trialEndsAt:
+        parish.billing?.trialEndsAt ?? owner?.trialEndsAt ?? null,
       ...toLicenseOwnerFields(owner),
       active: parish.active,
     };
   });
 
-  const dioceseRows = (dioceseBillings as any[]).map((row) => ({
-    id: row.id,
-    billingId: row.id,
-    kind: "diocese" as const,
-    entityId: row.dioceseId,
-    name: row.diocese?.name ?? "Diocese",
-    type: "DIOCESE",
-    plan: row.plan,
-    status: row.status,
-    trialEndsAt: row.trialEndsAt,
-    ...toLicenseOwnerFields(dioceseOwnerById.get(row.dioceseId)),
-    active: true,
-  }));
+  const dioceseRows = (dioceseBillings as any[]).map((row) => {
+    const owner = dioceseOwnerById.get(row.dioceseId);
+    const plan = resolveLicensePlanSlug({
+      billingPlan: row.plan,
+      ownerPlan: owner?.subscriptionPlan ?? null,
+    });
+    const status = deriveLicenseStatus({
+      ownerSubscriptionStatus: owner?.subscriptionStatus,
+      ownerStripeSubscriptionId: owner?.stripeSubscriptionId,
+      ownerTrialEndsAt: owner?.trialEndsAt,
+      billingStatus: row.status,
+      billingTrialEndsAt: row.trialEndsAt,
+    });
+    return {
+      id: row.id,
+      billingId: row.id,
+      kind: "diocese" as const,
+      entityId: row.dioceseId,
+      name: row.diocese?.name ?? "Diocese",
+      type: "DIOCESE",
+      plan,
+      status,
+      billingStatus: row.status,
+      trialEndsAt: row.trialEndsAt,
+      ...toLicenseOwnerFields(owner),
+      active: true,
+    };
+  });
 
   return [...parishRows, ...dioceseRows];
 };

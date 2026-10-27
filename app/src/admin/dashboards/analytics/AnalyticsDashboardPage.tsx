@@ -81,6 +81,10 @@ const Dashboard = ({ user }: { user: AuthUser }) => {
     {
       label: t("pages.dashboard.manual_active"),
       value: overview?.manualActiveUsers,
+      subtitle: t("pages.dashboard.manual_breakdown", {
+        users: overview?.manualActiveUsers || 0,
+        tenants: overview?.manualActiveTenants || 0,
+      }),
     },
     {
       label: t("pages.dashboard.mrr"),

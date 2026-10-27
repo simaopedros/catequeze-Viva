@@ -15,7 +15,7 @@ import {
   Share2,
   Users,
 } from "lucide-react";
-import { formatDateTime } from "../../../i18n/format";
+import { formatDateTime, formatPercent } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
 import {
   SkeletonCard,
@@ -59,8 +59,8 @@ type FunnelData = {
   }>;
 };
 
-function percent(value: number | null): string {
-  return value == null ? "—" : `${value.toFixed(1)}%`;
+function percent(value: number | null, locale: string): string {
+  return formatPercent(value, locale, { digits: 1 });
 }
 
 function pretty(value: string | null | undefined): string {
@@ -77,6 +77,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
   };
 
   const counts = data?.counts30d;
+  const pct = (value: number | null) => percent(value, currentLocale);
   const topCards = [
     {
       label: t("pages.analytics.landing_views"),
@@ -89,25 +90,25 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
     {
       label: t("pages.analytics.pricing_views"),
       value: counts?.pricing_viewed ?? 0,
-      subtitle: percent(data?.conversion30d.landingToPricing ?? null),
+      subtitle: pct(data?.conversion30d.landingToPricing ?? null),
       icon: MousePointerClick,
     },
     {
       label: t("pages.analytics.checkout_started"),
       value: counts?.checkout_started ?? 0,
-      subtitle: percent(data?.conversion30d.signupToCheckout ?? null),
+      subtitle: pct(data?.conversion30d.signupToCheckout ?? null),
       icon: CreditCard,
     },
     {
       label: t("pages.analytics.purchases"),
       value: counts?.purchase_completed ?? 0,
-      subtitle: percent(data?.conversion30d.checkoutToPurchase ?? null),
+      subtitle: pct(data?.conversion30d.checkoutToPurchase ?? null),
       icon: ShoppingCart,
     },
     {
       label: t("pages.analytics.activations"),
       value: counts?.activation_completed ?? 0,
-      subtitle: percent(data?.conversion30d.purchaseToActivation ?? null),
+      subtitle: pct(data?.conversion30d.purchaseToActivation ?? null),
       icon: Rocket,
     },
   ];
@@ -215,7 +216,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                           </p>
                         </div>
                         <span className="rounded-sm bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
-                          {percent(step.rate)}
+                          {pct(step.rate)}
                         </span>
                       </div>
                     </div>
@@ -244,7 +245,7 @@ const AnalyticsPage = ({ user }: { user: AuthUser }) => {
                     <div className="flex items-center justify-between">
                       <span>{t("pages.analytics.invite_acceptance")}</span>
                       <strong>
-                        {percent(data?.conversion30d.inviteAcceptance ?? null)}
+                        {pct(data?.conversion30d.inviteAcceptance ?? null)}
                       </strong>
                     </div>
                     <div className="flex items-center justify-between">

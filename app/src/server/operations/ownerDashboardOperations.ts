@@ -5,11 +5,7 @@
 import type Stripe from "stripe";
 import { requirePlatformAdmin } from "../auth/helpers";
 import { stripeClient } from "../../payment/stripe/stripeClient";
-import {
-  getPlanPriceCents,
-  resolvePlanIdOrFree,
-  PRISMA_FREE_PLANS,
-} from "../../shared/pricing";
+import { getPlanPriceCents, resolvePlanIdOrFree } from "../../shared/pricing";
 import { loadPlanCatalog } from "../pricing/planCatalogService";
 import type { CatalogBySlug } from "../../shared/planCatalog";
 import {
@@ -30,7 +26,10 @@ import {
   type PaidInvoiceLike,
   type StripeRecurringItemLike,
 } from "./ownerDashboardHelpers";
-import { getAccountStatusCounts } from "../billing/accountStatusCounts";
+import {
+  getAccountStatusCounts,
+  PAYING_TENANT_WHERE,
+} from "../billing/accountStatusCounts";
 
 const DAY_MS = 86_400_000;
 
@@ -106,6 +105,8 @@ async function fetchStripeRevenueAndMrr(now: Date): Promise<{
   currentMonthRevenueBrl: number;
   mrrBrl: number | null;
   canceledAtByMonth: Array<{ at: Date }>;
+  newPayingAtByMonth: Array<{ at: Date }>;
+  skippedNonLiveInvoices: number;
   revenueError: string | null;
 }> {
   const months = lastNMonthKeys(12, now, TIMEZONE);
@@ -114,31 +115,41 @@ async function fetchStripeRevenueAndMrr(now: Date): Promise<{
   const createdGte = Math.floor(twelveMonthsAgo.getTime() / 1000);
 
   try {
-    const [invoices, activeSubs, canceledSubs] = await Promise.all([
-      listAllStripePages<Stripe.Invoice>(async (params) => {
-        const page = await stripeClient.invoices.list({
-          ...params,
-          status: "paid",
-          created: { gte: createdGte },
-        });
-        return { data: page.data, has_more: page.has_more };
-      }),
-      listAllStripePages<Stripe.Subscription>(async (params) => {
-        const page = await stripeClient.subscriptions.list({
-          ...params,
-          status: "active",
-        });
-        return { data: page.data, has_more: page.has_more };
-      }),
-      listAllStripePages<Stripe.Subscription>(async (params) => {
-        const page = await stripeClient.subscriptions.list({
-          ...params,
-          status: "canceled",
-          created: { gte: createdGte },
-        });
-        return { data: page.data, has_more: page.has_more };
-      }),
-    ]);
+    const [invoices, activeSubs, canceledSubs, allRecentSubs] =
+      await Promise.all([
+        listAllStripePages<Stripe.Invoice>(async (params) => {
+          const page = await stripeClient.invoices.list({
+            ...params,
+            status: "paid",
+            created: { gte: createdGte },
+          });
+          return { data: page.data, has_more: page.has_more };
+        }),
+        listAllStripePages<Stripe.Subscription>(async (params) => {
+          const page = await stripeClient.subscriptions.list({
+            ...params,
+            status: "active",
+          });
+          return { data: page.data, has_more: page.has_more };
+        }),
+        listAllStripePages<Stripe.Subscription>(async (params) => {
+          const page = await stripeClient.subscriptions.list({
+            ...params,
+            status: "canceled",
+            created: { gte: createdGte },
+          });
+          return { data: page.data, has_more: page.has_more };
+        }),
+        // New payers: bucket by subscription start_date (America/Sao_Paulo), not created.
+        listAllStripePages<Stripe.Subscription>(async (params) => {
+          const page = await stripeClient.subscriptions.list({
+            ...params,
+            status: "all",
+            created: { gte: createdGte },
+          });
+          return { data: page.data, has_more: page.has_more };
+        }),
+      ]);
 
     // Optional read-only charges list (not used for totals; validates access path).
     try {
@@ -149,23 +160,45 @@ async function fetchStripeRevenueAndMrr(now: Date): Promise<{
 
     const paidLike: PaidInvoiceLike[] = invoices.map((inv) => ({
       amountPaidCents: inv.amount_paid ?? 0,
+      // Stripe Invoice exposes refunds via post-payment credit notes (not amount_refunded).
+      amountRefundedCents: inv.post_payment_credit_notes_amount ?? 0,
       currency: inv.currency,
       paidAt: invoicePaidAt(inv),
       status: inv.status,
+      livemode: inv.livemode,
     }));
 
-    const { byMonth, currentMonthTotalBrl } = aggregatePaidInvoicesByMonth(
-      paidLike,
-      months,
-      { timeZone: TIMEZONE, currency: "brl" },
-    );
+    const { byMonth, currentMonthTotalBrl, skippedNonLive } =
+      aggregatePaidInvoicesByMonth(paidLike, months, {
+        timeZone: TIMEZONE,
+        currency: "brl",
+      });
 
-    const recurringItems = activeSubs.flatMap(subscriptionRecurringItems);
+    const liveActiveSubs = activeSubs.filter((sub) => sub.livemode !== false);
+    const recurringItems = liveActiveSubs.flatMap(subscriptionRecurringItems);
     const mrrBrl = sumStripeMrrBrl(recurringItems);
 
     const canceledAtByMonth = canceledSubs
+      .filter((sub) => sub.livemode !== false)
       .map((sub) => {
         const ts = sub.canceled_at ?? sub.ended_at ?? sub.created;
+        return { at: new Date(ts * 1000) };
+      })
+      .filter((row) => !Number.isNaN(row.at.getTime()));
+
+    const payingStartStatuses = new Set([
+      "active",
+      "past_due",
+      "canceled",
+      "unpaid",
+      "paused",
+    ]);
+    const newPayingAtByMonth = allRecentSubs
+      .filter(
+        (sub) => sub.livemode !== false && payingStartStatuses.has(sub.status),
+      )
+      .map((sub) => {
+        const ts = sub.start_date ?? sub.created;
         return { at: new Date(ts * 1000) };
       })
       .filter((row) => !Number.isNaN(row.at.getTime()));
@@ -175,6 +208,8 @@ async function fetchStripeRevenueAndMrr(now: Date): Promise<{
       currentMonthRevenueBrl: currentMonthTotalBrl,
       mrrBrl,
       canceledAtByMonth,
+      newPayingAtByMonth,
+      skippedNonLiveInvoices: skippedNonLive,
       revenueError: null,
     };
   } catch (err) {
@@ -185,6 +220,8 @@ async function fetchStripeRevenueAndMrr(now: Date): Promise<{
       currentMonthRevenueBrl: 0,
       mrrBrl: null,
       canceledAtByMonth: [],
+      newPayingAtByMonth: [],
+      skippedNonLiveInvoices: 0,
       revenueError: message,
     };
   }
@@ -250,10 +287,7 @@ export const getOwnerDashboard = async (_args: void, context: any) => {
       },
     }),
     context.entities.TenantBilling.findMany({
-      where: {
-        status: "ACTIVE",
-        plan: { notIn: [...PRISMA_FREE_PLANS] },
-      },
+      where: { ...PAYING_TENANT_WHERE },
       select: { plan: true },
     }),
     context.entities.User.findMany({
@@ -293,8 +327,9 @@ export const getOwnerDashboard = async (_args: void, context: any) => {
         createdAt: { gte: thirtyDaysAgo },
       },
     }),
-    context.entities.FunnelEvent.count({
-      where: { type: "checkout_started" },
+    // Same source as Analytics (PricingEvent) — FunnelEvent was 0 while PricingEvent had 1.
+    context.entities.PricingEvent.count({
+      where: { event: "checkout_started" },
     }),
     context.entities.PricingEvent.findMany({
       where: {
@@ -407,11 +442,23 @@ export const getOwnerDashboard = async (_args: void, context: any) => {
     cancellationsFromStripe,
   );
 
-  const newPayingPerMonth = aggregateEventCountsByMonth(
+  // Prefer Stripe subscription start_date (America/Sao_Paulo); fall back to purchase events.
+  const newPayingFromStripe = aggregateEventCountsByMonth(
+    stripe.newPayingAtByMonth,
+    months,
+    TIMEZONE,
+  );
+  const newPayingFromPurchases = aggregateEventCountsByMonth(
     purchaseEvents.map((e: { createdAt: Date }) => ({ at: e.createdAt })),
     months,
     TIMEZONE,
   );
+  const stripeNewPayingTotal = newPayingFromStripe.reduce(
+    (sum, row) => sum + row.count,
+    0,
+  );
+  const newPayingPerMonth =
+    stripeNewPayingTotal > 0 ? newPayingFromStripe : newPayingFromPurchases;
 
   const purchaseUserIds = new Set(
     purchaseEvents
@@ -517,7 +564,7 @@ export const getOwnerDashboard = async (_args: void, context: any) => {
     ).map((u) => ({
       id: u.id,
       kind: "user" as const,
-      accountName: displayAccountName(u),
+      accountName: displayAccountName(u, { allowEmailFallback: false }),
       email: u.email,
       plan: u.subscriptionPlan,
       since:
@@ -570,7 +617,7 @@ export const getOwnerDashboard = async (_args: void, context: any) => {
       return {
         id: u.id,
         kind: "user" as const,
-        accountName: displayAccountName(u),
+        accountName: displayAccountName(u, { allowEmailFallback: false }),
         email: u.email,
         endsAt: end.toISOString(),
         windowDays: isWithinDaysForward(end, now, 7) ? 7 : 14,
@@ -622,6 +669,10 @@ export const getOwnerDashboard = async (_args: void, context: any) => {
   return {
     generatedAt: now.toISOString(),
     revenueError: stripe.revenueError,
+    revenueNote:
+      stripe.skippedNonLiveInvoices > 0
+        ? "excluded_non_live_or_zero"
+        : null,
     revenue: {
       byMonth: stripe.revenueByMonth,
       currentMonthTotalBrl: stripe.currentMonthRevenueBrl,

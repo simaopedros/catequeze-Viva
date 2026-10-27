@@ -1,29 +1,52 @@
 /**
  * Single source of truth for platform admin subscription / trial aggregate counts.
+ *
+ * Paying = real Stripe money: User.stripeSubscriptionId set and status active/past_due.
+ * TenantBilling has no Stripe subscription field — a tenant counts as paying only when
+ * its parish owner is a Stripe payer (or a future TenantBilling stripe link exists).
+ * ACTIVE non-free tenants whose owner has no Stripe sub are "liberado manualmente".
  */
 import { PRISMA_FREE_PLANS } from '../../shared/pricing';
 
+/** User subscription statuses that count as Stripe-paid. */
+export const PAYING_SUBSCRIPTION_STATUSES = ['active', 'past_due'] as const;
+
 /** User rows that count as Stripe-paid subscribers. */
 export const PAYING_USER_WHERE = {
-  subscriptionStatus: 'active',
   stripeSubscriptionId: { not: null },
+  subscriptionStatus: { in: [...PAYING_SUBSCRIPTION_STATUSES] },
 } as const;
 
-/** TenantBilling rows that count as paid tenants (non-free ACTIVE). */
+/**
+ * TenantBilling rows that count as paid tenants: ACTIVE non-free whose parish
+ * owner is a Stripe payer. (TenantBilling has no stripeSubscriptionId today.)
+ */
 export const PAYING_TENANT_WHERE = {
   status: 'ACTIVE',
   plan: { notIn: [...PRISMA_FREE_PLANS] },
+  parish: {
+    owner: { ...PAYING_USER_WHERE },
+  },
 } as const;
 
 /**
  * TenantBilling rows whose parish owner is already a paying User — same person
  * (e.g. solo catechist with personal-space TenantBilling ACTIVE).
+ * Under PAYING_TENANT_WHERE this is the full paying-tenant set for parish rows.
  */
 export const DOUBLE_COUNTED_TENANT_WHERE = {
   ...PAYING_TENANT_WHERE,
-  parish: {
-    owner: { ...PAYING_USER_WHERE },
-  },
+} as const;
+
+/** ACTIVE non-free tenants whose owner has no Stripe subscription (courtesy). */
+export const MANUAL_TENANT_WHERE = {
+  status: 'ACTIVE',
+  plan: { notIn: [...PRISMA_FREE_PLANS] },
+  OR: [
+    { parish: { owner: { stripeSubscriptionId: null } } },
+    { parish: { ownerId: null } },
+    { parishId: null, dioceseId: { not: null } },
+  ],
 } as const;
 
 export type AccountStatusCounts = {
@@ -32,6 +55,7 @@ export type AccountStatusCounts = {
   /** Paying users + paying tenants minus tenants owned by an already-counted paying user. */
   uniquePayers: number;
   manualActiveUsers: number;
+  manualActiveTenants: number;
   trialUsers: number;
   trialTenants: number;
   expiredTrialUsers: number;
@@ -67,6 +91,7 @@ export async function getAccountStatusCounts(
     payingUsers,
     tenantsOwnedByPayingUsers,
     manualActiveUsers,
+    manualActiveTenants,
     trialUsers,
     trialTenants,
     expiredTrialUsers,
@@ -90,6 +115,9 @@ export async function getAccountStatusCounts(
         subscriptionStatus: 'active',
         stripeSubscriptionId: null,
       },
+    }),
+    context.entities.TenantBilling.count({
+      where: { ...MANUAL_TENANT_WHERE },
     }),
     context.entities.User.count({
       where: {
@@ -144,6 +172,7 @@ export async function getAccountStatusCounts(
       tenantsOwnedByPayingUsers,
     ),
     manualActiveUsers,
+    manualActiveTenants,
     trialUsers,
     trialTenants,
     expiredTrialUsers,
@@ -167,6 +196,9 @@ export async function countPayingForPlan(context: { entities: any }, slug: strin
       where: {
         plan: { in: aliases },
         status: 'ACTIVE',
+        parish: {
+          owner: { ...PAYING_USER_WHERE },
+        },
       },
     }),
     context.entities.TenantBilling.count({

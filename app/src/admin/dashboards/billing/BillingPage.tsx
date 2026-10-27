@@ -104,15 +104,6 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
 
   const resolveStatusLabel = (row: LicenseRow) => {
     if (!row.status) return "—";
-    const isTrial =
-      row.status === "TRIAL" || row.status === "trialing";
-    if (
-      isTrial &&
-      row.trialEndsAt &&
-      new Date(row.trialEndsAt).getTime() < Date.now()
-    ) {
-      return t("pages.licenses.status_trial_expired");
-    }
     const key = `pages.licenses.status_${row.status}`;
     const translated = t(key);
     return translated === key ? row.status : translated;
@@ -138,12 +129,20 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
 
   const statusIcon = (status: string | null) => {
     switch (status) {
+      case "paying":
       case "ACTIVE":
+      case "active":
         return <BadgeCheck className="h-3.5 w-3.5 text-[#071A2D]" />;
+      case "trialing":
       case "TRIAL":
         return <CircleDot className="h-3.5 w-3.5 text-[#071A2D]" />;
+      case "manual":
+        return <BadgeCheck className="h-3.5 w-3.5 text-[#8A6418]" />;
+      case "past_due":
       case "PAST_DUE":
+      case "trial_expired":
         return <AlertTriangle className="h-3.5 w-3.5 text-[#8A6418]" />;
+      case "canceled":
       case "CANCELED":
         return <AlertTriangle className="h-3.5 w-3.5 text-destructive" />;
       default:
