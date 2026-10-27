@@ -184,7 +184,14 @@ jobs:
             sleep 3
             docker compose -f docker-compose.yml exec -T caddy caddy reload --config /etc/caddy/Caddyfile \
               || echo "⚠️ caddy reload falhou — o force-recreate acima já deveria ter carregado o Caddyfile"
-            sleep 5
+            # Espera a migracao do proprio container terminar antes de rodar a
+            # segunda: as duas disputavam o advisory lock do Prisma (P1002).
+            for i in $(seq 1 36); do
+              if docker compose -f docker-compose.yml logs --tail 300 server 2>&1 | grep -q "Server listening"; then
+                break
+              fi
+              sleep 5
+            done
             docker compose -f docker-compose.yml run --rm --entrypoint "npx" server prisma migrate deploy --schema=../db/schema.prisma
             sleep 5
             # Journey templates must land before the deploy finishes. The old
