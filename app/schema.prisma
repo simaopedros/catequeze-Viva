@@ -1941,6 +1941,18 @@ model Logs {
   level   String
 }
 
+/// Execution history for maintenance / cron-style jobs (adopt via recordJobRun).
+model JobRun {
+  id         String    @id @default(uuid())
+  name       String
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+  ok         Boolean?
+  error      String?
+
+  @@index([name, startedAt])
+}
+
 model ContactFormMessage {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())

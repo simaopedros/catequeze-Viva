@@ -230,7 +230,11 @@ describe("getSystemHealth credits", () => {
   it("counts users with UserAiCredits.creditsLeft > 0", async () => {
     const entities = {
       DailyStats: { findMany: vi.fn().mockResolvedValue([]) },
-      Logs: { findMany: vi.fn().mockResolvedValue([]) },
+      Logs: {
+        findMany: vi.fn().mockResolvedValue([]),
+        findFirst: vi.fn().mockResolvedValue(null),
+      },
+      JobRun: { findFirst: vi.fn().mockResolvedValue(null) },
       DailyAiUsage: {
         aggregate: vi.fn().mockResolvedValue({ _sum: { count: 0 } }),
       },
@@ -244,6 +248,13 @@ describe("getSystemHealth credits", () => {
       expect.objectContaining({ _sum: { count: true } }),
     );
     expect(result.usersWithCredits).toBe(4);
+    expect(result.jobs).toHaveLength(6);
+    expect(result.jobs[0]).toMatchObject({
+      name: "aiCreditsReset",
+      lastRunAt: null,
+      lastRunOk: null,
+      lastErrorAt: null,
+    });
   });
 });
 
