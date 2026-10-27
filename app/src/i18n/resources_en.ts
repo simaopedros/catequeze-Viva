@@ -149,6 +149,7 @@ export const admin_en = {
       "overview": "Overview",
       "dashboard": "Dashboard",
       "analytics": "Analytics",
+      "owner": "Owner view",
       "governance": "Governance",
       "parishes": "Parishes",
       "users": "Users",
@@ -657,6 +658,77 @@ export const admin_en = {
         "status_cancel_at_period_end": "Cancels at period end",
         "status_trial_expired": "Expired trial",
         "action_error": "Could not complete the action."
+      },
+      "owner": {
+        "title": "Owner view",
+        "subtitle": "Revenue, conversion, delinquency, trials, and email health — computed live (no DailyStats).",
+        "export_csv": "Export CSV",
+        "empty": "No data for this period.",
+        "yes": "Yes",
+        "no": "No",
+        "revenue_error": "Stripe unavailable: {{message}}. Other metrics are still available.",
+        "kpi": {
+          "current_month_revenue": "Current month revenue (BRL)",
+          "mrr": "MRR now",
+          "paying_accounts": "Paying accounts",
+          "payment_failed_30d": "Payment failures (30d)"
+        },
+        "sections": {
+          "signup_funnel": "Signup funnel",
+          "revenue": "Revenue, new paying, and cancellations (12 months)",
+          "cohorts": "Trial → paid conversion by signup cohort",
+          "activation": "Activation and retention by signup month",
+          "delinquency": "Delinquency ({{users}} users · {{tenants}} tenants)",
+          "trials": "Trials expiring (7d: {{d7}} · 14d: {{d14}})",
+          "email_health": "Email health (30 days)"
+        },
+        "funnel": {
+          "signups": "Signups",
+          "joined_parish": "Joined parish",
+          "created_class": "Created class",
+          "checkout_started": "Checkout started",
+          "paying": "Paying"
+        },
+        "cols": {
+          "month": "Month",
+          "revenue": "Revenue",
+          "new_paying": "New paying",
+          "cancellations": "Cancellations",
+          "signups": "Signups",
+          "had_trial": "Had trial",
+          "became_paying": "Became paying",
+          "conversion": "Conversion",
+          "created_class_pct": "% created class",
+          "attendance_pct": "% recorded attendance",
+          "account": "Account",
+          "email": "Email",
+          "plan": "Plan",
+          "since": "Since",
+          "ends_at": "Ends at",
+          "has_class": "Has class",
+          "day": "Day"
+        },
+        "email": {
+          "suppressions": "Suppressions",
+          "opt_outs": "Opt-outs",
+          "lifecycle_logs": "Lifecycle logs"
+        },
+        "csv": {
+          "account": "account",
+          "email": "email",
+          "ends_at": "ends_at",
+          "window": "window_days",
+          "has_class": "has_class",
+          "plan": "plan",
+          "since": "since",
+          "kind": "kind",
+          "month": "month",
+          "amount_brl": "amount_brl",
+          "signups": "signups",
+          "had_trial": "had_trial",
+          "became_paying": "became_paying",
+          "conversion": "conversion_pct"
+        }
       }
     },
     "loading": "Loading…",

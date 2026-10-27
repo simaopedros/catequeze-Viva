@@ -12,6 +12,7 @@ import {
   Flag,
   Tags,
   Newspaper,
+  Briefcase,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router";
@@ -118,6 +119,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 <NavLink to="/admin/analytics" end className={navLinkClass}>
                   <BarChart3 />
                   {t("sidebar.analytics")}
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/dono" end className={navLinkClass}>
+                  <Briefcase />
+                  {t("sidebar.owner")}
                 </NavLink>
               </li>
             </ul>

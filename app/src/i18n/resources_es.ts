@@ -149,6 +149,7 @@ export const admin_es = {
       "overview": "Vista General",
       "dashboard": "Panel",
       "analytics": "Analíticas",
+      "owner": "Visión del dueño",
       "governance": "Gobernanza",
       "parishes": "Parroquias",
       "users": "Usuarios",
@@ -657,6 +658,77 @@ export const admin_es = {
         "status_cancel_at_period_end": "Cancela al final del período",
         "status_trial_expired": "Prueba vencida",
         "action_error": "No fue posible completar la acción."
+      },
+      "owner": {
+        "title": "Visión del dueño",
+        "subtitle": "Ingresos, conversión, morosidad, trials y salud de email — calculados en vivo (sin DailyStats).",
+        "export_csv": "Exportar CSV",
+        "empty": "Sin datos en este período.",
+        "yes": "Sí",
+        "no": "No",
+        "revenue_error": "Stripe no disponible: {{message}}. Las demás métricas siguen disponibles.",
+        "kpi": {
+          "current_month_revenue": "Ingresos del mes (BRL)",
+          "mrr": "MRR ahora",
+          "paying_accounts": "Cuentas pagadoras",
+          "payment_failed_30d": "Fallos de pago (30d)"
+        },
+        "sections": {
+          "signup_funnel": "Embudo de registro",
+          "revenue": "Ingresos, nuevos pagadores y cancelaciones (12 meses)",
+          "cohorts": "Conversión trial → pago por cohorte de registro",
+          "activation": "Activación y retención por mes de registro",
+          "delinquency": "Morosidad ({{users}} usuarios · {{tenants}} tenants)",
+          "trials": "Trials por expirar (7d: {{d7}} · 14d: {{d14}})",
+          "email_health": "Salud de email (30 días)"
+        },
+        "funnel": {
+          "signups": "Registros",
+          "joined_parish": "Entró a parroquia",
+          "created_class": "Creó clase",
+          "checkout_started": "Checkout iniciado",
+          "paying": "Pagadores"
+        },
+        "cols": {
+          "month": "Mes",
+          "revenue": "Ingresos",
+          "new_paying": "Nuevos pagadores",
+          "cancellations": "Cancelaciones",
+          "signups": "Registros",
+          "had_trial": "Tuvieron trial",
+          "became_paying": "Pasaron a pago",
+          "conversion": "Conversión",
+          "created_class_pct": "% creó clase",
+          "attendance_pct": "% registró asistencia",
+          "account": "Cuenta",
+          "email": "Email",
+          "plan": "Plan",
+          "since": "Desde",
+          "ends_at": "Termina el",
+          "has_class": "Tiene clase",
+          "day": "Día"
+        },
+        "email": {
+          "suppressions": "Suppressions",
+          "opt_outs": "Opt-outs",
+          "lifecycle_logs": "Logs de lifecycle"
+        },
+        "csv": {
+          "account": "cuenta",
+          "email": "email",
+          "ends_at": "termina_en",
+          "window": "ventana_dias",
+          "has_class": "tiene_clase",
+          "plan": "plan",
+          "since": "desde",
+          "kind": "tipo",
+          "month": "mes",
+          "amount_brl": "monto_brl",
+          "signups": "registros",
+          "had_trial": "tuvieron_trial",
+          "became_paying": "pasaron_a_pago",
+          "conversion": "conversion_pct"
+        }
       }
     },
     "loading": "Cargando…",
