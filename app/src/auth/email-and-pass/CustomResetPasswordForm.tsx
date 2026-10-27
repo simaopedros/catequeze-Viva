@@ -111,7 +111,7 @@ export default function CustomResetPasswordForm() {
             />
             <button
               type="button"
-              className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="absolute inset-y-0 right-0 flex min-h-11 min-w-11 items-center justify-center text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={
                 showPassword ? t("aria_hide_password") : t("aria_show_password")

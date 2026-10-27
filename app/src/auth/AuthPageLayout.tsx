@@ -129,7 +129,7 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
                       type="button"
                       onClick={() => setLocale(locale)}
                       className={cn(
-                        "rounded-sm px-0.5 py-0.5 transition-colors",
+                        "inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm px-2 py-2 transition-colors",
                         currentLocale === locale
                           ? "font-semibold text-brand-ink"
                           : "hover:text-brand-ink",
