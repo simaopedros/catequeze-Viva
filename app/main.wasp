@@ -1950,6 +1950,12 @@ api maintenanceApi {
   entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish, SocialMedia, LifecycleEmailLog, Membership, ClassEnrollment, AttendanceRecord, PricingPlan, PricingPlanPrice, PricingEvent, EmailMessage, EmailSuppression, EmailPreference]
 }
 
+api subscriptionExpirationApi {
+  fn: import { subscriptionExpirationHandler } from "@src/server/api/subscriptionExpiration",
+  httpRoute: (POST, "/api/internal/subscription-expiration"),
+  entities: [User, TenantBilling, Parish, Notification, EmailMessage, EmailSuppression, EmailPreference]
+}
+
 api lifecycleUnsubscribeApi {
   fn: import { lifecycleUnsubscribeHandler } from "@src/server/api/lifecycleUnsubscribe",
   httpRoute: (GET, "/api/lifecycle/unsubscribe"),

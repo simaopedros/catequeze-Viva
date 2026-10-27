@@ -1,4 +1,3 @@
-import { timingSafeEqual } from "node:crypto";
 import type { Request, Response } from "express";
 import { calculateDailyStats } from "../../analytics/stats";
 import { logger } from "../logger";
@@ -6,9 +5,11 @@ import { cleanupAiCacheJob } from "../scripts/aiCacheCleanupJob";
 import { resetAiCreditsJob } from "../scripts/aiCreditsResetJob";
 import { sendRemindersJob } from "../scripts/remindersJob";
 import { reconcileSocialMediaJob } from "../scripts/socialMediaReconcileJob";
-import { expireSubscriptionsJob } from "../scripts/subscriptionExpirationJob";
 import { lifecycleNudgeJob } from "../scripts/lifecycleNudgeJob";
 import { processEmailOutbox } from "../email/service";
+import { maintenanceSecretMatches } from "./maintenanceAuth";
+
+export { maintenanceSecretMatches } from "./maintenanceAuth";
 
 type MaintenanceTask = {
   name: string;
@@ -22,21 +23,10 @@ function headerValue(req: Request): string {
   return Array.isArray(value) ? value[0] ?? "" : value ?? "";
 }
 
-export function maintenanceSecretMatches(
-  provided: string,
-  expected: string,
-): boolean {
-  const providedBuffer = Buffer.from(provided);
-  const expectedBuffer = Buffer.from(expected);
-  return (
-    providedBuffer.length === expectedBuffer.length &&
-    timingSafeEqual(providedBuffer, expectedBuffer)
-  );
-}
-
 /**
  * Runs all periodic database work once, without keeping a PostgreSQL-backed
  * queue alive between executions. Invoke daily from the VPS cron.
+ * Does not expire trials — see `/api/internal/subscription-expiration`.
  */
 export async function maintenanceHandler(
   req: Request,
@@ -66,7 +56,7 @@ export async function maintenanceHandler(
   const startedAt = Date.now();
 
   // Independent tasks run concurrently; the second stage depends on the first
-  // (lifecycle emails read the refreshed subscription state, daily stats count it).
+  // (lifecycle emails / daily stats). Trial expiration lives on its own route.
   const stages: MaintenanceTask[][] = [
     [
       {
@@ -76,10 +66,6 @@ export async function maintenanceHandler(
       {
         name: "aiCacheCleanup",
         run: () => cleanupAiCacheJob(undefined, context),
-      },
-      {
-        name: "subscriptionExpiration",
-        run: () => expireSubscriptionsJob(undefined, context),
       },
       {
         name: "meetingReminders",

@@ -15,7 +15,6 @@ import { useLocale } from "../../../i18n/useLocale";
 const MAINTENANCE_TASKS = [
   "aiCreditsReset",
   "aiCacheCleanup",
-  "subscriptionExpiration",
   "meetingReminders",
   "socialMediaReconcile",
   "lifecycleNudge",
