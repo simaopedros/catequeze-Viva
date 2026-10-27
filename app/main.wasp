@@ -2678,7 +2678,7 @@ query getAuditLogs {
 
 query getSystemHealth {
   fn: import { getSystemHealth } from "@src/server/operations/systemOperations",
-  entities: [Logs, DailyAiUsage, User, DailyStats, UserAiCredits]
+  entities: [Logs, DailyAiUsage, User, DailyStats, UserAiCredits, JobRun]
 }
 
 query listPricingPlansAdmin {

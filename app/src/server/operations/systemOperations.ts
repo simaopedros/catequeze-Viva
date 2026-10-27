@@ -3,6 +3,18 @@
  */
 import { requirePlatformAdmin } from '../auth/helpers';
 
+/** Tasks executed by the daily `/api/internal/maintenance` run (see server/api/maintenance.ts). */
+export const MAINTENANCE_JOB_NAMES = [
+  'aiCreditsReset',
+  'aiCacheCleanup',
+  'meetingReminders',
+  'socialMediaReconcile',
+  'lifecycleNudge',
+  'dailyStats',
+] as const;
+
+export type MaintenanceJobName = (typeof MAINTENANCE_JOB_NAMES)[number];
+
 export const getSystemHealth = async (_args: void, context: any) => {
   requirePlatformAdmin(context.user);
 
@@ -36,10 +48,38 @@ export const getSystemHealth = async (_args: void, context: any) => {
     select: { date: true, userCount: true, paidUserCount: true, totalViews: true },
   });
 
+  const jobs = await Promise.all(
+    MAINTENANCE_JOB_NAMES.map(async (name) => {
+      const [lastRun, lastErrorLog] = await Promise.all([
+        context.entities.JobRun.findFirst({
+          where: { name },
+          orderBy: { startedAt: 'desc' },
+          select: { startedAt: true, finishedAt: true, ok: true, error: true },
+        }),
+        context.entities.Logs.findFirst({
+          where: {
+            level: 'job-error',
+            message: { contains: name, mode: 'insensitive' },
+          },
+          orderBy: { createdAt: 'desc' },
+          select: { createdAt: true },
+        }),
+      ]);
+
+      return {
+        name,
+        lastRunAt: lastRun?.startedAt ?? null,
+        lastRunOk: lastRun?.ok ?? null,
+        lastErrorAt: lastErrorLog?.createdAt ?? (lastRun?.ok === false ? lastRun.finishedAt : null),
+      };
+    }),
+  );
+
   return {
     recentErrors,
     totalAiCreditsThisMonth: totalAiCredits,
     usersWithCredits,
     recentDailyStats,
+    jobs,
   };
 };

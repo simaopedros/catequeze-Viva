@@ -21,6 +21,13 @@ const MAINTENANCE_TASKS = [
   "dailyStats",
 ] as const;
 
+type JobHealthRow = {
+  name: string;
+  lastRunAt: string | Date | null;
+  lastRunOk: boolean | null;
+  lastErrorAt: string | Date | null;
+};
+
 const SystemHealthPage = ({ user }: { user: AuthUser }) => {
   const { t } = useTranslation("admin");
   const { currentLocale } = useLocale();
@@ -30,6 +37,20 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
     error,
     refetch,
   } = useQuery(getSystemHealth);
+
+  const jobByName = new Map<string, JobHealthRow>(
+    ((health?.jobs as JobHealthRow[] | undefined) ?? []).map((job) => [
+      job.name,
+      job,
+    ]),
+  );
+
+  const jobStatusLabel = (job: JobHealthRow | undefined) => {
+    if (!job?.lastRunAt) return t("pages.system.job_status_never");
+    if (job.lastRunOk === true) return t("pages.system.job_status_ok");
+    if (job.lastRunOk === false) return t("pages.system.job_status_failed");
+    return t("pages.system.job_status_never");
+  };
 
   return (
     <DefaultLayout user={user}>
@@ -134,23 +155,45 @@ const SystemHealthPage = ({ user }: { user: AuthUser }) => {
                 </h2>
                 <div className="h-px w-8 bg-[#D39A2B]" aria-hidden />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                {MAINTENANCE_TASKS.map((task) => (
-                  <div
-                    key={task}
-                    className="flex items-start gap-2 p-3 rounded-sm border border-border/70 bg-white"
-                  >
-                    <Activity className="h-3.5 w-3.5 text-[#071A2D] mt-0.5 shrink-0" />
-                    <div>
-                      <p className="text-xs font-semibold tracking-tight text-[#071A2D]">
-                        {task}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {t(`pages.system.jobs.${task}`)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="text-left text-muted-foreground">
+                      <th className="pb-2 pr-4">{t("pages.system.col_job")}</th>
+                      <th className="pb-2 pr-4">{t("pages.system.col_last_run")}</th>
+                      <th className="pb-2 pr-4">{t("pages.system.col_job_status")}</th>
+                      <th className="pb-2 pr-4">{t("pages.system.col_last_error")}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {MAINTENANCE_TASKS.map((task) => {
+                      const job = jobByName.get(task);
+                      return (
+                        <tr key={task} className="border-t">
+                          <td className="py-2 pr-4">
+                            <p className="font-semibold tracking-tight text-[#071A2D]">
+                              {task}
+                            </p>
+                            <p className="text-muted-foreground">
+                              {t(`pages.system.jobs.${task}`)}
+                            </p>
+                          </td>
+                          <td className="py-2 pr-4">
+                            {job?.lastRunAt
+                              ? formatDateTime(job.lastRunAt, currentLocale)
+                              : "—"}
+                          </td>
+                          <td className="py-2 pr-4">{jobStatusLabel(job)}</td>
+                          <td className="py-2 pr-4">
+                            {job?.lastErrorAt
+                              ? formatDateTime(job.lastErrorAt, currentLocale)
+                              : "—"}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             </div>
           </>

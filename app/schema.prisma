@@ -403,6 +403,7 @@ model User {
 
   // Payment (Stripe only, BRL)
   paymentProcessorUserId        String?   @unique
+  stripeSubscriptionId          String?
   subscriptionStatus            String?
   subscriptionPlan              String?  @default("catechist_free")
   datePaid                      DateTime?
@@ -1938,6 +1939,18 @@ model Logs {
 
   message String
   level   String
+}
+
+/// Execution history for maintenance / cron-style jobs (adopt via recordJobRun).
+model JobRun {
+  id         String    @id @default(uuid())
+  name       String
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+  ok         Boolean?
+  error      String?
+
+  @@index([name, startedAt])
 }
 
 model ContactFormMessage {

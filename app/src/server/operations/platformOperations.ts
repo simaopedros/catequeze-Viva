@@ -7,6 +7,7 @@ import { formatServerDate, resolveUserLocale } from '../i18n/serverLocale';
 import { getPlanPriceCents, resolvePlanIdOrFree, PRISMA_FREE_PLANS } from '../../shared/pricing';
 import { loadPlanCatalog } from '../pricing/planCatalogService';
 import type { CatalogBySlug } from '../../shared/planCatalog';
+import { getAccountStatusCounts } from '../billing/accountStatusCounts';
 
 function planPrice(plan: string | null | undefined, catalog?: CatalogBySlug): number {
   return getPlanPriceCents(resolvePlanIdOrFree(plan, catalog), 'monthly', catalog) / 100;
@@ -61,7 +62,6 @@ export const getPlatformOverview = async (_args: void, context: any) => {
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-  const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
   const [
     totalUsers,
@@ -72,9 +72,7 @@ export const getPlatformOverview = async (_args: void, context: any) => {
     archivedParishes,
     totalClasses,
     totalCatechumens,
-    payingTenants,
-    activeSubscriptions,
-    trialsExpiring,
+    statusCounts,
     activeBillings,
   ] = await Promise.all([
     context.entities.User.count(),
@@ -85,11 +83,7 @@ export const getPlatformOverview = async (_args: void, context: any) => {
     context.entities.Parish.count({ where: { active: false } }),
     context.entities.CatechesisClass.count({ where: { status: 'ACTIVE' } }),
     context.entities.ClassEnrollment.count({ where: { status: 'ENROLLED' } }),
-    context.entities.TenantBilling.count({ where: { status: 'ACTIVE', plan: { notIn: [...PRISMA_FREE_PLANS] } } }),
-    context.entities.User.count({ where: { subscriptionStatus: 'active' } }),
-    context.entities.TenantBilling.count({
-      where: { status: 'TRIAL', trialEndsAt: { gte: now, lte: sevenDaysFromNow } },
-    }),
+    getAccountStatusCounts(context, now),
     context.entities.TenantBilling.findMany({
       where: { status: 'ACTIVE', plan: { notIn: [...PRISMA_FREE_PLANS] } },
       select: { plan: true },
@@ -102,6 +96,10 @@ export const getPlatformOverview = async (_args: void, context: any) => {
     0,
   );
 
+  const activeSubscriptions = statusCounts.payingUsers + statusCounts.payingTenants;
+  const trialActive = statusCounts.trialUsers + statusCounts.trialTenants;
+  const expiredTrials = statusCounts.expiredTrialUsers + statusCounts.expiredTrialTenants;
+
   return {
     totalUsers,
     newUsers7d,
@@ -111,9 +109,19 @@ export const getPlatformOverview = async (_args: void, context: any) => {
     archivedParishes,
     totalClasses,
     totalCatechumens,
-    payingTenants,
+    payingTenants: statusCounts.payingTenants,
+    payingUsers: statusCounts.payingUsers,
     activeSubscriptions,
-    trialsExpiring,
+    trialsExpiring: statusCounts.trialsExpiring7d,
+    trialsExpiring7d: statusCounts.trialsExpiring7d,
+    manualActiveUsers: statusCounts.manualActiveUsers,
+    trialUsers: statusCounts.trialUsers,
+    trialTenants: statusCounts.trialTenants,
+    trialActive,
+    expiredTrialUsers: statusCounts.expiredTrialUsers,
+    expiredTrialTenants: statusCounts.expiredTrialTenants,
+    expiredTrials,
+    pastDue: statusCounts.pastDue,
     mrr: Math.round(mrr * 100) / 100,
   };
 };
@@ -205,16 +213,13 @@ export const getPlatformAlerts = async (_args: void, context: any) => {
   requirePlatformAdmin(context.user);
 
   const now = new Date();
-  const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
   const alerts: { type: 'warning' | 'info' | 'error'; code: string; count?: number }[] = [];
 
-  const trialsExpiring = await context.entities.TenantBilling.count({
-    where: { status: 'TRIAL', trialEndsAt: { gte: now, lte: sevenDaysFromNow } },
-  });
-  if (trialsExpiring > 0) {
-    alerts.push({ type: 'warning', code: 'trials_expiring', count: trialsExpiring });
+  const statusCounts = await getAccountStatusCounts(context, now);
+  if (statusCounts.trialsExpiring7d > 0) {
+    alerts.push({ type: 'warning', code: 'trials_expiring', count: statusCounts.trialsExpiring7d });
   }
 
   const archivedParishes = await context.entities.Parish.count({ where: { active: false } });
