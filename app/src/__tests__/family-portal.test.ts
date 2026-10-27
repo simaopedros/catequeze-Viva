@@ -4,6 +4,17 @@
  * Run with: NODE_ENV=development npx vitest run src/__tests__/family-portal.test.ts
  */
 import { describe, it, expect, beforeAll, vi } from 'vitest';
+
+vi.mock('wasp/server', () => ({
+  HttpError: class HttpError extends Error {
+    statusCode: number;
+    constructor(statusCode: number, message?: string) {
+      super(message);
+      this.statusCode = statusCode;
+    }
+  },
+}));
+
 import { prisma, USERS, PARISH_SAO_JOSE, makeContext } from './setup';
 
 const itOrSkip = process.env.NODE_ENV === 'development' ? it : it.skip;
