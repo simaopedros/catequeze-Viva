@@ -38,14 +38,15 @@ import { formatDate } from "../../i18n/format";
 import { isTodayInAppTimezone } from "../../shared/calendarDate";
 import { QueryErrorState } from "../../client/components/QueryErrorState";
 import { formatClassSchedule } from "../../shared/classSchedule";
+import {
+  countActiveClasses,
+  isClassPlanLimitReached,
+} from "../../shared/classPlanLimit";
 import { cn } from "../../client/utils";
 import {
-  AppDisplayTitle,
   AppPageHeader,
   AppPanel,
   AppMetric,
-  AppEyebrow,
-  AppGoldRule,
 } from "../../client/components/brand/AppChrome";
 
 const PAGE_SIZE = 50;
@@ -119,11 +120,11 @@ export default function ClassesPage() {
 
   const effectivePlan = workspacePlan || "catechist_free";
   const limits = getBySlug(effectivePlan).limits;
-  const activeClassesCount = classes.filter(
-    (c: any) => c.status !== "ARCHIVED",
-  ).length;
-  const isClassLimitReached =
-    limits.maxClasses !== null && activeClassesCount >= limits.maxClasses;
+  const activeClassesCount = countActiveClasses(classes);
+  const isClassLimitReached = isClassPlanLimitReached(
+    activeClassesCount,
+    limits.maxClasses,
+  );
 
   const activeCount = filtered.filter((c: any) => c.status === "ACTIVE").length;
   const draftCount = filtered.filter((c: any) => c.status === "DRAFT").length;
@@ -207,7 +208,7 @@ export default function ClassesPage() {
         title={t("title")}
         subtitle={t("subtitle")}
         primaryAction={
-          canCreateClass && !isClassLimitReached
+          canCreateClass
             ? { label: t("new_class"), href: "/app/classes/new" }
             : undefined
         }
@@ -297,24 +298,25 @@ export default function ClassesPage() {
           title={t("no_classes")}
           description={t("no_classes_desc")}
         >
-          {isClassLimitReached ? (
-            <div className="mt-4 w-full max-w-md">
-              <PlanLimitBanner
-                type="class_limit"
-                currentCount={activeClassesCount}
-                userPlan={effectivePlan}
-                isParishManaged={!isPersonal}
-                isPersonalWorkspace={isPersonal}
-                canManageBilling={canManageBilling}
-              />
+          {canCreateClass ? (
+            <div className="mt-4 flex w-full max-w-md flex-col items-center gap-3">
+              <Button className="h-11 min-h-11 rounded-sm px-5" asChild>
+                <Link to="/app/classes/new">
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("new_class")}
+                </Link>
+              </Button>
+              {isClassLimitReached && (
+                <PlanLimitBanner
+                  type="class_limit"
+                  currentCount={activeClassesCount}
+                  userPlan={effectivePlan}
+                  isParishManaged={!isPersonal}
+                  isPersonalWorkspace={isPersonal}
+                  canManageBilling={canManageBilling}
+                />
+              )}
             </div>
-          ) : canCreateClass ? (
-            <Button className="mt-4 h-11 min-h-11 rounded-sm px-5" asChild>
-              <Link to="/app/classes/new">
-                <Plus className="mr-2 h-4 w-4" />
-                {t("create")}
-              </Link>
-            </Button>
           ) : null}
         </EmptyState>
       ) : filtered.length === 0 ? (

@@ -2271,7 +2271,13 @@ export const classes_pt_BR = {
     "suggested_1": "Defina etapa, horário e catequista responsável para cada turma.",
     "suggested_2": "Cadastre catequizandos para acompanhar presença, encontros e progresso.",
     "suggested_3": "Use a presença editorial para preparar encontros com mais consistência.",
-    "limit_used_of_plan": "Você usou {{currentCount}} de {{maxAllowed}} turmas do Plano Catequista"
+    "limit_used_of_plan": "Você usou {{currentCount}} de {{maxAllowed}} turmas do Plano Catequista",
+    "limit_reached_title": "Limite do plano",
+    "limit_reached_heading": "Limite de turmas atingido",
+    "limit_reached_body": "O plano {{planName}} permite até {{maxAllowed}} turmas. Você já usa {{currentCount}}. Para criar outra, escolha um plano com mais espaço ou volte para Turmas.",
+    "limit_reached_none": "O plano {{planName}} ainda não libera turmas. Veja os planos para começar ou volte para Turmas.",
+    "limit_see_plans": "Ver planos",
+    "limit_back_to_classes": "Voltar para Turmas"
   } as const;
 
 export const collaborative_pt_BR = {
