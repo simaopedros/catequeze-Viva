@@ -26,6 +26,7 @@
     "already_have": "¿Ya tiene cuenta?",
     "login": "Entrar",
     "invited_to": "Fuiste invitado(a) a {{parish}} como {{role}}.",
+    "email_hint": "Usa el mismo email de la invitación ({{email}}).",
     "expired_title": "Invitación Expirada",
     "invalid_title": "Invitación Inválida",
     "expired_desc": "Esta invitación ya expiró. Pida una nueva a su coordinador.",

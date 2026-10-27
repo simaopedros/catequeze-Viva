@@ -100,11 +100,27 @@ export const listCatechumens = async (
     { lastName: "asc" },
     { id: "asc" },
   ];
-  const include = {
+  // Explicit select: never return uploadToken / uploadTokenExpires to clients.
+  const select = {
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+    firstName: true,
+    lastName: true,
+    email: true,
+    birthDate: true,
+    photoUrl: true,
+    userId: true,
+    householdId: true,
+    parishId: true,
     parish: { select: { id: true, name: true } },
     household: { select: { id: true, name: true, parishId: true } },
     enrollments: {
-      include: {
+      select: {
+        id: true,
+        status: true,
+        classId: true,
+        catechumenProfileId: true,
         class: { select: { id: true, name: true, parishId: true } },
       },
     },
@@ -152,7 +168,7 @@ export const listCatechumens = async (
       orderBy,
       take,
       skip,
-      include,
+      select,
     });
     return wrapResult(rows);
   }
@@ -169,7 +185,7 @@ export const listCatechumens = async (
       orderBy,
       take,
       skip,
-      include,
+      select,
     });
     return wrapResult(rows);
   }
@@ -195,7 +211,7 @@ export const listCatechumens = async (
       orderBy,
       take,
       skip,
-      include,
+      select,
     });
     return wrapResult(rows);
   }
@@ -210,7 +226,7 @@ export const listCatechumens = async (
         orderBy,
         take,
         skip,
-        include,
+        select,
       });
       return wrapResult(rows);
     }
@@ -223,7 +239,7 @@ export const listCatechumens = async (
       orderBy,
       take,
       skip,
-      include,
+      select,
     });
     return wrapResult(rows);
   }
@@ -284,7 +300,24 @@ export const getCatechumenProfile = async (
           milestones: true,
         },
       },
-      documents: true,
+      // Never expose s3Key (or other storage internals) to the client.
+      documents: {
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          name: true,
+          type: true,
+          mimeType: true,
+          status: true,
+          catechumenProfileId: true,
+          uploadedById: true,
+          verifiedAt: true,
+          verifiedById: true,
+          rejectedAt: true,
+          rejectedReason: true,
+        },
+      },
     },
   });
   return profile;

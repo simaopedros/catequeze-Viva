@@ -49,6 +49,10 @@ export function scrubSentryEvent<T extends Record<string, any>>(input: T): T {
 export const serverSetup: ServerSetupFn = async ({ app, server }) => {
   const MAX_BODY = '2mb';
 
+  // Trust Caddy (and Cloudflare via CF-Connecting-IP / X-Forwarded-For).
+  // Required so req.ip reflects the real client, not the proxy container.
+  app.set('trust proxy', 1);
+
   // ── Security headers ────────────────────────────────────────────────
   app.use((_req: any, res: any, next: any) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');

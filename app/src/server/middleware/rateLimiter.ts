@@ -1,8 +1,14 @@
 /**
- * Simple in-memory rate limiter for public API endpoints.
- * Tracks requests per IP within a sliding window.
+ * Rate limiters for public API endpoints.
+ * Auth login uses Postgres (persistentRateLimit); upload/document stay in-memory
+ * (per-process is acceptable for those paths).
  */
 import type { Request, Response, NextFunction } from 'express';
+import {
+  AUTH_LOGIN_RATE_LIMIT,
+  consumePersistentRateLimit,
+} from '../security/persistentRateLimit';
+import { getClientIpFromRequest } from '../security/clientIp';
 
 interface RateLimitEntry {
   count: number;
@@ -31,7 +37,7 @@ export function createRateLimiter(config: RateLimitConfig) {
   const { windowMs, max, message = 'Muitas requisições. Tente novamente mais tarde.' } = config;
 
   return function rateLimiter(req: Request, res: Response, next: NextFunction) {
-    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    const ip = getClientIpFromRequest(req);
     const key = `${ip}:${req.path}`;
     const now = Date.now();
 
@@ -58,12 +64,35 @@ export function createRateLimiter(config: RateLimitConfig) {
   };
 }
 
-// Pre-configured limiters for different use cases
-export const authRateLimiter = createRateLimiter({
-  windowMs: 15 * 60 * 1000,  // 15 minutes
-  max: 20,                     // 20 requests per window
-  message: 'Muitas tentativas. Aguarde 15 minutos.',
-});
+/**
+ * Persistent (Postgres) limiter for Wasp /auth/* login & related POSTs.
+ * Fail-open on DB errors. Skips non-auth paths when mounted globally.
+ */
+export function authRateLimiter(req: Request, res: Response, next: NextFunction) {
+  const path = req.path || req.url || '';
+  // Wasp email auth lives under /auth/* (family /entrar and staff /login share it).
+  const isAuthSensitive = path.startsWith('/auth/');
+
+  if (!isAuthSensitive || req.method === 'GET' || req.method === 'OPTIONS' || req.method === 'HEAD') {
+    return next();
+  }
+
+  const ip = getClientIpFromRequest(req);
+  void consumePersistentRateLimit(ip, AUTH_LOGIN_RATE_LIMIT)
+    .then((result) => {
+      if (!result.allowed) {
+        if (result.retryAfterSec) {
+          res.setHeader('Retry-After', String(result.retryAfterSec));
+        }
+        return res.status(429).json({
+          error: AUTH_LOGIN_RATE_LIMIT.message,
+          retryAfter: result.retryAfterSec,
+        });
+      }
+      next();
+    })
+    .catch(() => next()); // fail-open
+}
 
 export const uploadRateLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000,   // 1 hour

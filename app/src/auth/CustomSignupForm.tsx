@@ -59,7 +59,11 @@ export default function CustomSignupForm({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [hasTrackedStart, setHasTrackedStart] = useState(false);
-  const [showEmailForm, setShowEmailForm] = useState(!!defaultEmail);
+  // Invite signup needs the email field visible so the user can type the
+  // invite address (public invite API no longer returns it in clear).
+  const [showEmailForm, setShowEmailForm] = useState(
+    !!defaultEmail || !!inviteToken,
+  );
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
 
