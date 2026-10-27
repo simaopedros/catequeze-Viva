@@ -196,7 +196,8 @@ export const listHouseholds = async (
     return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
 
-  // Catechist: households of catechumens in allowed classes only (not whole parish)
+  // Catechist: households of catechumens in allowed classes, plus empty
+  // parish households (so a newly created family can be linked in the picker).
   if (access.isCatechist) {
     const classIds =
       access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds;
@@ -211,18 +212,24 @@ export const listHouseholds = async (
         enrollments.map((e: any) => e.catechumenProfileId).filter(Boolean),
       ),
     ];
-    if (catechumenIds.length === 0) return emptyPage(useCursorPage);
 
-    const profiles = await context.entities.CatechumenProfile.findMany({
-      where: { id: { in: catechumenIds }, householdId: { not: null } },
-      select: { householdId: true },
-    });
-    const householdIds = [
-      ...new Set(profiles.map((p: any) => p.householdId).filter(Boolean)),
-    ];
-    if (householdIds.length === 0) return emptyPage(useCursorPage);
+    let linkedHouseholdIds: string[] = [];
+    if (catechumenIds.length > 0) {
+      const profiles = await context.entities.CatechumenProfile.findMany({
+        where: { id: { in: catechumenIds }, householdId: { not: null } },
+        select: { householdId: true },
+      });
+      linkedHouseholdIds = [
+        ...new Set(profiles.map((p: any) => p.householdId).filter(Boolean)),
+      ];
+    }
 
-    const where: any = { id: { in: householdIds }, parishId };
+    const orClauses: any[] = [{ catechumens: { none: {} } }];
+    if (linkedHouseholdIds.length > 0) {
+      orClauses.unshift({ id: { in: linkedHouseholdIds } });
+    }
+
+    const where: any = { parishId, OR: orClauses };
     if (args.communityId) where.communityId = args.communityId;
     const rows = await context.entities.Household.findMany({
       where: buildWhere(where),

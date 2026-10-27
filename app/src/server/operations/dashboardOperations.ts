@@ -878,22 +878,31 @@ export const getDashboardStats = async (
 
   // ─── Phase 3: Queries depending on classScopeWhere (run in parallel) ───────
 
+  // "Turmas ativas" = status ACTIVE only (paused/concluded stay out of this KPI).
   const activeClassesPromise = context.entities.CatechesisClass.count({
     where: { ...classScopeWhere, status: "ACTIVE" },
   });
   const enrolledCatechumensPromise = context.entities.ClassEnrollment.findMany({
     where: {
       status: "ENROLLED",
-      class: classScopeWhere,
+      class: { ...classScopeWhere, status: { not: "ARCHIVED" } },
       catechumenProfileId: { not: null },
     },
     select: { catechumenProfileId: true },
     distinct: ["catechumenProfileId"],
   });
 
-  const attendanceWhere = { meeting: { class: classScopeWhere } };
+  // Same participation rule as reports: PRESENT + LATE + JUSTIFIED.
+  const attendanceClassWhere = {
+    ...classScopeWhere,
+    status: { not: "ARCHIVED" },
+  };
+  const attendanceWhere = { meeting: { class: attendanceClassWhere } };
   const attendanceTotalPromise = context.entities.AttendanceRecord.count({
-    where: { status: "PRESENT", ...attendanceWhere },
+    where: {
+      status: { in: ["PRESENT", "LATE", "JUSTIFIED"] },
+      ...attendanceWhere,
+    },
   });
   const attendanceRecordsTotalPromise = context.entities.AttendanceRecord.count(
     {

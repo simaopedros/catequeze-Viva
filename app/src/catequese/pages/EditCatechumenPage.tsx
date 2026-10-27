@@ -58,7 +58,8 @@ export default function EditCatechumenPage() {
   const { activeParishId } = useActiveParish();
   const { data: households = [], refetch: refetchHouseholds } = useQuery(
     listHouseholds,
-    { take: 200 },
+    { take: 200, parishId: activeParishId || undefined } as any,
+    { enabled: Boolean(activeParishId) },
   );
   const filteredHouseholds = useMemo(() => {
     if (!activeParishId) return households;
