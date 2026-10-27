@@ -15,6 +15,7 @@ import {
 } from "./components/NavBar/constants";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
+import { useNotFoundActive } from "./notFoundState";
 import GoogleTagScripts from "./analytics/GoogleTagScripts";
 import { activatePreloadedFonts } from "./fonts";
 import { rememberIntendedPath } from "../auth/intendedPath";
@@ -271,6 +272,7 @@ export default function App() {
     ? marketingNavigationItems
     : demoNavigationItems;
 
+  const notFoundActive = useNotFoundActive();
   const shouldDisplayAppNavBar = useMemo(() => {
     if (isFamilyPortal) return false;
     const publicPaths = [
@@ -408,7 +410,7 @@ export default function App() {
               <Outlet />
             ) : (
               <>
-                {shouldDisplayAppNavBar && (
+                {shouldDisplayAppNavBar && !notFoundActive && (
                   <Suspense fallback={<div className="h-16" aria-hidden />}>
                     <NavBar navigationItems={navigationItems} />
                   </Suspense>

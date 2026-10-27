@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, useLocation } from "react-router";
 import { useAuth } from "wasp/client/auth";
@@ -12,11 +13,42 @@ import { PublicFooter } from "../../catequese/PublicFooter";
 import { FileQuestion, ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";
 import { AppDisplayTitle, AppGoldRule } from "./brand/AppChrome";
+import { usePageTitle } from "../hooks/usePageTitle";
+import { setNotFoundActive } from "../notFoundState";
 
 export function NotFoundPage() {
   const { data: user } = useAuth();
   const { t } = useTranslation("common");
   const location = useLocation();
+
+  // "Página não encontrada · Catequese Viva" (usePageTitle appends APP_NAME)
+  usePageTitle(t("not_found_title"));
+
+  useEffect(() => {
+    setNotFoundActive(true);
+    return () => setNotFoundActive(false);
+  }, []);
+
+  // SPA serves HTTP 200 for unknown paths; noindex mitigates soft-404 indexing.
+  useEffect(() => {
+    let el = document.querySelector(
+      'meta[name="robots"]',
+    ) as HTMLMetaElement | null;
+    if (!el) {
+      el = document.createElement("meta");
+      el.setAttribute("name", "robots");
+      document.head.appendChild(el);
+    }
+    const previous = el.getAttribute("content");
+    el.setAttribute("content", "noindex");
+    return () => {
+      if (previous == null) {
+        el?.remove();
+      } else {
+        el?.setAttribute("content", previous);
+      }
+    };
+  }, []);
 
   if (!AI_FEATURES_ENABLED && isAiAppPath(location.pathname)) {
     return <Navigate to={AI_APP_HOME} replace />;
