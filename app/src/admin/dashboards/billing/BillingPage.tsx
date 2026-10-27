@@ -21,6 +21,7 @@ import {
   CircleDot,
   BadgeCheck,
   AlertTriangle,
+  MoreHorizontal,
 } from "lucide-react";
 import { Button } from "../../../client/components/ui/button";
 import { Input } from "../../../client/components/ui/input";
@@ -33,7 +34,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../../client/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../../../client/components/ui/dropdown-menu";
 import { ConfirmDialog } from "../../../client/components/ConfirmDialog";
+import { SkeletonTable } from "../../../client/components/Skeletons";
 import { formatDate } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
 
@@ -190,8 +199,8 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
         {error && <p className="text-sm text-destructive">{error}</p>}
 
         {isLoading ? (
-          <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+          <div className="space-y-4" aria-busy="true">
+            <SkeletonTable rows={8} />
           </div>
         ) : loadError && licenses.length === 0 ? (
           <QueryErrorState error={loadError} onRetry={refetch} />
@@ -295,7 +304,10 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
                       <td className="px-4 py-3 text-muted-foreground text-xs">
                         {row.kind === "diocese"
                           ? t("pages.licenses.diocese")
-                          : row.type || t("pages.licenses.parish")}
+                          : t(`pages.parishes.type_${row.type || "PARISH"}`, {
+                              defaultValue:
+                                row.type || t("pages.licenses.parish"),
+                            })}
                       </td>
                       <td className="px-4 py-3 text-xs font-semibold tracking-tight text-[#071A2D]">
                         {resolvePlanName(row.plan)}
@@ -313,7 +325,7 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex flex-wrap justify-end gap-1">
+                        <div className="flex flex-wrap items-center justify-end gap-1">
                           <Button
                             size="xs"
                             variant="outline"
@@ -321,48 +333,60 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
                           >
                             {t("pages.licenses.extend_trial")}
                           </Button>
-                          <Button
-                            size="xs"
-                            variant="outline"
-                            onClick={() => open(row, "complimentary")}
-                          >
-                            {t("pages.licenses.complimentary")}
-                          </Button>
-                          {row.kind === "diocese" && (
-                            <Button
-                              size="xs"
-                              variant="outline"
-                              disabled={busy}
-                              onClick={() =>
-                                void run(async () => {
-                                  await setComplimentaryPlan({
-                                    dioceseId: row.entityId,
-                                    planSlug: "unlimited",
-                                  });
-                                })
-                              }
-                            >
-                              {t("pages.licenses.assign_diocese")}
-                            </Button>
-                          )}
-                          {row.billingId && (
-                            <Button
-                              size="xs"
-                              variant="outline"
-                              onClick={() => open(row, "cancelLicense")}
-                            >
-                              {t("pages.licenses.cancel_license")}
-                            </Button>
-                          )}
-                          {row.hasStripe && row.ownerId && (
-                            <Button
-                              size="xs"
-                              variant="destructive"
-                              onClick={() => open(row, "cancelStripe")}
-                            >
-                              {t("pages.licenses.cancel_stripe")}
-                            </Button>
-                          )}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                size="xs"
+                                variant="outline"
+                                aria-label={t("pages.licenses.more_actions")}
+                              >
+                                {t("pages.licenses.more_actions")}
+                                <MoreHorizontal className="ml-1 h-3.5 w-3.5" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="min-w-[12rem]">
+                              <DropdownMenuItem
+                                onClick={() => open(row, "complimentary")}
+                              >
+                                {t("pages.licenses.complimentary")}
+                              </DropdownMenuItem>
+                              {row.kind === "diocese" && (
+                                <DropdownMenuItem
+                                  disabled={busy}
+                                  onClick={() =>
+                                    void run(async () => {
+                                      await setComplimentaryPlan({
+                                        dioceseId: row.entityId,
+                                        planSlug: "unlimited",
+                                      });
+                                    })
+                                  }
+                                >
+                                  {t("pages.licenses.assign_diocese")}
+                                </DropdownMenuItem>
+                              )}
+                              {(row.billingId ||
+                                (row.hasStripe && row.ownerId)) && (
+                                <DropdownMenuSeparator />
+                              )}
+                              {row.billingId && (
+                                <DropdownMenuItem
+                                  className="text-destructive focus:text-destructive"
+                                  onClick={() => open(row, "cancelLicense")}
+                                >
+                                  {t("pages.licenses.cancel_license")}
+                                </DropdownMenuItem>
+                              )}
+                              {row.hasStripe && row.ownerId && (
+                                <DropdownMenuItem
+                                  className="text-destructive focus:text-destructive"
+                                  onClick={() => open(row, "cancelStripe")}
+                                >
+                                  {t("pages.licenses.cancel_stripe")}
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </td>
                     </tr>

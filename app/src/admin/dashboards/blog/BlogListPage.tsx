@@ -18,6 +18,7 @@ import { Badge } from "../../../client/components/ui/badge";
 import { ConfirmDialog } from "../../../client/components/ConfirmDialog";
 import { formatDateTime } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
+import { SkeletonTable } from "../../../client/components/Skeletons";
 import type { BlogPostStatus } from "../../../shared/blog";
 
 type AdminBlogPost = {
@@ -88,8 +89,8 @@ const BlogListPage = ({ user }: { user: AuthUser }) => {
         {error && !data ? (
           <QueryErrorState error={error} onRetry={() => refetch()} />
         ) : isLoading ? (
-          <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+          <div className="space-y-4" aria-busy="true">
+            <SkeletonTable rows={6} />
           </div>
         ) : posts.length === 0 ? (
           <EmptyState

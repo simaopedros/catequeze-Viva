@@ -18,6 +18,7 @@ import { QueryErrorState } from "../../../client/components/QueryErrorState";
 import { Button } from "../../../client/components/ui/button";
 import { Badge } from "../../../client/components/ui/badge";
 import { ConfirmDialog } from "../../../client/components/ConfirmDialog";
+import { SkeletonTable } from "../../../client/components/Skeletons";
 import { formatPrice } from "../../../shared/currency";
 import { PlanEditorDialog, type PlanEditorValues } from "./PlanEditorDialog";
 import { PlanPricesCard } from "./PlanPricesCard";
@@ -190,8 +191,8 @@ const PlansPage = ({ user }: { user: AuthUser }) => {
         )}
 
         {isLoading ? (
-          <div className="flex justify-center py-12" aria-busy="true">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+          <div className="space-y-4" aria-busy="true">
+            <SkeletonTable rows={6} />
           </div>
         ) : error && plans.length === 0 ? (
           <QueryErrorState error={error} onRetry={refetch} />

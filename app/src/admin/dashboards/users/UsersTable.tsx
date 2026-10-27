@@ -12,7 +12,7 @@ import { Input } from "../../../client/components/ui/input";
 import { Label } from "../../../client/components/ui/label";
 import { Switch } from "../../../client/components/ui/switch";
 import useDebounce from "../../../client/hooks/useDebounce";
-import LoadingSpinner from "../../layout/LoadingSpinner";
+import { SkeletonTable } from "../../../client/components/Skeletons";
 import { useNavigate } from "react-router";
 import { formatDate } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
@@ -31,7 +31,26 @@ function AdminSwitch({ id, isAdmin }: Pick<User, "id" | "isAdmin">) {
 
 const UsersTable = () => {
   const { t } = useTranslation("admin");
+  const { t: tCommon } = useTranslation("common");
   const { currentLocale } = useLocale();
+
+  const statusLabel = (status: string) => {
+    const key = `pages.licenses.status_${status}`;
+    const translated = t(key);
+    return translated === key ? status : translated;
+  };
+
+  const roleLabel = (role: string) => {
+    const key = `roles.${role}`;
+    const translated = tCommon(key);
+    return translated === key ? role : translated;
+  };
+
+  const typeLabel = (type: string) => {
+    const key = `pages.parishes.type_${type}`;
+    const translated = t(key);
+    return translated === key ? type : translated;
+  };
   const [currentPage, setCurrentPage] = useState(1);
   const [emailFilter, setEmailFilter] = useState<string | undefined>(undefined);
   const [isAdminFilter, setIsAdminFilter] = useState<boolean | undefined>(
@@ -135,8 +154,8 @@ const UsersTable = () => {
           <tbody>
         {isLoading && (
           <tr>
-            <td colSpan={7} className="p-6">
-              <LoadingSpinner />
+            <td colSpan={7} className="p-4" aria-busy="true">
+              <SkeletonTable rows={6} />
             </td>
           </tr>
         )}
@@ -168,7 +187,7 @@ const UsersTable = () => {
               {user.subscriptionPlan || "—"}
               {user.subscriptionStatus ? (
                 <span className="ml-1 text-muted-foreground">
-                  · {user.subscriptionStatus}
+                  · {statusLabel(user.subscriptionStatus)}
                 </span>
               ) : null}
             </td>
@@ -179,7 +198,7 @@ const UsersTable = () => {
                     .slice(0, 3)
                     .map(
                       (w) =>
-                        `${w.name} (${w.role}${w.type ? ` · ${w.type}` : ""})`,
+                        `${w.name} (${roleLabel(w.role)}${w.type ? ` · ${typeLabel(w.type)}` : ""})`,
                     )
                     .join(", ")}
             </td>

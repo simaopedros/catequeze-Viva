@@ -339,7 +339,8 @@
       "impersonate_title": "Impersonar usuario",
       "impersonate_desc": "Verá la aplicación como este usuario. Su sesión de admin se guarda para salir después.",
       "cancel_stripe_title": "Cancelar suscripción de Stripe",
-      "cancel_stripe_desc": "Cancela de inmediato todas las suscripciones activas de este cliente en Stripe. Esto no genera reembolso."
+      "cancel_stripe_desc": "Cancela de inmediato todas las suscripciones activas de este cliente en Stripe. Esto no genera reembolso.",
+      "more_actions": "Más acciones"
     },
     "dashboard": {
       "title": "Centro de mando",
@@ -511,7 +512,10 @@
       "status_canceled": "Cancelado",
       "status_cancel_at_period_end": "Cancela al final del período",
       "status_trial_expired": "Prueba vencida",
-      "action_error": "No fue posible completar la acción."
+      "action_error": "No fue posible completar la acción.",
+      "more_actions": "Más acciones",
+      "status_ARCHIVED": "Archivado",
+      "status_deleted": "Eliminado"
     },
     "owner": {
       "title": "Visión del dueño",

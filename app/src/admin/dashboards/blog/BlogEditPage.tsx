@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from "../../../client/components/ui/select";
 import { Badge } from "../../../client/components/ui/badge";
+import { SkeletonForm } from "../../../client/components/Skeletons";
 import { BlogBodyEditor } from "./BlogBodyEditor";
 import { uploadBlogImage } from "../../../client/utils/blogImageUpload";
 import {
@@ -206,8 +207,8 @@ const BlogEditPage = ({ user }: { user: AuthUser }) => {
         {error && !data ? (
           <QueryErrorState error={error} onRetry={() => refetch()} />
         ) : isLoading || !post ? (
-          <div className="flex justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
+          <div className="space-y-4" aria-busy="true">
+            <SkeletonForm fields={6} />
           </div>
         ) : (
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">

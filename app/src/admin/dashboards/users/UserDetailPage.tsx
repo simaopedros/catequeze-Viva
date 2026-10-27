@@ -11,7 +11,14 @@ import { useParams, NavLink } from "react-router";
 import { useState } from "react";
 import DefaultLayout from "../../layout/DefaultLayout";
 import { AppPageHeader } from "../../../client/components/brand/AppChrome";
-import { Users, CreditCard, History, BarChart3, Building2 } from "lucide-react";
+import {
+  Users,
+  CreditCard,
+  History,
+  BarChart3,
+  Building2,
+  MoreHorizontal,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { formatDate } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
@@ -26,12 +33,48 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../../client/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../../../client/components/ui/dropdown-menu";
+import { SkeletonPage } from "../../../client/components/Skeletons";
 import { startImpersonation } from "../../impersonation";
 import { setActiveWorkspaceId } from "../../../client/hooks/workspaceStore";
+
+const resolveEnumLabel = (
+  tAdmin: (key: string) => string,
+  tCommon: (key: string) => string,
+  kind: "status" | "role" | "membership" | "type",
+  value: string | null | undefined,
+) => {
+  if (!value) return "—";
+  if (kind === "status") {
+    const key = `pages.licenses.status_${value}`;
+    const translated = tAdmin(key);
+    return translated === key ? value : translated;
+  }
+  if (kind === "role") {
+    const key = `roles.${value}`;
+    const translated = tCommon(key);
+    return translated === key ? value : translated;
+  }
+  if (kind === "membership") {
+    const key = `membership_status.${value}`;
+    const translated = tCommon(key);
+    return translated === key ? value : translated;
+  }
+  const key = `pages.parishes.type_${value}`;
+  const translated = tAdmin(key);
+  return translated === key ? value : translated;
+};
 
 const UserDetailPage = ({ user }: { user: AuthUser }) => {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation("admin");
+  const { t: tCommon } = useTranslation("common");
   const { currentLocale } = useLocale();
   const {
     data: u,
@@ -51,9 +94,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
   if (isLoading) {
     return (
       <DefaultLayout user={user}>
-        <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#071A2D] border-t-transparent" />
-        </div>
+        <SkeletonPage />
       </DefaultLayout>
     );
   }
@@ -105,37 +146,62 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                 : u.email
           }
           actions={
-            <div className="flex flex-wrap gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={u.isAdmin || u.id === user.id || busy}
-                onClick={() => setImpersonateOpen(true)}
-              >
-                {t("pages.user.impersonate")}
-              </Button>
-              <Button
-                size="sm"
-                variant={u.suspendedAt ? "outline" : "destructive"}
-                disabled={u.isAdmin || u.id === user.id || busy}
-                onClick={() => {
-                  if (u.suspendedAt) {
-                    void run(async () => {
-                      await setUserSuspended({
-                        userId: u.id,
-                        suspended: false,
-                      });
-                    });
-                  } else {
-                    setSuspendOpen(true);
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  aria-label={t("pages.user.more_actions")}
+                >
+                  {t("pages.user.more_actions")}
+                  <MoreHorizontal className="ml-1 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[12rem]">
+                <DropdownMenuItem
+                  disabled={u.isAdmin || u.id === user.id || busy}
+                  onClick={() => setImpersonateOpen(true)}
+                >
+                  {t("pages.user.impersonate")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={u.isAdmin || u.id === user.id || busy}
+                  className={
+                    u.suspendedAt
+                      ? undefined
+                      : "text-destructive focus:text-destructive"
                   }
-                }}
-              >
-                {u.suspendedAt
-                  ? t("pages.user.unsuspend")
-                  : t("pages.user.suspend")}
-              </Button>
-            </div>
+                  onClick={() => {
+                    if (u.suspendedAt) {
+                      void run(async () => {
+                        await setUserSuspended({
+                          userId: u.id,
+                          suspended: false,
+                        });
+                      });
+                    } else {
+                      setSuspendOpen(true);
+                    }
+                  }}
+                >
+                  {u.suspendedAt
+                    ? t("pages.user.unsuspend")
+                    : t("pages.user.suspend")}
+                </DropdownMenuItem>
+                {u.paymentProcessorUserId && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      disabled={busy}
+                      className="text-destructive focus:text-destructive"
+                      onClick={() => setCancelOpen(true)}
+                    >
+                      {t("pages.user.cancel_stripe")}
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           }
         />
 
@@ -216,7 +282,7 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                   {t("pages.user.status")}
                 </p>
                 <p className="font-semibold tracking-tight text-[#071A2D]">
-                  {u.subscriptionStatus || "—"}
+                  {resolveEnumLabel(t, tCommon, "status", u.subscriptionStatus)}
                 </p>
               </div>
               <div>
@@ -258,16 +324,6 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
               >
                 {t("pages.user.save_credits")}
               </Button>
-              {u.paymentProcessorUserId && (
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  disabled={busy}
-                  onClick={() => setCancelOpen(true)}
-                >
-                  {t("pages.user.cancel_stripe")}
-                </Button>
-              )}
             </div>
           </div>
         </div>
@@ -335,13 +391,16 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                       {m.parish.name}
                     </NavLink>
                     <p className="text-xs text-muted-foreground">
-                      {m.parish?.type ? `${m.parish.type} · ` : ""}
+                      {m.parish?.type
+                        ? `${resolveEnumLabel(t, tCommon, "type", m.parish.type)} · `
+                        : ""}
                       {m.community?.name
                         ? t("pages.user.community_prefix", {
                             name: m.community.name,
                           })
                         : ""}
-                      {m.role} · {m.status}
+                      {resolveEnumLabel(t, tCommon, "role", m.role)} ·{" "}
+                      {resolveEnumLabel(t, tCommon, "membership", m.status)}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
