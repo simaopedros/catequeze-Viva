@@ -190,6 +190,7 @@ export function AppPageHeader({
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           <AppDisplayTitle
             className={cn(
+              "min-w-0 max-w-full break-words whitespace-normal",
               density === "compact" && "text-title-xsm sm:text-title-sm",
             )}
           >
@@ -251,7 +252,7 @@ export function AppPageHeader({
               >
                 <AppPageHeaderOverflowMenu
                   actions={mobileSecondaries}
-                  label={t("more_actions")}
+                  label={t("more")}
                 />
               </Suspense>
             </div>

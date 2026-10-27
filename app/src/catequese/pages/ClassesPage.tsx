@@ -180,9 +180,13 @@ export default function ClassesPage() {
     return <QueryErrorState error={error} onRetry={refetch} />;
   }
 
+  const canEditClasses = canCreateClass;
+  const canOpenAttendance = userRole !== "GUARDIAN" && userRole !== "CATECHUMEN";
+
   if (isLoading && items.length === 0) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6" role="status" aria-busy="true">
+        <span className="sr-only">{tc("loading_sr")}</span>
         <div className="h-8 w-40 animate-pulse rounded bg-muted" />
         <div className="flex gap-2">
           {classFilters.map((f) => (
@@ -194,7 +198,7 @@ export default function ClassesPage() {
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
-            <SkeletonCard key={i} />
+            <SkeletonCard key={i} label={tc("loading_sr")} />
           ))}
         </div>
       </div>
@@ -425,6 +429,9 @@ export default function ClassesPage() {
               enrolledLabel={t("enrolled")}
               attendanceLabel={t("attendance")}
               detailsLabel={t("details")}
+              editLabel={t("detail.edit")}
+              showAttendance={canOpenAttendance}
+              showEdit={canEditClasses}
             />
           )}
         />
@@ -443,7 +450,7 @@ export default function ClassesPage() {
               <div className="relative z-[1] pointer-events-none">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-lg font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft">
+                    <p className="break-words text-lg font-semibold tracking-tight text-brand-ink group-hover:text-brand-ink-soft">
                       {cls.name}
                     </p>
                     {cls.stage && (
@@ -500,16 +507,26 @@ export default function ClassesPage() {
 
               {/* Primary CTA + overflow — re-enable pointer events */}
               <div className="relative z-[1] mt-4 flex gap-2 border-t border-border/60 pt-4 pointer-events-auto">
-                <Button
-                  size="sm"
-                  className="h-11 min-h-11 flex-1 rounded-md"
-                  asChild
-                >
-                  <Link to={`/app/classes/${cls.id}/attendance`}>
-                    <ClipboardList className="mr-2 h-3.5 w-3.5" />
-                    {t("attendance")}
-                  </Link>
-                </Button>
+                {canOpenAttendance ? (
+                  <Button
+                    size="sm"
+                    className="h-11 min-h-11 flex-1 rounded-md"
+                    asChild
+                  >
+                    <Link to={`/app/classes/${cls.id}/attendance`}>
+                      <ClipboardList className="mr-2 h-3.5 w-3.5" />
+                      {t("attendance")}
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    className="h-11 min-h-11 flex-1 rounded-md"
+                    asChild
+                  >
+                    <Link to={`/app/classes/${cls.id}`}>{t("details")}</Link>
+                  </Button>
+                )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -525,6 +542,20 @@ export default function ClassesPage() {
                     <DropdownMenuItem asChild>
                       <Link to={`/app/classes/${cls.id}`}>{t("details")}</Link>
                     </DropdownMenuItem>
+                    {canEditClasses && (
+                      <DropdownMenuItem asChild>
+                        <Link to={`/app/classes/${cls.id}?edit=1`}>
+                          {t("detail.edit")}
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    {canOpenAttendance && (
+                      <DropdownMenuItem asChild>
+                        <Link to={`/app/classes/${cls.id}/attendance`}>
+                          {t("attendance")}
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -560,6 +591,9 @@ function ClassMobileCard({
   enrolledLabel,
   attendanceLabel,
   detailsLabel,
+  editLabel,
+  showAttendance,
+  showEdit,
 }: {
   cls: any;
   statusLabel: string;
@@ -569,11 +603,16 @@ function ClassMobileCard({
   enrolledLabel: string;
   attendanceLabel: string;
   detailsLabel: string;
+  editLabel: string;
+  showAttendance: boolean;
+  showEdit: boolean;
 }) {
   return (
     <div className="space-y-2">
       <div className="flex items-start justify-between gap-2">
-        <p className="text-base font-semibold text-brand-ink">{cls.name}</p>
+        <p className="break-words text-base font-semibold text-brand-ink">
+          {cls.name}
+        </p>
         <Badge variant={statusVariant} className="shrink-0 text-overline">
           {statusLabel}
         </Badge>
@@ -588,19 +627,46 @@ function ClassMobileCard({
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
       >
-        <Button size="sm" className="h-11 min-h-11 flex-1 rounded-sm" asChild>
-          <Link to={`/app/classes/${cls.id}/attendance`}>
-            {attendanceLabel}
-          </Link>
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-11 min-h-11 rounded-sm"
-          asChild
-        >
-          <Link to={`/app/classes/${cls.id}`}>{detailsLabel}</Link>
-        </Button>
+        {showAttendance ? (
+          <Button size="sm" className="h-11 min-h-11 flex-1 rounded-sm" asChild>
+            <Link to={`/app/classes/${cls.id}/attendance`}>
+              {attendanceLabel}
+            </Link>
+          </Button>
+        ) : (
+          <Button size="sm" className="h-11 min-h-11 flex-1 rounded-sm" asChild>
+            <Link to={`/app/classes/${cls.id}`}>{detailsLabel}</Link>
+          </Button>
+        )}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-11 w-11 min-h-11 rounded-sm px-0"
+              aria-label={detailsLabel}
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <Link to={`/app/classes/${cls.id}`}>{detailsLabel}</Link>
+            </DropdownMenuItem>
+            {showEdit && (
+              <DropdownMenuItem asChild>
+                <Link to={`/app/classes/${cls.id}?edit=1`}>{editLabel}</Link>
+              </DropdownMenuItem>
+            )}
+            {showAttendance && (
+              <DropdownMenuItem asChild>
+                <Link to={`/app/classes/${cls.id}/attendance`}>
+                  {attendanceLabel}
+                </Link>
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );

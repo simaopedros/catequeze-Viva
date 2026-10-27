@@ -42,10 +42,11 @@ import {
 import { MeetingAttendanceSheet } from "../components/attendance/MeetingAttendanceSheet";
 import {
   type AttendanceCounts,
-  computeAttendanceRate,
   countStatuses,
   emptyAttendanceCounts,
+  formatAttendancePercentDisplay,
 } from "../../shared/attendanceMetrics";
+import { SkeletonPage, SkeletonTable } from "../../client/components/Skeletons";
 
 /** Match Tailwind `md` — mobile sheet below this width. */
 function useIsMobileSheet() {
@@ -287,8 +288,8 @@ export default function AttendancePage() {
     return st;
   }, [matrix, meetings]);
 
-  const studentRate = (catechumenId: string) =>
-    computeAttendanceRate(
+  const studentRateDisplay = (catechumenId: string) =>
+    formatAttendancePercentDisplay(
       countStatuses(meetings.map((m: any) => matrix[m.id]?.[catechumenId])),
     );
 
@@ -474,7 +475,7 @@ export default function AttendancePage() {
     }
   };
 
-  const getOverallPct = () => {
+  const getOverallPctDisplay = () => {
     const total = emptyAttendanceCounts();
     for (const s of Object.values(stats)) {
       total.present += s.present;
@@ -482,11 +483,14 @@ export default function AttendancePage() {
       total.justified += s.justified;
       total.absent += s.absent;
     }
-    return computeAttendanceRate(total);
+    return formatAttendancePercentDisplay(total);
   };
 
   // Mobile operational path: single-meeting sheet (no historical matrix payload)
   if (isMobileSheet && !showHistory) {
+    if (classLoading && !cls) {
+      return <SkeletonPage label={tc("loading_sr")} />;
+    }
     return (
       <div className="space-y-4 pb-2">
         <div className="flex items-start gap-3 border-b border-border/70 pb-4">
@@ -664,9 +668,7 @@ export default function AttendancePage() {
             onChange={(e) => setEnrollmentStatusFilter(e.target.value)}
             className="h-8 rounded-sm border border-input bg-background px-2 py-1 text-xs"
           >
-            <option value="all">
-              {t("matrix.all_statuses") || "Todos os status"}
-            </option>
+            <option value="all">{t("matrix.all_statuses")}</option>
             <option value="enrolled">{t("matrix.active") || "Ativos"}</option>
             <option value="dropped">
               {t("matrix.dropped") || "Desistentes"}
@@ -687,12 +689,9 @@ export default function AttendancePage() {
             }}
           />
         ) : classLoading || matrixLoading ? (
-          <div
-            className="flex justify-center py-12"
-            role="status"
-            aria-label={tc("loading")}
-          >
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground motion-reduce:animate-none" />
+          <div role="status" aria-busy="true" className="space-y-4 py-2">
+            <span className="sr-only">{tc("loading_sr")}</span>
+            <SkeletonTable rows={6} />
           </div>
         ) : meetings.length === 0 ? (
           <EmptyState
@@ -724,11 +723,18 @@ export default function AttendancePage() {
                   key={m.id}
                   className="flex items-center gap-1 rounded-sm border border-border/70 bg-muted/30 px-2 py-1 text-xs"
                 >
-                  <span className="text-muted-foreground truncate max-w-[120px]">
+                  <span
+                    className="max-w-[10rem] text-muted-foreground whitespace-normal break-words"
+                    title={`${formatDate(m.date, currentLocale, {
+                      day: "2-digit",
+                      month: "2-digit",
+                    })} · ${m.title || t("matrix.no_title")}`}
+                  >
                     {formatDate(m.date, currentLocale, {
                       day: "2-digit",
                       month: "2-digit",
                     })}
+                    {m.title ? ` · ${m.title}` : ""}
                   </span>
                   <button
                     onClick={() =>
@@ -781,22 +787,29 @@ export default function AttendancePage() {
                     <th className="sticky left-0 z-10 min-w-[140px] border-r bg-muted/50 p-2 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("matrix.catechumen_column")}
                     </th>
-                    {meetings.map((m: any) => (
-                      <th
-                        key={m.id}
-                        className="min-w-[90px] p-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
-                      >
-                        <div>
-                          {formatDate(m.date, currentLocale, {
-                            day: "2-digit",
-                            month: "2-digit",
-                          })}
-                        </div>
-                        <div className="max-w-[80px] truncate text-overline font-medium normal-case tracking-normal text-muted-foreground">
-                          {m.title || t("matrix.no_title")}
-                        </div>
-                      </th>
-                    ))}
+                    {meetings.map((m: any) => {
+                      const meetingLabel = `${formatDate(m.date, currentLocale, {
+                        day: "2-digit",
+                        month: "2-digit",
+                      })} · ${m.title || t("matrix.no_title")}`;
+                      return (
+                        <th
+                          key={m.id}
+                          className="min-w-[100px] max-w-[140px] p-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+                          title={meetingLabel}
+                        >
+                          <div>
+                            {formatDate(m.date, currentLocale, {
+                              day: "2-digit",
+                              month: "2-digit",
+                            })}
+                          </div>
+                          <div className="whitespace-normal break-words text-overline font-medium normal-case tracking-normal text-muted-foreground">
+                            {m.title || t("matrix.no_title")}
+                          </div>
+                        </th>
+                      );
+                    })}
                     <th className="min-w-[50px] bg-muted/30 p-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("matrix.percent_column")}
                     </th>
@@ -835,7 +848,7 @@ export default function AttendancePage() {
                       })}
                       <td className="bg-muted/20 p-1 text-center">
                         <span className="text-sm font-semibold tabular-nums text-brand-ink">
-                          {studentRate(cat.id)}%
+                          {studentRateDisplay(cat.id)}
                         </span>
                       </td>
                     </tr>
@@ -864,7 +877,7 @@ export default function AttendancePage() {
                       </td>
                     ))}
                     <td className="bg-muted/30 p-2 text-center text-sm font-semibold tabular-nums text-brand-ink">
-                      {getOverallPct()}%
+                      {getOverallPctDisplay()}
                     </td>
                   </tr>
                 </tfoot>

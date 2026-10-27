@@ -74,4 +74,12 @@ describe("copy and a11y polish (audit round 2)", () => {
     expect(page).toContain("getPersonFullName(item.createdBy)");
     expect(page).not.toContain("createdBy?.firstName");
   });
+
+  it("uses plain-language attendance heading and filter in pt-BR", () => {
+    const attendance = readLocaleJson("pt-BR/attendance.json") as {
+      matrix: { title: string; all_statuses: string };
+    };
+    expect(attendance.matrix.title).toBe("Chamada da turma");
+    expect(attendance.matrix.all_statuses).toBe("Todas as situações");
+  });
 });

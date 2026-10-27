@@ -28,11 +28,11 @@ export default function AppPageHeaderOverflowMenu({
         <Button
           type="button"
           variant="outline"
-          size="icon"
-          className="h-11 w-11 min-h-11 min-w-11 rounded-md"
+          className="h-11 min-h-11 gap-1.5 rounded-md px-3"
           aria-label={label}
         >
-          <MoreHorizontal className="h-5 w-5" />
+          <MoreHorizontal className="h-4 w-4 shrink-0" aria-hidden />
+          <span className="text-sm font-medium">{label}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[12rem]">

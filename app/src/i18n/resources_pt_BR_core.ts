@@ -643,6 +643,7 @@ export const common_pt_BR_core = {
     "create": "Criar",
     "search": "Buscar...",
     "loading": "Aguarde…",
+    "loading_sr": "Carregando",
     "error_generic": "Algo deu errado. Tente novamente.",
     "success_save": "Salvo com sucesso.",
     "confirm_delete": "Tem certeza que deseja excluir?",

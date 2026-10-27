@@ -35,6 +35,7 @@ import {
   type AttendanceQueueItem,
 } from "../../../client/offline/db";
 import { AppPanel } from "../../../client/components/brand/AppChrome";
+import { SkeletonList } from "../../../client/components/Skeletons";
 import { defaultMeetingDateIso } from "../../../shared/displayDate";
 import { displayMeetingRollCallStatus } from "../../../shared/meetingRollCallStatus";
 
@@ -456,8 +457,13 @@ export function MeetingAttendanceSheet({
 
   if (isLoading && !sheet) {
     return (
-      <div className={cn("flex items-center justify-center py-16", className)}>
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground motion-reduce:animate-none" />
+      <div
+        className={cn("space-y-3 py-4", className)}
+        role="status"
+        aria-busy="true"
+      >
+        <span className="sr-only">{tc("loading_sr")}</span>
+        <SkeletonList items={5} />
       </div>
     );
   }
@@ -552,7 +558,18 @@ export function MeetingAttendanceSheet({
             <p className="text-xs font-medium tracking-wide text-muted-foreground">
               {meeting.class?.name}
             </p>
-            <h2 className="truncate text-base font-semibold tracking-tight text-brand-ink">
+            <h2
+              className="break-words text-base font-semibold tracking-tight text-brand-ink"
+              title={`${formatDate(meeting.date, currentLocale, {
+                day: "2-digit",
+                month: "2-digit",
+              })} · ${meeting.title || meeting.theme || t("sheet.untitled")}`}
+            >
+              {formatDate(meeting.date, currentLocale, {
+                day: "2-digit",
+                month: "2-digit",
+              })}
+              {" · "}
               {meeting.title || meeting.theme || t("sheet.untitled")}
             </h2>
             <p className="text-xs text-muted-foreground">
@@ -689,18 +706,19 @@ export function MeetingAttendanceSheet({
                   setUndoStack([]);
                 }}
               >
-                <span className="truncate">
-                  {s.title ||
-                    formatDate(s.date, currentLocale, {
-                      day: "2-digit",
-                      month: "2-digit",
-                    })}
-                </span>
-                <span className="ml-2 shrink-0 text-overline text-muted-foreground">
+                <span
+                  className="min-w-0 flex-1 break-words whitespace-normal"
+                  title={`${formatDate(s.date, currentLocale, {
+                    day: "2-digit",
+                    month: "2-digit",
+                  })} · ${s.title || t("sheet.untitled")}`}
+                >
                   {formatDate(s.date, currentLocale, {
                     day: "2-digit",
                     month: "2-digit",
                   })}
+                  {" · "}
+                  {s.title || t("sheet.untitled")}
                 </span>
               </button>
             ))}
