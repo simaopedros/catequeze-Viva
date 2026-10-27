@@ -45,6 +45,7 @@ vi.mock('../server/validation', () => ({
 
 import {
   archivePricingPlan,
+  clearAdminPlansCacheForTests,
   listPricingPlansAdmin,
   upsertPricingPlan,
 } from '../server/operations/pricingAdminOperations';
@@ -54,10 +55,43 @@ function context(user: any, entities: any) {
   return { user, entities };
 }
 
+function emptyGroupBy() {
+  return vi.fn().mockResolvedValue([]);
+}
+
+function listEntities(overrides: Record<string, any> = {}) {
+  return {
+    PricingPlan: {
+      count: vi.fn().mockResolvedValue(0),
+      findUnique: vi.fn(),
+      findMany: vi.fn().mockResolvedValue([]),
+      create: vi.fn(),
+      update: vi.fn(),
+      ...overrides.PricingPlan,
+    },
+    PricingPlanPrice: {
+      findFirst: vi.fn().mockResolvedValue(null),
+      create: vi.fn().mockResolvedValue({}),
+      ...overrides.PricingPlanPrice,
+    },
+    User: {
+      count: vi.fn().mockResolvedValue(0),
+      groupBy: emptyGroupBy(),
+      ...overrides.User,
+    },
+    TenantBilling: {
+      count: vi.fn().mockResolvedValue(0),
+      groupBy: emptyGroupBy(),
+      ...overrides.TenantBilling,
+    },
+  };
+}
+
 describe('pricingAdminOperations', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     invalidatePlanCatalogCache();
+    clearAdminPlansCacheForTests();
   });
 
   it('rejects non-admins', async () => {
@@ -143,6 +177,7 @@ describe('pricingAdminOperations', () => {
   it('inserts DEFAULT_PLANS when they are missing from the table', async () => {
     const plansBySlug = new Map<string, any>();
     const PricingPlan = {
+      count: vi.fn().mockResolvedValue(0),
       findUnique: vi.fn(async ({ where }: any) => plansBySlug.get(where.slug) ?? null),
       create: vi.fn(async ({ data }: any) => {
         const row = { id: `id-${data.slug}`, stripeProductId: null, ...data };
@@ -151,7 +186,7 @@ describe('pricingAdminOperations', () => {
       }),
       update: vi.fn(),
       findMany: vi.fn(async () =>
-        [...plansBySlug.values()].map((row) => ({ ...row, prices: [], subscriberCount: 0 })),
+        [...plansBySlug.values()].map((row) => ({ ...row, prices: [] })),
       ),
     };
     const PricingPlanPrice = {
@@ -162,12 +197,7 @@ describe('pricingAdminOperations', () => {
       undefined,
       context(
         { isAdmin: true },
-        {
-          PricingPlan,
-          PricingPlanPrice,
-          User: { count: vi.fn().mockResolvedValue(0) },
-          TenantBilling: { count: vi.fn().mockResolvedValue(0) },
-        },
+        listEntities({ PricingPlan, PricingPlanPrice }),
       ),
     );
     expect(PricingPlan.create.mock.calls.map((call: any) => call[0].data.slug).sort()).toEqual([
@@ -180,13 +210,42 @@ describe('pricingAdminOperations', () => {
     expect(listed).toHaveLength(5);
   });
 
+  it('does not call Stripe seed when catalog rows already exist', async () => {
+    const existing = {
+      id: 'keep',
+      slug: 'single',
+      name: 'Nome editado',
+      prices: [],
+    };
+    const PricingPlan = {
+      count: vi.fn().mockResolvedValue(1),
+      findUnique: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      findMany: vi.fn().mockResolvedValue([existing]),
+    };
+    const PricingPlanPrice = {
+      findFirst: vi.fn(),
+      create: vi.fn(),
+    };
+    const listed = await listPricingPlansAdmin(
+      undefined,
+      context({ isAdmin: true }, listEntities({ PricingPlan, PricingPlanPrice })),
+    );
+    expect(PricingPlan.create).not.toHaveBeenCalled();
+    expect(PricingPlan.findUnique).not.toHaveBeenCalled();
+    expect(listed).toHaveLength(1);
+    expect(listed[0].subscriberCount).toBe(0);
+  });
+
   it('does not overwrite an existing default plan edited in admin', async () => {
     const existing = { id: 'keep', slug: 'single', name: 'Nome editado', stripeProductId: null };
     const PricingPlan = {
+      count: vi.fn().mockResolvedValue(0),
       findUnique: vi.fn(async ({ where }: any) => (where.slug === 'single' ? existing : null)),
       create: vi.fn(async ({ data }: any) => ({ id: `id-${data.slug}`, stripeProductId: null, ...data })),
       update: vi.fn(),
-      findMany: vi.fn().mockResolvedValue([existing]),
+      findMany: vi.fn().mockResolvedValue([{ ...existing, prices: [] }]),
     };
     const PricingPlanPrice = {
       findFirst: vi.fn(async ({ where }: any) => (where.planId === 'keep' ? { id: 'p1' } : null)),
@@ -194,15 +253,7 @@ describe('pricingAdminOperations', () => {
     };
     await listPricingPlansAdmin(
       undefined,
-      context(
-        { isAdmin: true },
-        {
-          PricingPlan,
-          PricingPlanPrice,
-          User: { count: vi.fn().mockResolvedValue(0) },
-          TenantBilling: { count: vi.fn().mockResolvedValue(0) },
-        },
-      ),
+      context({ isAdmin: true }, listEntities({ PricingPlan, PricingPlanPrice })),
     );
     expect(PricingPlan.create.mock.calls.some((call: any) => call[0].data.slug === 'single')).toBe(false);
     expect(PricingPlan.update).not.toHaveBeenCalled();

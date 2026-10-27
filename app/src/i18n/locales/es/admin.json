@@ -226,6 +226,32 @@
       "job_status_ok": "OK",
       "job_status_failed": "Falló",
       "job_status_never": "Nunca ejecutó",
+      "error_window": "Ventana de errores",
+      "error_window_7d": "Últimos 7 días",
+      "error_window_30d": "Últimos 30 días",
+      "error_window_90d": "Últimos 90 días",
+      "error_occurrences_one": "{{count}} ocurrencia",
+      "error_occurrences_other": "{{count}} ocurrencias",
+      "error_last_seen": "Última ocurrencia",
+      "load_timeout": "La consulta tardó demasiado. Inténtelo de nuevo.",
+      "error_labels": {
+        "daily_stats": "Error al calcular estadísticas diarias",
+        "daily_stats_401": "Error al calcular estadísticas diarias (API externa 401)",
+        "ai_credits_reset": "Error en el reinicio de créditos editoriales",
+        "ai_cache_cleanup": "Error en la limpieza de la caché editorial",
+        "meeting_reminders": "Error en los recordatorios de encuentros",
+        "social_media_reconcile": "Error en la reconciliación de medios",
+        "lifecycle_nudge": "Error en los correos de ciclo de vida",
+        "email_outbox": "Error al procesar la cola de correos"
+      },
+      "job_names": {
+        "aiCreditsReset": "Reinicio de créditos",
+        "aiCacheCleanup": "Limpieza de caché",
+        "meetingReminders": "Recordatorios de encuentros",
+        "socialMediaReconcile": "Reconciliación de medios",
+        "lifecycleNudge": "Correos de ciclo de vida",
+        "dailyStats": "Estadísticas diarias"
+      },
       "jobs": {
         "dailyStats": "Métricas diarias de usuarios, actividad e ingresos",
         "aiCreditsReset": "Reinicio mensual de créditos de asistencia editorial",

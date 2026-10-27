@@ -1954,7 +1954,7 @@ api readinessCheckApi {
 api maintenanceApi {
   fn: import { maintenanceHandler } from "@src/server/api/maintenance",
   httpRoute: (POST, "/api/internal/maintenance"),
-  entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish, SocialMedia, LifecycleEmailLog, Membership, ClassEnrollment, AttendanceRecord, PricingPlan, PricingPlanPrice, PricingEvent, EmailMessage, EmailSuppression, EmailPreference]
+  entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish, SocialMedia, LifecycleEmailLog, Membership, ClassEnrollment, AttendanceRecord, PricingPlan, PricingPlanPrice, PricingEvent, EmailMessage, EmailSuppression, EmailPreference, JobRun]
 }
 
 api subscriptionExpirationApi {

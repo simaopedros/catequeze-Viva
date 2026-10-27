@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { calculateDailyStats } from "../../analytics/stats";
 import { logger } from "../logger";
+import { recordJobRun } from "../jobs/recordJobRun";
 import { cleanupAiCacheJob } from "../scripts/aiCacheCleanupJob";
 import { resetAiCreditsJob } from "../scripts/aiCreditsResetJob";
 import { sendRemindersJob } from "../scripts/remindersJob";
@@ -100,7 +101,8 @@ export async function maintenanceHandler(
   const runTask = async (task: MaintenanceTask) => {
     const taskStartedAt = Date.now();
     try {
-      const result = await task.run();
+      // Persist start/finish/ok/error so /admin/sistema can show last run status.
+      const result = await recordJobRun(context, task.name, task.run);
       results.push({
         name: task.name,
         status: "ok",

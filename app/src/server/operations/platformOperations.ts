@@ -8,6 +8,15 @@ import { getPlanPriceCents, resolvePlanIdOrFree, PRISMA_FREE_PLANS } from '../..
 import { loadPlanCatalog } from '../pricing/planCatalogService';
 import type { CatalogBySlug } from '../../shared/planCatalog';
 import { getAccountStatusCounts } from '../billing/accountStatusCounts';
+import { createTtlCache } from '../cache/ttlCache';
+
+const PLATFORM_OVERVIEW_TTL_MS = 60_000;
+const platformOverviewCache = createTtlCache<any>(PLATFORM_OVERVIEW_TTL_MS);
+
+/** Test helper — clears the 60s overview cache. */
+export function clearPlatformOverviewCacheForTests() {
+  platformOverviewCache.clear();
+}
 
 function planPrice(plan: string | null | undefined, catalog?: CatalogBySlug): number {
   return getPlanPriceCents(resolvePlanIdOrFree(plan, catalog), 'monthly', catalog) / 100;
@@ -59,10 +68,14 @@ function rate(numerator: number, denominator: number): number | null {
 export const getPlatformOverview = async (_args: void, context: any) => {
   requirePlatformAdmin(context.user);
 
+  const cached = platformOverviewCache.get();
+  if (cached) return cached;
+
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
+  // Counts + catalog in parallel — no Stripe API on this path (catalog is DB/cache).
   const [
     totalUsers,
     newUsers7d,
@@ -74,6 +87,7 @@ export const getPlatformOverview = async (_args: void, context: any) => {
     totalCatechumens,
     statusCounts,
     activeBillings,
+    catalogSnapshot,
   ] = await Promise.all([
     context.entities.User.count(),
     context.entities.User.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
@@ -88,9 +102,10 @@ export const getPlatformOverview = async (_args: void, context: any) => {
       where: { status: 'ACTIVE', plan: { notIn: [...PRISMA_FREE_PLANS] } },
       select: { plan: true },
     }),
+    loadPlanCatalog(context),
   ]);
 
-  const catalog = (await loadPlanCatalog(context)).bySlug;
+  const catalog = catalogSnapshot.bySlug;
   const mrr = activeBillings.reduce(
     (sum: number, b: { plan: string }) => sum + planPrice(b.plan, catalog),
     0,
@@ -101,7 +116,7 @@ export const getPlatformOverview = async (_args: void, context: any) => {
   const trialActive = statusCounts.trialUsers + statusCounts.trialTenants;
   const expiredTrials = statusCounts.expiredTrialUsers + statusCounts.expiredTrialTenants;
 
-  return {
+  const payload = {
     totalUsers,
     newUsers7d,
     newUsers30d,
@@ -126,6 +141,8 @@ export const getPlatformOverview = async (_args: void, context: any) => {
     pastDue: statusCounts.pastDue,
     mrr: Math.round(mrr * 100) / 100,
   };
+  platformOverviewCache.set(payload);
+  return payload;
 };
 
 function startOfLocalDay(date: Date): Date {

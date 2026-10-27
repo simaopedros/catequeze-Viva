@@ -1939,6 +1939,8 @@ model Logs {
 
   message String
   level   String
+
+  @@index([level, createdAt])
 }
 
 /// Execution history for maintenance / cron-style jobs (adopt via recordJobRun).

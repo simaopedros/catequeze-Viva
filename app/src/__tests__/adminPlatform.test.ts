@@ -232,9 +232,8 @@ describe("getSystemHealth credits", () => {
       DailyStats: { findMany: vi.fn().mockResolvedValue([]) },
       Logs: {
         findMany: vi.fn().mockResolvedValue([]),
-        findFirst: vi.fn().mockResolvedValue(null),
       },
-      JobRun: { findFirst: vi.fn().mockResolvedValue(null) },
+      JobRun: { findMany: vi.fn().mockResolvedValue([]) },
       DailyAiUsage: {
         aggregate: vi.fn().mockResolvedValue({ _sum: { count: 0 } }),
       },
@@ -247,13 +246,56 @@ describe("getSystemHealth credits", () => {
     expect(entities.DailyAiUsage.aggregate).toHaveBeenCalledWith(
       expect.objectContaining({ _sum: { count: true } }),
     );
+    expect(entities.Logs.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          level: "job-error",
+          createdAt: expect.objectContaining({ gte: expect.any(Date) }),
+        }),
+        take: 200,
+      }),
+    );
+    expect(entities.JobRun.findMany).toHaveBeenCalledTimes(1);
     expect(result.usersWithCredits).toBe(4);
+    expect(result.days).toBe(7);
     expect(result.jobs).toHaveLength(6);
     expect(result.jobs[0]).toMatchObject({
       name: "aiCreditsReset",
       lastRunAt: null,
       lastRunOk: null,
       lastErrorAt: null,
+    });
+  });
+
+  it("groups duplicate job errors inside the requested window", async () => {
+    const entities = {
+      DailyStats: { findMany: vi.fn().mockResolvedValue([]) },
+      Logs: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: 1,
+            message: "Error calculating daily stats: HTTP error! Status: 401",
+            createdAt: new Date("2026-10-20T10:00:00.000Z"),
+          },
+          {
+            id: 2,
+            message: "Error calculating daily stats: HTTP error! Status: 401",
+            createdAt: new Date("2026-10-21T10:00:00.000Z"),
+          },
+        ]),
+      },
+      JobRun: { findMany: vi.fn().mockResolvedValue([]) },
+      DailyAiUsage: {
+        aggregate: vi.fn().mockResolvedValue({ _sum: { count: 0 } }),
+      },
+      UserAiCredits: { count: vi.fn().mockResolvedValue(0) },
+    };
+    const result = await getSystemHealth({ days: 30 }, context(ADMIN, entities));
+    expect(result.days).toBe(30);
+    expect(result.recentErrors).toHaveLength(1);
+    expect(result.recentErrors[0]).toMatchObject({
+      count: 2,
+      labelKey: "daily_stats_401",
     });
   });
 });
