@@ -15,7 +15,7 @@ const LOCALE_SHORT: Record<SupportedLocale, string> = {
 
 export function PublicFooter({
   hidePricing = false,
-  brandName = "Catequese Viva",
+  brandName = "Catechis",
 }: {
   hidePricing?: boolean;
   brandName?: string;

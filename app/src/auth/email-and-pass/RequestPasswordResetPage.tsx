@@ -6,6 +6,7 @@ export function RequestPasswordResetPage() {
   const { t } = useTranslation("auth");
   return (
     <AuthPageLayout
+      pageTitle={t("forgot_title")}
       panel={{
         eyebrow: t("forgot_panel_eyebrow"),
         title: t("forgot_panel_title"),

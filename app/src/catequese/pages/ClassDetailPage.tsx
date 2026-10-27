@@ -75,6 +75,7 @@ import {
   classSchedulePayload,
   formatClassSchedule,
 } from "../../shared/classSchedule";
+import { resolveClassLocationLabel } from "../../shared/classLocationDisplay";
 import { GenerateMeetingsPanel } from "../components/GenerateMeetingsPanel";
 
 export default function ClassDetailPage() {
@@ -218,7 +219,9 @@ export default function ClassDetailPage() {
       setEditDay(schedule.dayOfWeek);
       setEditStart(schedule.startTime);
       setEditEnd(schedule.endTime);
-      setEditLocation(cls.location || "");
+      setEditLocation(
+        resolveClassLocationLabel(cls.location, cls.parish?.name, ""),
+      );
       setEditCapacity(cls.maxCapacity || 30);
       setEditCommunityId(cls.community?.id || "");
     }
@@ -602,15 +605,19 @@ export default function ClassDetailPage() {
 
         <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
           <AppPanel className="px-4 py-3" padded={false}>
-            <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium tracking-wide text-muted-foreground">
               {t("location")}
             </p>
             <p className="mt-1.5 text-sm font-semibold tracking-tight text-brand-ink">
-              {cls.location || "—"}
+              {resolveClassLocationLabel(
+                cls.location,
+                cls.parish?.name,
+                t("location_not_informed"),
+              )}
             </p>
           </AppPanel>
           <AppPanel className="px-4 py-3" padded={false}>
-            <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium tracking-wide text-muted-foreground">
               {t("schedule")}
             </p>
             <p className="mt-1.5 text-sm font-semibold tracking-tight text-brand-ink">
@@ -622,7 +629,7 @@ export default function ClassDetailPage() {
             </p>
           </AppPanel>
           <AppMetric
-            label={t("enrolled")}
+            label={t("enrolled_metric")}
             value={`${enrolledIds.length}/${cls.maxCapacity}`}
           />
           <AppMetric
@@ -635,7 +642,7 @@ export default function ClassDetailPage() {
         {editing ? (
           <AppPanel className="p-4 space-y-3" padded={false}>
             <div className="space-y-1.5">
-              <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 <Pencil className="h-3.5 w-3.5" />
                 {t("detail.edit_class")}
               </p>
@@ -709,7 +716,7 @@ export default function ClassDetailPage() {
                   value={editLocation}
                   onChange={(e) => setEditLocation(e.target.value)}
                   className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
-                  placeholder={cls.location || t("location_placeholder")}
+                  placeholder={t("location_placeholder")}
                   aria-label={t("location")}
                 />
               </div>
@@ -920,7 +927,7 @@ export default function ClassDetailPage() {
               canEnroll && (
                 <div className="mt-6">
                   <div className="mb-2 space-y-1.5">
-                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("detail.available_to_enroll", {
                         count: available.length,
                       })}

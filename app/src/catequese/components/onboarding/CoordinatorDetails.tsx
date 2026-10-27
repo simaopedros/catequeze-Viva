@@ -55,7 +55,7 @@ export function CoordinatorDetails({
   const [dayOfWeek, setDayOfWeek] = useState("6");
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("10:30");
-  const [location, setLocation] = useState(parishName || "");
+  const [location, setLocation] = useState("");
   const [dateError, setDateError] = useState("");
   const [showOptionalDetails, setShowOptionalDetails] = useState(false);
 
@@ -209,7 +209,7 @@ export function CoordinatorDetails({
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
                         className="h-11 rounded-sm"
-                        placeholder={parishName}
+                        placeholder={t("class_setup.location_placeholder")}
                       />
                     </div>
                   </div>

@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { SkipToContent } from "../client/components/SkipToContent";
 import { BrandLockup } from "../client/components/brand/Brand";
+import { usePageTitle } from "../client/hooks/usePageTitle";
 import { useLocale, SupportedLocale } from "../i18n/useLocale";
 import { cn } from "../client/utils";
 import { AuthHeader } from "./AuthHeader";
@@ -15,6 +16,8 @@ const LOCALE_SHORT: Record<SupportedLocale, string> = {
 
 type AuthPageLayoutProps = {
   children: ReactNode;
+  /** Browser tab title segment before " · Catechis". */
+  pageTitle?: string;
   /** When set, shows institutional left panel (desktop) */
   panel?: {
     eyebrow?: string;
@@ -24,9 +27,14 @@ type AuthPageLayoutProps = {
   };
 };
 
-export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
+export function AuthPageLayout({
+  children,
+  panel,
+  pageTitle,
+}: AuthPageLayoutProps) {
   const { t } = useTranslation("auth");
   const { currentLocale, setLocale, supportedLocales } = useLocale();
+  usePageTitle(pageTitle);
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
@@ -86,7 +94,7 @@ export function AuthPageLayout({ children, panel }: AuthPageLayoutProps) {
             </div>
 
             <p className="relative text-xs text-[#6B7C8F]">
-              © {new Date().getFullYear()} Catequese Viva
+              © {new Date().getFullYear()} Catechis
             </p>
           </aside>
         )}

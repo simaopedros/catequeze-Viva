@@ -46,12 +46,12 @@ describe("not found page", () => {
     expect(hook).toContain("document.title = APP_NAME");
   });
 
-  it("PublicFooter accepts optional brandName defaulting to Catequese Viva", () => {
+  it("PublicFooter accepts optional brandName defaulting to Catechis", () => {
     const footer = readFileSync(
       join(root, "catequese/PublicFooter.tsx"),
       "utf8",
     );
-    expect(footer).toContain('brandName = "Catequese Viva"');
+    expect(footer).toContain('brandName = "Catechis"');
     expect(footer).toContain("{brandName}");
   });
 });
