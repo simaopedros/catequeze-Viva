@@ -16,6 +16,10 @@ import { SkeletonTable } from "../../../client/components/Skeletons";
 import { useNavigate } from "react-router";
 import { formatDate } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
+import {
+  resolveAdminCodeLabel,
+  resolveAdminPlanLabel,
+} from "../../../shared/adminLabels";
 
 function AdminSwitch({ id, isAdmin }: Pick<User, "id" | "isAdmin">) {
   const { data: currentUser } = useAuth();
@@ -34,23 +38,12 @@ const UsersTable = () => {
   const { t: tCommon } = useTranslation("common");
   const { currentLocale } = useLocale();
 
-  const statusLabel = (status: string) => {
-    const key = `pages.licenses.status_${status}`;
-    const translated = t(key);
-    return translated === key ? status : translated;
-  };
-
-  const roleLabel = (role: string) => {
-    const key = `roles.${role}`;
-    const translated = tCommon(key);
-    return translated === key ? role : translated;
-  };
-
-  const typeLabel = (type: string) => {
-    const key = `pages.parishes.type_${type}`;
-    const translated = t(key);
-    return translated === key ? type : translated;
-  };
+  const statusLabel = (status: string) =>
+    resolveAdminCodeLabel("status", status, t);
+  const roleLabel = (role: string) =>
+    resolveAdminCodeLabel("role", role, t, tCommon);
+  const typeLabel = (type: string) =>
+    resolveAdminCodeLabel("parishType", type, t);
   const [currentPage, setCurrentPage] = useState(1);
   const [emailFilter, setEmailFilter] = useState<string | undefined>(undefined);
   const [isAdminFilter, setIsAdminFilter] = useState<boolean | undefined>(
@@ -184,7 +177,9 @@ const UsersTable = () => {
                 : "—"}
             </td>
             <td className="hidden px-4 py-3 text-xs text-[#071A2D] lg:table-cell">
-              {user.subscriptionPlan || "—"}
+              {user.subscriptionPlan
+                ? resolveAdminPlanLabel(user.subscriptionPlan)
+                : "—"}
               {user.subscriptionStatus ? (
                 <span className="ml-1 text-muted-foreground">
                   · {statusLabel(user.subscriptionStatus)}

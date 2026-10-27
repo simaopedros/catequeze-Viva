@@ -14,10 +14,30 @@ import { useLocale } from "../../../i18n/useLocale";
 import { Button } from "../../../client/components/ui/button";
 import { Input } from "../../../client/components/ui/input";
 import { SkeletonTable } from "../../../client/components/Skeletons";
+import { resolveAdminCodeLabel } from "../../../shared/adminLabels";
+
+const AUDIT_ACTIONS = [
+  "CREATE",
+  "UPDATE",
+  "DELETE",
+  "LOGIN",
+  "LOGOUT",
+  "EXPORT",
+  "APPROVE",
+  "REJECT",
+] as const;
 
 const AuditLogPage = ({ user }: { user: AuthUser }) => {
   const { t } = useTranslation("admin");
   const { currentLocale } = useLocale();
+  const actionLabel = (action: string) =>
+    resolveAdminCodeLabel("auditAction", action, t);
+  const entityLabel = (entityType: string) =>
+    resolveAdminCodeLabel("entityType", entityType, t);
+  const operationLabel = (operation: string) =>
+    operation
+      ? resolveAdminCodeLabel("auditOperation", operation, t)
+      : "—";
   const [page, setPage] = useState(0);
   const [actionFilter, setActionFilter] = useState<string>("");
   const [entityType, setEntityType] = useState("");
@@ -94,13 +114,11 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
             }}
           >
             <option value="">{t("pages.audit.all_actions")}</option>
-            {["CREATE", "UPDATE", "DELETE", "LOGIN", "LOGOUT", "EXPORT", "APPROVE", "REJECT"].map(
-              (action) => (
-                <option key={action} value={action}>
-                  {action}
-                </option>
-              ),
-            )}
+            {AUDIT_ACTIONS.map((action) => (
+              <option key={action} value={action}>
+                {actionLabel(action)}
+              </option>
+            ))}
           </select>
           <Input
             className="h-9 w-40"
@@ -205,12 +223,14 @@ const AuditLogPage = ({ user }: { user: AuthUser }) => {
                                     : "bg-[#071A2D]/8 text-[#071A2D]"
                               }`}
                             >
-                              {log.action}
+                              {actionLabel(log.action)}
                             </span>
                           </td>
-                          <td className="px-4 py-2.5 text-xs">{log.entityType}</td>
+                          <td className="px-4 py-2.5 text-xs">
+                            {entityLabel(log.entityType)}
+                          </td>
                           <td className="px-4 py-2.5 text-xs text-muted-foreground hidden md:table-cell">
-                            {operation || "—"}
+                            {operationLabel(operation)}
                           </td>
                           <td className="px-4 py-2.5 text-xs text-muted-foreground hidden lg:table-cell">
                             {log.user?.email || "—"}

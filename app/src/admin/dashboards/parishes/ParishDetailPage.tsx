@@ -26,6 +26,10 @@ import { Button } from "../../../client/components/ui/button";
 import { ConfirmDialog } from "../../../client/components/ConfirmDialog";
 import { SkeletonPage } from "../../../client/components/Skeletons";
 import { setActiveWorkspaceId } from "../../../client/hooks/workspaceStore";
+import {
+  resolveAdminCodeLabel,
+  resolveAdminPlanLabel,
+} from "../../../shared/adminLabels";
 
 const ParishDetailPage = ({ user }: { user: AuthUser }) => {
   const { id } = useParams<{ id: string }>();
@@ -33,18 +37,10 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
   const { t: tCommon } = useTranslation("common");
   const { currentLocale } = useLocale();
 
-  const statusLabel = (status: string | null | undefined) => {
-    if (!status) return "—";
-    const key = `pages.licenses.status_${status}`;
-    const translated = t(key);
-    return translated === key ? status : translated;
-  };
-
-  const roleLabel = (role: string) => {
-    const key = `roles.${role}`;
-    const translated = tCommon(key);
-    return translated === key ? role : translated;
-  };
+  const statusLabel = (status: string | null | undefined) =>
+    resolveAdminCodeLabel("status", status, t);
+  const roleLabel = (role: string) =>
+    resolveAdminCodeLabel("role", role, t, tCommon);
   const {
     data: parish,
     isLoading,
@@ -254,7 +250,7 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                   {t("pages.parish.plan")}
                 </p>
                 <p className="font-semibold tracking-tight text-[#071A2D]">
-                  {parish.billing.plan}
+                  {resolveAdminPlanLabel(parish.billing.plan)}
                 </p>
               </div>
               <div>
@@ -366,16 +362,27 @@ const ParishDetailPage = ({ user }: { user: AuthUser }) => {
                 >
                   <div>
                     <span className="font-semibold tracking-tight text-[#071A2D]">
-                      {log.action}
+                      {resolveAdminCodeLabel("auditAction", log.action, t)}
                     </span>
                     <span className="text-muted-foreground ml-2">
-                      {log.entityType}
+                      {resolveAdminCodeLabel(
+                        "entityType",
+                        log.entityType,
+                        t,
+                      )}
                     </span>
                     {log.metadata && (
                       <span className="text-muted-foreground ml-2">
                         {(() => {
                           try {
-                            return JSON.parse(log.metadata).operation || "";
+                            const op = JSON.parse(log.metadata).operation;
+                            return op
+                              ? resolveAdminCodeLabel(
+                                  "auditOperation",
+                                  op,
+                                  t,
+                                )
+                              : "";
                           } catch {
                             return "";
                           }

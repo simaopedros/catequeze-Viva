@@ -44,6 +44,11 @@ import { SkeletonPage } from "../../../client/components/Skeletons";
 import { startImpersonation } from "../../impersonation";
 import { setActiveWorkspaceId } from "../../../client/hooks/workspaceStore";
 
+import {
+  resolveAdminCodeLabel,
+  resolveAdminPlanLabel,
+} from "../../../shared/adminLabels";
+
 const resolveEnumLabel = (
   tAdmin: (key: string) => string,
   tCommon: (key: string) => string,
@@ -52,23 +57,15 @@ const resolveEnumLabel = (
 ) => {
   if (!value) return "—";
   if (kind === "status") {
-    const key = `pages.licenses.status_${value}`;
-    const translated = tAdmin(key);
-    return translated === key ? value : translated;
+    return resolveAdminCodeLabel("status", value, tAdmin);
   }
   if (kind === "role") {
-    const key = `roles.${value}`;
-    const translated = tCommon(key);
-    return translated === key ? value : translated;
+    return resolveAdminCodeLabel("role", value, tAdmin, tCommon);
   }
   if (kind === "membership") {
-    const key = `membership_status.${value}`;
-    const translated = tCommon(key);
-    return translated === key ? value : translated;
+    return resolveAdminCodeLabel("membershipStatus", value, tAdmin, tCommon);
   }
-  const key = `pages.parishes.type_${value}`;
-  const translated = tAdmin(key);
-  return translated === key ? value : translated;
+  return resolveAdminCodeLabel("parishType", value, tAdmin);
 };
 
 const UserDetailPage = ({ user }: { user: AuthUser }) => {
@@ -274,7 +271,9 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                   {t("pages.user.plan")}
                 </p>
                 <p className="font-semibold tracking-tight text-[#071A2D]">
-                  {u.subscriptionPlan || "—"}
+                  {u.subscriptionPlan
+                    ? resolveAdminPlanLabel(u.subscriptionPlan)
+                    : "—"}
                 </p>
               </div>
               <div>
@@ -352,7 +351,11 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                       {row.name}
                     </span>
                     <span className="text-muted-foreground ml-2">
-                      {row.source} · {row.plan || "—"} · {row.status || "—"}
+                      {row.source} ·{" "}
+                      {row.plan ? resolveAdminPlanLabel(row.plan) : "—"} ·{" "}
+                      {row.status
+                        ? resolveEnumLabel(t, tCommon, "status", row.status)
+                        : "—"}
                     </span>
                   </div>
                   <span className="text-muted-foreground shrink-0">
@@ -447,10 +450,14 @@ const UserDetailPage = ({ user }: { user: AuthUser }) => {
                 >
                   <div>
                     <span className="font-semibold tracking-tight text-[#071A2D]">
-                      {log.action}
+                      {resolveAdminCodeLabel("auditAction", log.action, t)}
                     </span>
                     <span className="text-muted-foreground ml-2">
-                      {log.entityType}
+                      {resolveAdminCodeLabel(
+                        "entityType",
+                        log.entityType,
+                        t,
+                      )}
                     </span>
                   </div>
                   <span className="text-muted-foreground">

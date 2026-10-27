@@ -22,6 +22,7 @@ import {
 import { useLocale } from "../../../i18n/useLocale";
 import { Download } from "lucide-react";
 import { downloadCsv } from "./csvExport";
+import { resolveAdminPlanLabel } from "../../../shared/adminLabels";
 
 type OwnerDashboard = Awaited<ReturnType<typeof getOwnerDashboard>>;
 
@@ -140,7 +141,7 @@ const AdminOwnerPage = ({ user }: { user: AuthUser }) => {
         ...dash.delinquency.list.map((row) => [
           row.accountName,
           row.email ?? "",
-          row.plan ?? "",
+          row.plan ? resolveAdminPlanLabel(row.plan) : "",
           row.since ?? "",
           row.kind,
         ]),
@@ -349,8 +350,11 @@ const AdminOwnerPage = ({ user }: { user: AuthUser }) => {
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
               <Section
                 title={t("pages.owner.sections.delinquency", {
-                  users: dash.delinquency.userCount,
-                  tenants: dash.delinquency.tenantCount,
+                  breakdown: `${t("pages.dashboard.users_count", {
+                    count: dash.delinquency.userCount,
+                  })} · ${t("pages.dashboard.tenants_count", {
+                    count: dash.delinquency.tenantCount,
+                  })}`,
                 })}
                 action={
                   <Button
@@ -375,7 +379,7 @@ const AdminOwnerPage = ({ user }: { user: AuthUser }) => {
                   rows={dash.delinquency.list.map((row) => [
                     row.accountName,
                     row.email ?? "—",
-                    row.plan ?? "—",
+                    row.plan ? resolveAdminPlanLabel(row.plan) : "—",
                     row.since
                       ? formatDate(row.since, currentLocale)
                       : "—",
