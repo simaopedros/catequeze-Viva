@@ -386,24 +386,30 @@ export default function CustomLoginForm({
           href={signupHref}
           className="font-medium text-brand-ink hover:underline"
         >
-          {t("login_create_account")}
+          {t(
+            isFamilyPortalHost()
+              ? "login_create_account_family"
+              : "login_create_account",
+          )}
         </a>
       </p>
 
-      <ul className="space-y-2 border-t border-border/60 pt-5 lg:hidden">
-        {(Array.isArray(t("login_panel_points", { returnObjects: true }))
-          ? (t("login_panel_points", { returnObjects: true }) as string[])
-          : []
-        ).map((point) => (
-          <li
-            key={point}
-            className="flex gap-2 text-xs leading-snug text-muted-foreground"
-          >
-            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-ink/70" />
-            <span>{point}</span>
-          </li>
-        ))}
-      </ul>
+      {!isFamilyPortalHost() && (
+        <ul className="space-y-2 border-t border-border/60 pt-5 lg:hidden">
+          {(Array.isArray(t("login_panel_points", { returnObjects: true }))
+            ? (t("login_panel_points", { returnObjects: true }) as string[])
+            : []
+          ).map((point) => (
+            <li
+              key={point}
+              className="flex gap-2 text-xs leading-snug text-muted-foreground"
+            >
+              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-ink/70" />
+              <span>{point}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
