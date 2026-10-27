@@ -141,6 +141,7 @@ export default function FamiliesPage() {
             <div className="min-w-0 flex-1">
               <SearchInput
                 placeholder={t("families.search_placeholder")}
+                aria-label={t("families.search_placeholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 containerClassName="max-w-none w-full"
@@ -150,7 +151,10 @@ export default function FamiliesPage() {
               value={communityFilter || "all"}
               onValueChange={(v) => setCommunityFilter(v === "all" ? "" : v)}
             >
-              <SelectTrigger className="h-11 min-h-11 w-full rounded-sm sm:w-44">
+              <SelectTrigger
+                className="h-11 min-h-11 w-full rounded-sm sm:w-44"
+                aria-label={t("families.all_communities")}
+              >
                 <SelectValue placeholder={t("families.all_communities")} />
               </SelectTrigger>
               <SelectContent>

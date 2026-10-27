@@ -116,6 +116,7 @@ export default function BirthdaysPage() {
           className="min-h-11 w-full max-w-xs rounded-sm border border-border/70 bg-white px-3 py-2 text-sm"
           value={classFilter}
           onChange={(e) => setClassFilter(e.target.value)}
+          aria-label={t("filterByClass")}
         >
           <option value="">{t("allClasses")}</option>
           {classes.map((c: any) => (

@@ -382,6 +382,7 @@ export default function ContentLibraryPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <SearchInput
               placeholder={t("library.search_placeholder")}
+              aria-label={t("library.search_placeholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
