@@ -238,6 +238,47 @@ Após o primeiro deploy com este comportamento, o Caddy precisa do `Caddyfile` a
 
 ## Manutenção
 
+### Flush pontual do outbox de e-mail (por IDs)
+
+Ferramenta one-off segura para entregar **apenas** linhas `EmailMessage` com status `QUEUED`, pelos IDs indicados, pelo caminho normal (`deliverOutboxRow`: revalida suppression/opt-out e renderiza o catálogo). **Não** chama `processEmailOutbox`, maintenance, lifecycle nem trial jobs.
+
+O seed Wasp `flushEmailOutboxByIds` é selecionado pela env `WASP_DB_SEED_NAME` (ver bundle gerado `.wasp/out/server/src/dbSeed.ts` → `bundle/dbSeed.js`).
+
+Variáveis:
+
+| Env | Obrigatório | Default | Descrição |
+|-----|:-----------:|---------|-----------|
+| `WASP_DB_SEED_NAME` | sim | — | Deve ser `flushEmailOutboxByIds` |
+| `EMAIL_OUTBOX_IDS` | sim | — | IDs `EmailMessage` separados por vírgula |
+| `EMAIL_OUTBOX_PAUSE_MS` | não | `20000` | Pausa entre envios (ms) |
+
+No container de produção (WORKDIR da imagem: `/app/.wasp/out/server`; o runner **não** recompila — usar o `bundle/dbSeed.js` já empacotado):
+
+```bash
+ssh root@13.140.171.132
+cd /opt/catechis
+
+# Substituir os IDs reais; não logar destinatários/secrets
+docker compose -f docker-compose.yml exec -T \
+  -e WASP_DB_SEED_NAME=flushEmailOutboxByIds \
+  -e EMAIL_OUTBOX_IDS='id-1,id-2' \
+  -e EMAIL_OUTBOX_PAUSE_MS=20000 \
+  server \
+  node --enable-source-maps bundle/dbSeed.js
+```
+
+Em desenvolvimento local (recompila o seed):
+
+```bash
+cd app
+WASP_DB_SEED_NAME=flushEmailOutboxByIds \
+EMAIL_OUTBOX_IDS='id-1,id-2' \
+EMAIL_OUTBOX_PAUSE_MS=20000 \
+wasp db seed flushEmailOutboxByIds
+```
+
+Logs esperados: só `id`, `messageId` (tipo do catálogo) e `outcome` (`SENT` \| `SUPPRESSED` \| `FAILED` \| `SKIPPED`). Nunca e-mails de destinatário nem secrets.
+
 ### Atualizar `.env.server`
 
 ```bash

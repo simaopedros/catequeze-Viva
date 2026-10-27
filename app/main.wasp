@@ -111,7 +111,8 @@ app OpenSaaS {
 
   db: {
     seeds: [
-      import { seedPricingCatalog } from "@src/server/scripts/seedPricingCatalog"
+      import { seedPricingCatalog } from "@src/server/scripts/seedPricingCatalog",
+      import { flushEmailOutboxByIds } from "@src/server/scripts/flushEmailOutboxByIds"
     ]
   },
 }
