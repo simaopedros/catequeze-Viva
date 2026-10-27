@@ -72,6 +72,13 @@ catechis.app, www.catechis.app {
     import prod_api
   }
 
+  # Hashed Vite assets: missing files must 404 (not SPA index.html as text/html),
+  # otherwise open tabs after deploy get "Failed to fetch dynamically imported module".
+  handle /assets/* {
+    root * /srv/web-app
+    file_server
+  }
+
   handle {
     root * /srv/web-app
     try_files {path} /index.html
@@ -105,6 +112,11 @@ familia.catechis.app {
 
   handle /payments-webhook {
     import prod_api
+  }
+
+  handle /assets/* {
+    root * /srv/web-app
+    file_server
   }
 
   handle {

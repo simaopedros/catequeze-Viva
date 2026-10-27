@@ -1,6 +1,10 @@
 import { Component, ReactNode } from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import i18n from "../../i18n/config";
+import {
+  isChunkLoadError,
+  reloadOnceForChunkError,
+} from "../chunkLoadRecovery";
 import { Button } from "./ui/button";
 import { AppDisplayTitle, AppGoldRule } from "./brand/AppChrome";
 
@@ -35,6 +39,9 @@ export class ErrorBoundary extends Component<
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error("[ErrorBoundary]", error, errorInfo);
+    if (isChunkLoadError(error)) {
+      reloadOnceForChunkError();
+    }
   }
 
   handleRetry = () => {
