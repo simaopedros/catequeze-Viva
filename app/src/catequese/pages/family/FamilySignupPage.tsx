@@ -117,13 +117,17 @@ export default function FamilySignupPage() {
               role: (invitation as any).roleLabel,
             })}
           </p>
+          {(invitation as any).emailMasked ? (
+            <p className="text-sm text-muted-foreground">
+              {t("signup.email_hint", {
+                email: (invitation as any).emailMasked,
+              })}
+            </p>
+          ) : null}
         </div>
 
         <div className="rounded-sm border border-border/70 bg-white p-6 ">
-          <CustomSignupForm
-            inviteToken={token}
-            defaultEmail={(invitation as any).inviteEmail}
-          />
+          <CustomSignupForm inviteToken={token} />
         </div>
 
         <div className="text-center">

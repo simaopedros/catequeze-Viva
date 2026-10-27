@@ -9,12 +9,22 @@
   }
   reverse_proxy server:3001 {
     header_up Host {host}
-    header_up X-Real-IP {remote_host}
-    header_up X-Forwarded-For {remote_host}
+    # Do not overwrite X-Forwarded-For with {remote_host} (that was the Cloudflare
+    # edge IP). Cloudflare already sends CF-Connecting-IP; Express prefers it
+    # (see getClientIpFromRequest) and falls back to X-Forwarded-For / req.ip.
     header_up X-Forwarded-Proto {scheme}
     # Flush immediately so Server-Sent Events reach the browser as they are written.
     flush_interval -1
   }
+}
+
+# Production security headers (staff + family). Do NOT apply on homolog.
+(prod_security_headers) {
+  header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  header Content-Security-Policy "frame-ancestors 'none'"
+  header X-Content-Type-Options "nosniff"
+  header Referrer-Policy "strict-origin-when-cross-origin"
+  header X-Frame-Options "DENY"
 }
 
 # ── Produção: staff portal ────────────────────────────────────────────────────
@@ -23,6 +33,7 @@ catechis.app, www.catechis.app {
   redir @www https://catechis.app{uri} permanent
 
   encode gzip
+  import prod_security_headers
 
   handle /auth/* {
     import prod_api
@@ -89,6 +100,14 @@ catechis.app, www.catechis.app {
 # ── Produção: family portal (same SPA build) ─────────────────────────────────
 familia.catechis.app {
   encode gzip
+  import prod_security_headers
+  # Private family portal with minors' data — keep out of search indexes.
+  header X-Robots-Tag "noindex, nofollow"
+
+  handle /robots.txt {
+    header Content-Type "text/plain; charset=utf-8"
+    respond "User-agent: *\nDisallow: /\n" 200
+  }
 
   handle /auth/* {
     import prod_api

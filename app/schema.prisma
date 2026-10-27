@@ -1705,6 +1705,21 @@ model DailyAiUsage {
   @@index([date])
 }
 
+// ─── Persistent rate-limit buckets (auth / invites; fail-open on DB errors) ───
+
+model RateLimitBucket {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// Composite key, e.g. "auth-login:203.0.113.10" or "invite-accept:userId"
+  key     String   @unique
+  count   Int      @default(0)
+  resetAt DateTime
+
+  @@index([resetAt])
+}
+
 // ─── Two-Factor Authentication (TOTP) ────────────────────────────────────────
 
 model UserTwoFactor {

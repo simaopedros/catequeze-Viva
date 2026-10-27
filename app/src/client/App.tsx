@@ -228,6 +228,24 @@ export default function App() {
 
   const isFamilyPortal = useMemo(() => isFamilyPortalHost(), []);
 
+  // Family portal must stay out of search indexes (minors' data). Staff SEO untouched.
+  useEffect(() => {
+    if (!isFamilyPortal) return;
+    const ensureMeta = (name: string, content: string) => {
+      let el = document.querySelector(
+        `meta[name="${name}"]`,
+      ) as HTMLMetaElement | null;
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute("name", name);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", content);
+    };
+    ensureMeta("robots", "noindex, nofollow");
+    ensureMeta("googlebot", "noindex, nofollow");
+  }, [isFamilyPortal]);
+
   const isMarketingPage = useMemo(() => {
     if (isFamilyPortal) return false;
     return (

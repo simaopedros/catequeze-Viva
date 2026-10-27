@@ -10,6 +10,31 @@ import {
 
 import { requireWorkspaceAccess, resolveWorkspaceAccess } from './sharedScope';
 
+/** Client-safe Document fields — never include s3Key. */
+const documentClientSelect = {
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  name: true,
+  type: true,
+  mimeType: true,
+  status: true,
+  catechumenProfileId: true,
+  uploadedById: true,
+  verifiedAt: true,
+  verifiedById: true,
+  rejectedAt: true,
+  rejectedReason: true,
+  catechumenProfile: { select: { id: true, firstName: true, lastName: true } },
+  uploadedBy: { select: { id: true, firstName: true, lastName: true } },
+} as const;
+
+function stripDocumentStorageFields<T extends Record<string, any>>(doc: T) {
+  if (!doc || typeof doc !== 'object') return doc;
+  const { s3Key: _s3Key, ...rest } = doc;
+  return rest;
+}
+
 export const listDocuments = async (
   _args: { workspaceId?: string } | void,
   context: any,
@@ -18,16 +43,11 @@ export const listDocuments = async (
   const args = _args || {};
   const workspaceId = args.workspaceId?.trim() || undefined;
 
-  const baseInclude = {
-    catechumenProfile: { select: { id: true, firstName: true, lastName: true } },
-    uploadedBy: { select: { id: true, firstName: true, lastName: true } },
-  };
-
   // Admin without workspace: all documents
   if (context.user.isAdmin && !workspaceId) {
     return context.entities.Document.findMany({
       orderBy: { createdAt: 'desc' },
-      include: baseInclude,
+      select: documentClientSelect,
     });
   }
 
@@ -70,7 +90,7 @@ export const listDocuments = async (
         ],
       },
       orderBy: { createdAt: 'desc' },
-      include: baseInclude,
+      select: documentClientSelect,
     });
   }
 
@@ -88,7 +108,7 @@ export const listDocuments = async (
     return context.entities.Document.findMany({
       where: { catechumenProfileId: { in: catechumenIds } },
       orderBy: { createdAt: 'desc' },
-      include: baseInclude,
+      select: documentClientSelect,
     });
   }
 
@@ -109,7 +129,7 @@ export const listDocuments = async (
     return context.entities.Document.findMany({
       where: { catechumenProfileId: { in: dependentIds } },
       orderBy: { createdAt: 'desc' },
-      include: baseInclude,
+      select: documentClientSelect,
     });
   }
 
@@ -123,7 +143,7 @@ export const listDocuments = async (
     return context.entities.Document.findMany({
       where: { catechumenProfileId: catechumen?.id || '__none__' },
       orderBy: { createdAt: 'desc' },
-      include: baseInclude,
+      select: documentClientSelect,
     });
   }
 
@@ -316,7 +336,7 @@ export const verifyDocument = async (args: { id: string }, context: any) => {
     await syncDocumentMilestones(context, args.id, document.catechumenProfile, 'APPROVED');
   }
 
-  return updated;
+  return stripDocumentStorageFields(updated);
 };
 
 export const rejectDocument = async (args: { id: string; reason?: string }, context: any) => {
@@ -351,7 +371,7 @@ export const rejectDocument = async (args: { id: string; reason?: string }, cont
     await syncDocumentMilestones(context, args.id, document.catechumenProfile, 'REJECTED');
   }
 
-  return updated;
+  return stripDocumentStorageFields(updated);
 };
 
 export const deleteDocument = async (args: { id: string }, context: any) => {

@@ -29,28 +29,22 @@ import {
 } from '../../shared/teamInvitePolicy';
 import { deliverInviteEmail, roleLabel } from '../jobs/inviteEmailUtils';
 import { rememberFamilyAuthEmail } from '../../auth/email-and-pass/familyAuthEmailHints';
+import { getClientIpFromRequest } from '../security/clientIp';
+import { getRequestClientIp } from '../requestPortalContext';
+import {
+  assertPersistentRateLimit,
+  INVITE_ACCEPT_RATE_LIMIT,
+  INVITE_CREATE_RATE_LIMIT,
+  INVITE_LOOKUP_RATE_LIMIT,
+  INVITE_RESEND_RATE_LIMIT,
+} from '../security/persistentRateLimit';
+import { maskInviteEmail } from '../security/inviteEmailMask';
 
-// ── Simple rate limiter for public invite token endpoint ───────────────────
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT_MAX = 10;
-const RATE_LIMIT_WINDOW = 60_000;
-
-function checkRateLimit(ip: string): void {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-  if (entry && entry.resetAt > now) {
-    if (entry.count >= RATE_LIMIT_MAX) {
-      throw new HttpError(429, 'Muitas tentativas. Tente novamente em breve.');
-    }
-    entry.count++;
-  } else {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
-  }
-  if (rateLimitMap.size > 1000) {
-    for (const [k, v] of rateLimitMap) {
-      if (v.resetAt <= now) rateLimitMap.delete(k);
-    }
-  }
+/** Prefer ALS (global middleware) then context.req when present. */
+function clientIpFromContext(context: any): string {
+  const fromAls = getRequestClientIp();
+  if (fromAls && fromAls !== 'unknown') return fromAls;
+  return getClientIpFromRequest(context?.req ?? context?.request ?? null);
 }
 
 /** Invitation expires 30 days from now. */
@@ -225,6 +219,10 @@ export const inviteUserToParish = async (
   context: any,
 ) => {
   requireAuth(context.user);
+  await assertPersistentRateLimit(
+    context.user.id || clientIpFromContext(context),
+    INVITE_CREATE_RATE_LIMIT,
+  );
 
   const email = normalizeInviteEmail(args.email);
   if (!email || !email.includes('@')) {
@@ -1024,11 +1022,10 @@ export const getInvitationByToken = async (
   args: { token: string },
   context: any,
 ) => {
-  const ip =
-    (context.req?.headers?.['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
-    (context.req?.socket?.remoteAddress as string) ||
-    'unknown';
-  checkRateLimit(ip);
+  await assertPersistentRateLimit(
+    clientIpFromContext(context),
+    INVITE_LOOKUP_RATE_LIMIT,
+  );
 
   let invitation = await context.entities.PendingInvitation.findUnique({
     where: { token: args.token },
@@ -1059,8 +1056,8 @@ export const getInvitationByToken = async (
       parishName: invitation.parish.name,
       parishId: invitation.parishId,
       parishType: invitation.parish.type,
-      emailMasked: maskEmail(invitation.email),
-      inviteEmail: !existingUser ? invEmail : undefined,
+      // Public payload: masked only — never return invitee email in clear.
+      emailMasked: maskInviteEmail(invitation.email),
       expiresAt: invitation.expiresAt?.toISOString() ?? null,
       hasAccount: !!existingUser,
       portal: isFamilyPortalRole(invitation.role) ? 'family' : 'staff',
@@ -1092,7 +1089,7 @@ export const getInvitationByToken = async (
     parishName: membership.parish.name,
     parishId: membership.parishId,
     parishType: membership.parish.type,
-    emailMasked: maskEmail(membership.user?.email || ''),
+    emailMasked: maskInviteEmail(membership.user?.email || ''),
     expiresAt: membership.inviteTokenExpiresAt?.toISOString() ?? null,
     hasAccount: true,
     portal: isFamilyPortalRole(membership.role) ? 'family' : 'staff',
@@ -1108,6 +1105,10 @@ export const acceptInvitationByToken = async (
   context: any,
 ) => {
   requireAuth(context.user);
+  await assertPersistentRateLimit(
+    context.user.id || clientIpFromContext(context),
+    INVITE_ACCEPT_RATE_LIMIT,
+  );
 
   const userEmail = normalizeInviteEmail(context.user.email || '');
 
@@ -1299,6 +1300,10 @@ export const resendInvitation = async (
   context: any,
 ) => {
   requireAuth(context.user);
+  await assertPersistentRateLimit(
+    context.user.id || clientIpFromContext(context),
+    INVITE_RESEND_RATE_LIMIT,
+  );
 
   if (!args.pendingInvitationId && !args.membershipId) {
     throw new HttpError(400, 'Informe pendingInvitationId ou membershipId.');
@@ -1794,11 +1799,3 @@ export const setCoordinatorClasses = async (
 // Re-export hierarchy for tests / UI alignment
 export { ROLE_ASSIGNMENT_HIERARCHY, getAssignableRoles };
 
-// ── Utility ────────────────────────────────────────────────────────────────
-
-function maskEmail(email: string): string {
-  const [name, domain] = email.split('@');
-  if (!name || !domain) return email;
-  const visible = name.length > 2 ? 2 : 1;
-  return name.slice(0, visible) + '***' + '@' + domain;
-}

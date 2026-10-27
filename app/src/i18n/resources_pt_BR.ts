@@ -3681,6 +3681,7 @@ export const family_pt_BR = {
       "already_have": "Já tens conta?",
       "login": "Entrar",
       "invited_to": "Foste convidado(a) para {{parish}} como {{role}}.",
+      "email_hint": "Use o mesmo e-mail do convite ({{email}}).",
       "expired_title": "Convite Expirado",
       "invalid_title": "Convite Inválido",
       "expired_desc": "Este convite já expirou. Pede um novo ao teu coordenador.",

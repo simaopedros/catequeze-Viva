@@ -37,9 +37,18 @@ describe("catechumen access uses parish, not household parish alone", () => {
 
   it("getCatechumenProfile omits uploadToken from the payload", () => {
     const start = profile.indexOf("export const getCatechumenProfile");
-    const block = profile.slice(start, start + 2200);
+    const block = profile.slice(start, start + 2800);
     expect(block).toContain("uploadToken / uploadTokenExpires intentionally omitted");
     expect(block).toMatch(/select:\s*\{/);
     expect(block).not.toMatch(/select:\s*undefined/);
+    expect(block).not.toMatch(/uploadToken:\s*true/);
+  });
+
+  it("listCatechumens omits uploadToken via explicit select", () => {
+    const start = profile.indexOf("export const listCatechumens");
+    const block = profile.slice(start, start + 5500);
+    expect(block).toContain("never return uploadToken");
+    expect(block).toContain("select,");
+    expect(block).not.toMatch(/uploadToken:\s*true/);
   });
 });

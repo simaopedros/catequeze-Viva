@@ -26,6 +26,7 @@
     "already_have": "Already have an account?",
     "login": "Sign in",
     "invited_to": "You were invited to {{parish}} as {{role}}.",
+    "email_hint": "Use the same email as the invitation ({{email}}).",
     "expired_title": "Invitation Expired",
     "invalid_title": "Invalid Invitation",
     "expired_desc": "This invitation has expired. Ask your coordinator for a new one.",
