@@ -32,18 +32,37 @@ export type EnqueueResult = {
   skipped?: "suppressed" | "opted_out" | "duplicate";
 };
 
+async function resolveUserIdForEmail(
+  db: ReturnType<typeof resolveEmailDb>,
+  email: string,
+  explicitUserId?: string,
+): Promise<string | undefined> {
+  if (explicitUserId) return explicitUserId;
+  if (!db.user?.findFirst) return undefined;
+  try {
+    const user = await db.user.findFirst({
+      where: { email: { equals: email, mode: "insensitive" } },
+      select: { id: true },
+    });
+    return user?.id || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function ensureUnsubscribePayload(
-  input: EnqueueEmailInput,
+  userId: string | undefined,
+  messageId: EmailMessageId,
   payload: Record<string, unknown>,
 ): Record<string, unknown> {
-  if (isTransactionalMessage(input.messageId)) return payload;
+  if (isTransactionalMessage(messageId)) return payload;
   if (payload.unsubscribeUrl) return payload;
-  if (!input.userId) return payload;
+  if (!userId) return payload;
   const secret = getLifecycleEmailSecret();
   if (!secret) return payload;
   return {
     ...payload,
-    unsubscribeUrl: unsubscribeUrl(createUnsubscribeToken(input.userId, secret)),
+    unsubscribeUrl: unsubscribeUrl(createUnsubscribeToken(userId, secret)),
   };
 }
 
@@ -53,7 +72,12 @@ export async function enqueueEmail(
   const db = resolveEmailDb(input.context);
   const to = normalizeEmail(input.to);
   const locale = input.locale || "pt-BR";
-  const payload = ensureUnsubscribePayload(input, input.payload || {});
+  const userId = await resolveUserIdForEmail(db, to, input.userId);
+  const payload = ensureUnsubscribePayload(
+    userId,
+    input.messageId,
+    input.payload || {},
+  );
   const rendered = renderCatalogEmail(input.messageId, locale, payload);
   const topic = topicForMessage(input.messageId);
   const stream = streamForMessage(input.messageId);
@@ -79,7 +103,7 @@ export async function enqueueEmail(
       stream,
       to,
       toHash: hashEmail(to),
-      userId: input.userId ?? null,
+      userId: userId ?? null,
       subject: rendered.subject,
       provider: resolveEmailProviderName(),
       status: "QUEUED",

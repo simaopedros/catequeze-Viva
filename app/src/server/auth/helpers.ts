@@ -356,6 +356,8 @@ export async function assertCanAccessCatechumenProfile(
 
   // Guardian of household. Fall back to Prisma when the operation forgot
   // GuardianProfile in main.wasp entities (that omission used to 500 edits).
+  // Require an ACTIVE membership in the catechumen's parish so removed
+  // responsáveis cannot keep reading profiles via orphan GuardianProfile links.
   const guardianDelegate =
     context.entities?.GuardianProfile ??
     (await import("wasp/server")).prisma.guardianProfile;
@@ -367,7 +369,22 @@ export async function assertCanAccessCatechumenProfile(
     guardian?.householdId &&
     catechumen.householdId === guardian.householdId
   ) {
-    return;
+    const parishIdForGuardian =
+      catechumen.parishId || catechumen.household?.parishId || null;
+    if (parishIdForGuardian) {
+      const membershipDelegate =
+        context.entities?.Membership ??
+        (await import("wasp/server")).prisma.membership;
+      const activeGuardian = await membershipDelegate.findFirst({
+        where: {
+          userId: context.user.id,
+          parishId: parishIdForGuardian,
+          status: "ACTIVE",
+        },
+        select: { id: true },
+      });
+      if (activeGuardian) return;
+    }
   }
 
   // Staff access is keyed by the catechumen's own parish / class enrollments —

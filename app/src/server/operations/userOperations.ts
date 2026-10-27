@@ -1,7 +1,8 @@
-import { HttpError } from 'wasp/server';
+import { HttpError, prisma } from 'wasp/server';
 import { verifyPassword, hashPassword } from 'wasp/auth/password';
 import { createProviderId, findAuthIdentity, getProviderDataWithPassword, updateAuthIdentityProviderData } from 'wasp/auth/utils';
 import type { EmailProviderData } from 'wasp/auth/utils';
+import { validateJWT } from 'wasp/auth/jwt';
 
 import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
 import { z } from 'zod';
@@ -166,7 +167,64 @@ export const changePassword = async (args: unknown, context: any) => {
     { hashedPassword: newPassword },
   );
 
+  // Invalidate all Lucia sessions for this account so other devices are logged out.
+  const authRow = await prisma.auth.findUnique({
+    where: { userId: context.user.id },
+    select: { id: true },
+  });
+  if (authRow) {
+    await prisma.session.deleteMany({ where: { userId: authRow.id } });
+  }
+
   await writeAuditLog(context, 'UPDATE', 'User', context.user.id, { operation: 'PASSWORD_CHANGE' });
+
+  return { success: true };
+};
+
+const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'Token obrigatório.'),
+  password: z.string().min(8, 'A senha deve ter pelo menos 8 caracteres.'),
+});
+
+/**
+ * Password reset that also invalidates Lucia sessions (Wasp's built-in
+ * resetPassword only updates the hash, leaving other devices signed in).
+ * Auth is not required — the JWT token proves ownership of the email.
+ */
+export const resetPasswordAndInvalidateSessions = async (
+  args: unknown,
+  _context: any,
+) => {
+  const { token, password } = validateOrThrow(resetPasswordSchema, args);
+
+  let email: string;
+  try {
+    const payload = await validateJWT<{ email: string }>(token);
+    email = payload.email;
+  } catch {
+    throw new HttpError(400, 'Falha ao redefinir a senha: token inválido.');
+  }
+
+  const providerId = createProviderId('email', email);
+  const authIdentity = await findAuthIdentity(providerId);
+  if (!authIdentity) {
+    throw new HttpError(400, 'Falha ao redefinir a senha: token inválido.');
+  }
+
+  const providerData = getProviderDataWithPassword<'email'>(
+    authIdentity.providerData,
+  );
+
+  await updateAuthIdentityProviderData<'email'>(providerId, providerData, {
+    isEmailVerified: true,
+    hashedPassword: password,
+  });
+
+  // Session.userId references Auth.id (Lucia), exposed as authIdentity.authId.
+  const authId = (authIdentity as { authId?: string }).authId;
+  if (authId) {
+    await (prisma as any).session.deleteMany({ where: { userId: authId } });
+  }
 
   return { success: true };
 };

@@ -67,7 +67,8 @@ export const authRateLimiter = createRateLimiter({
 
 export const uploadRateLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000,   // 1 hour
-  max: 30,                      // 30 uploads per hour
+  // Document collection days (families uploading several files) need headroom.
+  max: 100,
   message: 'Limite de uploads excedido. Tente novamente em 1 hora.',
 });
 
