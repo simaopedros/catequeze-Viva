@@ -37,9 +37,28 @@ function tick() {
   });
 }
 
-describe("auth feature panel", () => {
+describe.each([false, true])("auth feature panel (compact: %s)", (compact) => {
+  it("keeps decorative content hidden and renders the correct variant", () => {
+    const { container } = render(<AuthFeaturePanel compact={compact} />);
+    expect(screen.getByRole("region")).toHaveAttribute(
+      "data-mode",
+      compact ? "compact" : "full",
+    );
+    expect(container.querySelector(".auth-mini")).toEqual(
+      compact ? expect.any(HTMLElement) : null,
+    );
+    expect(
+      container.querySelector(".auth-mini, .auth-mock-wrap"),
+    ).toHaveAttribute("aria-hidden", "true");
+    expect(container.querySelector("[aria-live]")).toBeNull();
+  });
+  it("cleans up timers when unmounted", () => {
+    const { unmount } = render(<AuthFeaturePanel compact={compact} />);
+    unmount();
+    expect(vi.getTimerCount()).toBe(0);
+  });
   it("renders every scene in sequence and wraps to the dashboard", () => {
-    render(<AuthFeaturePanel />);
+    render(<AuthFeaturePanel compact={compact} />);
     for (const scene of AUTH_SCENES) {
       expect(current()).toBe(scene);
       expect(
@@ -50,7 +69,7 @@ describe("auth feature panel", () => {
     expect(current()).toBe("dashboard");
   });
   it("pauses on hover and focus, and resumes only after both leave", () => {
-    render(<AuthFeaturePanel />);
+    render(<AuthFeaturePanel compact={compact} />);
     const region = screen.getByRole("region");
     const button = screen.getAllByRole("button")[0];
     fireEvent.mouseEnter(region);
@@ -66,7 +85,11 @@ describe("auth feature panel", () => {
   });
   it("allows manual dot navigation with reduced motion and no automatic cycle", () => {
     reduced = true;
-    render(<AuthFeaturePanel />);
+    render(<AuthFeaturePanel compact={compact} />);
+    expect(screen.getByRole("region")).toHaveAttribute("data-reduced", "true");
+    expect(
+      screen.queryByRole("button", { name: "feature_panel.pause" }),
+    ).toBeNull();
     tick();
     expect(current()).toBe("dashboard");
     for (const [index, scene] of AUTH_SCENES.entries()) {
@@ -83,7 +106,7 @@ describe("auth feature panel", () => {
     vi.useRealTimers();
     reduced = true;
     const user = userEvent.setup();
-    render(<AuthFeaturePanel />);
+    render(<AuthFeaturePanel compact={compact} />);
     const buttons = screen.getAllByRole("button");
     act(() => buttons[1].focus());
     await user.keyboard("{Enter}");
@@ -93,7 +116,7 @@ describe("auth feature panel", () => {
     expect(current()).toBe("attendance");
   });
   it("pauses explicitly and while the tab is hidden", () => {
-    render(<AuthFeaturePanel />);
+    render(<AuthFeaturePanel compact={compact} />);
     fireEvent.click(
       screen.getByRole("button", { name: "feature_panel.pause" }),
     );

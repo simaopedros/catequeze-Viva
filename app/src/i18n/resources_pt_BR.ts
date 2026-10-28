@@ -1461,7 +1461,34 @@ export const auth_pt_BR = {
         "title": "Calendário",
         "description": "Os próximos encontros em uma só visão."
       },
-      "attendance_meta": "Presença registrada"
+      "attendance_meta": "Presença registrada",
+      "demo": {
+        "people": "Catequizandos",
+        "groups": "Turmas ativas",
+        "average": "Presença média",
+        "week": "Encontros da semana",
+        "next": "Próximo encontro",
+        "present": "Presentes no encontro",
+        "journey": "Caminho da turma",
+        "sacrament": "Crisma · Etapa 2",
+        "name": "Nome",
+        "group": "Turma",
+        "guardian": "Responsável",
+        "status": "Situação",
+        "family": "Família Exemplo",
+        "lucas": "Lucas Exemplo",
+        "month": "Outubro",
+        "reminder": "Lembrete do encontro",
+        "chips": {
+          "dashboard": "Semana organizada",
+          "classes": "Turmas reunidas",
+          "attendance": "Presença registrada",
+          "records": "Ficha organizada",
+          "families": "Vínculos reunidos",
+          "calendar": "Encontro agendado"
+        },
+        "of_total": "de 14 presentes"
+      }
     },
     "mockup_dashboard": {
       "title": "Painel",

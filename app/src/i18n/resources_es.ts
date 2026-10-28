@@ -1461,7 +1461,34 @@ export const auth_es = {
         "title": "Calendario",
         "description": "Los próximos encuentros en una sola vista."
       },
-      "attendance_meta": "Asistencia registrada"
+      "attendance_meta": "Asistencia registrada",
+      "demo": {
+        "people": "Catequizandos",
+        "groups": "Grupos activos",
+        "average": "Asistencia media",
+        "week": "Encuentros de la semana",
+        "next": "Próximo encuentro",
+        "present": "Presentes en el encuentro",
+        "journey": "Camino del grupo",
+        "sacrament": "Confirmación · Etapa 2",
+        "name": "Nombre",
+        "group": "Grupo",
+        "guardian": "Responsable",
+        "status": "Estado",
+        "family": "Familia Ejemplo",
+        "lucas": "Lucas Ejemplo",
+        "month": "Octubre",
+        "reminder": "Recordatorio del encuentro",
+        "chips": {
+          "dashboard": "Semana organizada",
+          "classes": "Grupos reunidos",
+          "attendance": "Asistencia registrada",
+          "records": "Ficha organizada",
+          "families": "Vínculos reunidos",
+          "calendar": "Encuentro programado"
+        },
+        "of_total": "de 14 presentes"
+      }
     },
     "mockup_dashboard": {
       "title": "Panel",

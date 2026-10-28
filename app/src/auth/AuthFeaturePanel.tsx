@@ -1,7 +1,13 @@
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, CalendarDays, UsersRound, FileText, Heart } from "lucide-react";
-import { BrowserFrame } from "../landing-page/components/BrowserFrame";
-import { DashboardMock } from "../landing-page/components/mockups/DashboardMock";
+import {
+  Check,
+  CalendarDays,
+  UsersRound,
+  FileText,
+  Heart,
+  LayoutDashboard,
+} from "lucide-react";
 import {
   AUTH_SCENES,
   type AuthScene,
@@ -9,101 +15,288 @@ import {
 } from "./useAuthSceneCycle";
 import "./authFeaturePanel.css";
 
+const icons = {
+  dashboard: LayoutDashboard,
+  classes: UsersRound,
+  attendance: Check,
+  records: FileText,
+  families: Heart,
+  calendar: CalendarDays,
+};
+
+function Count({
+  value,
+  paused,
+  reduced,
+}: {
+  value: number;
+  paused: boolean;
+  reduced: boolean;
+}) {
+  const [progress, setProgress] = useState(paused ? 1 : 0);
+  useEffect(() => {
+    if (paused || reduced || progress >= 1) return;
+    const timer = window.setTimeout(
+      () => setProgress((p) => Math.min(1, p + 0.08)),
+      60,
+    );
+    return () => window.clearTimeout(timer);
+  }, [paused, reduced, progress]);
+  return <>{Math.round(value * (reduced ? 1 : progress))}</>;
+}
+
 function FeatureMock({
   scene,
-  animate,
+  paused,
+  reduced,
 }: {
   scene: AuthScene;
-  animate: boolean;
+  paused: boolean;
+  reduced: boolean;
 }) {
   const { t } = useTranslation("auth");
   const tr = (key: string) => t(`feature_panel.${key}`);
-  if (scene === "dashboard")
-    return <DashboardMock ns="auth" animate={animate} />;
   const names = [tr("maria"), tr("pedro"), tr("ana")];
-  const rows =
-    scene === "classes"
-      ? [tr("class_name"), tr("class_second"), tr("class_third")]
-      : scene === "calendar"
-        ? ["12", "19", "26"]
-        : scene === "records"
-          ? [tr("maria")]
-          : names;
-  const Icon =
-    scene === "families"
-      ? Heart
-      : scene === "calendar"
-        ? CalendarDays
-        : scene === "records"
-          ? FileText
-          : UsersRound;
+  const Icon = icons[scene];
+  const count = (value: number) => (
+    <Count value={value} paused={paused} reduced={reduced} />
+  );
   return (
-    <div className="space-y-3 p-4 text-brand-ink">
-      <div className="flex items-center gap-2 border-b border-brand-ink/10 pb-3">
-        <Icon className="h-4 w-4" />
-        <p className="font-brand-display text-base font-semibold">
-          {tr(`${scene}.title`)}
-        </p>
+    <div className={`auth-mock auth-mock-${scene}`}>
+      <div className="auth-mock-toolbar">
+        <span className="auth-mock-brand">C</span>
+        <strong>Catechis</strong>
+        <span className="auth-mock-dots">•••</span>
       </div>
-      {scene === "attendance" && (
-        <p className="rounded-md bg-emerald-50 p-2 text-xs text-emerald-800">
-          {tr("class_name")}
-        </p>
-      )}
-      {rows.map((row, i) => (
-        <div
-          key={row}
-          className="auth-feature-card flex items-center gap-3 rounded-lg border border-brand-ink/10 bg-white p-3"
-          style={{ animationDelay: `${i * 140}ms` }}
-        >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-brand-gold/15 text-sm font-semibold">
-            {scene === "calendar" ? row : row.charAt(0)}
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold">
-              {scene === "calendar" ? tr("meeting") : row}
-            </p>
-            <p className="mt-1 text-[11px] text-slate-600">
-              {tr(
-                scene === "calendar"
-                  ? "date"
-                  : scene === "classes"
-                    ? "class_meta"
-                    : scene === "families"
-                      ? "family_meta"
-                      : scene === "attendance"
-                        ? "attendance_meta"
-                        : "record_meta",
-              )}
-            </p>
+      <div className="auth-mock-body">
+        <div className="auth-mock-heading">
+          <Icon size={18} />
+          <strong>{tr(`${scene}.title`)}</strong>
+          <span>2026</span>
+        </div>
+        {scene === "dashboard" && (
+          <>
+            <div className="auth-metrics">
+              {[
+                [142, "people"],
+                [8, "groups"],
+                [87, "average"],
+              ].map(([value, label]) => (
+                <div key={label}>
+                  <small>{tr(`demo.${label}`)}</small>
+                  <b>
+                    {count(Number(value))}
+                    {label === "average" ? "%" : ""}
+                  </b>
+                </div>
+              ))}
+            </div>
+            <div className="auth-chart">
+              <small>{tr("demo.week")}</small>
+              <div className="auth-bars">
+                {[42, 70, 55, 88, 66, 95, 78].map((v, i) => (
+                  <div key={i}>
+                    <i
+                      style={{
+                        height: `${v}%`,
+                        animationDelay: `${i * 100}ms`,
+                      }}
+                    />
+                    <span>{i + 1}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="auth-reminder">
+              <CalendarDays />
+              <div>
+                <small>{tr("demo.next")}</small>
+                <strong>{tr("class_name")}</strong>
+                <span>{tr("date")}</span>
+              </div>
+            </div>
+          </>
+        )}
+        {scene === "classes" && (
+          <div className="auth-class-stack">
+            {["class_name", "class_second", "class_third"].map((key, i) => (
+              <div
+                className="auth-feature-card auth-class-card"
+                key={key}
+                style={{ animationDelay: `${i * 220}ms` }}
+              >
+                <div className="auth-class-top">
+                  <span className="auth-avatar">{["C", "E", "I"][i]}</span>
+                  <strong>{tr(key)}</strong>
+                  <span>{[14, 18, 12][i]}</span>
+                </div>
+                <small>{tr("demo.journey")}</small>
+                <div className="auth-progress">
+                  <i
+                    style={{
+                      width: `${[76, 52, 34][i]}%`,
+                      animationDelay: `${i * 220 + 250}ms`,
+                    }}
+                  />
+                </div>
+                <div className="auth-class-bottom">
+                  <div className="auth-avatars">
+                    {names.map((n) => (
+                      <span key={n}>{n.charAt(0)}</span>
+                    ))}
+                    <span>+{[11, 15, 9][i]}</span>
+                  </div>
+                  <small>{tr("class_meta")}</small>
+                </div>
+              </div>
+            ))}
           </div>
-          {scene === "attendance" && (
-            <Check
-              className="auth-feature-check h-5 w-5 text-emerald-700"
-              style={{ animationDelay: `${450 + i * 400}ms` }}
-            />
-          )}
-        </div>
-      ))}
-      {scene === "records" && (
-        <div className="space-y-3 rounded-lg border border-brand-ink/10 p-3 text-xs">
-          <p>{tr("class_name")}</p>
-          <p>{tr("record_details")}</p>
-          <p className="text-emerald-800">{tr("record_status")}</p>
-        </div>
-      )}
+        )}
+        {scene === "attendance" && (
+          <>
+            <div className="auth-attendance-total">
+              <span>{tr("class_name")}</span>
+              <b>{tr("demo.present")}</b>
+              <strong>
+                {count(12)}{" "}
+                <span className="auth-attendance-caption">
+                  {tr("demo.of_total")}
+                </span>
+              </strong>
+            </div>
+            <div className="auth-roll">
+              {[...names, tr("demo.lucas")].map((name, i) => (
+                <div className="auth-person" key={name}>
+                  <span className="auth-avatar">{name.charAt(0)}</span>
+                  <span>{name}</span>
+                  <i
+                    className="auth-feature-check"
+                    style={{ animationDelay: `${450 + i * 480}ms` }}
+                  >
+                    <Check size={17} />
+                  </i>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+        {scene === "records" && (
+          <>
+            <div className="auth-profile">
+              <span className="auth-avatar">M</span>
+              <strong>{names[0]}</strong>
+              <small>{tr("record_meta")}</small>
+              <span className="auth-seal">{tr("demo.sacrament")}</span>
+            </div>
+            <div className="auth-fields">
+              {[
+                ["demo.name", names[0]],
+                ["demo.group", tr("class_name")],
+                ["demo.guardian", names[2]],
+                ["demo.status", tr("record_status")],
+              ].map(([label, value], i) => (
+                <div
+                  key={label}
+                  className="auth-feature-card"
+                  style={{ animationDelay: `${i * 300}ms` }}
+                >
+                  <small>{tr(label)}</small>
+                  <strong>{value}</strong>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+        {scene === "families" && (
+          <>
+            <div className="auth-family-title">
+              <Heart size={28} />
+              <strong>{tr("demo.family")}</strong>
+              <small>{tr("family_meta")}</small>
+            </div>
+            <div className="auth-family-tree">
+              <div className="auth-parents">
+                {names.slice(1).map((n) => (
+                  <div key={n}>
+                    <span className="auth-avatar">{n.charAt(0)}</span>
+                    <strong>{n}</strong>
+                    <small>{tr("demo.guardian")}</small>
+                  </div>
+                ))}
+              </div>
+              <svg viewBox="0 0 300 90" preserveAspectRatio="none">
+                <path d="M75 0 V32 Q75 42 85 42 H215 Q225 42 225 32 V0 M150 42 V90" />
+              </svg>
+              <div
+                className="auth-child auth-feature-card"
+                style={{ animationDelay: "900ms" }}
+              >
+                <span className="auth-avatar">M</span>
+                <strong>{names[0]}</strong>
+                <small>{tr("class_name")}</small>
+              </div>
+            </div>
+          </>
+        )}
+        {scene === "calendar" && (
+          <>
+            <div className="auth-month">
+              <strong>{tr("demo.month")}</strong>
+              <span>2026</span>
+            </div>
+            <div className="auth-calendar">
+              {Array.from({ length: 35 }, (_, i) => {
+                const day = i - 3;
+                const hit = [12, 19, 26].indexOf(day);
+                return (
+                  <span
+                    key={i}
+                    className={hit >= 0 ? "auth-day-meeting" : ""}
+                    style={{ animationDelay: `${450 + hit * 500}ms` }}
+                  >
+                    {day > 0 && day <= 31 ? day : ""}
+                  </span>
+                );
+              })}
+            </div>
+            <div className="auth-reminder">
+              <CalendarDays />
+              <div>
+                <small>{tr("demo.reminder")}</small>
+                <strong>{tr("meeting")}</strong>
+                <span>{tr("date")}</span>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
 
-export default function AuthFeaturePanel() {
+export default function AuthFeaturePanel({
+  compact = false,
+}: {
+  compact?: boolean;
+}) {
   const { t } = useTranslation("auth");
   const cycle = useAuthSceneCycle();
   const scene = AUTH_SCENES[cycle.index];
+  const Icon = icons[scene];
+  const lastScene = useRef(scene);
+  const [outgoing, setOutgoing] = useState<AuthScene | null>(null);
+  useEffect(() => {
+    if (lastScene.current === scene) return;
+    setOutgoing(lastScene.current);
+    lastScene.current = scene;
+    const timer = window.setTimeout(() => setOutgoing(null), 450);
+    return () => window.clearTimeout(timer);
+  }, [scene]);
   return (
     <section
       aria-label={t("feature_panel.label")}
-      className="auth-feature-panel relative"
+      className={`auth-feature-panel ${compact ? "auth-feature-compact" : ""}`}
+      data-mode={compact ? "compact" : "full"}
       data-paused={cycle.paused}
       data-reduced={cycle.reduced}
       data-scene={scene}
@@ -115,32 +308,77 @@ export default function AuthFeaturePanel() {
           cycle.setFocused(false);
       }}
     >
-      <div
-        className="auth-feature-glow pointer-events-none absolute -inset-5 rounded-full bg-brand-gold/10 blur-2xl"
-        aria-hidden="true"
-      />
-      <div key={scene} className="auth-feature-scene relative">
-        <div className="h-[5.5rem]">
-          <h2 className="font-brand-display text-xl font-semibold text-white">
-            {t(`feature_panel.${scene}.title`)}
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-[#C5D0DC]">
-            {t(`feature_panel.${scene}.description`)}
-          </p>
-        </div>
-        <div aria-hidden="true" className="pointer-events-none select-none">
-          <BrowserFrame
-            aspect="natural"
-            url="catechis.app/app"
-            contentClassName="h-[300px] bg-[#F8FAFC]"
+      <div className="auth-feature-glow" aria-hidden="true" />
+      {compact ? (
+        <div className="auth-compact-content">
+          <Icon aria-hidden="true" size={22} />
+          <h2>{t(`feature_panel.${scene}.title`)}</h2>
+          <div
+            key={scene}
+            className={`auth-mini auth-mini-${scene}`}
+            aria-hidden="true"
           >
-            <FeatureMock scene={scene} animate={!cycle.paused} />
-          </BrowserFrame>
+            {scene === "calendar" ? (
+              [12, 19, 26].map((n) => <i key={n}>{n}</i>)
+            ) : scene === "attendance" ? (
+              <>
+                <Check size={16} />
+                <span>12/14</span>
+              </>
+            ) : scene === "records" ? (
+              <>
+                <FileText size={16} />
+                <i />
+                <i />
+              </>
+            ) : scene === "families" ? (
+              <>
+                <span>P</span>
+                <i />
+                <span>M</span>
+              </>
+            ) : (
+              <>
+                {[45, 75, 60].map((v) => (
+                  <i key={v} style={{ height: `${v}%` }} />
+                ))}
+              </>
+            )}
+          </div>
         </div>
-      </div>
-      <p className="relative mt-3 text-[11px] text-[#C5D0DC]">
-        {t("feature_panel.example")}
-      </p>
+      ) : (
+        <>
+          <div className="auth-feature-stage">
+            {AUTH_SCENES.map((item) => (
+              <div
+                key={item}
+                className="auth-feature-scene"
+                data-active={scene === item}
+                aria-hidden={scene !== item}
+              >
+                <h2>{t(`feature_panel.${item}.title`)}</h2>
+                <p className="auth-scene-description">
+                  {t(`feature_panel.${item}.description`)}
+                </p>
+                <div aria-hidden="true" className="auth-mock-wrap">
+                  {(scene === item || outgoing === item) && (
+                    <FeatureMock
+                      scene={item}
+                      paused={cycle.paused || scene !== item}
+                      reduced={cycle.reduced}
+                    />
+                  )}
+                </div>
+              </div>
+            ))}
+            <div key={scene} className="auth-floating-chip" aria-hidden="true">
+              <Check size={14} />
+              {t(`feature_panel.demo.chips.${scene}`)}
+            </div>
+          </div>
+          <p className="auth-example">{t("feature_panel.example")}</p>
+        </>
+      )}
       <div
         className="relative mt-2 flex flex-wrap items-center"
         role="group"

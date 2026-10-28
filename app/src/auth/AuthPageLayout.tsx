@@ -61,13 +61,15 @@ export function AuthPageLayout({
   const { t } = useTranslation("auth");
   const { currentLocale, setLocale, supportedLocales } = useLocale();
   usePageTitle(pageTitle);
-  // Defer the panel chunk until after the form commits, and skip it on mobile.
+  // Defer the optional panel chunk until after the form commits.
   const [showMotion, setShowMotion] = useState(false);
+  const [desktop, setDesktop] = useState(false);
   useEffect(() => {
     if (!animatedPanel) return;
     const media = window.matchMedia("(min-width: 1024px)");
-    const update = () => setShowMotion(media.matches);
+    const update = () => setDesktop(media.matches);
     update();
+    setShowMotion(true);
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
   }, [animatedPanel]);
@@ -81,7 +83,7 @@ export function AuthPageLayout({
       <div className="flex flex-1">
         {/* Brand panel — desktop */}
         {panel && (
-          <aside className="relative hidden w-[min(42%,28rem)] shrink-0 flex-col justify-between bg-brand-ink px-10 py-10 text-[#E8EEF5] lg:flex xl:w-[28rem] xl:px-12">
+          <aside className="relative hidden w-[min(42%,28rem)] shrink-0 flex-col justify-between bg-brand-ink px-10 py-10 text-[#E8EEF5] lg:flex xl:w-[48%] xl:px-12">
             <div
               className="pointer-events-none absolute inset-0 opacity-[0.08]"
               style={{
@@ -90,27 +92,32 @@ export function AuthPageLayout({
               }}
               aria-hidden
             />
-            <div className="relative space-y-10">
+            <div className="relative flex flex-1 flex-col gap-7">
               <Link to="/" className="inline-block">
                 <BrandLockup compact hideBadge tone="inverse" />
               </Link>
 
               {animatedPanel ? (
-                <div className="h-[530px]">
-                  {showMotion && (
-                    <PanelBoundary
-                      fallback={
-                        <p className="font-brand-display text-2xl text-white">
-                          {panel.title}
-                        </p>
-                      }
-                    >
+                <>
+                  <div className="space-y-3">
+                    <h1 className="font-brand-display text-[1.8rem] font-semibold leading-tight tracking-tight text-white xl:text-[2.25rem]">
+                      {panel.title}
+                    </h1>
+                    <div className="h-px w-12 bg-brand-gold" aria-hidden />
+                    {panel.subtitle && (
+                      <p className="max-w-sm text-sm leading-relaxed text-[#A8B8C9]">
+                        {panel.subtitle}
+                      </p>
+                    )}
+                  </div>
+                  {showMotion && desktop && (
+                    <PanelBoundary fallback={null}>
                       <Suspense fallback={null}>
                         <AuthFeaturePanel />
                       </Suspense>
                     </PanelBoundary>
                   )}
-                </div>
+                </>
               ) : (
                 <div className="space-y-4">
                   {panel.eyebrow && (
@@ -147,7 +154,7 @@ export function AuthPageLayout({
               )}
             </div>
 
-            <p className="relative text-xs text-[#6B7C8F]">
+            <p className="relative mt-6 text-xs text-[#6B7C8F]">
               © {new Date().getFullYear()} Catechis
             </p>
           </aside>
@@ -167,6 +174,15 @@ export function AuthPageLayout({
               )}
             >
               {children}
+              {animatedPanel && showMotion && !desktop && (
+                <div className="lg:hidden">
+                  <PanelBoundary fallback={null}>
+                    <Suspense fallback={null}>
+                      <AuthFeaturePanel compact />
+                    </Suspense>
+                  </PanelBoundary>
+                </div>
+              )}
             </div>
           </main>
 

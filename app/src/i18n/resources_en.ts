@@ -1461,7 +1461,34 @@ export const auth_en = {
         "title": "Calendar",
         "description": "Upcoming meetings in one view."
       },
-      "attendance_meta": "Attendance recorded"
+      "attendance_meta": "Attendance recorded",
+      "demo": {
+        "people": "Catechumens",
+        "groups": "Active classes",
+        "average": "Average attendance",
+        "week": "Weekly meetings",
+        "next": "Next meeting",
+        "present": "Present at the meeting",
+        "journey": "Class journey",
+        "sacrament": "Confirmation · Stage 2",
+        "name": "Name",
+        "group": "Class",
+        "guardian": "Guardian",
+        "status": "Status",
+        "family": "Example family",
+        "lucas": "Lucas Example",
+        "month": "October",
+        "reminder": "Meeting reminder",
+        "chips": {
+          "dashboard": "Week organized",
+          "classes": "Classes together",
+          "attendance": "Attendance recorded",
+          "records": "Record organized",
+          "families": "Connections together",
+          "calendar": "Meeting scheduled"
+        },
+        "of_total": "of 14 present"
+      }
     },
     "mockup_dashboard": {
       "title": "Dashboard",
