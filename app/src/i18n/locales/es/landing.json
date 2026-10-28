@@ -2,7 +2,7 @@
   "hero": {
     "headline_line1": "Tú siembras la fe.",
     "headline_line2": "Nosotros organizamos el grupo.",
-    "subheadline": "Catequese Viva deja encuentros, grupos y catequizandos organizados para que tengas más tiempo para estar con ellos.",
+    "subheadline": "Catechis deja encuentros, grupos y catequizandos organizados para que tengas más tiempo para estar con ellos.",
     "badge": "Para quien dice sí a la misión de catequizar",
     "cta_primary": "Empezar 7 días gratis",
     "cta_secondary": "Ver cómo funciona",
@@ -46,10 +46,10 @@
       }
     ],
     "click_trigger": "Funciona en el celular · Hecho para la rutina de catequesis",
-    "image_alt": "Panel de Catequese Viva con próximas acciones, asistencia, grupos y pendientes sacramentales"
+    "image_alt": "Panel de Catechis con próximas acciones, asistencia, grupos y pendientes sacramentales"
   },
   "pain_title": "La misión ya te pide mucho. El papeleo no tiene que pedir más.",
-  "pain_subtitle": "Catequese Viva reúne preparación, grupo, asistencia y familias — para que la burocracia no robe tiempo a la evangelización.",
+  "pain_subtitle": "Catechis reúne preparación, grupo, asistencia y familias — para que la burocracia no robe tiempo a la evangelización.",
   "pains": [
     {
       "text": "Preparar el encuentro cada semana exige tiempo, referencias y creatividad"
@@ -71,7 +71,7 @@
     }
   ],
   "ai_showcase_title": "Mira cómo un encuentro puede tomar forma en minutos",
-  "ai_showcase_subtitle": "Catequese Viva reúne tema, edad y referencias católicas para montar un primer borrador que revisas antes de usar.",
+  "ai_showcase_subtitle": "Catechis reúne tema, edad y referencias católicas para montar un primer borrador que revisas antes de usar.",
   "ai_showcase_cta": "Ver planes para tu próximo grupo",
   "features_title": "Lo esencial para preparar y acompañar tu catequesis",
   "features_subtitle": "Asistencia editorial y familias trabajan juntas para reducir la improvisación y dar más claridad a la rutina pastoral.",
@@ -120,7 +120,7 @@
     }
   },
   "mission_title": "Encuentro preparado. Grupo acogido. Fe compartida con las familias.",
-  "mission_text": "Catequese Viva existe para servir tu misión — no al revés. Menos improvisación y papeleo, más presencia verdadera con cada catequizando que Dios te confió.",
+  "mission_text": "Catechis existe para servir tu misión — no al revés. Menos improvisación y papeleo, más presencia verdadera con cada catequizando que Dios te confió.",
   "personas_title": "Hecho para el catequista — y listo para las familias de tu grupo",
   "personas_subtitle": "En esta fase, la experiencia es tuya: tú organizas el grupo y las familias siguen todo por el portal.",
   "personas": [
@@ -240,7 +240,7 @@
   "faqs": [
     {
       "q": "¿Necesito saber de tecnología?",
-      "a": "No. Catequese Viva fue pensada para funcionar en el celular y ser simple desde el primer encuentro."
+      "a": "No. Catechis fue pensada para funcionar en el celular y ser simple desde el primer encuentro."
     },
     {
       "q": "¿Tengo que registrar todo de una vez?",
@@ -265,7 +265,7 @@
   ],
   "cta_eyebrow": "Vuelve a lo que importa",
   "cta_title": "Vuelve a tener tiempo para aquello que te llamó a la catequesis.",
-  "cta_subtitle": "Deja la organización con Catequese Viva y vive el encuentro con más presencia, tranquilidad y propósito.",
+  "cta_subtitle": "Deja la organización con Catechis y vive el encuentro con más presencia, tranquilidad y propósito.",
   "cta_lines": [],
   "cta_button": "Empezar 7 días gratis",
   "cta_badge": "Trial",
@@ -359,7 +359,7 @@
   },
   "ai_showcase_badge": "Mira cómo funciona el flujo",
   "trust_title": "Hecho para cuidar datos sensibles",
-  "trust_subtitle": "Catequese Viva maneja datos de niños y familias. Por eso la protección está en la estructura, no en una promesa.",
+  "trust_subtitle": "Catechis maneja datos de niños y familias. Por eso la protección está en la estructura, no en una promesa.",
   "trust": [
     {
       "title": "Conforme a la LGPD",
@@ -454,10 +454,10 @@
   "price_trial_note": "",
   "comparison": {
     "title": "Deja de dispersar tu catequesis en papel, planilla y WhatsApp",
-    "subtitle": "Compara tu flujo actual con Catequese Viva en lo que importa en tu semana con el grupo.",
+    "subtitle": "Compara tu flujo actual con Catechis en lo que importa en tu semana con el grupo.",
     "col_criterion": "Lo que necesitas",
     "col_old": "Papel + planilla + WhatsApp",
-    "col_next": "Catequese Viva",
+    "col_next": "Catechis",
     "cta": "Empezar gratis por 7 días",
     "helper": "7 días gratis, con acceso a todos los recursos. Cancela cuando quieras.",
     "rows": [
@@ -503,7 +503,7 @@
   "demo": {
     "badge": "La inteligencia que ayuda",
     "title": "No necesitas empezar con una página en blanco.",
-    "subtitle": "Indica el tema y el perfil de tu grupo. Catequese Viva ayuda a transformar la idea en un encuentro listo para que tú lo revises.",
+    "subtitle": "Indica el tema y el perfil de tu grupo. Catechis ayuda a transformar la idea en un encuentro listo para que tú lo revises.",
     "helper": "",
     "panel_title": "Preparar encuentro",
     "panel_subtitle": "",
@@ -668,7 +668,7 @@
     "eyebrow": "",
     "title": "Menos organización. Más encuentro.",
     "col_before": "Antes",
-    "col_after": "Con Catequese Viva",
+    "col_after": "Con Catechis",
     "rows": [
       { "before": "Cuaderno", "after": "Encuentros organizados" },
       { "before": "WhatsApp", "after": "Comunicación centralizada" },
@@ -680,7 +680,7 @@
   "presence": {
     "title_line1": "Más corazón en el encuentro.",
     "title_line2": "Menos peso en la semana.",
-    "subtitle": "Catequese Viva cuida la parte que nadie ve para que tú puedas cuidar la parte que realmente importa."
+    "subtitle": "Catechis cuida la parte que nadie ve para que tú puedas cuidar la parte que realmente importa."
   },
   "start_small": {
     "eyebrow": "Empieza pequeño.",

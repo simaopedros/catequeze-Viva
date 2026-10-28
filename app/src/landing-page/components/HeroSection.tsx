@@ -214,7 +214,7 @@ export function HeroSection({
   const imageAlt = landingCopy(
     tr,
     "hero.image_alt",
-    "Painel da Catequese Viva com turmas, presença e próximas ações",
+    "Painel do Catechis com turmas, presença e próximas ações",
   );
   const showProductShot = visual === "product" || visual === "management";
 
@@ -294,7 +294,7 @@ function CampaignHeroVisual({
           </span>
           <div>
             <p className="text-xs uppercase tracking-wider text-muted-foreground">
-              Catequese Viva
+              Catechis
             </p>
             <p className="text-base font-semibold text-brand-ink">{title}</p>
           </div>

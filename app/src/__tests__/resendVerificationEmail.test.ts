@@ -142,7 +142,7 @@ describe('resendVerificationEmail action', () => {
       'ana@example.com',
       expect.objectContaining({
         to: 'ana@example.com',
-        from: { name: 'Catequese Viva', email: 'onboarding@catechis.app' },
+        from: { name: 'Catechis', email: 'onboarding@catechis.app' },
         subject: 'Confirme seu email',
       }),
     );

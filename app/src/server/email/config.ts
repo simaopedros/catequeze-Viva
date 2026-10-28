@@ -3,7 +3,7 @@ import {
   type EmailStream,
 } from "../../shared/emailCatalog";
 
-export const EMAIL_BRAND_NAME = "Catequese Viva";
+export const EMAIL_BRAND_NAME = "Catechis";
 
 /** All product mail uses catechis.app — never a second root domain. */
 const DEFAULT_FROM: Record<EmailStream, string> = {

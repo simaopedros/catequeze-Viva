@@ -110,7 +110,7 @@ export function ReportsPrintSheet({
                   color: "#8A6418",
                 }}
               >
-                Catequese Viva
+                Catechis
               </p>
               <h1 style={{ margin: "2px 0 0", fontSize: "20px" }}>
                 {t("print_title")}

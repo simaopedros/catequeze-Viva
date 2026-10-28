@@ -1,5 +1,5 @@
 /**
- * AI Operations for Catequese Viva.
+ * AI Operations for Catechis.
  *
  * Actions: generateMeetingWithAi, generateAnnualPlanning, chatWithAi,
  *          generateActivityForMeeting, generateWhatsAppMessage

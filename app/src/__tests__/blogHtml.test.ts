@@ -91,7 +91,7 @@ describe("blog crawler HTML", () => {
       url: "https://catechis.app/blog/como-preparar-o-encontro",
       canonicalUrl: "https://catechis.app/blog/como-preparar-o-encontro",
       publishedAt: "2026-09-09T12:00:00.000Z",
-      authorName: "Equipe Catequese Viva",
+      authorName: "Equipe Catechis",
       locale: "pt-BR",
     });
     expect(html).toContain("Como preparar o encontro");

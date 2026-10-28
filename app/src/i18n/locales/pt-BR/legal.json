@@ -5,11 +5,11 @@
     "sections": {
       "acceptance": {
         "title": "1. Aceitação dos Termos",
-        "text": "Ao acessar e usar a plataforma Catequese Viva, você concorda com estes Termos de Uso."
+        "text": "Ao acessar e usar a plataformo Catechis, você concorda com estes Termos de Uso."
       },
       "service": {
         "title": "2. Descrição do Serviço",
-        "text": "A Catequese Viva é uma plataforma SaaS para gestão de catequese católica: turmas, presença, conteúdo, sacramentos e comunicação pastoral."
+        "text": "O Catechis é uma plataforma SaaS para gestão de catequese católica: turmas, presença, conteúdo, sacramentos e comunicação pastoral."
       },
       "obligations": {
         "title": "3. Obrigações do Usuário",
@@ -23,7 +23,7 @@
       },
       "liability": {
         "title": "4. Limitação de Responsabilidade",
-        "text": "A Catequese Viva não se responsabiliza por conteúdo publicado pelos usuários, decisões pastorais baseadas nos dados da plataforma, ou indisponibilidade temporária."
+        "text": "O Catechis não se responsabiliza por conteúdo publicado pelos usuários, decisões pastorais baseadas nos dados da plataforma, ou indisponibilidade temporária."
       },
       "jurisdiction": {
         "title": "5. Foro",
@@ -37,11 +37,11 @@
     "sections": {
       "intro": {
         "title": "1. Introdução",
-        "text": "A Catequese Viva está comprometida com a proteção dos dados pessoais de seus usuários e dos catequizandos, em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018). Esta política explica quais dados tratamos, para quê, com quem compartilhamos, por quanto tempo guardamos e como você exerce seus direitos."
+        "text": "O Catechis está comprometida com a proteção dos dados pessoais de seus usuários e dos catequizandos, em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018). Esta política explica quais dados tratamos, para quê, com quem compartilhamos, por quanto tempo guardamos e como você exerce seus direitos."
       },
       "controller": {
         "title": "2. Quem é responsável pelos dados",
-        "text": "Quando uma paróquia, diocese ou catequista usa a plataforma para organizar a catequese, essa instituição (ou o catequista, no plano pessoal) é a controladora dos dados dos catequizandos e das famílias: ela decide quem é cadastrado e para quê. A Catequese Viva atua como operadora, tratando esses dados apenas para prestar o serviço contratado e conforme as instruções do controlador. Para os dados da sua própria conta (cadastro, login, assinatura), a Catequese Viva é a controladora."
+        "text": "Quando uma paróquia, diocese ou catequista usa a plataforma para organizar a catequese, essa instituição (ou o catequista, no plano pessoal) é a controladora dos dados dos catequizandos e das famílias: ela decide quem é cadastrado e para quê. O Catechis atua como operadora, tratando esses dados apenas para prestar o serviço contratado e conforme as instruções do controlador. Para os dados da sua própria conta (cadastro, login, assinatura), o Catechis é a controladora."
       },
       "collected": {
         "title": "3. Dados coletados",
@@ -122,7 +122,7 @@
       },
       "dpo": {
         "title": "12. Encarregado de dados (DPO)",
-        "text": "O encarregado pelo tratamento de dados pessoais da Catequese Viva é o canal oficial para dúvidas, pedidos de titulares e comunicações da ANPD.",
+        "text": "O encarregado pelo tratamento de dados pessoais do Catechis é o canal oficial para dúvidas, pedidos de titulares e comunicações da ANPD.",
         "email_label": "Email do encarregado:",
         "email": "privacidade@catechis.app",
         "response": "Respondemos em até 15 dias. Também é possível falar conosco em contato@catechis.app ou pela página de Contato."

@@ -22,37 +22,37 @@ export const SITE_ORIGIN =
 
 export const LANDING_ROUTE_META: Record<string, LandingRouteMeta> = {
   "/": {
-    title: "Você semeia a fé. A gente organiza a turma. | Catequese Viva",
+    title: "Você semeia a fé. A gente organiza a turma. | Catechis",
     description:
       "Mais presença no encontro, menos tempo organizando. Prepare encontros, acompanhe catequizandos e registre presenças. 7 dias gratuitos, com acesso a todos os recursos. Cancele quando quiser.",
     canonicalPath: "/",
     campaign: "main",
   },
   "/ia": {
-    title: "Assistência editorial para encontros de catequese | Catequese Viva",
+    title: "Assistência editorial para encontros de catequese | Catechis",
     description:
       "Prepare roteiros de encontro com assistência editorial católica: objetivo, dinâmica, Bíblia e oração. Revise antes de usar. Trial de 7 dias.",
     canonicalPath: "/ia",
     campaign: "ia",
   },
   "/presenca": {
-    title: "Chamada e presença de catequese no celular | Catequese Viva",
+    title: "Chamada e presença de catequese no celular | Catechis",
     description:
       "Faça a chamada pelo celular, acompanhe faltas e histórico da turma. Sem papel e sem planilha. 7 dias gratuitos, com acesso a todos os recursos. Cancele quando quiser.",
     canonicalPath: "/presenca",
     campaign: "attendance",
   },
   "/sistema": {
-    title: "Sistema de gestão de catequese para paróquia | Catequese Viva",
+    title: "Sistema de gestão de catequese para paróquia | Catechis",
     description:
       "Turmas, presença, famílias e relatórios no mesmo sistema. Para catequistas e coordenação. 7 dias gratuitos, com acesso a todos os recursos. Cancele quando quiser.",
     canonicalPath: "/sistema",
     campaign: "system",
   },
   "/blog": {
-    title: "Blog para catequistas | Catequese Viva",
+    title: "Blog para catequistas | Catechis",
     description:
-      "Artigos práticos para a rotina do catequista: formação, encontros, liturgia, família e gestão da catequese. Conteúdo da Catequese Viva.",
+      "Artigos práticos para a rotina do catequista: formação, encontros, liturgia, família e gestão da catequese. Conteúdo do Catechis.",
     canonicalPath: "/blog",
     campaign: "main",
   },

@@ -36,7 +36,7 @@
   "welcome": {
     "hello": "Olá, {{name}}",
     "hello_default": "Bem-vindo(a)",
-    "question": "Como você vai usar a Catequese Viva?",
+    "question": "Como você vai usar o Catechis?",
     "personal_title": "Sou catequista e cuido da minha turma",
     "personal_desc": "Crie sua turma e inclua os catequizandos. Você ganha 7 dias grátis do Plano Catequista, sem cartão.",
     "personal_features": [],
@@ -118,7 +118,7 @@
     "whatsapp_question": "Quer o plano Diocese para a sua região?",
     "whatsapp_helper": "A equipe de vendas explica cobertura, preços e como ativar o plano Diocese.",
     "whatsapp_cta": "Consultar plano Diocese no WhatsApp",
-    "whatsapp_prefill": "Olá! Estou no cadastro da Catequese Viva e quero saber mais sobre o plano Diocese.",
+    "whatsapp_prefill": "Olá! Estou no cadastro do Catechis e quero saber mais sobre o plano Diocese.",
     "skip": "Pular esta etapa →",
     "select_hint": "Selecione uma diocese acima",
     "subtitle": "Escolha a diocese para encontrar a paróquia certa com menos esforço.",
@@ -341,7 +341,7 @@
     "plan_limit": "Seu período de teste não está ativo, então ainda não dá para criar a turma. Assine o Plano Catequista para continuar ou fale com o suporte.",
     "plan_limit_subscribe": "Assinar o Plano Catequista",
     "plan_limit_support": "Falar com o suporte",
-    "plan_limit_support_prefill": "Olá! Estou no cadastro do Catequese Viva e não consegui criar minha primeira turma (limite do plano).",
+    "plan_limit_support_prefill": "Olá! Estou no cadastro do Catechis e não consegui criar minha primeira turma (limite do plano).",
     "start_time_invalid": "Horário de início inválido. Use o formato HH:mm (ex.: 19:00).",
     "end_time_invalid": "Horário de término inválido. Use o formato HH:mm (ex.: 20:30).",
     "default_meeting_title": "Encontro de hoje",
@@ -404,5 +404,13 @@
     "partial_error_other": "{{count}} linhas não foram adicionadas. As demais foram preservadas.",
     "partial_error_zero": "{{count}} linhas não foram adicionadas. As demais foram preservadas."
   },
-  "resume_banner": "Continuando de onde você parou."
+  "resume_banner": "Continuando de onde você parou.",
+  "organization_name": {
+    "parish_title": "Informe o nome da sua paróquia",
+    "diocese_title": "Informe o nome da sua diocese",
+    "required": "Informe o nome da organização.",
+    "save": "Salvar",
+    "later": "Agora não",
+    "save_error": "Não foi possível salvar. Tente novamente."
+  }
 }

@@ -1,6 +1,6 @@
 {
   "about": {
-    "title": "About Catequese Viva",
+    "title": "About Catechis",
     "intro": "A complete pastoral platform for Christian initiation, connecting dioceses, parishes, catechists, families, and catechumens in an integrated faith journey.",
     "mission_title": "Our Mission",
     "mission_text": "To facilitate and strengthen the catechetical mission of the Catholic Church, offering modern tools that enable coordinators, catechists, and families to accompany Christian formation with excellence, simplicity, and security.",
@@ -27,13 +27,13 @@
       "The parish owns its data: export it whenever you like, with no lock-in."
     ],
     "contact_title": "Talk to us",
-    "contact_text": "Have suggestions, want to present Catequese Viva to your parish or diocese, or found a problem? Write to the team.",
+    "contact_text": "Have suggestions, want to present Catechis to your parish or diocese, or found a problem? Write to the team.",
     "contact_cta": "Go to Contact",
     "help_cta": "See frequently asked questions"
   },
   "contact": {
     "title": "Contact",
-    "intro": "Get in touch with the Catequese Viva team.",
+    "intro": "Get in touch with the Catechis team.",
     "location": "São Paulo, Brazil",
     "phone_label": "Phone (support and general questions)",
     "subject_prefix": "Subject",
@@ -52,7 +52,7 @@
     "cta": "Talk to sales on WhatsApp",
     "cta_short": "Sales WhatsApp",
     "helper": "Our sales team can help you choose a plan and answer subscription questions.",
-    "prefill": "Hi! I'd like to know more about Catequese Viva plans.",
+    "prefill": "Hi! I'd like to know more about Catechis plans.",
     "aria": "Open a conversation on the sales WhatsApp"
   },
   "pricing": {
@@ -121,7 +121,7 @@
     "badge_catechist": "Built for the catechist"
   },
   "workspace": {
-    "app_name": "Catequese Viva",
+    "app_name": "Catechis",
     "title": "Select Space",
     "subtitle": "Choose the workspace where you want to work",
     "personal_section": "My Personal Space",
@@ -204,7 +204,7 @@
   "catechist_free": "No subscription",
   "help": {
     "title": "Help",
-    "intro": "Quick answers to the most common questions about Catequese Viva. Didn't find what you need? Contact the team at the bottom of the page.",
+    "intro": "Quick answers to the most common questions about Catechis. Didn't find what you need? Contact the team at the bottom of the page.",
     "contact_title": "Still need help?",
     "contact_text": "Write to the team through the Contact page. If you already have an account, you can also use the Support center in your profile menu.",
     "contact_cta": "Contact the team",
