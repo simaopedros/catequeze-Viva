@@ -1676,7 +1676,8 @@ export const classes_pt_BR_app = {
     "limit_reached_body": "O plano {{planName}} permite até {{maxAllowed}} turmas. Você já usa {{currentCount}}. Para criar outra, escolha um plano com mais espaço ou volte para Turmas.",
     "limit_reached_none": "O plano {{planName}} ainda não libera turmas. Veja os planos para começar ou volte para Turmas.",
     "limit_see_plans": "Ver planos",
-    "limit_back_to_classes": "Voltar para Turmas"
+    "limit_back_to_classes": "Voltar para Turmas",
+    "restore_quota_blocked": "Não é possível restaurar: a turma excederia o limite de turmas ou de pessoas distintas do plano. Libere vagas ou altere o plano."
   } as const;
 
 export const collaborative_pt_BR_app = {

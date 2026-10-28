@@ -9,7 +9,7 @@ import { Input } from "../../client/components/ui/input";
 import { ArrowLeft, Save } from "lucide-react";
 import {
   createClass,
-  listClasses,
+  getPlanUsage,
   listCommunities,
   useQuery,
 } from "wasp/client/operations";
@@ -39,10 +39,7 @@ import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
 import { canManageWorkspaceBilling } from "../../shared/billingAccess";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { isInstitutionalWorkspaceType } from "../../shared/workspace";
-import {
-  countActiveClasses,
-  isClassPlanLimitReached,
-} from "../../shared/classPlanLimit";
+import { isClassPlanLimitReached } from "../../shared/classPlanLimit";
 import { buildBillingJourneyHrefFromContext } from "../lib/upgradeJourney";
 
 export default function CreateClassPage() {
@@ -91,9 +88,13 @@ export default function CreateClassPage() {
   ]);
 
   const targetParishId = parishId || workspaceId;
-  const { data: classPage, isLoading: classesLoading } = useQuery(
-    listClasses,
-    { workspaceId: targetParishId, take: 100, paginated: true } as any,
+  const {
+    data: planUsage,
+    isLoading: classesLoading,
+    error: usageError,
+  } = useQuery(
+    getPlanUsage,
+    { parishId: targetParishId || "" },
     { enabled: Boolean(targetParishId) },
   );
   const selectedIsInstitutional = institutionalParishes.some(
@@ -104,13 +105,12 @@ export default function CreateClassPage() {
     { parishId: targetParishId },
     { enabled: Boolean(targetParishId) && selectedIsInstitutional },
   );
-  const existingClasses = Array.isArray(classPage)
-    ? classPage
-    : (classPage as any)?.items || [];
-  const effectivePlan = workspacePlan || "catechist_free";
-  const limits = getBySlug(effectivePlan).limits;
-  const activeClassesCount = countActiveClasses(existingClasses);
-  const limitCheckReady = !targetParishId || !classesLoading;
+  const effectivePlan = planUsage?.plan || workspacePlan || "catechist_free";
+  const limits = planUsage
+    ? { maxClasses: planUsage.maxClasses }
+    : getBySlug(effectivePlan).limits;
+  const activeClassesCount = planUsage?.classesUsed ?? 0;
+  const limitCheckReady = !targetParishId || (!classesLoading && !!planUsage);
   const isClassLimitReached =
     Boolean(targetParishId) &&
     limitCheckReady &&
@@ -165,6 +165,15 @@ export default function CreateClassPage() {
   };
 
   const goBack = () => leaveGuard.confirmLeave(() => navigate("/app/classes"));
+
+  if (usageError) {
+    return (
+      <div className="mx-auto max-w-lg space-y-5">
+        <AppPageHeader eyebrow={t("create")} title={t("create")} />
+        <p role="alert">{usageError.message || t("create_error")}</p>
+      </div>
+    );
+  }
 
   if (!limitCheckReady) {
     return (

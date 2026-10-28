@@ -18,6 +18,9 @@ import {
 import {
   assertCanCreateClass,
   assertCanEnrollCatechumen,
+  assertCanRestoreClass,
+  resolveEnrollmentCapacity,
+  assertEnrollmentCapacity,
 } from "./billingEnforcement";
 import { ensurePersonalWorkspace } from "./workspaceOperations";
 import { ensureSacramentalJourneyForCatechumen } from "../sacramentHelpers";
@@ -612,7 +615,7 @@ export const updateClass = async (args: any, context: any) => {
 
   const classData = await context.entities.CatechesisClass.findUnique({
     where: { id: args.id },
-    select: { parishId: true },
+    select: { parishId: true, status: true },
   });
   if (!classData) throw new HttpError(404, "Turma não encontrada.");
 
@@ -638,6 +641,11 @@ export const updateClass = async (args: any, context: any) => {
     }
   }
 
+  if (
+    classData.status === "ARCHIVED" && args.status && args.status !== "ARCHIVED"
+  ) {
+    await assertCanRestoreClass(context, classData.parishId, args.id);
+  }
   const { id, parishId: _ignoredParishId, ...data } = args;
 
   // Blank schedule fields clear to null so a no-op edit cannot invent defaults.
@@ -930,7 +938,9 @@ export const enrollCatechumen = async (
 
   // Enforce plan catechumen limits
   if (!context.user.isAdmin) {
-    await assertCanEnrollCatechumen(context, classData.parishId);
+    await assertCanEnrollCatechumen(
+      context, classData.parishId, args.catechumenProfileId,
+    );
   }
 
   const existing = await context.entities.ClassEnrollment.findFirst({
@@ -1083,13 +1093,14 @@ export const bulkEnrollCatechumens = async (
     toEnroll.push(id);
   }
 
+  const planCapacity = context.user.isAdmin
+    ? null
+    : await resolveEnrollmentCapacity(context, classData.parishId);
   let enrolled = 0;
   for (const catechumenProfileId of toEnroll) {
     const name = nameById.get(catechumenProfileId) ?? catechumenProfileId;
     try {
-      if (!context.user.isAdmin) {
-        await assertCanEnrollCatechumen(context, classData.parishId);
-      }
+      if (planCapacity) assertEnrollmentCapacity(planCapacity, catechumenProfileId);
       await context.entities.ClassEnrollment.create({
         data: {
           classId: args.classId,
@@ -1097,6 +1108,7 @@ export const bulkEnrollCatechumens = async (
           status: EnrollmentStatus.ENROLLED,
         },
       });
+      planCapacity?.people.add(catechumenProfileId);
       enrolled++;
       enrolledCount++;
       if (classData.sacramentId) {
