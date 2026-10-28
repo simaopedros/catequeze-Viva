@@ -2599,6 +2599,8 @@ export const common_en = {
     "pending_review": "Under review",
     "no_pending_review": "No content pending review.",
     "empty_search": "None found",
+    "families_new_button": "New family",
+    "families_create_permission_hint": "Ask a coordinator",
     "no_family": "No families",
     "no_catechumens": "No catechumens",
     "no_parishes": "No parishes",
