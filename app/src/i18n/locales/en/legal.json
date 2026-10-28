@@ -5,11 +5,11 @@
     "sections": {
       "acceptance": {
         "title": "1. Acceptance of Terms",
-        "text": "By accessing and using the Catequese Viva platform, you agree to these Terms of Use."
+        "text": "By accessing and using the Catechis platform, you agree to these Terms of Use."
       },
       "service": {
         "title": "2. Service Description",
-        "text": "Catequese Viva is a SaaS platform for Catholic catechesis management: classes, attendance, content, sacraments, and pastoral communication."
+        "text": "Catechis is a SaaS platform for Catholic catechesis management: classes, attendance, content, sacraments, and pastoral communication."
       },
       "obligations": {
         "title": "3. User Obligations",
@@ -23,7 +23,7 @@
       },
       "liability": {
         "title": "4. Limitation of Liability",
-        "text": "Catequese Viva is not responsible for content published by users, pastoral decisions based on platform data, or temporary unavailability."
+        "text": "Catechis is not responsible for content published by users, pastoral decisions based on platform data, or temporary unavailability."
       },
       "jurisdiction": {
         "title": "5. Jurisdiction",
@@ -37,11 +37,11 @@
     "sections": {
       "intro": {
         "title": "1. Introduction",
-        "text": "Catequese Viva is committed to protecting the personal data of its users and of catechumens, in accordance with Brazil's General Data Protection Law (LGPD — Law No. 13,709/2018). This policy explains which data we process, why, who we share it with, how long we keep it and how you exercise your rights."
+        "text": "Catechis is committed to protecting the personal data of its users and of catechumens, in accordance with Brazil's General Data Protection Law (LGPD — Law No. 13,709/2018). This policy explains which data we process, why, who we share it with, how long we keep it and how you exercise your rights."
       },
       "controller": {
         "title": "2. Who is responsible for the data",
-        "text": "When a parish, diocese or catechist uses the platform to organize catechesis, that institution (or the catechist, on the personal plan) is the controller of the data about catechumens and families: it decides who is registered and why. Catequese Viva acts as the processor, handling that data only to provide the contracted service and according to the controller's instructions. For your own account data (sign-up, login, subscription), Catequese Viva is the controller."
+        "text": "When a parish, diocese or catechist uses the platform to organize catechesis, that institution (or the catechist, on the personal plan) is the controller of the data about catechumens and families: it decides who is registered and why. Catechis acts as the processor, handling that data only to provide the contracted service and according to the controller's instructions. For your own account data (sign-up, login, subscription), Catechis is the controller."
       },
       "collected": {
         "title": "3. Data we collect",
@@ -122,7 +122,7 @@
       },
       "dpo": {
         "title": "12. Data protection officer (DPO)",
-        "text": "Catequese Viva's data protection officer is the official channel for questions, data subject requests and communications from the ANPD.",
+        "text": "Catechis's data protection officer is the official channel for questions, data subject requests and communications from the ANPD.",
         "email_label": "DPO email:",
         "email": "privacidade@catechis.app",
         "response": "We reply within 15 days. You can also reach us at contato@catechis.app or through the Contact page."

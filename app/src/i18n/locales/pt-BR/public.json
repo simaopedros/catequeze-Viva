@@ -1,6 +1,6 @@
 {
   "about": {
-    "title": "Sobre a Catequese Viva",
+    "title": "Sobre o Catechis",
     "intro": "Uma plataforma pastoral completa para a iniciação cristã, conectando dioceses, paróquias, catequistas, famílias e catequizandos em uma jornada de fé integrada.",
     "mission_title": "Nossa Missão",
     "mission_text": "Facilitar e fortalecer a missão catequética da Igreja Católica, oferecendo ferramentas modernas que permitam aos coordenadores, catequistas e famílias acompanhar a formação cristã com excelência, simplicidade e segurança.",
@@ -27,13 +27,13 @@
       "A paróquia é dona dos dados: exporte quando quiser, sem prender ninguém à plataforma."
     ],
     "contact_title": "Fale com a gente",
-    "contact_text": "Tem sugestões, quer apresentar a Catequese Viva à sua paróquia ou diocese, ou encontrou um problema? Escreva para a equipe.",
+    "contact_text": "Tem sugestões, quer apresentar o Catechis à sua paróquia ou diocese, ou encontrou um problema? Escreva para a equipe.",
     "contact_cta": "Ir para Contato",
     "help_cta": "Ver perguntas frequentes"
   },
   "contact": {
     "title": "Contato",
-    "intro": "Entre em contato com a equipe da Catequese Viva.",
+    "intro": "Entre em contato com a equipe do Catechis.",
     "location": "São Paulo, Brasil",
     "phone_label": "Telefone (suporte e assuntos gerais)",
     "subject_prefix": "Assunto",
@@ -52,7 +52,7 @@
     "cta": "Fale com vendas no WhatsApp",
     "cta_short": "WhatsApp de vendas",
     "helper": "A equipe de vendas tira suas dúvidas sobre o plano e a assinatura.",
-    "prefill": "Olá! Quero saber mais sobre os planos da Catequese Viva.",
+    "prefill": "Olá! Quero saber mais sobre os planos do Catechis.",
     "aria": "Abrir conversa no WhatsApp de vendas"
   },
   "pricing": {
@@ -121,7 +121,7 @@
     "badge_catechist": "Feito para o catequista"
   },
   "workspace": {
-    "app_name": "Catequese Viva",
+    "app_name": "Catechis",
     "title": "Selecionar Espaço",
     "subtitle": "Escolha o workspace onde deseja trabalhar",
     "personal_section": "Meu Espaço Pessoal",
@@ -204,7 +204,7 @@
   "catechist_free": "Sem assinatura",
   "help": {
     "title": "Ajuda",
-    "intro": "Respostas rápidas para as dúvidas mais comuns sobre a Catequese Viva. Não encontrou o que procurava? Fale com a equipe no fim da página.",
+    "intro": "Respostas rápidas para as dúvidas mais comuns sobre o Catechis. Não encontrou o que procurava? Fale com a equipe no fim da página.",
     "contact_title": "Ainda precisa de ajuda?",
     "contact_text": "Escreva para a equipe pela página de Contato. Se você já tem conta, use também a Central de suporte no menu do seu perfil.",
     "contact_cta": "Falar com a equipe",

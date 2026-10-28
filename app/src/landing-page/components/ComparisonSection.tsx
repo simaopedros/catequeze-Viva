@@ -12,7 +12,7 @@ type ComparisonRow = {
 };
 
 /**
- * Side-by-side comparison: paper/spreadsheet/WhatsApp vs Catequese Viva.
+ * Side-by-side comparison: paper/spreadsheet/WhatsApp vs Catechis.
  */
 export function ComparisonSection({ ns = "landing" }: { ns?: string }) {
   const tr = useLandingText(ns);

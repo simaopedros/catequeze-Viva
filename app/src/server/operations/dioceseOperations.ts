@@ -33,8 +33,11 @@ export const createDiocese = async (args: { name: string; country: string }, con
   requireAuth(context.user);
   if (!context.user.isAdmin) throw new HttpError(403, 'Apenas administradores da plataforma podem criar dioceses.');
 
+  const name = args.name?.trim();
+  if (!name) throw new HttpError(400, 'Informe o nome da diocese.');
+
   const diocese = await context.entities.Diocese.create({
-    data: { name: args.name, country: args.country || 'BR' },
+    data: { name, country: args.country || 'BR' },
   });
 
   await writeAuditLog(context, 'CREATE', 'Diocese', diocese.id, { operation: 'DIOCESE_CREATE' });

@@ -7,22 +7,22 @@ const { isFamilyPortalRequestContext } = vi.hoisted(() => ({
 vi.mock('../server/i18n/serverI18n', () => {
   const strings: Record<string, string> = {
     email_verification_subject_staff:
-      'Confirme seu email da equipe de catequese — Catequese Viva',
+      'Confirme seu email da equipe de catequese — Catechis',
     email_verification_body_staff:
       'Você criou uma conta no painel pastoral (catequistas e coordenação). Clique no link para confirmar seu email:',
     email_verification_button_staff: 'Confirmar email da equipe',
     email_verification_subject_family:
-      'Confirme seu email do Portal da Família — Catequese Viva',
+      'Confirme seu email do Portal da Família — Catechis',
     email_verification_body_family:
       'Você criou uma conta no Portal da Família. Clique no link para confirmar seu email:',
     email_verification_button_family: 'Confirmar email do Portal da Família',
     password_reset_subject_staff:
-      'Redefinir senha da equipe de catequese — Catequese Viva',
+      'Redefinir senha da equipe de catequese — Catechis',
     password_reset_body_staff:
       'Use este link para redefinir a senha da sua conta no painel pastoral:',
     password_reset_button_staff: 'Redefinir senha da equipe',
     password_reset_subject_family:
-      'Redefinir senha do Portal da Família — Catequese Viva',
+      'Redefinir senha do Portal da Família — Catechis',
     password_reset_body_family:
       'Use este link para redefinir a senha da sua conta no Portal da Família:',
     password_reset_button_family: 'Redefinir senha do Portal da Família',

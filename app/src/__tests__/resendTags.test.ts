@@ -81,7 +81,7 @@ describe("resendEmailAdapter", () => {
 
   const base = {
     to: "ana@example.com",
-    from: { name: "Catequese Viva", email: "ola@catechis.app" },
+    from: { name: "Catechis", email: "ola@catechis.app" },
     subject: "Bem-vinda",
     html: "<p>oi</p>",
     text: "oi",

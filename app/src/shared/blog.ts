@@ -95,7 +95,7 @@ export function buildBlogAuthorName(author: {
     .filter(Boolean)
     .join(" ")
     .trim();
-  return name || "Catequese Viva";
+  return name || "Catechis";
 }
 
 export function normalizeBlogTags(raw: unknown): string[] {

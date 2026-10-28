@@ -1,3 +1,4 @@
+import { isOrganizationNameValid } from "../../shared/organizationName";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router";
@@ -544,6 +545,11 @@ export default function OnboardingPage() {
     location?: string;
   }) => {
     if (!parish) return;
+    if (!isOrganizationNameValid("PARISH", parish.name)) {
+      setError(t("organization_name.required"));
+      setStep("parish");
+      return;
+    }
     setSaving(true);
     setError("");
     try {

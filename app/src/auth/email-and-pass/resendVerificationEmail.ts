@@ -13,7 +13,7 @@ import {
 } from './resendVerificationCore';
 
 // Must match `auth.methods.email.fromField` and the EmailVerificationRoute path in main.wasp.
-const FROM_FIELD = { name: 'Catequese Viva', email: 'onboarding@catechis.app' };
+const FROM_FIELD = { name: 'Catechis', email: 'onboarding@catechis.app' };
 const EMAIL_VERIFICATION_CLIENT_ROUTE = '/email-verification';
 
 type ResendVerificationEmailArgs = { email?: unknown };

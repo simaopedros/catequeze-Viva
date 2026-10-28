@@ -1081,7 +1081,7 @@ export const ai_pt_BR_app = {
       "credits_cta": "Compre créditos avulsos para continuar usando a assistência editorial sem alterar seu plano.",
       "generic_error": "Desculpe, ocorreu um erro. Tente novamente mais tarde.",
       "theological_assistant": "Assistente Teológico",
-      "catholic_ai": "Assistência católica • Catequese Viva",
+      "catholic_ai": "Assistência católica • Catechis",
       "empty_response": "Resposta vazia da assistência editorial.",
       "infra_error": "Erro de infraestrutura: o chat não recebeu um stream SSE. A rota /api/* pode não estar a ser encaminhada para o servidor. Contacte o suporte se o problema continuar.",
       "view_history": "Ver histórico de conversas",
@@ -1969,7 +1969,7 @@ export const content_pt_BR_app = {
       "preview_hint": "Pré-visualização em formato A4. Confira se o texto não está cortado antes de imprimir.",
       "pastoral_support": "Apoio pastoral",
       "linked_references": "Referências vinculadas",
-      "header_badge": "Catequese Viva — Roteiro de Encontro",
+      "header_badge": "Catechis — Roteiro de Encontro",
       "prepared_by": "Preparado por: {{name}}",
       "minutes": "{{count}} min",
       "materials_title": "📋 Preparação de Materiais",
@@ -1998,7 +1998,7 @@ export const content_pt_BR_app = {
       "task_attachment": "Tarefa com entrega de arquivo",
       "requires_upload": "Requer upload",
       "catechist_notes": "📝 Anotações do Catequista",
-      "footer": "Material gerado pela plataforma Catequese Viva"
+      "footer": "Material gerado pela plataformo Catechis"
     },
     "workspace": {
       "default_title": "Novo encontro",
@@ -2322,15 +2322,15 @@ export const dashboard_pt_BR_app = {
 export const emails_pt_BR_app = {
     "fallback_name": "catequista",
     "fallback_class": "sua turma",
-    "footer_reason": "Você recebe este e-mail porque criou uma conta no Catequese Viva.",
+    "footer_reason": "Você recebe este e-mail porque criou uma conta no Catechis.",
     "unsubscribe": "Não quero mais estes e-mails",
     "unsubscribed_title": "Inscrição cancelada",
-    "unsubscribed_body": "Você não receberá mais e-mails de acompanhamento da sua conta no Catequese Viva.",
+    "unsubscribed_body": "Você não receberá mais e-mails de acompanhamento da sua conta no Catechis.",
     "unsubscribe_invalid_title": "Link inválido",
     "unsubscribe_invalid_body": "Este link de descadastro é inválido ou já expirou.",
     "welcome": {
-      "subject": "Bem-vindo à Catequese Viva, {{name}}",
-      "subject_no_name": "Bem-vindo à Catequese Viva",
+      "subject": "Bem-vindo ao Catechis, {{name}}",
+      "subject_no_name": "Bem-vindo ao Catechis",
       "heading": "Sua catequese começa aqui",
       "body": "Olá, {{name}}. Sua conta está pronta. Crie a primeira turma para marcar presença e preparar encontros no mesmo lugar.",
       "body_no_name": "Olá! Sua conta está pronta. Crie a primeira turma para marcar presença e preparar encontros no mesmo lugar.",
@@ -2349,19 +2349,19 @@ export const emails_pt_BR_app = {
         "body": "Você foi convidado(a) para integrar a equipe de catequese de \"{{location}}\" como {{role}}.\n\nEsse acesso é do painel pastoral (coordenação e catequistas), não do Portal da Família.\n\nPara aceitar, acesse: {{link}}\n\nEste convite expira em 30 dias.",
         "cta": "Aceitar convite"
       },
-      "footer": "— Equipe Catequese Viva"
+      "footer": "— Equipe Catechis"
     },
     "support_reply": {
-      "subject": "Resposta do suporte — Catequese Viva",
+      "subject": "Resposta do suporte — Catechis",
       "heading": "Resposta do suporte",
       "greeting": "Olá {{name}},",
       "intro": "Recebemos a sua mensagem e a nossa resposta é:",
-      "outro": "Também pode ver esta resposta na central de suporte da Catequese Viva.",
+      "outro": "Também pode ver esta resposta na central de suporte do Catechis.",
       "cta": "Abrir suporte",
-      "footer": "Catequese Viva · suporte"
+      "footer": "Catechis · suporte"
     },
     "billing": {
-      "footer": "Catequese Viva · assinatura",
+      "footer": "Catechis · assinatura",
       "canceled": {
         "subject": "Sua assinatura será encerrada",
         "heading": "A assinatura segue até o fim do período",
@@ -2395,11 +2395,11 @@ export const emails_pt_BR_app = {
       "transactional_note": "Emails de login, convite e fatura não podem ser desativados."
     },
     "broadcast": {
-      "footer": "Você recebe este email porque assinou as novidades da Catequese Viva."
+      "footer": "Você recebe este email porque assinou as novidades do Catechis."
     },
     "campaigns": {
       "activate_create_class": {
-        "subject": "Crie sua primeira turma no Catequese Viva",
+        "subject": "Crie sua primeira turma no Catechis",
         "heading": "Sua catequese ainda está no papel",
         "body": "Olá, {{name}}. Crie a turma em 2 minutos para começar a chamada e os encontros no mesmo lugar.",
         "cta": "Criar minha turma"
@@ -2418,7 +2418,7 @@ export const emails_pt_BR_app = {
       },
       "convert_after_value": {
         "subject": "Sua turma já está no ar — mantenha o acesso",
-        "heading": "Presença e encontros já estão no Catequese Viva",
+        "heading": "Presença e encontros já estão no Catechis",
         "body": "Olá, {{name}}. Assine o Plano Catequista ({{price}}/mês) para não perder o acesso no dia {{trialEndsAt}}.",
         "cta": "Assinar agora"
       },
@@ -2435,7 +2435,7 @@ export const emails_pt_BR_app = {
       "trial_d1": {
         "subject": "Seu teste termina amanhã",
         "heading": "Amanhã o período de teste acaba",
-        "body_no_class": "Olá, {{name}}. Ainda dá tempo de criar a turma hoje e ver o Catequese Viva em ação.",
+        "body_no_class": "Olá, {{name}}. Ainda dá tempo de criar a turma hoje e ver o Catechis em ação.",
         "body_no_people": "Olá, {{name}}. Adicione os catequizandos da {{className}} hoje — amanhã o teste acaba.",
         "body_no_action": "Olá, {{name}}. Lance a presença ou prepare o encontro da {{className}} antes de o teste acabar amanhã.",
         "body_value": "Olá, {{name}}. Amanhã termina o teste. Assine o Plano Catequista ({{price}}/mês) para manter turma, presença e encontros.",
@@ -2458,7 +2458,7 @@ export const emails_pt_BR_app = {
         "subject": "Um convite para retomar a catequese",
         "heading": "Sua turma espera você",
         "body": "Olá, {{name}}. Faz uma semana que o teste acabou. O Plano Catequista custa {{price}}/mês — reative para continuar de onde parou.",
-        "cta": "Voltar ao Catequese Viva"
+        "cta": "Voltar ao Catechis"
       }
     }
   } as const;
@@ -3020,7 +3020,7 @@ export const onboarding_pt_BR_app = {
     "welcome": {
       "hello": "Olá, {{name}}",
       "hello_default": "Bem-vindo(a)",
-      "question": "Como você vai usar a Catequese Viva?",
+      "question": "Como você vai usar o Catechis?",
       "personal_title": "Sou catequista e cuido da minha turma",
       "personal_desc": "Crie sua turma e inclua os catequizandos. Você ganha 7 dias grátis do Plano Catequista, sem cartão.",
       "personal_features": [],
@@ -3102,7 +3102,7 @@ export const onboarding_pt_BR_app = {
       "whatsapp_question": "Quer o plano Diocese para a sua região?",
       "whatsapp_helper": "A equipe de vendas explica cobertura, preços e como ativar o plano Diocese.",
       "whatsapp_cta": "Consultar plano Diocese no WhatsApp",
-      "whatsapp_prefill": "Olá! Estou no cadastro da Catequese Viva e quero saber mais sobre o plano Diocese.",
+      "whatsapp_prefill": "Olá! Estou no cadastro do Catechis e quero saber mais sobre o plano Diocese.",
       "skip": "Pular esta etapa →",
       "select_hint": "Selecione uma diocese acima",
       "subtitle": "Escolha a diocese para encontrar a paróquia certa com menos esforço.",
@@ -3325,7 +3325,7 @@ export const onboarding_pt_BR_app = {
       "plan_limit": "Seu período de teste não está ativo, então ainda não dá para criar a turma. Assine o Plano Catequista para continuar ou fale com o suporte.",
       "plan_limit_subscribe": "Assinar o Plano Catequista",
       "plan_limit_support": "Falar com o suporte",
-      "plan_limit_support_prefill": "Olá! Estou no cadastro do Catequese Viva e não consegui criar minha primeira turma (limite do plano).",
+      "plan_limit_support_prefill": "Olá! Estou no cadastro do Catechis e não consegui criar minha primeira turma (limite do plano).",
       "start_time_invalid": "Horário de início inválido. Use o formato HH:mm (ex.: 19:00).",
       "end_time_invalid": "Horário de término inválido. Use o formato HH:mm (ex.: 20:30).",
       "default_meeting_title": "Encontro de hoje",
@@ -3388,7 +3388,15 @@ export const onboarding_pt_BR_app = {
       "partial_error_other": "{{count}} linhas não foram adicionadas. As demais foram preservadas.",
       "partial_error_zero": "{{count}} linhas não foram adicionadas. As demais foram preservadas."
     },
-    "resume_banner": "Continuando de onde você parou."
+    "resume_banner": "Continuando de onde você parou.",
+    "organization_name": {
+      "parish_title": "Informe o nome da sua paróquia",
+      "diocese_title": "Informe o nome da sua diocese",
+      "required": "Informe o nome da organização.",
+      "save": "Salvar",
+      "later": "Agora não",
+      "save_error": "Não foi possível salvar. Tente novamente."
+    }
   } as const;
 
 export const parishes_pt_BR_app = {
@@ -3962,7 +3970,7 @@ export const settings_pt_BR_app = {
     "migration_error": "Erro ao executar migração.",
     "privacy_notice": "Seus dados são protegidos conforme a LGPD. Nenhum dado é compartilhado sem consentimento.",
     "email_preferences": "Preferências de email",
-    "email_preferences_desc": "Escolha quais emails da Catequese Viva você quer receber. Login, convites e faturas continuam ativos.",
+    "email_preferences_desc": "Escolha quais emails do Catechis você quer receber. Login, convites e faturas continuam ativos.",
     "email_pref_lifecycle": "Dicas de ativação, teste e retorno à conta",
     "email_pref_product": "Novidades do produto e newsletter",
     "email_pref_pastoral": "Comunicados das turmas e da paróquia",

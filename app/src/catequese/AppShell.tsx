@@ -1,3 +1,4 @@
+import { OrganizationNameNotice } from "./components/OrganizationNameNotice";
 import {
   ReactNode,
   useEffect,
@@ -262,6 +263,7 @@ export function AppShell({ children }: AppShellProps) {
                 <TopBar />
               </ErrorBoundary>
               {!hideOperationalChrome && <ProductTrialBanner />}
+              {!hideOperationalChrome && <OrganizationNameNotice />}
             </div>
             <main
               id="main-content"

@@ -34,7 +34,7 @@ export default function PublicSocialPostPage() {
     const excerpt = post.body.replace(/\s+/g, " ").slice(0, 70);
     document.title = excerpt
       ? `${excerpt} · ${t("title")}`
-      : `${t("title")} · Catequese Viva`;
+      : `${t("title")} · Catechis`;
   }, [post, t]);
 
   const canInteract = Boolean(

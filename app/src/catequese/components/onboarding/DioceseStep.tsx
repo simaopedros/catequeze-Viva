@@ -1,3 +1,4 @@
+import { isOrganizationNameValid } from "../../../shared/organizationName";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "wasp/client/auth";
@@ -115,7 +116,10 @@ export function DioceseStep({
   };
 
   const handleCreate = async () => {
-    if (!newName.trim()) return;
+    if (!isOrganizationNameValid("DIOCESE", newName)) {
+      setError(t("organization_name.required"));
+      return;
+    }
     setCreating(true);
     setError("");
     try {
@@ -366,12 +370,20 @@ export function DioceseStep({
             {t("diocese.new_name_label")}
           </Label>
           <Input
+            required
+            aria-describedby="organization-name-required"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             className="h-11 rounded-sm"
             placeholder={t("diocese.new_name_placeholder")}
             aria-label={t("diocese.new_name_label")}
           />
+          <p
+            id="organization-name-required"
+            className="text-xs text-muted-foreground"
+          >
+            {t("organization_name.required")}
+          </p>
           {duplicateDiocese && (
             <div className="border border-border/70 px-3 py-2 text-xs text-muted-foreground rounded-sm">
               {t("diocese.duplicate_warning")}{" "}
@@ -418,10 +430,16 @@ export function DioceseStep({
         {selected ? (
           <>
             <p className="text-sm text-muted-foreground">
-              {t("diocese.selection_ready", { name: selected.name })}
+              {isOrganizationNameValid("DIOCESE", selected.name)
+                ? t("diocese.selection_ready", { name: selected.name })
+                : t("organization_name.required")}
             </p>
             <Button
-              onClick={onContinue}
+              disabled={!isOrganizationNameValid("DIOCESE", selected.name)}
+              onClick={() => {
+                if (isOrganizationNameValid("DIOCESE", selected.name))
+                  onContinue();
+              }}
               className="h-11 w-full rounded-md"
             >
               {t("diocese.continue_with_selection")}

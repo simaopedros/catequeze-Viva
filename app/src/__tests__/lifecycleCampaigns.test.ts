@@ -358,7 +358,7 @@ describe("campaign copy", () => {
     });
     expect(html).toContain("Criar");
     expect(html).toContain("/api/lifecycle/unsubscribe");
-    expect(html).toContain("Catequese Viva");
+    expect(html).toContain("Catechis");
   });
 });
 

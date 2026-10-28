@@ -1,3 +1,4 @@
+import { isOrganizationNameValid } from "../../../shared/organizationName";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -170,7 +171,10 @@ export function ParishStep({
   };
 
   const handleCreate = async (startTrial = false) => {
-    if (!newName.trim()) return;
+    if (!isOrganizationNameValid("PARISH", newName)) {
+      setError(t("organization_name.required"));
+      return;
+    }
     if (!searchCity.trim() || !searchState.trim()) {
       setError(t("parish.city_state_required"));
       return;
@@ -356,12 +360,20 @@ export function ParishStep({
             {t("parish.new_name_label")}
           </Label>
           <Input
+            required
+            aria-describedby="organization-name-required"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             className="h-11 rounded-sm"
             placeholder={t("parish.new_name_placeholder")}
             aria-label={t("parish.new_name_label")}
           />
+          <p
+            id="organization-name-required"
+            className="text-xs text-muted-foreground"
+          >
+            {t("organization_name.required")}
+          </p>
           {duplicateParish && (
             <div className="border border-border/70 px-3 py-2 text-xs text-muted-foreground rounded-sm">
               {t("parish.duplicate_warning")}{" "}
@@ -408,9 +420,7 @@ export function ParishStep({
                 onClick={() => handleCreate(true)}
                 disabled={creating}
               >
-                {creating
-                  ? t("parish.creating")
-                  : t("parish.trial_offer_cta")}
+                {creating ? t("parish.creating") : t("parish.trial_offer_cta")}
               </Button>
             </div>
           )}
@@ -450,10 +460,16 @@ export function ParishStep({
         {selected ? (
           <>
             <p className="text-sm text-muted-foreground">
-              {t("parish.selection_ready", { name: selected.name })}
+              {isOrganizationNameValid("PARISH", selected.name)
+                ? t("parish.selection_ready", { name: selected.name })
+                : t("organization_name.required")}
             </p>
             <Button
-              onClick={onContinue}
+              disabled={!isOrganizationNameValid("PARISH", selected.name)}
+              onClick={() => {
+                if (isOrganizationNameValid("PARISH", selected.name))
+                  onContinue();
+              }}
               className="h-11 w-full rounded-md"
             >
               {t("parish.continue_with_selection")}

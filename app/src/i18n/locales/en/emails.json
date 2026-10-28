@@ -1,15 +1,15 @@
 {
   "fallback_name": "catechist",
   "fallback_class": "your class",
-  "footer_reason": "You received this email because you created a Catequese Viva account.",
+  "footer_reason": "You received this email because you created o Catechis account.",
   "unsubscribe": "I don't want these emails anymore",
   "unsubscribed_title": "Unsubscribed",
-  "unsubscribed_body": "You will no longer receive account follow-up emails from Catequese Viva.",
+  "unsubscribed_body": "You will no longer receive account follow-up emails from Catechis.",
   "unsubscribe_invalid_title": "Invalid link",
   "unsubscribe_invalid_body": "This unsubscribe link is invalid or has expired.",
   "welcome": {
-    "subject": "Welcome to Catequese Viva, {{name}}",
-    "subject_no_name": "Welcome to Catequese Viva",
+    "subject": "Welcome to Catechis, {{name}}",
+    "subject_no_name": "Welcome to Catechis",
     "heading": "Your catechesis starts here",
     "body": "Hi, {{name}}. Your account is ready. Create the first class to take attendance and prepare meetings in one place.",
     "body_no_name": "Hi! Your account is ready. Create the first class to take attendance and prepare meetings in one place.",
@@ -28,19 +28,19 @@
       "body": "You were invited to join the catechesis team of \"{{location}}\" as {{role}}.\n\nThis access is for the pastoral dashboard (coordinators and catechists), not the Family Portal.\n\nTo accept, open: {{link}}\n\nThis invitation expires in 30 days.",
       "cta": "Accept invitation"
     },
-    "footer": "— Catequese Viva team"
+    "footer": "— Catechis team"
   },
   "support_reply": {
-    "subject": "Support reply — Catequese Viva",
+    "subject": "Support reply — Catechis",
     "heading": "Support reply",
     "greeting": "Hi {{name}},",
     "intro": "We received your message. Our reply is:",
-    "outro": "You can also see this reply in the Catequese Viva support inbox.",
+    "outro": "You can also see this reply in the Catechis support inbox.",
     "cta": "Open support",
-    "footer": "Catequese Viva · support"
+    "footer": "Catechis · support"
   },
   "billing": {
-    "footer": "Catequese Viva · billing",
+    "footer": "Catechis · billing",
     "canceled": {
       "subject": "Your subscription will end",
       "heading": "Access continues until the paid period ends",
@@ -74,11 +74,11 @@
     "transactional_note": "Login, invite, and billing emails cannot be turned off."
   },
   "broadcast": {
-    "footer": "You receive this email because you subscribed to Catequese Viva updates."
+    "footer": "You receive this email because you subscribed to Catechis updates."
   },
   "campaigns": {
     "activate_create_class": {
-      "subject": "Create your first class on Catequese Viva",
+      "subject": "Create your first class on Catechis",
       "heading": "Your catechesis is still on paper",
       "body": "Hi, {{name}}. Create the class in about 2 minutes to start attendance and meetings in one place.",
       "cta": "Create my class"
@@ -97,7 +97,7 @@
     },
     "convert_after_value": {
       "subject": "Your class is live — keep access",
-      "heading": "Attendance and meetings are already on Catequese Viva",
+      "heading": "Attendance and meetings are already on Catechis",
       "body": "Hi, {{name}}. Subscribe to the Catechist Plan ({{price}}/month) so you don't lose access on {{trialEndsAt}}.",
       "cta": "Subscribe now"
     },
@@ -114,7 +114,7 @@
     "trial_d1": {
       "subject": "Your trial ends tomorrow",
       "heading": "The trial period ends tomorrow",
-      "body_no_class": "Hi, {{name}}. There is still time to create the class today and see Catequese Viva in action.",
+      "body_no_class": "Hi, {{name}}. There is still time to create the class today and see Catechis in action.",
       "body_no_people": "Hi, {{name}}. Add the catechumens for {{className}} today — the trial ends tomorrow.",
       "body_no_action": "Hi, {{name}}. Record attendance or prepare the meeting for {{className}} before the trial ends tomorrow.",
       "body_value": "Hi, {{name}}. The trial ends tomorrow. Subscribe to the Catechist Plan ({{price}}/month) to keep class, attendance, and meetings.",
@@ -137,7 +137,7 @@
       "subject": "An invitation to resume catechesis",
       "heading": "Your class is waiting",
       "body": "Hi, {{name}}. It's been a week since the trial ended. The Catechist Plan is {{price}}/month — reactivate to pick up where you left off.",
-      "cta": "Return to Catequese Viva"
+      "cta": "Return to Catechis"
     }
   }
 }

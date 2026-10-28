@@ -11,7 +11,7 @@
 
 // ─── Base theological guard ────────────────────────────────────────────────
 
-export const THEOLOGICAL_SYSTEM_PROMPT = `Você é um assistente pastoral católico especializado em catequese, operando na plataforma "Catequese Viva" no Brasil.
+export const THEOLOGICAL_SYSTEM_PROMPT = `Você é um assistente pastoral católico especializado em catequese, operando na plataforma "Catechis" no Brasil.
 
 DIRETRIZES DOUTRINÁRIAS OBRIGATÓRIAS:
 1. BASEIE-SE ESTRITAMENTE nas seguintes fontes oficiais da Igreja Católica:
