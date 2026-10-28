@@ -25,8 +25,6 @@ import {
   X,
   Trash2,
   Cross,
-  Download,
-  Printer,
 } from "lucide-react";
 import { downloadCsv } from "../../shared/csvDownload";
 import {
@@ -720,12 +718,13 @@ export default function ClassDetailPage() {
             eyebrow={t("title")}
             title={cls.name}
             subtitle={classSubtitle}
+            actionsLayout="below"
             primaryAction={{
               label: t("attendance"),
               href: `/app/classes/${id}/attendance`,
             }}
             secondaryActions={[
-              // Status first so Pausar/Concluir never sit next to Presença
+              // Primary tools stay visible: status + Editar
               ...(canManageClass
                 ? statusOpts
                     .filter((s) => s.status !== cls.status)
@@ -736,6 +735,16 @@ export default function ClassDetailPage() {
                       disabled: busyAction === "status",
                     }))
                 : []),
+              ...(canManageClass
+                ? [
+                    {
+                      label: t("detail.edit"),
+                      onClick: () => setEditing(true),
+                    },
+                  ]
+                : []),
+            ]}
+            menuActions={[
               {
                 label: t("detail.tabs.meetings"),
                 href: `/app/classes/${id}/meetings`,
@@ -751,10 +760,6 @@ export default function ClassDetailPage() {
               },
               ...(canManageClass
                 ? [
-                    {
-                      label: t("detail.edit"),
-                      onClick: () => setEditing(true),
-                    },
                     {
                       label:
                         busyAction === "duplicate"
@@ -798,37 +803,6 @@ export default function ClassDetailPage() {
         {canManageClass && (
           <div className="flex flex-wrap gap-2 print:hidden">
             <SendAnnouncementButton classId={id!} className={cls.name} />
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-10 min-h-10 sm:h-9 sm:min-h-9"
-              onClick={handleExportRosterCsv}
-            >
-              <Download className="mr-1 h-3.5 w-3.5" />
-              {t("export_roster_csv")}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-10 min-h-10 sm:h-9 sm:min-h-9"
-              disabled={busyAction === "export-attendance"}
-              onClick={handleExportAttendanceCsv}
-            >
-              <Download className="mr-1 h-3.5 w-3.5" />
-              {t("export_attendance_csv")}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-10 min-h-10 sm:h-9 sm:min-h-9"
-              onClick={() => window.print()}
-            >
-              <Printer className="mr-1 h-3.5 w-3.5" />
-              {t("print")}
-            </Button>
           </div>
         )}
 
