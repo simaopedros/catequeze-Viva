@@ -1,3 +1,4 @@
+import { validateOrThrow, updateMeetingSchema } from "../validation";
 import { HttpError, prisma } from "wasp/server";
 import { AttendanceStatus, MembershipStatus } from "@prisma/client";
 import { logger } from "../logger";
@@ -995,32 +996,33 @@ export function isAllowedMeetingStatusTransition(
 
 export const updateMeeting = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
+  const parsed = validateOrThrow(updateMeetingSchema, args);
 
   const meeting = await context.entities.Meeting.findUnique({
-    where: { id: args.id },
+    where: { id: parsed.id },
     select: { classId: true, status: true },
   });
   if (!meeting) throw new HttpError(404, "Encontro não encontrado.");
 
-  await assertCanTakeAttendance(context, meeting.classId, args.surface);
+  await assertCanTakeAttendance(context, meeting.classId, parsed.surface);
 
-  if (args.status !== undefined && args.status !== meeting.status) {
-    if (!isAllowedMeetingStatusTransition(meeting.status, args.status)) {
+  if (parsed.status !== undefined && parsed.status !== meeting.status) {
+    if (!isAllowedMeetingStatusTransition(meeting.status, parsed.status)) {
       throw new HttpError(
         400,
-        `Transição de status inválida: ${meeting.status} → ${args.status}.`,
+        `Transição de status inválida: ${meeting.status} → ${parsed.status}.`,
       );
     }
   }
 
   // Validate contentId belongs to the same parish if provided
-  if (args.contentId) {
+  if (parsed.contentId) {
     const classData = await context.entities.CatechesisClass.findUnique({
       where: { id: meeting.classId },
       select: { parishId: true },
     });
     const content = await context.entities.ContentItem.findUnique({
-      where: { id: args.contentId },
+      where: { id: parsed.contentId },
       select: { parishId: true },
     });
     if (!content || content.parishId !== classData?.parishId) {
@@ -1031,9 +1033,11 @@ export const updateMeeting = async (args: any, context: any) => {
     }
   }
 
-  // Unlink content by passing null contentId — handled by the spread below
-
-  const { id, ...data } = args;
+  const { id } = parsed;
+  const data: Record<string, any> = {};
+  for (const key of ["title", "theme", "date", "notes", "contentId", "status"] as const) {
+    if (Object.prototype.hasOwnProperty.call(parsed, key)) data[key] = parsed[key];
+  }
 
   // Convert date string to Date object if present
   if (data.date) {

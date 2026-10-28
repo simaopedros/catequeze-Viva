@@ -607,11 +607,11 @@ export const getClassDetails = async (args: { id: string }, context: any) => {
 };
 
 export const updateClass = async (args: any, context: any) => {
-  validateOrThrow(updateClassSchema, args);
+  const parsed = validateOrThrow(updateClassSchema, args);
   if (!context.user) throw new HttpError(401);
 
   const classData = await context.entities.CatechesisClass.findUnique({
-    where: { id: args.id },
+    where: { id: parsed.id },
     select: { parishId: true },
   });
   if (!classData) throw new HttpError(404, "Turma não encontrada.");
@@ -623,7 +623,7 @@ export const updateClass = async (args: any, context: any) => {
       const isLeadCatechist = await context.entities.ClassCatechist.findFirst({
         where: {
           userId: context.user.id,
-          classId: args.id,
+          classId: parsed.id,
           role: CatechistAssignmentRole.LEAD,
         },
       });
@@ -634,11 +634,18 @@ export const updateClass = async (args: any, context: any) => {
         );
       }
     } else {
-      await assertCoordinatorClassScope(context, classData.parishId, args.id);
+      await assertCoordinatorClassScope(context, classData.parishId, parsed.id);
     }
   }
 
-  const { id, parishId: _ignoredParishId, ...data } = args;
+  const { id } = parsed;
+  const data: Record<string, any> = {};
+  for (const key of [
+    "name", "communityId", "stageId", "sacramentId", "yearId",
+    "dayOfWeek", "startTime", "endTime", "location", "maxCapacity", "status",
+  ] as const) {
+    if (Object.prototype.hasOwnProperty.call(parsed, key)) data[key] = parsed[key];
+  }
 
   // Blank schedule fields clear to null so a no-op edit cannot invent defaults.
   if ("dayOfWeek" in data) data.dayOfWeek = data.dayOfWeek || null;
