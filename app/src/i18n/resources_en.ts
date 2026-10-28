@@ -7239,7 +7239,12 @@ export const sacraments_en = {
       "error_update_milestone": "Error updating milestone",
       "error_copy": "Error copying template",
       "error_publish": "Error publishing",
-      "error_restart": "Restart the Wasp server."
+      "error_restart": "Restart the Wasp server.",
+      "aria_edit": "Edit template",
+      "aria_copy": "Duplicate template",
+      "aria_publish": "Publish template",
+      "aria_expand": "Show milestones",
+      "aria_collapse": "Hide milestones"
     }
   } as const;
 
@@ -7458,6 +7463,7 @@ export const topbar_en = {
     "searchNavigate": "navigate",
     "searchOpen": "open",
     "searchFocusHint": "Ctrl+K to focus",
+    "searchTypeHint": "Type at least 3 letters to search",
     "notifications": "Notifications",
     "markAllRead": "Mark all as read",
     "noNotifications": "No notifications",

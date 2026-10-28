@@ -125,12 +125,13 @@ export default function DirectoryPage() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          className="flex-1 h-9 rounded-sm border border-input bg-background px-3 text-sm"
+          className="h-11 min-h-11 flex-1 rounded-sm border border-input bg-background px-3 text-sm md:h-9 md:min-h-0"
           placeholder={t("directory.searchPlaceholder")}
           aria-label={t("directory.searchPlaceholder")}
         />
         <Button
           size="sm"
+          className="min-h-11 md:min-h-9"
           onClick={handleSearch}
           disabled={loading || searchQuery.length < 2}
         >
@@ -152,7 +153,7 @@ export default function DirectoryPage() {
                   setSearchQuery(topic);
                   handleSearch();
                 }}
-                className="rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-brand-ink/30 hover:text-brand-ink"
+                className="inline-flex min-h-11 items-center rounded-sm border border-border/70 bg-muted/30 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-brand-ink/30 hover:text-brand-ink md:min-h-0"
               >
                 {topic}
               </button>
@@ -168,7 +169,7 @@ export default function DirectoryPage() {
               key={key}
               onClick={() => loadPart(key)}
               className={
-                "px-3 py-1.5 text-sm rounded-sm transition-colors " +
+                "inline-flex min-h-11 items-center rounded-sm px-3 py-1.5 text-sm transition-colors md:min-h-8 " +
                 (part === key
                   ? "bg-brand-ink text-white"
                   : "bg-muted hover:bg-muted/70")

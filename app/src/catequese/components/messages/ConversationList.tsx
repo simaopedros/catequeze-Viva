@@ -207,22 +207,28 @@ export function ConversationList({
           />
         </div>
 
-        <div className="flex gap-1 overflow-x-auto pb-0.5 scrollbar-none">
-          {FILTER_OPTIONS.map((opt) => (
-            <button
-              type="button"
-              key={opt.value}
-              onClick={() => setFilter(opt.value)}
-              className={cn(
-                "min-h-9 whitespace-nowrap rounded-sm px-2.5 py-1.5 text-overline font-medium transition-colors",
-                filter === opt.value
-                  ? "bg-brand-ink text-white"
-                  : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-brand-ink",
-              )}
-            >
-              {opt.label}
-            </button>
-          ))}
+        <div className="relative min-w-0">
+          <div className="flex gap-1 overflow-x-auto pb-0.5 pr-8 scrollbar-none">
+            {FILTER_OPTIONS.map((opt) => (
+              <button
+                type="button"
+                key={opt.value}
+                onClick={() => setFilter(opt.value)}
+                className={cn(
+                  "min-h-11 shrink-0 whitespace-nowrap rounded-sm px-2.5 py-1.5 text-overline font-medium transition-colors md:min-h-9",
+                  filter === opt.value
+                    ? "bg-brand-ink text-white"
+                    : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-brand-ink",
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          <div
+            className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-surface-elevated to-transparent md:hidden"
+            aria-hidden
+          />
         </div>
       </div>
 

@@ -151,7 +151,7 @@ export function MobileSearchDialog({
         >
           {query.length < 3 ? (
             <p className="py-12 text-center text-sm text-muted-foreground">
-              {t("searchFocusHint")}
+              {t("searchTypeHint")}
             </p>
           ) : !isLoading && flatResults.length === 0 ? (
             <p className="py-12 text-center text-sm text-muted-foreground">

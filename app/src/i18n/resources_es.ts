@@ -7239,7 +7239,12 @@ export const sacraments_es = {
       "error_update_milestone": "Error al actualizar hito",
       "error_copy": "Error al copiar modelo",
       "error_publish": "Error al publicar",
-      "error_restart": "Reinicie el servidor Wasp."
+      "error_restart": "Reinicie el servidor Wasp.",
+      "aria_edit": "Editar modelo",
+      "aria_copy": "Duplicar modelo",
+      "aria_publish": "Publicar modelo",
+      "aria_expand": "Ver hitos",
+      "aria_collapse": "Ocultar hitos"
     }
   } as const;
 
@@ -7458,6 +7463,7 @@ export const topbar_es = {
     "searchNavigate": "navegar",
     "searchOpen": "abrir",
     "searchFocusHint": "Ctrl+K para enfocar",
+    "searchTypeHint": "Escriba al menos 3 letras para buscar",
     "notifications": "Notificaciones",
     "markAllRead": "Marcar todas como leídas",
     "noNotifications": "Sin notificaciones",
