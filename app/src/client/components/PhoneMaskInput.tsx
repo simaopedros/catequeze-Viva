@@ -1,4 +1,9 @@
 import { useCallback } from "react";
+import {
+  formatBrazilianPhone,
+  formatInternationalPhone,
+  isInternationalPhoneInput,
+} from "../../shared/phoneFormat";
 
 interface PhoneMaskInputProps
   extends Omit<
@@ -6,15 +11,13 @@ interface PhoneMaskInputProps
     "value" | "onChange" | "type" | "maxLength"
   > {
   value: string;
-  /** Receives the masked value, not the raw digits. */
+  /** Receives the masked (or international) value, not only raw digits. */
   onChange: (value: string) => void;
 }
 
 /**
- * Input with automatic Brazilian phone mask.
- * Detects mobile (11 digits) vs landline (10 digits).
- * Format: (00) 00000-0000 (mobile) or (00) 0000-0000 (landline).
- * Pure React — no external dependencies, React 19 compatible.
+ * Phone input: Brazilian mask by default; if the value starts with +, keep
+ * international E.164-style input without forcing BR formatting.
  */
 export default function PhoneMaskInput({
   value,
@@ -24,29 +27,20 @@ export default function PhoneMaskInput({
   className,
   ...props
 }: PhoneMaskInputProps) {
-  const formatPhone = useCallback((raw: string): string => {
-    const digits = raw.replace(/\D/g, "");
-    const len = digits.length;
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const raw = e.target.value;
+      if (isInternationalPhoneInput(raw)) {
+        onChange(formatInternationalPhone(raw));
+        return;
+      }
+      const digits = raw.replace(/\D/g, "");
+      onChange(formatBrazilianPhone(digits));
+    },
+    [onChange],
+  );
 
-    if (len <= 2) return digits;
-    if (len <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-    if (len <= 10)
-      return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
-    // 11 digits (mobile)
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(
-      7,
-      11,
-    )}`;
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value;
-    const digits = raw.replace(/\D/g, "");
-    // Limit to 11 digits
-    const limited = digits.slice(0, 11);
-    const formatted = formatPhone(limited);
-    onChange(formatted);
-  };
+  const international = isInternationalPhoneInput(value);
 
   return (
     <input
@@ -54,9 +48,10 @@ export default function PhoneMaskInput({
       value={value}
       onChange={handleChange}
       disabled={disabled}
-      placeholder={placeholder}
+      placeholder={international ? "+351 912 345 678" : placeholder}
       className={className}
-      maxLength={15}
+      maxLength={international ? 20 : 15}
+      inputMode="tel"
       {...props}
     />
   );

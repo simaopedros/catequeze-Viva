@@ -1317,6 +1317,7 @@ export const auth_pt_BR = {
     "two_factor_gate_error_invalid": "Código inválido.",
     "two_factor_setup_security_title": "Segurança",
     "two_factor_setup_loading": "Carregando...",
+    "two_factor_setup_load_error": "Não foi possível carregar a segurança. Tente de novo.",
     "two_factor_setup_active": "Ativado",
     "two_factor_setup_inactive": "Desativado",
     "two_factor_setup_admin_required": "Como administrador, a autenticação de dois fatores é obrigatória para sua conta.",
@@ -2843,6 +2844,24 @@ export const common_pt_BR = {
         "success": "Matrícula feita",
         "error": "Não foi possível matricular",
         "no_classes": "Não há outra turma ativa disponível. Crie uma turma primeiro."
+      },
+      "transfer": {
+        "open": "Trocar de turma",
+        "title": "Trocar de turma",
+        "desc": "Escolha a nova turma de {{name}}. A matrícula atual será encerrada.",
+        "label": "Nova turma",
+        "placeholder": "Selecione a turma",
+        "submit": "Trocar",
+        "success": "Turma atualizada",
+        "error": "Não foi possível trocar de turma",
+        "no_classes": "Não há outra turma disponível para trocar."
+      },
+      "remove_from_class": {
+        "open": "Remover da turma",
+        "confirm_title": "Remover da turma",
+        "confirm_desc": "A matrícula será encerrada. O catequizando continua na lista e pode ser matriculado de novo depois.",
+        "success": "Removido da turma",
+        "error": "Não foi possível remover da turma"
       },
       "certificate": {
         "open": "Gerar declaração",
@@ -7457,7 +7476,7 @@ export const topbar_pt_BR = {
     "notifications": "Notificações",
     "markAllRead": "Marcar todas como lidas",
     "noNotifications": "Nenhuma notificação",
-    "personalSpace": "Espaço pessoal",
+    "personalSpace": "Meu Espaço Pessoal",
     "workspaceGroups": {
       "personal": "Pessoal",
       "parish": "Paróquias",

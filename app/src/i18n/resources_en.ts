@@ -1317,6 +1317,7 @@ export const auth_en = {
     "two_factor_gate_error_invalid": "Invalid code.",
     "two_factor_setup_security_title": "Security",
     "two_factor_setup_loading": "Loading...",
+    "two_factor_setup_load_error": "Could not load security settings. Try again.",
     "two_factor_setup_active": "Active",
     "two_factor_setup_inactive": "Inactive",
     "two_factor_setup_admin_required": "As an administrator, two-factor authentication is mandatory for your account.",
@@ -2930,6 +2931,24 @@ export const common_en = {
         "success": "Enrolled",
         "error": "Could not enroll",
         "no_classes": "There is no other active class available. Create a class first."
+      },
+      "transfer": {
+        "open": "Change class",
+        "title": "Change class",
+        "desc": "Choose the new class for {{name}}. The current enrollment will be closed.",
+        "label": "New class",
+        "placeholder": "Select a class",
+        "submit": "Change",
+        "success": "Class updated",
+        "error": "Could not change class",
+        "no_classes": "There is no other class available to switch to."
+      },
+      "remove_from_class": {
+        "open": "Remove from class",
+        "confirm_title": "Remove from class",
+        "confirm_desc": "The enrollment will be closed. The catechumen stays in the list and can be enrolled again later.",
+        "success": "Removed from class",
+        "error": "Could not remove from class"
       },
       "certificate": {
         "open": "Generate letter",
@@ -7457,7 +7476,7 @@ export const topbar_en = {
     "notifications": "Notifications",
     "markAllRead": "Mark all as read",
     "noNotifications": "No notifications",
-    "personalSpace": "Personal space",
+    "personalSpace": "My Personal Space",
     "workspaceGroups": {
       "personal": "Personal",
       "parish": "Parishes",

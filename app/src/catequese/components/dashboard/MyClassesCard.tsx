@@ -106,7 +106,7 @@ function SingleClass({ cls }: { cls: ClassInsight }) {
                 </span>{" "}
                 <span className="text-muted-foreground">
                   {t("of_registered", {
-                    total: last.registeredCount || last.enrollmentCount,
+                    total: last.enrollmentCount || last.registeredCount,
                   })}
                 </span>
               </Link>

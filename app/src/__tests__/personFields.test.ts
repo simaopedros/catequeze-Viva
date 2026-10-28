@@ -24,6 +24,11 @@ describe("personFields", () => {
     expect(isPhoneAllowed("(11) 98888-7777")).toBe(true);
     expect(isPhoneAllowed("")).toBe(true);
   });
+
+  it("accepts international numbers with country code", () => {
+    expect(isPhoneAllowed("+351 912 345 678")).toBe(true);
+    expect(isPhoneAllowed("+1 202 555 0123")).toBe(true);
+  });
 });
 
 describe("create schemas", () => {

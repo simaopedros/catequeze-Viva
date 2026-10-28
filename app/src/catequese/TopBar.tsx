@@ -420,7 +420,10 @@ export const TopBar = memo(function TopBar() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
+              side="bottom"
               align="end"
+              sideOffset={6}
+              collisionPadding={12}
               className="w-[min(20rem,calc(100vw-1rem))] p-0"
             >
               <div className="flex items-center justify-between px-3 py-2 border-b">

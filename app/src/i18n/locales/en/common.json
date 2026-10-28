@@ -534,6 +534,24 @@
       "error": "Could not enroll",
       "no_classes": "There is no other active class available. Create a class first."
     },
+    "transfer": {
+      "open": "Change class",
+      "title": "Change class",
+      "desc": "Choose the new class for {{name}}. The current enrollment will be closed.",
+      "label": "New class",
+      "placeholder": "Select a class",
+      "submit": "Change",
+      "success": "Class updated",
+      "error": "Could not change class",
+      "no_classes": "There is no other class available to switch to."
+    },
+    "remove_from_class": {
+      "open": "Remove from class",
+      "confirm_title": "Remove from class",
+      "confirm_desc": "The enrollment will be closed. The catechumen stays in the list and can be enrolled again later.",
+      "success": "Removed from class",
+      "error": "Could not remove from class"
+    },
     "certificate": {
       "open": "Generate letter",
       "dialog_title": "Generate a letter or certificate",

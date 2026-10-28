@@ -447,6 +447,24 @@
       "error": "No se pudo inscribir",
       "no_classes": "No hay otro grupo activo disponible. Cree un grupo primero."
     },
+    "transfer": {
+      "open": "Cambiar de grupo",
+      "title": "Cambiar de grupo",
+      "desc": "Elija el nuevo grupo de {{name}}. La inscripción actual se cerrará.",
+      "label": "Nuevo grupo",
+      "placeholder": "Seleccione el grupo",
+      "submit": "Cambiar",
+      "success": "Grupo actualizado",
+      "error": "No se pudo cambiar de grupo",
+      "no_classes": "No hay otro grupo disponible para cambiar."
+    },
+    "remove_from_class": {
+      "open": "Quitar del grupo",
+      "confirm_title": "Quitar del grupo",
+      "confirm_desc": "La inscripción se cerrará. El catecúmeno sigue en la lista y puede inscribirse de nuevo después.",
+      "success": "Quitado del grupo",
+      "error": "No se pudo quitar del grupo"
+    },
     "certificate": {
       "open": "Generar constancia",
       "dialog_title": "Generar constancia o certificado",

@@ -825,9 +825,36 @@ export const getParishTeam = async (
     pending.map((p: any) => normalizeInviteEmail(p.email)),
   );
 
+  // Prefer real names from existing accounts when the invite email already
+  // belongs to a user (avoid showing only the raw email).
+  const pendingEmailList = [...pendingEmails];
+  const usersByEmail = new Map<string, { firstName: string | null; lastName: string | null }>();
+  if (pendingEmailList.length > 0) {
+    const existingUsers = await context.entities.User.findMany({
+      where: { email: { in: pendingEmailList } },
+      select: { email: true, firstName: true, lastName: true },
+    });
+    for (const u of existingUsers) {
+      if (u.email) usersByEmail.set(normalizeInviteEmail(u.email), u);
+    }
+  }
+
+  const personDisplayName = (person: {
+    firstName?: string | null;
+    lastName?: string | null;
+    email?: string | null;
+  }) => {
+    const name = [person.firstName, person.lastName]
+      .map((p) => p?.trim())
+      .filter(Boolean)
+      .join(' ');
+    return name || person.email || '';
+  };
+
   const invitations = [
     ...pending.map((p: any) => {
       const expired = p.expiresAt && new Date(p.expiresAt).getTime() < now;
+      const known = usersByEmail.get(normalizeInviteEmail(p.email));
       return {
         id: p.id,
         kind: 'pending' as const,
@@ -845,7 +872,9 @@ export const getParishTeam = async (
             }
           : null,
         inviteUrl: p.token ? inviteUrlForRole(p.role, p.token) : null,
-        displayName: p.email,
+        displayName: known
+          ? personDisplayName({ ...known, email: p.email })
+          : p.email,
       };
     }),
     ...legacyInvited
@@ -858,9 +887,6 @@ export const getParishTeam = async (
           m.inviteTokenExpiresAt &&
           new Date(m.inviteTokenExpiresAt).getTime() < now;
         const email = m.user?.email || '';
-        const name = [m.user?.firstName, m.user?.lastName]
-          .filter(Boolean)
-          .join(' ');
         return {
           id: m.id,
           kind: 'membership' as const,
@@ -874,7 +900,11 @@ export const getParishTeam = async (
           inviteUrl: m.inviteToken
             ? inviteUrlForRole(m.role, m.inviteToken)
             : null,
-          displayName: name || email,
+          displayName: personDisplayName({
+            firstName: m.user?.firstName,
+            lastName: m.user?.lastName,
+            email,
+          }),
         };
       }),
   ].sort(
