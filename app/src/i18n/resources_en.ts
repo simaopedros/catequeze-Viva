@@ -5752,9 +5752,9 @@ export const meetings_en = {
     "generate_ai_activity": "Generate activity with assistance",
     "generate_whatsapp": "Generate WhatsApp",
     "delete_confirm_title": "Remove meeting?",
-    "delete_confirm_desc": "This action cannot be undone. Attendance records will be removed.",
+    "delete_confirm_desc": "The meeting and attendance will go to trash for 30 days and can be restored during that time.",
     "delete_error": "Error removing meeting.",
-    "delete_success": "Meeting removed.",
+    "delete_success": "Meeting moved to trash.",
     "search_content": "Search content...",
     "detail_eyebrow": "Meeting",
     "detail_not_found": "Meeting not found",
@@ -5840,7 +5840,13 @@ export const meetings_en = {
       "next_label": "Next meeting",
       "empty_mobile": "No meeting scheduled."
     },
-    "delete_confirm_button": "Delete meeting"
+    "delete_confirm_button": "Delete meeting",
+    "trash_title": "Meeting trash (30 days)",
+    "trash_empty": "No meetings in trash.",
+    "trash_expires": "Expires on {{date}}",
+    "restore": "Restore",
+    "restore_success": "Meeting restored.",
+    "restore_error": "Unable to restore: {{message}}"
   } as const;
 
 export const messages_en = {
