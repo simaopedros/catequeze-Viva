@@ -1300,7 +1300,7 @@ export const transferEnrollment = async (
             ]),
           );
           const transactionalContext = { ...context, entities };
-          const classes = [];
+          const classes: any[] = [];
           for (const id of [args.fromClassId, args.toClassId]) {
             const classData = await entities.CatechesisClass.findUnique({
               where: { id },
