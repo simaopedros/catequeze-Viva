@@ -143,6 +143,8 @@ export default function CustomSignupForm({
         password,
         username: email,
         isAdmin: false,
+        // Ignorado pelo servidor (userSignupFields define true); exigido apenas pelo tipo do SDK.
+        termsAcceptanceRequired: true,
       });
       // Email verification may leave the new account unauthenticated.
       // The first authenticated access requires the same explicit acceptance.
