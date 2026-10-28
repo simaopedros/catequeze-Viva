@@ -86,3 +86,6 @@ export const useQuery = vi.fn((_query?: unknown) => ({
   refetch: vi.fn(),
 }));
 export const useAction = (fn: unknown) => fn;
+
+export const listHouseholds = vi.fn();
+export const listCommunities = vi.fn();

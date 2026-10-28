@@ -1,4 +1,5 @@
 import { HttpError } from 'wasp/server';
+import { canCreateHousehold } from '../../shared/householdPermissions';
 import { requireWorkspaceAccess } from './sharedScope';
 import {
   emptyPage,
@@ -262,7 +263,7 @@ export const createHousehold = async (
 
   if (parishId && !context.user.isAdmin) {
     const access = await requireWorkspaceAccess(context, parishId);
-    if (!access.isCoordinatorOrAbove && !access.isCatechist && access.role !== 'PERSONAL_OWNER') {
+    if (!canCreateHousehold(access.role)) {
       throw new HttpError(403, 'Apenas coordenadores e catequistas podem criar famílias neste workspace.');
     }
   }

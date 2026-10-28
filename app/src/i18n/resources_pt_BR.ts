@@ -2525,6 +2525,8 @@ export const common_pt_BR = {
     "pending_review": "Em revisão",
     "no_pending_review": "Nenhum conteúdo pendente de revisão.",
     "empty_search": "Nenhuma encontrada",
+    "families_new_button": "Nova família",
+    "families_create_permission_hint": "Peça a um coordenador",
     "no_family": "Nenhuma família",
     "no_catechumens": "Nenhum catequizando",
     "no_parishes": "Nenhuma paróquia",

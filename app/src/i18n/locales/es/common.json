@@ -87,6 +87,8 @@
   "pending_review": "En revisión",
   "no_pending_review": "Sin contenido pendiente de revisión.",
   "empty_search": "Ninguna encontrada",
+  "families_new_button": "Nueva familia",
+  "families_create_permission_hint": "Pide ayuda a un coordinador",
   "no_family": "Sin familias",
   "no_catechumens": "Sin catecúmenos",
   "no_parishes": "Sin parroquias",

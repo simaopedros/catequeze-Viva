@@ -35,6 +35,7 @@ import { SkeletonCard } from "../../client/components/Skeletons";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import useDebounce from "../../client/hooks/useDebounce";
+import { canCreateHousehold } from "../../shared/householdPermissions";
 import { FamilyPortalInviteBanner } from "../components/FamilyPortalInviteBanner";
 
 const PAGE_SIZE = 50;
@@ -43,8 +44,11 @@ export default function FamiliesPage() {
   const { t } = useTranslation("common");
   const { t: tn } = useTranslation("navigation");
   const { activeParishId } = useActiveParish();
-  const { userRole } = useUserContext();
-  const canCreateFamily = userRole !== "ASSISTANT_CATECHIST";
+  const { userRole, isAdmin, parishId } = useUserContext();
+  const canCreateFamily = canCreateHousehold(
+    parishId === activeParishId ? userRole : undefined,
+    isAdmin,
+  );
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 400);
   const [communityFilter, setCommunityFilter] = useState("");
@@ -128,10 +132,8 @@ export default function FamiliesPage() {
         subtitle={t("families.subtitle_registered", {
           count: filtered.length,
         })}
-        primaryAction={
-          canCreateFamily
-            ? { label: t("new"), href: "/app/families/new" }
-            : undefined
+        actions={
+          <FamilyCreateAction allowed={canCreateFamily} label={t("families_new_button")} hint={t("families_create_permission_hint")} hintId="family-create-header-hint" />
         }
       />
       <FamilyPortalInviteBanner />
@@ -217,11 +219,7 @@ export default function FamiliesPage() {
             title={t("no_family")}
             description={t("families.empty_desc")}
           >
-            {canCreateFamily && (
-              <Button className="mt-4 h-11" asChild>
-                <Link to="/app/families/new">{t("families.register")}</Link>
-              </Button>
-            )}
+            <FamilyCreateAction allowed={canCreateFamily} label={t("families.register")} hint={t("families_create_permission_hint")} hintId="family-create-empty-hint" />
           </EmptyState>
         )
       ) : (
@@ -304,6 +302,21 @@ export default function FamiliesPage() {
             {t("load_more")}
           </Button>
         </div>
+      )}
+    </div>
+  );
+}
+
+function FamilyCreateAction({ allowed, label, hint, hintId }: { allowed: boolean; label: string; hint: string; hintId: string }) {
+  return (
+    <div className="flex flex-col items-start gap-1">
+      {allowed ? (
+        <Button className="h-11" asChild><Link to="/app/families/new">{label}</Link></Button>
+      ) : (
+        <>
+          <Button className="h-11" disabled aria-describedby={hintId}>{label}</Button>
+          <p id={hintId} className="text-sm text-muted-foreground">{hint}</p>
+        </>
       )}
     </div>
   );
