@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Loader2 } from "lucide-react";
-import { cancelEnrollment, enrollCatechumen } from "wasp/client/operations";
+import { transferEnrollment, enrollCatechumen } from "wasp/client/operations";
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,7 @@ export function EnrollInClassDialog({
   enrolledClassIds,
   onEnrolled,
   mode = "enroll",
-  fromEnrollmentId,
+  fromClassId,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -33,7 +33,7 @@ export function EnrollInClassDialog({
   onEnrolled: () => void;
   /** enroll = new class; transfer = leave current then enroll in another */
   mode?: "enroll" | "transfer";
-  fromEnrollmentId?: string | null;
+  fromClassId?: string | null;
 }) {
   const { t } = useTranslation("common");
   const isTransfer = mode === "transfer";
@@ -48,13 +48,18 @@ export function EnrollInClassDialog({
 
   const submit = async () => {
     if (!classId) return;
-    if (isTransfer && !fromEnrollmentId) return;
+    if (isTransfer && !fromClassId) return;
     setSaving(true);
     try {
-      if (isTransfer && fromEnrollmentId) {
-        await cancelEnrollment({ enrollmentId: fromEnrollmentId });
+      if (isTransfer && fromClassId) {
+        await transferEnrollment({
+          catechumenProfileId: catechumenId,
+          fromClassId,
+          toClassId: classId,
+        });
+      } else {
+        await enrollCatechumen({ classId, catechumenProfileId: catechumenId });
       }
-      await enrollCatechumen({ classId, catechumenProfileId: catechumenId });
       toast({
         title: isTransfer
           ? t("catechumens.transfer.success")

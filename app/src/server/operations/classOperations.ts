@@ -1,4 +1,5 @@
-import { HttpError } from "wasp/server";
+import { startOfAppCalendarDay } from '../../shared/calendarDate';
+import { HttpError, prisma } from "wasp/server";
 import {
   validateOrThrow,
   createClassSchema,
@@ -6,6 +7,7 @@ import {
 } from "../validation";
 import {
   requireClassAccess,
+  assertCanAccessCatechumenProfile,
   getEffectiveParishRole,
   isCoordinatorOrAboveRole,
 } from "../auth/helpers";
@@ -18,6 +20,9 @@ import {
 import {
   assertCanCreateClass,
   assertCanEnrollCatechumen,
+  assertCanRestoreClass,
+  resolveEnrollmentCapacity,
+  assertEnrollmentCapacity,
 } from "./billingEnforcement";
 import { ensurePersonalWorkspace } from "./workspaceOperations";
 import { ensureSacramentalJourneyForCatechumen } from "../sacramentHelpers";
@@ -77,16 +82,9 @@ async function assertCoordinatorClassScope(
   if (access?.isScopedCoordinator) assertClassInScope(access, classId);
 }
 
-/** Start of the current UTC day — meeting dates are stored as midnight UTC. */
-function startOfUtcDay(now: Date = new Date()): Date {
-  return new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-  );
-}
-
 /** Next upcoming meeting for list cards (avoids "Nenhum encontro agendado" when one exists). */
 function classListInclude(now: Date = new Date()) {
-  const dayStart = startOfUtcDay(now);
+  const dayStart = startOfAppCalendarDay(now);
   return {
     parish: { select: { id: true, name: true } },
     community: { select: { id: true, name: true } },
@@ -607,12 +605,12 @@ export const getClassDetails = async (args: { id: string }, context: any) => {
 };
 
 export const updateClass = async (args: any, context: any) => {
-  validateOrThrow(updateClassSchema, args);
+  const parsed = validateOrThrow(updateClassSchema, args);
   if (!context.user) throw new HttpError(401);
 
   const classData = await context.entities.CatechesisClass.findUnique({
-    where: { id: args.id },
-    select: { parishId: true },
+    where: { id: parsed.id },
+    select: { parishId: true, status: true },
   });
   if (!classData) throw new HttpError(404, "Turma não encontrada.");
 
@@ -623,7 +621,7 @@ export const updateClass = async (args: any, context: any) => {
       const isLeadCatechist = await context.entities.ClassCatechist.findFirst({
         where: {
           userId: context.user.id,
-          classId: args.id,
+          classId: parsed.id,
           role: CatechistAssignmentRole.LEAD,
         },
       });
@@ -634,11 +632,23 @@ export const updateClass = async (args: any, context: any) => {
         );
       }
     } else {
-      await assertCoordinatorClassScope(context, classData.parishId, args.id);
+      await assertCoordinatorClassScope(context, classData.parishId, parsed.id);
     }
   }
 
-  const { id, parishId: _ignoredParishId, ...data } = args;
+  if (
+    classData.status === "ARCHIVED" && parsed.status && parsed.status !== "ARCHIVED"
+  ) {
+    await assertCanRestoreClass(context, classData.parishId, parsed.id);
+  }
+  const { id } = parsed;
+  const data: Record<string, any> = {};
+  for (const key of [
+    "name", "communityId", "stageId", "sacramentId", "yearId",
+    "dayOfWeek", "startTime", "endTime", "location", "maxCapacity", "status",
+  ] as const) {
+    if (Object.prototype.hasOwnProperty.call(parsed, key)) data[key] = parsed[key];
+  }
 
   // Blank schedule fields clear to null so a no-op edit cannot invent defaults.
   if ("dayOfWeek" in data) data.dayOfWeek = data.dayOfWeek || null;
@@ -877,18 +887,11 @@ export const removeCatechistFromClass = async (
   });
 };
 
-export const enrollCatechumen = async (
-  args: { classId: string; catechumenProfileId: string },
+async function assertEnrollmentClassAccess(
   context: any,
-) => {
-  if (!context.user) throw new HttpError(401);
-
-  const classData = await context.entities.CatechesisClass.findUnique({
-    where: { id: args.classId },
-    select: { parishId: true, maxCapacity: true, sacramentId: true },
-  });
-  if (!classData) throw new HttpError(404, "Turma não encontrada.");
-
+  classData: any,
+  classId: string,
+) {
   if (!context.user.isAdmin) {
     const role = await getEffectiveParishRole(context, classData.parishId);
     if (!role) {
@@ -896,15 +899,11 @@ export const enrollCatechumen = async (
     }
     if (isCoordinatorOrAbove(role)) {
       // Coordinators (including PERSONAL_OWNER) can enroll in any class in their scope
-      await assertCoordinatorClassScope(
-        context,
-        classData.parishId,
-        args.classId,
-      );
+      await assertCoordinatorClassScope(context, classData.parishId, classId);
     } else if (isCatechist(role)) {
       // Catechists can only enroll in classes they are assigned to
       const assignment = await context.entities.ClassCatechist.findFirst({
-        where: { classId: args.classId, userId: context.user.id },
+        where: { classId: classId, userId: context.user.id },
       });
       if (!assignment) {
         throw new HttpError(
@@ -919,6 +918,42 @@ export const enrollCatechumen = async (
       );
     }
   }
+}
+
+async function assertEnrollmentProfileAccess(
+  context: any,
+  parishId: string,
+  profileId: string,
+) {
+  const profile = await context.entities.CatechumenProfile.findUnique({
+    where: { id: profileId },
+    select: { parishId: true },
+  });
+  if (!profile) throw new HttpError(404, "Catequizando não encontrado.");
+  if (profile.parishId !== parishId) {
+    throw new HttpError(403, "Catequizando não pertence à paróquia da turma.");
+  }
+  await assertCanAccessCatechumenProfile(context, profileId);
+}
+
+export const enrollCatechumen = async (
+  args: { classId: string; catechumenProfileId: string },
+  context: any,
+) => {
+  if (!context.user) throw new HttpError(401);
+
+  const classData = await context.entities.CatechesisClass.findUnique({
+    where: { id: args.classId },
+    select: { parishId: true, maxCapacity: true, sacramentId: true },
+  });
+  if (!classData) throw new HttpError(404, "Turma não encontrada.");
+
+  await assertEnrollmentClassAccess(context, classData, args.classId);
+  await assertEnrollmentProfileAccess(
+    context,
+    classData.parishId,
+    args.catechumenProfileId,
+  );
 
   // Check capacity
   const enrolledCount = await context.entities.ClassEnrollment.count({
@@ -930,7 +965,9 @@ export const enrollCatechumen = async (
 
   // Enforce plan catechumen limits
   if (!context.user.isAdmin) {
-    await assertCanEnrollCatechumen(context, classData.parishId);
+    await assertCanEnrollCatechumen(
+      context, classData.parishId, args.catechumenProfileId,
+    );
   }
 
   const existing = await context.entities.ClassEnrollment.findFirst({
@@ -1044,6 +1081,11 @@ export const bulkEnrollCatechumens = async (
     }
   }
 
+  // Validate the entire request before fetching names or writing enrollments.
+  for (const id of ids) {
+    await assertEnrollmentProfileAccess(context, classData.parishId, id);
+  }
+
   const profiles = await context.entities.CatechumenProfile.findMany({
     where: { id: { in: ids } },
     select: { id: true, firstName: true, lastName: true },
@@ -1083,13 +1125,14 @@ export const bulkEnrollCatechumens = async (
     toEnroll.push(id);
   }
 
+  const planCapacity = context.user.isAdmin
+    ? null
+    : await resolveEnrollmentCapacity(context, classData.parishId);
   let enrolled = 0;
   for (const catechumenProfileId of toEnroll) {
     const name = nameById.get(catechumenProfileId) ?? catechumenProfileId;
     try {
-      if (!context.user.isAdmin) {
-        await assertCanEnrollCatechumen(context, classData.parishId);
-      }
+      if (planCapacity) assertEnrollmentCapacity(planCapacity, catechumenProfileId);
       await context.entities.ClassEnrollment.create({
         data: {
           classId: args.classId,
@@ -1097,6 +1140,7 @@ export const bulkEnrollCatechumens = async (
           status: EnrollmentStatus.ENROLLED,
         },
       });
+      planCapacity?.people.add(catechumenProfileId);
       enrolled++;
       enrolledCount++;
       if (classData.sacramentId) {
@@ -1153,10 +1197,7 @@ export const archiveClass = async (args: { id: string }, context: any) => {
 };
 
 /** Soft-duplicate: new class with schedule/location, no enrollments or meetings. */
-export const duplicateClass = async (
-  args: { id: string },
-  context: any,
-) => {
+export const duplicateClass = async (args: { id: string }, context: any) => {
   if (!context.user) throw new HttpError(401);
   if (!args.id?.trim()) throw new HttpError(400, "id é obrigatório.");
 
@@ -1198,6 +1239,16 @@ export const duplicateClass = async (
       );
     }
     await assertCoordinatorClassScope(context, source.parishId, source.id);
+    const assignment = await context.entities.ClassCatechist.findFirst({
+      where: { classId: source.id, userId: context.user.id },
+      select: { userId: true },
+    });
+    requireClassAccess(
+      context.user,
+      { role, status: "ACTIVE" },
+      assignment ? [assignment] : [],
+      source.parishId,
+    );
     await assertCanCreateClass(context, source.parishId);
   }
 
@@ -1220,10 +1271,7 @@ export const duplicateClass = async (
   });
 
   if (!context.user.isAdmin) {
-    const creatorRole = await getEffectiveParishRole(
-      context,
-      source.parishId,
-    );
+    const creatorRole = await getEffectiveParishRole(context, source.parishId);
     if (
       creatorRole &&
       (isCatechist(creatorRole) || creatorRole === "PERSONAL_OWNER")
@@ -1239,6 +1287,124 @@ export const duplicateClass = async (
   }
 
   return newClass;
+};
+
+/** Serializable retries ensure simultaneous transfers cannot both take the last seat. */
+export const transferEnrollment = async (
+  args: { catechumenProfileId: string; fromClassId: string; toClassId: string },
+  context: any,
+) => {
+  if (!context.user) throw new HttpError(401);
+  if (args.fromClassId === args.toClassId) {
+    throw new HttpError(
+      400,
+      "Selecione uma turma de destino diferente da origem.",
+    );
+  }
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await prisma.$transaction(
+        async (tx: any) => {
+          // All helpers, including billing enforcement, must use this transaction.
+          const entities = Object.fromEntries(
+            Object.keys(context.entities).map((name) => [
+              name,
+              tx[name[0].toLowerCase() + name.slice(1)],
+            ]),
+          );
+          const transactionalContext = { ...context, entities };
+          const classes: any[] = [];
+          for (const id of [args.fromClassId, args.toClassId]) {
+            const classData = await entities.CatechesisClass.findUnique({
+              where: { id },
+              select: { parishId: true, maxCapacity: true, sacramentId: true },
+            });
+            if (!classData) throw new HttpError(404, "Turma não encontrada.");
+            await assertEnrollmentClassAccess(
+              transactionalContext,
+              classData,
+              id,
+            );
+            await assertEnrollmentProfileAccess(
+              transactionalContext,
+              classData.parishId,
+              args.catechumenProfileId,
+            );
+            classes.push(classData);
+          }
+          const destination = classes[1];
+          const source = await entities.ClassEnrollment.findFirst({
+            where: {
+              classId: args.fromClassId,
+              catechumenProfileId: args.catechumenProfileId,
+              status: EnrollmentStatus.ENROLLED,
+            },
+          });
+          if (!source)
+            throw new HttpError(
+              400,
+              "Matrícula ativa na origem não encontrada.",
+            );
+          const existing = await entities.ClassEnrollment.findFirst({
+            where: {
+              classId: args.toClassId,
+              catechumenProfileId: args.catechumenProfileId,
+            },
+          });
+          if (existing?.status === EnrollmentStatus.ENROLLED)
+            throw new HttpError(400, "Já está inscrito.");
+          const count = await entities.ClassEnrollment.count({
+            where: {
+              classId: args.toClassId,
+              status: EnrollmentStatus.ENROLLED,
+            },
+          });
+          if (destination.maxCapacity && count >= destination.maxCapacity) {
+            throw new HttpError(
+              400,
+              "Turma lotada. Capacidade máxima atingida.",
+            );
+          }
+          await entities.ClassEnrollment.update({
+            where: { id: source.id },
+            data: { status: EnrollmentStatus.DROPPED, endedAt: new Date() },
+          });
+          // Count the destination plan after removing the source, exactly as the old flow did.
+          // A failure here rolls back the source update as well.
+          if (!context.user.isAdmin)
+            await assertCanEnrollCatechumen(
+              transactionalContext,
+              destination.parishId,
+              source.catechumenProfileId,
+            );
+          const enrollment = existing
+            ? await entities.ClassEnrollment.update({
+                where: { id: existing.id },
+                data: { status: EnrollmentStatus.ENROLLED },
+              })
+            : await entities.ClassEnrollment.create({
+                data: {
+                  classId: args.toClassId,
+                  catechumenProfileId: args.catechumenProfileId,
+                  status: EnrollmentStatus.ENROLLED,
+                },
+              });
+          if (!existing && destination.sacramentId) {
+            await ensureSacramentalJourneyForCatechumen(
+              args.catechumenProfileId,
+              destination.sacramentId,
+              destination.parishId,
+              transactionalContext,
+            );
+          }
+          return enrollment;
+        },
+        { isolationLevel: "Serializable" },
+      );
+    } catch (error: any) {
+      if (error?.code !== "P2034" || attempt >= 2) throw error;
+    }
+  }
 };
 
 export const cancelEnrollment = async (

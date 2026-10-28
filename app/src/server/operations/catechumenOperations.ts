@@ -1,3 +1,4 @@
+import { catechumenPublicSelect } from "./catechumenDto";
 import { HttpError, prisma } from "wasp/server";
 import { MembershipStatus, CatechistAssignmentRole } from "@prisma/client";
 import {
@@ -102,17 +103,7 @@ export const listCatechumens = async (
   ];
   // Explicit select: never return uploadToken / uploadTokenExpires to clients.
   const select = {
-    id: true,
-    createdAt: true,
-    updatedAt: true,
-    firstName: true,
-    lastName: true,
-    email: true,
-    birthDate: true,
-    photoUrl: true,
-    userId: true,
-    householdId: true,
-    parishId: true,
+    ...catechumenPublicSelect,
     parish: { select: { id: true, name: true } },
     household: { select: { id: true, name: true, parishId: true } },
     enrollments: {
@@ -258,17 +249,7 @@ export const getCatechumenProfile = async (
   const profile = await context.entities.CatechumenProfile.findUnique({
     where: { id: args.id },
     select: {
-      id: true,
-      createdAt: true,
-      updatedAt: true,
-      firstName: true,
-      lastName: true,
-      email: true,
-      birthDate: true,
-      photoUrl: true,
-      userId: true,
-      householdId: true,
-      parishId: true,
+      ...catechumenPublicSelect,
       // uploadToken / uploadTokenExpires intentionally omitted — staff of a
       // linked household parish must never receive them via this query.
       parish: { select: { id: true, name: true } },
@@ -327,49 +308,13 @@ export const getCatechumenProfile = async (
 export const createCatechumen = async (args: any, context: any) => {
   if (!context.user) throw new HttpError(401);
 
-  let parishId: string | null = null;
-
-  if (!context.user.isAdmin) {
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
-      select: { role: true, parishId: true },
-    });
-
-    if (
-      membership &&
-      (isCoordinatorOrAbove(membership.role) || isCatechist(membership.role))
-    ) {
-      parishId = membership.parishId;
-    } else {
-      // Try personal workspace
-      const personal = await context.entities.Parish.findFirst({
-        where: { ownerId: context.user.id, type: "PERSONAL" },
-        select: { id: true },
-      });
-      if (personal) {
-        parishId = personal.id;
-      } else {
-        throw new HttpError(
-          403,
-          "Apenas coordenadores e catequistas podem criar catequizandos.",
-        );
-      }
-    }
-  } else {
-    // Admin: use first active membership parish, or personal workspace, or null
-    const membership = await context.entities.Membership.findFirst({
-      where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
-      select: { parishId: true },
-      orderBy: { createdAt: "asc" },
-    });
-    parishId = membership?.parishId || null;
-    if (!parishId) {
-      const personal = await context.entities.Parish.findFirst({
-        where: { ownerId: context.user.id, type: "PERSONAL" },
-        select: { id: true },
-      });
-      if (personal) parishId = personal.id;
-    }
+  const parishId = args.workspaceId?.trim() || args.parishId?.trim();
+  if (!parishId) {
+    throw new HttpError(400, "É necessário especificar uma paróquia para criar o catequizando.");
+  }
+  const access = await requireWorkspaceAccess(context, parishId);
+  if (!context.user.isAdmin && !access.isCoordinatorOrAbove && !access.isCatechist && access.role !== 'PERSONAL_OWNER') {
+    throw new HttpError(403, "Apenas coordenadores e catequistas podem criar catequizandos.");
   }
 
   if (args.householdId) {
@@ -380,12 +325,7 @@ export const createCatechumen = async (args: any, context: any) => {
     if (!household) {
       throw new HttpError(404, "Família não encontrada.");
     }
-    if (
-      !context.user.isAdmin &&
-      household.parishId &&
-      parishId &&
-      household.parishId !== parishId
-    ) {
+    if (household.parishId !== parishId) {
       throw new HttpError(
         403,
         "A família deve pertencer à mesma paróquia do catequizando.",
@@ -418,6 +358,7 @@ export const createCatechumen = async (args: any, context: any) => {
   }
 
   return context.entities.CatechumenProfile.create({
+    select: catechumenPublicSelect,
     data: {
       firstName: args.firstName,
       lastName: args.lastName,
@@ -547,6 +488,7 @@ export const updateCatechumen = async (args: any, context: any) => {
   }
 
   return context.entities.CatechumenProfile.update({
+    select: catechumenPublicSelect,
     where: { id: args.id },
     data,
   });

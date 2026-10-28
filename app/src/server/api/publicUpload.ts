@@ -1,3 +1,4 @@
+import { assertPublicTokenRateLimit, isUploadTokenValid } from '../security/publicUploadToken';
 import type { Request, Response } from 'express';
 import type { MiddlewareConfigFn } from 'wasp/server';
 import { singleDocumentUpload } from './multipart';
@@ -37,6 +38,7 @@ export async function publicUploadDocument(req: Request, res: Response, context:
     if (!token || !type) {
       return res.status(400).json({ error: 'Campos obrigatórios: token, type, file.' });
     }
+    assertPublicTokenRateLimit(token, { req });
     if (!file) {
       return res.status(400).json({ error: 'Ficheiro obrigatório (campo "file").' });
     }
@@ -63,7 +65,7 @@ export async function publicUploadDocument(req: Request, res: Response, context:
     if (!catechumen) {
       return res.status(404).json({ error: 'Link inválido.' });
     }
-    if (catechumen.uploadTokenExpires && new Date(catechumen.uploadTokenExpires) < new Date()) {
+    if (!isUploadTokenValid(catechumen.uploadTokenExpires)) {
       return res.status(410).json({ error: 'Link expirado.' });
     }
 
@@ -74,7 +76,7 @@ export async function publicUploadDocument(req: Request, res: Response, context:
       parishId,
     });
 
-    const doc = await entities.Document.create({
+    await entities.Document.create({
       data: {
         name: TYPE_LABELS[type] || type,
         type,
@@ -84,8 +86,9 @@ export async function publicUploadDocument(req: Request, res: Response, context:
       },
     });
 
-    return res.json({ success: true, document: { id: doc.id, name: doc.name } });
+    return res.json({ success: true });
   } catch (err: any) {
+    if (err?.statusCode === 429) return res.status(429).json({ error: err.message });
     logger.error('Erro no upload público', { error: err?.message || String(err) });
     if (err?.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({ error: 'Ficheiro demasiado grande. Máximo: 10 MB.' });

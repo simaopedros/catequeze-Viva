@@ -1,4 +1,5 @@
 import "./instrument";
+import { AccountTermsGate } from "../auth/AccountTermsGate";
 import "./setupApiUrlProxy";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router";
@@ -389,44 +390,46 @@ export default function App() {
           </button>
         </div>
       )}
-      {isFamilyPortal && location.pathname === "/" ? (
-        <div className="min-h-screen bg-background text-brand-ink">
-          <ErrorBoundary>
-            <Suspense fallback={<RouteFallback />}>
-              <FamilyLandingPage />
-            </Suspense>
-          </ErrorBoundary>
-        </div>
-      ) : (
-        <div className="min-h-screen bg-background text-brand-ink">
-          <ErrorBoundary>
-            {isAppRoute ? (
+      <AccountTermsGate>
+        {isFamilyPortal && location.pathname === "/" ? (
+          <div className="min-h-screen bg-background text-brand-ink">
+            <ErrorBoundary>
               <Suspense fallback={<RouteFallback />}>
-                <AppShell>
-                  <Outlet />
-                </AppShell>
+                <FamilyLandingPage />
               </Suspense>
-            ) : isAdminDashboard ? (
-              <Outlet />
-            ) : (
-              <>
-                {shouldDisplayAppNavBar && !notFoundActive && (
-                  <Suspense fallback={<div className="h-16" aria-hidden />}>
-                    <NavBar navigationItems={navigationItems} />
-                  </Suspense>
-                )}
-                <div className="mx-auto max-w-(--breakpoint-2xl)">
-                  <Suspense
-                    fallback={<RouteFallback className="min-h-[60vh] py-6" />}
-                  >
+            </ErrorBoundary>
+          </div>
+        ) : (
+          <div className="min-h-screen bg-background text-brand-ink">
+            <ErrorBoundary>
+              {isAppRoute ? (
+                <Suspense fallback={<RouteFallback />}>
+                  <AppShell>
                     <Outlet />
-                  </Suspense>
-                </div>
-              </>
-            )}
-          </ErrorBoundary>
-        </div>
-      )}
+                  </AppShell>
+                </Suspense>
+              ) : isAdminDashboard ? (
+                <Outlet />
+              ) : (
+                <>
+                  {shouldDisplayAppNavBar && !notFoundActive && (
+                    <Suspense fallback={<div className="h-16" aria-hidden />}>
+                      <NavBar navigationItems={navigationItems} />
+                    </Suspense>
+                  )}
+                  <div className="mx-auto max-w-(--breakpoint-2xl)">
+                    <Suspense
+                      fallback={<RouteFallback className="min-h-[60vh] py-6" />}
+                    >
+                      <Outlet />
+                    </Suspense>
+                  </div>
+                </>
+              )}
+            </ErrorBoundary>
+          </div>
+        )}
+      </AccountTermsGate>
       <PlatformSessionGuards />
       <GlobalActivityBar />
       <Toaster position="top-right" />

@@ -11,6 +11,7 @@ const emailDataSchema = z.object({
 });
 
 export const getEmailUserFields = defineUserSignupFields({
+  termsAcceptanceRequired: () => true,
   email: (data) => {
     const emailData = emailDataSchema.parse(data);
     return emailData.email;
@@ -83,6 +84,7 @@ const googleDataSchema = z.object({
 });
 
 export const getGoogleUserFields = defineUserSignupFields({
+  termsAcceptanceRequired: () => true,
   email: (data) => {
     const googleData = googleDataSchema.parse(data);
     return googleData.profile.email;

@@ -2,7 +2,6 @@ import { useParams } from "react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
-import { Badge } from "../../client/components/ui/badge";
 import {
   AppDisplayTitle,
   AppEyebrow,
@@ -12,15 +11,6 @@ import { FileText, Upload, CheckCircle, Clock, Loader2 } from "lucide-react";
 import { useQuery, getCatechumenByUploadToken } from "wasp/client/operations";
 import { toast } from "../../client/hooks/use-toast";
 import { uploadPublicDocumentMultipart } from "../../client/utils/documentUpload";
-
-const DOC_TYPES = [
-  "BAPTISM_CERTIFICATE",
-  "BIRTH_CERTIFICATE",
-  "CONSENT_FORM",
-  "MARRIAGE_CERTIFICATE",
-  "PASTORAL_LETTER",
-  "OTHER",
-] as const;
 
 export default function PublicUploadDocsPage() {
   const { t } = useTranslation("public");
@@ -99,7 +89,7 @@ export default function PublicUploadDocsPage() {
           <AppDisplayTitle className="text-2xl sm:text-2xl">
             {t("upload_docs.greeting")}{" "}
             <span className="text-brand-ink">
-              {catechumen.firstName} {catechumen.lastName}
+              {catechumen.firstName}
             </span>
           </AppDisplayTitle>
           <AppGoldRule className="mx-auto" />
@@ -107,54 +97,6 @@ export default function PublicUploadDocsPage() {
             {t("upload_docs.subtitle")}
           </p>
         </div>
-
-        {catechumen.documents?.length > 0 && (
-          <div className="rounded-sm border border-border/70 bg-white p-5">
-            <div className="mb-3 space-y-1.5">
-              <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                {t("upload_docs.existing_title")}
-              </h2>
-              <div className="h-px w-8 bg-brand-gold" aria-hidden />
-            </div>
-            <div className="space-y-2">
-              {catechumen.documents.map((d: any) => (
-                <div
-                  key={d.id}
-                  className="flex items-center justify-between py-2 border-b last:border-0"
-                >
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm font-semibold tracking-tight text-brand-ink">
-                        {d.name}
-                      </p>
-                      <p className="text-overline text-muted-foreground">
-                        {t(`upload_docs.types.${d.type}`, {
-                          defaultValue: d.type,
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                  <Badge
-                    variant={d.verifiedAt ? "default" : "secondary"}
-                    className="text-overline gap-1"
-                  >
-                    {d.verifiedAt ? (
-                      <>
-                        <CheckCircle className="h-3 w-3" />{" "}
-                        {t("upload_docs.verified")}
-                      </>
-                    ) : (
-                      <>
-                        <Clock className="h-3 w-3" /> {t("upload_docs.pending")}
-                      </>
-                    )}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         <div className="rounded-sm border border-border/70 bg-white p-5 space-y-4">
           <div className="space-y-1.5">
@@ -181,7 +123,7 @@ export default function PublicUploadDocsPage() {
               onChange={(e) => setDocType(e.target.value)}
               className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
             >
-              {DOC_TYPES.map((k) => (
+              {catechumen.documentTypes.map((k: string) => (
                 <option key={k} value={k}>
                   {t(`upload_docs.types.${k}`)}
                 </option>

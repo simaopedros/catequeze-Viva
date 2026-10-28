@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
+  transactionMock: vi.fn(),
   constructEventMock: vi.fn(),
   retrieveInvoiceMock: vi.fn(),
   retrieveSubscriptionMock: vi.fn(),
@@ -23,6 +24,7 @@ vi.mock('express', () => {
 });
 
 vi.mock('wasp/server', () => ({
+  prisma: { $transaction: mocks.transactionMock },
   env: {
     STRIPE_WEBHOOK_SECRET: 'whsec_test',
     STRIPE_API_KEY: 'sk_test_123',
@@ -136,6 +138,11 @@ function createTrackedEventDelegate() {
       rows.push(record);
       return record;
     },
+    async updateMany({ where, data }: any) {
+      const matches = rows.filter(row => row.id === where.id && (!where.status || row.status === where.status) && (!where.errorMessage || row.errorMessage === where.errorMessage));
+      matches.forEach(row => Object.assign(row, data));
+      return { count: matches.length };
+    },
     async update({ where, data }: { where: { id: string }; data: any }) {
       const row = rows.find((item) => item.id === where.id);
       Object.assign(row, data);
@@ -189,6 +196,8 @@ function createFunnelEventDelegate() {
 }
 
 function createContext() {
+  const trackedEvent = createTrackedEventDelegate();
+  mocks.transactionMock.mockImplementation(async callback => callback({ user: {}, trackedEvent }));
   return {
     entities: {
       User: {
@@ -200,7 +209,7 @@ function createContext() {
         }),
       },
       UserAiCredits: {},
-      TrackedEvent: createTrackedEventDelegate(),
+      TrackedEvent: trackedEvent,
       FunnelEvent: createFunnelEventDelegate(),
     },
   } as any;
