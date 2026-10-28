@@ -10,6 +10,7 @@ type BrandLockupProps = {
   className?: string;
   compact?: boolean;
   tone?: "default" | "inverse";
+  /** Kept for call-site compatibility; badge is no longer rendered. */
   hideBadge?: boolean;
 };
 
@@ -19,7 +20,7 @@ type BrandMedallionProps = {
 
 export function BrandMark({
   className,
-  title = "Catequese Viva",
+  title = "Catechis",
   ...props
 }: BrandMarkProps) {
   const id = useId().replace(/:/g, "");
@@ -95,55 +96,23 @@ export function BrandLockup({
   className,
   compact = false,
   tone = "default",
-  hideBadge = false,
 }: BrandLockupProps) {
-  const toneClasses =
-    tone === "inverse"
-      ? {
-          name: "text-white",
-          badge: "border-[#f4cf7a]/30 bg-[#f4cf7a]/14 text-[#fff4dc]",
-          subline: "text-[#f6d08a]",
-        }
-      : {
-          name: "text-brand-ink",
-          badge: "border-brand-gold/30 bg-brand-gold/12 text-brand-gold-muted",
-          subline: "text-brand-gold-muted",
-        };
+  const nameClass =
+    tone === "inverse" ? "text-white" : "text-brand-ink";
 
   return (
     <span className={cn("inline-flex items-center gap-3", className)}>
       <BrandMark
         className={cn("shrink-0", compact ? "h-8 w-8" : "h-10 w-10")}
       />
-      <span className="flex min-w-0 flex-col leading-none">
-        <span
-          className={cn(
-            "font-brand-display truncate font-semibold tracking-[0.01em]",
-            compact ? "text-[1.02rem]" : "text-[1.16rem]",
-            toneClasses.name,
-          )}
-        >
-          Catequese
-        </span>
-        {hideBadge ? (
-          <span
-            className={cn(
-              "mt-1 text-[0.64rem] font-semibold uppercase tracking-[0.32em]",
-              toneClasses.subline,
-            )}
-          >
-            Viva
-          </span>
-        ) : (
-          <span
-            className={cn(
-              "mt-1 inline-flex w-fit items-center rounded-sm border px-2 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.32em]",
-              toneClasses.badge,
-            )}
-          >
-            Viva
-          </span>
+      <span
+        className={cn(
+          "min-w-0 truncate font-brand-display font-semibold tracking-[0.01em] leading-none",
+          compact ? "text-[1.02rem]" : "text-[1.16rem]",
+          nameClass,
         )}
+      >
+        Catechis
       </span>
     </span>
   );

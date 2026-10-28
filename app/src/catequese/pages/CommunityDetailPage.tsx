@@ -267,7 +267,9 @@ export default function CommunityDetailPage() {
                       {cls.stage?.name && `${cls.stage.name} · `}
                       {cls.dayOfWeek && `${cls.dayOfWeek} ${cls.startTime}`}
                       {cls._count?.enrollments
-                        ? ` · ${cls._count.enrollments} ${t("enrolled")}`
+                        ? ` · ${t("counts.enrolled", {
+                            count: cls._count.enrollments,
+                          })}`
                         : ""}
                     </p>
                   </div>

@@ -784,7 +784,7 @@ export default function AttendancePage() {
               <table className="w-full text-xs">
                 <thead>
                   <tr className="bg-muted/50">
-                    <th className="sticky left-0 z-10 min-w-[140px] border-r bg-muted/50 p-2 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    <th className="sticky left-0 z-10 min-w-[140px] border-r bg-muted/50 p-2 text-left text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("matrix.catechumen_column")}
                     </th>
                     {meetings.map((m: any) => {
@@ -795,7 +795,7 @@ export default function AttendancePage() {
                       return (
                         <th
                           key={m.id}
-                          className="min-w-[100px] max-w-[140px] p-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+                          className="min-w-[100px] max-w-[140px] p-2 text-center text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground"
                           title={meetingLabel}
                         >
                           <div>
@@ -810,7 +810,7 @@ export default function AttendancePage() {
                         </th>
                       );
                     })}
-                    <th className="min-w-[50px] bg-muted/30 p-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    <th className="min-w-[50px] bg-muted/30 p-2 text-center text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("matrix.percent_column")}
                     </th>
                   </tr>
@@ -856,7 +856,7 @@ export default function AttendancePage() {
                 </tbody>
                 <tfoot>
                   <tr className="border-t-2 bg-muted/30 font-medium">
-                    <td className="sticky left-0 z-10 border-r bg-muted/30 p-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    <td className="sticky left-0 z-10 border-r bg-muted/30 p-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       {t("matrix.totals")}
                     </td>
                     {meetings.map((m: any) => (

@@ -95,19 +95,20 @@ export function BottomNav() {
                 ? "catechumens_short"
                 : item.labelKey;
             const baseLabel = t(labelKey, { defaultValue: t(item.labelKey) });
+            const fullLabel = t(item.labelKey);
             const locked =
               subscriptionLocked && !isSubscriptionFreeAppPath(item.to);
-            const label = locked
-              ? `${baseLabel} — ${t("locked_hint")}`
-              : baseLabel;
+            const accessibleLabel = locked
+              ? `${fullLabel} — ${t("locked_hint")}`
+              : fullLabel;
             return (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.to === "/app"}
                 prefetch="intent"
-                title={label}
-                aria-label={label}
+                title={accessibleLabel}
+                aria-label={accessibleLabel}
                 className={({ isActive }) =>
                   cn(
                     // text-micro abaixo de 360px: em 320px a coluna tem ~56px

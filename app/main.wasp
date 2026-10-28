@@ -3,7 +3,7 @@ app OpenSaaS {
     version: "^0.22.0"
   },
 
-  title: "Catequese Viva",
+  title: "Catechis",
 
   head: [
     // Favicon — prefer small SVG; avoid large ICO on critical path
@@ -16,7 +16,7 @@ app OpenSaaS {
     "<meta name='mobile-web-app-capable' content='yes' />",
     "<meta name='apple-mobile-web-app-capable' content='yes' />",
     "<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />",
-    "<meta name='apple-mobile-web-app-title' content='Catequese Viva' />",
+    "<meta name='apple-mobile-web-app-title' content='Catechis' />",
 
     // Fonts: preconnect + preloaded stylesheet. The <link> is `as='style'` so it
     // does not block first paint; src/client/fonts.ts promotes it to a
