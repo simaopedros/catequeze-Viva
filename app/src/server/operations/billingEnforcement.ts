@@ -590,170 +590,215 @@ export async function assertCanCreateParish(
 
 // ─── Class creation ─────────────────────────────────────────────────────────
 
-export async function assertCanCreateClass(
-  context: any,
-  parishId: string,
-): Promise<void> {
-  const parish = await context.entities.Parish.findUnique({
-    where: { id: parishId },
-    select: { type: true, ownerId: true },
-  });
-
-  if (parish?.type === 'PERSONAL') {
-    if (!context.user) throw new HttpError(401);
-    // Fresh user + heal product trial so onboarding is not blocked by free sentinel.
-    const freshUser = await ensureProductTrial(context, context.user.id);
-    const plan = getPersonalPlanId(freshUser);
-    const limits = await catalogLimits(context, plan);
-    if (limits.maxClasses === null) return;
-
-    const activeCount = await context.entities.CatechesisClass.count({
-      where: { parishId, status: { not: 'ARCHIVED' } },
-    });
-
-    if (activeCount >= limits.maxClasses!) {
-      try {
-        const { refreshUserBillingFromStripe } = await import(
-          '../../payment/stripe/syncUserSubscription'
-        );
-        const synced = await refreshUserBillingFromStripe(context, context.user.id);
-        const syncedPlan = getPersonalPlanId(synced);
-        const syncedLimits = await catalogLimits(context, syncedPlan);
-        if (syncedLimits.maxClasses === null) return;
-        if (activeCount < syncedLimits.maxClasses) return;
-      } catch {
-        // Fall through to the original limit error.
-      }
-      throw new HttpError(
-        403,
-        `LIMIT: Limite de turmas do plano ${planName(plan)} atingido (${activeCount}/${limits.maxClasses}). Faça upgrade.`,
-      );
-    }
-    return;
-  }
-
-  const billing = await resolveEffectiveBilling(context, parishId);
-  const effectivePlan = getEffectiveBillingPlan(billing);
-  const planLimits = await catalogLimits(context, effectivePlan);
-
-  const maxClasses = billing?.maxClasses != null ? billing.maxClasses : planLimits.maxClasses;
-  if (maxClasses === null) return;
-
-  let activeCount: number;
-  if (!billing && (effectivePlan === 'CATECHIST_FREE' || effectivePlan === 'SINGLE')) {
-    const myClassLinks = await context.entities.ClassCatechist.findMany({
-      where: { userId: context.user.id },
-      select: { classId: true },
-    });
-    const myClassIds = myClassLinks.map((l: any) => l.classId);
-    activeCount = await context.entities.CatechesisClass.count({
-      where: { id: { in: myClassIds }, status: { not: 'ARCHIVED' } },
-    });
-  } else {
-    activeCount = await context.entities.CatechesisClass.count({
-      where: { parishId, status: { not: 'ARCHIVED' } },
-    });
-  }
-
-  if (activeCount >= maxClasses) {
-    throw new HttpError(
-      403,
-      buildLimitMessage('class_limit', effectivePlan, activeCount, maxClasses),
-    );
-  }
-}
-
-// ─── Catechumen enrollment ──────────────────────────────────────────────────
-
-export type EnrollmentCapacity = {
-  /** null = unlimited */
-  maxCatechumens: number | null;
-  enrolledCount: number;
-  /** Error to raise when the limit is reached (message depends on plan). */
-  limitError: () => HttpError;
-};
-
-/**
- * Resolves the workspace's catechumen limit and current usage once. Bulk
- * callers (CSV import) use this to enforce the limit locally instead of
- * re-querying billing for every row.
- */
-export async function resolveEnrollmentCapacity(
-  context: any,
-  parishId: string,
-): Promise<EnrollmentCapacity> {
+/** One quota scope for enforcement and the lightweight usage query. */
+async function resolveQuotaScope(context: any, parishId: string) {
+  if (!context.user) throw new HttpError(401);
   const parish = await context.entities.Parish.findUnique({
     where: { id: parishId },
     select: { type: true },
   });
-
-  if (parish?.type === 'PERSONAL') {
-    if (!context.user) throw new HttpError(401);
-    const freshUser = await ensureProductTrial(context, context.user.id);
-    const plan = getPersonalPlanId(freshUser);
-    const limits = await catalogLimits(context, plan);
-    if (limits.maxCatechumens === null) {
-      return { maxCatechumens: null, enrolledCount: 0, limitError: () => new HttpError(403) };
-    }
-
-    const enrolledCount = await context.entities.ClassEnrollment.count({
-      where: { status: 'ENROLLED', class: { parishId } },
-    });
-    const max = limits.maxCatechumens;
-    return {
-      maxCatechumens: max,
-      enrolledCount,
-      limitError: () =>
-        new HttpError(
-          403,
-          `LIMIT: Limite de catequizandos do plano ${planName(plan)} atingido (${enrolledCount}/${max}).`,
-        ),
-    };
-  }
-
-  const billing = await resolveEffectiveBilling(context, parishId);
-  const effectivePlan = getEffectiveBillingPlan(billing);
-  const planLimits = await catalogLimits(context, effectivePlan);
-
-  const maxCatechumens = billing?.maxCatechumens != null ? billing.maxCatechumens : planLimits.maxCatechumens;
-  if (maxCatechumens === null) {
-    return { maxCatechumens: null, enrolledCount: 0, limitError: () => new HttpError(403) };
-  }
-
-  let enrolledCount: number;
-  if (!billing && (effectivePlan === 'CATECHIST_FREE' || effectivePlan === 'SINGLE')) {
-    const myClassLinks = await context.entities.ClassCatechist.findMany({
+  if (!parish) throw new HttpError(404, "Paróquia não encontrada.");
+  const personal = parish.type === "PERSONAL";
+  const billing = personal
+    ? null
+    : await resolveEffectiveBilling(context, parishId);
+  const plan = personal
+    ? getPersonalPlanId(await ensureProductTrial(context, context.user.id))
+    : getEffectiveBillingPlan(billing);
+  const limits = await catalogLimits(context, plan);
+  let classWhere: any = { parishId, status: { not: "ARCHIVED" } };
+  if (
+    !personal &&
+    !billing &&
+    (plan === "CATECHIST_FREE" || plan === "SINGLE")
+  ) {
+    const links = await context.entities.ClassCatechist.findMany({
       where: { userId: context.user.id },
       select: { classId: true },
     });
-    const myClassIds = myClassLinks.map((l: any) => l.classId);
-    enrolledCount = await context.entities.ClassEnrollment.count({
-      where: { status: 'ENROLLED', classId: { in: myClassIds } },
-    });
-  } else {
-    enrolledCount = await context.entities.ClassEnrollment.count({
-      where: { status: 'ENROLLED', class: { parishId } },
-    });
+    classWhere = {
+      id: { in: links.map((l: any) => l.classId) },
+      status: { not: "ARCHIVED" },
+    };
   }
-
+  // Preserve the existing ENROLLED scope for people, including archived and
+  // concluded classes. Only the class quota excludes archived classes.
+  const { status: _classStatus, ...peopleClassWhere } = classWhere;
   return {
-    maxCatechumens,
-    enrolledCount,
+    plan,
+    classWhere,
+    peopleClassWhere,
+    personal,
+    maxClasses: billing?.maxClasses ?? limits.maxClasses,
+    maxCatechumens: billing?.maxCatechumens ?? limits.maxCatechumens,
+  };
+}
+
+/** Fetch only distinct IDs, never student details or enrollment history. */
+export async function countPlanPeople(
+  context: any,
+  classWhere: any,
+): Promise<Set<string>> {
+  const people = await context.entities.ClassEnrollment.findMany({
+    where: { status: "ENROLLED", class: classWhere },
+    select: { catechumenProfileId: true },
+    distinct: ["catechumenProfileId"],
+  });
+  return new Set(people.map((p: any) => p.catechumenProfileId));
+}
+
+export async function resolvePlanUsage(context: any, parishId: string) {
+  const scope = await resolveQuotaScope(context, parishId);
+  const [classesUsed, people] = await Promise.all([
+    context.entities.CatechesisClass.count({ where: scope.classWhere }),
+    countPlanPeople(context, scope.peopleClassWhere),
+  ]);
+  return { ...scope, classesUsed, people, catechumensUsed: people.size };
+}
+
+export async function assertCanCreateClass(
+  context: any,
+  parishId: string,
+): Promise<void> {
+  const scope = await resolveQuotaScope(context, parishId);
+  if (scope.maxClasses === null) return;
+  const count = await context.entities.CatechesisClass.count({
+    where: scope.classWhere,
+  });
+  if (count >= scope.maxClasses) {
+    if (scope.personal) {
+      try {
+        const { refreshUserBillingFromStripe } = await import(
+          "../../payment/stripe/syncUserSubscription"
+        );
+        const synced = await refreshUserBillingFromStripe(
+          context,
+          context.user.id,
+        );
+        const limits = await catalogLimits(context, getPersonalPlanId(synced));
+        if (limits.maxClasses === null || count < limits.maxClasses) return;
+      } catch {
+        // Preserve the existing fallback to the quota error if sync fails.
+      }
+    }
+    throw new HttpError(
+      403,
+      buildLimitMessage("class_limit", scope.plan, count, scope.maxClasses),
+    );
+  }
+}
+
+export type EnrollmentCapacity = {
+  maxCatechumens: number | null;
+  enrolledCount: number;
+  people: Set<string>;
+  limitError: () => HttpError;
+};
+
+export async function resolveEnrollmentCapacity(
+  context: any,
+  parishId: string,
+): Promise<EnrollmentCapacity> {
+  const scope = await resolveQuotaScope(context, parishId);
+  const people = await countPlanPeople(context, scope.peopleClassWhere);
+  return {
+    maxCatechumens: scope.maxCatechumens,
+    enrolledCount: people.size,
+    people,
     limitError: () =>
       new HttpError(
         403,
-        buildLimitMessage('catechumen_limit', effectivePlan, enrolledCount, maxCatechumens),
+        buildLimitMessage(
+          "catechumen_limit",
+          scope.plan,
+          people.size,
+          scope.maxCatechumens!,
+        ),
       ),
   };
+}
+
+export function assertEnrollmentCapacity(
+  capacity: EnrollmentCapacity,
+  profileId: string,
+): void {
+  if (capacity.people.has(profileId) || capacity.maxCatechumens === null)
+    return;
+  if (capacity.people.size >= capacity.maxCatechumens)
+    throw capacity.limitError();
 }
 
 export async function assertCanEnrollCatechumen(
   context: any,
   parishId: string,
+  profileId: string,
 ): Promise<void> {
-  const capacity = await resolveEnrollmentCapacity(context, parishId);
-  if (capacity.maxCatechumens === null) return;
-  if (capacity.enrolledCount >= capacity.maxCatechumens) {
-    throw capacity.limitError();
+  assertEnrollmentCapacity(
+    await resolveEnrollmentCapacity(context, parishId),
+    profileId,
+  );
+}
+
+function restorationFits(
+  usage: Awaited<ReturnType<typeof resolvePlanUsage>>,
+  restoredPeople: Set<string>,
+): boolean {
+  return (
+    (usage.maxClasses === null || usage.classesUsed + 1 <= usage.maxClasses) &&
+    (usage.maxCatechumens === null ||
+      new Set([...usage.people, ...restoredPeople]).size <=
+        usage.maxCatechumens)
+  );
+}
+
+export async function assertCanRestoreClass(
+  context: any,
+  parishId: string,
+  classId: string,
+): Promise<void> {
+  const usage = await resolvePlanUsage(context, parishId);
+  const restoredPeople = await countPlanPeople(context, {
+    id: classId,
+    parishId,
+  });
+  if (!restorationFits(usage, restoredPeople)) {
+    throw new HttpError(
+      403,
+      "Não é possível restaurar esta turma: o limite de turmas ou de pessoas distintas do plano seria excedido. Libere vagas ou altere o plano.",
+    );
   }
 }
+
+export const getPlanUsage = async (
+  args: { parishId: string; restoreClassId?: string },
+  context: any,
+) => {
+  if (!context.user) throw new HttpError(401);
+  const { requireWorkspaceAccess, assertClassInScope } = await import(
+    "./sharedScope"
+  );
+  const access = await requireWorkspaceAccess(context, args.parishId);
+  const usage = await resolvePlanUsage(context, args.parishId);
+  let canRestore: boolean | null = null;
+  if (args.restoreClassId) {
+    assertClassInScope(access, args.restoreClassId);
+    const cls = await context.entities.CatechesisClass.findUnique({
+      where: { id: args.restoreClassId },
+      select: { parishId: true, status: true },
+    });
+    if (!cls || cls.parishId !== args.parishId) throw new HttpError(404);
+    const people = await countPlanPeople(context, {
+      id: args.restoreClassId,
+      parishId: args.parishId,
+    });
+    canRestore = cls.status === "ARCHIVED" && restorationFits(usage, people);
+  }
+  return {
+    plan: usage.plan,
+    classesUsed: usage.classesUsed,
+    catechumensUsed: usage.catechumensUsed,
+    maxClasses: usage.maxClasses,
+    maxCatechumens: usage.maxCatechumens,
+    canRestore,
+  };
+};

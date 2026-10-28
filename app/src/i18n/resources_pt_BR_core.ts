@@ -235,7 +235,7 @@ export const billing_pt_BR_core = {
     "covered_by_named": "Coberta por {{name}}",
     "usage_title": "Uso do plano",
     "classes": "Turmas",
-    "catechumens": "Catequizandos",
+    "catechumens": "Catequizandos (pessoas distintas)",
     "subscription_active": "Assinatura ativa",
     "free_plan": "Sem assinatura",
     "awaiting_payment": "Aguardando pagamento",
@@ -274,7 +274,7 @@ export const billing_pt_BR_core = {
     "cancelling": "Cancelando…",
     "manage_payment": "Gerenciar pagamento",
     "classes_quota_label": "Uso de turmas",
-    "catechumens_quota_label": "Uso de catequizandos",
+    "catechumens_quota_label": "Catequizandos (pessoas distintas)",
     "ai_credits_quota_label": "Uso de créditos editoriais",
     "ai_credits": "Créditos editoriais",
     "monthly_badge": "Mensal",
@@ -608,7 +608,8 @@ export const billing_pt_BR_core = {
     "checkout_charge_after_trial_one": "Não precisa de cartão agora. Você tem 1 dia grátis; a primeira cobrança é em {{date}} se houver cartão cadastrado. Sem cartão até lá, a assinatura é cancelada sem cobrança.",
     "checkout_charge_after_trial_other": "Não precisa de cartão agora. Você tem {{count}} dias grátis; a primeira cobrança é em {{date}} se houver cartão cadastrado. Sem cartão até lá, a assinatura é cancelada sem cobrança.",
     "checkout_charge_today": "A cobrança é feita no Stripe assim que você confirmar a assinatura.",
-    "checkout_plan_includes_label": "O que o plano inclui"
+    "checkout_plan_includes_label": "O que o plano inclui",
+    "distinct_people_usage": "Cada pessoa conta uma vez, mesmo com várias matrículas. Pessoas em turmas concluídas continuam contando."
   } as const;
 
 export const blog_pt_BR_core = {

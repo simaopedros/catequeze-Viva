@@ -1,7 +1,8 @@
+import { randomUUID } from "node:crypto";
 import { type PrismaClient } from "@prisma/client";
 import express from "express";
 import type { Stripe } from "stripe";
-import { config, env, type MiddlewareConfigFn } from "wasp/server";
+import { config, env, prisma, type MiddlewareConfigFn } from "wasp/server";
 import { type PaymentsWebhook } from "wasp/server/api";
 import { emitProductEventSafe } from "../../server/email/events";
 import { PRODUCT_EVENT } from "../../shared/emailCatalog";
@@ -36,7 +37,7 @@ const INVOICE_PROCESSED_EVENT = "invoice_processed";
 
 type WebhookContext = Parameters<PaymentsWebhook>[2];
 type TrackedEventDelegate = any;
-type TrackedEventStatus = "sent" | "failed" | "skipped";
+type TrackedEventStatus = "sent" | "failed" | "skipped" | "processing";
 
 interface BaseTrackedEventData {
   provider: string;
@@ -93,7 +94,9 @@ export const stripeWebhook: PaymentsWebhook = async (
     }
 
     if ((event.type as string) === "invoice_payment.paid") {
-      await handleInvoicePaymentPaid(event, prismaUserDelegate, trackedEventDelegate, context);
+      if (!(await handleInvoicePaymentPaid(event, prismaUserDelegate, trackedEventDelegate, context))) {
+        return response.status(200).send();
+      }
       await recordStripeWebhookReceipt(trackedEventDelegate, event);
       return response.status(204).send();
     }
@@ -109,7 +112,9 @@ export const stripeWebhook: PaymentsWebhook = async (
         break;
       case "invoice.paid":
       case "invoice.payment_succeeded":
-        await handleInvoicePaid(event, prismaUserDelegate, trackedEventDelegate, context);
+        if (!(await handleInvoicePaid(event, prismaUserDelegate, trackedEventDelegate, context))) {
+          return response.status(200).send();
+        }
         break;
       case "invoice.payment_failed":
         await handleInvoicePaymentFailed(event, prismaUserDelegate, context);
@@ -335,8 +340,8 @@ async function handleInvoicePaid(
   prismaUserDelegate: PrismaClient["user"],
   trackedEventDelegate: TrackedEventDelegate,
   context: WebhookContext,
-): Promise<void> {
-  await processPaidInvoice(event.data.object, event.id, prismaUserDelegate, trackedEventDelegate, context);
+): Promise<boolean> {
+  return processPaidInvoice(event.data.object, event.id, prismaUserDelegate, trackedEventDelegate, context);
 }
 
 async function handleInvoicePaymentPaid(
@@ -344,7 +349,7 @@ async function handleInvoicePaymentPaid(
   prismaUserDelegate: PrismaClient["user"],
   trackedEventDelegate: TrackedEventDelegate,
   context: WebhookContext,
-): Promise<void> {
+): Promise<boolean> {
   const invoicePayment = event.data.object as {
     invoice: string | Stripe.Invoice;
   };
@@ -356,7 +361,7 @@ async function handleInvoicePaymentPaid(
     throw new Error("invoice_payment.paid missing invoice id");
   }
   const invoice = await stripeClient.invoices.retrieve(invoiceId);
-  await processPaidInvoice(invoice, event.id, prismaUserDelegate, trackedEventDelegate, context);
+  return processPaidInvoice(invoice, event.id, prismaUserDelegate, trackedEventDelegate, context);
 }
 
 async function processPaidInvoice(
@@ -365,12 +370,12 @@ async function processPaidInvoice(
   prismaUserDelegate: PrismaClient["user"],
   trackedEventDelegate: TrackedEventDelegate,
   context: WebhookContext,
-): Promise<void> {
+): Promise<boolean> {
   if (!invoice.id || invoice.amount_paid <= 0) {
-    return;
+    return true;
   }
 
-  const invoiceProcessing = await beginTrackedEvent(trackedEventDelegate, {
+  const invoiceProcessing = await claimInvoiceEvent(trackedEventDelegate, {
     provider: STRIPE_PROVIDER,
     eventName: INVOICE_PROCESSED_EVENT,
     eventId: `invoice_processed_${invoice.id}`,
@@ -378,11 +383,11 @@ async function processPaidInvoice(
     invoiceId: invoice.id,
 
     stripeCustomerId: getCustomerId(invoice.customer),
-    status: "failed",
-    errorMessage: "processing",
+    status: "processing",
   });
+  if (!invoiceProcessing) return false;
   if (invoiceProcessing.status === "sent") {
-    return;
+    return true;
   }
 
   try {
@@ -398,19 +403,25 @@ async function processPaidInvoice(
     console.info(`[Stripe] processPaidInvoice customer=${customerId} subscription=${subscriptionId} plan=${paymentPlanId}`);
 
     if (catalogPlan.kind === "credits") {
-        await updateUserCredits(
-          {
-            paymentProcessorUserId: customerId,
-            datePaid: invoicePaidAtDate,
-            numOfCreditsPurchased: catalogPlan.creditsAmount
-              ?? (paymentPlans[paymentPlanId]?.effect.kind === "credits"
-                ? paymentPlans[paymentPlanId].effect.amount
-                : 0),
-          },
-          prismaUserDelegate,
-        );
-        await finishTrackedEvent(trackedEventDelegate, invoiceProcessing.id, {
-          responseJson: { invoiceId: invoice.id, paymentPlanId },
+        await prisma.$transaction(async (tx) => {
+          // Lock and fence the lease before crediting. A stale worker cannot spend
+          // a reclaimed lease; rollback restores both the marker and the balance.
+          const completed = await tx.trackedEvent.updateMany({
+            where: { id: invoiceProcessing.id, status: "processing", errorMessage: invoiceProcessing.errorMessage },
+            data: { status: "sent", errorMessage: null, responseJson: { invoiceId: invoice.id, paymentPlanId } },
+          });
+          if (completed.count !== 1) throw new Error("Invoice processing lease lost");
+          await updateUserCredits(
+            {
+              paymentProcessorUserId: customerId,
+              datePaid: invoicePaidAtDate,
+              numOfCreditsPurchased: catalogPlan.creditsAmount
+                ?? (paymentPlans[paymentPlanId]?.effect.kind === "credits"
+                  ? paymentPlans[paymentPlanId].effect.amount
+                  : 0),
+            },
+            tx.user,
+          );
         });
         await deliverAiCreditsPurchaseMetaEvent({
           invoice,
@@ -440,7 +451,7 @@ async function processPaidInvoice(
               skipped: "subscription_still_trialing",
             },
           });
-          return;
+          return true;
         }
 
         const user = await updateUserSubscription(
@@ -568,9 +579,14 @@ async function processPaidInvoice(
       throw new Error(`Unexpected invoice for plan "${paymentPlanId}"`);
     }
   } catch (error) {
-    await failTrackedEvent(trackedEventDelegate, invoiceProcessing.id, error);
+    // Never reopen a committed invoice because a later analytics call failed.
+    await trackedEventDelegate.updateMany({
+      where: { id: invoiceProcessing.id, status: "processing", errorMessage: invoiceProcessing.errorMessage },
+      data: { status: "failed", errorMessage: error instanceof Error ? error.message : String(error) },
+    });
     throw error;
   }
+  return true;
 }
 
 async function handleInvoicePaymentFailed(
@@ -830,6 +846,39 @@ async function deliverMetaTrackedEvent(
   } catch (error) {
     await failTrackedEvent(trackedEventDelegate, pendingEvent.id, error);
   }
+}
+
+const INVOICE_LEASE_TIMEOUT_MS = 10 * 60 * 1000;
+
+async function claimInvoiceEvent(
+  delegate: TrackedEventDelegate,
+  data: BaseTrackedEventData,
+): Promise<any | null> {
+  if (!delegate?.create || !delegate?.updateMany) {
+    throw new Error("Invoice tracking unavailable");
+  }
+  const lease = randomUUID();
+  const created = await safeCreateTrackedEvent(delegate, { ...data, errorMessage: lease });
+  if (created) return created;
+
+  const existing = await findTrackedEventByEventId(delegate, data.eventId);
+  if (!existing) throw new Error("Invoice tracking conflict");
+  if (existing.status === "sent") return existing;
+
+  const expiredAt = new Date(Date.now() - INVOICE_LEASE_TIMEOUT_MS);
+  const claimed = await delegate.updateMany({
+    where: {
+      id: existing.id,
+      OR: [
+        // Legacy workers stored processing as failed + errorMessage=processing.
+        { status: "failed", errorMessage: "processing", updatedAt: { lte: expiredAt } },
+        ...(existing.errorMessage !== "processing" ? [{ status: "failed" }] : []),
+        { status: "processing", updatedAt: { lte: expiredAt } },
+      ],
+    },
+    data: { status: "processing", errorMessage: lease },
+  });
+  return claimed.count === 1 ? { ...existing, status: "processing", errorMessage: lease } : null;
 }
 
 async function beginTrackedEvent(

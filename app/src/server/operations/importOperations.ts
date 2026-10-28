@@ -297,7 +297,7 @@ export const importCatechumensCSV = async (
   const journeysToEnsure: { profileId: string; sacramentId: string }[] = [];
 
   for (const { profile, target } of targets) {
-    if (remainingPlanSlots <= 0) {
+    if (!capacity?.people.has(profile.id) && remainingPlanSlots <= 0) {
       results.details.push(
         `Linha ${profile.lineNumber}: não foi possível matricular — ${
           capacity?.limitError().message ?? "limite do plano atingido"
@@ -313,7 +313,8 @@ export const importCatechumensCSV = async (
       continue;
     }
     enrolledByClass.set(target.id, enrolledCount + 1);
-    remainingPlanSlots -= 1;
+    if (!capacity?.people.has(profile.id)) remainingPlanSlots -= 1;
+    capacity?.people.add(profile.id);
     enrollmentsToCreate.push({
       classId: target.id,
       catechumenProfileId: profile.id,

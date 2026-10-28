@@ -1493,7 +1493,7 @@ export const billing_en = {
     "covered_by_named": "Covered by {{name}}",
     "usage_title": "Plan usage",
     "classes": "Classes",
-    "catechumens": "Catechumens",
+    "catechumens": "Catechumens (distinct people)",
     "subscription_active": "Active subscription",
     "free_plan": "No subscription",
     "awaiting_payment": "Awaiting payment",
@@ -1532,7 +1532,7 @@ export const billing_en = {
     "cancelling": "Cancelling…",
     "manage_payment": "Manage payment",
     "classes_quota_label": "Classes usage",
-    "catechumens_quota_label": "Catechumens usage",
+    "catechumens_quota_label": "Catechumens (distinct people)",
     "ai_credits_quota_label": "Editorial credits usage",
     "ai_credits": "Editorial credits",
     "monthly_badge": "Monthly",
@@ -1866,7 +1866,8 @@ export const billing_en = {
     "checkout_charge_after_trial_one": "No card needed now. You get 1 free day; the first charge is on {{date}} if a card is on file. Without a card by then, the subscription is canceled with no charge.",
     "checkout_charge_after_trial_other": "No card needed now. You get {{count}} free days; the first charge is on {{date}} if a card is on file. Without a card by then, the subscription is canceled with no charge.",
     "checkout_charge_today": "You are charged on Stripe as soon as you confirm the subscription.",
-    "checkout_plan_includes_label": "What the plan includes"
+    "checkout_plan_includes_label": "What the plan includes",
+    "distinct_people_usage": "Each person counts once, even with multiple enrollments. People in completed classes still count."
   } as const;
 
 export const birthdays_en = {
@@ -2306,7 +2307,8 @@ export const classes_en = {
     "limit_reached_body": "The {{planName}} plan allows up to {{maxAllowed}} classes. You already use {{currentCount}}. To create another, pick a plan with more room or go back to Classes.",
     "limit_reached_none": "The {{planName}} plan does not unlock classes yet. See the plans to get started or go back to Classes.",
     "limit_see_plans": "See plans",
-    "limit_back_to_classes": "Back to Classes"
+    "limit_back_to_classes": "Back to Classes",
+    "restore_quota_blocked": "This class would exceed the plan limit for classes or distinct people. Free up capacity or change your plan."
   } as const;
 
 export const collaborative_en = {
