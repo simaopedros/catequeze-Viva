@@ -35,7 +35,7 @@ describe("audit média H — telefone internacional", () => {
 });
 
 describe("audit média H — ficha catequizando turma", () => {
-  it("exposes transfer and remove actions using cancelEnrollment", () => {
+  it("exposes atomic transfer and reversible removal actions", () => {
     const page = readFileSync(
       root("catequese/pages/CatechumenDetailPage.tsx"),
       "utf8",
@@ -49,7 +49,7 @@ describe("audit média H — ficha catequizando turma", () => {
       root("catequese/components/EnrollInClassDialog.tsx"),
       "utf8",
     );
-    expect(dialog).toContain("cancelEnrollment");
+    expect(dialog).toContain("transferEnrollment");
     expect(dialog).toContain('mode === "transfer"');
 
     const ops = readFileSync(
