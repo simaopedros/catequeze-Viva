@@ -1,3 +1,4 @@
+import { catechumenPublicSelect } from "./catechumenDto";
 import { HttpError, prisma } from "wasp/server";
 import { MembershipStatus, CatechistAssignmentRole } from "@prisma/client";
 import {
@@ -102,17 +103,7 @@ export const listCatechumens = async (
   ];
   // Explicit select: never return uploadToken / uploadTokenExpires to clients.
   const select = {
-    id: true,
-    createdAt: true,
-    updatedAt: true,
-    firstName: true,
-    lastName: true,
-    email: true,
-    birthDate: true,
-    photoUrl: true,
-    userId: true,
-    householdId: true,
-    parishId: true,
+    ...catechumenPublicSelect,
     parish: { select: { id: true, name: true } },
     household: { select: { id: true, name: true, parishId: true } },
     enrollments: {
@@ -258,17 +249,7 @@ export const getCatechumenProfile = async (
   const profile = await context.entities.CatechumenProfile.findUnique({
     where: { id: args.id },
     select: {
-      id: true,
-      createdAt: true,
-      updatedAt: true,
-      firstName: true,
-      lastName: true,
-      email: true,
-      birthDate: true,
-      photoUrl: true,
-      userId: true,
-      householdId: true,
-      parishId: true,
+      ...catechumenPublicSelect,
       // uploadToken / uploadTokenExpires intentionally omitted — staff of a
       // linked household parish must never receive them via this query.
       parish: { select: { id: true, name: true } },
@@ -418,6 +399,7 @@ export const createCatechumen = async (args: any, context: any) => {
   }
 
   return context.entities.CatechumenProfile.create({
+    select: catechumenPublicSelect,
     data: {
       firstName: args.firstName,
       lastName: args.lastName,
@@ -547,6 +529,7 @@ export const updateCatechumen = async (args: any, context: any) => {
   }
 
   return context.entities.CatechumenProfile.update({
+    select: catechumenPublicSelect,
     where: { id: args.id },
     data,
   });
