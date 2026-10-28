@@ -1880,7 +1880,10 @@ export const birthdays_pt_BR = {
     "markUndelivered": "Marcar como não entregue",
     "exportList": "Exportar lista",
     "noBirthdays": "Nenhum aniversário no período",
-    "in": "em"
+    "in": "em",
+    "exportLoading": "Exportação indisponível durante o carregamento",
+    "loadingBirthdays": "Carregando aniversários",
+    "noBirthdaysPeriod": "Nenhum aniversário neste período"
   } as const;
 
 export const blog_pt_BR = {
@@ -2303,7 +2306,9 @@ export const classes_pt_BR = {
     "limit_reached_body": "O plano {{planName}} permite até {{maxAllowed}} turmas. Você já usa {{currentCount}}. Para criar outra, escolha um plano com mais espaço ou volte para Turmas.",
     "limit_reached_none": "O plano {{planName}} ainda não libera turmas. Veja os planos para começar ou volte para Turmas.",
     "limit_see_plans": "Ver planos",
-    "limit_back_to_classes": "Voltar para Turmas"
+    "limit_back_to_classes": "Voltar para Turmas",
+    "consult_records": "Consultar registros",
+    "more_class_actions": "Mais ações da turma {{name}}"
   } as const;
 
 export const collaborative_pt_BR = {
@@ -2919,7 +2924,10 @@ export const common_pt_BR = {
             "body": "Certificamos que {{name}}{{birth}} concluiu a etapa {{stage}} da catequese na turma {{className}}, da {{parish}}, caminhando na fé com dedicação."
           }
         }
-      }
+      },
+      "import_example": "Exemplo de CSV",
+      "import_copy_example": "Copiar exemplo",
+      "import_download_example": "Baixar arquivo modelo"
     },
     "families": {
       "subtitle_registered_zero": "Nenhuma família cadastrada",
@@ -3006,7 +3014,8 @@ export const common_pt_BR = {
       "catechumen_linked_success": "Catequizando adicionado com sucesso!",
       "catechumen_removed_success": "Catequizando removido com sucesso.",
       "no_unlinked_catechumens": "Nenhum catequizando sem família encontrado nesta paróquia.",
-      "view_families_cta": "Vincular a Famílias"
+      "view_families_cta": "Vincular a Famílias",
+      "back_to_families": "Voltar para Famílias"
     },
     "global_search_placeholder": "Buscar catequizandos, turmas, conteúdos, Bíblia...",
     "two_factor_code_placeholder": "Código de 6 dígitos",
@@ -3357,7 +3366,8 @@ export const content_pt_BR = {
       },
       "card_duration": "Duração",
       "card_activities": "Atividades",
-      "search_title": "Busca"
+      "search_title": "Busca",
+      "loading_contents": "Carregando conteúdos"
     },
     "detail": {
       "by_author": "por {{name}}",

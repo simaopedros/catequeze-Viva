@@ -28,6 +28,10 @@ import { parseCatechumenCsv } from "../../shared/csvCatechumenImport";
 import { formatDateOnly } from "../../i18n/format";
 import { useLocale } from "../../i18n/useLocale";
 
+const csvExample = `nome,sobrenome,nascimento,familia,turma
+João,Silva,2015-03-15,Silva Santos,Eucaristia 2026
+Maria,Santos,2014-07-22,Silva Santos,Eucaristia 2026`;
+
 function formatImportBirthDate(
   value: string | null | undefined,
   locale: string,
@@ -184,11 +188,18 @@ export default function ImportCatechumensPage() {
           <p className="text-sm text-muted-foreground">
             {t("catechumens.import_format_desc")}
           </p>
-          <pre className="mt-2 rounded-sm bg-muted p-3 text-xs">
-            {`nome,sobrenome,nascimento,familia,turma
-João,Silva,2015-03-15,Silva Santos,Eucaristia 2026
-Maria,Santos,2014-07-22,Silva Santos,Eucaristia 2026`}
-          </pre>
+          <pre tabIndex={0} aria-label={t("catechumens.import_example")} className="mt-2 max-w-full overflow-x-auto rounded-sm bg-muted p-3 text-xs">{csvExample}</pre>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="outline" onClick={() => navigator.clipboard.writeText(csvExample)}>{t("catechumens.import_copy_example")}</Button>
+            <Button type="button" variant="outline" onClick={() => {
+              const url = URL.createObjectURL(new Blob([csvExample], { type: "text/csv;charset=utf-8" }));
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = "modelo-catequizandos.csv";
+              link.click();
+              URL.revokeObjectURL(url);
+            }}>{t("catechumens.import_download_example")}</Button>
+          </div>
         </div>
 
         {scopedClass && (

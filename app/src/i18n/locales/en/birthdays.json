@@ -12,5 +12,8 @@
   "markUndelivered": "Mark as not delivered",
   "exportList": "Export list",
   "noBirthdays": "No birthdays in this period",
-  "in": "on"
+  "in": "on",
+  "exportLoading": "Export unavailable while loading",
+  "loadingBirthdays": "Loading birthdays",
+  "noBirthdaysPeriod": "No birthdays in this period"
 }

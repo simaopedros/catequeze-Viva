@@ -1128,7 +1128,10 @@ export const common_pt_BR_core = {
             "body": "Certificamos que {{name}}{{birth}} concluiu a etapa {{stage}} da catequese na turma {{className}}, da {{parish}}, caminhando na fé com dedicação."
           }
         }
-      }
+      },
+      "import_example": "Exemplo de CSV",
+      "import_copy_example": "Copiar exemplo",
+      "import_download_example": "Baixar arquivo modelo"
     },
     "families": {
       "subtitle_registered_zero": "Nenhuma família cadastrada",
@@ -1215,7 +1218,8 @@ export const common_pt_BR_core = {
       "catechumen_linked_success": "Catequizando adicionado com sucesso!",
       "catechumen_removed_success": "Catequizando removido com sucesso.",
       "no_unlinked_catechumens": "Nenhum catequizando sem família encontrado nesta paróquia.",
-      "view_families_cta": "Vincular a Famílias"
+      "view_families_cta": "Vincular a Famílias",
+      "back_to_families": "Voltar para Famílias"
     },
     "global_search_placeholder": "Buscar catequizandos, turmas, conteúdos, Bíblia...",
     "two_factor_code_placeholder": "Código de 6 dígitos",

@@ -496,7 +496,10 @@
           "body": "Certificamos que {{name}}{{birth}} concluyó la etapa {{stage}} de la catequesis en el grupo {{className}}, de {{parish}}, caminando en la fe con dedicación."
         }
       }
-    }
+    },
+    "import_example": "Ejemplo CSV",
+    "import_copy_example": "Copiar ejemplo",
+    "import_download_example": "Descargar plantilla"
   },
   "families": {
     "subtitle_registered_zero": "Ninguna familia registrada",
@@ -583,7 +586,8 @@
     "catechumen_linked_success": "¡Catecúmeno añadido con éxito!",
     "catechumen_removed_success": "Catecúmeno eliminado con éxito.",
     "no_unlinked_catechumens": "No se encontraron catecúmenos sin familia en esta parroquia.",
-    "view_families_cta": "Vincular a Familias"
+    "view_families_cta": "Vincular a Familias",
+    "back_to_families": "Volver a Familias"
   },
   "global_search_placeholder": "Buscar catequizandos, clases, contenidos, Biblia...",
   "two_factor_code_placeholder": "Código de 6 dígitos",

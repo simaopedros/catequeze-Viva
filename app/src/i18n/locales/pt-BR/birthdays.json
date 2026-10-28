@@ -12,5 +12,8 @@
   "markUndelivered": "Marcar como não entregue",
   "exportList": "Exportar lista",
   "noBirthdays": "Nenhum aniversário no período",
-  "in": "em"
+  "in": "em",
+  "exportLoading": "Exportação indisponível durante o carregamento",
+  "loadingBirthdays": "Carregando aniversários",
+  "noBirthdaysPeriod": "Nenhum aniversário neste período"
 }

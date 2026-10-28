@@ -270,10 +270,10 @@ export default function ContentLibraryPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 animate-pulse rounded bg-muted" />
+        <AppPageHeader title={t("title")} />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
-            <SkeletonCard key={i} />
+            <SkeletonCard key={i} label={t("library.loading_contents")} />
           ))}
         </div>
       </div>

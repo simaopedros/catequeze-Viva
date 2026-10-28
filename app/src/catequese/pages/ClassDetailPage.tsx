@@ -970,6 +970,7 @@ export default function ClassDetailPage() {
         ) : null}
 
         <DetailTabs
+          id="class-detail"
           tabs={[
             {
               id: "inscritos",
@@ -997,6 +998,10 @@ export default function ClassDetailPage() {
           }}
         />
 
+        {CLASS_DETAIL_TABS.filter((id) => id !== tab).map((id) => (
+          <div key={id} role="tabpanel" id={`class-detail-panel-${id}`} aria-labelledby={`class-detail-tab-${id}`} hidden />
+        ))}
+        <div role="tabpanel" id={`class-detail-panel-${tab}`} aria-labelledby={`class-detail-tab-${tab}`}>
         {tab === "inscritos" && (
           <div>
             {enrolled.length === 0 ? (
@@ -1631,6 +1636,7 @@ export default function ClassDetailPage() {
             )}
           </div>
         )}
+        </div>
       </div>
       <ConfirmDialog
         open={!!unenrollConfirm}

@@ -1880,7 +1880,10 @@ export const birthdays_en = {
     "markUndelivered": "Mark as not delivered",
     "exportList": "Export list",
     "noBirthdays": "No birthdays in this period",
-    "in": "on"
+    "in": "on",
+    "exportLoading": "Export unavailable while loading",
+    "loadingBirthdays": "Loading birthdays",
+    "noBirthdaysPeriod": "No birthdays in this period"
   } as const;
 
 export const blog_en = {
@@ -2303,7 +2306,9 @@ export const classes_en = {
     "limit_reached_body": "The {{planName}} plan allows up to {{maxAllowed}} classes. You already use {{currentCount}}. To create another, pick a plan with more room or go back to Classes.",
     "limit_reached_none": "The {{planName}} plan does not unlock classes yet. See the plans to get started or go back to Classes.",
     "limit_see_plans": "See plans",
-    "limit_back_to_classes": "Back to Classes"
+    "limit_back_to_classes": "Back to Classes",
+    "consult_records": "View records",
+    "more_class_actions": "More actions for class {{name}}"
   } as const;
 
 export const collaborative_en = {
@@ -2513,7 +2518,8 @@ export const common_en = {
       "catechumen_linked_success": "Catechumen added successfully!",
       "catechumen_removed_success": "Catechumen removed successfully.",
       "no_unlinked_catechumens": "No unlinked catechumens found in this parish.",
-      "view_families_cta": "Link to Families"
+      "view_families_cta": "Link to Families",
+      "back_to_families": "Back to Families"
     },
     "save": "Save",
     "cancel": "Cancel",
@@ -3006,7 +3012,10 @@ export const common_en = {
             "body": "We certify that {{name}}{{birth}} has completed the {{stage}} stage of catechesis in the class {{className}} at {{parish}}, walking in faith with dedication."
           }
         }
-      }
+      },
+      "import_example": "CSV example",
+      "import_copy_example": "Copy example",
+      "import_download_example": "Download template"
     },
     "global_search_placeholder": "Search catechumens, classes, content, Bible...",
     "two_factor_code_placeholder": "6-digit code",
@@ -3357,7 +3366,8 @@ export const content_en = {
       },
       "card_duration": "Duration",
       "card_activities": "Activities",
-      "search_title": "Search"
+      "search_title": "Search",
+      "loading_contents": "Loading content"
     },
     "detail": {
       "by_author": "by {{name}}",

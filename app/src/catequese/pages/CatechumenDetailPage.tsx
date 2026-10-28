@@ -536,6 +536,7 @@ export default function CatechumenDetailPage() {
         )}
 
         <DetailTabs
+          id="catechumen-detail"
           tabs={[
             {
               id: "overview",
@@ -568,6 +569,10 @@ export default function CatechumenDetailPage() {
           }
         />
 
+        {CATECHUMEN_DETAIL_TABS.filter((id) => id !== tab).map((id) => (
+          <div key={id} role="tabpanel" id={`catechumen-detail-panel-${id}`} aria-labelledby={`catechumen-detail-tab-${id}`} hidden />
+        ))}
+        <div role="tabpanel" id={`catechumen-detail-panel-${tab}`} aria-labelledby={`catechumen-detail-tab-${tab}`}>
         {tab === "overview" &&
           attendance.length > 0 &&
           (() => {
@@ -1172,6 +1177,7 @@ export default function CatechumenDetailPage() {
           </div>
         )}
 
+        </div>
         {canEdit && (
           <details className="group rounded-sm border border-border/70 bg-white p-4">
             <summary className="cursor-pointer list-none text-xs font-medium text-muted-foreground marker:hidden">

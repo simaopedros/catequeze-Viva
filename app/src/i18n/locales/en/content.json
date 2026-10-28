@@ -93,7 +93,8 @@
     },
     "card_duration": "Duration",
     "card_activities": "Activities",
-    "search_title": "Search"
+    "search_title": "Search",
+    "loading_contents": "Loading content"
   },
   "detail": {
     "by_author": "by {{name}}",

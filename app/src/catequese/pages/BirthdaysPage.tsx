@@ -93,11 +93,12 @@ export default function BirthdaysPage() {
         subtitle={t("subtitle", {
           defaultValue: "Acompanhe aniversários e brindes da catequese.",
         })}
-        primaryAction={{
-          label: t("exportList"),
+        primaryAction={isLoading || birthdays?.length ? {
+          label: isLoading ? t("exportLoading") : t("exportList"),
+          disabled: isLoading,
           onClick: handleExportCSV,
-          ariaLabel: t("exportList"),
-        }}
+          ariaLabel: isLoading ? t("exportLoading") : t("exportList"),
+        } : undefined}
         secondaryActions={[]}
       />
 
@@ -128,7 +129,8 @@ export default function BirthdaysPage() {
       )}
 
       {isLoading ? (
-        <div className="space-y-2 animate-pulse">
+        <div className="space-y-2 animate-pulse" role="status" aria-busy="true">
+          <span className="sr-only">{t("loadingBirthdays")}</span>
           {[1, 2, 3].map((i) => (
             <div key={i} className="h-14 rounded-sm bg-muted" />
           ))}
@@ -140,7 +142,7 @@ export default function BirthdaysPage() {
           onRetry={refetchBirthdays}
         />
       ) : !birthdays?.length ? (
-        <EmptyState icon={Cake} title={t("noBirthdays")} compact />
+        <EmptyState icon={Cake} title={t("noBirthdaysPeriod")} compact />
       ) : (
         <AppPanel padded={false} className="overflow-hidden">
           <div className="divide-y divide-border/70">
