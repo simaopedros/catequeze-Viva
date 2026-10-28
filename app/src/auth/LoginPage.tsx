@@ -12,6 +12,7 @@ export default function Login() {
 
   return (
     <AuthPageLayout
+      animatedPanel
       pageTitle={t("login_title")}
       panel={{
         eyebrow: t("login_panel_eyebrow"),
