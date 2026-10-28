@@ -28,6 +28,7 @@
   "active": "Activos",
   "dropped": "Desertores",
   "transferred": "Transferidos",
+  "name": "Nombre",
   "rank": "Posición",
   "noData": "Sin datos disponibles",
   "noMeetings": "Sin encuentros registrados en esta clase",

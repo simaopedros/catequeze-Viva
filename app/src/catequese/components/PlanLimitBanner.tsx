@@ -149,7 +149,7 @@ export function PlanLimitBanner({
             asChild
             variant="subtle"
             size="xs"
-            className="shrink-0 gap-1 ml-auto"
+            className="ml-auto h-10 min-h-10 shrink-0 gap-1 sm:h-8 sm:min-h-8"
           >
             <Link to={upgradeHref}>
               <ArrowUpRight className="h-3 w-3" />

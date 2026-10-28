@@ -13,7 +13,10 @@ import {
   Minus,
   ClipboardList,
   Loader2,
+  Download,
+  Printer,
 } from "lucide-react";
+import { downloadCsv } from "../../shared/csvDownload";
 import { EmptyState } from "../../client/components/EmptyState";
 import {
   DropdownMenu,
@@ -583,13 +586,62 @@ export default function AttendancePage() {
                   })
             }
             actions={
-              <Button
-                className="h-10 rounded-md"
-                onClick={() => setShowNew(!showNew)}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                {t("matrix.new_meeting")}
-              </Button>
+              <div className="flex flex-wrap gap-2 print:hidden">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-10 min-h-10 rounded-md"
+                  onClick={() => {
+                    const header = [
+                      tcl("csv_roster_headers.name"),
+                      ...meetings.map((m: any) => {
+                        const d = m.date
+                          ? formatDate(m.date, currentLocale, {
+                              day: "2-digit",
+                              month: "2-digit",
+                            })
+                          : "";
+                        return `${d} ${m.title || ""}`.trim();
+                      }),
+                    ];
+                    const rows = [
+                      header,
+                      ...filteredCatechumens.map((cat: any) => [
+                        `${cat.firstName || ""} ${cat.lastName || ""}`.trim(),
+                        ...meetings.map(
+                          (m: any) => matrix[m.id]?.[cat.id] || "",
+                        ),
+                      ]),
+                    ];
+                    downloadCsv(
+                      `turma-presenca-${(cls?.name || classId || "turma")
+                        .toString()
+                        .replace(/\s+/g, "-")
+                        .slice(0, 40)}.csv`,
+                      rows,
+                    );
+                  }}
+                >
+                  <Download className="mr-1 h-4 w-4" />
+                  {tcl("export_attendance_csv")}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-10 min-h-10 rounded-md"
+                  onClick={() => window.print()}
+                >
+                  <Printer className="mr-1 h-4 w-4" />
+                  {tcl("print")}
+                </Button>
+                <Button
+                  className="h-10 min-h-10 rounded-md"
+                  onClick={() => setShowNew(!showNew)}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("matrix.new_meeting")}
+                </Button>
+              </div>
             }
           />
         </div>

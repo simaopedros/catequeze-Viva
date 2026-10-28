@@ -38,11 +38,18 @@ export default function AppPageHeaderOverflowMenu({
       <DropdownMenuContent align="end" className="min-w-[12rem]">
         {actions.map((action) =>
           action.href ? (
-            <DropdownMenuItem key={action.label} asChild>
+            <DropdownMenuItem
+              key={action.label}
+              asChild
+              className="min-h-10 sm:min-h-0"
+            >
               <Link
                 to={action.href}
                 onClick={action.onClick}
-                className={cn(action.destructive && "text-destructive")}
+                className={cn(
+                  "min-h-10 sm:min-h-0",
+                  action.destructive && "text-destructive",
+                )}
               >
                 {action.label}
               </Link>
@@ -51,7 +58,10 @@ export default function AppPageHeaderOverflowMenu({
             <DropdownMenuItem
               key={action.label}
               disabled={action.disabled}
-              className={cn(action.destructive && "text-destructive")}
+              className={cn(
+                "min-h-10 sm:min-h-0",
+                action.destructive && "text-destructive",
+              )}
               onClick={action.onClick}
             >
               {action.label}

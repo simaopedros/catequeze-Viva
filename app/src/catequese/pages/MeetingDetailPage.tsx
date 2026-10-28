@@ -9,6 +9,7 @@ import {
 } from "wasp/client/operations";
 import { Button } from "../../client/components/ui/button";
 import { Badge } from "../../client/components/ui/badge";
+import { Input } from "../../client/components/ui/input";
 import { Textarea } from "../../client/components/ui/textarea";
 import { Label } from "../../client/components/ui/label";
 import {
@@ -20,6 +21,8 @@ import { SkeletonPage } from "../../client/components/Skeletons";
 import { toast } from "../../client/hooks/use-toast";
 import { useLocale } from "../../i18n/useLocale";
 import { formatDate } from "../../i18n/format";
+import { LocalizedDateInput } from "../../client/components/LocalizedDateInput";
+import { todayInAppTimezone, toAppCalendarDate } from "../../shared/calendarDate";
 import {
   ArrowLeft,
   Calendar,
@@ -30,8 +33,14 @@ import {
   Play,
   Ban,
   MessageSquare,
+  Pencil,
 } from "lucide-react";
 import { isFamilyPortalHost } from "../../shared/portal";
+
+function meetingDateInputValue(date: Date | string | null | undefined): string {
+  if (!date) return todayInAppTimezone();
+  return todayInAppTimezone(toAppCalendarDate(date));
+}
 
 const STATUS_VARIANT: Record<
   string,
@@ -70,12 +79,22 @@ export default function MeetingDetailPage() {
   const [justifyFor, setJustifyFor] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDate, setEditDate] = useState(todayInAppTimezone());
 
   useEffect(() => {
     if (actionParam === "justify" && dependentIdParam) {
       setJustifyFor(dependentIdParam);
     }
   }, [actionParam, dependentIdParam]);
+
+  useEffect(() => {
+    if (!meetingRaw || editing) return;
+    const m = meetingRaw as any;
+    setEditTitle(m.title || m.theme || "");
+    setEditDate(meetingDateInputValue(m.date));
+  }, [meetingRaw, editing]);
 
   const dateLabel = useMemo(() => {
     if (!meeting?.date) return "";
@@ -95,6 +114,28 @@ export default function MeetingDetailPage() {
     try {
       await updateMeeting({ id: meeting.id, status });
       toast({ title: t("status_updated") });
+      await refetch();
+    } catch (e: any) {
+      toast({
+        title: t("update_error", { message: e.message || t("server_error") }),
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveMeetingEdit = async () => {
+    if (!meeting || !editTitle.trim()) return;
+    setSaving(true);
+    try {
+      await updateMeeting({
+        id: meeting.id,
+        title: editTitle.trim(),
+        date: editDate,
+      });
+      toast({ title: t("updated_success") });
+      setEditing(false);
       await refetch();
     } catch (e: any) {
       toast({
@@ -159,6 +200,7 @@ export default function MeetingDetailPage() {
   // Never show roll-call ("Fazer chamada") on the family portal surface.
   const canTakeAttendance = !onFamilyPortal && Boolean(perms.canTakeAttendance);
   const canChangeStatus = !onFamilyPortal && Boolean(perms.canChangeStatus);
+  const canEditMeeting = !onFamilyPortal && Boolean(perms.canEdit);
 
   const attendanceHref = meeting.class?.id
     ? `/app/classes/${meeting.class.id}/attendance?meetingId=${meeting.id}`
@@ -293,13 +335,73 @@ export default function MeetingDetailPage() {
       </div>
 
       <AppPanel className="space-y-3">
-        <div className="space-y-1.5">
-          <AppEyebrow className="flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5" />
-            {t("detail_info")}
-          </AppEyebrow>
-          <div className="h-px w-8 bg-brand-gold" aria-hidden />
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-1.5">
+            <AppEyebrow className="flex items-center gap-1.5">
+              <Calendar className="h-3.5 w-3.5" />
+              {t("detail_info")}
+            </AppEyebrow>
+            <div className="h-px w-8 bg-brand-gold" aria-hidden />
+          </div>
+          {canEditMeeting && !editing && (
+            <Button
+              type="button"
+              variant="outline"
+              className="h-10 min-h-10 rounded-sm sm:h-9"
+              disabled={saving}
+              onClick={() => setEditing(true)}
+            >
+              <Pencil className="mr-1.5 h-3.5 w-3.5" />
+              {t("edit_meeting")}
+            </Button>
+          )}
         </div>
+
+        {editing && canEditMeeting ? (
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="meeting-edit-title">{t("meeting_title")}</Label>
+              <Input
+                id="meeting-edit-title"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                maxLength={200}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="meeting-edit-date">{t("date")}</Label>
+              <LocalizedDateInput
+                id="meeting-edit-date"
+                value={editDate}
+                onChange={setEditDate}
+                aria-label={t("date")}
+              />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                className="h-11 min-h-11 rounded-sm"
+                disabled={saving || editTitle.trim().length < 3}
+                onClick={saveMeetingEdit}
+              >
+                {saving ? tc("saving") : t("save_meeting")}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-11 min-h-11 rounded-sm"
+                disabled={saving}
+                onClick={() => {
+                  setEditing(false);
+                  setEditTitle(meeting.title || meeting.theme || "");
+                  setEditDate(meetingDateInputValue(meeting.date));
+                }}
+              >
+                {tc("cancel")}
+              </Button>
+            </div>
+          </div>
+        ) : (
         <dl className="grid gap-3 text-sm sm:grid-cols-2">
           <div>
             <dt className="text-muted-foreground">{t("date")}</dt>
@@ -336,6 +438,7 @@ export default function MeetingDetailPage() {
             </div>
           )}
         </dl>
+        )}
 
         {canChangeStatus && meeting.status !== "CANCELLED" && (
           <div className="flex flex-wrap gap-2 border-t border-border/70 pt-2">
