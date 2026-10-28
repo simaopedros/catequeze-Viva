@@ -2577,7 +2577,19 @@ action updateUserProfile {
 
 action requestDataExport {
   fn: import { requestDataExport } from "@src/server/operations/userOperations",
-  entities: [User, Membership, GuardianProfile, AuditLog]
+  entities: [User, Membership, GuardianProfile, AuditLog, DataExportRequest]
+}
+
+query getDataExportRequest {
+  fn: import { getDataExportRequest } from "@src/server/operations/dataExport",
+  entities: [DataExportRequest]
+}
+
+api downloadDataExport {
+  fn: import { downloadDataExport } from "@src/server/operations/dataExport",
+  auth: true,
+  httpRoute: (GET, "/api/data-export/:id"),
+  entities: [User, Membership, GuardianProfile, AuditLog, DataExportRequest]
 }
 
 action changePassword {

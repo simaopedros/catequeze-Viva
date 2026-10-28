@@ -386,6 +386,7 @@ model File {
 // ─── Existing Models (Extended) ───────────────────────────────────────────────
 
 model User {
+  dataExportRequests DataExportRequest[]
   termsAcceptanceRequired Boolean @default(false)
   termsAcceptances TermsAcceptance[]
   consentEvents ConsentEvent[]
@@ -2642,6 +2643,20 @@ model BlogPost {
 
 
 
+
+model DataExportRequest {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  status           String   @default("REQUESTED")
+  requestedAt      DateTime @default(now())
+  expiresAt        DateTime @default(dbgenerated("(CURRENT_TIMESTAMP + interval '7 days')"))
+  deliveredAt      DateTime?
+  downloadCount    Int      @default(0)
+  lastDownloadedAt DateTime?
+
+  @@index([userId])
+}
 // Retained for recovery only. No automatic purge.
 model DeletedMeetingSnapshot {
   id                String   @id @default(uuid())
