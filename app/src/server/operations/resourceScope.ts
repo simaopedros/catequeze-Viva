@@ -133,7 +133,23 @@ export async function resolveActorForResource(
   },
   workspaceId?: string | null,
 ): Promise<ResourceActor> {
-  if (workspaceId) return resolveResourceActor(context, workspaceId);
+  if (workspaceId) {
+    const actor = await resolveResourceActor(context, workspaceId);
+    // A client-selected workspace must belong to the resource's hierarchy.
+    // Sharing a diocese does not make sibling parishes interchangeable.
+    const compatible =
+      (resource.parishId && resource.parishId === actor.parishId) ||
+      (resource.dioceseId &&
+        resource.dioceseId === actor.dioceseId &&
+        (resource.ownerType === "DIOCESE" || actor.ownerType === "DIOCESE"));
+    if (!actor.isPlatformAdmin && !compatible) {
+      throw new HttpError(
+        403,
+        "Você não pode acessar este recurso neste espaço.",
+      );
+    }
+    return actor;
+  }
   if (resource.parishId) {
     return resolveResourceActor(context, resource.parishId);
   }
@@ -154,8 +170,26 @@ export function canManageOwned(
   resource: {
     ownerType?: string | null;
     inheritancePolicy?: string | null;
+    parishId?: string | null;
+    dioceseId?: string | null;
+    communityId?: string | null;
+    classId?: string | null;
   },
 ): boolean {
+  if (!actor.isPlatformAdmin) {
+    const ownerType = resource.ownerType || actor.ownerType;
+    const resourceOwnerId =
+      ownerType === "DIOCESE"
+        ? resource.dioceseId
+        : ownerType === "COMMUNITY"
+          ? resource.communityId
+          : ownerType === "CLASS"
+            ? resource.classId
+            : resource.parishId;
+    const actorOwnerId =
+      ownerType === "COMMUNITY" ? actor.communityId : actor.ownerId;
+    if (!resourceOwnerId || resourceOwnerId !== actorOwnerId) return false;
+  }
   return canEditResource({
     role: actor.role,
     actorOwnerType: actor.ownerType,
@@ -171,6 +205,10 @@ export function assertCanManageOwned(
   resource: {
     ownerType?: string | null;
     inheritancePolicy?: string | null;
+    parishId?: string | null;
+    dioceseId?: string | null;
+    communityId?: string | null;
+    classId?: string | null;
   },
 ) {
   if (!canManageOwned(actor, resource)) {
