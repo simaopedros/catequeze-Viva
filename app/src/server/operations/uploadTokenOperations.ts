@@ -1,3 +1,5 @@
+import { VALID_DOCUMENT_TYPES } from '../storage/uploadValidation';
+import { assertPublicTokenRateLimit, isUploadTokenValid } from '../security/publicUploadToken';
 import { HttpError } from 'wasp/server';
 import { requireAuth, assertCanAccessCatechumenProfile } from '../auth/helpers';
 import crypto from 'node:crypto';
@@ -106,41 +108,16 @@ export const getCatechumenByUploadToken = async (
   args: { token: string },
   context: any,
 ) => {
+  assertPublicTokenRateLimit(args.token, context);
   const catechumen = await context.entities.CatechumenProfile.findUnique({
     where: { uploadToken: args.token },
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      uploadTokenExpires: true,
-      documents: {
-        select: {
-          id: true,
-          name: true,
-          type: true,
-          verifiedAt: true,
-          createdAt: true,
-        },
-        orderBy: { createdAt: 'desc' },
-      },
-    },
+    select: { firstName: true, uploadTokenExpires: true },
   });
-
-  if (!catechumen) {
-    throw new HttpError(404, 'Link inválido ou expirado.');
+  if (!catechumen) throw new HttpError(404, 'Link inválido ou expirado.');
+  if (!isUploadTokenValid(catechumen.uploadTokenExpires)) {
+    throw new HttpError(410, 'Este link de upload expirou. Peça ao catequista um novo link.');
   }
-
-  if (
-    catechumen.uploadTokenExpires &&
-    new Date(catechumen.uploadTokenExpires) < new Date()
-  ) {
-    throw new HttpError(
-      410,
-      'Este link de upload expirou. Peça ao catequista um novo link.',
-    );
-  }
-
-  return catechumen;
+  return { firstName: catechumen.firstName, documentTypes: [...VALID_DOCUMENT_TYPES] };
 };
 
 /**

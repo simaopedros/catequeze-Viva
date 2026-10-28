@@ -35,7 +35,7 @@ describe("audit média H — telefone internacional", () => {
 });
 
 describe("audit média H — ficha catequizando turma", () => {
-  it("exposes transfer and remove actions using cancelEnrollment", () => {
+  it("exposes atomic transfer and reversible removal actions", () => {
     const page = readFileSync(
       root("catequese/pages/CatechumenDetailPage.tsx"),
       "utf8",
@@ -49,7 +49,7 @@ describe("audit média H — ficha catequizando turma", () => {
       root("catequese/components/EnrollInClassDialog.tsx"),
       "utf8",
     );
-    expect(dialog).toContain("cancelEnrollment");
+    expect(dialog).toContain("transferEnrollment");
     expect(dialog).toContain('mode === "transfer"');
 
     const ops = readFileSync(
@@ -75,8 +75,8 @@ describe("audit média H — mensagens lista e erro inicial", () => {
   });
 });
 
-describe("audit média H — assinatura contagens", () => {
-  it("billing usage prefers planUsageClasses (non-archived)", () => {
+describe("audit média H — dashboard contagens", () => {
+  it("dashboard keeps non-archived class usage", () => {
     const dash = readFileSync(
       root("server/operations/dashboardOperations.ts"),
       "utf8",
@@ -84,13 +84,6 @@ describe("audit média H — assinatura contagens", () => {
     expect(dash).toContain("planUsageClassesPromise");
     expect(dash).toContain('status: { not: "ARCHIVED" }');
     expect(dash).toContain("planUsageClasses,");
-
-    const billing = readFileSync(
-      root("catequese/pages/BillingPage.tsx"),
-      "utf8",
-    );
-    expect(billing).toContain("planUsageClasses");
-    expect(billing).toContain("activeCatechumens");
   });
 });
 

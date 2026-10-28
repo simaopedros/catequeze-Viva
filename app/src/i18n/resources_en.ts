@@ -1413,7 +1413,10 @@ export const auth_en = {
     "reset_success_title": "Password updated",
     "reset_success_body": "Your password was updated. Sign in with your email and new password to continue.",
     "reset_error_generic": "We could not reset the password. Request a new link and try again.",
-    "reset_error_missing_token": "The reset link is missing. Open the email we sent and tap the button."
+    "reset_error_missing_token": "The reset link is missing. Open the email we sent and tap the button.",
+    "terms_continue": "Continue",
+    "terms_retry": "Try again",
+    "terms_save_error": "Unable to record acceptance. Please try again."
   } as const;
 
 export const bible_en = {
@@ -1490,7 +1493,7 @@ export const billing_en = {
     "covered_by_named": "Covered by {{name}}",
     "usage_title": "Plan usage",
     "classes": "Classes",
-    "catechumens": "Catechumens",
+    "catechumens": "Catechumens (distinct people)",
     "subscription_active": "Active subscription",
     "free_plan": "No subscription",
     "awaiting_payment": "Awaiting payment",
@@ -1529,7 +1532,7 @@ export const billing_en = {
     "cancelling": "Cancelling…",
     "manage_payment": "Manage payment",
     "classes_quota_label": "Classes usage",
-    "catechumens_quota_label": "Catechumens usage",
+    "catechumens_quota_label": "Catechumens (distinct people)",
     "ai_credits_quota_label": "Editorial credits usage",
     "ai_credits": "Editorial credits",
     "monthly_badge": "Monthly",
@@ -1863,7 +1866,8 @@ export const billing_en = {
     "checkout_charge_after_trial_one": "No card needed now. You get 1 free day; the first charge is on {{date}} if a card is on file. Without a card by then, the subscription is canceled with no charge.",
     "checkout_charge_after_trial_other": "No card needed now. You get {{count}} free days; the first charge is on {{date}} if a card is on file. Without a card by then, the subscription is canceled with no charge.",
     "checkout_charge_today": "You are charged on Stripe as soon as you confirm the subscription.",
-    "checkout_plan_includes_label": "What the plan includes"
+    "checkout_plan_includes_label": "What the plan includes",
+    "distinct_people_usage": "Each person counts once, even with multiple enrollments. People in completed classes still count."
   } as const;
 
 export const birthdays_en = {
@@ -2303,7 +2307,8 @@ export const classes_en = {
     "limit_reached_body": "The {{planName}} plan allows up to {{maxAllowed}} classes. You already use {{currentCount}}. To create another, pick a plan with more room or go back to Classes.",
     "limit_reached_none": "The {{planName}} plan does not unlock classes yet. See the plans to get started or go back to Classes.",
     "limit_see_plans": "See plans",
-    "limit_back_to_classes": "Back to Classes"
+    "limit_back_to_classes": "Back to Classes",
+    "restore_quota_blocked": "This class would exceed the plan limit for classes or distinct people. Free up capacity or change your plan."
   } as const;
 
 export const collaborative_en = {
@@ -2706,7 +2711,9 @@ export const common_en = {
           "label": "Sensitive data",
           "desc": "I authorize processing sensitive data in accordance with LGPD."
         }
-      }
+      },
+      "version": "Version {{version}}",
+      "accepted_at": "Accepted on {{date}}"
     },
     "documents": {
       "title": "Documents",
@@ -5752,9 +5759,9 @@ export const meetings_en = {
     "generate_ai_activity": "Generate activity with assistance",
     "generate_whatsapp": "Generate WhatsApp",
     "delete_confirm_title": "Remove meeting?",
-    "delete_confirm_desc": "This action cannot be undone. Attendance records will be removed.",
+    "delete_confirm_desc": "The meeting and attendance will go to trash for 30 days and can be restored during that time.",
     "delete_error": "Error removing meeting.",
-    "delete_success": "Meeting removed.",
+    "delete_success": "Meeting moved to trash.",
     "search_content": "Search content...",
     "detail_eyebrow": "Meeting",
     "detail_not_found": "Meeting not found",
@@ -5840,7 +5847,13 @@ export const meetings_en = {
       "next_label": "Next meeting",
       "empty_mobile": "No meeting scheduled."
     },
-    "delete_confirm_button": "Delete meeting"
+    "delete_confirm_button": "Delete meeting",
+    "trash_title": "Meeting trash (30 days)",
+    "trash_empty": "No meetings in trash.",
+    "trash_expires": "Expires on {{date}}",
+    "restore": "Restore",
+    "restore_success": "Meeting restored.",
+    "restore_error": "Unable to restore: {{message}}"
   } as const;
 
 export const messages_en = {
@@ -7338,7 +7351,7 @@ export const settings_en = {
     "export_desc": "Under GDPR/LGPD, you can request an export of your data.",
     "export_requesting": "Requesting...",
     "export_request": "Request export",
-    "export_success": "Request submitted successfully!",
+    "export_success": "Your data is available to download for 7 days.",
     "export_error": "Error requesting export: {{message}}",
     "export_retry": "Please try again.",
     "migration": "Parish Migration",
@@ -7362,7 +7375,16 @@ export const settings_en = {
     "avatar_alt": "Profile photo",
     "avatar_change": "Change photo",
     "avatar_add": "Add photo",
-    "avatar_remove": "Remove photo"
+    "avatar_remove": "Remove photo",
+    "export_reused": "You already have an active request. Download your data before the indicated date.",
+    "export_download": "Download my data",
+    "export_valid_until": "Valid until: {{date}} (7 days from the request).",
+    "export_status": "Status: {{status}}",
+    "export_status_requested": "Requested",
+    "export_status_ready": "Ready",
+    "export_status_downloaded": "Downloaded",
+    "export_status_expired": "Expired",
+    "export_download_error": "Unable to download your data. Check the expiration date and try again."
   } as const;
 
 export const social_en = {

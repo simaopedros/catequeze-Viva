@@ -1676,7 +1676,8 @@ export const classes_pt_BR_app = {
     "limit_reached_body": "O plano {{planName}} permite até {{maxAllowed}} turmas. Você já usa {{currentCount}}. Para criar outra, escolha um plano com mais espaço ou volte para Turmas.",
     "limit_reached_none": "O plano {{planName}} ainda não libera turmas. Veja os planos para começar ou volte para Turmas.",
     "limit_see_plans": "Ver planos",
-    "limit_back_to_classes": "Voltar para Turmas"
+    "limit_back_to_classes": "Voltar para Turmas",
+    "restore_quota_blocked": "Não é possível restaurar: a turma excederia o limite de turmas ou de pessoas distintas do plano. Libere vagas ou altere o plano."
   } as const;
 
 export const collaborative_pt_BR_app = {
@@ -2764,9 +2765,9 @@ export const meetings_pt_BR_app = {
     "generate_ai_activity": "Gerar atividade com assistência",
     "generate_whatsapp": "Gerar WhatsApp",
     "delete_confirm_title": "Remover encontro?",
-    "delete_confirm_desc": "Esta ação não pode ser desfeita. Os registros de presença deste encontro também serão removidos.",
+    "delete_confirm_desc": "O encontro e as presenças vão para a lixeira por 30 dias e podem ser restaurados nesse período.",
     "delete_error": "Erro ao remover encontro.",
-    "delete_success": "Encontro removido.",
+    "delete_success": "Encontro movido para a lixeira.",
     "search_content": "Buscar conteúdo...",
     "detail_eyebrow": "Encontro",
     "detail_not_found": "Encontro não encontrado",
@@ -2852,7 +2853,13 @@ export const meetings_pt_BR_app = {
       "next_label": "Próximo encontro",
       "empty_mobile": "Nenhum encontro agendado."
     },
-    "delete_confirm_button": "Remover encontro"
+    "delete_confirm_button": "Remover encontro",
+    "trash_title": "Lixeira de encontros (30 dias)",
+    "trash_empty": "Nenhum encontro na lixeira.",
+    "trash_expires": "Expira em {{date}}",
+    "restore": "Restaurar",
+    "restore_success": "Encontro restaurado.",
+    "restore_error": "Erro ao restaurar: {{message}}"
   } as const;
 
 export const messages_pt_BR_app = {
@@ -3943,7 +3950,7 @@ export const settings_pt_BR_app = {
     "export_desc": "Conforme a LGPD, você pode solicitar a exportação dos seus dados.",
     "export_requesting": "Solicitando...",
     "export_request": "Solicitar exportação",
-    "export_success": "Solicitação enviada com sucesso!",
+    "export_success": "Seus dados estão disponíveis para download por 7 dias.",
     "export_error": "Erro ao solicitar exportação: {{message}}",
     "export_retry": "Tente novamente.",
     "migration": "Migração de Paróquia",
@@ -3967,7 +3974,16 @@ export const settings_pt_BR_app = {
     "avatar_alt": "Foto de perfil",
     "avatar_change": "Trocar foto",
     "avatar_add": "Adicionar foto",
-    "avatar_remove": "Remover foto"
+    "avatar_remove": "Remover foto",
+    "export_reused": "Você já tem um pedido válido. Baixe seus dados até a data indicada.",
+    "export_download": "Baixar meus dados",
+    "export_valid_until": "Validade: {{date}} (7 dias a partir do pedido).",
+    "export_status": "Status: {{status}}",
+    "export_status_requested": "Solicitado",
+    "export_status_ready": "Disponível",
+    "export_status_downloaded": "Baixado",
+    "export_status_expired": "Expirado",
+    "export_download_error": "Não foi possível baixar os dados. Verifique a validade e tente novamente."
   } as const;
 
 export const social_pt_BR_app = {

@@ -107,28 +107,7 @@ export const updateUserProfile = async (args: any, context: any) => {
   return updated;
 };
 
-export const requestDataExport = async (_args: any, context: any) => {
-  requireAuth(context.user);
-
-  const [user, memberships, guardianProfile] = await Promise.all([
-    context.entities.User.findUnique({
-      where: { id: context.user.id },
-      select: { id: true, email: true, firstName: true, lastName: true, phone: true, locale: true, createdAt: true },
-    }),
-    context.entities.Membership.findMany({
-      where: { userId: context.user.id },
-      include: { parish: { select: { name: true } } },
-    }),
-    context.entities.GuardianProfile.findUnique({ where: { userId: context.user.id } }),
-  ]);
-
-  await writeAuditLog(context, 'EXPORT', 'User', context.user.id, { operation: 'DATA_EXPORT' });
-  return {
-    success: true,
-    message: 'Solicitação de exportação registrada. Você receberá seus dados por email.',
-    exportedAt: new Date().toISOString(),
-  };
-};
+export { requestDataExport } from "./dataExport";
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Senha atual é obrigatória.'),

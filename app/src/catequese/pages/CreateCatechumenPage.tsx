@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router";
-import { useMemo, useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -75,7 +75,7 @@ export default function CreateCatechumenPage() {
   const { userRole } = useUserContext();
   const { data: households = [], refetch: refetchHouseholds } = useQuery(
     listHouseholds,
-    { take: 200, parishId: activeParishId || undefined } as any,
+    { selector: true, take: 200, parishId: activeParishId || undefined } as any,
     { enabled: Boolean(activeParishId) },
   );
 
@@ -89,10 +89,7 @@ export default function CreateCatechumenPage() {
     "PERSONAL_OWNER",
   ].includes(userRole);
 
-  const filteredHouseholds = useMemo(() => {
-    if (!activeParishId) return households;
-    return households.filter((h: any) => h.parishId === activeParishId);
-  }, [households, activeParishId]);
+  const filteredHouseholds = households;
 
   const [photo, setPhoto] = useState("");
   const [classId, setClassId] = useState("");
@@ -132,6 +129,7 @@ export default function CreateCatechumenPage() {
   const onSubmit = async (values: CreateCatechumenValues) => {
     try {
       const result = await createCatechumen({
+        workspaceId: activeParishId,
         firstName: values.firstName.trim(),
         lastName: values.lastName.trim(),
         birthDate: values.birthDate || undefined,

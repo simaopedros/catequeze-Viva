@@ -46,7 +46,7 @@ async function canCoordinatorAccessUploaderDocument(
 
 /**
  * Populates req.user from the session WITHOUT rejecting unauthenticated requests.
- * This lets serveDocument support both session-based auth and token-based auth.
+ * Authorization is enforced by serveDocument.
  */
 async function optionalAuth(req: Request, _res: Response, next: NextFunction) {
   try {
@@ -62,7 +62,7 @@ async function optionalAuth(req: Request, _res: Response, next: NextFunction) {
  * Serves a document file from Bunny Storage or local uploads (dev).
  * Permissions:
  * - Authenticated users in the same parish as the document's catechumen/uploader
- * - Anyone with a valid uploadToken (public upload page)
+ * Public upload tokens never grant read access.
  */
 export async function serveDocument(req: Request, res: Response, context: any) {
   const docId = req.params.id;
@@ -83,11 +83,6 @@ export async function serveDocument(req: Request, res: Response, context: any) {
         name: true,
         catechumenProfileId: true,
         uploadedById: true,
-        catechumenProfile: {
-          select: {
-            uploadToken: true,
-          },
-        },
       },
     });
 
@@ -118,19 +113,6 @@ export async function serveDocument(req: Request, res: Response, context: any) {
       }
     }
 
-    // Option 2: Valid upload token matches the catechumen's token
-    if (!authorized && uploadToken && doc.catechumenProfile?.uploadToken) {
-      if (uploadToken === doc.catechumenProfile.uploadToken) {
-        const catechumen = await entities.CatechumenProfile.findUnique({
-          where: { id: doc.catechumenProfileId! },
-          select: { uploadTokenExpires: true },
-        });
-        if (catechumen?.uploadTokenExpires && new Date(catechumen.uploadTokenExpires) > new Date()) {
-          authorized = true;
-        }
-      }
-    }
-
     if (!authorized) {
       logger.warn('[doc-access] DENIED', {
         userId: user?.id,
@@ -152,7 +134,7 @@ export async function serveDocument(req: Request, res: Response, context: any) {
 
     const mimeType = doc.mimeType || stored.contentType || 'application/octet-stream';
     res.setHeader('Content-Type', mimeType);
-    res.setHeader('Content-Disposition', `inline; filename="${doc.name}"`);
+    res.setHeader('Content-Disposition', `inline; filename*=UTF-8''${encodeURIComponent(doc.name).replace(/[!'()*]/g, (char) => '%' + char.charCodeAt(0).toString(16).toUpperCase())}`);
     res.send(stored.buffer);
   } catch (err) {
     logger.error('Erro ao servir documento', { error: err instanceof Error ? err.message : String(err) });

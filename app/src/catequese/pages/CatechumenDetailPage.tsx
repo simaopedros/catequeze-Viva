@@ -1222,7 +1222,10 @@ export default function CatechumenDetailPage() {
             if (!open) setTransferEnrollmentId(null);
           }}
           mode="transfer"
-          fromEnrollmentId={transferEnrollmentId}
+          fromClassId={
+            profile.enrollments?.find((e: any) => e.id === transferEnrollmentId)
+              ?.classId
+          }
           catechumenId={profile.id}
           catechumenName={`${profile.firstName} ${profile.lastName}`}
           enrolledClassIds={enrolledClassIds}

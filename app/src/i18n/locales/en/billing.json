@@ -37,7 +37,7 @@
   "covered_by_named": "Covered by {{name}}",
   "usage_title": "Plan usage",
   "classes": "Classes",
-  "catechumens": "Catechumens",
+  "catechumens": "Catechumens (distinct people)",
   "subscription_active": "Active subscription",
   "free_plan": "No subscription",
   "awaiting_payment": "Awaiting payment",
@@ -76,7 +76,7 @@
   "cancelling": "Cancelling…",
   "manage_payment": "Manage payment",
   "classes_quota_label": "Classes usage",
-  "catechumens_quota_label": "Catechumens usage",
+  "catechumens_quota_label": "Catechumens (distinct people)",
   "ai_credits_quota_label": "Editorial credits usage",
   "ai_credits": "Editorial credits",
   "monthly_badge": "Monthly",
@@ -410,5 +410,6 @@
   "checkout_charge_after_trial_one": "No card needed now. You get 1 free day; the first charge is on {{date}} if a card is on file. Without a card by then, the subscription is canceled with no charge.",
   "checkout_charge_after_trial_other": "No card needed now. You get {{count}} free days; the first charge is on {{date}} if a card is on file. Without a card by then, the subscription is canceled with no charge.",
   "checkout_charge_today": "You are charged on Stripe as soon as you confirm the subscription.",
-  "checkout_plan_includes_label": "What the plan includes"
+  "checkout_plan_includes_label": "What the plan includes",
+  "distinct_people_usage": "Each person counts once, even with multiple enrollments. People in completed classes still count."
 }

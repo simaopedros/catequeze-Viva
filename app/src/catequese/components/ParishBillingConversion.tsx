@@ -250,6 +250,9 @@ export function ParishBillingConversion({
             : "space-y-3 rounded-sm border border-border/60 bg-muted/25 px-4 py-5 sm:px-6"
         }
       >
+        <p className="text-sm text-muted-foreground sm:col-span-full">
+          {t("distinct_people_usage")}
+        </p>
         {showUsageContrast ? (
           <>
             <div className="space-y-3">

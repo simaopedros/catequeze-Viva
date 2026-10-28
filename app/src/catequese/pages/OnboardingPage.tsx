@@ -787,8 +787,9 @@ export default function OnboardingPage() {
           </div>
         )}
 
-      {step === "catechumens" && classId && className && (
+      {step === "catechumens" && workspaceId && classId && className && (
         <CatechumensSetupStep
+          workspaceId={workspaceId}
           classId={classId}
           className={className}
           initialCount={catechumensCount}
