@@ -1676,7 +1676,8 @@ export const classes_pt_BR_app = {
     "limit_reached_body": "O plano {{planName}} permite até {{maxAllowed}} turmas. Você já usa {{currentCount}}. Para criar outra, escolha um plano com mais espaço ou volte para Turmas.",
     "limit_reached_none": "O plano {{planName}} ainda não libera turmas. Veja os planos para começar ou volte para Turmas.",
     "limit_see_plans": "Ver planos",
-    "limit_back_to_classes": "Voltar para Turmas"
+    "limit_back_to_classes": "Voltar para Turmas",
+    "restore_quota_blocked": "Não é possível restaurar: a turma excederia o limite de turmas ou de pessoas distintas do plano. Libere vagas ou altere o plano."
   } as const;
 
 export const collaborative_pt_BR_app = {
@@ -2764,9 +2765,9 @@ export const meetings_pt_BR_app = {
     "generate_ai_activity": "Gerar atividade com assistência",
     "generate_whatsapp": "Gerar WhatsApp",
     "delete_confirm_title": "Remover encontro?",
-    "delete_confirm_desc": "Esta ação não pode ser desfeita. Os registros de presença deste encontro também serão removidos.",
+    "delete_confirm_desc": "O encontro e as presenças vão para a lixeira por 30 dias e podem ser restaurados nesse período.",
     "delete_error": "Erro ao remover encontro.",
-    "delete_success": "Encontro removido.",
+    "delete_success": "Encontro movido para a lixeira.",
     "search_content": "Buscar conteúdo...",
     "detail_eyebrow": "Encontro",
     "detail_not_found": "Encontro não encontrado",
@@ -2852,7 +2853,13 @@ export const meetings_pt_BR_app = {
       "next_label": "Próximo encontro",
       "empty_mobile": "Nenhum encontro agendado."
     },
-    "delete_confirm_button": "Remover encontro"
+    "delete_confirm_button": "Remover encontro",
+    "trash_title": "Lixeira de encontros (30 dias)",
+    "trash_empty": "Nenhum encontro na lixeira.",
+    "trash_expires": "Expira em {{date}}",
+    "restore": "Restaurar",
+    "restore_success": "Encontro restaurado.",
+    "restore_error": "Erro ao restaurar: {{message}}"
   } as const;
 
 export const messages_pt_BR_app = {

@@ -10,6 +10,7 @@ import {
   validateFileSignature,
 } from '../storage/uploadValidation';
 import { logger } from '../logger';
+import { requireWorkspaceAccess } from '../operations/sharedScope';
 import { assertCanAccessCatechumenProfile } from '../auth/helpers';
 
 function runMulter(req: Request, res: Response): Promise<void> {
@@ -56,92 +57,37 @@ export async function authenticatedDocumentUpload(
     const entities = context.entities;
     const user = context.user;
 
-    let accessibleParishIds: string[] = [];
-    let effectiveRole: string | null = null;
-
-    if (!user.isAdmin) {
-      const memberships = await entities.Membership.findMany({
-        where: { userId: user.id, status: 'ACTIVE' },
-        select: { role: true, parishId: true },
+    let resolvedParishId: string | undefined;
+    if (catechumenProfileId) {
+      // Share the action's record-derived household and assigned-class guard.
+      const target = await entities.CatechumenProfile.findUnique({
+        where: { id: catechumenProfileId },
+        select: { parishId: true, household: { select: { parishId: true } } },
       });
-
-      const personalWorkspace = memberships.length === 0
-        ? await entities.Parish.findFirst({
-            where: { ownerId: user.id, type: 'PERSONAL' },
-            select: { id: true },
-          })
-        : null;
-
-      if (!memberships.length && !personalWorkspace) {
-        return res.status(403).json({ error: 'Sem permissão para enviar documentos.' });
-      }
-
-      const catechistRoles = [
-        'SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR',
-        'PERSONAL_OWNER', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST',
-      ];
-      const primaryRole = memberships[0]?.role || (personalWorkspace ? 'PERSONAL_OWNER' : null);
-      const hasCatechistRole = memberships.some((m: { role: string; parishId: string | null }) => catechistRoles.includes(m.role)) || Boolean(personalWorkspace);
-      effectiveRole = primaryRole;
-      accessibleParishIds = [
-        ...new Set([
-          ...memberships.map((m: { role: string; parishId: string | null }) => m.parishId),
-          ...(personalWorkspace ? [personalWorkspace.id] : []),
-        ]),
-      ].filter((id): id is string => Boolean(id));
-
-      if (hasCatechistRole) {
-        if (catechumenProfileId) {
-          const catechumen = await entities.CatechumenProfile.findUnique({
-            where: { id: catechumenProfileId },
-            select: {
-              parishId: true,
-              household: { select: { parishId: true } },
-              enrollments: { select: { class: { select: { parishId: true } } } },
-            },
-          });
-          const targetParishIds = [
-            catechumen?.parishId,
-            catechumen?.household?.parishId,
-            ...(catechumen?.enrollments || []).map((e: any) => e.class?.parishId),
-          ].filter(Boolean);
-          const allowed = targetParishIds.some((id) => accessibleParishIds.includes(id));
-          if (!allowed) {
-            return res.status(403).json({ error: 'Só pode enviar documentos para catequizandos da sua paróquia.' });
-          }
-        }
-      } else if (effectiveRole === 'GUARDIAN') {
-        if (!catechumenProfileId) {
-          return res.status(403).json({ error: 'Responsáveis devem selecionar um catequizando da família.' });
-        }
-        // ACTIVE membership in the catechumen's parish (not householdId alone).
-        try {
-          await assertCanAccessCatechumenProfile(context, catechumenProfileId);
-        } catch (err) {
-          if (err instanceof HttpError) {
-            return res.status(err.statusCode).json({ error: err.message });
-          }
-          throw err;
-        }
-      } else {
-        return res.status(403).json({ error: 'Sem permissão para enviar documentos.' });
+      if (!target) throw new HttpError(404, 'Catequizando não encontrado.');
+      resolvedParishId = target.parishId || target.household?.parishId || undefined;
+      await assertCanAccessCatechumenProfile(context, catechumenProfileId, resolvedParishId);
+    } else {
+      resolvedParishId = parishId || (await entities.Membership.findFirst({
+        where: { userId: user.id, status: 'ACTIVE' },
+        select: { parishId: true },
+      }))?.parishId;
+      if (!resolvedParishId && !user.isAdmin) {
+        resolvedParishId = (await entities.Parish.findFirst({
+          where: { ownerId: user.id, type: 'PERSONAL' }, select: { id: true },
+        }))?.id;
       }
     }
 
-    let resolvedParishId = parishId as string | undefined;
-    if (!resolvedParishId) {
-      if (effectiveRole === 'GUARDIAN' && catechumenProfileId) {
-        const catechumen = await entities.CatechumenProfile.findUnique({
-          where: { id: catechumenProfileId },
-          select: { parishId: true, household: { select: { parishId: true } } },
-        });
-        resolvedParishId = catechumen?.parishId || catechumen?.household?.parishId || undefined;
-      } else {
-        const membership = await entities.Membership.findFirst({
-          where: { userId: user.id, status: 'ACTIVE' },
-          select: { parishId: true },
-        });
-        resolvedParishId = membership?.parishId || accessibleParishIds[0];
+    if (!user.isAdmin) {
+      if (!resolvedParishId) throw new HttpError(403, 'Sem permissão para enviar documentos.');
+      const access = await requireWorkspaceAccess(context, resolvedParishId);
+      const allowedRoles = [
+        'SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR',
+        'PERSONAL_OWNER', 'LEAD_CATECHIST', 'ASSISTANT_CATECHIST',
+      ];
+      if (!allowedRoles.includes(access.role) && !(access.role === 'GUARDIAN' && catechumenProfileId)) {
+        throw new HttpError(403, 'Sem permissão para enviar documentos.');
       }
     }
 
@@ -164,6 +110,7 @@ export async function authenticatedDocumentUpload(
 
     return res.json({ success: true, document: { id: doc.id, name: doc.name, type: doc.type, createdAt: doc.createdAt } });
   } catch (err: any) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     logger.error('Erro no upload autenticado', { error: err?.message || String(err) });
     if (err?.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({ error: 'Ficheiro demasiado grande. Máximo: 10 MB.' });

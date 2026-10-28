@@ -333,6 +333,7 @@ export async function requireDioceseAccess(
 export async function assertCanAccessCatechumenProfile(
   context: any,
   catechumenId: string,
+  scopeParishId?: string,
 ): Promise<void> {
   requireAuth(context.user);
   if (context.user.isAdmin) return;
@@ -408,6 +409,7 @@ export async function assertCanAccessCatechumenProfile(
   const { resolveWorkspaceAccess } = await import("../operations/sharedScope");
 
   for (const parishId of candidateParishIds) {
+    if (scopeParishId && parishId !== scopeParishId) continue;
     const access = await resolveWorkspaceAccess(context, parishId, {
       required: false,
     });
