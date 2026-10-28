@@ -223,7 +223,7 @@ export default function CustomLoginForm({
           <button
             type="button"
             onClick={handleBackToLogin}
-            className="flex min-h-11 w-full items-center justify-center gap-1.5 py-2 text-sm text-muted-foreground transition-colors hover:text-brand-ink"
+            className="flex w-full items-center justify-center gap-1.5 py-2 text-sm text-muted-foreground transition-colors hover:text-brand-ink"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             {t("two_factor_back_button")}
@@ -282,7 +282,7 @@ export default function CustomLoginForm({
                 variant="outline"
                 onClick={handleResendVerification}
                 disabled={isResending || isLoading}
-                className="h-11 w-full"
+                className="h-9 w-full"
               >
                 {isResending && (
                   <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
@@ -323,7 +323,7 @@ export default function CustomLoginForm({
               </Label>
               <a
                 href="/request-password-reset"
-                className="inline-flex min-h-11 items-center text-sm text-muted-foreground underline-offset-2 transition-colors hover:text-brand-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="text-sm text-muted-foreground underline-offset-2 transition-colors hover:text-brand-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 {t("login_forgot_password")}
               </a>
@@ -384,7 +384,7 @@ export default function CustomLoginForm({
         {t("login_no_account")}{" "}
         <a
           href={signupHref}
-          className="inline-flex min-h-11 items-center font-medium text-brand-ink hover:underline"
+          className="font-medium text-brand-ink hover:underline"
         >
           {t(
             isFamilyPortalHost()

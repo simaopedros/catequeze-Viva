@@ -8,17 +8,9 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
-import { useCountUp } from "../../home/homeMotionEnv";
 import { useTranslation } from "react-i18next";
 
-export function DashboardMock({
-  ns = "landing",
-  animate = false,
-}: {
-  ns?: string;
-  animate?: boolean;
-}) {
-  const count = useCountUp(142, animate, 1100);
+export function DashboardMock({ ns = "landing" }: { ns?: string }) {
   const { t } = useTranslation(ns);
   return (
     <div className="h-full overflow-hidden p-3 sm:p-4 space-y-3 bg-background text-overline sm:text-xs">
@@ -35,7 +27,7 @@ export function DashboardMock({
         {[
           {
             l: t("mockup_dashboard.catechumens"),
-            v: animate ? String(count) : "142",
+            v: "142",
             i: Users,
             c: "text-brand-ink bg-brand-ink/8",
           },
