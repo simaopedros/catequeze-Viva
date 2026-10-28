@@ -1,3 +1,4 @@
+import { attendanceRateDisplay } from "../../shared/attendanceMetrics";
 import { lazy, Suspense, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, Link } from "react-router";
@@ -198,7 +199,7 @@ export default function ClassPastoralReportPage() {
         <AppMetric label={t("totalMeetings")} value={data.totalMeetings} />
         <AppMetric
           label={t("avgAttendance")}
-          value={`${data.avgAttendance}%`}
+          value={attendanceRateDisplay(data.avgAttendance, data.totalAttendanceRecords, tcl("no_roll_calls"))}
         />
         <AppMetric label={t("atRisk")} value={data.atRiskCount} />
       </div>

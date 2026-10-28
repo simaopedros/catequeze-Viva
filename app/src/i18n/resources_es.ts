@@ -2303,7 +2303,12 @@ export const classes_es = {
     "limit_reached_body": "El plan {{planName}} permite hasta {{maxAllowed}} grupos. Ya usas {{currentCount}}. Para crear otro, elige un plan con más espacio o vuelve a Grupos.",
     "limit_reached_none": "El plan {{planName}} aún no libera grupos. Mira los planes para comenzar o vuelve a Grupos.",
     "limit_see_plans": "Ver planes",
-    "limit_back_to_classes": "Volver a Grupos"
+    "limit_back_to_classes": "Volver a Grupos",
+    "no_roll_calls": "Sin llamadas de asistencia registradas",
+    "export_period": "Período de exportación",
+    "export_last_90_days": "Últimos 90 días",
+    "export_all_history": "Todo el historial",
+    "export_until": "hasta"
   } as const;
 
 export const collaborative_es = {

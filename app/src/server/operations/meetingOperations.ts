@@ -328,6 +328,9 @@ export const getClassAttendanceMatrix = async (
     toDate?: string;
     /** Cap number of meetings (default 40, max 80) */
     take?: number;
+    /** Ignore the default lower bound; callers page using cursor. */
+    allHistory?: boolean;
+    cursor?: string;
   },
   context: any,
 ) => {
@@ -349,10 +352,11 @@ export const getClassAttendanceMatrix = async (
   return context.entities.Meeting.findMany({
     where: {
       classId: args.classId,
-      date: { gte: fromDate, lt: toDate },
+      date: { ...(args.allHistory ? {} : { gte: fromDate }), lt: toDate },
       status: { not: "CANCELLED" },
     },
-    orderBy: { date: "desc" },
+    orderBy: [{ date: "desc" }, { id: "desc" }],
+    ...(args.cursor ? { cursor: { id: args.cursor }, skip: 1 } : {}),
     take,
     include: {
       attendance: {

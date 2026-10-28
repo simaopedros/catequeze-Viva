@@ -239,5 +239,10 @@
   "limit_reached_body": "The {{planName}} plan allows up to {{maxAllowed}} classes. You already use {{currentCount}}. To create another, pick a plan with more room or go back to Classes.",
   "limit_reached_none": "The {{planName}} plan does not unlock classes yet. See the plans to get started or go back to Classes.",
   "limit_see_plans": "See plans",
-  "limit_back_to_classes": "Back to Classes"
+  "limit_back_to_classes": "Back to Classes",
+  "no_roll_calls": "No roll calls recorded",
+  "export_period": "Export period",
+  "export_last_90_days": "Last 90 days",
+  "export_all_history": "All history",
+  "export_until": "until"
 }

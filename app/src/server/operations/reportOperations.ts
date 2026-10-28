@@ -1,3 +1,4 @@
+import { attendanceRateFromTotals } from '../../shared/attendanceMetrics';
 import { HttpError } from 'wasp/server';
 import { requireWorkspaceAccess, classWhereForAccess } from './sharedScope';
 import {
@@ -87,11 +88,10 @@ export const getReportsOverview = async (
 
   const totalEnrolled = classReports.reduce((s: number, c: any) => s + c.totalEnrolled, 0);
   const totalMeetings = classReports.reduce((s: number, c: any) => s + c.totalMeetings, 0);
-  // Classes without any roll call yet would drag the average down with a fake 0%.
-  const ratedClasses = classReports.filter((c: any) => c.totalAttendanceRecords > 0);
-  const avgAttendance = ratedClasses.length > 0
-    ? Math.round(ratedClasses.reduce((s: number, c: any) => s + c.attendanceRate, 0) / ratedClasses.length)
-    : 0;
+  const avgAttendance = attendanceRateFromTotals(
+    classReports.reduce((sum: number, c: any) => sum + c.attendedCount, 0),
+    classReports.reduce((sum: number, c: any) => sum + c.totalAttendanceRecords, 0),
+  );
 
   return {
     totalEnrolled,
