@@ -2642,6 +2642,23 @@ model BlogPost {
 
 
 
+// Retained for recovery only. No automatic purge.
+model DeletedMeetingSnapshot {
+  id                String   @id @default(uuid())
+  classId           String
+  parishId          String?
+  originalMeetingId String
+  deletedAt         DateTime @default(now())
+  deletedById       String
+  expiresAt         DateTime
+  restoredAt        DateTime?
+  restoredById      String?
+  payload           Json
+
+  @@index([classId])
+  @@index([expiresAt])
+}
+
 // Account terms are separate from guardian authorizations.
 model TermsAcceptance {
   id String @id @default(uuid())

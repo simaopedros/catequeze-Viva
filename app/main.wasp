@@ -939,7 +939,7 @@ action updateMeeting {
 
 action deleteMeeting {
   fn: import { deleteMeeting } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, AttendanceRecord, CatechesisClass, Membership, Parish]
+  entities: [Meeting, AttendanceRecord, DeletedMeetingSnapshot, CatechesisClass, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
 }
 
 query getMeeting {
@@ -2825,6 +2825,16 @@ page PublicUploadDocsPage {
 
 
 
+
+query listDeletedMeetings {
+  fn: import { listDeletedMeetings } from "@src/server/operations/meetingOperations",
+  entities: [DeletedMeetingSnapshot, CatechesisClass, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
+}
+
+action restoreDeletedMeeting {
+  fn: import { restoreDeletedMeeting } from "@src/server/operations/meetingOperations",
+  entities: [DeletedMeetingSnapshot, Meeting, AttendanceRecord, CatechesisClass, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
+}
 
 query getAccountTermsStatus {
   fn: import { getAccountTermsStatus } from "@src/server/operations/termsOperations",

@@ -1300,10 +1300,104 @@ export const deleteMeeting = async (
 
   await assertCanTakeAttendance(context, meeting.classId, args.surface);
 
-  await context.entities.AttendanceRecord.deleteMany({
-    where: { meetingId: args.id },
+  await prisma.$transaction(async (tx: any) => {
+    // Lock the meeting and existing attendance before reading the recovery payload.
+    await tx.$queryRaw`SELECT id FROM "Meeting" WHERE id = ${args.id} FOR UPDATE`;
+    await tx.$queryRaw`SELECT id FROM "AttendanceRecord" WHERE "meetingId" = ${args.id} FOR UPDATE`;
+    const original = await tx.meeting.findUnique({
+      where: { id: args.id },
+      include: { attendance: true },
+    });
+    if (!original) throw new HttpError(404, "Encontro não encontrado.");
+    const classData = await tx.catechesisClass.findUnique({
+      where: { id: original.classId },
+    });
+    const { attendance, ...data } = original;
+    const deletedAt = new Date();
+    await tx.deletedMeetingSnapshot.create({
+      data: {
+        classId: original.classId,
+        parishId: classData?.parishId,
+        originalMeetingId: original.id,
+        deletedById: context.user.id,
+        deletedAt,
+        expiresAt: new Date(deletedAt.getTime() + 30 * 24 * 60 * 60 * 1000),
+        payload: JSON.parse(JSON.stringify({ meeting: data, attendance })),
+      },
+    });
+    await tx.attendanceRecord.deleteMany({ where: { meetingId: args.id } });
+    await tx.meeting.delete({ where: { id: args.id } });
   });
-  await context.entities.Meeting.delete({ where: { id: args.id } });
-
   return { success: true };
+};
+
+export const listDeletedMeetings = async (
+  args: { classId: string; surface?: string },
+  context: any,
+) => {
+  await assertCanTakeAttendance(context, args.classId, args.surface);
+  const rows = await context.entities.DeletedMeetingSnapshot.findMany({
+    where: {
+      classId: args.classId,
+      restoredAt: null,
+      expiresAt: { gt: new Date() },
+    },
+    orderBy: { deletedAt: "desc" },
+  });
+  // Never return attendance or other personal data to the trash list.
+  return rows.map((row: any) => ({
+    id: row.id,
+    title: row.payload.meeting.title,
+    date: row.payload.meeting.date,
+    deletedAt: row.deletedAt,
+    expiresAt: row.expiresAt,
+  }));
+};
+
+export const restoreDeletedMeeting = async (
+  args: { id: string; surface?: string },
+  context: any,
+) => {
+  if (!context.user) throw new HttpError(401);
+  const snapshot = await context.entities.DeletedMeetingSnapshot.findUnique({
+    where: { id: args.id },
+  });
+  if (!snapshot)
+    throw new HttpError(404, "Encontro na lixeira não encontrado.");
+  await assertCanTakeAttendance(context, snapshot.classId, args.surface);
+  return prisma.$transaction(async (tx: any) => {
+    // Lock the class against archiving and atomically claim the snapshot.
+    const classes =
+      await tx.$queryRaw`SELECT id, status FROM "CatechesisClass" WHERE id = ${snapshot.classId} FOR UPDATE`;
+    if (!classes.length || classes[0].status === "ARCHIVED") {
+      throw new HttpError(
+        400,
+        "A turma está arquivada ou foi excluída. Reative a turma antes de restaurar.",
+      );
+    }
+    const restoredAt = new Date();
+    const claimed = await tx.deletedMeetingSnapshot.updateMany({
+      where: { id: args.id, restoredAt: null, expiresAt: { gt: restoredAt } },
+      data: { restoredAt, restoredById: context.user.id },
+    });
+    if (!claimed.count)
+      throw new HttpError(400, "Este encontro expirou ou já foi restaurado.");
+    const { meeting, attendance } = snapshot.payload as any;
+    if (
+      await tx.meeting.findUnique({ where: { id: snapshot.originalMeetingId } })
+    ) {
+      throw new HttpError(409, "Este encontro já existe ou já foi restaurado.");
+    }
+    const withDates = (row: any) => ({
+      ...row,
+      createdAt: new Date(row.createdAt),
+      updatedAt: new Date(row.updatedAt),
+    });
+    await tx.meeting.create({
+      data: { ...withDates(meeting), date: new Date(meeting.date) },
+    });
+    if (attendance.length)
+      await tx.attendanceRecord.createMany({ data: attendance.map(withDates) });
+    return { success: true };
+  });
 };

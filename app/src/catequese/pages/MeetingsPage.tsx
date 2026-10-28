@@ -37,6 +37,8 @@ import {
   createMeeting,
   updateMeeting,
   deleteMeeting,
+  listDeletedMeetings,
+  restoreDeletedMeeting,
   listContentItems,
 } from "wasp/client/operations";
 import { useUserContext } from "../../client/hooks/useUserContext";
@@ -62,6 +64,36 @@ export default function MeetingsPage() {
     "ASSISTANT_CATECHIST",
     "PERSONAL_OWNER",
   ].includes(userRole);
+  const [showTrash, setShowTrash] = useState(false);
+  const [restoring, setRestoring] = useState<string | null>(null);
+  const {
+    data: deletedMeetings,
+    error: trashError,
+    isLoading: trashLoading,
+    refetch: refetchTrash,
+  } = useQuery(
+    listDeletedMeetings,
+    { classId: classId! },
+    { enabled: Boolean(classId) && canManageMeetings && showTrash },
+  );
+  const handleRestore = async (id: string) => {
+    setRestoring(id);
+    try {
+      await restoreDeletedMeeting({ id });
+      toast({ title: t("restore_success") });
+      setCursor(null);
+      setMeetingItems([]);
+      setNextCursor(null);
+      await Promise.all([refetchMeetings(), refetchTrash()]);
+    } catch (e: any) {
+      toast({
+        title: t("restore_error", { message: e.message || tc("try_again") }),
+        variant: "destructive",
+      });
+    } finally {
+      setRestoring(null);
+    }
+  };
   const PAGE_SIZE = 40;
   const [meetingItems, setMeetingItems] = useState<any[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -152,6 +184,7 @@ export default function MeetingsPage() {
     try {
       await deleteMeeting({ id: deleteTarget });
       toast({ title: t("delete_success") });
+      if (showTrash) refetchTrash();
       setCursor(null);
       setMeetingItems([]);
       setNextCursor(null);
@@ -220,6 +253,52 @@ export default function MeetingsPage() {
           },
         ]}
       />
+
+      {canManageMeetings && (
+        <Button
+          variant="link"
+          onClick={() => setShowTrash(!showTrash)}
+          aria-expanded={showTrash}
+        >
+          {t("trash_title")}
+        </Button>
+      )}
+      {canManageMeetings && showTrash && (
+        <AppPanel className="space-y-3">
+          <h2 className="font-semibold">{t("trash_title")}</h2>
+          {trashError ? (
+            <QueryErrorState error={trashError} onRetry={refetchTrash} />
+          ) : trashLoading ? (
+            <p>{tc("loading")}</p>
+          ) : (
+            <>
+              {!deletedMeetings?.length && <p>{t("trash_empty")}</p>}
+              {deletedMeetings?.map((item: any) => (
+                <div
+                  key={item.id}
+                  className="flex flex-wrap items-center justify-between gap-3 border-b py-3"
+                >
+                  <div>
+                    <p>{item.title || t("no_title")}</p>
+                    <p>{formatDate(item.date, currentLocale)}</p>
+                    <p>
+                      {t("trash_expires", {
+                        date: formatDate(item.expiresAt, currentLocale),
+                      })}
+                    </p>
+                  </div>
+                  <Button
+                    disabled={Boolean(restoring)}
+                    onClick={() => handleRestore(item.id)}
+                  >
+                    {t("restore")}
+                  </Button>
+                </div>
+              ))}
+            </>
+          )}
+        </AppPanel>
+      )}
 
       {showForm && (
         <AppPanel className="space-y-3">
