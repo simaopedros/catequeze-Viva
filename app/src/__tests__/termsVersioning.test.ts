@@ -124,15 +124,10 @@ describe("account terms", () => {
     expect((getEmailUserFields as any).termsAcceptanceRequired({})).toBe(true);
     expect((getGoogleUserFields as any).termsAcceptanceRequired({})).toBe(true);
   });
-  it("validates the email signup checkbox on the server", () => {
-    expect(() =>
-      (getEmailUserFields as any).email({ email: "account@example.test" }),
-    ).toThrow();
+  it("accepts the SDK email payload and still requires authenticated acceptance", () => {
     expect(
-      (getEmailUserFields as any).email({
-        email: "account@example.test",
-        acceptedTerms: true,
-      }),
+      (getEmailUserFields as any).email({ email: "account@example.test" }),
     ).toBe("account@example.test");
+    expect((getEmailUserFields as any).termsAcceptanceRequired({})).toBe(true);
   });
 });

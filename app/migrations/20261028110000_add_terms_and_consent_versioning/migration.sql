@@ -1,5 +1,5 @@
--- Nullable marker: existing accounts are never required to accept retroactively.
-ALTER TABLE "User" ADD COLUMN "termsAcceptanceRequired" BOOLEAN;
+-- Existing accounts and creates outside signup do not require retroactive acceptance.
+ALTER TABLE "User" ADD COLUMN "termsAcceptanceRequired" BOOLEAN NOT NULL DEFAULT false;
 ALTER TABLE "ConsentRecord" ADD COLUMN "textVersion" TEXT;
 
 CREATE TABLE "TermsAcceptance" (

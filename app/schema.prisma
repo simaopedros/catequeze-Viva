@@ -386,7 +386,7 @@ model File {
 // ─── Existing Models (Extended) ───────────────────────────────────────────────
 
 model User {
-  termsAcceptanceRequired Boolean?
+  termsAcceptanceRequired Boolean @default(false)
   termsAcceptances TermsAcceptance[]
   consentEvents ConsentEvent[]
   id        String   @id @default(uuid())

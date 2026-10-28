@@ -143,7 +143,6 @@ export default function CustomSignupForm({
         password,
         username: email,
         isAdmin: false,
-        acceptedTerms: true,
       });
       // Email verification may leave the new account unauthenticated.
       // The first authenticated access requires the same explicit acceptance.

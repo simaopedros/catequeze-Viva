@@ -8,7 +8,6 @@ function isAdminEmail(email: string): boolean {
 
 const emailDataSchema = z.object({
   email: z.string(),
-  acceptedTerms: z.literal(true),
 });
 
 export const getEmailUserFields = defineUserSignupFields({
