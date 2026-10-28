@@ -102,7 +102,9 @@ function classListInclude(now: Date = new Date()) {
     },
     _count: {
       select: {
-        enrollments: { where: { status: "ENROLLED" } },
+        enrollments: {
+          where: { status: "ENROLLED", catechumenProfileId: { not: null } },
+        },
         meetings: true,
       },
     },

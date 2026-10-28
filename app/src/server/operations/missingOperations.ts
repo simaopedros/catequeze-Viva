@@ -204,13 +204,23 @@ export const exportReport = async (
   }
 
   const whereClause: any = {
-    status: 'ACTIVE',
+    status: { not: 'ARCHIVED' },
     ...classScope,
   };
 
   const rows = await context.entities.CatechesisClass.findMany({
     where: whereClause,
-    select: { id: true, name: true, _count: { select: { enrollments: true } } },
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: {
+          enrollments: {
+            where: { status: 'ENROLLED', catechumenProfileId: { not: null } },
+          },
+        },
+      },
+    },
     take: 5000,
   });
 

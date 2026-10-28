@@ -75,7 +75,8 @@ export default function CreateCatechumenPage() {
   const { userRole } = useUserContext();
   const { data: households = [], refetch: refetchHouseholds } = useQuery(
     listHouseholds,
-    { take: 200 },
+    { take: 200, parishId: activeParishId || undefined } as any,
+    { enabled: Boolean(activeParishId) },
   );
 
   const canManage = [

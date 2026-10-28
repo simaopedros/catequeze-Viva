@@ -2156,7 +2156,7 @@ export const dashboard_pt_BR_app = {
     "see_classes": "Ver turmas",
     "see_report": "Ver relatório",
     "see_pending": "Ver pendências",
-    "active_class_one": "Turma ativa",
+    "active_class_one": "Turma em andamento",
     "trend_down": "{{pct}}% no último mês",
     "trend_up": "{{pct}}% no último mês",
     "my_class": "Minha turma",
@@ -2210,7 +2210,8 @@ export const dashboard_pt_BR_app = {
     "institutional_title": "Painel de Gestão Pastoral",
     "institutional_subtitle": "KPIs consolidados, tendências e alertas.",
     "active_catechumens": "Catequizandos ativos",
-    "active_classes": "Turmas ativas",
+    "active_classes": "Turmas em andamento",
+    "active_classes_hint": "Só conta turmas com status ativo. Pausadas ou concluídas ficam de fora.",
     "avg_attendance": "Presença média",
     "pending_sacraments": "Pendências sacramentais",
     "pending_documents": "Documentos pendentes",
@@ -3887,7 +3888,12 @@ export const sacraments_pt_BR_app = {
       "error_update_milestone": "Erro ao atualizar marco",
       "error_copy": "Erro ao copiar modelo",
       "error_publish": "Erro ao publicar",
-      "error_restart": "Reinicie o servidor Wasp."
+      "error_restart": "Reinicie o servidor Wasp.",
+      "aria_edit": "Editar modelo",
+      "aria_copy": "Duplicar modelo",
+      "aria_publish": "Publicar modelo",
+      "aria_expand": "Ver marcos",
+      "aria_collapse": "Ocultar marcos"
     }
   } as const;
 

@@ -3617,7 +3617,7 @@ export const dashboard_en = {
     "see_classes": "See classes",
     "see_report": "See report",
     "see_pending": "See pending items",
-    "active_class_one": "Active class",
+    "active_class_one": "Class in progress",
     "trend_down": "{{pct}}% in the last month",
     "trend_up": "{{pct}}% in the last month",
     "my_class": "My class",
@@ -3671,7 +3671,8 @@ export const dashboard_en = {
     "institutional_title": "Pastoral Management Dashboard",
     "institutional_subtitle": "Consolidated KPIs, trends and alerts.",
     "active_catechumens": "Active catechumens",
-    "active_classes": "Active classes",
+    "active_classes": "Classes in progress",
+    "active_classes_hint": "Only classes with active status. Paused or concluded are not included.",
     "avg_attendance": "Average attendance",
     "pending_sacraments": "Pending sacraments",
     "pending_documents": "Pending documents",
@@ -7263,7 +7264,12 @@ export const sacraments_en = {
       "error_update_milestone": "Error updating milestone",
       "error_copy": "Error copying template",
       "error_publish": "Error publishing",
-      "error_restart": "Restart the Wasp server."
+      "error_restart": "Restart the Wasp server.",
+      "aria_edit": "Edit template",
+      "aria_copy": "Duplicate template",
+      "aria_publish": "Publish template",
+      "aria_expand": "Show milestones",
+      "aria_collapse": "Hide milestones"
     }
   } as const;
 
@@ -7482,6 +7488,7 @@ export const topbar_en = {
     "searchNavigate": "navigate",
     "searchOpen": "open",
     "searchFocusHint": "Ctrl+K to focus",
+    "searchTypeHint": "Type at least 3 letters to search",
     "notifications": "Notifications",
     "markAllRead": "Mark all as read",
     "noNotifications": "No notifications",

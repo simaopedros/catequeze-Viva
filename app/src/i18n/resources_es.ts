@@ -3617,7 +3617,7 @@ export const dashboard_es = {
     "see_classes": "Ver grupos",
     "see_report": "Ver informe",
     "see_pending": "Ver pendientes",
-    "active_class_one": "Grupo activo",
+    "active_class_one": "Grupo en curso",
     "trend_down": "{{pct}}% en el último mes",
     "trend_up": "{{pct}}% en el último mes",
     "my_class": "Mi grupo",
@@ -3671,7 +3671,8 @@ export const dashboard_es = {
     "institutional_title": "Panel de Gestión Pastoral",
     "institutional_subtitle": "KPIs consolidados, tendencias y alertas.",
     "active_catechumens": "Catecúmenos activos",
-    "active_classes": "Grupos activos",
+    "active_classes": "Grupos en curso",
+    "active_classes_hint": "Solo cuenta grupos con estado activo. Pausados o concluidos no entran.",
     "avg_attendance": "Asistencia media",
     "pending_sacraments": "Pendientes sacramentales",
     "pending_documents": "Documentos pendientes",
@@ -7263,7 +7264,12 @@ export const sacraments_es = {
       "error_update_milestone": "Error al actualizar hito",
       "error_copy": "Error al copiar modelo",
       "error_publish": "Error al publicar",
-      "error_restart": "Reinicie el servidor Wasp."
+      "error_restart": "Reinicie el servidor Wasp.",
+      "aria_edit": "Editar modelo",
+      "aria_copy": "Duplicar modelo",
+      "aria_publish": "Publicar modelo",
+      "aria_expand": "Ver hitos",
+      "aria_collapse": "Ocultar hitos"
     }
   } as const;
 
@@ -7482,6 +7488,7 @@ export const topbar_es = {
     "searchNavigate": "navegar",
     "searchOpen": "abrir",
     "searchFocusHint": "Ctrl+K para enfocar",
+    "searchTypeHint": "Escriba al menos 3 letras para buscar",
     "notifications": "Notificaciones",
     "markAllRead": "Marcar todas como leídas",
     "noNotifications": "Sin notificaciones",

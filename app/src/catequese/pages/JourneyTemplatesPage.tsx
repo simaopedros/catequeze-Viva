@@ -356,11 +356,17 @@ export default function JourneyTemplatesPage() {
                       </div>
                     ) : (
                       <>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold tracking-tight text-brand-ink">
-                            {tmpl.name}
-                          </h3>
-                          <Badge variant="outline" className="text-overline">
+                        {/* Título sozinho + selos abaixo: no mobile o flex
+                            horizontal espremia o nome em 3–4 linhas e cortava
+                            o Badge do sacramento fora do cartão. */}
+                        <h3 className="min-w-0 truncate text-base font-semibold tracking-tight text-brand-ink sm:whitespace-normal sm:break-words">
+                          {tmpl.name}
+                        </h3>
+                        <div className="mt-1.5 flex min-w-0 flex-wrap items-center gap-1.5">
+                          <Badge
+                            variant="outline"
+                            className="max-w-full truncate text-overline"
+                          >
                             {scopeLabel}
                           </Badge>
                           {(tmpl.ownerType === "DIOCESE" || !tmpl.parishId) && (
@@ -371,17 +377,17 @@ export default function JourneyTemplatesPage() {
                             />
                           )}
                           {tmpl.sacrament?.name && (
-                            <Badge className="text-overline">
+                            <Badge className="max-w-full truncate text-overline">
                               {tmpl.sacrament.name}
                             </Badge>
                           )}
                         </div>
                         {tmpl.description && (
-                          <p className="text-xs text-muted-foreground mt-0.5">
+                          <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
                             {tmpl.description}
                           </p>
                         )}
-                        <p className="text-overline text-muted-foreground mt-1">
+                        <p className="mt-1 text-overline text-muted-foreground">
                           {t("templates.milestones_count", {
                             count: milestones.length,
                           })}
@@ -391,47 +397,56 @@ export default function JourneyTemplatesPage() {
                   </div>
 
                   {!isEditing && (
-                    <div className="flex items-center gap-1 flex-shrink-0">
+                    <div className="flex flex-shrink-0 items-center gap-0.5">
                       {canManage && (
                         <>
                           <Button
-                            size="sm"
+                            size="icon"
                             variant="ghost"
-                            className="h-7 text-overline"
+                            className="h-11 w-11 min-h-11 min-w-11 md:h-8 md:w-8 md:min-h-0 md:min-w-0"
+                            aria-label={t("templates.aria_edit")}
                             onClick={() => {
                               setEditingId(tmpl.id);
                               setEditName(tmpl.name);
                               setEditDescription(tmpl.description || "");
                             }}
                           >
-                            <Pencil className="h-3 w-3" />
+                            <Pencil className="h-4 w-4" />
                           </Button>
                           <Button
-                            size="sm"
+                            size="icon"
                             variant="ghost"
-                            className="h-7 text-overline"
+                            className="h-11 w-11 min-h-11 min-w-11 md:h-8 md:w-8 md:min-h-0 md:min-w-0"
+                            aria-label={t("templates.aria_copy")}
                             onClick={() => handleCopy(tmpl.id)}
                             disabled={copyingId === tmpl.id}
                           >
-                            <Copy className="h-3 w-3" />
+                            <Copy className="h-4 w-4" />
                           </Button>
                           {isDioceseAdmin && tmpl.parishId && (
                             <Button
-                              size="sm"
+                              size="icon"
                               variant="ghost"
-                              className="h-7 text-overline text-brand-ink"
+                              className="h-11 w-11 min-h-11 min-w-11 text-brand-ink md:h-8 md:w-8 md:min-h-0 md:min-w-0"
+                              aria-label={t("templates.aria_publish")}
                               onClick={() => handlePublish(tmpl.id)}
                               disabled={publishingId === tmpl.id}
                             >
-                              <Send className="h-3 w-3" />
+                              <Send className="h-4 w-4" />
                             </Button>
                           )}
                         </>
                       )}
                       <Button
-                        size="sm"
+                        size="icon"
                         variant="ghost"
-                        className="h-7 text-overline"
+                        className="h-11 w-11 min-h-11 min-w-11 md:h-8 md:w-8 md:min-h-0 md:min-w-0"
+                        aria-label={
+                          isExpanded
+                            ? t("templates.aria_collapse")
+                            : t("templates.aria_expand")
+                        }
+                        aria-expanded={isExpanded}
                         onClick={() =>
                           setExpandedTemplateId(isExpanded ? null : tmpl.id)
                         }

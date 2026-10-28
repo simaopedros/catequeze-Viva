@@ -46,6 +46,8 @@ export function FilterPills({
             onClick={() => onChange(opt.value)}
             aria-pressed={value === opt.value}
             className={cn(
+              // min-h-11 no mobile: com py-1.5 a pílula ficava em 28px, bem abaixo
+              // dos 44px de alvo de toque. No desktop volta ao tamanho compacto.
               "inline-flex shrink-0 snap-start items-center whitespace-nowrap rounded-sm px-3 py-1.5 text-xs font-medium transition-colors min-h-11 sm:min-h-0",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
               value === opt.value

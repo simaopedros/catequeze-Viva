@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   countActiveClasses,
+  countActiveStatusClasses,
   isClassPlanLimitReached,
 } from "../shared/classPlanLimit";
 
@@ -28,7 +29,7 @@ describe("isClassPlanLimitReached", () => {
 });
 
 describe("countActiveClasses", () => {
-  it("counts non-archived classes only", () => {
+  it("counts non-archived classes only (plan limit)", () => {
     expect(
       countActiveClasses([
         { status: "ACTIVE" },
@@ -43,5 +44,25 @@ describe("countActiveClasses", () => {
     expect(countActiveClasses([])).toBe(0);
     expect(countActiveClasses(null)).toBe(0);
     expect(countActiveClasses(undefined)).toBe(0);
+  });
+});
+
+describe("countActiveStatusClasses", () => {
+  it("counts only status ACTIVE for the ativas KPI", () => {
+    expect(
+      countActiveStatusClasses([
+        { status: "ACTIVE" },
+        { status: "DRAFT" },
+        { status: "ARCHIVED" },
+        { status: "PAUSED" },
+        { status: "CONCLUDED" },
+        { status: "ACTIVE" },
+      ]),
+    ).toBe(2);
+  });
+
+  it("handles empty input", () => {
+    expect(countActiveStatusClasses([])).toBe(0);
+    expect(countActiveStatusClasses(null)).toBe(0);
   });
 });

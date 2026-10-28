@@ -112,7 +112,7 @@ function NextActionCard({ action: a }: { action: NextAction }) {
           <h3 className="text-base font-semibold tracking-tight text-brand-ink">
             {t(a.titleKey)}
           </h3>
-          <p className="truncate text-sm font-medium text-brand-ink/80">
+          <p className="line-clamp-2 text-sm font-medium text-brand-ink/80">
             {t(`action.${a.id}.subtitle`, a.meta)}
           </p>
         </div>
@@ -229,7 +229,7 @@ export function NextActionsPanel({
         <AppEyebrow>{t("next_actions")}</AppEyebrow>
         <Link
           to="/app/calendar"
-          className="shrink-0 text-xs font-medium text-brand-ink underline-offset-4 hover:underline"
+          className="inline-flex min-h-11 shrink-0 items-center text-xs font-medium text-brand-ink underline-offset-4 hover:underline md:min-h-0"
         >
           {t("see_all")}
         </Link>

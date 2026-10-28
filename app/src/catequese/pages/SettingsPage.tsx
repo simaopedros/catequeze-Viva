@@ -299,7 +299,7 @@ export default function SettingsPage() {
           <Button
             type="submit"
             size="sm"
-            className="rounded-md"
+            className="min-h-11 rounded-md md:min-h-9"
             disabled={saving || !profileDirty}
             loading={saving}
           >

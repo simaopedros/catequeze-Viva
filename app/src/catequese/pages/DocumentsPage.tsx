@@ -552,7 +552,7 @@ export default function DocumentsPage() {
                             </Badge>
                           )}
                           {status === "MISSING" && (
-                            <span className="text-micro text-muted-foreground italic flex-shrink-0">
+                            <span className="flex-shrink-0 text-xs italic text-muted-foreground">
                               {tc("documents.status_missing")}
                             </span>
                           )}

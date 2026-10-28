@@ -18,10 +18,6 @@ function isMobileEncounterRoute(pathname: string): boolean {
   );
 }
 
-function isTurmasRoute(pathname: string): boolean {
-  return pathname === "/app/classes" || pathname.startsWith("/app/classes/");
-}
-
 const BREADCRUMB_ROUTE_KEYS = new Set([
   "new",
   "edit",
@@ -44,13 +40,6 @@ export function Breadcrumbs({ className }: { className?: string }) {
 
   const segments = location.pathname.split("/").filter(Boolean);
   const hideOnMobileEncounter = isMobileEncounterRoute(location.pathname);
-  const turmasTouch = isTurmasRoute(location.pathname);
-  const linkTouchClass = turmasTouch
-    ? "-my-1 flex min-h-10 min-w-10 flex-shrink-0 items-center justify-center transition-colors hover:text-brand-ink sm:min-h-8 sm:min-w-8"
-    : "-my-1 flex min-h-8 min-w-8 flex-shrink-0 items-center justify-center transition-colors hover:text-brand-ink";
-  const textTouchClass = turmasTouch
-    ? "-my-1 flex min-h-10 max-w-[220px] items-center truncate transition-colors hover:text-brand-ink sm:min-h-8 sm:max-w-xs"
-    : "-my-1 flex min-h-8 max-w-[220px] items-center truncate transition-colors hover:text-brand-ink sm:max-w-xs";
 
   // Só rotas profundas (/app/classes/:id em diante). Em /app e /app/classes o
   // AppPageHeader já diz onde o usuário está — a trilha seria ruído duplicado.
@@ -104,13 +93,12 @@ export function Breadcrumbs({ className }: { className?: string }) {
       } ${className ?? ""}`}
       aria-label={t("breadcrumb.ariaLabel")}
     >
-      {/* min-h/min-w-8 nos links: como texto puro eles ficavam com 14–20px de
-          altura, difíceis de acertar no toque. O -my-1 impede que a trilha
-          engorde a régua vertical da página. */}
+      {/* min-h-11 no mobile (≥44px); no desktop volta a min-h-8 para não
+          engordar a régua. O -my-1 compensava o alvo antigo; mantemos no md+. */}
       <Link
         to="/app"
         aria-label={t("dashboard")}
-        className={linkTouchClass}
+        className="flex min-h-11 min-w-11 flex-shrink-0 items-center justify-center transition-colors hover:text-brand-ink md:-my-1 md:min-h-8 md:min-w-8"
       >
         <Home className="h-3.5 w-3.5" />
       </Link>
@@ -121,7 +109,7 @@ export function Breadcrumbs({ className }: { className?: string }) {
             <Link
               to={item.to}
               title={item.label}
-              className={textTouchClass}
+              className="flex min-h-11 max-w-[220px] items-center truncate px-1 transition-colors hover:text-brand-ink sm:max-w-xs md:-my-1 md:min-h-8 md:px-0"
             >
               {item.label}
             </Link>

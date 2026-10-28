@@ -59,6 +59,7 @@ export function ProfileAvatarPicker({
             type="button"
             variant="outline"
             size="sm"
+            className="min-h-11 md:min-h-9"
             disabled={saving}
             onClick={() => fileRef.current?.click()}
           >
@@ -74,6 +75,7 @@ export function ProfileAvatarPicker({
               type="button"
               variant="ghost"
               size="sm"
+              className="min-h-11 md:min-h-9"
               disabled={saving}
               onClick={() => void save(null)}
             >
