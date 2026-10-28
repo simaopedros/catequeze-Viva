@@ -30,6 +30,7 @@ import { downloadCsv } from "../../shared/csvDownload";
 import {
   useQuery,
   getClassDetails,
+  getPlanUsage,
   listCatechumens,
   enrollCatechumen,
   bulkEnrollCatechumens,
@@ -96,6 +97,11 @@ export default function ClassDetailPage() {
     error: classError,
     refetch: refetchClass,
   } = useQuery(getClassDetails, { id: id! });
+  const { data: planUsage } = useQuery(
+    getPlanUsage,
+    { parishId: cls?.parish?.id || "", restoreClassId: id },
+    { enabled: !!cls?.parish?.id && cls?.status === "ARCHIVED" },
+  );
   const { data: user } = useAuth();
   const { userRole, isAdmin } = useUserContext();
   const { getBySlug } = usePlanCatalog();
@@ -717,7 +723,7 @@ export default function ClassDetailPage() {
             className="min-w-0 flex-1 border-0 pb-0"
             eyebrow={t("title")}
             title={cls.name}
-            subtitle={classSubtitle}
+            subtitle={cls.status === "ARCHIVED" && planUsage?.canRestore === false ? t("restore_quota_blocked") : classSubtitle}
             actionsLayout="below"
             primaryAction={{
               label: t("attendance"),
@@ -732,7 +738,7 @@ export default function ClassDetailPage() {
                       label: s.label,
                       onClick: () => handleStatus(s.status),
                       destructive: s.status === "CONCLUDED",
-                      disabled: busyAction === "status",
+                      disabled: busyAction === "status" || (cls.status === "ARCHIVED" && planUsage?.canRestore === false),
                     }))
                 : []),
               ...(canManageClass

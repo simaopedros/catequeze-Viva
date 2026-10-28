@@ -804,7 +804,7 @@ action createClass {
 
 action updateClass {
   fn: import { updateClass } from "@src/server/operations/classOperations",
-  entities: [CatechesisClass, Membership, ClassCatechist, Parish, Community]
+  entities: [CatechesisClass, ClassEnrollment, Membership, ClassCatechist, Parish, Community, TenantBilling, Diocese, User, PricingPlan, PricingPlanPrice]
 }
 
 action assignLeadCatechist {
@@ -1037,6 +1037,11 @@ action justifyAbsenceByMeeting {
 //#endregion
 
 //#region Catequese Viva - Dashboard Operations
+query getPlanUsage {
+  fn: import { getPlanUsage } from "@src/server/operations/billingEnforcement",
+  entities: [CatechesisClass, ClassEnrollment, ClassCatechist, Membership, Parish, Community, TenantBilling, Diocese, User, PricingPlan, PricingPlanPrice]
+}
+
 query getDashboardStats {
   fn: import { getDashboardStats } from "@src/server/operations/dashboardOperations",
   entities: [User, Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, GuardianProfile, Household]

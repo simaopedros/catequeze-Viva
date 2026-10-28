@@ -9,7 +9,7 @@ import {
 } from "../lib/intendedPlan";
 import {
   useQuery,
-  getDashboardStats,
+  getPlanUsage,
   generateCheckoutSession,
   cancelSubscription,
   changeSubscriptionPlan,
@@ -165,8 +165,7 @@ export default function BillingPage() {
     { isPersonalOwner: isPersonal, isAdmin },
   );
 
-  // Scope usage to the active workspace so plan quotas match create-class limits
-  // (getDashboardStats without parishId aggregates every parish the user can access).
+  // Use the same workspace quota scope as server enforcement.
   const usageParishId = parishId || workspaceId || undefined;
 
   const statsQueryEnabled = Boolean(usageParishId);
@@ -175,8 +174,8 @@ export default function BillingPage() {
     isLoading: statsLoading,
     refetch: refetchStats,
   } = useQuery(
-    getDashboardStats,
-    { parishId: usageParishId },
+    getPlanUsage,
+    { parishId: usageParishId! },
     { enabled: statsQueryEnabled },
   );
 
@@ -375,13 +374,14 @@ export default function BillingPage() {
     visiblePlans[0] ??
     null;
 
-  // Align with plan limit base: non-archived classes + ENROLLED catechumens.
-  // Prefer planUsageClasses; fall back for older payloads still in cache.
-  const classesUsed =
-    stats?.planUsageClasses ?? stats?.activeClasses ?? 0;
-  const catechumensUsed = stats?.activeCatechumens ?? 0;
-  const maxClasses = effectivePlan.maxClasses ?? Infinity;
-  const maxCatechumens = effectivePlan.maxCatechumens ?? Infinity;
+  const classesUsed = stats?.classesUsed ?? 0;
+  const catechumensUsed = stats?.catechumensUsed ?? 0;
+  const maxClasses = stats
+    ? stats.maxClasses ?? Infinity
+    : effectivePlan.maxClasses ?? Infinity;
+  const maxCatechumens = stats
+    ? stats.maxCatechumens ?? Infinity
+    : effectivePlan.maxCatechumens ?? Infinity;
 
   const startCheckout = useCallback(
     async (planId: string, interval: BillingInterval = billingInterval) => {

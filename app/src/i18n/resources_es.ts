@@ -1490,7 +1490,7 @@ export const billing_es = {
     "covered_by_named": "Cubierta por {{name}}",
     "usage_title": "Uso del plan",
     "classes": "Grupos",
-    "catechumens": "Catecúmenos",
+    "catechumens": "Catequizandos (personas distintas)",
     "subscription_active": "Suscripción activa",
     "free_plan": "Sin suscripción",
     "awaiting_payment": "Esperando pago",
@@ -1529,7 +1529,7 @@ export const billing_es = {
     "cancelling": "Cancelando…",
     "manage_payment": "Gestionar pago",
     "classes_quota_label": "Uso de grupos",
-    "catechumens_quota_label": "Uso de catecúmenos",
+    "catechumens_quota_label": "Catequizandos (personas distintas)",
     "ai_credits_quota_label": "Uso de créditos editoriales",
     "ai_credits": "Créditos editoriales",
     "monthly_badge": "Mensual",
@@ -1863,7 +1863,8 @@ export const billing_es = {
     "checkout_charge_after_trial_one": "No hace falta tarjeta ahora. Tienes 1 día gratis; el primer cobro es el {{date}} si hay tarjeta registrada. Sin tarjeta para entonces, la suscripción se cancela sin cobro.",
     "checkout_charge_after_trial_other": "No hace falta tarjeta ahora. Tienes {{count}} días gratis; el primer cobro es el {{date}} si hay tarjeta registrada. Sin tarjeta para entonces, la suscripción se cancela sin cobro.",
     "checkout_charge_today": "El cobro se hace en Stripe en cuanto confirmes la suscripción.",
-    "checkout_plan_includes_label": "Qué incluye el plan"
+    "checkout_plan_includes_label": "Qué incluye el plan",
+    "distinct_people_usage": "Cada persona cuenta una vez, incluso con varias matrículas. Las personas en clases concluidas siguen contando."
   } as const;
 
 export const birthdays_es = {
@@ -2303,7 +2304,8 @@ export const classes_es = {
     "limit_reached_body": "El plan {{planName}} permite hasta {{maxAllowed}} grupos. Ya usas {{currentCount}}. Para crear otro, elige un plan con más espacio o vuelve a Grupos.",
     "limit_reached_none": "El plan {{planName}} aún no libera grupos. Mira los planes para comenzar o vuelve a Grupos.",
     "limit_see_plans": "Ver planes",
-    "limit_back_to_classes": "Volver a Grupos"
+    "limit_back_to_classes": "Volver a Grupos",
+    "restore_quota_blocked": "Esta clase superaría el límite del plan de clases o personas distintas. Libere cupo o cambie de plan."
   } as const;
 
 export const collaborative_es = {
