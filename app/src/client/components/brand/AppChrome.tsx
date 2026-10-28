@@ -130,8 +130,9 @@ function ActionButton({
 /**
  * Page header with progressive action disclosure:
  * - one primary CTA always visible
- * - secondary actions full on sm+
+ * - secondary actions full on sm+ (or beside title / below title)
  * - secondary collapse into overflow menu on mobile
+ * - optional menuActions always live in "Mais ações" at every breakpoint
  */
 export function AppPageHeader({
   eyebrow,
@@ -141,6 +142,8 @@ export function AppPageHeader({
   actions,
   primaryAction,
   secondaryActions,
+  menuActions,
+  actionsLayout = "beside",
   density = "comfortable",
   count,
   className,
@@ -157,6 +160,13 @@ export function AppPageHeader({
   actions?: ReactNode;
   primaryAction?: PagePrimaryAction;
   secondaryActions?: PageSecondaryAction[];
+  /**
+   * Extra actions that always sit in the overflow menu (all breakpoints).
+   * Use for secondary tools that must not crush the title on desktop.
+   */
+  menuActions?: PageSecondaryAction[];
+  /** "below" keeps the title full-width and puts actions on their own wrapping row. */
+  actionsLayout?: "beside" | "below";
   density?: UiDensity;
   count?: ReactNode;
   className?: string;
@@ -168,20 +178,29 @@ export function AppPageHeader({
 }) {
   const { t } = useTranslation("common");
   usePageTitle(documentTitle === null ? undefined : documentTitle ?? title);
-  const hasStructured =
-    Boolean(primaryAction) || (secondaryActions && secondaryActions.length > 0);
   const secondaries = secondaryActions ?? [];
+  const menuItems = menuActions ?? [];
+  const hasStructured =
+    Boolean(primaryAction) ||
+    secondaries.length > 0 ||
+    menuItems.length > 0;
   const mobileSecondaries = secondaries.filter((action) => !action.desktopOnly);
+  const mobileMenuItems = [...mobileSecondaries, ...menuItems];
+  const stacked = actionsLayout === "below";
+  const moreLabel = menuItems.length > 0 ? t("more_actions") : t("more");
 
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 border-b border-border sm:flex-row sm:items-end sm:justify-between sm:gap-4",
+        "flex flex-col gap-3 border-b border-border",
+        stacked
+          ? "items-stretch"
+          : "sm:flex-row sm:items-end sm:justify-between sm:gap-4",
         density === "compact" ? "pb-3 sm:pb-4" : "pb-4 sm:pb-6",
         className,
       )}
     >
-      <div className="min-w-0 space-y-2 sm:space-y-2.5">
+      <div className="min-w-0 w-full space-y-2 sm:space-y-2.5">
         {eyebrow && eyebrow !== title && (
           <AppEyebrow className={cn(hideEyebrowOnMobile && "hidden sm:block")}>
             {eyebrow}
@@ -223,11 +242,12 @@ export function AppPageHeader({
       {hasStructured ? (
         <div
           className={cn(
-            "w-full shrink-0 items-center gap-2 sm:w-auto",
-            hideActionsOnMobile ? "hidden sm:flex" : "flex",
+            "flex w-full min-w-0 flex-wrap items-center gap-2",
+            !stacked && "shrink-0 sm:w-auto",
+            hideActionsOnMobile && "hidden sm:flex",
           )}
         >
-          {/* Secondary: desktop row */}
+          {/* Visible secondary buttons: sm+ always; below-layout also shows them on sm+ only */}
           {secondaries.length > 0 && (
             <div className="hidden sm:flex flex-wrap gap-2">
               {secondaries.map((action) => (
@@ -239,8 +259,8 @@ export function AppPageHeader({
               ))}
             </div>
           )}
-          {/* Secondary: mobile overflow */}
-          {mobileSecondaries.length > 0 && (
+          {/* Mobile: one overflow with secondaries (+ menuActions when present) */}
+          {mobileMenuItems.length > 0 && (
             <div className="sm:hidden">
               <Suspense
                 fallback={
@@ -251,8 +271,26 @@ export function AppPageHeader({
                 }
               >
                 <AppPageHeaderOverflowMenu
-                  actions={mobileSecondaries}
-                  label={t("more")}
+                  actions={mobileMenuItems}
+                  label={moreLabel}
+                />
+              </Suspense>
+            </div>
+          )}
+          {/* Desktop: dedicated overflow for menuActions only */}
+          {menuItems.length > 0 && (
+            <div className="hidden sm:block">
+              <Suspense
+                fallback={
+                  <span
+                    className="inline-block h-11 w-11 rounded-md border border-border/70"
+                    aria-hidden
+                  />
+                }
+              >
+                <AppPageHeaderOverflowMenu
+                  actions={menuItems}
+                  label={moreLabel}
                 />
               </Suspense>
             </div>
