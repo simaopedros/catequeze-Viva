@@ -1375,6 +1375,7 @@ export const transferEnrollment = async (
             await assertCanEnrollCatechumen(
               transactionalContext,
               destination.parishId,
+              source.catechumenProfileId,
             );
           const enrollment = existing
             ? await entities.ClassEnrollment.update({
