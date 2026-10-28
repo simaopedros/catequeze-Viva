@@ -1255,7 +1255,7 @@ query listUpcomingBirthdays {
 
 action toggleBirthdayGift {
   fn: import { toggleBirthdayGift } from "@src/server/operations/pastoralReportOperations",
-  entities: [CatechumenBirthdayGift]
+  entities: [CatechumenBirthdayGift, ClassEnrollment, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 //#endregion
 
@@ -1517,7 +1517,7 @@ api authenticatedDocumentUpload {
   middlewareConfigFn: import { authenticatedDocumentUploadMiddleware } from "@src/server/api/authenticatedDocumentUpload",
   auth: true,
   httpRoute: (POST, "/api/documents/upload"),
-  entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish]
+  entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish, ClassCatechist, CatechesisClass]
 }
 
 api uploadOfficialResourceAttachment {

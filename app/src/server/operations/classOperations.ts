@@ -1,3 +1,4 @@
+import { startOfAppCalendarDay } from '../../shared/calendarDate';
 import { HttpError, prisma } from "wasp/server";
 import {
   validateOrThrow,
@@ -78,16 +79,9 @@ async function assertCoordinatorClassScope(
   if (access?.isScopedCoordinator) assertClassInScope(access, classId);
 }
 
-/** Start of the current UTC day — meeting dates are stored as midnight UTC. */
-function startOfUtcDay(now: Date = new Date()): Date {
-  return new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-  );
-}
-
 /** Next upcoming meeting for list cards (avoids "Nenhum encontro agendado" when one exists). */
 function classListInclude(now: Date = new Date()) {
-  const dayStart = startOfUtcDay(now);
+  const dayStart = startOfAppCalendarDay(now);
   return {
     parish: { select: { id: true, name: true } },
     community: { select: { id: true, name: true } },
