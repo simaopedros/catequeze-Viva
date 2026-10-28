@@ -131,9 +131,10 @@ describe("mobile geral polish (PR G)", () => {
     );
 
     const pills = readSrc("client/components/FilterPills.tsx");
-    expect(pills).toContain("bg-gradient-to-l from-background");
-    expect(pills).toContain("pr-8");
+    expect(pills).toContain("HorizontalScrollFade");
     expect(pills).toContain("min-h-11 sm:min-h-0");
+    const fade = readSrc("client/components/HorizontalScrollFade.tsx");
+    expect(fade).toContain("bg-gradient-to-l from-background");
   });
 
   it("keeps pt-BR/en/es aria and searchTypeHint keys in sync", () => {

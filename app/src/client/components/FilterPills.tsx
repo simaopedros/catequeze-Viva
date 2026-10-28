@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { cn } from "../utils";
 import { X } from "lucide-react";
+import { HorizontalScrollFade } from "./HorizontalScrollFade";
 
 export interface FilterPillOption {
   value: string;
@@ -32,10 +33,12 @@ export function FilterPills({
   const showClear = onClear && value !== clearValue;
 
   return (
-    // Fade à direita + pr-8: no mobile o último chip ficava cortado sem
-    // indicação de que dá para rolar. Desktop mantém a faixa compacta.
-    <div className={cn("relative min-w-0", className)}>
-      <div className="flex items-center gap-1.5 overflow-x-auto scroll-touch snap-x snap-mandatory no-scrollbar -mx-1 px-1 pr-8">
+    <HorizontalScrollFade
+      activeKey={value}
+      activeSelector='[aria-pressed="true"]'
+      className={cn("-mx-1 px-1", className)}
+    >
+      <div className="flex snap-x snap-mandatory items-center gap-1.5">
         {options.map((opt) => (
           <button
             key={opt.value}
@@ -78,10 +81,6 @@ export function FilterPills({
           </button>
         )}
       </div>
-      <div
-        className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent sm:hidden"
-        aria-hidden
-      />
-    </div>
+    </HorizontalScrollFade>
   );
 }

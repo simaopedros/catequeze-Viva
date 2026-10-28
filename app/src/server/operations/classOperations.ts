@@ -77,27 +77,39 @@ async function assertCoordinatorClassScope(
   if (access?.isScopedCoordinator) assertClassInScope(access, classId);
 }
 
-const classListInclude = {
-  parish: { select: { id: true, name: true } },
-  community: { select: { id: true, name: true } },
-  stage: { select: { id: true, name: true } },
-  sacrament: { select: { id: true, name: true } },
-  catechists: {
-    include: {
-      user: {
-        select: { id: true, firstName: true, lastName: true, email: true },
+/** Next upcoming meeting for list cards (avoids "Nenhum encontro agendado" when one exists). */
+function classListInclude(now: Date = new Date()) {
+  return {
+    parish: { select: { id: true, name: true } },
+    community: { select: { id: true, name: true } },
+    stage: { select: { id: true, name: true } },
+    sacrament: { select: { id: true, name: true } },
+    catechists: {
+      include: {
+        user: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
       },
     },
-  },
-  _count: {
-    select: {
-      enrollments: {
-        where: { status: "ENROLLED", catechumenProfileId: { not: null } },
+    meetings: {
+      where: {
+        status: { not: "CANCELLED" as const },
+        date: { gte: now },
       },
-      meetings: true,
+      orderBy: { date: "asc" as const },
+      take: 1,
+      select: { id: true, date: true, title: true },
     },
-  },
-};
+    _count: {
+      select: {
+        enrollments: {
+          where: { status: "ENROLLED", catechumenProfileId: { not: null } },
+        },
+        meetings: true,
+      },
+    },
+  };
+}
 
 /** Returns array (legacy) or { items, nextCursor } when paginated/cursor. */
 export const listClasses = async (
@@ -144,7 +156,7 @@ export const listClasses = async (
       orderBy: [{ name: "asc" }, { id: "asc" }],
       take: take ?? 50,
       skip,
-      include: classListInclude,
+      include: classListInclude(),
     });
     return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
@@ -168,7 +180,7 @@ export const listClasses = async (
       orderBy: [{ name: "asc" }, { id: "asc" }],
       take: take ?? 50,
       skip,
-      include: classListInclude,
+      include: classListInclude(),
     });
     return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
@@ -181,7 +193,7 @@ export const listClasses = async (
       orderBy: [{ name: "asc" }, { id: "asc" }],
       take: take ?? 50,
       skip,
-      include: classListInclude,
+      include: classListInclude(),
     });
     return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
@@ -213,7 +225,7 @@ export const listClasses = async (
       orderBy: [{ name: "asc" }, { id: "asc" }],
       take: take ?? 50,
       skip,
-      include: classListInclude,
+      include: classListInclude(),
     });
     return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
@@ -238,17 +250,7 @@ export const listClasses = async (
       orderBy: [{ name: "asc" }, { id: "asc" }],
       take: take ?? 50,
       skip,
-      include: {
-        parish: { select: { id: true, name: true } },
-        community: { select: { id: true, name: true } },
-        stage: { select: { id: true, name: true } },
-        _count: {
-          select: {
-            enrollments: { where: { status: "ENROLLED" } },
-            meetings: true,
-          },
-        },
-      },
+      include: classListInclude(),
     });
     return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
@@ -1136,20 +1138,99 @@ export const archiveClass = async (args: { id: string }, context: any) => {
     await assertCoordinatorClassScope(context, classData.parishId, args.id);
   }
 
-  const activeMeetings = await context.entities.Meeting.count({
-    where: { classId: args.id, date: { gte: new Date() } },
-  });
-  if (activeMeetings > 0) {
-    throw new HttpError(
-      400,
-      "Não é possível arquivar uma turma com encontros futuros.",
-    );
-  }
-
   return context.entities.CatechesisClass.update({
     where: { id: args.id },
     data: { status: "ARCHIVED" },
   });
+};
+
+/** Soft-duplicate: new class with schedule/location, no enrollments or meetings. */
+export const duplicateClass = async (
+  args: { id: string },
+  context: any,
+) => {
+  if (!context.user) throw new HttpError(401);
+  if (!args.id?.trim()) throw new HttpError(400, "id é obrigatório.");
+
+  const source = await context.entities.CatechesisClass.findUnique({
+    where: { id: args.id },
+    select: {
+      id: true,
+      name: true,
+      parishId: true,
+      communityId: true,
+      stageId: true,
+      sacramentId: true,
+      yearId: true,
+      dayOfWeek: true,
+      startTime: true,
+      endTime: true,
+      location: true,
+      maxCapacity: true,
+    },
+  });
+  if (!source) throw new HttpError(404, "Turma não encontrada.");
+
+  if (!context.user.isAdmin) {
+    const role = await getEffectiveParishRole(context, source.parishId);
+    if (!role) {
+      throw new HttpError(
+        403,
+        "Você não tem permissão para duplicar turmas nesta paróquia.",
+      );
+    }
+    if (
+      !isCoordinatorOrAbove(role) &&
+      role !== "LEAD_CATECHIST" &&
+      role !== "ASSISTANT_CATECHIST"
+    ) {
+      throw new HttpError(
+        403,
+        "Apenas coordenadores e catequistas podem duplicar turmas.",
+      );
+    }
+    await assertCoordinatorClassScope(context, source.parishId, source.id);
+    await assertCanCreateClass(context, source.parishId);
+  }
+
+  const copyName = `Cópia de ${source.name}`.slice(0, 200);
+  const newClass = await context.entities.CatechesisClass.create({
+    data: {
+      name: copyName,
+      parishId: source.parishId,
+      communityId: source.communityId,
+      stageId: source.stageId,
+      sacramentId: source.sacramentId,
+      yearId: source.yearId,
+      dayOfWeek: source.dayOfWeek,
+      startTime: source.startTime,
+      endTime: source.endTime,
+      location: source.location,
+      maxCapacity: source.maxCapacity || 30,
+      status: ClassStatus.ACTIVE,
+    },
+  });
+
+  if (!context.user.isAdmin) {
+    const creatorRole = await getEffectiveParishRole(
+      context,
+      source.parishId,
+    );
+    if (
+      creatorRole &&
+      (isCatechist(creatorRole) || creatorRole === "PERSONAL_OWNER")
+    ) {
+      await context.entities.ClassCatechist.create({
+        data: {
+          classId: newClass.id,
+          userId: context.user.id,
+          role: CatechistAssignmentRole.LEAD,
+        },
+      });
+    }
+  }
+
+  return newClass;
 };
 
 export const cancelEnrollment = async (
@@ -1200,7 +1281,11 @@ export const cancelEnrollment = async (
 
   return context.entities.ClassEnrollment.update({
     where: { id: args.enrollmentId },
-    data: { status: EnrollmentStatus.DROPPED },
+    data: {
+      status: EnrollmentStatus.DROPPED,
+      // So pastoral ranking skips meetings after removal (no false absences).
+      endedAt: new Date(),
+    },
   });
 };
 

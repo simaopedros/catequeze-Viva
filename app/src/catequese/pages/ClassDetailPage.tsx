@@ -25,7 +25,10 @@ import {
   X,
   Trash2,
   Cross,
+  Download,
+  Printer,
 } from "lucide-react";
+import { downloadCsv } from "../../shared/csvDownload";
 import {
   useQuery,
   getClassDetails,
@@ -33,6 +36,8 @@ import {
   enrollCatechumen,
   bulkEnrollCatechumens,
   updateClass,
+  archiveClass,
+  duplicateClass,
   getOrCreateClassChat,
   cancelEnrollment,
   addAssistantCatechist,
@@ -41,6 +46,7 @@ import {
   listCommunities,
   getMonthlyPlan,
   inviteUserToParish,
+  getClassAttendanceMatrix,
 } from "wasp/client/operations";
 import { useAuth } from "wasp/client/auth";
 import { useUserContext } from "../../client/hooks/useUserContext";
@@ -169,27 +175,49 @@ export default function ClassDetailPage() {
     new Set(),
   );
   const [bulkEnrolling, setBulkEnrolling] = useState(false);
+  const [archiveConfirm, setArchiveConfirm] = useState(false);
+  const [busyAction, setBusyAction] = useState<string | null>(null);
 
-  const statusOpts = useMemo(
-    () => [
-      {
+  const statusOpts = useMemo(() => {
+    const current = cls?.status;
+    const opts: {
+      status: string;
+      label: string;
+      variant: "default" | "outline";
+    }[] = [];
+    if (current === "ARCHIVED") {
+      opts.push({
         status: "ACTIVE",
-        label: t("detail.activate"),
-        variant: "default" as const,
-      },
-      {
-        status: "PAUSED",
-        label: t("detail.pause"),
-        variant: "outline" as const,
-      },
-      {
-        status: "CONCLUDED",
-        label: t("detail.conclude"),
-        variant: "outline" as const,
-      },
-    ],
-    [t],
-  );
+        label: t("restore"),
+        variant: "default",
+      });
+      return opts;
+    }
+    if (current === "CONCLUDED") {
+      opts.push({
+        status: "ACTIVE",
+        label: t("detail.reopen"),
+        variant: "default",
+      });
+      return opts;
+    }
+    opts.push({
+      status: "ACTIVE",
+      label: t("detail.activate"),
+      variant: "default",
+    });
+    opts.push({
+      status: "PAUSED",
+      label: t("detail.pause"),
+      variant: "outline",
+    });
+    opts.push({
+      status: "CONCLUDED",
+      label: t("detail.conclude"),
+      variant: "outline",
+    });
+    return opts;
+  }, [t, cls?.status]);
 
   const dayOptions = useMemo(
     () =>
@@ -361,23 +389,158 @@ export default function ClassDetailPage() {
   const handleStatus = async (status: string) => {
     if (status === "CONCLUDED") {
       setStatusConfirm(status);
-    } else {
+      return;
+    }
+    setBusyAction("status");
+    try {
       await updateClass({ id, status });
+      const wasConcluded = cls?.status === "CONCLUDED";
+      const wasArchived = cls?.status === "ARCHIVED";
       toast({
         title:
           status === "ACTIVE"
-            ? t("detail.activated_success")
+            ? wasArchived
+              ? t("restore_success")
+              : wasConcluded
+                ? t("reopen_success")
+                : t("detail.activated_success")
             : t("detail.paused_success"),
       });
       refetchClass();
+    } catch (e: any) {
+      toast({
+        title:
+          cls?.status === "ARCHIVED" ? t("restore_error") : t("detail.error"),
+        description: e.message || tc("try_again"),
+        variant: "destructive",
+      });
+    } finally {
+      setBusyAction(null);
     }
   };
   const confirmStatus = async () => {
     if (!statusConfirm) return;
     const status = statusConfirm;
     setStatusConfirm(null);
-    await updateClass({ id, status });
-    toast({ title: t("detail.concluded_success") });
+    setBusyAction("status");
+    try {
+      await updateClass({ id, status });
+      toast({ title: t("detail.concluded_success") });
+      refetchClass();
+    } catch (e: any) {
+      toast({
+        title: t("detail.error"),
+        description: e.message || tc("try_again"),
+        variant: "destructive",
+      });
+    } finally {
+      setBusyAction(null);
+    }
+  };
+
+  const handleArchive = async () => {
+    if (!id) return;
+    setArchiveConfirm(false);
+    setBusyAction("archive");
+    try {
+      await archiveClass({ id });
+      toast({ title: t("archive_success") });
+      refetchClass();
+    } catch (e: any) {
+      toast({
+        title: t("archive_error"),
+        description: e.message || tc("try_again"),
+        variant: "destructive",
+      });
+    } finally {
+      setBusyAction(null);
+    }
+  };
+
+  const handleDuplicate = async () => {
+    if (!id) return;
+    setBusyAction("duplicate");
+    try {
+      const created = await duplicateClass({ id });
+      toast({ title: t("duplicate_success") });
+      navigate(`/app/classes/${created.id}`);
+    } catch (e: any) {
+      if (
+        handlePlanLimitError(e.message || e, {
+          currentPlan: effectivePlan,
+          isPersonalWorkspace: isPersonal,
+        })
+      )
+        return;
+      toast({
+        title: t("duplicate_error"),
+        description: e.message || tc("try_again"),
+        variant: "destructive",
+      });
+    } finally {
+      setBusyAction(null);
+    }
+  };
+
+  const handleExportRosterCsv = () => {
+    const rows = [
+      [t("csv_roster_headers.name"), t("csv_roster_headers.status")],
+      ...enrolled.map((e: any) => [
+        `${e.catechumenProfile?.firstName || ""} ${e.catechumenProfile?.lastName || ""}`.trim(),
+        e.status || "ENROLLED",
+      ]),
+    ];
+    downloadCsv(
+      `turma-lista-${(cls?.name || id || "turma").replace(/\s+/g, "-").slice(0, 40)}.csv`,
+      rows,
+    );
+  };
+
+  const handleExportAttendanceCsv = async () => {
+    if (!id) return;
+    setBusyAction("export-attendance");
+    try {
+      const meetings = await getClassAttendanceMatrix({ classId: id, take: 80 });
+      const header = [
+        t("csv_roster_headers.name"),
+        ...meetings.map((m: any) => {
+          const d = m.date
+            ? formatDate(m.date, currentLocale, {
+                day: "2-digit",
+                month: "2-digit",
+              })
+            : "";
+          return `${d} ${m.title || ""}`.trim();
+        }),
+      ];
+      const rows = [header];
+      for (const e of enrolled) {
+        const pid = e.catechumenProfile?.id;
+        const name =
+          `${e.catechumenProfile?.firstName || ""} ${e.catechumenProfile?.lastName || ""}`.trim();
+        rows.push([
+          name,
+          ...meetings.map((m: any) => {
+            const rec = (m.attendance || []).find(
+              (a: any) => a.catechumenProfileId === pid,
+            );
+            return rec?.status || "";
+          }),
+        ]);
+      }
+      downloadCsv(
+        `turma-presenca-${(cls?.name || id || "turma").replace(/\s+/g, "-").slice(0, 40)}.csv`,
+        rows,
+      );
+    } catch (e: any) {
+      toast({
+        title: t("detail.error"),
+        description: e.message || tc("try_again"),
+        variant: "destructive",
+      });
+    } finally {
+      setBusyAction(null);
+    }
   };
   const handleOpenChat = async () => {
     setChatting(true);
@@ -570,6 +733,7 @@ export default function ClassDetailPage() {
                       label: s.label,
                       onClick: () => handleStatus(s.status),
                       destructive: s.status === "CONCLUDED",
+                      disabled: busyAction === "status",
                     }))
                 : []),
               {
@@ -591,6 +755,40 @@ export default function ClassDetailPage() {
                       label: t("detail.edit"),
                       onClick: () => setEditing(true),
                     },
+                    {
+                      label:
+                        busyAction === "duplicate"
+                          ? tc("loading")
+                          : t("duplicate"),
+                      onClick: handleDuplicate,
+                      disabled: Boolean(busyAction),
+                    },
+                    ...(cls.status !== "ARCHIVED"
+                      ? [
+                          {
+                            label: t("archive"),
+                            onClick: () => setArchiveConfirm(true),
+                            destructive: true,
+                            disabled: Boolean(busyAction),
+                          },
+                        ]
+                      : []),
+                    {
+                      label: t("export_roster_csv"),
+                      onClick: handleExportRosterCsv,
+                    },
+                    {
+                      label:
+                        busyAction === "export-attendance"
+                          ? tc("loading")
+                          : t("export_attendance_csv"),
+                      onClick: handleExportAttendanceCsv,
+                      disabled: busyAction === "export-attendance",
+                    },
+                    {
+                      label: t("print"),
+                      onClick: () => window.print(),
+                    },
                   ]
                 : []),
             ]}
@@ -598,8 +796,39 @@ export default function ClassDetailPage() {
         </div>
 
         {canManageClass && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 print:hidden">
             <SendAnnouncementButton classId={id!} className={cls.name} />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-10 min-h-10 sm:h-9 sm:min-h-9"
+              onClick={handleExportRosterCsv}
+            >
+              <Download className="mr-1 h-3.5 w-3.5" />
+              {t("export_roster_csv")}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-10 min-h-10 sm:h-9 sm:min-h-9"
+              disabled={busyAction === "export-attendance"}
+              onClick={handleExportAttendanceCsv}
+            >
+              <Download className="mr-1 h-3.5 w-3.5" />
+              {t("export_attendance_csv")}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-10 min-h-10 sm:h-9 sm:min-h-9"
+              onClick={() => window.print()}
+            >
+              <Printer className="mr-1 h-3.5 w-3.5" />
+              {t("print")}
+            </Button>
           </div>
         )}
 
@@ -812,7 +1041,7 @@ export default function ClassDetailPage() {
                       </Link>
                     </Button>
                     <Button size="sm" variant="outline" asChild>
-                      <Link to="/app/catechumens/new">
+                      <Link to={`/app/catechumens/new?classId=${id}`}>
                         <UserPlus className="mr-1 h-3.5 w-3.5" />
                         {t("detail.empty_cta_create_person")}
                       </Link>
@@ -1461,6 +1690,15 @@ export default function ClassDetailPage() {
         confirmLabel={t("detail.remove_catechist")}
         variant="destructive"
         onConfirm={handleRemoveCatechist}
+      />
+      <ConfirmDialog
+        open={archiveConfirm}
+        onOpenChange={setArchiveConfirm}
+        title={t("confirm_archive_title")}
+        description={t("confirm_archive_desc")}
+        confirmLabel={t("confirm_archive_btn")}
+        variant="destructive"
+        onConfirm={handleArchive}
       />
     </>
   );
