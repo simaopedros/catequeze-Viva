@@ -18,7 +18,16 @@ const CONSENT_TYPE_KEYS = [
 
 export default function ConsentPage() {
   const { t } = useTranslation("common");
-  const [consents, setConsents] = useState<Record<string, boolean>>({});
+  const [consents, setConsents] = useState<
+    Record<
+      string,
+      {
+        granted: boolean;
+        grantedAt: string | Date | null;
+        textVersion: string | null;
+      }
+    >
+  >({});
 
   const consentTypes = useMemo(
     () =>
@@ -37,9 +46,13 @@ export default function ConsentPage() {
   const loadConsents = async () => {
     try {
       const data = await listConsents();
-      const map: Record<string, boolean> = {};
+      const map: typeof consents = {};
       data?.forEach((c: any) => {
-        map[c.type] = c.granted;
+        map[c.type] = {
+          granted: c.granted,
+          grantedAt: c.grantedAt,
+          textVersion: c.textVersion,
+        };
       });
       setConsents(map);
     } catch (e: any) {
@@ -82,12 +95,30 @@ export default function ConsentPage() {
                 {ct.label}
               </h3>
               <p className="text-sm text-muted-foreground">{ct.desc}</p>
+              {consents[ct.key]?.textVersion && (
+                <p className="text-xs text-muted-foreground">
+                  {t("consent_page.version", {
+                    version: consents[ct.key].textVersion,
+                  })}
+                  {consents[ct.key].grantedAt && (
+                    <>
+                      {" "}
+                      ·{" "}
+                      {t("consent_page.accepted_at", {
+                        date: new Date(
+                          consents[ct.key].grantedAt!,
+                        ).toLocaleDateString("pt-BR"),
+                      })}
+                    </>
+                  )}
+                </p>
+              )}
             </div>
             <div className="flex shrink-0 gap-2">
               <Button
                 size="sm"
                 className="rounded-sm"
-                variant={consents[ct.key] ? "default" : "outline"}
+                variant={consents[ct.key]?.granted ? "default" : "outline"}
                 onClick={() => toggle(ct.key, true)}
               >
                 <CheckCircle className="mr-1 h-3 w-3" />
@@ -96,7 +127,7 @@ export default function ConsentPage() {
               <Button
                 size="sm"
                 className="rounded-sm"
-                variant={!consents[ct.key] ? "destructive" : "outline"}
+                variant={!consents[ct.key]?.granted ? "destructive" : "outline"}
                 onClick={() => toggle(ct.key, false)}
               >
                 <XCircle className="mr-1 h-3 w-3" />

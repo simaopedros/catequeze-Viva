@@ -285,7 +285,9 @@
         "label": "Sensitive data",
         "desc": "I authorize processing sensitive data in accordance with LGPD."
       }
-    }
+    },
+    "version": "Version {{version}}",
+    "accepted_at": "Accepted on {{date}}"
   },
   "documents": {
     "title": "Documents",

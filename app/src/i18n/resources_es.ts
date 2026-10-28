@@ -1413,7 +1413,10 @@ export const auth_es = {
     "reset_success_title": "Contraseña actualizada",
     "reset_success_body": "Tu contraseña fue actualizada. Entra con tu correo y la nueva contraseña para continuar.",
     "reset_error_generic": "No se pudo restablecer la contraseña. Pide un nuevo enlace e inténtalo de nuevo.",
-    "reset_error_missing_token": "Falta el enlace de restablecimiento. Abre el correo que enviamos y toca el botón."
+    "reset_error_missing_token": "Falta el enlace de restablecimiento. Abre el correo que enviamos y toca el botón.",
+    "terms_continue": "Continuar",
+    "terms_retry": "Intentar de nuevo",
+    "terms_save_error": "No se pudo registrar la aceptación. Inténtalo de nuevo."
   } as const;
 
 export const bible_es = {
@@ -2623,7 +2626,9 @@ export const common_es = {
           "label": "Datos sensibles",
           "desc": "Autorizo el tratamiento de datos sensibles conforme a la LGPD."
         }
-      }
+      },
+      "version": "Versión {{version}}",
+      "accepted_at": "Aceptado el {{date}}"
     },
     "documents": {
       "title": "Documentos",

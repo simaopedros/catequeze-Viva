@@ -1413,7 +1413,10 @@ export const auth_pt_BR = {
     "reset_success_title": "Senha redefinida",
     "reset_success_body": "Sua senha foi atualizada. Entre com o e-mail e a nova senha para continuar.",
     "reset_error_generic": "Não foi possível redefinir a senha. Peça um novo link e tente de novo.",
-    "reset_error_missing_token": "Faltou o link de redefinição. Abra o e-mail que enviamos e toque no botão."
+    "reset_error_missing_token": "Faltou o link de redefinição. Abra o e-mail que enviamos e toque no botão.",
+    "terms_continue": "Continuar",
+    "terms_retry": "Tentar novamente",
+    "terms_save_error": "Não foi possível registrar o aceite. Tente novamente."
   } as const;
 
 export const bible_pt_BR = {
@@ -2623,7 +2626,9 @@ export const common_pt_BR = {
           "label": "Dados sensíveis",
           "desc": "Autorizo o tratamento de dados sensíveis conforme LGPD."
         }
-      }
+      },
+      "version": "Versão {{version}}",
+      "accepted_at": "Aceito em {{date}}"
     },
     "documents": {
       "title": "Documentos",

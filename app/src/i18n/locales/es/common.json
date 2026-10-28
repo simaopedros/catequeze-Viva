@@ -198,7 +198,9 @@
         "label": "Datos sensibles",
         "desc": "Autorizo el tratamiento de datos sensibles conforme a la LGPD."
       }
-    }
+    },
+    "version": "Versión {{version}}",
+    "accepted_at": "Aceptado el {{date}}"
   },
   "documents": {
     "title": "Documentos",
