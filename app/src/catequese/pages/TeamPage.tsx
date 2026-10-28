@@ -717,9 +717,10 @@ export default function TeamPage() {
                     .join(", ");
                   const displayName =
                     [m.user?.firstName, m.user?.lastName]
+                      .map((p: string | undefined) => p?.trim())
                       .filter(Boolean)
                       .join(" ") ||
-                    m.user?.email?.split("@")[0] ||
+                    m.user?.email ||
                     "—";
                   return (
                     <AppPanel
@@ -860,9 +861,10 @@ export default function TeamPage() {
                         >
                           <td className="px-4 py-3 font-semibold tracking-tight text-brand-ink">
                             {[m.user?.firstName, m.user?.lastName]
+                              .map((p: string | undefined) => p?.trim())
                               .filter(Boolean)
                               .join(" ") ||
-                              m.user?.email?.split("@")[0] ||
+                              m.user?.email ||
                               "—"}
                           </td>
                           <td className="px-4 py-3 text-muted-foreground">

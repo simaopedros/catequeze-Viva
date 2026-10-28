@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   startTwoFactorSetup,
   verifyTwoFactorSetup,
   disableTwoFactor,
   getTwoFactorStatus,
+  useQuery,
 } from "wasp/client/operations";
 import { Button } from "../../client/components/ui/button";
 import { Input } from "../../client/components/ui/input";
@@ -23,10 +24,13 @@ import { Alert } from "../../client/components/ui/alert";
 
 export default function TwoFactorSetup() {
   const { t } = useTranslation(["auth", "common"]);
-  const [status, setStatus] = useState<{ enabled: boolean; required: boolean }>(
-    { enabled: false, required: false },
-  );
-  const [loading, setLoading] = useState(true);
+  const {
+    data: statusData,
+    isLoading: loading,
+    error: statusQueryError,
+    refetch,
+  } = useQuery(getTwoFactorStatus);
+  const status = statusData ?? { enabled: false, required: false };
   const [setupStep, setSetupStep] = useState<"idle" | "qr" | "verify">("idle");
   const [secret, setSecret] = useState("");
   const [uri, setUri] = useState("");
@@ -36,18 +40,8 @@ export default function TwoFactorSetup() {
   const [success, setSuccess] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
 
-  useEffect(() => {
-    loadStatus();
-  }, []);
-
-  const loadStatus = async () => {
-    try {
-      const s = await getTwoFactorStatus();
-      setStatus(s);
-    } catch (e) {
-      /* ignore */
-    }
-    setLoading(false);
+  const loadStatus = () => {
+    void refetch();
   };
 
   const handleStartSetup = async () => {
@@ -125,6 +119,29 @@ export default function TwoFactorSetup() {
           <Loader2 className="h-4 w-4 animate-spin" />
           {t("two_factor_setup_loading")}
         </div>
+      </AppPanel>
+    );
+  }
+
+  if (statusQueryError && !statusData) {
+    return (
+      <AppPanel className="space-y-4">
+        <AppEyebrow className="flex items-center gap-2">
+          <Shield className="h-3.5 w-3.5" />
+          {t("two_factor_setup_security_title")}
+        </AppEyebrow>
+        <Alert variant="destructive">
+          {(statusQueryError as any)?.message ||
+            t("two_factor_setup_load_error")}
+        </Alert>
+        <Button
+          type="button"
+          variant="outline"
+          className="h-11 rounded-sm"
+          onClick={() => void refetch()}
+        >
+          {t("common:try_again")}
+        </Button>
       </AppPanel>
     );
   }

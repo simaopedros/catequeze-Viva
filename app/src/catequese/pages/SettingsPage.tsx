@@ -92,12 +92,15 @@ export default function SettingsPage() {
   const leaveGuard = useUnsavedChangesGuard(profileDirty && !saving);
 
   useEffect(() => {
+    // Só hidrata quando o usuário autenticado chegou; evita limpar o form
+    // com strings vazias enquanto useAuth ainda carrega.
+    if (!user) return;
     profileForm.reset({
-      firstName: user?.firstName || "",
-      lastName: user?.lastName || "",
-      phone: user?.phone || "",
+      firstName: user.firstName || "",
+      lastName: user.lastName || "",
+      phone: user.phone || "",
     });
-  }, [user, profileForm]);
+  }, [user?.id, user?.firstName, user?.lastName, user?.phone, profileForm]);
 
   // Password form with Zod
   const passwordForm = useForm<ChangePasswordValues>({

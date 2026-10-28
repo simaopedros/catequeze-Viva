@@ -1152,7 +1152,11 @@ export const getMeeting = async (
   if (isStaff) {
     const [totalActive, registered] = await Promise.all([
       context.entities.ClassEnrollment.count({
-        where: { classId: meeting.classId, status: "ENROLLED" },
+        where: {
+          classId: meeting.classId,
+          status: "ENROLLED",
+          catechumenProfileId: { not: null },
+        },
       }),
       context.entities.AttendanceRecord.count({
         where: { meetingId: meeting.id },

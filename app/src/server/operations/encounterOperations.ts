@@ -429,7 +429,11 @@ export const getEncounterFocus = async (
   if (roleKind === 'staff') {
     const [totalActive, registered] = await Promise.all([
       context.entities.ClassEnrollment.count({
-        where: { classId, status: 'ENROLLED' },
+        where: {
+          classId,
+          status: 'ENROLLED',
+          catechumenProfileId: { not: null },
+        },
       }),
       context.entities.AttendanceRecord.count({
         where: { meetingId: m.id },

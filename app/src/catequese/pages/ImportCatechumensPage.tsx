@@ -25,9 +25,32 @@ import {
   AppPanel,
 } from "../../client/components/brand/AppChrome";
 import { parseCatechumenCsv } from "../../shared/csvCatechumenImport";
+import { formatDateOnly } from "../../i18n/format";
+import { useLocale } from "../../i18n/useLocale";
+
+function formatImportBirthDate(
+  value: string | null | undefined,
+  locale: string,
+): string {
+  if (!value) return "-";
+  const iso = value.trim();
+  if (/^\d{4}-\d{2}-\d{2}/.test(iso)) {
+    try {
+      return formatDateOnly(iso.slice(0, 10), locale, {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+    } catch {
+      return value;
+    }
+  }
+  return value;
+}
 
 export default function ImportCatechumensPage() {
   const { t } = useTranslation("common");
+  const { currentLocale } = useLocale();
   const [csvData, setCsvData] = useState("");
   const [results, setResults] = useState<any>(null);
   const [importing, setImporting] = useState(false);
@@ -318,7 +341,7 @@ Maria,Santos,2014-07-22,Silva Santos,Eucaristia 2026`}
                         {row.lastName}
                       </td>
                       <td className="px-3 py-2 text-muted-foreground">
-                        {row.birthDate || "-"}
+                        {formatImportBirthDate(row.birthDate, currentLocale)}
                       </td>
                       <td className="px-3 py-2 text-muted-foreground">
                         {row.familyName || "-"}

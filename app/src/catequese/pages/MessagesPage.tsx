@@ -254,9 +254,13 @@ export default function MessagesPage() {
     setSearchParams({});
   };
 
-  const handleNewConversationCreated = (id: string) => {
+  const handleNewConversationCreated = async (id: string) => {
     handleSelectConversation(id);
-    refetchConvs();
+    try {
+      await refetchConvs();
+    } catch {
+      // Lista pode atrasar; a conversa já está aberta e o poll atualiza depois.
+    }
   };
 
   const handleSendMessage = async (content: string, parentId?: string) => {
@@ -471,6 +475,13 @@ export default function MessagesPage() {
                       onSendMessage={handleSendMessage}
                       isSending={isSending}
                     />
+                  </div>
+                ) : loadingChat ? (
+                  <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
+                    <div className="h-10 w-10 animate-pulse rounded-sm bg-muted" />
+                    <p className="text-sm text-muted-foreground">
+                      {tc("loading")}
+                    </p>
                   </div>
                 ) : (
                   <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">

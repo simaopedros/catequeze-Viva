@@ -53,7 +53,7 @@ export function RecentMeetingsList({
       </div>
       <ul className="divide-y divide-border/60">
         {meetings.slice(0, limit).map((m) => {
-          const total = m.registeredCount || m.enrollmentCount;
+          const total = m.enrollmentCount || m.registeredCount;
           const unregistered = m.registeredCount === 0;
           return (
             <li key={m.id}>

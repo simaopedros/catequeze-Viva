@@ -1317,6 +1317,7 @@ export const auth_es = {
     "two_factor_gate_error_invalid": "Código inválido.",
     "two_factor_setup_security_title": "Seguridad",
     "two_factor_setup_loading": "Cargando...",
+    "two_factor_setup_load_error": "No se pudo cargar la seguridad. Inténtelo de nuevo.",
     "two_factor_setup_active": "Activado",
     "two_factor_setup_inactive": "Desactivado",
     "two_factor_setup_admin_required": "Como administrador, la autenticación de dos factores es obligatoria para su cuenta.",
@@ -2868,6 +2869,24 @@ export const common_es = {
         "success": "Inscripción realizada",
         "error": "No se pudo inscribir",
         "no_classes": "No hay otro grupo activo disponible. Cree un grupo primero."
+      },
+      "transfer": {
+        "open": "Cambiar de grupo",
+        "title": "Cambiar de grupo",
+        "desc": "Elija el nuevo grupo de {{name}}. La inscripción actual se cerrará.",
+        "label": "Nuevo grupo",
+        "placeholder": "Seleccione el grupo",
+        "submit": "Cambiar",
+        "success": "Grupo actualizado",
+        "error": "No se pudo cambiar de grupo",
+        "no_classes": "No hay otro grupo disponible para cambiar."
+      },
+      "remove_from_class": {
+        "open": "Quitar del grupo",
+        "confirm_title": "Quitar del grupo",
+        "confirm_desc": "La inscripción se cerrará. El catecúmeno sigue en la lista y puede inscribirse de nuevo después.",
+        "success": "Quitado del grupo",
+        "error": "No se pudo quitar del grupo"
       },
       "certificate": {
         "open": "Generar constancia",
@@ -7492,7 +7511,7 @@ export const topbar_es = {
     "notifications": "Notificaciones",
     "markAllRead": "Marcar todas como leídas",
     "noNotifications": "Sin notificaciones",
-    "personalSpace": "Espacio personal",
+    "personalSpace": "Mi Espacio Personal",
     "workspaceGroups": {
       "personal": "Personal",
       "parish": "Parroquias",

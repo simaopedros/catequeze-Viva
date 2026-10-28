@@ -939,7 +939,16 @@ export const enrollCatechumen = async (
       catechumenProfileId: args.catechumenProfileId,
     },
   });
-  if (existing) throw new HttpError(400, "Já está inscrito.");
+  if (existing) {
+    if (existing.status === EnrollmentStatus.ENROLLED) {
+      throw new HttpError(400, "Já está inscrito.");
+    }
+    // Reversible: rematricular após remoção/transferência reabre a mesma row.
+    return context.entities.ClassEnrollment.update({
+      where: { id: existing.id },
+      data: { status: EnrollmentStatus.ENROLLED },
+    });
+  }
   const enrollment = await context.entities.ClassEnrollment.create({
     data: {
       classId: args.classId,

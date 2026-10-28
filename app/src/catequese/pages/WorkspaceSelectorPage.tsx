@@ -405,17 +405,19 @@ export default function WorkspaceSelectorPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="text-lg font-semibold tracking-tight text-brand-ink">
-                            {lastUsed.name}
+                            {lastUsed.isPersonal
+                              ? t("topbar:personalSpace")
+                              : lastUsed.name}
                           </p>
                           <span className="text-overline text-muted-foreground rounded-sm border border-border/70 bg-muted/30 px-2 py-0.5">
                             {t("workspace.last_used")}
                           </span>
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                          {lastUsed.isPersonal
-                            ? lastUsed.subtitle
-                            : roleLabel(lastUsed.role, t)}
-                        </p>
+                        {!lastUsed.isPersonal && (
+                          <p className="text-sm text-muted-foreground">
+                            {roleLabel(lastUsed.role, t)}
+                          </p>
+                        )}
                       </div>
                       <ArrowRight className="h-5 w-5 mt-2 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                     </div>
@@ -453,10 +455,7 @@ export default function WorkspaceSelectorPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-lg font-semibold tracking-tight text-brand-ink">
-                        {personal.name}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {personal.subtitle}
+                        {t("topbar:personalSpace")}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
                         <WorkspaceKindBadge kind="PERSONAL" />

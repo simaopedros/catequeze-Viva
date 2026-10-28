@@ -101,7 +101,7 @@ export function useUserContext(): UseUserContextReturn {
     effectiveMembership = {
       id: "virtual-personal",
       parishId: ctx.personalWorkspaceId,
-      parishName: "Espaço Pessoal",
+      parishName: "Meu Espaço Pessoal",
       role: "PERSONAL_OWNER",
       status: "ACTIVE",
       communityId: null,

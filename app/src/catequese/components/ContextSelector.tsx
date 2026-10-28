@@ -220,16 +220,16 @@ export function ContextSelector() {
                       <div className="flex min-w-0 items-center gap-1.5">
                         <WorkspaceKindBadge kind={kind} />
                         <span className="truncate text-sm font-semibold tracking-tight text-brand-ink">
-                          {ws.name}
+                          {ws.isPersonal ? t("personalSpace") : ws.name}
                         </span>
                       </div>
                       <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-x-1.5 text-overline text-muted-foreground">
-                        <span className="truncate">
-                          {ws.isPersonal
-                            ? ws.subtitle || t("personalSpace")
-                            : rowRole}
-                        </span>
-                        <span aria-hidden>·</span>
+                        {!ws.isPersonal && (
+                          <>
+                            <span className="truncate">{rowRole}</span>
+                            <span aria-hidden>·</span>
+                          </>
+                        )}
                         <WorkspacePlanLabel
                           parishType={ws.isPersonal ? "PERSONAL" : ws.type}
                           parishPlan={ws.plan}

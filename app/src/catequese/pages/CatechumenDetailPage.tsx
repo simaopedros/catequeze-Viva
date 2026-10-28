@@ -25,6 +25,8 @@ import {
   Mail,
   Printer,
   Plus,
+  ArrowRightLeft,
+  UserMinus,
 } from "lucide-react";
 import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import { EnrollInClassDialog } from "../components/EnrollInClassDialog";
@@ -53,6 +55,7 @@ import {
   getCatechumenAttendanceReport,
   justifyAbsence,
   deleteCatechumen,
+  cancelEnrollment,
 } from "wasp/client/operations";
 import {
   fetchAuthenticatedDocument,
@@ -128,6 +131,13 @@ export default function CatechumenDetailPage() {
   } | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [enrollOpen, setEnrollOpen] = useState(false);
+  const [transferEnrollmentId, setTransferEnrollmentId] = useState<
+    string | null
+  >(null);
+  const [unenrollConfirmId, setUnenrollConfirmId] = useState<string | null>(
+    null,
+  );
+  const [unenrolling, setUnenrolling] = useState(false);
   const [certificateOpen, setCertificateOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [selectedAnalysisClassId, setSelectedAnalysisClassId] = useState<
@@ -383,6 +393,33 @@ export default function CatechumenDetailPage() {
     }
   };
 
+  const confirmUnenroll = async () => {
+    if (!unenrollConfirmId) return;
+    const enrollmentId = unenrollConfirmId;
+    setUnenrolling(true);
+    try {
+      await cancelEnrollment({ enrollmentId });
+      toast({ title: t("catechumens.remove_from_class.success") });
+      setUnenrollConfirmId(null);
+      refetchProfile();
+    } catch (e: any) {
+      toast({
+        title: t("catechumens.remove_from_class.error"),
+        description: e?.message || t("try_again"),
+        variant: "destructive",
+      });
+    } finally {
+      setUnenrolling(false);
+    }
+  };
+
+  const activeEnrollments = (profile.enrollments ?? []).filter(
+    (e: any) => e.status === "ENROLLED",
+  );
+  const enrolledClassIds = activeEnrollments
+    .map((e: any) => e.class?.id)
+    .filter(Boolean);
+
   const detailSubtitle = [
     age ? t("catechumens.years_old", { age }) : null,
     profile.birthDate ? formatDateOnly(profile.birthDate, currentLocale) : null,
@@ -602,17 +639,42 @@ export default function CatechumenDetailPage() {
                 </h3>
                 <div className="h-px w-8 bg-brand-gold" aria-hidden />
               </div>
-              {profile.enrollments?.length > 0 ? (
-                profile.enrollments.map((e: any) => (
-                  <Link
-                    key={e.id}
-                    to={`/app/classes/${e.class?.id}`}
-                    className="block py-0.5 text-sm font-semibold tracking-tight text-brand-ink hover:underline"
-                  >
-                    {e.class?.name}{" "}
-                    {e.class?.stage?.name && `· ${e.class.stage.name}`}
-                  </Link>
-                ))
+              {activeEnrollments.length > 0 ? (
+                <ul className="space-y-2">
+                  {activeEnrollments.map((e: any) => (
+                    <li key={e.id} className="space-y-1.5">
+                      <Link
+                        to={`/app/classes/${e.class?.id}`}
+                        className="block py-0.5 text-sm font-semibold tracking-tight text-brand-ink hover:underline"
+                      >
+                        {e.class?.name}{" "}
+                        {e.class?.stage?.name && `· ${e.class.stage.name}`}
+                      </Link>
+                      {canEdit && (
+                        <div className="flex flex-wrap gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-9 rounded-sm"
+                            onClick={() => setTransferEnrollmentId(e.id)}
+                          >
+                            <ArrowRightLeft className="mr-1 h-3.5 w-3.5" />
+                            {t("catechumens.transfer.open")}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-9 rounded-sm"
+                            onClick={() => setUnenrollConfirmId(e.id)}
+                          >
+                            <UserMinus className="mr-1 h-3.5 w-3.5" />
+                            {t("catechumens.remove_from_class.open")}
+                          </Button>
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
               ) : (
                 <p className="text-sm text-muted-foreground">
                   {t("catechumens.detail_none")}
@@ -1148,12 +1210,37 @@ export default function CatechumenDetailPage() {
           onOpenChange={setEnrollOpen}
           catechumenId={profile.id}
           catechumenName={`${profile.firstName} ${profile.lastName}`}
-          enrolledClassIds={(profile.enrollments ?? [])
-            .map((e: any) => e.class?.id)
-            .filter(Boolean)}
+          enrolledClassIds={enrolledClassIds}
           onEnrolled={() => refetchProfile()}
         />
       )}
+
+      {canEdit && (
+        <EnrollInClassDialog
+          open={!!transferEnrollmentId}
+          onOpenChange={(open) => {
+            if (!open) setTransferEnrollmentId(null);
+          }}
+          mode="transfer"
+          fromEnrollmentId={transferEnrollmentId}
+          catechumenId={profile.id}
+          catechumenName={`${profile.firstName} ${profile.lastName}`}
+          enrolledClassIds={enrolledClassIds}
+          onEnrolled={() => refetchProfile()}
+        />
+      )}
+
+      <ConfirmDialog
+        open={!!unenrollConfirmId}
+        onOpenChange={(open) => {
+          if (!open) setUnenrollConfirmId(null);
+        }}
+        onConfirm={confirmUnenroll}
+        loading={unenrolling}
+        title={t("catechumens.remove_from_class.confirm_title")}
+        description={t("catechumens.remove_from_class.confirm_desc")}
+        confirmLabel={t("catechumens.remove_from_class.open")}
+      />
 
       {profile.enrollments?.length > 0 && (
         <CertificateDialog

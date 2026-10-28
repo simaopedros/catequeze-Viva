@@ -221,6 +221,7 @@ const REVIEWER_ROLES = [
 const emptyFamilyDashboard = () => ({
   activeCatechumens: 0,
   activeClasses: 0,
+  planUsageClasses: 0,
   avgAttendance: 0,
   openRollCallIncomplete: false,
   pendingSacraments: 0,
@@ -415,6 +416,7 @@ export const getDashboardStats = async (
     return {
       activeCatechumens: 0,
       activeClasses: 0,
+      planUsageClasses: 0,
       avgAttendance: 0,
       openRollCallIncomplete: false,
       pendingSacraments: 0,
@@ -462,6 +464,7 @@ export const getDashboardStats = async (
     const emptyFamily = {
       activeCatechumens: 0,
       activeClasses: 0,
+      planUsageClasses: 0,
       avgAttendance: 0,
       openRollCallIncomplete: false,
       pendingSacraments: 0,
@@ -882,6 +885,11 @@ export const getDashboardStats = async (
   const activeClassesPromise = context.entities.CatechesisClass.count({
     where: { ...classScopeWhere, status: "ACTIVE" },
   });
+  // Plan/billing usage: same base as classPlanLimit / billingEnforcement
+  // (everything except archived). Does not change limit enforcement rules.
+  const planUsageClassesPromise = context.entities.CatechesisClass.count({
+    where: { ...classScopeWhere, status: { not: "ARCHIVED" } },
+  });
   const enrolledCatechumensPromise = context.entities.ClassEnrollment.findMany({
     where: {
       status: "ENROLLED",
@@ -925,6 +933,7 @@ export const getDashboardStats = async (
 
   const [
     activeClasses,
+    planUsageClasses,
     enrolledCatechumens,
     attendanceTotal,
     attendanceRecordsTotal,
@@ -933,6 +942,7 @@ export const getDashboardStats = async (
     todayMeetings,
   ] = await Promise.all([
     activeClassesPromise,
+    planUsageClassesPromise,
     enrolledCatechumensPromise,
     attendanceTotalPromise,
     attendanceRecordsTotalPromise,
@@ -1232,6 +1242,8 @@ export const getDashboardStats = async (
   return {
     activeCatechumens: enrolledCatechumens.length,
     activeClasses,
+    /** Non-archived class count for plan/billing usage (not the ACTIVE KPI). */
+    planUsageClasses,
     avgAttendance,
     openRollCallIncomplete,
     pendingSacraments,

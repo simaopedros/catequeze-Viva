@@ -375,7 +375,10 @@ export default function BillingPage() {
     visiblePlans[0] ??
     null;
 
-  const classesUsed = stats?.activeClasses ?? 0;
+  // Align with plan limit base: non-archived classes + ENROLLED catechumens.
+  // Prefer planUsageClasses; fall back for older payloads still in cache.
+  const classesUsed =
+    stats?.planUsageClasses ?? stats?.activeClasses ?? 0;
   const catechumensUsed = stats?.activeCatechumens ?? 0;
   const maxClasses = effectivePlan.maxClasses ?? Infinity;
   const maxCatechumens = effectivePlan.maxCatechumens ?? Infinity;
