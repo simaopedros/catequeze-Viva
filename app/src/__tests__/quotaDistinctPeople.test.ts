@@ -11,6 +11,7 @@ vi.mock("wasp/server", () => ({
 }));
 vi.mock("../server/auth/helpers", () => ({
   requireClassAccess: vi.fn(),
+  assertCanAccessCatechumenProfile: vi.fn(),
   getEffectiveParishRole: vi.fn(async () => "PARISH_COORDINATOR"),
   isCoordinatorOrAboveRole: () => true,
 }));
@@ -40,6 +41,9 @@ function context() {
           maxClasses: 1,
           maxCatechumens: 1,
         })),
+      },
+      CatechumenProfile: {
+        findUnique: vi.fn(async () => ({ parishId: "p" })),
       },
       CatechesisClass: {
         findUnique: vi.fn(async () => ({ parishId: "p", status: "ARCHIVED" })),
@@ -196,6 +200,7 @@ describe("enrollment callers", () => {
     });
     Object.assign(c.entities, {
       CatechumenProfile: {
+        findUnique: vi.fn(async () => ({ parishId: "p" })),
         findMany: vi.fn(async () =>
           ["b", "a", "c"].map((id) => ({
             id,
