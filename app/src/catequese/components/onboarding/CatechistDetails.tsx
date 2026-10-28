@@ -32,7 +32,7 @@ export function CatechistDetails({
   const [dayOfWeek, setDayOfWeek] = useState("6");
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("10:30");
-  const [location, setLocation] = useState(parishName || "");
+  const [location, setLocation] = useState("");
 
   const handleFinish = () => {
     onComplete({
@@ -123,7 +123,7 @@ export function CatechistDetails({
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-2 text-sm mt-1"
-            placeholder={parishName}
+            placeholder={t("class_setup.location_placeholder")}
             aria-label={t("coordinator.location")}
           />
         </div>

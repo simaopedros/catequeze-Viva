@@ -107,12 +107,14 @@ export default function CatechumensPage() {
   const serverSearch =
     debouncedSearch.trim().length >= 2 ? debouncedSearch.trim() : undefined;
 
-  // Reset accumulation when filters/workspace change
+  // Reset accumulation only when the server query key changes.
+  // classFilter is client-side only — including it here emptied items while
+  // React Query returned the same cached pageData, so the hydrate effect never ran.
   useEffect(() => {
     setItems([]);
     setNextCursor(null);
     setCursor(null);
-  }, [debouncedSearch, classFilter, activeParishId]);
+  }, [serverSearch, activeParishId]);
 
   const {
     data: pageData,

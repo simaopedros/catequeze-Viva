@@ -27,7 +27,7 @@ describe("family landing i18n (public portal)", () => {
       landing: { tagline: string; enter: string };
     };
     expect(family.portal_badge).toBe("Portal da Família");
-    expect(family.app_name).toBe("Catequese Viva");
+    expect(family.app_name).toBe("Catechis");
     expect(family.landing.tagline.length).toBeGreaterThan(0);
     expect(family.landing.enter.length).toBeGreaterThan(0);
   });

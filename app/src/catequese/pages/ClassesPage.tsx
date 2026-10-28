@@ -143,10 +143,12 @@ export default function ClassesPage() {
         value: f.status,
         label:
           f.status === "" && classes.length
-            ? `${f.label} (${classes.length}+)`
+            ? hasMore
+              ? t("filter_all_capped", { count: classes.length })
+              : t("filter_all_count", { count: classes.length })
             : f.label,
       })),
-    [classFilters, classes],
+    [classFilters, classes, hasMore, t],
   );
 
   const clearFilters = () => {
@@ -374,7 +376,7 @@ export default function ClassesPage() {
             },
             {
               key: "enrolled",
-              header: t("enrolled"),
+              header: t("enrolled_metric"),
               hideOnMobile: true,
               render: (cls: any) => cls._count?.enrollments || 0,
             },
@@ -426,7 +428,9 @@ export default function ClassesPage() {
               }
               schedule={scheduleLabel(cls)}
               nextAction={nextActionLabel(cls)}
-              enrolledLabel={t("enrolled")}
+              enrolledLabel={t("enrolled_count", {
+                count: cls._count?.enrollments || 0,
+              })}
               attendanceLabel={t("attendance")}
               detailsLabel={t("details")}
               editLabel={t("detail.edit")}
@@ -477,7 +481,9 @@ export default function ClassesPage() {
                 <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
                   <span className="inline-flex items-center gap-1.5">
                     <Users className="h-3.5 w-3.5" />
-                    {cls._count?.enrollments || 0} {t("enrolled").toLowerCase()}
+                    {t("enrolled_count", {
+                      count: cls._count?.enrollments || 0,
+                    })}
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <Clock className="h-3.5 w-3.5" />
@@ -618,8 +624,7 @@ function ClassMobileCard({
         </Badge>
       </div>
       <p className="text-sm text-muted-foreground">
-        {cls._count?.enrollments || 0} {enrolledLabel.toLowerCase()} ·{" "}
-        {schedule}
+        {enrolledLabel} · {schedule}
       </p>
       <p className="text-sm font-medium text-brand-ink">{nextAction}</p>
       <div

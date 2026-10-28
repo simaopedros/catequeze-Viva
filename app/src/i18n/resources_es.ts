@@ -1296,7 +1296,7 @@ export const auth_es = {
     "signup_error_password_mismatch": "Las contraseñas no coinciden.",
     "signup_error_terms": "Debe aceptar los Términos de Uso y la Política de Privacidad.",
     "signup_error_create": "Error al crear cuenta. Intente nuevamente.",
-    "footer_copyright": "© {{year}} Catequese Viva",
+    "footer_copyright": "© {{year}} Catechis",
     "email_verified": "Email verificado con éxito.",
     "email_verify_pending": "Confirmando tu email…",
     "email_verify_success_title": "Email verificado",
@@ -2065,7 +2065,11 @@ export const classes_es = {
     "title": "Grupos",
     "subtitle": "Gestione grupos, catequistas y catecúmenos.",
     "eyebrow": "Catequesis",
-    "metrics_visible": "Visibles",
+    "metrics_visible": "En la lista",
+    "filter_all_count": "Todas ({{count}})",
+    "filter_all_capped": "Todas (más de {{count}})",
+    "location_not_informed": "Lugar no informado",
+    "enrolled_metric": "Matriculados",
     "active_count_one": "{{count}} activa",
     "active_count_other": "{{count}} activas",
     "create": "Crear grupo",
@@ -2396,7 +2400,7 @@ export const collaborative_es = {
   } as const;
 
 export const common_es = {
-    "app_name": "Catequesis Viva",
+    "app_name": "Catechis",
     "app_tagline": "Plataforma pastoral de iniciación cristiana",
     "change_language": "Cambiar idioma",
     "toggle_dark_mode": "Alternar modo oscuro",
@@ -3592,7 +3596,7 @@ export const dashboard_es = {
     "see_classes": "Ver grupos",
     "see_report": "Ver informe",
     "see_pending": "Ver pendientes",
-    "active_class_one": "Grupo activo",
+    "active_class_one": "Grupo en curso",
     "trend_down": "{{pct}}% en el último mes",
     "trend_up": "{{pct}}% en el último mes",
     "my_class": "Mi grupo",
@@ -3646,7 +3650,8 @@ export const dashboard_es = {
     "institutional_title": "Panel de Gestión Pastoral",
     "institutional_subtitle": "KPIs consolidados, tendencias y alertas.",
     "active_catechumens": "Catecúmenos activos",
-    "active_classes": "Grupos activos",
+    "active_classes": "Grupos en curso",
+    "active_classes_hint": "Solo cuenta grupos con estado activo. Pausados o concluidos no entran.",
     "avg_attendance": "Asistencia media",
     "pending_sacraments": "Pendientes sacramentales",
     "pending_documents": "Documentos pendientes",
@@ -3895,7 +3900,7 @@ export const emails_es = {
 export const family_es = {
     "portal_badge": "Portal Familiar",
     "staff_portal_badge": "Equipo Pastoral",
-    "app_name": "Catequesis Viva",
+    "app_name": "Catechis",
     "landing": {
       "tagline": "Acompañe la jornada de fe de sus hijos.",
       "invite_title": "Entrada por Invitación",

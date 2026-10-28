@@ -318,7 +318,9 @@ describe('getDashboardStats scoping', () => {
       expect(where.parishId).toEqual({ in: [PARISH_A] });
     }
     for (const where of whereOf(calls, 'AttendanceRecord', 'count')) {
-      expect(where.meeting).toEqual({ class: { parishId: PARISH_A } });
+      expect(where.meeting).toEqual({
+        class: { parishId: PARISH_A, status: { not: 'ARCHIVED' } },
+      });
     }
     // Action-center insight window keeps the same class scope
     for (const where of whereOf(calls, 'AttendanceRecord', 'findMany')) {
@@ -368,8 +370,9 @@ describe('getDashboardStats scoping', () => {
     for (const where of whereOf(calls, 'CatechumenProfile', 'findMany')) {
       expect(where).toEqual({ enrollments: { some: { class: expectedScope } } });
     }
+    const attendanceScope = { ...expectedScope, status: { not: 'ARCHIVED' } };
     for (const where of whereOf(calls, 'AttendanceRecord', 'count')) {
-      expect(where.meeting).toEqual({ class: expectedScope });
+      expect(where.meeting).toEqual({ class: attendanceScope });
     }
     for (const where of whereOf(calls, 'AttendanceRecord', 'findMany')) {
       expect(where.meeting).toMatchObject({ class: expectedScope });
@@ -703,7 +706,11 @@ describe('exportReport', () => {
     await exportReport({ workspaceId: PARISH_B }, context);
 
     expect(classQueries).toEqual([
-      { status: 'ACTIVE', parishId: PARISH_B, id: { in: ['mine-b'] } },
+      {
+        status: { not: 'ARCHIVED' },
+        parishId: PARISH_B,
+        id: { in: ['mine-b'] },
+      },
     ]);
   });
 
@@ -717,7 +724,9 @@ describe('exportReport', () => {
 
     await exportReport({ workspaceId: PARISH_A }, context);
 
-    expect(classQueries).toEqual([{ status: 'ACTIVE', parishId: PARISH_A }]);
+    expect(classQueries).toEqual([
+      { status: { not: 'ARCHIVED' }, parishId: PARISH_A },
+    ]);
   });
 
   it('guardian cannot export', async () => {

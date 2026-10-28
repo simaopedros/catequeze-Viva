@@ -1296,7 +1296,7 @@ export const auth_en = {
     "signup_error_password_mismatch": "Passwords do not match.",
     "signup_error_terms": "You must accept the Terms of Use and Privacy Policy.",
     "signup_error_create": "Error creating account. Please try again.",
-    "footer_copyright": "© {{year}} Catequese Viva",
+    "footer_copyright": "© {{year}} Catechis",
     "email_verified": "Email verified successfully.",
     "email_verify_pending": "Confirming your email…",
     "email_verify_success_title": "Email verified",
@@ -2065,7 +2065,11 @@ export const classes_en = {
     "title": "Classes",
     "subtitle": "Manage classes, catechists, and catechumens.",
     "eyebrow": "Catechesis",
-    "metrics_visible": "Visible",
+    "metrics_visible": "In list",
+    "filter_all_count": "All ({{count}})",
+    "filter_all_capped": "All (more than {{count}})",
+    "location_not_informed": "Location not set",
+    "enrolled_metric": "Enrolled",
     "active_count_one": "{{count}} active",
     "active_count_other": "{{count}} active",
     "create": "Create class",
@@ -2396,7 +2400,7 @@ export const collaborative_en = {
   } as const;
 
 export const common_en = {
-    "app_name": "Catequese Viva",
+    "app_name": "Catechis",
     "app_tagline": "Pastoral platform for Christian initiation",
     "change_language": "Change language",
     "toggle_dark_mode": "Toggle dark mode",
@@ -3592,7 +3596,7 @@ export const dashboard_en = {
     "see_classes": "See classes",
     "see_report": "See report",
     "see_pending": "See pending items",
-    "active_class_one": "Active class",
+    "active_class_one": "Class in progress",
     "trend_down": "{{pct}}% in the last month",
     "trend_up": "{{pct}}% in the last month",
     "my_class": "My class",
@@ -3646,7 +3650,8 @@ export const dashboard_en = {
     "institutional_title": "Pastoral Management Dashboard",
     "institutional_subtitle": "Consolidated KPIs, trends and alerts.",
     "active_catechumens": "Active catechumens",
-    "active_classes": "Active classes",
+    "active_classes": "Classes in progress",
+    "active_classes_hint": "Only classes with active status. Paused or concluded are not included.",
     "avg_attendance": "Average attendance",
     "pending_sacraments": "Pending sacraments",
     "pending_documents": "Pending documents",
@@ -3895,7 +3900,7 @@ export const emails_en = {
 export const family_en = {
     "portal_badge": "Family Portal",
     "staff_portal_badge": "Pastoral Team",
-    "app_name": "Catequese Viva",
+    "app_name": "Catechis",
     "landing": {
       "tagline": "Follow your children's faith journey.",
       "invite_title": "Invitation Only",

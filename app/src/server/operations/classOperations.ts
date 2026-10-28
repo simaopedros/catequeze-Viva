@@ -91,7 +91,9 @@ const classListInclude = {
   },
   _count: {
     select: {
-      enrollments: { where: { status: "ENROLLED" } },
+      enrollments: {
+        where: { status: "ENROLLED", catechumenProfileId: { not: null } },
+      },
       meetings: true,
     },
   },

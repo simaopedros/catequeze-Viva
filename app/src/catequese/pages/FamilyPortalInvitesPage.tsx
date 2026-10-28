@@ -79,7 +79,7 @@ export default function FamilyPortalInvitesPage() {
 
   const { data: households = [] } = useQuery(
     listHouseholds,
-    { take: 200 },
+    { take: 200, parishId: activeParishId || undefined } as any,
     { enabled: Boolean(activeParishId) },
   );
 

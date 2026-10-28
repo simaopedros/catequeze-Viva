@@ -25,6 +25,7 @@ type Metric = {
   value: string | number;
   href?: string;
   linkLabel?: string;
+  title?: string;
   trend?: AttendanceTrend | null;
 };
 
@@ -85,6 +86,7 @@ function MetricCell({ metric }: { metric: Metric }) {
     return (
       <Link
         to={metric.href}
+        title={metric.title}
         className={cn(
           base,
           "transition-[box-shadow,border-color] duration-150 hover:border-input hover:shadow-elevation-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
@@ -94,7 +96,11 @@ function MetricCell({ metric }: { metric: Metric }) {
       </Link>
     );
   }
-  return <div className={base}>{body}</div>;
+  return (
+    <div className={base} title={metric.title}>
+      {body}
+    </div>
+  );
 }
 
 interface MyCatechesisMetricsProps {
@@ -129,6 +135,7 @@ export function MyCatechesisMetrics({
       value: stats?.activeClasses ?? 0,
       href: "/app/classes",
       linkLabel: t("see_classes"),
+      title: t("active_classes_hint"),
     },
     {
       id: "attendance",

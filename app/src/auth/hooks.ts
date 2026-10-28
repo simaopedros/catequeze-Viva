@@ -1,5 +1,5 @@
 /**
- * Auth hooks for Catequese Viva.
+ * Auth hooks for Catechis.
  */
 
 import { config } from "wasp/server";

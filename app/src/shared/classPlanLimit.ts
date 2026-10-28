@@ -14,10 +14,21 @@ export function isClassPlanLimitReached(
   return count >= maxClasses;
 }
 
-/** Active (non-archived) classes from a list payload. */
+/**
+ * Classes that count toward the plan limit (everything except archived).
+ * Do not use this for the "turmas ativas" KPI — use countActiveStatusClasses.
+ */
 export function countActiveClasses(
   classes: Array<{ status?: string | null }> | null | undefined,
 ): number {
   if (!classes?.length) return 0;
   return classes.filter((c) => c.status !== "ARCHIVED").length;
+}
+
+/** Classes with status ACTIVE only (paused/concluded/draft do not count). */
+export function countActiveStatusClasses(
+  classes: Array<{ status?: string | null }> | null | undefined,
+): number {
+  if (!classes?.length) return 0;
+  return classes.filter((c) => c.status === "ACTIVE").length;
 }

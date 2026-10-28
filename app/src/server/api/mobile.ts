@@ -408,13 +408,27 @@ export async function mobileCatechumenDetails(req: Request, res: Response, conte
 export async function mobileFamilies(req: Request, res: Response, context: any) {
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
-  return res.json(await listHouseholds({ communityId: parseOptionalString(req.query.communityId) }, opCtx));
+  return res.json(
+    await listHouseholds(
+      {
+        parishId: parseOptionalString(req.query.workspaceId),
+        communityId: parseOptionalString(req.query.communityId),
+      },
+      opCtx,
+    ),
+  );
 }
 
 export async function mobileFamilyDetails(req: Request, res: Response, context: any) {
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
-  const households = await listHouseholds({ communityId: parseOptionalString(req.query.communityId) }, opCtx);
+  const households = await listHouseholds(
+    {
+      parishId: parseOptionalString(req.query.workspaceId),
+      communityId: parseOptionalString(req.query.communityId),
+    },
+    opCtx,
+  );
   const householdId = parseRequiredString(req.params.id, 'id');
   const household = households.find((item: any) => item.id === householdId);
   if (!household) {

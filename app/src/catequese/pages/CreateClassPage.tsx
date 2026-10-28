@@ -371,7 +371,7 @@ export default function CreateClassPage() {
                         <option value="">{tc("select_option")}</option>
                         {[0, 1, 2, 3, 4, 5, 6].map((i) => (
                           <option key={i} value={i}>
-                            {t(`days.${i}`)}
+                            {t(`days_long.${i}`)}
                           </option>
                         ))}
                       </select>
