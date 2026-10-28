@@ -212,6 +212,7 @@ export default function CalendarPage() {
           ...m,
           name: m.title || t("meeting_default"),
           type: "class",
+          source: "meeting" as const,
           color: "#10b981",
           className:
             filteredClasses.find((c: any) => c.id === m.classId)?.name || "",
@@ -514,10 +515,19 @@ export default function CalendarPage() {
           setSelectedDay={setSelectedDay}
           setMobilePanelOpen={setMobilePanelOpen}
           onOpenEvent={(e) => {
-            if (e.type === "class" && e.id) {
+            if (e.source === "meeting" && e.id) {
               openMeeting(e.id);
+              return;
+            }
+            const day = dayKeyParts(eventDayKey(e)).day;
+            setSelectedDay(day);
+            // Desktop already has the day side panel; opening the Sheet there
+            // leaves only the overlay visible (content is lg:hidden) and blocks UI.
+            if (isDesktopViewport()) {
+              setMobilePanelOpen(false);
+              setViewMode("month");
+              setUserPickedView(true);
             } else {
-              setSelectedDay(dayKeyParts(eventDayKey(e)).day);
               setMobilePanelOpen(true);
             }
           }}
@@ -570,7 +580,7 @@ export default function CalendarPage() {
       >
         <SheetContent
           side="bottom"
-          className="max-h-[85dvh] overflow-y-auto rounded-t-sm p-0 lg:hidden"
+          className="max-h-[85dvh] overflow-y-auto rounded-t-sm p-0"
         >
           <SheetHeader className="sticky top-0 z-10 border-b border-border/70 bg-surface-elevated px-4 py-3 text-left">
             <SheetTitle className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-muted-foreground">
@@ -964,18 +974,18 @@ function SidePanelContent({
           <div className="space-y-1.5">
             {upcomingEvents.slice(0, 5).map((e: any) => {
               const eventDate = dayKeyParts(eventDayKey(e));
+              const isMeeting = e.source === "meeting";
               return (
                 <div
                   key={e.id}
-                  role={e.type === "class" ? "button" : undefined}
-                  tabIndex={e.type === "class" ? 0 : undefined}
+                  role={isMeeting ? "button" : undefined}
+                  tabIndex={isMeeting ? 0 : undefined}
                   onClick={() => {
-                    if (e.type === "class" && onOpenMeeting)
-                      onOpenMeeting(e.id);
+                    if (isMeeting && onOpenMeeting) onOpenMeeting(e.id);
                   }}
                   onKeyDown={(ev) => {
                     if (
-                      e.type === "class" &&
+                      isMeeting &&
                       onOpenMeeting &&
                       (ev.key === "Enter" || ev.key === " ")
                     ) {
@@ -984,7 +994,7 @@ function SidePanelContent({
                     }
                   }}
                   className={`flex items-center gap-2.5 rounded-sm p-2 hover:bg-muted/30 transition-colors ${
-                    e.type === "class" ? "cursor-pointer" : ""
+                    isMeeting ? "cursor-pointer" : ""
                   }`}
                 >
                   <div className="flex w-9 shrink-0 flex-col items-center">
@@ -1058,17 +1068,19 @@ function SidePanelContent({
         </AppPanel>
       ) : (
         <div className="space-y-2">
-          {dayEvents.map((e) => (
+          {dayEvents.map((e) => {
+            const isMeeting = e.source === "meeting";
+            return (
             <div
               key={e.id}
-              role={e.type === "class" ? "button" : undefined}
-              tabIndex={e.type === "class" ? 0 : undefined}
+              role={isMeeting ? "button" : undefined}
+              tabIndex={isMeeting ? 0 : undefined}
               onClick={() => {
-                if (e.type === "class" && onOpenMeeting) onOpenMeeting(e.id);
+                if (isMeeting && onOpenMeeting) onOpenMeeting(e.id);
               }}
               onKeyDown={(ev) => {
                 if (
-                  e.type === "class" &&
+                  isMeeting &&
                   onOpenMeeting &&
                   (ev.key === "Enter" || ev.key === " ")
                 ) {
@@ -1077,7 +1089,7 @@ function SidePanelContent({
                 }
               }}
               className={`flex items-start justify-between rounded-sm border border-border/70 bg-surface-elevated p-3 hover:bg-muted/20 transition-colors ${
-                e.type === "class" ? "cursor-pointer" : ""
+                isMeeting ? "cursor-pointer" : ""
               }`}
             >
               <div className="flex items-start gap-2.5 min-w-0">
@@ -1124,7 +1136,7 @@ function SidePanelContent({
                 >
                   <Download className="h-3.5 w-3.5" />
                 </button>
-                {e.type !== "class" &&
+                {!isMeeting &&
                   allowCreate &&
                   !e.generated &&
                   !e.inherited &&
@@ -1139,7 +1151,8 @@ function SidePanelContent({
                   )}
               </div>
             </div>
-          ))}
+            );
+          })}
 
           {allowCreate && (
             <Button

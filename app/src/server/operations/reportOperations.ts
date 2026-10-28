@@ -41,12 +41,19 @@ export const getReportsOverview = async (
     throw new HttpError(403, 'Apenas coordenadores podem aceder a relatorios.');
   }
 
-  // Classes + enrollment counts; attendance is aggregated in SQL (no row trees).
+  // Same pastoral scope as the dashboard: non-archived classes (ACTIVE, DRAFT,
+  // PAUSED, CONCLUDED). Filtering only ACTIVE hid whole classes and zeroed averages.
   const classes = await context.entities.CatechesisClass.findMany({
-    where: { ...whereClause, status: 'ACTIVE' },
+    where: { ...whereClause, status: { not: 'ARCHIVED' } },
     select: {
       id: true, name: true, parishId: true,
-      _count: { select: { enrollments: true } },
+      _count: {
+        select: {
+          enrollments: {
+            where: { status: 'ENROLLED', catechumenProfileId: { not: null } },
+          },
+        },
+      },
     },
     orderBy: { name: 'asc' },
     take: MAX_CLASSES_IN_OVERVIEW,
@@ -58,12 +65,8 @@ export const getReportsOverview = async (
     periodStart ? { from: periodStart } : undefined,
   );
 
-  // With a period selected, classes without meetings in that window are left out.
-  const classesInPeriod = periodStart
-    ? classes.filter((cls: any) => (aggregates.get(cls.id)?.totalMeetings ?? 0) > 0)
-    : classes;
-
-  const classReports = classesInPeriod.map((cls: any) => {
+  // Keep every class in the list; period only affects the attendance window.
+  const classReports = classes.map((cls: any) => {
     const agg = aggregates.get(cls.id) ?? emptyAggregate(cls.id);
     return {
       id: cls.id,

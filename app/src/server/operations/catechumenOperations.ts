@@ -116,6 +116,7 @@ export const listCatechumens = async (
     parish: { select: { id: true, name: true } },
     household: { select: { id: true, name: true, parishId: true } },
     enrollments: {
+      where: { status: "ENROLLED" },
       select: {
         id: true,
         status: true,
