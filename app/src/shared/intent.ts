@@ -1,5 +1,5 @@
 /**
- * Canonical AI intent types for the Catequese Viva platform.
+ * Canonical AI intent types for the Catechis platform.
  *
  * Each intent maps to one of the two AI surfaces:
  * - "Assistência editorial" (content assistance): create_meeting, improve_content, generate_activity, generate_whatsapp

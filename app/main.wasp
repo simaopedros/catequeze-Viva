@@ -30,19 +30,19 @@ app OpenSaaS {
     "<link rel='preload' as='image' type='image/webp' imageSrcSet='/landing/dashboard-hero-960.webp 960w, /landing/dashboard-hero.webp 1600w' imageSizes='(max-width: 1024px) 100vw, 900px' fetchPriority='high' />",
 
     "<meta name='description' content='Mais presença no encontro, menos tempo organizando. Prepare encontros, acompanhe catequizandos e registre presenças. 7 dias grátis, sem cartão.' />",
-    "<meta name='author' content='Catequese Viva' />",
+    "<meta name='author' content='Catechis' />",
     "<meta name='keywords' content='catequese, católica, paróquia, pastoral, crisma, primeira eucaristia, igreja, gestão paroquial' />",
 
     "<meta property='og:type' content='website' />",
-    "<meta property='og:title' content='Você semeia a fé. A gente organiza a turma. | Catequese Viva' />",
-    "<meta property='og:site_name' content='Catequese Viva' />",
+    "<meta property='og:title' content='Você semeia a fé. A gente organiza a turma. | Catechis' />",
+    "<meta property='og:site_name' content='Catechis' />",
     "<meta property='og:url' content='https://catechis.app' />",
     "<meta property='og:description' content='Mais presença no encontro, menos tempo organizando. Prepare encontros, acompanhe catequizandos e registre presenças. 7 dias grátis, sem cartão.' />",
     "<meta property='og:image' content='https://catechis.app/public-banner.webp' />",
     "<meta property='og:image:width' content='1200' />",
     "<meta property='og:image:height' content='630' />",
     "<meta name='twitter:card' content='summary_large_image' />",
-    "<meta name='twitter:title' content='Você semeia a fé. A gente organiza a turma. | Catequese Viva' />",
+    "<meta name='twitter:title' content='Você semeia a fé. A gente organiza a turma. | Catechis' />",
     "<meta name='twitter:description' content='Mais presença no encontro, menos tempo organizando. Prepare encontros, acompanhe catequizandos e registre presenças. 7 dias grátis, sem cartão.' />",
     "<meta name='twitter:image' content='https://catechis.app/public-banner.webp' />",
   ],
@@ -55,7 +55,7 @@ app OpenSaaS {
       //   (RequestPasswordReset(Route|Page), PasswordReset(Route|Page), EmailVerification(Route|Page))
       email: {
         fromField: {
-          name: "Catequese Viva",
+          name: "Catechis",
           email: "onboarding@catechis.app"
         },
         emailVerification: {
@@ -104,7 +104,7 @@ app OpenSaaS {
   emailSender: {
     provider: SMTP,
     defaultFrom: {
-      name: "Catequese Viva",
+      name: "Catechis",
       email: "noreply@catechis.app"
     },
   },
@@ -341,7 +341,7 @@ page AdminBlogEditPage {
   component: import AdminBlogEdit from "@src/admin/dashboards/blog/BlogEditPage"
 }
 
-//#region Catequese Viva App Routes
+//#region Catechis App Routes
 route AppDashboardRoute { path: "/app", to: AppDashboardPage }
 page AppDashboardPage {
   authRequired: true,
@@ -396,7 +396,7 @@ page SocialShortLinkPage {
 }
 //#endregion
 
-//#region Catequese Viva - Class Detail
+//#region Catechis - Class Detail
 route AppClassDetailRoute { path: "/app/classes/:id", to: AppClassDetailPage }
 page AppClassDetailPage {
   authRequired: true,
@@ -604,7 +604,7 @@ page AppOnboardingPage {
 //#endregion
 
 
-//#region Catequese Viva - User Context & Parishes
+//#region Catechis - User Context & Parishes
 query getCurrentUserContext {
   fn: import { getCurrentUserContext } from "@src/server/operations/userContext",
   entities: [User, Membership, Parish, Community, PendingInvitation]
@@ -781,7 +781,7 @@ action organizeAsParish {
 //#endregion
 
 
-//#region Catequese Viva - Classes
+//#region Catechis - Classes
 query listClasses {
   fn: import { listClasses } from "@src/server/operations/classOperations",
   entities: [CatechesisClass, Membership, Parish, ClassCatechist, GuardianProfile, CatechumenProfile, ClassEnrollment]
@@ -804,7 +804,7 @@ action createClass {
 
 action updateClass {
   fn: import { updateClass } from "@src/server/operations/classOperations",
-  entities: [CatechesisClass, Membership, ClassCatechist, Parish, Community]
+  entities: [CatechesisClass, ClassEnrollment, Membership, ClassCatechist, Parish, Community, TenantBilling, Diocese, User, PricingPlan, PricingPlanPrice]
 }
 
 action assignLeadCatechist {
@@ -853,7 +853,7 @@ action cancelEnrollment {
 }
 //#endregion
 
-//#region Catequese Viva - Catechumens
+//#region Catechis - Catechumens
 query listCatechumens {
   fn: import { listCatechumens } from "@src/server/operations/catechumenOperations",
   entities: [CatechumenProfile, Membership, ClassEnrollment, CatechesisClass, ClassCatechist, Household, GuardianProfile, Parish]
@@ -866,7 +866,7 @@ query getCatechumenProfile {
 
 action createCatechumen {
   fn: import { createCatechumen } from "@src/server/operations/catechumenOperations",
-  entities: [CatechumenProfile, Membership, Parish, Household, ClassCatechist]
+  entities: [CatechumenProfile, Membership, Parish, Household, ClassCatechist, CatechesisClass]
 }
 
 action updateCatechumen {
@@ -882,7 +882,7 @@ action deleteCatechumen {
 }
 //#endregion
 
-//#region Catequese Viva - Families
+//#region Catechis - Families
 query listHouseholds {
   fn: import { listHouseholds } from "@src/server/operations/familyOperations",
   entities: [Household, Membership, GuardianProfile, ClassCatechist, ClassEnrollment, CatechumenProfile, Parish]
@@ -915,7 +915,7 @@ action updateHousehold {
 //#endregion
 
 
-//#region Catequese Viva - Meetings & Attendance
+//#region Catechis - Meetings & Attendance
 route AppAttendanceRoute { path: "/app/classes/:id/attendance", to: AppAttendancePage }
 page AppAttendancePage {
   authRequired: true,
@@ -939,7 +939,7 @@ action updateMeeting {
 
 action deleteMeeting {
   fn: import { deleteMeeting } from "@src/server/operations/meetingOperations",
-  entities: [Meeting, AttendanceRecord, CatechesisClass, Membership, Parish]
+  entities: [Meeting, AttendanceRecord, DeletedMeetingSnapshot, CatechesisClass, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
 }
 
 query getMeeting {
@@ -1033,10 +1033,15 @@ action justifyAbsenceByMeeting {
 //#endregion
 
 
-//#region Catequese Viva - Create Forms
+//#region Catechis - Create Forms
 //#endregion
 
-//#region Catequese Viva - Dashboard Operations
+//#region Catechis - Dashboard Operations
+query getPlanUsage {
+  fn: import { getPlanUsage } from "@src/server/operations/billingEnforcement",
+  entities: [CatechesisClass, ClassEnrollment, ClassCatechist, Membership, Parish, Community, TenantBilling, Diocese, User, PricingPlan, PricingPlanPrice]
+}
+
 query getDashboardStats {
   fn: import { getDashboardStats } from "@src/server/operations/dashboardOperations",
   entities: [User, Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, GuardianProfile, Household]
@@ -1089,12 +1094,12 @@ query getInstitutionalDashboardInsights {
 //#endregion
 
 
-//#region Catequese Viva - Create Catechumen & Household
+//#region Catechis - Create Catechumen & Household
 
 //#endregion
 
 
-//#region Catequese Viva - Content Library
+//#region Catechis - Content Library
 query listContentItems {
   fn: import { listContentItems } from "@src/server/operations/contentOperations",
   entities: [ContentItem, Membership, Parish, ClassCatechist, Diocese]
@@ -1174,7 +1179,7 @@ action removeCatechismRef {
 //#endregion
 
 
-//#region Catequese Viva - Sacraments
+//#region Catechis - Sacraments
 query listSacramentalJourneys {
   fn: import { listSacramentalJourneys } from "@src/server/operations/sacramentOperations",
   entities: [SacramentalJourney, Membership, ClassCatechist, ClassEnrollment, CatechumenProfile, GuardianProfile, CatechesisClass, Parish]
@@ -1232,7 +1237,7 @@ action publishTemplate {
 //#endregion
 
 
-//#region Catequese Viva - Reports
+//#region Catechis - Reports
 query getReportsOverview {
   fn: import { getReportsOverview } from "@src/server/operations/reportOperations",
   entities: [CatechesisClass, Meeting, AttendanceRecord, Membership, Parish, ClassCatechist]
@@ -1255,12 +1260,12 @@ query listUpcomingBirthdays {
 
 action toggleBirthdayGift {
   fn: import { toggleBirthdayGift } from "@src/server/operations/pastoralReportOperations",
-  entities: [CatechumenBirthdayGift]
+  entities: [CatechumenBirthdayGift, ClassEnrollment, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 //#endregion
 
 
-//#region Catequese Viva - Calendar
+//#region Catechis - Calendar
 query listLiturgicalEvents {
   fn: import { listLiturgicalEvents } from "@src/server/operations/calendarOperations",
   entities: [LiturgicalEvent, Membership, Parish, Diocese, Community, ClassCatechist]
@@ -1465,7 +1470,7 @@ query getHierarchyAdoptionReport {
 //#endregion
 
 
-//#region Catequese Viva - Documents
+//#region Catechis - Documents
 route AppDocumentsRoute { path: "/app/documents", to: AppDocumentsPage }
 page AppDocumentsPage {
   authRequired: true,
@@ -1517,7 +1522,7 @@ api authenticatedDocumentUpload {
   middlewareConfigFn: import { authenticatedDocumentUploadMiddleware } from "@src/server/api/authenticatedDocumentUpload",
   auth: true,
   httpRoute: (POST, "/api/documents/upload"),
-  entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish]
+  entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish, ClassCatechist, CatechesisClass]
 }
 
 api uploadOfficialResourceAttachment {
@@ -1786,7 +1791,7 @@ action setSocialAuthorBan {
 }
 //#endregion
 
-//#region Catequese Viva - Mobile API
+//#region Catechis - Mobile API
 api mobileAuthLogin {
   fn: import { mobileAuthLogin } from "@src/server/api/mobile",
   httpRoute: (POST, "/mobile/auth/login")
@@ -2004,7 +2009,7 @@ action generateCatechumenUploadToken {
 
 query getCatechumenByUploadToken {
   fn: import { getCatechumenByUploadToken } from "@src/server/operations/uploadTokenOperations",
-  entities: [CatechumenProfile, Document]
+  entities: [CatechumenProfile]
 }
 
 action uploadDocumentWithToken {
@@ -2014,7 +2019,7 @@ action uploadDocumentWithToken {
 //#endregion
 
 
-//#region Catequese Viva - CSV Import
+//#region Catechis - CSV Import
 route AppImportCatechumensRoute { path: "/app/catechumens/import", to: AppImportCatechumensPage }
 page AppImportCatechumensPage {
   authRequired: true,
@@ -2031,7 +2036,7 @@ action importCatechumensCSV {
 route AppParishDetailRoute { path: "/app/parishes/:id", to: AppParishDetailPage }
 page AppParishDetailPage { authRequired: true, component: import ParishDetailPage from "@src/catequese/pages/ParishDetailPage" }
 
-//#region Catequese Viva - Missing Routes
+//#region Catechis - Missing Routes
 route AppParishesRoute { path: "/app/parishes", to: AppParishesPage }
 page AppParishesPage { authRequired: true, component: import ParishesPage from "@src/catequese/pages/ParishesPage" }
 
@@ -2066,7 +2071,7 @@ page AppFamilyDetailPage { authRequired: true, component: import FamilyDetailPag
 //#endregion
 
 
-//#region Catequese Viva - Activities & Guardian
+//#region Catechis - Activities & Guardian
 query listActivitiesByContent {
   fn: import { listActivitiesByContent } from "@src/server/operations/activityOperations",
   entities: [Activity, ActivitySubmission, ContentItem, Membership, Parish, CatechumenProfile, GuardianProfile]
@@ -2120,7 +2125,7 @@ page TermsPublicPage { component: import TermsPage from "@src/catequese/pages/Te
 //#endregion
 
 
-//#region Catequese Viva - Consents
+//#region Catechis - Consents
 route AppConsentRoute { path: "/app/consents", to: AppConsentPage }
 page AppConsentPage { authRequired: true, component: import ConsentPage from "@src/catequese/pages/ConsentPage" }
 
@@ -2131,7 +2136,7 @@ query listConsents {
 
 action saveConsent {
   fn: import { saveConsent } from "@src/server/operations/consentOperations",
-  entities: [ConsentRecord]
+  entities: [ConsentRecord, ConsentEvent, GuardianProfile]
 }
 //#endregion
 
@@ -2572,7 +2577,19 @@ action updateUserProfile {
 
 action requestDataExport {
   fn: import { requestDataExport } from "@src/server/operations/userOperations",
-  entities: [User, Membership, GuardianProfile, AuditLog]
+  entities: [User, Membership, GuardianProfile, AuditLog, DataExportRequest]
+}
+
+query getDataExportRequest {
+  fn: import { getDataExportRequest } from "@src/server/operations/dataExport",
+  entities: [DataExportRequest]
+}
+
+api downloadDataExport {
+  fn: import { downloadDataExport } from "@src/server/operations/dataExport",
+  auth: true,
+  httpRoute: (GET, "/api/data-export/:id"),
+  entities: [User, Membership, GuardianProfile, AuditLog, DataExportRequest]
 }
 
 action changePassword {
@@ -2820,3 +2837,23 @@ page PublicUploadDocsPage {
 
 
 
+
+query listDeletedMeetings {
+  fn: import { listDeletedMeetings } from "@src/server/operations/meetingOperations",
+  entities: [DeletedMeetingSnapshot, CatechesisClass, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
+}
+
+action restoreDeletedMeeting {
+  fn: import { restoreDeletedMeeting } from "@src/server/operations/meetingOperations",
+  entities: [DeletedMeetingSnapshot, Meeting, AttendanceRecord, CatechesisClass, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
+}
+
+query getAccountTermsStatus {
+  fn: import { getAccountTermsStatus } from "@src/server/operations/termsOperations",
+  entities: [User]
+}
+
+action acceptAccountTerms {
+  fn: import { acceptAccountTerms } from "@src/server/operations/termsOperations",
+  entities: [User, TermsAcceptance]
+}

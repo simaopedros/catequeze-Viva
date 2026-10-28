@@ -143,7 +143,7 @@ describe('open graph', () => {
 
   it('falls back when the post has no text', () => {
     expect(buildOgTitle('', 'Maria')).toBe('Publicação de Maria');
-    expect(buildOgTitle('', null)).toBe('Comunidade Catequese Viva');
+    expect(buildOgTitle('', null)).toBe('Comunidade Catechis');
   });
 
   it('escapes html in the rendered preview document', () => {

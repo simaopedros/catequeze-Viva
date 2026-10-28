@@ -1,15 +1,15 @@
 {
   "fallback_name": "catequista",
   "fallback_class": "tu grupo",
-  "footer_reason": "Recibes este correo porque creaste una cuenta en Catequese Viva.",
+  "footer_reason": "Recibes este correo porque creaste una cuenta en Catechis.",
   "unsubscribe": "No quiero más estos correos",
   "unsubscribed_title": "Suscripción cancelada",
-  "unsubscribed_body": "Ya no recibirás correos de seguimiento de tu cuenta en Catequese Viva.",
+  "unsubscribed_body": "Ya no recibirás correos de seguimiento de tu cuenta en Catechis.",
   "unsubscribe_invalid_title": "Enlace no válido",
   "unsubscribe_invalid_body": "Este enlace para cancelar la suscripción no es válido o ha caducado.",
   "welcome": {
-    "subject": "Bienvenido a Catequese Viva, {{name}}",
-    "subject_no_name": "Bienvenido a Catequese Viva",
+    "subject": "Bienvenido o Catechis, {{name}}",
+    "subject_no_name": "Bienvenido o Catechis",
     "heading": "Tu catequesis empieza aquí",
     "body": "Hola, {{name}}. Tu cuenta está lista. Crea el primer grupo para pasar lista y preparar encuentros en el mismo lugar.",
     "body_no_name": "¡Hola! Tu cuenta está lista. Crea el primer grupo para pasar lista y preparar encuentros en el mismo lugar.",
@@ -28,19 +28,19 @@
       "body": "Te invitaron a integrar el equipo de catequesis de \"{{location}}\" como {{role}}.\n\nEste acceso es del panel pastoral (coordinación y catequistas), no del Portal de la Familia.\n\nPara aceptar, abre: {{link}}\n\nEsta invitación caduca en 30 días.",
       "cta": "Aceptar invitación"
     },
-    "footer": "— Equipo Catequese Viva"
+    "footer": "— Equipo Catechis"
   },
   "support_reply": {
-    "subject": "Respuesta del soporte — Catequese Viva",
+    "subject": "Respuesta del soporte — Catechis",
     "heading": "Respuesta del soporte",
     "greeting": "Hola {{name}},",
     "intro": "Recibimos tu mensaje. Nuestra respuesta es:",
-    "outro": "También puedes ver esta respuesta en el centro de soporte de Catequese Viva.",
+    "outro": "También puedes ver esta respuesta en el centro de soporte de Catechis.",
     "cta": "Abrir soporte",
-    "footer": "Catequese Viva · soporte"
+    "footer": "Catechis · soporte"
   },
   "billing": {
-    "footer": "Catequese Viva · suscripción",
+    "footer": "Catechis · suscripción",
     "canceled": {
       "subject": "Tu suscripción se encerrará",
       "heading": "El acceso sigue hasta el fin del período pagado",
@@ -74,11 +74,11 @@
     "transactional_note": "Los correos de acceso, invitación y factura no se pueden desactivar."
   },
   "broadcast": {
-    "footer": "Recibes este correo porque te suscribiste a las novedades de Catequese Viva."
+    "footer": "Recibes este correo porque te suscribiste a las novedades de Catechis."
   },
   "campaigns": {
     "activate_create_class": {
-      "subject": "Crea tu primer grupo en Catequese Viva",
+      "subject": "Crea tu primer grupo en Catechis",
       "heading": "Tu catequesis sigue en el papel",
       "body": "Hola, {{name}}. Crea el grupo en 2 minutos para empezar la asistencia y los encuentros en el mismo lugar.",
       "cta": "Crear mi grupo"
@@ -97,7 +97,7 @@
     },
     "convert_after_value": {
       "subject": "Tu grupo ya está en marcha — mantén el acceso",
-      "heading": "Asistencia y encuentros ya están en Catequese Viva",
+      "heading": "Asistencia y encuentros ya están en Catechis",
       "body": "Hola, {{name}}. Suscríbete al Plan Catequista ({{price}}/mes) para no perder el acceso el {{trialEndsAt}}.",
       "cta": "Suscribirme ahora"
     },
@@ -114,7 +114,7 @@
     "trial_d1": {
       "subject": "Tu prueba termina mañana",
       "heading": "Mañana termina el periodo de prueba",
-      "body_no_class": "Hola, {{name}}. Aún da tiempo de crear el grupo hoy y ver Catequese Viva en acción.",
+      "body_no_class": "Hola, {{name}}. Aún da tiempo de crear el grupo hoy y ver Catechis en acción.",
       "body_no_people": "Hola, {{name}}. Añade a los catecúmenos de {{className}} hoy: mañana acaba la prueba.",
       "body_no_action": "Hola, {{name}}. Pasa lista o prepara el encuentro de {{className}} antes de que la prueba acabe mañana.",
       "body_value": "Hola, {{name}}. Mañana termina la prueba. Suscríbete al Plan Catequista ({{price}}/mes) para mantener grupo, asistencia y encuentros.",
@@ -137,7 +137,7 @@
       "subject": "Una invitación para retomar la catequesis",
       "heading": "Tu grupo te espera",
       "body": "Hola, {{name}}. Hace una semana que terminó la prueba. El Plan Catequista cuesta {{price}}/mes: reactívalo para continuar donde lo dejaste.",
-      "cta": "Volver a Catequese Viva"
+      "cta": "Volver o Catechis"
     }
   }
 }

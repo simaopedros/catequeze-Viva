@@ -68,7 +68,7 @@ export function HomeHero({ ns = "landing" }: { ns?: string }) {
   const imageAlt = landingCopy(
     tr,
     "hero.image_alt",
-    "Painel da Catequese Viva com turmas, presença e próximas ações",
+    "Painel do Catechis com turmas, presença e próximas ações",
   );
 
   const textStart = (words1.length + words2.length) * WORD_STAGGER_MS + 180;

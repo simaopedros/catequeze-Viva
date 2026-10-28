@@ -8,12 +8,7 @@ function read(path: string) {
   return readFileSync(join(root, path), "utf8");
 }
 
-/** Mirrors classOperations.startOfUtcDay — meeting dates are midnight UTC. */
-function startOfUtcDay(now: Date): Date {
-  return new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-  );
-}
+import { startOfAppCalendarDay } from "../shared/calendarDate";
 
 describe("class detail header layout", () => {
   it("keeps title full-width with actions below and Mais ações menu", () => {
@@ -34,8 +29,10 @@ describe("class detail header layout", () => {
     const page = read("catequese/pages/ClassDetailPage.tsx");
 
     const rosterMatches = page.match(/t\("export_roster_csv"\)/g) ?? [];
+    // The export dialog also uses the label for its title and submit button.
+    const toolbar = page.slice(0, page.indexOf('<Dialog open={attendanceExportOpen}'));
     const attendanceMatches =
-      page.match(/t\("export_attendance_csv"\)/g) ?? [];
+      toolbar.match(/t\("export_attendance_csv"\)/g) ?? [];
     const printMatches = page.match(/t\("print"\)/g) ?? [];
 
     // One label reference each for the menu action (handlers may mention keys too)
@@ -78,19 +75,19 @@ describe("class detail header layout", () => {
 
 describe("class list next meeting day boundary", () => {
   it("includes a midnight-UTC meeting on the same UTC day after evening BRT", () => {
-    // 27/10 21:30 BRT = 28/10 00:30 UTC; meeting stored as 28/10 00:00 UTC
-    const now = new Date("2026-10-28T00:30:00.000Z");
+    // 28/10 23:30 BRT = 29/10 02:30 UTC; meeting stored as 28/10 00:00 UTC
+    const now = new Date("2026-10-29T02:30:00.000Z");
     const meetingDate = new Date("2026-10-28T00:00:00.000Z");
-    const dayStart = startOfUtcDay(now);
+    const dayStart = startOfAppCalendarDay(now);
 
     expect(meetingDate >= now).toBe(false);
     expect(meetingDate >= dayStart).toBe(true);
     expect(dayStart.toISOString()).toBe("2026-10-28T00:00:00.000Z");
   });
 
-  it("uses startOfUtcDay in classListInclude filter", () => {
+  it("uses startOfAppCalendarDay in classListInclude filter", () => {
     const ops = read("server/operations/classOperations.ts");
-    expect(ops).toContain("const dayStart = startOfUtcDay(now)");
+    expect(ops).toContain("const dayStart = startOfAppCalendarDay(now)");
     expect(ops).toContain("date: { gte: dayStart }");
     expect(ops).toContain('status: { not: "CANCELLED" as const }');
   });

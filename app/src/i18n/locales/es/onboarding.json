@@ -36,7 +36,7 @@
   "welcome": {
     "hello": "Hola, {{name}}",
     "hello_default": "Bienvenido/a",
-    "question": "¿Cómo vas a usar Catequese Viva?",
+    "question": "¿Cómo vas a usar Catechis?",
     "personal_title": "Soy catequista y cuido mi grupo",
     "personal_desc": "Crea tu grupo e incluye a los catequizandos. Tienes 7 días gratis del Plan Catequista, sin tarjeta.",
     "personal_features": [],
@@ -118,7 +118,7 @@
     "whatsapp_question": "¿Quieres el plan Diócesis para tu región?",
     "whatsapp_helper": "El equipo de ventas explica cobertura, precios y cómo activar el plan Diócesis.",
     "whatsapp_cta": "Consultar plan Diócesis en WhatsApp",
-    "whatsapp_prefill": "¡Hola! Estoy en el registro de Catequese Viva y quiero saber más sobre el plan Diócesis.",
+    "whatsapp_prefill": "¡Hola! Estoy en el registro de Catechis y quiero saber más sobre el plan Diócesis.",
     "skip": "Omitir este paso →",
     "select_hint": "Seleccione una diócesis arriba",
     "subtitle": "Elige la diócesis para encontrar la parroquia correcta con menos esfuerzo.",
@@ -341,7 +341,7 @@
     "plan_limit": "Tu período de prueba no está activo, así que aún no puedes crear el grupo. Suscríbete al Plan Catequista para continuar o contacta con soporte.",
     "plan_limit_subscribe": "Suscribirme al Plan Catequista",
     "plan_limit_support": "Contactar con soporte",
-    "plan_limit_support_prefill": "¡Hola! Me estoy registrando en Catequese Viva y no pude crear mi primer grupo (límite del plan).",
+    "plan_limit_support_prefill": "¡Hola! Me estoy registrando en Catechis y no pude crear mi primer grupo (límite del plan).",
     "start_time_invalid": "Horario de inicio inválido. Usa el formato HH:mm (ej.: 19:00).",
     "end_time_invalid": "Horario de fin inválido. Usa el formato HH:mm (ej.: 20:30).",
     "default_meeting_title": "Encuentro de hoy",
@@ -404,5 +404,13 @@
     "partial_error_other": "No se añadieron {{count}} filas. Las demás se conservaron.",
     "partial_error_zero": "No se añadieron {{count}} filas. Las demás se conservaron."
   },
-  "resume_banner": "Continuando desde donde lo dejaste."
+  "resume_banner": "Continuando desde donde lo dejaste.",
+  "organization_name": {
+    "parish_title": "Indica el nombre de tu parroquia",
+    "diocese_title": "Indica el nombre de tu diócesis",
+    "required": "Indica el nombre de la organización.",
+    "save": "Guardar",
+    "later": "Ahora no",
+    "save_error": "No se pudo guardar. Inténtalo de nuevo."
+  }
 }

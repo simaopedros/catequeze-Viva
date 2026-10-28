@@ -54,7 +54,7 @@ export async function aiCompletion(
       ? {
           extra_headers: {
             'HTTP-Referer': 'https://catequese.viva',
-            'X-Title': 'Catequese Viva',
+            'X-Title': 'Catechis',
           },
         }
       : {}),
@@ -98,7 +98,7 @@ export async function aiCompletionStream(
       ? {
           extra_headers: {
             'HTTP-Referer': 'https://catequese.viva',
-            'X-Title': 'Catequese Viva',
+            'X-Title': 'Catechis',
           },
         }
       : {}),

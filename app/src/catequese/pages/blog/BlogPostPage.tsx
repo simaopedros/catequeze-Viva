@@ -54,7 +54,7 @@ export default function BlogPostPage() {
   useEffect(() => {
     if (!post) return;
     applyBlogPostDocumentMeta({
-      title: post.seoTitle || `${post.title} | Catequese Viva`,
+      title: post.seoTitle || `${post.title} | Catechis`,
       description: post.seoDescription || post.excerpt,
       path: `/blog/${post.slug}`,
       imageKey: post.coverImageKey,
@@ -70,7 +70,7 @@ export default function BlogPostPage() {
         canonicalUrl: `${origin()}/blog/${post.slug}`,
         publishedAt: post.publishedAt,
         updatedAt: post.updatedAt,
-        authorName: post.author?.name || "Catequese Viva",
+        authorName: post.author?.name || "Catechis",
         imageUrl: post.coverImageKey
           ? `${origin()}${buildBlogImageUrl(post.coverImageKey)}`
           : undefined,

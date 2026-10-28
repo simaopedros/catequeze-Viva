@@ -79,7 +79,7 @@ export async function uploadDocumentMultipart(
 
 export async function uploadPublicDocumentMultipart(
   params: PublicDocumentUploadParams,
-): Promise<{ success: boolean; document: { id: string; name: string } }> {
+): Promise<{ success: boolean }> {
   const form = new FormData();
   form.append("file", params.file);
   form.append("token", params.token);

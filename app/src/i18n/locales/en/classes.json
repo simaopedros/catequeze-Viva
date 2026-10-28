@@ -241,5 +241,11 @@
   "limit_see_plans": "See plans",
   "limit_back_to_classes": "Back to Classes",
   "consult_records": "View records",
-  "more_class_actions": "More actions for class {{name}}"
+  "more_class_actions": "More actions for class {{name}}",
+  "no_roll_calls": "No roll calls recorded",
+  "export_period": "Export period",
+  "export_last_90_days": "Last 90 days",
+  "export_all_history": "All history",
+  "export_until": "until",
+  "restore_quota_blocked": "This class would exceed the plan limit for classes or distinct people. Free up capacity or change your plan."
 }

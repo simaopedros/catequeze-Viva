@@ -2,7 +2,7 @@
   "hero": {
     "headline_line1": "You sow the faith.",
     "headline_line2": "We organize the class.",
-    "subheadline": "Catequese Viva keeps meetings, classes, and catechumens organized so you have more time to be with them.",
+    "subheadline": "Catechis keeps meetings, classes, and catechumens organized so you have more time to be with them.",
     "badge": "For those who say yes to the mission of catechizing",
     "cta_primary": "Start 7 days free",
     "cta_secondary": "See how it works",
@@ -46,10 +46,10 @@
       }
     ],
     "click_trigger": "Works on mobile · Built for catechesis routines",
-    "image_alt": "Catequese Viva dashboard with next actions, attendance, classes, and sacramental follow-ups"
+    "image_alt": "Catechis dashboard with next actions, attendance, classes, and sacramental follow-ups"
   },
   "pain_title": "The mission already asks a lot of you. Paperwork shouldn't ask for more.",
-  "pain_subtitle": "Catequese Viva gathers preparation, your class, attendance, and families — so bureaucracy stops stealing time from evangelization.",
+  "pain_subtitle": "Catechis gathers preparation, your class, attendance, and families — so bureaucracy stops stealing time from evangelization.",
   "pains": [
     {
       "text": "Preparing every weekly meeting takes time, references, and creativity"
@@ -71,7 +71,7 @@
     }
   ],
   "ai_showcase_title": "See how a meeting can take shape in minutes",
-  "ai_showcase_subtitle": "Catequese Viva combines theme, age group, and Catholic references to draft a first version that you review before using.",
+  "ai_showcase_subtitle": "Catechis combines theme, age group, and Catholic references to draft a first version that you review before using.",
   "ai_showcase_cta": "View plans for your next class",
   "features_title": "What matters most to prepare and follow catechesis",
   "features_subtitle": "AI, attendance, and families work together to reduce improvisation and bring more clarity to the pastoral routine.",
@@ -120,7 +120,7 @@
     }
   },
   "mission_title": "Meeting prepared. Class embraced. Faith shared with the families.",
-  "mission_text": "Catequese Viva exists to serve your mission — not the other way around. Less improvisation and paperwork, more real presence with each catechumen God entrusted to you.",
+  "mission_text": "Catechis exists to serve your mission — not the other way around. Less improvisation and paperwork, more real presence with each catechumen God entrusted to you.",
   "personas_title": "Built for the catechist — and ready for the families in your class",
   "personas_subtitle": "In this phase, the journey is yours: you care for the class and families follow along in the portal.",
   "personas": [
@@ -240,7 +240,7 @@
   "faqs": [
     {
       "q": "Do I need to be good with technology?",
-      "a": "No. Catequese Viva was designed to work on your phone and stay simple from the first meeting."
+      "a": "No. Catechis was designed to work on your phone and stay simple from the first meeting."
     },
     {
       "q": "Do I have to register everything at once?",
@@ -265,7 +265,7 @@
   ],
   "cta_eyebrow": "Back to what matters",
   "cta_title": "Get back the time for what called you to catechesis.",
-  "cta_subtitle": "Leave the organization to Catequese Viva and live the meeting with more presence, calm, and purpose.",
+  "cta_subtitle": "Leave the organization to Catechis and live the meeting with more presence, calm, and purpose.",
   "cta_lines": [],
   "cta_button": "Start 7 days free",
   "cta_badge": "Trial",
@@ -359,7 +359,7 @@
   },
   "ai_showcase_badge": "See how the flow works",
   "trust_title": "Built to handle sensitive data",
-  "trust_subtitle": "Catequese Viva handles data on children and families. Protection is in the structure, not in a promise.",
+  "trust_subtitle": "Catechis handles data on children and families. Protection is in the structure, not in a promise.",
   "trust": [
     {
       "title": "LGPD-aligned",
@@ -454,10 +454,10 @@
   "price_trial_note": "",
   "comparison": {
     "title": "Stop scattering your catechesis across paper, spreadsheets, and WhatsApp",
-    "subtitle": "Compare your current workflow with Catequese Viva on what matters in your week with the class.",
+    "subtitle": "Compare your current workflow with Catechis on what matters in your week with the class.",
     "col_criterion": "What you need",
     "col_old": "Paper + spreadsheet + WhatsApp",
-    "col_next": "Catequese Viva",
+    "col_next": "Catechis",
     "cta": "Start free for 7 days",
     "helper": "7 days free, with access to every feature. Cancel anytime.",
     "rows": [
@@ -503,7 +503,7 @@
   "demo": {
     "badge": "Intelligence that helps",
     "title": "You don't need to start with a blank page.",
-    "subtitle": "Share the theme and your class profile. Catequese Viva helps turn the idea into a meeting ready for you to review.",
+    "subtitle": "Share the theme and your class profile. Catechis helps turn the idea into a meeting ready for you to review.",
     "helper": "",
     "panel_title": "Prepare meeting",
     "panel_subtitle": "",
@@ -668,7 +668,7 @@
     "eyebrow": "",
     "title": "Less organizing. More encounter.",
     "col_before": "Before",
-    "col_after": "With Catequese Viva",
+    "col_after": "With Catechis",
     "rows": [
       { "before": "Notebook", "after": "Organized meetings" },
       { "before": "WhatsApp", "after": "Centralized communication" },
@@ -680,7 +680,7 @@
   "presence": {
     "title_line1": "More heart in the meeting.",
     "title_line2": "Less weight in the week.",
-    "subtitle": "Catequese Viva takes care of the part nobody sees so you can take care of the part that actually matters."
+    "subtitle": "Catechis takes care of the part nobody sees so you can take care of the part that actually matters."
   },
   "start_small": {
     "eyebrow": "Start small.",

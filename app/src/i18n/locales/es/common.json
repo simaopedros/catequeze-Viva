@@ -196,7 +196,9 @@
         "label": "Datos sensibles",
         "desc": "Autorizo el tratamiento de datos sensibles conforme a la LGPD."
       }
-    }
+    },
+    "version": "Versión {{version}}",
+    "accepted_at": "Aceptado el {{date}}"
   },
   "documents": {
     "title": "Documentos",
@@ -703,7 +705,7 @@
     "title": "Central de soporte",
     "subtitle": "Envía tu duda abajo. Las respuestas del equipo aparecen aquí y también se envían por correo.",
     "your_message": "Tu mensaje",
-    "our_reply": "Respuesta de Catequese Viva",
+    "our_reply": "Respuesta de Catechis",
     "waiting": "Aún a la espera de respuesta.",
     "empty_title": "Sin mensajes de soporte",
     "empty_desc": "Cuando envíes un mensaje, la conversación con el equipo aparece aquí.",

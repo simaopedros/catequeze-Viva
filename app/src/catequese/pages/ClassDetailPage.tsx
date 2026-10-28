@@ -1,3 +1,6 @@
+import { attendanceRateDisplay } from "../../shared/attendanceMetrics";
+import { attendanceExportProfiles } from '../../shared/attendanceExport';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../../client/components/ui/dialog';
 import { useTranslation } from "react-i18next";
 import { TimeInput } from "../../client/components/ui/time-input";
 import { useParams, Link, useNavigate, useSearchParams } from "react-router";
@@ -30,6 +33,7 @@ import { downloadCsv } from "../../shared/csvDownload";
 import {
   useQuery,
   getClassDetails,
+  getPlanUsage,
   listCatechumens,
   enrollCatechumen,
   bulkEnrollCatechumens,
@@ -96,6 +100,11 @@ export default function ClassDetailPage() {
     error: classError,
     refetch: refetchClass,
   } = useQuery(getClassDetails, { id: id! });
+  const { data: planUsage } = useQuery(
+    getPlanUsage,
+    { parishId: cls?.parish?.id || "", restoreClassId: id },
+    { enabled: !!cls?.parish?.id && cls?.status === "ARCHIVED" },
+  );
   const { data: user } = useAuth();
   const { userRole, isAdmin } = useUserContext();
   const { getBySlug } = usePlanCatalog();
@@ -494,11 +503,28 @@ export default function ClassDetailPage() {
     );
   };
 
+  const [attendanceExportOpen, setAttendanceExportOpen] = useState(false);
+  const [attendanceExportPeriod, setAttendanceExportPeriod] = useState("quarter");
   const handleExportAttendanceCsv = async () => {
     if (!id) return;
     setBusyAction("export-attendance");
     try {
-      const meetings = await getClassAttendanceMatrix({ classId: id, take: 80 });
+      const toDate = new Date().toISOString();
+      const fromDate = new Date(Date.now() - 90 * 86400000).toISOString();
+      const allHistory = attendanceExportPeriod === "all";
+      const periodLabel = allHistory
+        ? `${t("export_all_history")} (${t("export_until")} ${toDate})`
+        : `${fromDate} / ${toDate}`;
+      const meetings: any[] = [];
+      let cursor: string | undefined;
+      for (;;) {
+        const page: any[] = await getClassAttendanceMatrix({
+          classId: id, take: 80, allHistory, fromDate, toDate, cursor,
+        });
+        meetings.push(...page);
+        if (page.length < 80) break;
+        cursor = page[page.length - 1].id;
+      }
       const header = [
         t("csv_roster_headers.name"),
         ...meetings.map((m: any) => {
@@ -506,16 +532,16 @@ export default function ClassDetailPage() {
             ? formatDate(m.date, currentLocale, {
                 day: "2-digit",
                 month: "2-digit",
+                year: "numeric",
               })
             : "";
           return `${d} ${m.title || ""}`.trim();
         }),
       ];
-      const rows = [header];
-      for (const e of enrolled) {
-        const pid = e.catechumenProfile?.id;
-        const name =
-          `${e.catechumenProfile?.firstName || ""} ${e.catechumenProfile?.lastName || ""}`.trim();
+      const rows = [[t("export_period"), periodLabel], header];
+      for (const profile of attendanceExportProfiles(enrolled, meetings)) {
+        const pid = profile.id;
+        const name = `${profile.firstName || ""} ${profile.lastName || ""}`.trim();
         rows.push([
           name,
           ...meetings.map((m: any) => {
@@ -717,7 +743,7 @@ export default function ClassDetailPage() {
             className="min-w-0 flex-1 border-0 pb-0"
             eyebrow={t("title")}
             title={cls.name}
-            subtitle={classSubtitle}
+            subtitle={cls.status === "ARCHIVED" && planUsage?.canRestore === false ? t("restore_quota_blocked") : classSubtitle}
             actionsLayout="below"
             primaryAction={{
               label: t("attendance"),
@@ -732,7 +758,7 @@ export default function ClassDetailPage() {
                       label: s.label,
                       onClick: () => handleStatus(s.status),
                       destructive: s.status === "CONCLUDED",
-                      disabled: busyAction === "status",
+                      disabled: busyAction === "status" || (cls.status === "ARCHIVED" && planUsage?.canRestore === false),
                     }))
                 : []),
               ...(canManageClass
@@ -787,7 +813,7 @@ export default function ClassDetailPage() {
                         busyAction === "export-attendance"
                           ? tc("loading")
                           : t("export_attendance_csv"),
-                      onClick: handleExportAttendanceCsv,
+                      onClick: () => setAttendanceExportOpen(true),
                       disabled: busyAction === "export-attendance",
                     },
                     {
@@ -837,7 +863,7 @@ export default function ClassDetailPage() {
           />
           <AppMetric
             label={t("attendance")}
-            value={`${attendanceRate}%`}
+            value={attendanceRateDisplay(attendanceRate, cls.attendanceSummary?.totalAttendanceRecords ?? 0, t("no_roll_calls"))}
             href={`/app/classes/${id}/attendance`}
           />
         </div>
@@ -1638,6 +1664,20 @@ export default function ClassDetailPage() {
         )}
         </div>
       </div>
+      <Dialog open={attendanceExportOpen} onOpenChange={setAttendanceExportOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("export_attendance_csv")}</DialogTitle>
+            <DialogDescription>{t("export_period")}</DialogDescription>
+          </DialogHeader>
+          <label htmlFor="attendance-export-period">{t("export_period")}</label>
+          <select id="attendance-export-period" value={attendanceExportPeriod} onChange={(event) => setAttendanceExportPeriod(event.target.value)}>
+            <option value="quarter">{t("export_last_90_days")}</option>
+            <option value="all">{t("export_all_history")}</option>
+          </select>
+          <Button disabled={busyAction === "export-attendance"} onClick={handleExportAttendanceCsv}>{t("export_attendance_csv")}</Button>
+        </DialogContent>
+      </Dialog>
       <ConfirmDialog
         open={!!unenrollConfirm}
         onOpenChange={(open) => {

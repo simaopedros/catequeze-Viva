@@ -1,5 +1,5 @@
 /**
- * Catequese Viva — Service Worker
+ * Catechis — Service Worker
  *
  * Strategies:
  * - App Shell (HTML/CSS/JS/fonts): Cache-First with background update
@@ -193,7 +193,7 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {};
   const options = {
-    body: data.body || 'Nova notificação da Catequese Viva',
+    body: data.body || 'Nova notificação do Catechis',
     icon: '/icons/icon-192x192.png',
     badge: '/icons/badge-72x72.png',
     tag: data.tag || 'catequese-viva',
@@ -205,7 +205,7 @@ self.addEventListener('push', (event) => {
 
   event.waitUntil(
     self.registration.showNotification(
-      data.title || 'Catequese Viva',
+      data.title || 'Catechis',
       options,
     ),
   );
