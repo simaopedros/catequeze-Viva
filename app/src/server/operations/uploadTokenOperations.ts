@@ -117,7 +117,7 @@ export const getCatechumenByUploadToken = async (
   if (!isUploadTokenValid(catechumen.uploadTokenExpires)) {
     throw new HttpError(410, 'Este link de upload expirou. Peça ao catequista um novo link.');
   }
-  return { firstName: catechumen.firstName, documentTypes: VALID_DOCUMENT_TYPES };
+  return { firstName: catechumen.firstName, documentTypes: [...VALID_DOCUMENT_TYPES] };
 };
 
 /**
