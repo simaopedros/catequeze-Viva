@@ -80,8 +80,9 @@ export const createClassSchema = z.object({
 
 export const updateClassSchema = createClassSchema.partial().extend({
   id: uuidSchema,
+  maxCapacity: z.number().int().min(1).max(200).optional(),
   status: z.enum(['DRAFT', 'ACTIVE', 'PAUSED', 'CONCLUDED', 'ARCHIVED']).optional(),
-});
+}).strict();
 
 export const getClassDetailsSchema = z.object({
   id: uuidSchema,
@@ -120,7 +121,8 @@ export const updateMeetingSchema = z.object({
   notes: z.string().max(2000).optional(),
   contentId: z.string().uuid().nullable().optional(),
   status: z.enum(['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']).optional(),
-});
+  surface: z.string().nullable().optional(),
+}).strict();
 
 export const getOrCreateClassChatSchema = z.object({
   classId: uuidSchema,

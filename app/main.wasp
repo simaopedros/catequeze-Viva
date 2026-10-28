@@ -824,12 +824,12 @@ action removeCatechistFromClass {
 
 action enrollCatechumen {
   fn: import { enrollCatechumen } from "@src/server/operations/classOperations",
-  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, PricingPlan, PricingPlanPrice, EmailMessage, EmailSuppression, EmailPreference]
+  entities: [CatechumenProfile, GuardianProfile, ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, PricingPlan, PricingPlanPrice, EmailMessage, EmailSuppression, EmailPreference]
 }
 
 action bulkEnrollCatechumens {
   fn: import { bulkEnrollCatechumens } from "@src/server/operations/classOperations",
-  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, CatechumenProfile, PricingPlan, PricingPlanPrice]
+  entities: [CatechumenProfile, GuardianProfile, ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, PricingPlan, PricingPlanPrice]
 }
 
 action archiveClass {
@@ -840,6 +840,11 @@ action archiveClass {
 action duplicateClass {
   fn: import { duplicateClass } from "@src/server/operations/classOperations",
   entities: [CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Community, Diocese, User, PricingPlan, PricingPlanPrice, EmailMessage, EmailSuppression, EmailPreference]
+}
+
+action transferEnrollment {
+  fn: import { transferEnrollment } from "@src/server/operations/classOperations",
+  entities: [ClassEnrollment, CatechesisClass, CatechumenProfile, GuardianProfile, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, PricingPlan, PricingPlanPrice, SacramentalJourneyTemplate, SacramentalJourney, SacramentalMilestoneTemplate, SacramentalMilestone]
 }
 
 action cancelEnrollment {
