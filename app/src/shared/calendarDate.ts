@@ -69,3 +69,9 @@ export function meetingDateFromInput(value: string | Date): Date {
   }
   return new Date(value);
 }
+
+
+// Lower bound for meeting dates stored as date-only UTC values.
+export function startOfAppCalendarDay(now: Date = new Date()): Date {
+  return new Date(todayInAppTimezone(now) + "T00:00:00.000Z");
+}
