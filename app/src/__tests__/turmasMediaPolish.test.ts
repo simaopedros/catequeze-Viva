@@ -86,9 +86,12 @@ describe("turmas média polish", () => {
     expect(detail).toContain('label: t("attendance")');
     expect(detail).toContain('label: t("detail.edit")');
     expect(detail).toContain("destructive: s.status === \"CONCLUDED\"");
-    expect(chrome).toContain('label={t("more")}');
+    expect(chrome).toContain('t("more")');
+    expect(chrome).toContain('t("more_actions")');
     expect(overflow).toContain("{label}");
     expect(detail).toContain('searchParams.get("edit")');
+    expect(detail).toContain('actionsLayout="below"');
+    expect(detail).toContain("menuActions");
   });
 
   it("does not truncate encounter titles in the attendance matrix header", () => {
