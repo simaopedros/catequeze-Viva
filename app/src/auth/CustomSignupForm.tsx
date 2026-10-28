@@ -1,3 +1,4 @@
+import { acceptAccountTerms } from "wasp/client/operations";
 import { useEffect, useState } from "react";
 import { signup } from "wasp/client/auth";
 import { googleSignInUrl } from "wasp/client/auth";
@@ -137,7 +138,20 @@ export default function CustomSignupForm({
 
     setIsLoading(true);
     try {
-      await signup({ email, password, username: email, isAdmin: false });
+      await signup({
+        email,
+        password,
+        username: email,
+        isAdmin: false,
+        acceptedTerms: true,
+      });
+      // Email verification may leave the new account unauthenticated.
+      // The first authenticated access requires the same explicit acceptance.
+      try {
+        await acceptAccountTerms({ accepted: true });
+      } catch {
+        // The server keeps termsAcceptanceRequired until acceptance is persisted.
+      }
       // Fire Meta browser event immediately after successful account create.
       // Server also sends CAPI CompleteRegistration in onAfterSignup (authoritative).
       try {

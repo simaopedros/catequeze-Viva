@@ -2126,7 +2126,7 @@ query listConsents {
 
 action saveConsent {
   fn: import { saveConsent } from "@src/server/operations/consentOperations",
-  entities: [ConsentRecord]
+  entities: [ConsentRecord, ConsentEvent, GuardianProfile]
 }
 //#endregion
 
@@ -2815,3 +2815,13 @@ page PublicUploadDocsPage {
 
 
 
+
+query getAccountTermsStatus {
+  fn: import { getAccountTermsStatus } from "@src/server/operations/termsOperations",
+  entities: [User]
+}
+
+action acceptAccountTerms {
+  fn: import { acceptAccountTerms } from "@src/server/operations/termsOperations",
+  entities: [User, TermsAcceptance]
+}
