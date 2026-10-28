@@ -188,6 +188,7 @@ it("transfers in one serializable transaction and enforces plan on transactional
       }),
     }),
     "parish",
+    "valid",
   );
 });
 it("rolls back source when plan enforcement rejects", async () => {
