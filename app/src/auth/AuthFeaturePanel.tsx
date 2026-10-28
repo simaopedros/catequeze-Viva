@@ -245,7 +245,7 @@ function FeatureMock({
               <span>2026</span>
             </div>
             <div className="auth-calendar">
-              {Array.from({ length: 35 }, (_, i) => {
+              {Array.from({ length: 42 }, (_, i) => {
                 const day = i - 3;
                 const hit = [12, 19, 26].indexOf(day);
                 return (
@@ -356,18 +356,20 @@ export default function AuthFeaturePanel({
                 data-active={scene === item}
                 aria-hidden={scene !== item}
               >
-                <h2>{t(`feature_panel.${item}.title`)}</h2>
-                <p className="auth-scene-description">
-                  {t(`feature_panel.${item}.description`)}
-                </p>
-                <div aria-hidden="true" className="auth-mock-wrap">
-                  {(scene === item || outgoing === item) && (
-                    <FeatureMock
-                      scene={item}
-                      paused={cycle.paused || scene !== item}
-                      reduced={cycle.reduced}
-                    />
-                  )}
+                <div className="auth-scene-content">
+                  <h2>{t(`feature_panel.${item}.title`)}</h2>
+                  <p className="auth-scene-description">
+                    {t(`feature_panel.${item}.description`)}
+                  </p>
+                  <div aria-hidden="true" className="auth-mock-wrap">
+                    {(scene === item || outgoing === item) && (
+                      <FeatureMock
+                        scene={item}
+                        paused={cycle.paused || scene !== item}
+                        reduced={cycle.reduced}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -380,7 +382,7 @@ export default function AuthFeaturePanel({
         </>
       )}
       <div
-        className="relative mt-2 flex flex-wrap items-center"
+        className="auth-feature-controls relative mt-2 flex flex-wrap items-center"
         role="group"
         aria-label={t("feature_panel.navigation")}
       >

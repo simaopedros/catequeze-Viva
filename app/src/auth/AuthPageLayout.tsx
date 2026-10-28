@@ -83,7 +83,14 @@ export function AuthPageLayout({
       <div className="flex flex-1">
         {/* Brand panel — desktop */}
         {panel && (
-          <aside className="relative hidden w-[min(42%,28rem)] shrink-0 flex-col justify-between bg-brand-ink px-10 py-10 text-[#E8EEF5] lg:flex xl:w-[48%] xl:px-12">
+          <aside
+            data-viewport-fixed={animatedPanel || undefined}
+            className={cn(
+              "relative hidden w-[min(42%,28rem)] shrink-0 flex-col justify-between bg-brand-ink px-10 py-10 text-[#E8EEF5] lg:flex xl:w-[48%] xl:px-12",
+              animatedPanel &&
+                "auth-motion-aside lg:sticky lg:top-0 lg:h-screen lg:self-start lg:overflow-hidden",
+            )}
+          >
             <div
               className="pointer-events-none absolute inset-0 opacity-[0.08]"
               style={{
@@ -92,20 +99,25 @@ export function AuthPageLayout({
               }}
               aria-hidden
             />
-            <div className="relative flex flex-1 flex-col gap-7">
+            <div
+              className={cn(
+                "relative flex flex-1 flex-col gap-7",
+                animatedPanel && "auth-motion-content min-h-0",
+              )}
+            >
               <Link to="/" className="inline-block">
                 <BrandLockup compact hideBadge tone="inverse" />
               </Link>
 
               {animatedPanel ? (
                 <>
-                  <div className="space-y-3">
+                  <div className="auth-motion-heading shrink-0 space-y-3">
                     <h1 className="font-brand-display text-[1.8rem] font-semibold leading-tight tracking-tight text-white xl:text-[2.25rem]">
                       {panel.title}
                     </h1>
                     <div className="h-px w-12 bg-brand-gold" aria-hidden />
                     {panel.subtitle && (
-                      <p className="max-w-sm text-sm leading-relaxed text-[#A8B8C9]">
+                      <p className="auth-motion-subtitle max-w-sm text-sm leading-relaxed text-[#A8B8C9]">
                         {panel.subtitle}
                       </p>
                     )}

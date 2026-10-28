@@ -18,7 +18,9 @@
 .auth-feature-stage {
   position: relative;
   flex: 1;
-  min-height: 460px;
+  min-height: 0;
+  overflow: hidden;
+  container-type: size;
   margin-top: 24px;
 }
 .auth-feature-scene {
@@ -395,7 +397,7 @@
 .auth-calendar > span {
   display: grid;
   place-items: center;
-  aspect-ratio: 1;
+  height: 30px;
   background: #fff;
   border-radius: 7px;
   font-size: 11px;
@@ -408,7 +410,8 @@
 }
 .auth-floating-chip {
   position: absolute;
-  right: -10px;
+  right: 8px;
+  max-width: calc(100% - 16px);
   bottom: 8px;
   display: flex;
   align-items: center;
@@ -605,7 +608,7 @@
     min-height: 380px;
   }
   .auth-feature-stage {
-    min-height: 490px;
+    min-height: 0;
   }
   .auth-bars {
     height: 120px;
@@ -626,16 +629,6 @@
     min-width: 40px;
   }
 }
-/* Share a grid cell so the tallest mock reserves space during crossfades. */
-.auth-feature-stage {
-  display: grid;
-}
-.auth-feature-scene {
-  position: relative;
-  inset: auto;
-  grid-area: 1 / 1;
-  align-self: center;
-}
 .auth-class-card {
   padding: 10px;
 }
@@ -655,4 +648,77 @@
 .auth-class-card .auth-avatars span {
   width: 20px;
   height: 20px;
+}
+
+/* The viewport owns the height; scene content never participates in sizing it. */
+.auth-motion-content > a,
+.auth-motion-heading,
+.auth-motion-aside > p,
+.auth-feature-controls,
+.auth-example {
+  flex-shrink: 0;
+}
+.auth-feature-panel[data-mode="full"] {
+  overflow: hidden;
+}
+.auth-feature-scene {
+  bottom: 48px;
+  align-items: center;
+}
+.auth-scene-content {
+  width: 100%;
+}
+.auth-feature-controls {
+  flex-wrap: nowrap;
+}
+.auth-feature-controls > button {
+  flex-shrink: 0;
+}
+.auth-example {
+  margin-top: 8px;
+}
+@container (max-height: 640px) {
+  .auth-scene-content {
+    zoom: 0.85;
+  }
+}
+@container (max-height: 550px) {
+  .auth-scene-content {
+    zoom: 0.75;
+  }
+}
+@container (max-height: 470px) {
+  .auth-scene-content {
+    zoom: 0.65;
+  }
+}
+@container (max-height: 400px) {
+  .auth-scene-content {
+    zoom: 0.55;
+  }
+}
+@container (max-height: 340px) {
+  .auth-scene-content {
+    zoom: 0.45;
+  }
+}
+@media (min-width: 1024px) and (max-height: 760px) {
+  .auth-motion-aside {
+    padding-block: 20px;
+  }
+  .auth-motion-content {
+    gap: 14px;
+  }
+  .auth-motion-subtitle {
+    display: none;
+  }
+  .auth-motion-heading h1 {
+    font-size: 1.8rem;
+  }
+  .auth-motion-aside > p {
+    margin-top: 8px;
+  }
+  .auth-feature-stage {
+    margin-top: 8px;
+  }
 }

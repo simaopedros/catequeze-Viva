@@ -1,4 +1,5 @@
 import React from "react";
+import { readFileSync } from "node:fs";
 import userEvent from "@testing-library/user-event";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -137,4 +138,18 @@ describe.each([false, true])("auth feature panel (compact: %s)", (compact) => {
     expect(current()).toBe("attendance");
     hidden.mockRestore();
   });
+});
+
+it("keeps the desktop panel viewport fixed and reserves navigation outside the stage", () => {
+  const layout = readFileSync("src/auth/AuthPageLayout.tsx", "utf8");
+  expect(layout).toContain("data-viewport-fixed={animatedPanel || undefined}");
+  expect(layout).toContain(
+    "lg:sticky lg:top-0 lg:h-screen lg:self-start lg:overflow-hidden",
+  );
+  const { container } = render(<AuthFeaturePanel />);
+  expect(container.querySelector(".auth-feature-stage")).toBeInTheDocument();
+  expect(container.querySelector(".auth-feature-controls")).toBeInTheDocument();
+  fireEvent.click(screen.getAllByRole("button")[5]);
+  expect(container.querySelectorAll(".auth-calendar > span")).toHaveLength(42);
+  expect(container.querySelectorAll(".auth-day-meeting")).toHaveLength(3);
 });
