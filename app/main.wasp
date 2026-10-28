@@ -861,7 +861,7 @@ query getCatechumenProfile {
 
 action createCatechumen {
   fn: import { createCatechumen } from "@src/server/operations/catechumenOperations",
-  entities: [CatechumenProfile, Membership, Parish, Household, ClassCatechist]
+  entities: [CatechumenProfile, Membership, Parish, Household, ClassCatechist, CatechesisClass]
 }
 
 action updateCatechumen {
@@ -1999,7 +1999,7 @@ action generateCatechumenUploadToken {
 
 query getCatechumenByUploadToken {
   fn: import { getCatechumenByUploadToken } from "@src/server/operations/uploadTokenOperations",
-  entities: [CatechumenProfile, Document]
+  entities: [CatechumenProfile]
 }
 
 action uploadDocumentWithToken {

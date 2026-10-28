@@ -58,13 +58,10 @@ export default function EditCatechumenPage() {
   const { activeParishId } = useActiveParish();
   const { data: households = [], refetch: refetchHouseholds } = useQuery(
     listHouseholds,
-    { take: 200, parishId: activeParishId || undefined } as any,
+    { selector: true, take: 200, parishId: activeParishId || undefined } as any,
     { enabled: Boolean(activeParishId) },
   );
-  const filteredHouseholds = useMemo(() => {
-    if (!activeParishId) return households;
-    return households.filter((h: any) => h.parishId === activeParishId);
-  }, [households, activeParishId]);
+  const filteredHouseholds = households;
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [birthDate, setBirthDate] = useState("");
