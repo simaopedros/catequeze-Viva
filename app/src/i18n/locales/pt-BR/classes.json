@@ -244,5 +244,6 @@
   "export_period": "Período da exportação",
   "export_last_90_days": "Últimos 90 dias",
   "export_all_history": "Todo o histórico",
-  "export_until": "até"
+  "export_until": "até",
+  "restore_quota_blocked": "Não é possível restaurar: a turma excederia o limite de turmas ou de pessoas distintas do plano. Libere vagas ou altere o plano."
 }

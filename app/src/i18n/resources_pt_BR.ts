@@ -1413,7 +1413,10 @@ export const auth_pt_BR = {
     "reset_success_title": "Senha redefinida",
     "reset_success_body": "Sua senha foi atualizada. Entre com o e-mail e a nova senha para continuar.",
     "reset_error_generic": "Não foi possível redefinir a senha. Peça um novo link e tente de novo.",
-    "reset_error_missing_token": "Faltou o link de redefinição. Abra o e-mail que enviamos e toque no botão."
+    "reset_error_missing_token": "Faltou o link de redefinição. Abra o e-mail que enviamos e toque no botão.",
+    "terms_continue": "Continuar",
+    "terms_retry": "Tentar novamente",
+    "terms_save_error": "Não foi possível registrar o aceite. Tente novamente."
   } as const;
 
 export const bible_pt_BR = {
@@ -1490,7 +1493,7 @@ export const billing_pt_BR = {
     "covered_by_named": "Coberta por {{name}}",
     "usage_title": "Uso do plano",
     "classes": "Turmas",
-    "catechumens": "Catequizandos",
+    "catechumens": "Catequizandos (pessoas distintas)",
     "subscription_active": "Assinatura ativa",
     "free_plan": "Sem assinatura",
     "awaiting_payment": "Aguardando pagamento",
@@ -1529,7 +1532,7 @@ export const billing_pt_BR = {
     "cancelling": "Cancelando…",
     "manage_payment": "Gerenciar pagamento",
     "classes_quota_label": "Uso de turmas",
-    "catechumens_quota_label": "Uso de catequizandos",
+    "catechumens_quota_label": "Catequizandos (pessoas distintas)",
     "ai_credits_quota_label": "Uso de créditos editoriais",
     "ai_credits": "Créditos editoriais",
     "monthly_badge": "Mensal",
@@ -1863,7 +1866,8 @@ export const billing_pt_BR = {
     "checkout_charge_after_trial_one": "Não precisa de cartão agora. Você tem 1 dia grátis; a primeira cobrança é em {{date}} se houver cartão cadastrado. Sem cartão até lá, a assinatura é cancelada sem cobrança.",
     "checkout_charge_after_trial_other": "Não precisa de cartão agora. Você tem {{count}} dias grátis; a primeira cobrança é em {{date}} se houver cartão cadastrado. Sem cartão até lá, a assinatura é cancelada sem cobrança.",
     "checkout_charge_today": "A cobrança é feita no Stripe assim que você confirmar a assinatura.",
-    "checkout_plan_includes_label": "O que o plano inclui"
+    "checkout_plan_includes_label": "O que o plano inclui",
+    "distinct_people_usage": "Cada pessoa conta uma vez, mesmo com várias matrículas. Pessoas em turmas concluídas continuam contando."
   } as const;
 
 export const birthdays_pt_BR = {
@@ -2308,7 +2312,8 @@ export const classes_pt_BR = {
     "export_period": "Período da exportação",
     "export_last_90_days": "Últimos 90 dias",
     "export_all_history": "Todo o histórico",
-    "export_until": "até"
+    "export_until": "até",
+    "restore_quota_blocked": "Não é possível restaurar: a turma excederia o limite de turmas ou de pessoas distintas do plano. Libere vagas ou altere o plano."
   } as const;
 
 export const collaborative_pt_BR = {
@@ -2624,7 +2629,9 @@ export const common_pt_BR = {
           "label": "Dados sensíveis",
           "desc": "Autorizo o tratamento de dados sensíveis conforme LGPD."
         }
-      }
+      },
+      "version": "Versão {{version}}",
+      "accepted_at": "Aceito em {{date}}"
     },
     "documents": {
       "title": "Documentos",
@@ -5757,9 +5764,9 @@ export const meetings_pt_BR = {
     "generate_ai_activity": "Gerar atividade com assistência",
     "generate_whatsapp": "Gerar WhatsApp",
     "delete_confirm_title": "Remover encontro?",
-    "delete_confirm_desc": "Esta ação não pode ser desfeita. Os registros de presença deste encontro também serão removidos.",
+    "delete_confirm_desc": "O encontro e as presenças vão para a lixeira por 30 dias e podem ser restaurados nesse período.",
     "delete_error": "Erro ao remover encontro.",
-    "delete_success": "Encontro removido.",
+    "delete_success": "Encontro movido para a lixeira.",
     "search_content": "Buscar conteúdo...",
     "detail_eyebrow": "Encontro",
     "detail_not_found": "Encontro não encontrado",
@@ -5845,7 +5852,13 @@ export const meetings_pt_BR = {
       "next_label": "Próximo encontro",
       "empty_mobile": "Nenhum encontro agendado."
     },
-    "delete_confirm_button": "Remover encontro"
+    "delete_confirm_button": "Remover encontro",
+    "trash_title": "Lixeira de encontros (30 dias)",
+    "trash_empty": "Nenhum encontro na lixeira.",
+    "trash_expires": "Expira em {{date}}",
+    "restore": "Restaurar",
+    "restore_success": "Encontro restaurado.",
+    "restore_error": "Erro ao restaurar: {{message}}"
   } as const;
 
 export const messages_pt_BR = {
@@ -7335,7 +7348,7 @@ export const settings_pt_BR = {
     "export_desc": "Conforme a LGPD, você pode solicitar a exportação dos seus dados.",
     "export_requesting": "Solicitando...",
     "export_request": "Solicitar exportação",
-    "export_success": "Solicitação enviada com sucesso!",
+    "export_success": "Seus dados estão disponíveis para download por 7 dias.",
     "export_error": "Erro ao solicitar exportação: {{message}}",
     "export_retry": "Tente novamente.",
     "migration": "Migração de Paróquia",
@@ -7359,7 +7372,16 @@ export const settings_pt_BR = {
     "avatar_alt": "Foto de perfil",
     "avatar_change": "Trocar foto",
     "avatar_add": "Adicionar foto",
-    "avatar_remove": "Remover foto"
+    "avatar_remove": "Remover foto",
+    "export_reused": "Você já tem um pedido válido. Baixe seus dados até a data indicada.",
+    "export_download": "Baixar meus dados",
+    "export_valid_until": "Validade: {{date}} (7 dias a partir do pedido).",
+    "export_status": "Status: {{status}}",
+    "export_status_requested": "Solicitado",
+    "export_status_ready": "Disponível",
+    "export_status_downloaded": "Baixado",
+    "export_status_expired": "Expirado",
+    "export_download_error": "Não foi possível baixar os dados. Verifique a validade e tente novamente."
   } as const;
 
 export const social_pt_BR = {

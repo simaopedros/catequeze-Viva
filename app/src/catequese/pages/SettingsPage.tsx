@@ -1,3 +1,4 @@
+import { api } from "wasp/client/api";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
@@ -29,6 +30,7 @@ import { useUserContext } from "../../client/hooks/useUserContext";
 import {
   updateUserProfile,
   requestDataExport,
+  getDataExportRequest,
   changePassword,
   useQuery,
   listParishes,
@@ -69,6 +71,7 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState("");
   // Export
+  const { data: exportRequest, refetch: refreshExport } = useQuery(getDataExportRequest);
   const [exporting, setExporting] = useState(false);
   const [exportMsg, setExportMsg] = useState("");
   // Migration (platform admin only)
@@ -143,13 +146,35 @@ export default function SettingsPage() {
     setExportMsg("");
     try {
       const result = await requestDataExport({});
-      setExportMsg(result.message || t("export_success"));
+      setExportMsg(t(result.reused ? "export_reused" : "export_success"));
+      await refreshExport();
     } catch (e: any) {
       setExportMsg(
         t("export_error", { message: e.message || t("export_retry") }),
       );
     }
     setExporting(false);
+  };
+
+  const handleDownloadData = async () => {
+    if (!exportRequest) return;
+    setExporting(true);
+    setExportMsg("");
+    try {
+      const result = await api.get(`/api/data-export/${encodeURIComponent(exportRequest.id)}`, { responseType: "blob" });
+      const url = URL.createObjectURL(result.data);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "meus-dados.json";
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      await refreshExport();
+    } catch {
+      setExportMsg(t("export_download_error"));
+      await refreshExport();
+    } finally {
+      setExporting(false);
+    }
   };
 
   const handleMigration = async () => {
@@ -416,6 +441,17 @@ export default function SettingsPage() {
           {t("export_data")}
         </AppEyebrow>
         <p className="text-xs text-muted-foreground">{t("export_desc")}</p>
+        {exportRequest && (
+          <div className="space-y-2 text-sm">
+            <p>{t("export_status", { status: t(`export_status_${exportRequest.status.toLowerCase()}`) })}</p>
+            <p>{t("export_valid_until", { date: new Date(exportRequest.expiresAt).toLocaleString() })}</p>
+            {exportRequest.status !== "EXPIRED" && (
+              <Button variant="outline" onClick={handleDownloadData} disabled={exporting}>
+                <Download className="mr-2 h-4 w-4" />{t("export_download")}
+              </Button>
+            )}
+          </div>
+        )}
         {exportMsg && (
           <p
             className={`text-xs mb-3 ${

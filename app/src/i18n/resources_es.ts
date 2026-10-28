@@ -1413,7 +1413,10 @@ export const auth_es = {
     "reset_success_title": "Contraseña actualizada",
     "reset_success_body": "Tu contraseña fue actualizada. Entra con tu correo y la nueva contraseña para continuar.",
     "reset_error_generic": "No se pudo restablecer la contraseña. Pide un nuevo enlace e inténtalo de nuevo.",
-    "reset_error_missing_token": "Falta el enlace de restablecimiento. Abre el correo que enviamos y toca el botón."
+    "reset_error_missing_token": "Falta el enlace de restablecimiento. Abre el correo que enviamos y toca el botón.",
+    "terms_continue": "Continuar",
+    "terms_retry": "Intentar de nuevo",
+    "terms_save_error": "No se pudo registrar la aceptación. Inténtalo de nuevo."
   } as const;
 
 export const bible_es = {
@@ -1490,7 +1493,7 @@ export const billing_es = {
     "covered_by_named": "Cubierta por {{name}}",
     "usage_title": "Uso del plan",
     "classes": "Grupos",
-    "catechumens": "Catecúmenos",
+    "catechumens": "Catequizandos (personas distintas)",
     "subscription_active": "Suscripción activa",
     "free_plan": "Sin suscripción",
     "awaiting_payment": "Esperando pago",
@@ -1529,7 +1532,7 @@ export const billing_es = {
     "cancelling": "Cancelando…",
     "manage_payment": "Gestionar pago",
     "classes_quota_label": "Uso de grupos",
-    "catechumens_quota_label": "Uso de catecúmenos",
+    "catechumens_quota_label": "Catequizandos (personas distintas)",
     "ai_credits_quota_label": "Uso de créditos editoriales",
     "ai_credits": "Créditos editoriales",
     "monthly_badge": "Mensual",
@@ -1863,7 +1866,8 @@ export const billing_es = {
     "checkout_charge_after_trial_one": "No hace falta tarjeta ahora. Tienes 1 día gratis; el primer cobro es el {{date}} si hay tarjeta registrada. Sin tarjeta para entonces, la suscripción se cancela sin cobro.",
     "checkout_charge_after_trial_other": "No hace falta tarjeta ahora. Tienes {{count}} días gratis; el primer cobro es el {{date}} si hay tarjeta registrada. Sin tarjeta para entonces, la suscripción se cancela sin cobro.",
     "checkout_charge_today": "El cobro se hace en Stripe en cuanto confirmes la suscripción.",
-    "checkout_plan_includes_label": "Qué incluye el plan"
+    "checkout_plan_includes_label": "Qué incluye el plan",
+    "distinct_people_usage": "Cada persona cuenta una vez, incluso con varias matrículas. Las personas en clases concluidas siguen contando."
   } as const;
 
 export const birthdays_es = {
@@ -2308,7 +2312,8 @@ export const classes_es = {
     "export_period": "Período de exportación",
     "export_last_90_days": "Últimos 90 días",
     "export_all_history": "Todo el historial",
-    "export_until": "hasta"
+    "export_until": "hasta",
+    "restore_quota_blocked": "Esta clase superaría el límite del plan de clases o personas distintas. Libere cupo o cambie de plan."
   } as const;
 
 export const collaborative_es = {
@@ -2624,7 +2629,9 @@ export const common_es = {
           "label": "Datos sensibles",
           "desc": "Autorizo el tratamiento de datos sensibles conforme a la LGPD."
         }
-      }
+      },
+      "version": "Versión {{version}}",
+      "accepted_at": "Aceptado el {{date}}"
     },
     "documents": {
       "title": "Documentos",
@@ -5757,9 +5764,9 @@ export const meetings_es = {
     "generate_ai_activity": "Generar actividad con asistencia",
     "generate_whatsapp": "Generar WhatsApp",
     "delete_confirm_title": "¿Eliminar encuentro?",
-    "delete_confirm_desc": "Esta acción no se puede deshacer. Los registros de asistencia se eliminarán.",
+    "delete_confirm_desc": "El encuentro y las asistencias irán a la papelera durante 30 días y podrán restaurarse durante ese período.",
     "delete_error": "Error al eliminar encuentro.",
-    "delete_success": "Encuentro eliminado.",
+    "delete_success": "Encuentro movido a la papelera.",
     "search_content": "Buscar contenido...",
     "detail_eyebrow": "Encuentro",
     "detail_not_found": "Encuentro no encontrado",
@@ -5845,7 +5852,13 @@ export const meetings_es = {
       "next_label": "Próximo encuentro",
       "empty_mobile": "No hay encuentros programados."
     },
-    "delete_confirm_button": "Eliminar encuentro"
+    "delete_confirm_button": "Eliminar encuentro",
+    "trash_title": "Papelera de encuentros (30 días)",
+    "trash_empty": "No hay encuentros en la papelera.",
+    "trash_expires": "Vence el {{date}}",
+    "restore": "Restaurar",
+    "restore_success": "Encuentro restaurado.",
+    "restore_error": "Error al restaurar: {{message}}"
   } as const;
 
 export const messages_es = {
@@ -7335,7 +7348,7 @@ export const settings_es = {
     "export_desc": "Conforme a la LGPD, puede solicitar la exportación de sus datos.",
     "export_requesting": "Solicitando...",
     "export_request": "Solicitar exportación",
-    "export_success": "¡Solicitud enviada con éxito!",
+    "export_success": "Sus datos están disponibles para descargar durante 7 días.",
     "export_error": "Error al solicitar exportación: {{message}}",
     "export_retry": "Intente nuevamente.",
     "migration": "Migración de Parroquia",
@@ -7359,7 +7372,16 @@ export const settings_es = {
     "avatar_alt": "Foto de perfil",
     "avatar_change": "Cambiar foto",
     "avatar_add": "Añadir foto",
-    "avatar_remove": "Quitar foto"
+    "avatar_remove": "Quitar foto",
+    "export_reused": "Ya tiene una solicitud válida. Descargue sus datos antes de la fecha indicada.",
+    "export_download": "Descargar mis datos",
+    "export_valid_until": "Válido hasta: {{date}} (7 días desde la solicitud).",
+    "export_status": "Estado: {{status}}",
+    "export_status_requested": "Solicitado",
+    "export_status_ready": "Disponible",
+    "export_status_downloaded": "Descargado",
+    "export_status_expired": "Vencido",
+    "export_download_error": "No se pudieron descargar los datos. Compruebe la vigencia e intente nuevamente."
   } as const;
 
 export const social_es = {

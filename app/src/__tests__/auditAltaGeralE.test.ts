@@ -32,9 +32,9 @@ describe("audit alta E — família no dropdown", () => {
       root("server/operations/familyOperations.ts"),
       "utf8",
     );
-    const start = ops.indexOf("// Catechist: households");
-    const block = ops.slice(start, start + 1600);
-    expect(block).toContain("catechumens: { none: {} }");
+    const start = ops.indexOf("// Detailed directory: related households");
+    const block = ops.slice(start, start + 2000);
+    expect(block).toContain("args.selector ? [{ catechumens: { none: {} } }] : []");
     expect(block).toContain("OR: orClauses");
   });
 });

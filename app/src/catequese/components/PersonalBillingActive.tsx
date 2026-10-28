@@ -343,6 +343,9 @@ export function PersonalBillingActive({
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             {t(`${ns}.usage_title`)}
           </p>
+          <p className="text-sm text-muted-foreground">
+            {t("distinct_people_usage")}
+          </p>
           <UsageRow
             label={t(`${ns}.usage_classes`, {
               used: classesUsed,

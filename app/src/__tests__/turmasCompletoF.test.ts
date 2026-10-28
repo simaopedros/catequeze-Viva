@@ -47,7 +47,7 @@ describe("turmas completo PR F", () => {
   it("loads next upcoming meeting in listClasses include", () => {
     const ops = read("server/operations/classOperations.ts");
     expect(ops).toContain("function classListInclude");
-    expect(ops).toContain("function startOfUtcDay");
+    expect(ops).toContain("startOfAppCalendarDay(now)");
     expect(ops).toContain("date: { gte: dayStart }");
     expect(ops).not.toContain("date: { gte: now }");
     expect(ops).toContain("include: classListInclude()");

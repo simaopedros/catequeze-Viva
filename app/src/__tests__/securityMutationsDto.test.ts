@@ -137,7 +137,7 @@ it.each([createCatechumen, updateCatechumen])(
   "omits upload credentials",
   async (operation) => {
     const result = await operation(
-      { id, firstName: "Pessoa fictícia", lastName: "Teste" },
+      { id, workspaceId: "parish-1", firstName: "Pessoa fictícia", lastName: "Teste" },
       context(),
     );
     expect(result).toMatchObject({ id, firstName: "Pessoa fictícia" });

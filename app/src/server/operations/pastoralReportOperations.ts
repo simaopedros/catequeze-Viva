@@ -1,5 +1,5 @@
 import { HttpError } from 'wasp/server';
-import { assertCanAccessClass, getUserParishRoles, isCoordinatorOrAboveRole } from '../auth/helpers';
+import { assertCanAccessClass, getUserParishRoles } from '../auth/helpers';
 import { requireWorkspaceAccess, resolveWorkspaceAccess } from './sharedScope';
 import { buildDisplayName } from './conversationPolicies';
 import {
@@ -13,6 +13,7 @@ import {
   riskLevelFromRate,
   type AttendanceRiskLevel,
 } from '../../shared/attendanceMetrics';
+import { dateStringToNoonUTC, todayInAppTimezone } from '../../shared/calendarDate';
 import { enrollmentCoversMeetingDate } from '../../shared/enrollmentWindow';
 
 /** Pastoral report window: meetings older than this are not loaded. */
@@ -33,29 +34,34 @@ async function getBirthdayScope(context: any): Promise<{ parishIds: string[]; cl
 
   const parishRoles = await getUserParishRoles(context);
   const parishIds: string[] = [];
-  const scopedClassIds: string[] = [];
-  for (const r of parishRoles as { parishId: string; role: string }[]) {
-    if (!isCoordinatorOrAboveRole(r.role)) continue;
-    // Scoped community coordinators (vice) contribute their classes, not the parish
+  const classIds: string[] = [];
+  for (const r of parishRoles) {
     const access = await resolveWorkspaceAccess(context, r.parishId, { required: false });
-    if (access?.isScopedCoordinator && access.allowedClassIds !== 'ALL') {
-      scopedClassIds.push(...access.allowedClassIds);
-    } else {
+    if (!access) continue;
+    if (access.isCoordinatorOrAbove && access.allowedClassIds === 'ALL') {
       parishIds.push(r.parishId);
+    } else if (access.isCoordinatorOrAbove && access.allowedClassIds !== 'ALL') {
+      classIds.push(...access.allowedClassIds);
+    } else if (access.isCatechist && access.allowedClassIds !== 'ALL') {
+      const assignments = await context.entities.ClassCatechist.findMany({
+        where: {
+          userId: context.user.id,
+          classId: { in: access.allowedClassIds },
+          class: { parishId: r.parishId, status: 'ACTIVE' },
+        },
+        select: { classId: true },
+      });
+      classIds.push(...assignments.map((a: any) => a.classId));
     }
   }
+  return { parishIds: [...new Set(parishIds)], classIds: [...new Set(classIds)] };
+}
 
-  const catechistAssignments = await context.entities.ClassCatechist.findMany({
-    where: { userId: context.user.id },
-    select: { classId: true, class: { select: { parishId: true } } },
-  });
-  const classIds: string[] = catechistAssignments.map((a: any) => a.classId);
-  const assignedParishIds: string[] = catechistAssignments.map((a: any) => a.class?.parishId).filter(Boolean);
-
-  return {
-    parishIds: [...new Set([...parishIds, ...assignedParishIds])],
-    classIds: [...new Set([...classIds, ...scopedClassIds])],
-  };
+function nextCivilBirthday(birth: Date, now: Date): Date {
+  const today = dateStringToNoonUTC(todayInAppTimezone(now));
+  const next = new Date(Date.UTC(today.getUTCFullYear(), birth.getUTCMonth(), birth.getUTCDate(), 12));
+  if (next < today) next.setUTCFullYear(next.getUTCFullYear() + 1);
+  return next;
 }
 
 export const getClassPastoralReport = async (args: { classId: string }, context: any) => {
@@ -143,16 +149,15 @@ export const getClassPastoralReport = async (args: { classId: string }, context:
     .filter((name: string) => name && name !== 'Usuário');
 
   // UPCOMING BIRTHDAYS (next 30 days)
-  const thirtyDaysFromNow = new Date();
-  thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+  const thirtyDaysFromNow = dateStringToNoonUTC(todayInAppTimezone(now));
+  thirtyDaysFromNow.setUTCDate(thirtyDaysFromNow.getUTCDate() + 30);
 
   const upcomingBirthdays = activeEnrollments
     .filter((e: any) => e.catechumenProfile?.birthDate)
     .map((e: any) => {
       const birth = new Date(e.catechumenProfile.birthDate);
-      const nextBirthday = new Date(now.getFullYear(), birth.getMonth(), birth.getDate());
-      if (nextBirthday < now) nextBirthday.setFullYear(now.getFullYear() + 1);
-      const age = nextBirthday.getFullYear() - birth.getFullYear();
+      const nextBirthday = nextCivilBirthday(birth, now);
+      const age = nextBirthday.getUTCFullYear() - birth.getUTCFullYear();
       return {
         catechumenId: e.catechumenProfile.id,
         name: `${e.catechumenProfile.firstName} ${e.catechumenProfile.lastName}`,
@@ -527,8 +532,8 @@ export const listUpcomingBirthdays = async (args: { classId?: string; days?: num
 
   const days = args.days || 30;
   const now = new Date();
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() + days);
+  const cutoff = dateStringToNoonUTC(todayInAppTimezone(now));
+  cutoff.setUTCDate(cutoff.getUTCDate() + days);
 
   if (args.classId) {
     const { parishId } = await assertCanAccessClass(context, args.classId);
@@ -541,6 +546,10 @@ export const listUpcomingBirthdays = async (args: { classId?: string; days?: num
           403,
           'Apenas coordenadores e catequistas podem consultar aniversários da turma.',
         );
+      }
+      const scope = await getBirthdayScope(context);
+      if (!scope.parishIds.includes(parishId) && !scope.classIds.includes(args.classId)) {
+        throw new HttpError(403, 'Sem permissão para consultar aniversários.');
       }
     }
   }
@@ -578,13 +587,12 @@ export const listUpcomingBirthdays = async (args: { classId?: string; days?: num
     },
   });
 
-  const upcoming = enrollments
+  const upcomingRows = enrollments
     .filter((e: any) => e.catechumenProfile?.birthDate)
     .map((e: any) => {
       const birth = new Date(e.catechumenProfile.birthDate);
-      const nextBirthday = new Date(now.getFullYear(), birth.getMonth(), birth.getDate());
-      if (nextBirthday < now) nextBirthday.setFullYear(now.getFullYear() + 1);
-      const age = nextBirthday.getFullYear() - birth.getFullYear();
+      const nextBirthday = nextCivilBirthday(birth, now);
+      const age = nextBirthday.getUTCFullYear() - birth.getUTCFullYear();
       return {
         catechumenId: e.catechumenProfile.id,
         name: `${e.catechumenProfile.firstName} ${e.catechumenProfile.lastName}`,
@@ -594,15 +602,24 @@ export const listUpcomingBirthdays = async (args: { classId?: string; days?: num
         nextBirthday: nextBirthday.toISOString(),
         className: e.class.name,
         classId: e.class.id,
+        classes: [{ id: e.class.id, name: e.class.name }],
       };
     })
     .filter((b: any) => new Date(b.nextBirthday) <= cutoff)
     .sort((a: any, b: any) => new Date(a.nextBirthday).getTime() - new Date(b.nextBirthday).getTime());
 
+  const byCatechumen = new Map<string, (typeof upcomingRows)[number]>();
+  for (const row of upcomingRows) {
+    const existing = byCatechumen.get(row.catechumenId);
+    if (!existing) byCatechumen.set(row.catechumenId, row);
+    else if (!existing.classes.some((cls: any) => cls.id === row.classId)) existing.classes.push(...row.classes);
+  }
+  const upcoming = [...byCatechumen.values()];
+
   const gifts = await context.entities.CatechumenBirthdayGift.findMany({
     where: {
       catechumenProfileId: { in: upcoming.map((b: any) => b.catechumenId) },
-      year: now.getFullYear(),
+      year: Number(todayInAppTimezone(now).slice(0, 4)),
     },
   });
   const giftMap = new Map(gifts.map((g: any) => [g.catechumenProfileId, g.delivered]));
