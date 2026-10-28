@@ -1677,6 +1677,11 @@ export const classes_pt_BR_app = {
     "limit_reached_none": "O plano {{planName}} ainda não libera turmas. Veja os planos para começar ou volte para Turmas.",
     "limit_see_plans": "Ver planos",
     "limit_back_to_classes": "Voltar para Turmas",
+    "no_roll_calls": "Sem chamadas registradas",
+    "export_period": "Período da exportação",
+    "export_last_90_days": "Últimos 90 dias",
+    "export_all_history": "Todo o histórico",
+    "export_until": "até",
     "restore_quota_blocked": "Não é possível restaurar: a turma excederia o limite de turmas ou de pessoas distintas do plano. Libere vagas ou altere o plano."
   } as const;
 

@@ -268,6 +268,7 @@ export const getClassPastoralReport = async (args: { classId: string }, context:
     totalActiveCatechumens,
     totalMeetings,
     avgAttendance,
+    totalAttendanceRecords: classCounts.present + classCounts.late + classCounts.justified + classCounts.absent,
     unjustifiedAbsences,
     atRiskCount,
     upcomingBirthdays,
