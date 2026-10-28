@@ -73,7 +73,7 @@ export const auth_pt_BR_core = {
     "signup_error_password_mismatch": "As senhas não coincidem.",
     "signup_error_terms": "Deve aceitar os Termos de Uso e a Política de Privacidade.",
     "signup_error_create": "Erro ao criar conta. Tente novamente.",
-    "footer_copyright": "© {{year}} Catequese Viva",
+    "footer_copyright": "© {{year}} Catechis",
     "email_verified": "E-mail verificado com sucesso.",
     "email_verify_pending": "Confirmando seu e-mail…",
     "email_verify_success_title": "E-mail verificado",
@@ -630,7 +630,7 @@ export const blog_pt_BR_core = {
   } as const;
 
 export const common_pt_BR_core = {
-    "app_name": "Catequese Viva",
+    "app_name": "Catechis",
     "app_tagline": "Plataforma pastoral de iniciação cristã",
     "change_language": "Alterar idioma",
     "toggle_dark_mode": "Alternar modo escuro",
@@ -1467,7 +1467,7 @@ export const cookie_pt_BR_core = {
 export const family_pt_BR_core = {
     "portal_badge": "Portal da Família",
     "staff_portal_badge": "Equipe Pastoral",
-    "app_name": "Catequese Viva",
+    "app_name": "Catechis",
     "landing": {
       "tagline": "Acompanhe a jornada de fé dos seus filhos.",
       "invite_title": "Entrada por convite",
@@ -2976,7 +2976,7 @@ export const navigation_pt_BR_core = {
     "dashboard": "Painel",
     "classes": "Turmas",
     "catechumens": "Catequizandos",
-    "catechumens_short": "Cateq.",
+    "catechumens_short": "Alunos",
     "families": "Famílias",
     "team": "Pessoas e acessos",
     "family_portal_invites": "Convites da família",

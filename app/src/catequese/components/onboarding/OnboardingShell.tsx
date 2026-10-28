@@ -159,7 +159,7 @@ export function OnboardingShell({
           </div>
 
           <p className="relative text-xs text-[#6B7C8F]">
-            © {new Date().getFullYear()} Catequese Viva
+            © {new Date().getFullYear()} Catechis
           </p>
         </aside>
 

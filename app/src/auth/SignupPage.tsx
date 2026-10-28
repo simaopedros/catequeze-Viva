@@ -50,6 +50,7 @@ export function Signup() {
 
   return (
     <AuthPageLayout
+      pageTitle={t("signup_title")}
       panel={{
         eyebrow: t("signup_panel_eyebrow"),
         title: t("signup_panel_title"),
