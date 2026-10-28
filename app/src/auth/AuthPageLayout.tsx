@@ -1,4 +1,12 @@
-import { ReactNode } from "react";
+import {
+  Component,
+  ReactNode,
+  lazy,
+  Suspense,
+  useEffect,
+  useState,
+} from "react";
+
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { SkipToContent } from "../client/components/SkipToContent";
@@ -7,6 +15,22 @@ import { usePageTitle } from "../client/hooks/usePageTitle";
 import { useLocale, SupportedLocale } from "../i18n/useLocale";
 import { cn } from "../client/utils";
 import { AuthHeader } from "./AuthHeader";
+
+const AuthFeaturePanel = lazy(() => import("./AuthFeaturePanel"));
+
+// A failed optional chunk must never take down the authentication form.
+class PanelBoundary extends Component<
+  { children: ReactNode; fallback: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
+}
 
 const LOCALE_SHORT: Record<SupportedLocale, string> = {
   "pt-BR": "PT",
@@ -18,6 +42,7 @@ type AuthPageLayoutProps = {
   children: ReactNode;
   /** Browser tab title segment before " · Catechis". */
   pageTitle?: string;
+  animatedPanel?: boolean;
   /** When set, shows institutional left panel (desktop) */
   panel?: {
     eyebrow?: string;
@@ -31,10 +56,21 @@ export function AuthPageLayout({
   children,
   panel,
   pageTitle,
+  animatedPanel = false,
 }: AuthPageLayoutProps) {
   const { t } = useTranslation("auth");
   const { currentLocale, setLocale, supportedLocales } = useLocale();
   usePageTitle(pageTitle);
+  // Defer the panel chunk until after the form commits, and skip it on mobile.
+  const [showMotion, setShowMotion] = useState(false);
+  useEffect(() => {
+    if (!animatedPanel) return;
+    const media = window.matchMedia("(min-width: 1024px)");
+    const update = () => setShowMotion(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, [animatedPanel]);
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
@@ -59,24 +95,42 @@ export function AuthPageLayout({
                 <BrandLockup compact hideBadge tone="inverse" />
               </Link>
 
-              <div className="space-y-4">
-                {panel.eyebrow && (
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-gold/90">
-                    {panel.eyebrow}
-                  </p>
-                )}
-                <h1 className="font-brand-display text-[2rem] font-semibold leading-[1.15] tracking-tight text-white xl:text-[2.25rem]">
-                  {panel.title}
-                </h1>
-                <div className="h-px w-12 bg-brand-gold" aria-hidden />
-                {panel.subtitle && (
-                  <p className="text-sm leading-relaxed text-[#A8B8C9] max-w-[20rem]">
-                    {panel.subtitle}
-                  </p>
-                )}
-              </div>
+              {animatedPanel ? (
+                <div className="h-[530px]">
+                  {showMotion && (
+                    <PanelBoundary
+                      fallback={
+                        <p className="font-brand-display text-2xl text-white">
+                          {panel.title}
+                        </p>
+                      }
+                    >
+                      <Suspense fallback={null}>
+                        <AuthFeaturePanel />
+                      </Suspense>
+                    </PanelBoundary>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {panel.eyebrow && (
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-gold/90">
+                      {panel.eyebrow}
+                    </p>
+                  )}
+                  <h1 className="font-brand-display text-[2rem] font-semibold leading-[1.15] tracking-tight text-white xl:text-[2.25rem]">
+                    {panel.title}
+                  </h1>
+                  <div className="h-px w-12 bg-brand-gold" aria-hidden />
+                  {panel.subtitle && (
+                    <p className="text-sm leading-relaxed text-[#A8B8C9] max-w-[20rem]">
+                      {panel.subtitle}
+                    </p>
+                  )}
+                </div>
+              )}
 
-              {panel.points && panel.points.length > 0 && (
+              {!animatedPanel && panel.points && panel.points.length > 0 && (
                 <ul className="space-y-4">
                   {panel.points.map((point, i) => (
                     <li

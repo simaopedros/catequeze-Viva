@@ -193,7 +193,71 @@ export const auth_pt_BR_core = {
     "reset_error_missing_token": "Faltou o link de redefinição. Abra o e-mail que enviamos e toque no botão.",
     "terms_continue": "Continuar",
     "terms_retry": "Tentar novamente",
-    "terms_save_error": "Não foi possível registrar o aceite. Tente novamente."
+    "terms_save_error": "Não foi possível registrar o aceite. Tente novamente.",
+    "feature_panel": {
+      "label": "Conheça os recursos do Catechis",
+      "navigation": "Navegação dos recursos",
+      "show": "Mostrar: {{scene}}",
+      "pause": "Pausar",
+      "resume": "Retomar",
+      "example": "Demonstração com dados fictícios",
+      "maria": "Maria Exemplo",
+      "pedro": "Pedro Exemplo",
+      "ana": "Ana Exemplo",
+      "class_name": "Turma Crisma 2026",
+      "class_second": "Turma Eucaristia 2026",
+      "class_third": "Turma Iniciação 2026",
+      "class_meta": "Encontros e catequizandos",
+      "family_meta": "Responsáveis e vínculos familiares",
+      "record_meta": "Ficha do catequizando",
+      "record_details": "Dados pessoais e responsáveis",
+      "record_status": "Cadastro organizado",
+      "meeting": "Encontro da turma",
+      "date": "Outubro de 2026 · 09:00",
+      "dashboard": {
+        "title": "Painel",
+        "description": "Uma visão da catequese para organizar a semana."
+      },
+      "classes": {
+        "title": "Turmas",
+        "description": "Encontros e catequizandos reunidos por turma."
+      },
+      "attendance": {
+        "title": "Presença",
+        "description": "Uma chamada simples para acompanhar cada encontro."
+      },
+      "records": {
+        "title": "Fichas",
+        "description": "Dados e responsáveis sempre à mão."
+      },
+      "families": {
+        "title": "Famílias",
+        "description": "Vínculos organizados para acompanhar em família."
+      },
+      "calendar": {
+        "title": "Calendário",
+        "description": "Os próximos encontros em uma só visão."
+      },
+      "attendance_meta": "Presença registrada"
+    },
+    "mockup_dashboard": {
+      "title": "Painel",
+      "subtitle": "Visão geral da catequese",
+      "catechumens": "Catequizandos",
+      "active_classes": "Turmas ativas",
+      "avg_attendance": "Presença média",
+      "sacraments": "Sacramentos",
+      "today": "Hoje",
+      "today_class": "Turma Crisma 2026",
+      "today_detail": "Outubro de 2026 · 09:00",
+      "upcoming": "Próximos",
+      "upcoming_class": "Turma Eucaristia 2026",
+      "upcoming_detail": "Outubro de 2026 · 09:00",
+      "alerts_title": "3 alertas pastorais",
+      "alerts_subtitle": "Faltas consecutivas · docs pendentes",
+      "birthdays": "Aniversariantes",
+      "birthdays_list": "Maria Exemplo · Pedro Exemplo"
+    }
   } as const;
 
 export const billing_pt_BR_core = {
