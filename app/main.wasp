@@ -824,12 +824,12 @@ action removeCatechistFromClass {
 
 action enrollCatechumen {
   fn: import { enrollCatechumen } from "@src/server/operations/classOperations",
-  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, PricingPlan, PricingPlanPrice, EmailMessage, EmailSuppression, EmailPreference]
+  entities: [CatechumenProfile, GuardianProfile, ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, PricingPlan, PricingPlanPrice, EmailMessage, EmailSuppression, EmailPreference]
 }
 
 action bulkEnrollCatechumens {
   fn: import { bulkEnrollCatechumens } from "@src/server/operations/classOperations",
-  entities: [ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, CatechumenProfile, PricingPlan, PricingPlanPrice]
+  entities: [CatechumenProfile, GuardianProfile, ClassEnrollment, CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, PricingPlan, PricingPlanPrice]
 }
 
 action archiveClass {
@@ -840,6 +840,11 @@ action archiveClass {
 action duplicateClass {
   fn: import { duplicateClass } from "@src/server/operations/classOperations",
   entities: [CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Community, Diocese, User, PricingPlan, PricingPlanPrice, EmailMessage, EmailSuppression, EmailPreference]
+}
+
+action transferEnrollment {
+  fn: import { transferEnrollment } from "@src/server/operations/classOperations",
+  entities: [ClassEnrollment, CatechesisClass, CatechumenProfile, GuardianProfile, Membership, ClassCatechist, TenantBilling, Parish, Diocese, User, PricingPlan, PricingPlanPrice, SacramentalJourneyTemplate, SacramentalJourney, SacramentalMilestoneTemplate, SacramentalMilestone]
 }
 
 action cancelEnrollment {
@@ -861,7 +866,7 @@ query getCatechumenProfile {
 
 action createCatechumen {
   fn: import { createCatechumen } from "@src/server/operations/catechumenOperations",
-  entities: [CatechumenProfile, Membership, Parish, Household, ClassCatechist]
+  entities: [CatechumenProfile, Membership, Parish, Household, ClassCatechist, CatechesisClass]
 }
 
 action updateCatechumen {
@@ -1255,7 +1260,7 @@ query listUpcomingBirthdays {
 
 action toggleBirthdayGift {
   fn: import { toggleBirthdayGift } from "@src/server/operations/pastoralReportOperations",
-  entities: [CatechumenBirthdayGift]
+  entities: [CatechumenBirthdayGift, ClassEnrollment, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 //#endregion
 
@@ -1517,7 +1522,7 @@ api authenticatedDocumentUpload {
   middlewareConfigFn: import { authenticatedDocumentUploadMiddleware } from "@src/server/api/authenticatedDocumentUpload",
   auth: true,
   httpRoute: (POST, "/api/documents/upload"),
-  entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish]
+  entities: [Document, Membership, GuardianProfile, CatechumenProfile, Parish, ClassCatechist, CatechesisClass]
 }
 
 api uploadOfficialResourceAttachment {
@@ -2004,7 +2009,7 @@ action generateCatechumenUploadToken {
 
 query getCatechumenByUploadToken {
   fn: import { getCatechumenByUploadToken } from "@src/server/operations/uploadTokenOperations",
-  entities: [CatechumenProfile, Document]
+  entities: [CatechumenProfile]
 }
 
 action uploadDocumentWithToken {

@@ -34,6 +34,7 @@ export const listHouseholds = async (
   _args:
     | {
         communityId?: string;
+        selector?: boolean;
         /** When set, scope results to this workspace (must be in user's accessible parishes). */
         parishId?: string;
         workspaceId?: string;
@@ -72,7 +73,7 @@ export const listHouseholds = async (
         { id: { in: ids } },
         nameIdCursorWhere(args.cursor),
       ),
-      include: {
+      ...(args.selector ? { select: { id: true, name: true } } : { include: {
         guardians: {
           include: {
             user: {
@@ -90,7 +91,7 @@ export const listHouseholds = async (
         },
         community: { select: { id: true, name: true } },
         _count: { select: { catechumens: true } },
-      },
+      } }),
       orderBy: [{ name: 'asc' }, { id: 'asc' }],
       take,
     });
@@ -134,7 +135,7 @@ export const listHouseholds = async (
       orderBy: [{ name: 'asc' }, { id: 'asc' }],
       take,
       skip,
-      include: includeOpts,
+      ...(args.selector ? { select: { id: true, name: true } } : { include: includeOpts }),
     });
     return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
@@ -172,7 +173,7 @@ export const listHouseholds = async (
       orderBy: [{ name: 'asc' }, { id: 'asc' }],
       take,
       skip,
-      include: includeOpts,
+      ...(args.selector ? { select: { id: true, name: true } } : { include: includeOpts }),
     });
     return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
@@ -191,17 +192,16 @@ export const listHouseholds = async (
       orderBy: [{ name: 'asc' }, { id: 'asc' }],
       take,
       skip,
-      include: includeOpts,
+      ...(args.selector ? { select: { id: true, name: true } } : { include: includeOpts }),
     });
     return wrapNameIdPage(rows, pageSize, useCursorPage);
   }
 
-  // Catechist: households of catechumens in allowed classes, plus empty
-  // parish households (so a newly created family can be linked in the picker).
+  // Detailed directory: related households only. The minimal selector may
+  // also include empty parish households because Household has no creator field.
   if (access.isCatechist) {
     const classIds =
       access.allowedClassIds === 'ALL' ? [] : access.allowedClassIds;
-    if (classIds.length === 0) return emptyPage(useCursorPage);
 
     const enrollments = await context.entities.ClassEnrollment.findMany({
       where: { classId: { in: classIds }, catechumenProfileId: { not: null } },
@@ -226,11 +226,12 @@ export const listHouseholds = async (
       ];
     }
 
-    const orClauses: any[] = [{ catechumens: { none: {} } }];
+    const orClauses: any[] = args.selector ? [{ catechumens: { none: {} } }] : [];
     if (linkedHouseholdIds.length > 0) {
       orClauses.unshift({ id: { in: linkedHouseholdIds } });
     }
 
+    if (orClauses.length === 0) return emptyPage(useCursorPage);
     const where: any = { parishId, OR: orClauses };
     if (args.communityId) where.communityId = args.communityId;
     const rows = await context.entities.Household.findMany({
@@ -238,7 +239,7 @@ export const listHouseholds = async (
       orderBy: [{ name: 'asc' }, { id: 'asc' }],
       take,
       skip,
-      include: includeOpts,
+      ...(args.selector ? { select: { id: true, name: true } } : { include: includeOpts }),
     });
     return wrapNameIdPage(rows, pageSize, useCursorPage);
   }

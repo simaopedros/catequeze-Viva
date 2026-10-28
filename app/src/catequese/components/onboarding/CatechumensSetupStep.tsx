@@ -24,6 +24,7 @@ type ParsedRow = {
 
 interface CatechumensSetupStepProps {
   classId: string;
+  workspaceId: string;
   className: string;
   onContinue: (count: number) => void;
   onSkip: () => void;
@@ -33,6 +34,7 @@ interface CatechumensSetupStepProps {
 
 export function CatechumensSetupStep({
   classId,
+  workspaceId,
   className,
   onContinue,
   onSkip,
@@ -58,6 +60,7 @@ export function CatechumensSetupStep({
 
   const addOne = async (fn: string, ln: string) => {
     const profile = await createCatechumen({
+      workspaceId,
       firstName: fn,
       lastName: ln || "—",
     });
