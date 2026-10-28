@@ -18,6 +18,10 @@ function isMobileEncounterRoute(pathname: string): boolean {
   );
 }
 
+function isTurmasRoute(pathname: string): boolean {
+  return pathname === "/app/classes" || pathname.startsWith("/app/classes/");
+}
+
 const BREADCRUMB_ROUTE_KEYS = new Set([
   "new",
   "edit",
@@ -40,6 +44,13 @@ export function Breadcrumbs({ className }: { className?: string }) {
 
   const segments = location.pathname.split("/").filter(Boolean);
   const hideOnMobileEncounter = isMobileEncounterRoute(location.pathname);
+  const turmasTouch = isTurmasRoute(location.pathname);
+  const linkTouchClass = turmasTouch
+    ? "-my-1 flex min-h-10 min-w-10 flex-shrink-0 items-center justify-center transition-colors hover:text-brand-ink sm:min-h-8 sm:min-w-8"
+    : "-my-1 flex min-h-8 min-w-8 flex-shrink-0 items-center justify-center transition-colors hover:text-brand-ink";
+  const textTouchClass = turmasTouch
+    ? "-my-1 flex min-h-10 max-w-[220px] items-center truncate transition-colors hover:text-brand-ink sm:min-h-8 sm:max-w-xs"
+    : "-my-1 flex min-h-8 max-w-[220px] items-center truncate transition-colors hover:text-brand-ink sm:max-w-xs";
 
   // Só rotas profundas (/app/classes/:id em diante). Em /app e /app/classes o
   // AppPageHeader já diz onde o usuário está — a trilha seria ruído duplicado.
@@ -99,7 +110,7 @@ export function Breadcrumbs({ className }: { className?: string }) {
       <Link
         to="/app"
         aria-label={t("dashboard")}
-        className="-my-1 flex min-h-8 min-w-8 flex-shrink-0 items-center justify-center transition-colors hover:text-brand-ink"
+        className={linkTouchClass}
       >
         <Home className="h-3.5 w-3.5" />
       </Link>
@@ -110,7 +121,7 @@ export function Breadcrumbs({ className }: { className?: string }) {
             <Link
               to={item.to}
               title={item.label}
-              className="-my-1 flex min-h-8 max-w-[220px] items-center truncate transition-colors hover:text-brand-ink sm:max-w-xs"
+              className={textTouchClass}
             >
               {item.label}
             </Link>

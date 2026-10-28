@@ -13,6 +13,7 @@ import {
   riskLevelFromRate,
   type AttendanceRiskLevel,
 } from '../../shared/attendanceMetrics';
+import { enrollmentCoversMeetingDate } from '../../shared/enrollmentWindow';
 
 /** Pastoral report window: meetings older than this are not loaded. */
 const PASTORAL_REPORT_WINDOW_MONTHS = 24;
@@ -79,7 +80,7 @@ export const getClassPastoralReport = async (args: { classId: string }, context:
       catechists: { select: { user: { select: { id: true, firstName: true, lastName: true, email: true } }, role: true } },
       enrollments: {
         select: {
-          id: true, status: true, startedAt: true, endedAt: true, notes: true, origin: true,
+          id: true, status: true, startedAt: true, endedAt: true, updatedAt: true, notes: true, origin: true,
           catechumenProfile: {
             select: { id: true, firstName: true, lastName: true, photoUrl: true, birthDate: true },
           },
@@ -208,15 +209,15 @@ export const getClassPastoralReport = async (args: { classId: string }, context:
     const profile = e.catechumenProfile;
     if (!profile) return null;
 
-    const startedAt = e.startedAt ? new Date(e.startedAt) : null;
-    const endedAt = e.endedAt ? new Date(e.endedAt) : null;
-
-    const validMeetings = cls.meetings.filter((m: any) => {
-      const d = new Date(m.date);
-      if (startedAt && d < startedAt) return false;
-      if (endedAt && d > endedAt) return false;
-      return true;
-    });
+    const validMeetings = cls.meetings.filter((m: any) =>
+      enrollmentCoversMeetingDate({
+        meetingDate: m.date,
+        startedAt: e.startedAt,
+        endedAt: e.endedAt,
+        status: e.status,
+        updatedAt: e.updatedAt,
+      }),
+    );
 
     const counts = emptyAttendanceCounts();
     let consecutiveAbsences = 0;
@@ -325,7 +326,9 @@ export const getCatechumenPastoralAnalysis = async (args: { catechumenId: string
   const profile = enrollment.catechumenProfile;
   const cls = enrollment.class;
   const startedAt = enrollment.startedAt;
-  const endedAt = enrollment.endedAt;
+  const endedAt =
+    enrollment.endedAt ||
+    (enrollment.status === 'DROPPED' ? enrollment.updatedAt : null);
 
   const meetingRows = await context.entities.Meeting.findMany({
     where: {
@@ -362,8 +365,16 @@ export const getCatechumenPastoralAnalysis = async (args: { catechumenId: string
   }
 
   const now = new Date();
-  const validMeetings = meetingRows.filter((m: any) =>
-    isCountableMeeting(m, { now, hasAttendance: attendanceByMeeting.has(m.id) }),
+  const validMeetings = meetingRows.filter(
+    (m: any) =>
+      enrollmentCoversMeetingDate({
+        meetingDate: m.date,
+        startedAt: enrollment.startedAt,
+        endedAt: enrollment.endedAt,
+        status: enrollment.status,
+        updatedAt: enrollment.updatedAt,
+      }) &&
+      isCountableMeeting(m, { now, hasAttendance: attendanceByMeeting.has(m.id) }),
   );
 
   const catechists = cls.catechists

@@ -837,6 +837,11 @@ action archiveClass {
   entities: [CatechesisClass, Membership, Meeting, Parish]
 }
 
+action duplicateClass {
+  fn: import { duplicateClass } from "@src/server/operations/classOperations",
+  entities: [CatechesisClass, Membership, ClassCatechist, TenantBilling, Parish, Community, Diocese, User, PricingPlan, PricingPlanPrice, EmailMessage, EmailSuppression, EmailPreference]
+}
+
 action cancelEnrollment {
   fn: import { cancelEnrollment } from "@src/server/operations/classOperations",
   entities: [ClassEnrollment, Membership, Parish]

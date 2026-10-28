@@ -351,7 +351,7 @@ export default function ClassPastoralReportPage() {
                         {t("rank")}
                       </th>
                       <th className="p-3 text-left text-xs font-medium tracking-wide">
-                        {tc("name")}
+                        {t("name")}
                       </th>
                       <th className="p-3 text-center text-xs font-medium tracking-wide">
                         {t("present")}

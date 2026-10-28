@@ -45,7 +45,12 @@ export default function SendAnnouncementButton({ classId, className }: Props) {
 
   if (!open) {
     return (
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+      <Button
+        variant="outline"
+        size="sm"
+        className="h-10 min-h-10 sm:h-9 sm:min-h-9"
+        onClick={() => setOpen(true)}
+      >
         <Mail className="mr-1 h-3 w-3" />
         {t("announcement.button")}
       </Button>

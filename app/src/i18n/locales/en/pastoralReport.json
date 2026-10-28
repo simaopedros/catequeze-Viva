@@ -28,6 +28,7 @@
   "active": "Active",
   "dropped": "Dropped",
   "transferred": "Transferred",
+  "name": "Name",
   "rank": "Position",
   "noData": "No data available",
   "noMeetings": "No meetings registered in this class",

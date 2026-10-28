@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router";
-import { useMemo, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router";
+import { useMemo, useRef, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,7 +30,6 @@ import {
   FormLabel,
   FormMessage,
 } from "../../client/components/ui/form";
-import { useState } from "react";
 import {
   AppPageHeader,
   AppPanel,
@@ -71,6 +70,7 @@ function compressImage(file: File): Promise<string> {
 export default function CreateCatechumenPage() {
   const { t } = useTranslation("common");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { activeParishId } = useActiveParish();
   const { userRole } = useUserContext();
   const { data: households = [], refetch: refetchHouseholds } = useQuery(
@@ -95,10 +95,16 @@ export default function CreateCatechumenPage() {
 
   const [photo, setPhoto] = useState("");
   const [classId, setClassId] = useState("");
+  const [redirecting, setRedirecting] = useState(false);
   const { classes: enrollableClasses } = useEnrollableClasses(canManage);
   const [showCreateHouseholdModal, setShowCreateHouseholdModal] =
     useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const fromQuery = searchParams.get("classId")?.trim();
+    if (fromQuery) setClassId(fromQuery);
+  }, [searchParams]);
 
   const form = useForm<CreateCatechumenValues>({
     resolver: zodResolver(createCatechumenSchema),
@@ -148,13 +154,16 @@ export default function CreateCatechumenPage() {
       }
       form.reset(values);
       setPhoto("");
-      setClassId("");
       toast({ title: t("catechumens.created_success") });
-      navigate(`/app/catechumens/${result.id}`);
+      setRedirecting(true);
+      window.setTimeout(() => {
+        navigate(`/app/catechumens/${result.id}`);
+      }, 50);
     } catch (err: any) {
       form.setError("root", {
         message: err.message || t("catechumens.create_error"),
       });
+      setRedirecting(false);
     }
   };
 
@@ -374,38 +383,45 @@ export default function CreateCatechumenPage() {
                 )}
               />
 
-              {enrollableClasses.length > 0 && (
-                <div className="space-y-2">
-                  <label
-                    htmlFor="catechumen-class"
-                    className="text-sm font-medium leading-none"
-                  >
-                    {t("catechumens.enroll.label_optional")}
-                  </label>
-                  <select
-                    id="catechumen-class"
-                    value={classId}
-                    onChange={(e) => setClassId(e.target.value)}
-                    className="flex h-12 min-h-12 w-full rounded-sm border border-input bg-background px-3 py-2 text-base md:h-11 md:min-h-11 md:text-sm"
-                  >
-                    <option value="">{t("catechumens.enroll.none")}</option>
-                    {enrollableClasses.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+              <div className="space-y-2">
+                <label
+                  htmlFor="catechumen-class"
+                  className="text-sm font-medium leading-none"
+                >
+                  {t("catechumens.enroll.label_optional")}
+                </label>
+                <select
+                  id="catechumen-class"
+                  value={classId}
+                  onChange={(e) => setClassId(e.target.value)}
+                  className="flex h-12 min-h-12 w-full rounded-sm border border-input bg-background px-3 py-2 text-base md:h-11 md:min-h-11 md:text-sm"
+                >
+                  <option value="">{t("catechumens.enroll.none")}</option>
+                  {enrollableClasses.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+                {enrollableClasses.length === 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    {t("catechumens.enroll.no_classes")}
+                  </p>
+                )}
+              </div>
             </form>
           </Form>
         </AppPanel>
       </div>
 
       <MobileActionBar
-        label={form.formState.isSubmitting ? t("saving") : t("register")}
-        loading={form.formState.isSubmitting}
-        disabled={form.formState.isSubmitting}
+        label={
+          form.formState.isSubmitting || redirecting
+            ? t("saving")
+            : t("register")
+        }
+        loading={form.formState.isSubmitting || redirecting}
+        disabled={form.formState.isSubmitting || redirecting}
         onClick={form.handleSubmit(onSubmit)}
         icon={<Save className="mr-2 h-4 w-4" />}
       />
