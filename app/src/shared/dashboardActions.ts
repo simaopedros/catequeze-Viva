@@ -256,7 +256,7 @@ export function buildNextActions(
   }
 
   const pending = stats?.pendingAttendanceMeeting;
-  if (pending && pending.id !== meeting?.id) {
+  if (pending && pending.enrollmentCount > 0 && pending.id !== meeting?.id) {
     actions.push(
       action(
         "register_attendance",

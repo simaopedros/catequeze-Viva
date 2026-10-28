@@ -29,8 +29,10 @@ describe("class detail header layout", () => {
     const page = read("catequese/pages/ClassDetailPage.tsx");
 
     const rosterMatches = page.match(/t\("export_roster_csv"\)/g) ?? [];
+    // The export dialog also uses the label for its title and submit button.
+    const toolbar = page.slice(0, page.indexOf('<Dialog open={attendanceExportOpen}'));
     const attendanceMatches =
-      page.match(/t\("export_attendance_csv"\)/g) ?? [];
+      toolbar.match(/t\("export_attendance_csv"\)/g) ?? [];
     const printMatches = page.match(/t\("print"\)/g) ?? [];
 
     // One label reference each for the menu action (handlers may mention keys too)

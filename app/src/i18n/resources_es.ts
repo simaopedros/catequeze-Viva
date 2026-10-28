@@ -2308,6 +2308,11 @@ export const classes_es = {
     "limit_reached_none": "El plan {{planName}} aún no libera grupos. Mira los planes para comenzar o vuelve a Grupos.",
     "limit_see_plans": "Ver planes",
     "limit_back_to_classes": "Volver a Grupos",
+    "no_roll_calls": "Sin llamadas de asistencia registradas",
+    "export_period": "Período de exportación",
+    "export_last_90_days": "Últimos 90 días",
+    "export_all_history": "Todo el historial",
+    "export_until": "hasta",
     "restore_quota_blocked": "Esta clase superaría el límite del plan de clases o personas distintas. Libere cupo o cambie de plan."
   } as const;
 
