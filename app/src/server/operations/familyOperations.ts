@@ -220,7 +220,9 @@ export const listHouseholds = async (
         select: { householdId: true },
       });
       linkedHouseholdIds = [
-        ...new Set(profiles.map((p: any) => p.householdId).filter(Boolean)),
+        ...new Set<string>(
+          profiles.map((p: any) => p.householdId as string).filter(Boolean),
+        ),
       ];
     }
 
