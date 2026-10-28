@@ -240,6 +240,8 @@
   "limit_reached_none": "The {{planName}} plan does not unlock classes yet. See the plans to get started or go back to Classes.",
   "limit_see_plans": "See plans",
   "limit_back_to_classes": "Back to Classes",
+  "consult_records": "View records",
+  "more_class_actions": "More actions for class {{name}}",
   "no_roll_calls": "No roll calls recorded",
   "export_period": "Export period",
   "export_last_90_days": "Last 90 days",

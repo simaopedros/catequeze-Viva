@@ -99,7 +99,7 @@ export function BottomNav() {
             const locked =
               subscriptionLocked && !isSubscriptionFreeAppPath(item.to);
             const accessibleLabel = locked
-              ? `${fullLabel} — ${t("locked_hint")}`
+              ? `${fullLabel}, ${t("locked_hint")}`
               : fullLabel;
             return (
               <NavLink
@@ -141,7 +141,7 @@ export function BottomNav() {
                       )}
                     </span>
                     {/* Abaixo de 400px só ícone; rótulos curtos evitam "Catequiz…" em 360px. */}
-                    <span className="hidden max-w-full truncate min-[400px]:block">
+                    <span className="block max-w-full truncate">
                       {baseLabel}
                     </span>
                   </>
@@ -165,7 +165,7 @@ export function BottomNav() {
               <span className="flex h-6 w-11 items-center justify-center">
                 <Menu className="h-5 w-5" />
               </span>
-              <span className="hidden max-w-full truncate min-[400px]:block">
+              <span className="block max-w-full truncate">
                 {t("more", { ns: "common" })}
               </span>
               {unreadCount > 0 && (

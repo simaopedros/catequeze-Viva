@@ -90,7 +90,8 @@
     "catechumen_linked_success": "Catechumen added successfully!",
     "catechumen_removed_success": "Catechumen removed successfully.",
     "no_unlinked_catechumens": "No unlinked catechumens found in this parish.",
-    "view_families_cta": "Link to Families"
+    "view_families_cta": "Link to Families",
+    "back_to_families": "Back to Families"
   },
   "save": "Save",
   "cancel": "Cancel",
@@ -585,7 +586,10 @@
           "body": "We certify that {{name}}{{birth}} has completed the {{stage}} stage of catechesis in the class {{className}} at {{parish}}, walking in faith with dedication."
         }
       }
-    }
+    },
+    "import_example": "CSV example",
+    "import_copy_example": "Copy example",
+    "import_download_example": "Download template"
   },
   "global_search_placeholder": "Search catechumens, classes, content, Bible...",
   "two_factor_code_placeholder": "6-digit code",

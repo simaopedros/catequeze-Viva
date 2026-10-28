@@ -1275,7 +1275,10 @@ export const birthdays_pt_BR_app = {
     "markUndelivered": "Marcar como não entregue",
     "exportList": "Exportar lista",
     "noBirthdays": "Nenhum aniversário no período",
-    "in": "em"
+    "in": "em",
+    "exportLoading": "Exportação indisponível durante o carregamento",
+    "loadingBirthdays": "Carregando aniversários",
+    "noBirthdaysPeriod": "Nenhum aniversário neste período"
   } as const;
 
 export const calendar_pt_BR_app = {
@@ -1677,6 +1680,8 @@ export const classes_pt_BR_app = {
     "limit_reached_none": "O plano {{planName}} ainda não libera turmas. Veja os planos para começar ou volte para Turmas.",
     "limit_see_plans": "Ver planos",
     "limit_back_to_classes": "Voltar para Turmas",
+    "consult_records": "Consultar registros",
+    "more_class_actions": "Mais ações da turma {{name}}",
     "no_roll_calls": "Sem chamadas registradas",
     "export_period": "Período da exportação",
     "export_last_90_days": "Últimos 90 dias",
@@ -1895,7 +1900,8 @@ export const content_pt_BR_app = {
       },
       "card_duration": "Duração",
       "card_activities": "Atividades",
-      "search_title": "Busca"
+      "search_title": "Busca",
+      "loading_contents": "Carregando conteúdos"
     },
     "detail": {
       "by_author": "por {{name}}",

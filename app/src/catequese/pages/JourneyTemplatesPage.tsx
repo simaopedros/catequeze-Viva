@@ -320,7 +320,7 @@ export default function JourneyTemplatesPage() {
                 key={tmpl.id}
                 className="rounded-sm border border-border/70 bg-white overflow-hidden"
               >
-                <div className="p-4 flex items-start justify-between gap-3">
+                <div className="p-4 flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-start">
                   <div className="flex-1 min-w-0">
                     {isEditing ? (
                       <div className="space-y-2">
@@ -359,7 +359,7 @@ export default function JourneyTemplatesPage() {
                         {/* Título sozinho + selos abaixo: no mobile o flex
                             horizontal espremia o nome em 3–4 linhas e cortava
                             o Badge do sacramento fora do cartão. */}
-                        <h3 className="min-w-0 truncate text-base font-semibold tracking-tight text-brand-ink sm:whitespace-normal sm:break-words">
+                        <h3 className="min-w-0 line-clamp-3 break-words text-base font-semibold tracking-tight text-brand-ink sm:line-clamp-none">
                           {tmpl.name}
                         </h3>
                         <div className="mt-1.5 flex min-w-0 flex-wrap items-center gap-1.5">

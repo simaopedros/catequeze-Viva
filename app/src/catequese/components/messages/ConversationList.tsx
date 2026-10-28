@@ -177,7 +177,7 @@ export function ConversationList({
           <div className="min-w-0 space-y-1.5">
             <AppEyebrow>{t("conversations")}</AppEyebrow>
             <AppDisplayTitle
-              as="h2"
+              as="h1"
               className="text-base text-brand-ink sm:text-base"
             >
               {t("title")}

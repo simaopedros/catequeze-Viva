@@ -93,7 +93,8 @@
     },
     "card_duration": "Duración",
     "card_activities": "Actividades",
-    "search_title": "Búsqueda"
+    "search_title": "Búsqueda",
+    "loading_contents": "Cargando contenidos"
   },
   "detail": {
     "by_author": "por {{name}}",

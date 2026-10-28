@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { cn } from "../utils";
 import { HorizontalScrollFade } from "./HorizontalScrollFade";
 
@@ -7,6 +8,7 @@ export interface DetailTabOption {
 }
 
 interface DetailTabsProps {
+  id: string;
   tabs: DetailTabOption[];
   value: string;
   onChange: (id: string) => void;
@@ -18,11 +20,13 @@ interface DetailTabsProps {
  * Touch-friendly (min height 44px). Edge fade when more tabs are off-screen.
  */
 export function DetailTabs({
+  id,
   tabs,
   value,
   onChange,
   className,
 }: DetailTabsProps) {
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   return (
     <HorizontalScrollFade
       activeKey={value}
@@ -33,11 +37,26 @@ export function DetailTabs({
       )}
     >
       <div className="flex gap-0">
-        {tabs.map((tab) => (
+        {tabs.map((tab, index) => (
           <button
             key={tab.id}
             type="button"
             role="tab"
+            id={`${id}-tab-${tab.id}`}
+            aria-controls={`${id}-panel-${tab.id}`}
+            ref={(element) => { tabRefs.current[index] = element; }}
+            tabIndex={value === tab.id ? 0 : -1}
+            onKeyDown={(event) => {
+              let next = index;
+              if (event.key === "ArrowRight") next = (index + 1) % tabs.length;
+              else if (event.key === "ArrowLeft") next = (index - 1 + tabs.length) % tabs.length;
+              else if (event.key === "Home") next = 0;
+              else if (event.key === "End") next = tabs.length - 1;
+              else return;
+              event.preventDefault();
+              onChange(tabs[next].id);
+              tabRefs.current[next]?.focus();
+            }}
             aria-selected={value === tab.id}
             onClick={() => onChange(tab.id)}
             className={cn(
