@@ -1439,7 +1439,11 @@ export const classes_pt_BR_app = {
     "title": "Turmas",
     "subtitle": "Gerencie turmas, catequistas e catequizandos.",
     "eyebrow": "Catequese",
-    "metrics_visible": "Visíveis",
+    "metrics_visible": "Na lista",
+    "filter_all_count": "Todas ({{count}})",
+    "filter_all_capped": "Todas (mais de {{count}})",
+    "location_not_informed": "Local não informado",
+    "enrolled_metric": "Matriculados",
     "active_count_one": "{{count}} ativa",
     "active_count_other": "{{count}} ativas",
     "create": "Criar turma",
@@ -1507,11 +1511,11 @@ export const classes_pt_BR_app = {
     "create_parish_cta": "Criar paróquia",
     "days": {
       "0": "Domingo",
-      "1": "Segunda",
-      "2": "Terça",
-      "3": "Quarta",
-      "4": "Quinta",
-      "5": "Sexta",
+      "1": "Segunda-feira",
+      "2": "Terça-feira",
+      "3": "Quarta-feira",
+      "4": "Quinta-feira",
+      "5": "Sexta-feira",
       "6": "Sábado"
     },
     "days_long": {
@@ -3291,11 +3295,11 @@ export const onboarding_pt_BR_app = {
       "default_meeting_title": "Encontro de hoje",
       "days": {
         "0": "Domingo",
-        "1": "Segunda",
-        "2": "Terça",
-        "3": "Quarta",
-        "4": "Quinta",
-        "5": "Sexta",
+        "1": "Segunda-feira",
+        "2": "Terça-feira",
+        "3": "Quarta-feira",
+        "4": "Quinta-feira",
+        "5": "Sexta-feira",
         "6": "Sábado"
       }
     },
@@ -3859,7 +3863,12 @@ export const sacraments_pt_BR_app = {
       "error_update_milestone": "Erro ao atualizar marco",
       "error_copy": "Erro ao copiar modelo",
       "error_publish": "Erro ao publicar",
-      "error_restart": "Reinicie o servidor Wasp."
+      "error_restart": "Reinicie o servidor Wasp.",
+      "aria_edit": "Editar modelo",
+      "aria_copy": "Duplicar modelo",
+      "aria_publish": "Publicar modelo",
+      "aria_expand": "Ver marcos",
+      "aria_collapse": "Ocultar marcos"
     }
   } as const;
 

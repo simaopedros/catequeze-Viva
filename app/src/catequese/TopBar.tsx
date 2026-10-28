@@ -389,7 +389,9 @@ export const TopBar = memo(function TopBar() {
                 </kbd>{" "}
                 {tTop("searchOpen")}
               </span>
-              <span className="ml-auto">{tTop("searchFocusHint")}</span>
+              <span className="ml-auto hidden sm:inline">
+                {tTop("searchFocusHint")}
+              </span>
             </div>
           </div>
         )}

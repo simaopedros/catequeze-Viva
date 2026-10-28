@@ -559,7 +559,7 @@ export default function BiblePage() {
               onChange={(e) => setBookFilter(e.target.value)}
               placeholder={t("book_filter")}
               aria-label={t("book_filter")}
-              className="w-full h-8 rounded-sm border border-input bg-background pl-8 pr-3 text-xs"
+              className="h-11 min-h-11 w-full rounded-sm border border-input bg-background pl-8 pr-3 text-sm md:h-8 md:min-h-0 md:text-xs"
             />
           </div>
         </div>
@@ -587,7 +587,7 @@ export default function BiblePage() {
                 onChange={(e) => setBookFilter(e.target.value)}
                 placeholder={t("book_filter")}
                 aria-label={t("book_filter")}
-                className="w-full h-8 rounded-sm border border-input bg-background pl-8 pr-3 text-xs"
+                className="h-11 min-h-11 w-full rounded-sm border border-input bg-background pl-8 pr-3 text-sm md:h-8 md:min-h-0 md:text-xs"
               />
             </div>
           )}
@@ -602,7 +602,7 @@ export default function BiblePage() {
                   <button
                     key={b.id}
                     onClick={() => loadBook(b.id)}
-                    className="truncate rounded-sm px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted"
+                    className="min-h-11 truncate rounded-sm px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted md:min-h-0"
                     title={b.name}
                   >
                     <span className="font-semibold tracking-tight text-brand-ink">
@@ -629,7 +629,7 @@ export default function BiblePage() {
                   <button
                     key={b.id}
                     onClick={() => loadBook(b.id)}
-                    className="truncate rounded-sm px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted"
+                    className="min-h-11 truncate rounded-sm px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted md:min-h-0"
                     title={b.name}
                   >
                     <span className="font-semibold tracking-tight text-brand-ink">

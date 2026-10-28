@@ -94,7 +94,7 @@ export function BottomSheetNav({ onNavigate }: BottomSheetNavProps) {
     <SheetContent
       id="bottom-sheet-nav"
       side="bottom"
-      className="z-50 max-h-[70vh] gap-0 overflow-y-auto rounded-t-sm border-t border-border/70 bg-surface-elevated p-0 lg:hidden"
+      className="z-50 max-h-[70vh] gap-0 overflow-y-auto rounded-t-sm border-t border-border/70 bg-surface-elevated p-0 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] lg:hidden"
     >
       <SheetHeader className="sticky top-0 z-10 space-y-0 border-b border-border/70 bg-surface-elevated px-4 pb-3 pt-4 text-left">
         <div className="mb-2 flex justify-center" aria-hidden>

@@ -86,7 +86,7 @@ export function useActiveWorkspace(): UseActiveWorkspaceReturn {
   return {
     workspace,
     workspaceId: workspace?.id || "",
-    workspaceName: workspace?.name || "Catequese Viva",
+    workspaceName: workspace?.name || "Catechis",
     workspaceType: workspace?.type || "PERSONAL",
     workspacePlan,
     isPersonal: workspace?.isPersonal ?? true,

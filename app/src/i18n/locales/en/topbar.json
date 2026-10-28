@@ -5,6 +5,7 @@
   "searchNavigate": "navigate",
   "searchOpen": "open",
   "searchFocusHint": "Ctrl+K to focus",
+  "searchTypeHint": "Type at least 3 letters to search",
   "notifications": "Notifications",
   "markAllRead": "Mark all as read",
   "noNotifications": "No notifications",

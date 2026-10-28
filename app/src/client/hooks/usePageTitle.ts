@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 /** Matches `title` in main.wasp — the value index.html ships with. */
-export const APP_NAME = "Catequese Viva";
+export const APP_NAME = "Catechis";
 
 /**
  * Sets `document.title` for the current screen.

@@ -1296,7 +1296,7 @@ export const auth_pt_BR = {
     "signup_error_password_mismatch": "As senhas não coincidem.",
     "signup_error_terms": "Deve aceitar os Termos de Uso e a Política de Privacidade.",
     "signup_error_create": "Erro ao criar conta. Tente novamente.",
-    "footer_copyright": "© {{year}} Catequese Viva",
+    "footer_copyright": "© {{year}} Catechis",
     "email_verified": "E-mail verificado com sucesso.",
     "email_verify_pending": "Confirmando seu e-mail…",
     "email_verify_success_title": "E-mail verificado",
@@ -2066,7 +2066,11 @@ export const classes_pt_BR = {
     "title": "Turmas",
     "subtitle": "Gerencie turmas, catequistas e catequizandos.",
     "eyebrow": "Catequese",
-    "metrics_visible": "Visíveis",
+    "metrics_visible": "Na lista",
+    "filter_all_count": "Todas ({{count}})",
+    "filter_all_capped": "Todas (mais de {{count}})",
+    "location_not_informed": "Local não informado",
+    "enrolled_metric": "Matriculados",
     "active_count_one": "{{count}} ativa",
     "active_count_other": "{{count}} ativas",
     "create": "Criar turma",
@@ -2134,11 +2138,11 @@ export const classes_pt_BR = {
     "create_parish_cta": "Criar paróquia",
     "days": {
       "0": "Domingo",
-      "1": "Segunda",
-      "2": "Terça",
-      "3": "Quarta",
-      "4": "Quinta",
-      "5": "Sexta",
+      "1": "Segunda-feira",
+      "2": "Terça-feira",
+      "3": "Quarta-feira",
+      "4": "Quinta-feira",
+      "5": "Sexta-feira",
       "6": "Sábado"
     },
     "days_long": {
@@ -2397,7 +2401,7 @@ export const collaborative_pt_BR = {
   } as const;
 
 export const common_pt_BR = {
-    "app_name": "Catequese Viva",
+    "app_name": "Catechis",
     "app_tagline": "Plataforma pastoral de iniciação cristã",
     "change_language": "Alterar idioma",
     "toggle_dark_mode": "Alternar modo escuro",
@@ -3915,7 +3919,7 @@ export const emails_pt_BR = {
 export const family_pt_BR = {
     "portal_badge": "Portal da Família",
     "staff_portal_badge": "Equipe Pastoral",
-    "app_name": "Catequese Viva",
+    "app_name": "Catechis",
     "landing": {
       "tagline": "Acompanhe a jornada de fé dos seus filhos.",
       "invite_title": "Entrada por convite",
@@ -5934,7 +5938,7 @@ export const navigation_pt_BR = {
     "dashboard": "Painel",
     "classes": "Turmas",
     "catechumens": "Catequizandos",
-    "catechumens_short": "Cateq.",
+    "catechumens_short": "Alunos",
     "families": "Famílias",
     "team": "Pessoas e acessos",
     "family_portal_invites": "Convites da família",
@@ -6366,11 +6370,11 @@ export const onboarding_pt_BR = {
       "default_meeting_title": "Encontro de hoje",
       "days": {
         "0": "Domingo",
-        "1": "Segunda",
-        "2": "Terça",
-        "3": "Quarta",
-        "4": "Quinta",
-        "5": "Sexta",
+        "1": "Segunda-feira",
+        "2": "Terça-feira",
+        "3": "Quarta-feira",
+        "4": "Quinta-feira",
+        "5": "Sexta-feira",
         "6": "Sábado"
       }
     },
@@ -7254,7 +7258,12 @@ export const sacraments_pt_BR = {
       "error_update_milestone": "Erro ao atualizar marco",
       "error_copy": "Erro ao copiar modelo",
       "error_publish": "Erro ao publicar",
-      "error_restart": "Reinicie o servidor Wasp."
+      "error_restart": "Reinicie o servidor Wasp.",
+      "aria_edit": "Editar modelo",
+      "aria_copy": "Duplicar modelo",
+      "aria_publish": "Publicar modelo",
+      "aria_expand": "Ver marcos",
+      "aria_collapse": "Ocultar marcos"
     }
   } as const;
 
@@ -7473,6 +7482,7 @@ export const topbar_pt_BR = {
     "searchNavigate": "navegar",
     "searchOpen": "abrir",
     "searchFocusHint": "Ctrl+K para focar",
+    "searchTypeHint": "Digite ao menos 3 letras para buscar",
     "notifications": "Notificações",
     "markAllRead": "Marcar todas como lidas",
     "noNotifications": "Nenhuma notificação",

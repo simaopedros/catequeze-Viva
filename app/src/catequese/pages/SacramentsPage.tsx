@@ -359,7 +359,7 @@ export default function SacramentsPage() {
                 aria-label={tc("search")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="flex h-9 w-40 rounded-sm border border-input bg-background pl-9 pr-3 text-sm"
+                className="flex h-11 min-h-11 w-40 rounded-sm border border-input bg-background pl-9 pr-3 text-sm md:h-9 md:min-h-0"
               />
             </div>
             {canManage && (
@@ -385,7 +385,7 @@ export default function SacramentsPage() {
         <AppMetric label={t("page.blocked")} value={statusCounts.blocked} />
       </div>
 
-      <div className="flex gap-1 flex-wrap">
+      <div className="flex flex-wrap gap-1">
         {FILTER_KEYS.map((f) => {
           const FIcon = f.icon;
           return (
@@ -393,7 +393,7 @@ export default function SacramentsPage() {
               key={f.key}
               size="sm"
               variant={activeFilter === f.key ? "default" : "outline"}
-              className="h-7 text-xs gap-1"
+              className="h-11 min-h-11 gap-1 text-xs md:h-7 md:min-h-0"
               onClick={() => setActiveFilter(f.key)}
             >
               <FIcon className="h-3 w-3" />

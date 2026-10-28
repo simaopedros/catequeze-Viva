@@ -46,7 +46,7 @@ export function RecentMeetingsList({
         <AppEyebrow>{t("recent_meetings")}</AppEyebrow>
         <Link
           to="/app/calendar"
-          className="shrink-0 text-xs font-medium text-brand-ink underline-offset-4 hover:underline"
+          className="inline-flex min-h-11 shrink-0 items-center text-xs font-medium text-brand-ink underline-offset-4 hover:underline md:min-h-0"
         >
           {t("see_all")}
         </Link>
@@ -68,7 +68,7 @@ export function RecentMeetingsList({
                   <Calendar className="h-4 w-4" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-semibold tracking-tight text-brand-ink">
+                  <span className="block text-sm font-semibold tracking-tight text-brand-ink line-clamp-2">
                     {m.title || m.theme || t("meeting_default")}
                     <span className="font-normal text-muted-foreground">
                       {" · "}

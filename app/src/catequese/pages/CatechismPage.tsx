@@ -231,7 +231,7 @@ export default function CatechismPage() {
               key={key}
               onClick={() => loadCategory(key)}
               className={
-                "px-3 py-1.5 text-sm rounded-sm transition-colors " +
+                "inline-flex min-h-11 items-center rounded-sm px-3 py-1.5 text-sm transition-colors md:min-h-8 " +
                 (category === key
                   ? "bg-brand-ink text-white"
                   : "bg-muted hover:bg-muted/70")

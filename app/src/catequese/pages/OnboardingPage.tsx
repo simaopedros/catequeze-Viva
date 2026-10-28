@@ -408,7 +408,7 @@ export default function OnboardingPage() {
           dayOfWeek: validated.data.dayOfWeek || undefined,
           startTime: validated.data.startTime || undefined,
           endTime: validated.data.endTime || undefined,
-          location: validated.data.location || personalParish.name,
+          location: validated.data.location || undefined,
         });
 
         trackMarketingEvent("first_class_created", {

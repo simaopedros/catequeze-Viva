@@ -201,7 +201,7 @@ export function MyClassesCard({ classes, className }: MyClassesCardProps) {
         {!single && (
           <Link
             to="/app/classes"
-            className="shrink-0 text-xs font-medium text-brand-ink underline-offset-4 hover:underline"
+            className="inline-flex min-h-11 shrink-0 items-center text-xs font-medium text-brand-ink underline-offset-4 hover:underline md:min-h-0"
           >
             {t("see_all")}
           </Link>

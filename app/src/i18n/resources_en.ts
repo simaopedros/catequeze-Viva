@@ -1296,7 +1296,7 @@ export const auth_en = {
     "signup_error_password_mismatch": "Passwords do not match.",
     "signup_error_terms": "You must accept the Terms of Use and Privacy Policy.",
     "signup_error_create": "Error creating account. Please try again.",
-    "footer_copyright": "© {{year}} Catequese Viva",
+    "footer_copyright": "© {{year}} Catechis",
     "email_verified": "Email verified successfully.",
     "email_verify_pending": "Confirming your email…",
     "email_verify_success_title": "Email verified",
@@ -2066,7 +2066,11 @@ export const classes_en = {
     "title": "Classes",
     "subtitle": "Manage classes, catechists, and catechumens.",
     "eyebrow": "Catechesis",
-    "metrics_visible": "Visible",
+    "metrics_visible": "In list",
+    "filter_all_count": "All ({{count}})",
+    "filter_all_capped": "All (more than {{count}})",
+    "location_not_informed": "Location not set",
+    "enrolled_metric": "Enrolled",
     "active_count_one": "{{count}} active",
     "active_count_other": "{{count}} active",
     "create": "Create class",
@@ -2397,7 +2401,7 @@ export const collaborative_en = {
   } as const;
 
 export const common_en = {
-    "app_name": "Catequese Viva",
+    "app_name": "Catechis",
     "app_tagline": "Pastoral platform for Christian initiation",
     "change_language": "Change language",
     "toggle_dark_mode": "Toggle dark mode",
@@ -3915,7 +3919,7 @@ export const emails_en = {
 export const family_en = {
     "portal_badge": "Family Portal",
     "staff_portal_badge": "Pastoral Team",
-    "app_name": "Catequese Viva",
+    "app_name": "Catechis",
     "landing": {
       "tagline": "Follow your children's faith journey.",
       "invite_title": "Invitation Only",
@@ -7254,7 +7258,12 @@ export const sacraments_en = {
       "error_update_milestone": "Error updating milestone",
       "error_copy": "Error copying template",
       "error_publish": "Error publishing",
-      "error_restart": "Restart the Wasp server."
+      "error_restart": "Restart the Wasp server.",
+      "aria_edit": "Edit template",
+      "aria_copy": "Duplicate template",
+      "aria_publish": "Publish template",
+      "aria_expand": "Show milestones",
+      "aria_collapse": "Hide milestones"
     }
   } as const;
 
@@ -7473,6 +7482,7 @@ export const topbar_en = {
     "searchNavigate": "navigate",
     "searchOpen": "open",
     "searchFocusHint": "Ctrl+K to focus",
+    "searchTypeHint": "Type at least 3 letters to search",
     "notifications": "Notifications",
     "markAllRead": "Mark all as read",
     "noNotifications": "No notifications",
