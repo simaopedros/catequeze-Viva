@@ -7330,7 +7330,7 @@ export const settings_es = {
     "export_desc": "Conforme a la LGPD, puede solicitar la exportación de sus datos.",
     "export_requesting": "Solicitando...",
     "export_request": "Solicitar exportación",
-    "export_success": "¡Solicitud enviada con éxito!",
+    "export_success": "Sus datos están disponibles para descargar durante 7 días.",
     "export_error": "Error al solicitar exportación: {{message}}",
     "export_retry": "Intente nuevamente.",
     "migration": "Migración de Parroquia",
@@ -7354,7 +7354,16 @@ export const settings_es = {
     "avatar_alt": "Foto de perfil",
     "avatar_change": "Cambiar foto",
     "avatar_add": "Añadir foto",
-    "avatar_remove": "Quitar foto"
+    "avatar_remove": "Quitar foto",
+    "export_reused": "Ya tiene una solicitud válida. Descargue sus datos antes de la fecha indicada.",
+    "export_download": "Descargar mis datos",
+    "export_valid_until": "Válido hasta: {{date}} (7 días desde la solicitud).",
+    "export_status": "Estado: {{status}}",
+    "export_status_requested": "Solicitado",
+    "export_status_ready": "Disponible",
+    "export_status_downloaded": "Descargado",
+    "export_status_expired": "Vencido",
+    "export_download_error": "No se pudieron descargar los datos. Compruebe la vigencia e intente nuevamente."
   } as const;
 
 export const social_es = {
