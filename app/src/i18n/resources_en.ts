@@ -1413,7 +1413,10 @@ export const auth_en = {
     "reset_success_title": "Password updated",
     "reset_success_body": "Your password was updated. Sign in with your email and new password to continue.",
     "reset_error_generic": "We could not reset the password. Request a new link and try again.",
-    "reset_error_missing_token": "The reset link is missing. Open the email we sent and tap the button."
+    "reset_error_missing_token": "The reset link is missing. Open the email we sent and tap the button.",
+    "terms_continue": "Continue",
+    "terms_retry": "Try again",
+    "terms_save_error": "Unable to record acceptance. Please try again."
   } as const;
 
 export const bible_en = {
@@ -2708,7 +2711,9 @@ export const common_en = {
           "label": "Sensitive data",
           "desc": "I authorize processing sensitive data in accordance with LGPD."
         }
-      }
+      },
+      "version": "Version {{version}}",
+      "accepted_at": "Accepted on {{date}}"
     },
     "documents": {
       "title": "Documents",

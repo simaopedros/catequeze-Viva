@@ -386,6 +386,9 @@ model File {
 // ─── Existing Models (Extended) ───────────────────────────────────────────────
 
 model User {
+  termsAcceptanceRequired Boolean @default(false)
+  termsAcceptances TermsAcceptance[]
+  consentEvents ConsentEvent[]
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
 
@@ -835,6 +838,7 @@ model Household {
   guardians   GuardianProfile[]
   catechumens CatechumenProfile[]
   consents    ConsentRecord[]
+  consentEvents ConsentEvent[]
 
   @@index([parishId])
   @@index([communityId])
@@ -1511,6 +1515,8 @@ model Document {
 }
 
 model ConsentRecord {
+  textVersion String?
+  events ConsentEvent[]
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2635,3 +2641,34 @@ model BlogPost {
 
 
 
+
+// Account terms are separate from guardian authorizations.
+model TermsAcceptance {
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  kind String
+  version String
+  acceptedAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// Append-only audit trail. Operations only insert events.
+model ConsentEvent {
+  id String @id @default(uuid())
+  consentRecordId String?
+  consentRecord ConsentRecord? @relation(fields: [consentRecordId], references: [id], onDelete: Restrict)
+  householdId String
+  household Household @relation(fields: [householdId], references: [id], onDelete: Restrict)
+  type ConsentType
+  granted Boolean
+  textVersion String
+  actorUserId String
+  actorUser User @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now())
+
+  @@index([householdId, createdAt])
+  @@index([consentRecordId])
+  @@index([actorUserId])
+}
