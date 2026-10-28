@@ -144,3 +144,12 @@ export function ageFromBirthDate(
   }
   return age;
 }
+
+/** Aggregate rate: each recorded attendance has the same weight. */
+export function attendanceRateFromTotals(attended: number, total: number): number {
+  return total > 0 ? Math.round(attended / total * 100) : 0;
+}
+
+export function attendanceRateDisplay(rate: number, total: number, emptyLabel: string): string {
+  return total > 0 ? `${rate}%` : emptyLabel;
+}

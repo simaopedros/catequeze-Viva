@@ -109,7 +109,7 @@ jobs:
           docker cp "${CID}:/app/web-app/index.html" /tmp/smoke-index.html
           docker rm "${CID}"
           test -f /tmp/smoke-index.html && echo "✅ Image smoke test passed"
-          grep -q 'Catequese Viva' /tmp/smoke-index.html && echo "✅ Content check passed"
+          grep -Eq 'Catechis|Catequese Viva' /tmp/smoke-index.html && echo "✅ Content check passed"
 
       - name: Pre-deploy backup
         if: ${{ vars.ENABLE_PROD_DEPLOY == 'true' }}

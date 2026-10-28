@@ -648,6 +648,8 @@ export const getOrCreateParishByOsmId = async (
 ): Promise<{ id: string; name: string; city?: string | null; state?: string | null; osmId?: string | null }> => {
   if (!context.user) throw new HttpError(401);
 
+  if (!args.name?.trim()) throw new HttpError(400, 'Informe o nome da paróquia.');
+
   // 1. Check by osmId
   if (args.osmId) {
     const byOsm = await context.entities.Parish.findFirst({

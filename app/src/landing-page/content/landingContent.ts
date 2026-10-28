@@ -236,7 +236,7 @@ export const TESTIMONIALS: Testimonial[] = [
   {
     name: 'Maria Silva',
     role: 'Coordenadora de Catequese',
-    text: 'A Catequese Viva transformou a forma como gerenciamos nossas turmas. Antes tudo era em papel, agora temos controle total de presenças, sacramentos e comunicação com as famílias.',
+    text: 'O Catechis transformou a forma como gerenciamos nossas turmas. Antes tudo era em papel, agora temos controle total de presenças, sacramentos e comunicação com as famílias.',
   },
   {
     name: 'Pe. João Santos',
@@ -252,7 +252,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     q: 'Meus dados estão seguros? A plataforma segue a LGPD?',
-    a: 'Sim. A Catequese Viva foi projetada com proteção de dados desde o início. Consentimentos são registrados digitalmente, dados de crianças e adolescentes têm proteção especial, e você pode solicitar a exportação ou exclusão dos dados a qualquer momento.',
+    a: 'Sim. O Catechis foi projetada com proteção de dados desde o início. Consentimentos são registrados digitalmente, dados de crianças e adolescentes têm proteção especial, e você pode solicitar a exportação ou exclusão dos dados a qualquer momento.',
   },
   {
     q: 'Posso importar os catequizandos que já tenho cadastrados em planilha?',

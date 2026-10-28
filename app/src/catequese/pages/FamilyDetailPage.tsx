@@ -482,7 +482,7 @@ export default function FamilyDetailPage() {
             className="mt-1 shrink-0 rounded-sm"
             asChild
           >
-            <Link to="/app/families">
+            <Link to="/app/families" aria-label={t("families.back_to_families")}>
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
@@ -570,6 +570,7 @@ export default function FamilyDetailPage() {
         </div>
 
         <DetailTabs
+          id="family-detail"
           tabs={[
             {
               id: "overview",
@@ -600,6 +601,10 @@ export default function FamilyDetailPage() {
           onChange={(id) => setTab(id as (typeof FAMILY_DETAIL_TABS)[number])}
         />
 
+        {FAMILY_DETAIL_TABS.filter((id) => id !== tab).map((id) => (
+          <div key={id} role="tabpanel" id={`family-detail-panel-${id}`} aria-labelledby={`family-detail-tab-${id}`} hidden />
+        ))}
+        <div role="tabpanel" id={`family-detail-panel-${tab}`} aria-labelledby={`family-detail-tab-${tab}`}>
         {/* Contact info */}
         {tab === "overview" && editing ? (
           <AppPanel className="space-y-3">
@@ -929,6 +934,7 @@ export default function FamilyDetailPage() {
             )}
           </div>
         )}
+        </div>
       </div>
 
       {/* ── Add Guardian Dialog ── */}

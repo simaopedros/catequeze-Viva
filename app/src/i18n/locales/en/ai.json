@@ -208,7 +208,7 @@
     "credits_cta": "Buy extra credits to keep using editorial assistance without changing your plan.",
     "generic_error": "Sorry, an error occurred. Please try again later.",
     "theological_assistant": "Theological Assistant",
-    "catholic_ai": "Catholic editorial assistance • Catequese Viva",
+    "catholic_ai": "Catholic editorial assistance • Catechis",
     "empty_response": "Empty editorial assistance response.",
     "infra_error": "Infrastructure error: the chat did not receive an SSE stream. The /api/* route may not be proxied to the server. Contact support if this persists.",
     "view_history": "View chat history",

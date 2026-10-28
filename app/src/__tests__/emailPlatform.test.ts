@@ -168,7 +168,7 @@ describe("product events", () => {
     const welcome = getFakeSentEmails().find((email) =>
       email.subject.includes("Bem-vindo"),
     );
-    expect(welcome?.subject).toBe("Bem-vindo à Catequese Viva");
+    expect(welcome?.subject).toBe("Bem-vindo ao Catechis");
     expect(welcome?.text || welcome?.html || "").toMatch(/Olá!/);
     expect(welcome?.subject).not.toMatch(/,\s*$/);
   });
@@ -184,7 +184,7 @@ describe("product events", () => {
     const welcome = getFakeSentEmails().find((email) =>
       email.subject.includes("João"),
     );
-    expect(welcome?.subject).toBe("Bem-vindo à Catequese Viva, João");
+    expect(welcome?.subject).toBe("Bem-vindo ao Catechis, João");
   });
 });
 
@@ -273,13 +273,13 @@ describe("templates", () => {
       link: family.link,
     });
     expect(rendered.html).toContain("Portal da Família");
-    expect(rendered.html).toContain("Catequese Viva");
+    expect(rendered.html).toContain("Catechis");
 
     const auth = buildVerificationEmailContent(
       "https://catechis.app/email-verification?token=abc",
     );
     expect(auth.html).toContain("painel pastoral");
-    expect(auth.html).toContain("Catequese Viva");
+    expect(auth.html).toContain("Catechis");
   });
 });
 

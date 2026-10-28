@@ -1,3 +1,4 @@
+import { attendanceRateFromTotals } from "../../shared/attendanceMetrics";
 import { HttpError } from "wasp/server";
 import { resolveUserScope, requireWorkspaceAccess } from "./sharedScope";
 import {
@@ -1061,7 +1062,9 @@ export const getDashboardStats = async (
   // gaps would flood the action list.
   const lastPast = pastMeetings[0];
   const pendingAttendanceMeeting =
-    lastPast && lastPast._count.attendance === 0
+    lastPast &&
+    lastPast._count.attendance === 0 &&
+    (pastEnrollmentByClass.get(lastPast.classId) ?? 0) > 0
       ? {
           id: lastPast.id,
           title: lastPast.title,
@@ -1159,12 +1162,10 @@ export const getDashboardStats = async (
 
   // ─── Post-processing (pure JS, no DB) ───────────────────────────────────────
 
-  let avgAttendance = 0;
-  if (attendanceRecordsTotal > 0) {
-    avgAttendance = Math.round(
-      (attendanceTotal / attendanceRecordsTotal) * 100,
-    );
-  }
+  const avgAttendance = attendanceRateFromTotals(
+    attendanceTotal,
+    attendanceRecordsTotal,
+  );
 
   const aniversariantes = allCatechumens
     .filter(

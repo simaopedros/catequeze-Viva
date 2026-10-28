@@ -35,7 +35,7 @@ type AuthedContext = {
 };
 
 const passwordResetFromField = {
-  name: 'Catequese Viva',
+  name: 'Catechis',
   email: 'onboarding@catechis.app',
 };
 

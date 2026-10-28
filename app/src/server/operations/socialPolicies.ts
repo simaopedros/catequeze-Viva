@@ -120,7 +120,7 @@ export function buildOgTitle(body: string, authorName?: string | null): string {
   const excerpt = clean.length > 70 ? `${clean.slice(0, 69).trimEnd()}…` : clean;
   if (excerpt && authorName) return `${excerpt} — ${authorName}`;
   if (excerpt) return excerpt;
-  return authorName ? `Publicação de ${authorName}` : 'Comunidade Catequese Viva';
+  return authorName ? `Publicação de ${authorName}` : 'Comunidade Catechis';
 }
 
 /** Minimal HTML document served to link-preview crawlers. */
@@ -137,7 +137,7 @@ export function renderOgHtml(meta: OgMetadata, redirectUrl: string): string {
     `<meta property="og:title" content="${escape(meta.title)}" />`,
     `<meta property="og:description" content="${escape(meta.description)}" />`,
     `<meta property="og:url" content="${escape(meta.url)}" />`,
-    `<meta property="og:site_name" content="Catequese Viva" />`,
+    `<meta property="og:site_name" content="Catechis" />`,
     meta.image ? `<meta property="og:image" content="${escape(meta.image)}" />` : '',
     meta.video ? `<meta property="og:video" content="${escape(meta.video)}" />` : '',
     `<meta name="twitter:card" content="${meta.image || meta.video ? 'summary_large_image' : 'summary'}" />`,

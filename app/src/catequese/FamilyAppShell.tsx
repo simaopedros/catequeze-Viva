@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "wasp/client/auth";
 import { UserDropdown } from "../user/UserDropdown";
 import { TwoFactorGate } from "./components/TwoFactorGate";
-import { Home, Calendar, MessageSquare } from "lucide-react";
+import { Home, Calendar, MessageSquare, FileText, ClipboardCheck } from "lucide-react";
 import { BrandLockup } from "../client/components/brand/Brand";
 
 interface FamilyAppShellProps {
@@ -42,6 +42,8 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
     { to: "/app", icon: Home, label: t("dashboard") },
     { to: "/app/calendar", icon: Calendar, label: t("calendar") },
     { to: "/app/messages", icon: MessageSquare, label: t("messages") },
+    { to: "/app/documents", icon: FileText, label: t("documents") },
+    { to: "/app/consents", icon: ClipboardCheck, label: t("consents") },
   ];
 
   return (
@@ -64,6 +66,16 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
             </div>
           </div>
         </header>
+
+        <nav className="hidden border-b border-border/70 bg-white px-6 md:flex" aria-label={t("family_label")}>
+          {navItems.map((item) => (
+            <button key={item.to} type="button" onClick={() => navigate(item.to)}
+              aria-current={location.pathname === item.to || (item.to !== "/app" && location.pathname.startsWith(item.to)) ? "page" : undefined}
+              className="min-h-11 px-3 text-sm font-medium text-brand-ink hover:bg-muted">
+              {item.label}
+            </button>
+          ))}
+        </nav>
 
         {/* Content */}
         <main
@@ -101,7 +113,7 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
                 >
                   <item.icon className="h-5 w-5" />
                   <span
-                    className={`text-overline font-medium ${
+                    className={`max-w-full truncate text-micro font-medium ${
                       isActive ? "text-brand-ink" : ""
                     }`}
                   >

@@ -164,6 +164,7 @@ export default function ClassesPage() {
     );
 
   const nextActionLabel = (cls: any) => {
+    if (cls.status === "CONCLUDED") return t("consult_records");
     if (cls.meetings?.[0] && isTodayInAppTimezone(cls.meetings[0].date)) {
       return t("meeting_today");
     }
@@ -432,9 +433,11 @@ export default function ClassesPage() {
                 count: cls._count?.enrollments || 0,
               })}
               attendanceLabel={t("attendance")}
+              moreActionsLabel={t("more_class_actions", { name: cls.name })}
               detailsLabel={t("details")}
+              primaryLabel={cls.status === "CONCLUDED" ? t("consult_records") : t("details")}
               editLabel={t("detail.edit")}
-              showAttendance={canOpenAttendance}
+              showAttendance={canOpenAttendance && cls.status !== "CONCLUDED"}
               showEdit={canEditClasses}
             />
           )}
@@ -513,7 +516,7 @@ export default function ClassesPage() {
 
               {/* Primary CTA + overflow — re-enable pointer events */}
               <div className="relative z-[1] mt-4 flex gap-2 border-t border-border/60 pt-4 pointer-events-auto">
-                {canOpenAttendance ? (
+                {canOpenAttendance && cls.status !== "CONCLUDED" ? (
                   <Button
                     size="sm"
                     className="h-11 min-h-11 flex-1 rounded-md"
@@ -530,7 +533,7 @@ export default function ClassesPage() {
                     className="h-11 min-h-11 flex-1 rounded-md"
                     asChild
                   >
-                    <Link to={`/app/classes/${cls.id}`}>{t("details")}</Link>
+                    <Link to={`/app/classes/${cls.id}`}>{cls.status === "CONCLUDED" ? t("consult_records") : t("details")}</Link>
                   </Button>
                 )}
                 <DropdownMenu>
@@ -597,6 +600,8 @@ function ClassMobileCard({
   enrolledLabel,
   attendanceLabel,
   detailsLabel,
+  moreActionsLabel,
+  primaryLabel,
   editLabel,
   showAttendance,
   showEdit,
@@ -609,6 +614,8 @@ function ClassMobileCard({
   enrolledLabel: string;
   attendanceLabel: string;
   detailsLabel: string;
+  moreActionsLabel: string;
+  primaryLabel: string;
   editLabel: string;
   showAttendance: boolean;
   showEdit: boolean;
@@ -640,7 +647,7 @@ function ClassMobileCard({
           </Button>
         ) : (
           <Button size="sm" className="h-11 min-h-11 flex-1 rounded-sm" asChild>
-            <Link to={`/app/classes/${cls.id}`}>{detailsLabel}</Link>
+            <Link to={`/app/classes/${cls.id}`}>{primaryLabel}</Link>
           </Button>
         )}
         <DropdownMenu>
@@ -649,7 +656,7 @@ function ClassMobileCard({
               size="sm"
               variant="outline"
               className="h-11 w-11 min-h-11 rounded-sm px-0"
-              aria-label={detailsLabel}
+              aria-label={moreActionsLabel}
             >
               <MoreHorizontal className="h-4 w-4" />
             </Button>

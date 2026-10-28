@@ -1,9 +1,9 @@
-# Catequese Viva
+# Catechis
 
-> [Catequese Viva](https://catechis.app) é um ecossistema completo de gestão e planejamento para a catequese católica paroquial. Combina ferramentas administrativas modernas com recursos de Inteligência Artificial para apoiar catequistas na evangelização.
+> [Catechis](https://catechis.app) é um ecossistema completo de gestão e planejamento para a catequese católica paroquial. Combina ferramentas administrativas modernas com recursos de Inteligência Artificial para apoiar catequistas na evangelização.
 
 ## Páginas Públicas Principais
-- [Página Inicial](https://catechis.app/) – Apresentação geral do ecossistema Catequese Viva.
+- [Página Inicial](https://catechis.app/) – Apresentação geral do ecossistemo Catechis.
 - [Catequese com IA](https://catechis.app/ia) – Detalhes sobre o planejador de encontros por Inteligência Artificial (gerador de dinâmicas, temas e atividades baseados no Catecismo e na Bíblia).
 - [Controle de Presença](https://catechis.app/presenca) – Apresentação da ferramenta de chamada digital, controle de faltas e engajamento dos catequizandos.
 - [Sistema de Gestão](https://catechis.app/sistema) – Informações para paróquias, dioceses e coordenação sobre cadastro de turmas, catequistas, sacramentos e relatórios.

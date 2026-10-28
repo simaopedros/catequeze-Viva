@@ -90,7 +90,8 @@
     "catechumen_linked_success": "Catechumen added successfully!",
     "catechumen_removed_success": "Catechumen removed successfully.",
     "no_unlinked_catechumens": "No unlinked catechumens found in this parish.",
-    "view_families_cta": "Link to Families"
+    "view_families_cta": "Link to Families",
+    "back_to_families": "Back to Families"
   },
   "save": "Save",
   "cancel": "Cancel",
@@ -587,7 +588,10 @@
           "body": "We certify that {{name}}{{birth}} has completed the {{stage}} stage of catechesis in the class {{className}} at {{parish}}, walking in faith with dedication."
         }
       }
-    }
+    },
+    "import_example": "CSV example",
+    "import_copy_example": "Copy example",
+    "import_download_example": "Download template"
   },
   "global_search_placeholder": "Search catechumens, classes, content, Bible...",
   "two_factor_code_placeholder": "6-digit code",
@@ -703,7 +707,7 @@
     "title": "Support inbox",
     "subtitle": "Send your question below. Team replies appear here and are also sent by email.",
     "your_message": "Your message",
-    "our_reply": "Reply from Catequese Viva",
+    "our_reply": "Reply from Catechis",
     "waiting": "Waiting for a reply.",
     "empty_title": "No support messages",
     "empty_desc": "When you send a message, the conversation with the team appears here.",

@@ -46,7 +46,7 @@ export function BrandLayout({
               textTransform: "uppercase",
             }}
           >
-            Catequese Viva
+            Catechis
           </p>
           <h1
             style={{

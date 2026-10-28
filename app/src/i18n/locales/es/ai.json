@@ -208,7 +208,7 @@
     "credits_cta": "Compra créditos extra para seguir usando la asistencia editorial sin cambiar tu plan.",
     "generic_error": "Lo siento, ocurrió un error. Intente nuevamente más tarde.",
     "theological_assistant": "Asistente Teológico",
-    "catholic_ai": "Asistencia católica • Catequese Viva",
+    "catholic_ai": "Asistencia católica • Catechis",
     "empty_response": "Respuesta vacía de la asistencia editorial.",
     "infra_error": "Error de infraestructura: el chat no recibió un stream SSE. Es posible que la ruta /api/* no se esté reenviando al servidor. Contacte con soporte si continúa.",
     "view_history": "Ver historial de conversas",

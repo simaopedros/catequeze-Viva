@@ -1081,7 +1081,7 @@ export const ai_pt_BR = {
       "credits_cta": "Compre créditos avulsos para continuar usando a assistência editorial sem alterar seu plano.",
       "generic_error": "Desculpe, ocorreu um erro. Tente novamente mais tarde.",
       "theological_assistant": "Assistente Teológico",
-      "catholic_ai": "Assistência católica • Catequese Viva",
+      "catholic_ai": "Assistência católica • Catechis",
       "empty_response": "Resposta vazia da assistência editorial.",
       "infra_error": "Erro de infraestrutura: o chat não recebeu um stream SSE. A rota /api/* pode não estar a ser encaminhada para o servidor. Contacte o suporte se o problema continuar.",
       "view_history": "Ver histórico de conversas",
@@ -1336,12 +1336,12 @@ export const auth_pt_BR = {
     "two_factor_setup_success_activate": "Autenticação de dois fatores ativada com sucesso!",
     "two_factor_setup_success_deactivate": "2FA desativado com sucesso.",
     "two_factor_setup_verify_button": "Verificar",
-    "email_verification_subject": "Confirme seu email da equipe de catequese — Catequese Viva",
+    "email_verification_subject": "Confirme seu email da equipe de catequese — Catechis",
     "email_verification_body": "Você criou uma conta no painel pastoral (catequistas e coordenação). Clique no link para confirmar seu email:",
     "email_verification_button": "Confirmar email da equipe",
     "email_verification_family_body": "Se você criou conta no <strong>portal da família</strong>, use este link:",
     "email_verification_family_button": "Verificar email (portal da família)",
-    "password_reset_subject": "Redefinir senha da equipe de catequese — Catequese Viva",
+    "password_reset_subject": "Redefinir senha da equipe de catequese — Catechis",
     "password_reset_body": "Use este link para redefinir a senha da sua conta no painel pastoral:",
     "password_reset_button": "Redefinir senha da equipe",
     "password_reset_family_alt": "Ou no portal da família:",
@@ -1378,16 +1378,16 @@ export const auth_pt_BR = {
     "signup_success_step_3": "Continue a configuração da sua primeira turma.",
     "signup_password_rule_length": "Pelo menos 8 caracteres",
     "signup_password_rule_match": "As senhas coincidem",
-    "email_verification_subject_staff": "Confirme seu email da equipe de catequese — Catequese Viva",
+    "email_verification_subject_staff": "Confirme seu email da equipe de catequese — Catechis",
     "email_verification_body_staff": "Você criou uma conta no painel pastoral (catequistas e coordenação). Clique no link para confirmar seu email:",
     "email_verification_button_staff": "Confirmar email da equipe",
-    "email_verification_subject_family": "Confirme seu email do Portal da Família — Catequese Viva",
+    "email_verification_subject_family": "Confirme seu email do Portal da Família — Catechis",
     "email_verification_body_family": "Você criou uma conta no Portal da Família. Clique no link para confirmar seu email:",
     "email_verification_button_family": "Confirmar email do Portal da Família",
-    "password_reset_subject_staff": "Redefinir senha da equipe de catequese — Catequese Viva",
+    "password_reset_subject_staff": "Redefinir senha da equipe de catequese — Catechis",
     "password_reset_body_staff": "Use este link para redefinir a senha da sua conta no painel pastoral:",
     "password_reset_button_staff": "Redefinir senha da equipe",
-    "password_reset_subject_family": "Redefinir senha do Portal da Família — Catequese Viva",
+    "password_reset_subject_family": "Redefinir senha do Portal da Família — Catechis",
     "password_reset_body_family": "Use este link para redefinir a senha da sua conta no Portal da Família:",
     "password_reset_button_family": "Redefinir senha do Portal da Família",
     "forgot_panel_eyebrow": "Recuperar acesso",
@@ -1489,7 +1489,7 @@ export const billing_pt_BR = {
     "request_diocese_title": "Pedir cobertura da diocese",
     "request_diocese_desc": "Quando a diocese tiver licença ativa, esta paróquia aparece como coberta. Fale com vendas para vincular e atribuir o Plano Diocese.",
     "request_diocese_cta": "Falar com vendas sobre cobertura diocesana",
-    "request_diocese_prefill": "Olá! Gostaria de pedir cobertura da diocese para a paróquia {{name}} na Catequese Viva.",
+    "request_diocese_prefill": "Olá! Gostaria de pedir cobertura da diocese para a paróquia {{name}} no Catechis.",
     "covered_by_named": "Coberta por {{name}}",
     "usage_title": "Uso do plano",
     "classes": "Turmas",
@@ -1702,7 +1702,7 @@ export const billing_pt_BR = {
       "headline_trial_ended": "Seu período de teste terminou",
       "headline_trial_active": "Seu período de teste está ativo",
       "headline_no_trial": "Leve a catequese da sua paróquia para o próximo nível",
-      "result_trial": "Continue usando a Catequese Viva sem limites.",
+      "result_trial": "Continue usando o Catechis sem limites.",
       "result_no_trial": "Tenha toda sua equipe, turmas e catequizandos em um só lugar.",
       "usage_aria": "Comparação do uso atual com o Plano Paróquia",
       "usage_trial_label": "Seu teste",
@@ -1854,12 +1854,12 @@ export const billing_pt_BR = {
       "manager_coordination": "Coordenação de {{name}}",
       "manager_person": "{{name}}",
       "manager_diocese": "Diocese {{name}}",
-      "diocese_manager": "Equipe comercial da Catequese Viva",
+      "diocese_manager": "Equipe comercial do Catechis",
       "your_role": "Seu papel neste espaço: {{role}}",
       "diocese_sales_title": "Falar sobre a licença da diocese",
       "diocese_sales_desc": "A cobertura das paróquias é venda assistida.",
       "diocese_cta": "Falar com vendas sobre a diocese",
-      "diocese_prefill": "Olá! Gostaria de falar sobre o Plano Diocese para {{name}} na Catequese Viva."
+      "diocese_prefill": "Olá! Gostaria de falar sobre o Plano Diocese para {{name}} no Catechis."
     },
     "checkout_cta_start_trial_one": "Começar 1 dia grátis",
     "checkout_cta_start_trial_other": "Começar {{count}} dias grátis",
@@ -1884,12 +1884,15 @@ export const birthdays_pt_BR = {
     "markUndelivered": "Marcar como não entregue",
     "exportList": "Exportar lista",
     "noBirthdays": "Nenhum aniversário no período",
-    "in": "em"
+    "in": "em",
+    "exportLoading": "Exportação indisponível durante o carregamento",
+    "loadingBirthdays": "Carregando aniversários",
+    "noBirthdaysPeriod": "Nenhum aniversário neste período"
   } as const;
 
 export const blog_pt_BR = {
     "kicker": "Para catequistas",
-    "title": "Blog da Catequese Viva",
+    "title": "Blog do Catechis",
     "intro": "Formação, dicas de encontro, liturgia e gestão da catequese — conteúdo para quem acompanha turmas de verdade.",
     "all_categories": "Todos",
     "empty_title": "Ainda não há artigos publicados",
@@ -2308,6 +2311,13 @@ export const classes_pt_BR = {
     "limit_reached_none": "O plano {{planName}} ainda não libera turmas. Veja os planos para começar ou volte para Turmas.",
     "limit_see_plans": "Ver planos",
     "limit_back_to_classes": "Voltar para Turmas",
+    "consult_records": "Consultar registros",
+    "more_class_actions": "Mais ações da turma {{name}}",
+    "no_roll_calls": "Sem chamadas registradas",
+    "export_period": "Período da exportação",
+    "export_last_90_days": "Últimos 90 dias",
+    "export_all_history": "Todo o histórico",
+    "export_until": "até",
     "restore_quota_blocked": "Não é possível restaurar: a turma excederia o limite de turmas ou de pessoas distintas do plano. Libere vagas ou altere o plano."
   } as const;
 
@@ -2928,7 +2938,10 @@ export const common_pt_BR = {
             "body": "Certificamos que {{name}}{{birth}} concluiu a etapa {{stage}} da catequese na turma {{className}}, da {{parish}}, caminhando na fé com dedicação."
           }
         }
-      }
+      },
+      "import_example": "Exemplo de CSV",
+      "import_copy_example": "Copiar exemplo",
+      "import_download_example": "Baixar arquivo modelo"
     },
     "families": {
       "subtitle_registered_zero": "Nenhuma família cadastrada",
@@ -3015,7 +3028,8 @@ export const common_pt_BR = {
       "catechumen_linked_success": "Catequizando adicionado com sucesso!",
       "catechumen_removed_success": "Catequizando removido com sucesso.",
       "no_unlinked_catechumens": "Nenhum catequizando sem família encontrado nesta paróquia.",
-      "view_families_cta": "Vincular a Famílias"
+      "view_families_cta": "Vincular a Famílias",
+      "back_to_families": "Voltar para Famílias"
     },
     "global_search_placeholder": "Buscar catequizandos, turmas, conteúdos, Bíblia...",
     "two_factor_code_placeholder": "Código de 6 dígitos",
@@ -3131,7 +3145,7 @@ export const common_pt_BR = {
       "title": "Central de suporte",
       "subtitle": "Envie sua dúvida abaixo. As respostas da equipe aparecem aqui e também chegam por e-mail.",
       "your_message": "Sua mensagem",
-      "our_reply": "Resposta da Catequese Viva",
+      "our_reply": "Resposta do Catechis",
       "waiting": "Aguardando resposta.",
       "empty_title": "Sem mensagens de suporte",
       "empty_desc": "Quando você enviar uma mensagem, a conversa com a equipe aparece aqui.",
@@ -3366,7 +3380,8 @@ export const content_pt_BR = {
       },
       "card_duration": "Duração",
       "card_activities": "Atividades",
-      "search_title": "Busca"
+      "search_title": "Busca",
+      "loading_contents": "Carregando conteúdos"
     },
     "detail": {
       "by_author": "por {{name}}",
@@ -3440,7 +3455,7 @@ export const content_pt_BR = {
       "preview_hint": "Pré-visualização em formato A4. Confira se o texto não está cortado antes de imprimir.",
       "pastoral_support": "Apoio pastoral",
       "linked_references": "Referências vinculadas",
-      "header_badge": "Catequese Viva — Roteiro de Encontro",
+      "header_badge": "Catechis — Roteiro de Encontro",
       "prepared_by": "Preparado por: {{name}}",
       "minutes": "{{count}} min",
       "materials_title": "📋 Preparação de Materiais",
@@ -3469,7 +3484,7 @@ export const content_pt_BR = {
       "task_attachment": "Tarefa com entrega de arquivo",
       "requires_upload": "Requer upload",
       "catechist_notes": "📝 Anotações do Catequista",
-      "footer": "Material gerado pela plataforma Catequese Viva"
+      "footer": "Material gerado pela plataformo Catechis"
     },
     "workspace": {
       "default_title": "Novo encontro",
@@ -3805,15 +3820,15 @@ export const dashboard_pt_BR = {
 export const emails_pt_BR = {
     "fallback_name": "catequista",
     "fallback_class": "sua turma",
-    "footer_reason": "Você recebe este e-mail porque criou uma conta no Catequese Viva.",
+    "footer_reason": "Você recebe este e-mail porque criou uma conta no Catechis.",
     "unsubscribe": "Não quero mais estes e-mails",
     "unsubscribed_title": "Inscrição cancelada",
-    "unsubscribed_body": "Você não receberá mais e-mails de acompanhamento da sua conta no Catequese Viva.",
+    "unsubscribed_body": "Você não receberá mais e-mails de acompanhamento da sua conta no Catechis.",
     "unsubscribe_invalid_title": "Link inválido",
     "unsubscribe_invalid_body": "Este link de descadastro é inválido ou já expirou.",
     "welcome": {
-      "subject": "Bem-vindo à Catequese Viva, {{name}}",
-      "subject_no_name": "Bem-vindo à Catequese Viva",
+      "subject": "Bem-vindo ao Catechis, {{name}}",
+      "subject_no_name": "Bem-vindo ao Catechis",
       "heading": "Sua catequese começa aqui",
       "body": "Olá, {{name}}. Sua conta está pronta. Crie a primeira turma para marcar presença e preparar encontros no mesmo lugar.",
       "body_no_name": "Olá! Sua conta está pronta. Crie a primeira turma para marcar presença e preparar encontros no mesmo lugar.",
@@ -3832,19 +3847,19 @@ export const emails_pt_BR = {
         "body": "Você foi convidado(a) para integrar a equipe de catequese de \"{{location}}\" como {{role}}.\n\nEsse acesso é do painel pastoral (coordenação e catequistas), não do Portal da Família.\n\nPara aceitar, acesse: {{link}}\n\nEste convite expira em 30 dias.",
         "cta": "Aceitar convite"
       },
-      "footer": "— Equipe Catequese Viva"
+      "footer": "— Equipe Catechis"
     },
     "support_reply": {
-      "subject": "Resposta do suporte — Catequese Viva",
+      "subject": "Resposta do suporte — Catechis",
       "heading": "Resposta do suporte",
       "greeting": "Olá {{name}},",
       "intro": "Recebemos a sua mensagem e a nossa resposta é:",
-      "outro": "Também pode ver esta resposta na central de suporte da Catequese Viva.",
+      "outro": "Também pode ver esta resposta na central de suporte do Catechis.",
       "cta": "Abrir suporte",
-      "footer": "Catequese Viva · suporte"
+      "footer": "Catechis · suporte"
     },
     "billing": {
-      "footer": "Catequese Viva · assinatura",
+      "footer": "Catechis · assinatura",
       "canceled": {
         "subject": "Sua assinatura será encerrada",
         "heading": "A assinatura segue até o fim do período",
@@ -3878,11 +3893,11 @@ export const emails_pt_BR = {
       "transactional_note": "Emails de login, convite e fatura não podem ser desativados."
     },
     "broadcast": {
-      "footer": "Você recebe este email porque assinou as novidades da Catequese Viva."
+      "footer": "Você recebe este email porque assinou as novidades do Catechis."
     },
     "campaigns": {
       "activate_create_class": {
-        "subject": "Crie sua primeira turma no Catequese Viva",
+        "subject": "Crie sua primeira turma no Catechis",
         "heading": "Sua catequese ainda está no papel",
         "body": "Olá, {{name}}. Crie a turma em 2 minutos para começar a chamada e os encontros no mesmo lugar.",
         "cta": "Criar minha turma"
@@ -3901,7 +3916,7 @@ export const emails_pt_BR = {
       },
       "convert_after_value": {
         "subject": "Sua turma já está no ar — mantenha o acesso",
-        "heading": "Presença e encontros já estão no Catequese Viva",
+        "heading": "Presença e encontros já estão no Catechis",
         "body": "Olá, {{name}}. Assine o Plano Catequista ({{price}}/mês) para não perder o acesso no dia {{trialEndsAt}}.",
         "cta": "Assinar agora"
       },
@@ -3918,7 +3933,7 @@ export const emails_pt_BR = {
       "trial_d1": {
         "subject": "Seu teste termina amanhã",
         "heading": "Amanhã o período de teste acaba",
-        "body_no_class": "Olá, {{name}}. Ainda dá tempo de criar a turma hoje e ver o Catequese Viva em ação.",
+        "body_no_class": "Olá, {{name}}. Ainda dá tempo de criar a turma hoje e ver o Catechis em ação.",
         "body_no_people": "Olá, {{name}}. Adicione os catequizandos da {{className}} hoje — amanhã o teste acaba.",
         "body_no_action": "Olá, {{name}}. Lance a presença ou prepare o encontro da {{className}} antes de o teste acabar amanhã.",
         "body_value": "Olá, {{name}}. Amanhã termina o teste. Assine o Plano Catequista ({{price}}/mês) para manter turma, presença e encontros.",
@@ -3941,7 +3956,7 @@ export const emails_pt_BR = {
         "subject": "Um convite para retomar a catequese",
         "heading": "Sua turma espera você",
         "body": "Olá, {{name}}. Faz uma semana que o teste acabou. O Plano Catequista custa {{price}}/mês — reative para continuar de onde parou.",
-        "cta": "Voltar ao Catequese Viva"
+        "cta": "Voltar ao Catechis"
       }
     }
   } as const;
@@ -4372,7 +4387,7 @@ export const landing_pt_BR = {
     "hero": {
       "headline_line1": "Você semeia a fé.",
       "headline_line2": "A gente organiza a turma.",
-      "subheadline": "A Catequese Viva deixa encontros, turmas e catequizandos organizados para você ter mais tempo para estar com eles.",
+      "subheadline": "O Catechis deixa encontros, turmas e catequizandos organizados para você ter mais tempo para estar com eles.",
       "badge": "Para quem diz sim à missão de catequizar",
       "cta_primary": "Começar 7 dias grátis",
       "cta_secondary": "Ver como funciona",
@@ -4416,10 +4431,10 @@ export const landing_pt_BR = {
         }
       ],
       "click_trigger": "Funciona no celular · Feito para a rotina da catequese",
-      "image_alt": "Painel da Catequese Viva com próximas ações, frequência, turmas e pendências sacramentais"
+      "image_alt": "Painel do Catechis com próximas ações, frequência, turmas e pendências sacramentais"
     },
     "pain_title": "A missão já pede muito de você. A papelada não precisa pedir mais.",
-    "pain_subtitle": "A Catequese Viva reúne preparação, turma, presença e famílias — para a burocracia não roubar o tempo da evangelização.",
+    "pain_subtitle": "O Catechis reúne preparação, turma, presença e famílias — para a burocracia não roubar o tempo da evangelização.",
     "pains": [
       {
         "text": "Preparar o encontro toda semana exige tempo, referências e criatividade"
@@ -4441,7 +4456,7 @@ export const landing_pt_BR = {
       }
     ],
     "ai_showcase_title": "Veja como um encontro pode nascer em minutos",
-    "ai_showcase_subtitle": "A Catequese Viva reúne tema, faixa etária e referências católicas para montar um primeiro rascunho que você revisa antes de usar.",
+    "ai_showcase_subtitle": "O Catechis reúne tema, faixa etária e referências católicas para montar um primeiro rascunho que você revisa antes de usar.",
     "ai_showcase_cta": "Ver planos para preparar a próxima turma",
     "features_title": "O essencial para organizar a catequese sem improviso",
     "features_subtitle": "Tudo o que mais pesa na rotina do catequista e da coordenação, no mesmo sistema.",
@@ -4490,7 +4505,7 @@ export const landing_pt_BR = {
       }
     },
     "mission_title": "Encontro preparado. Turma acolhida. Fé compartilhada com as famílias.",
-    "mission_text": "A Catequese Viva existe para servir a sua missão — não o contrário. Menos improviso e papelada, mais presença de verdade com cada catequizando que Deus confiou a você.",
+    "mission_text": "O Catechis existe para servir a sua missão — não o contrário. Menos improviso e papelada, mais presença de verdade com cada catequizando que Deus confiou a você.",
     "personas_title": "Feito para o catequista — e pronto para as famílias da sua turma",
     "personas_subtitle": "Nesta fase, a caminhada é sua: você cuida da turma e as famílias acompanham pelo portal.",
     "personas": [
@@ -4610,7 +4625,7 @@ export const landing_pt_BR = {
     "faqs": [
       {
         "q": "Preciso saber mexer com tecnologia?",
-        "a": "Não. A Catequese Viva foi pensada para funcionar no celular e ser simples desde o primeiro encontro."
+        "a": "Não. O Catechis foi pensada para funcionar no celular e ser simples desde o primeiro encontro."
       },
       {
         "q": "Preciso cadastrar tudo de uma vez?",
@@ -4635,7 +4650,7 @@ export const landing_pt_BR = {
     ],
     "cta_eyebrow": "Volte ao que importa",
     "cta_title": "Volte a ter tempo para aquilo que chamou você à catequese.",
-    "cta_subtitle": "Deixe a organização com a Catequese Viva e viva o encontro com mais presença, tranquilidade e propósito.",
+    "cta_subtitle": "Deixe a organização com o Catechis e viva o encontro com mais presença, tranquilidade e propósito.",
     "cta_lines": [],
     "cta_button": "Começar 7 dias grátis",
     "cta_badge": "Teste gratuito",
@@ -4729,7 +4744,7 @@ export const landing_pt_BR = {
     },
     "ai_showcase_badge": "Veja como o fluxo funciona",
     "trust_title": "Feito para cuidar de dados sensíveis",
-    "trust_subtitle": "A Catequese Viva lida com dados de crianças e famílias. Por isso a proteção está na estrutura, não em promessa.",
+    "trust_subtitle": "O Catechis lida com dados de crianças e famílias. Por isso a proteção está na estrutura, não em promessa.",
     "trust": [
       {
         "title": "Conforme a LGPD",
@@ -4824,10 +4839,10 @@ export const landing_pt_BR = {
     "price_trial_note": "",
     "comparison": {
       "title": "Pare de espalhar a sua catequese em papel, planilha e WhatsApp",
-      "subtitle": "Compare o seu jeito atual com a Catequese Viva no que importa na sua semana com a turma.",
+      "subtitle": "Compare o seu jeito atual com o Catechis no que importa na sua semana com a turma.",
       "col_criterion": "O que você precisa",
       "col_old": "Papel + planilha + WhatsApp",
-      "col_next": "Catequese Viva",
+      "col_next": "Catechis",
       "cta": "Começar grátis por 7 dias",
       "helper": "7 dias gratuitos, com acesso a todos os recursos. Cancele quando quiser.",
       "rows": [
@@ -4873,7 +4888,7 @@ export const landing_pt_BR = {
     "demo": {
       "badge": "A inteligência que ajuda",
       "title": "Você não precisa começar com uma página em branco.",
-      "subtitle": "Informe o tema e o perfil da sua turma. A Catequese Viva ajuda a transformar a ideia em um encontro pronto para você revisar.",
+      "subtitle": "Informe o tema e o perfil da sua turma. O Catechis ajuda a transformar a ideia em um encontro pronto para você revisar.",
       "helper": "",
       "panel_title": "Preparar encontro",
       "panel_subtitle": "",
@@ -5038,7 +5053,7 @@ export const landing_pt_BR = {
       "eyebrow": "",
       "title": "Menos organização. Mais encontro.",
       "col_before": "Antes",
-      "col_after": "Com Catequese Viva",
+      "col_after": "Com Catechis",
       "rows": [
         {
           "before": "Caderno",
@@ -5065,7 +5080,7 @@ export const landing_pt_BR = {
     "presence": {
       "title_line1": "Mais coração no encontro.",
       "title_line2": "Menos peso na semana.",
-      "subtitle": "A Catequese Viva cuida da parte que ninguém vê para você poder cuidar da parte que realmente importa."
+      "subtitle": "O Catechis cuida da parte que ninguém vê para você poder cuidar da parte que realmente importa."
     },
     "start_small": {
       "eyebrow": "Comece pequeno.",
@@ -5516,7 +5531,7 @@ export const landingSistema_pt_BR = {
       "visual_item_1": "Turmas e equipes em um painel",
       "visual_item_2": "Indicadores de presença",
       "visual_item_3": "Próximas ações pastorais",
-      "image_alt": "Painel de gestão da Catequese Viva com turmas, presença e próximas ações pastorais"
+      "image_alt": "Painel de gestão do Catechis com turmas, presença e próximas ações pastorais"
     },
     "features_title": "Tudo para gerenciar sua catequese",
     "features_order": [
@@ -5612,11 +5627,11 @@ export const legal_pt_BR = {
       "sections": {
         "acceptance": {
           "title": "1. Aceitação dos Termos",
-          "text": "Ao acessar e usar a plataforma Catequese Viva, você concorda com estes Termos de Uso."
+          "text": "Ao acessar e usar a plataformo Catechis, você concorda com estes Termos de Uso."
         },
         "service": {
           "title": "2. Descrição do Serviço",
-          "text": "A Catequese Viva é uma plataforma SaaS para gestão de catequese católica: turmas, presença, conteúdo, sacramentos e comunicação pastoral."
+          "text": "O Catechis é uma plataforma SaaS para gestão de catequese católica: turmas, presença, conteúdo, sacramentos e comunicação pastoral."
         },
         "obligations": {
           "title": "3. Obrigações do Usuário",
@@ -5630,7 +5645,7 @@ export const legal_pt_BR = {
         },
         "liability": {
           "title": "4. Limitação de Responsabilidade",
-          "text": "A Catequese Viva não se responsabiliza por conteúdo publicado pelos usuários, decisões pastorais baseadas nos dados da plataforma, ou indisponibilidade temporária."
+          "text": "O Catechis não se responsabiliza por conteúdo publicado pelos usuários, decisões pastorais baseadas nos dados da plataforma, ou indisponibilidade temporária."
         },
         "jurisdiction": {
           "title": "5. Foro",
@@ -5644,11 +5659,11 @@ export const legal_pt_BR = {
       "sections": {
         "intro": {
           "title": "1. Introdução",
-          "text": "A Catequese Viva está comprometida com a proteção dos dados pessoais de seus usuários e dos catequizandos, em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018). Esta política explica quais dados tratamos, para quê, com quem compartilhamos, por quanto tempo guardamos e como você exerce seus direitos."
+          "text": "O Catechis está comprometida com a proteção dos dados pessoais de seus usuários e dos catequizandos, em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018). Esta política explica quais dados tratamos, para quê, com quem compartilhamos, por quanto tempo guardamos e como você exerce seus direitos."
         },
         "controller": {
           "title": "2. Quem é responsável pelos dados",
-          "text": "Quando uma paróquia, diocese ou catequista usa a plataforma para organizar a catequese, essa instituição (ou o catequista, no plano pessoal) é a controladora dos dados dos catequizandos e das famílias: ela decide quem é cadastrado e para quê. A Catequese Viva atua como operadora, tratando esses dados apenas para prestar o serviço contratado e conforme as instruções do controlador. Para os dados da sua própria conta (cadastro, login, assinatura), a Catequese Viva é a controladora."
+          "text": "Quando uma paróquia, diocese ou catequista usa a plataforma para organizar a catequese, essa instituição (ou o catequista, no plano pessoal) é a controladora dos dados dos catequizandos e das famílias: ela decide quem é cadastrado e para quê. O Catechis atua como operadora, tratando esses dados apenas para prestar o serviço contratado e conforme as instruções do controlador. Para os dados da sua própria conta (cadastro, login, assinatura), o Catechis é a controladora."
         },
         "collected": {
           "title": "3. Dados coletados",
@@ -5729,7 +5744,7 @@ export const legal_pt_BR = {
         },
         "dpo": {
           "title": "12. Encarregado de dados (DPO)",
-          "text": "O encarregado pelo tratamento de dados pessoais da Catequese Viva é o canal oficial para dúvidas, pedidos de titulares e comunicações da ANPD.",
+          "text": "O encarregado pelo tratamento de dados pessoais do Catechis é o canal oficial para dúvidas, pedidos de titulares e comunicações da ANPD.",
           "email_label": "Email do encarregado:",
           "email": "privacidade@catechis.app",
           "response": "Respondemos em até 15 dias. Também é possível falar conosco em contato@catechis.app ou pela página de Contato."
@@ -5761,9 +5776,9 @@ export const meetings_pt_BR = {
     "generate_ai_activity": "Gerar atividade com assistência",
     "generate_whatsapp": "Gerar WhatsApp",
     "delete_confirm_title": "Remover encontro?",
-    "delete_confirm_desc": "Esta ação não pode ser desfeita. Os registros de presença deste encontro também serão removidos.",
+    "delete_confirm_desc": "O encontro e as presenças vão para a lixeira por 30 dias e podem ser restaurados nesse período.",
     "delete_error": "Erro ao remover encontro.",
-    "delete_success": "Encontro removido.",
+    "delete_success": "Encontro movido para a lixeira.",
     "search_content": "Buscar conteúdo...",
     "detail_eyebrow": "Encontro",
     "detail_not_found": "Encontro não encontrado",
@@ -5849,7 +5864,13 @@ export const meetings_pt_BR = {
       "next_label": "Próximo encontro",
       "empty_mobile": "Nenhum encontro agendado."
     },
-    "delete_confirm_button": "Remover encontro"
+    "delete_confirm_button": "Remover encontro",
+    "trash_title": "Lixeira de encontros (30 dias)",
+    "trash_empty": "Nenhum encontro na lixeira.",
+    "trash_expires": "Expira em {{date}}",
+    "restore": "Restaurar",
+    "restore_success": "Encontro restaurado.",
+    "restore_error": "Erro ao restaurar: {{message}}"
   } as const;
 
 export const messages_pt_BR = {
@@ -6092,7 +6113,7 @@ export const onboarding_pt_BR = {
     "welcome": {
       "hello": "Olá, {{name}}",
       "hello_default": "Bem-vindo(a)",
-      "question": "Como você vai usar a Catequese Viva?",
+      "question": "Como você vai usar o Catechis?",
       "personal_title": "Sou catequista e cuido da minha turma",
       "personal_desc": "Crie sua turma e inclua os catequizandos. Você ganha 7 dias grátis do Plano Catequista, sem cartão.",
       "personal_features": [],
@@ -6174,7 +6195,7 @@ export const onboarding_pt_BR = {
       "whatsapp_question": "Quer o plano Diocese para a sua região?",
       "whatsapp_helper": "A equipe de vendas explica cobertura, preços e como ativar o plano Diocese.",
       "whatsapp_cta": "Consultar plano Diocese no WhatsApp",
-      "whatsapp_prefill": "Olá! Estou no cadastro da Catequese Viva e quero saber mais sobre o plano Diocese.",
+      "whatsapp_prefill": "Olá! Estou no cadastro do Catechis e quero saber mais sobre o plano Diocese.",
       "skip": "Pular esta etapa →",
       "select_hint": "Selecione uma diocese acima",
       "subtitle": "Escolha a diocese para encontrar a paróquia certa com menos esforço.",
@@ -6397,7 +6418,7 @@ export const onboarding_pt_BR = {
       "plan_limit": "Seu período de teste não está ativo, então ainda não dá para criar a turma. Assine o Plano Catequista para continuar ou fale com o suporte.",
       "plan_limit_subscribe": "Assinar o Plano Catequista",
       "plan_limit_support": "Falar com o suporte",
-      "plan_limit_support_prefill": "Olá! Estou no cadastro do Catequese Viva e não consegui criar minha primeira turma (limite do plano).",
+      "plan_limit_support_prefill": "Olá! Estou no cadastro do Catechis e não consegui criar minha primeira turma (limite do plano).",
       "start_time_invalid": "Horário de início inválido. Use o formato HH:mm (ex.: 19:00).",
       "end_time_invalid": "Horário de término inválido. Use o formato HH:mm (ex.: 20:30).",
       "default_meeting_title": "Encontro de hoje",
@@ -6460,7 +6481,15 @@ export const onboarding_pt_BR = {
       "partial_error_other": "{{count}} linhas não foram adicionadas. As demais foram preservadas.",
       "partial_error_zero": "{{count}} linhas não foram adicionadas. As demais foram preservadas."
     },
-    "resume_banner": "Continuando de onde você parou."
+    "resume_banner": "Continuando de onde você parou.",
+    "organization_name": {
+      "parish_title": "Informe o nome da sua paróquia",
+      "diocese_title": "Informe o nome da sua diocese",
+      "required": "Informe o nome da organização.",
+      "save": "Salvar",
+      "later": "Agora não",
+      "save_error": "Não foi possível salvar. Tente novamente."
+    }
   } as const;
 
 export const parishes_pt_BR = {
@@ -6774,7 +6803,7 @@ export const pastoralReport_pt_BR = {
 
 export const public_pt_BR = {
     "about": {
-      "title": "Sobre a Catequese Viva",
+      "title": "Sobre o Catechis",
       "intro": "Uma plataforma pastoral completa para a iniciação cristã, conectando dioceses, paróquias, catequistas, famílias e catequizandos em uma jornada de fé integrada.",
       "mission_title": "Nossa Missão",
       "mission_text": "Facilitar e fortalecer a missão catequética da Igreja Católica, oferecendo ferramentas modernas que permitam aos coordenadores, catequistas e famílias acompanhar a formação cristã com excelência, simplicidade e segurança.",
@@ -6801,13 +6830,13 @@ export const public_pt_BR = {
         "A paróquia é dona dos dados: exporte quando quiser, sem prender ninguém à plataforma."
       ],
       "contact_title": "Fale com a gente",
-      "contact_text": "Tem sugestões, quer apresentar a Catequese Viva à sua paróquia ou diocese, ou encontrou um problema? Escreva para a equipe.",
+      "contact_text": "Tem sugestões, quer apresentar o Catechis à sua paróquia ou diocese, ou encontrou um problema? Escreva para a equipe.",
       "contact_cta": "Ir para Contato",
       "help_cta": "Ver perguntas frequentes"
     },
     "contact": {
       "title": "Contato",
-      "intro": "Entre em contato com a equipe da Catequese Viva.",
+      "intro": "Entre em contato com a equipe do Catechis.",
       "location": "São Paulo, Brasil",
       "phone_label": "Telefone (suporte e assuntos gerais)",
       "subject_prefix": "Assunto",
@@ -6826,7 +6855,7 @@ export const public_pt_BR = {
       "cta": "Fale com vendas no WhatsApp",
       "cta_short": "WhatsApp de vendas",
       "helper": "A equipe de vendas tira suas dúvidas sobre o plano e a assinatura.",
-      "prefill": "Olá! Quero saber mais sobre os planos da Catequese Viva.",
+      "prefill": "Olá! Quero saber mais sobre os planos do Catechis.",
       "aria": "Abrir conversa no WhatsApp de vendas"
     },
     "pricing": {
@@ -6895,7 +6924,7 @@ export const public_pt_BR = {
       "badge_catechist": "Feito para o catequista"
     },
     "workspace": {
-      "app_name": "Catequese Viva",
+      "app_name": "Catechis",
       "title": "Selecionar Espaço",
       "subtitle": "Escolha o workspace onde deseja trabalhar",
       "personal_section": "Meu Espaço Pessoal",
@@ -6978,7 +7007,7 @@ export const public_pt_BR = {
     "catechist_free": "Sem assinatura",
     "help": {
       "title": "Ajuda",
-      "intro": "Respostas rápidas para as dúvidas mais comuns sobre a Catequese Viva. Não encontrou o que procurava? Fale com a equipe no fim da página.",
+      "intro": "Respostas rápidas para as dúvidas mais comuns sobre o Catechis. Não encontrou o que procurava? Fale com a equipe no fim da página.",
       "contact_title": "Ainda precisa de ajuda?",
       "contact_text": "Escreva para a equipe pela página de Contato. Se você já tem conta, use também a Central de suporte no menu do seu perfil.",
       "contact_cta": "Falar com a equipe",
@@ -7078,7 +7107,7 @@ export const publicNav_pt_BR = {
     "share_error": "Não foi possível compartilhar agora",
     "share_hook": "Você semeia a fé. A gente organiza a turma.",
     "share_subhook": "Compartilhe com outro catequista.",
-    "share_title": "Catequese Viva",
+    "share_title": "Catechis",
     "share_text": "Organize a catequese sem papel e improviso — prepare encontros, faça a chamada e fale com as famílias no mesmo lugar.",
     "how_it_works": "Como funciona",
     "faq": "Dúvidas",
@@ -7339,7 +7368,7 @@ export const settings_pt_BR = {
     "export_desc": "Conforme a LGPD, você pode solicitar a exportação dos seus dados.",
     "export_requesting": "Solicitando...",
     "export_request": "Solicitar exportação",
-    "export_success": "Solicitação enviada com sucesso!",
+    "export_success": "Seus dados estão disponíveis para download por 7 dias.",
     "export_error": "Erro ao solicitar exportação: {{message}}",
     "export_retry": "Tente novamente.",
     "migration": "Migração de Paróquia",
@@ -7354,7 +7383,7 @@ export const settings_pt_BR = {
     "migration_error": "Erro ao executar migração.",
     "privacy_notice": "Seus dados são protegidos conforme a LGPD. Nenhum dado é compartilhado sem consentimento.",
     "email_preferences": "Preferências de email",
-    "email_preferences_desc": "Escolha quais emails da Catequese Viva você quer receber. Login, convites e faturas continuam ativos.",
+    "email_preferences_desc": "Escolha quais emails do Catechis você quer receber. Login, convites e faturas continuam ativos.",
     "email_pref_lifecycle": "Dicas de ativação, teste e retorno à conta",
     "email_pref_product": "Novidades do produto e newsletter",
     "email_pref_pastoral": "Comunicados das turmas e da paróquia",
@@ -7363,7 +7392,16 @@ export const settings_pt_BR = {
     "avatar_alt": "Foto de perfil",
     "avatar_change": "Trocar foto",
     "avatar_add": "Adicionar foto",
-    "avatar_remove": "Remover foto"
+    "avatar_remove": "Remover foto",
+    "export_reused": "Você já tem um pedido válido. Baixe seus dados até a data indicada.",
+    "export_download": "Baixar meus dados",
+    "export_valid_until": "Validade: {{date}} (7 dias a partir do pedido).",
+    "export_status": "Status: {{status}}",
+    "export_status_requested": "Solicitado",
+    "export_status_ready": "Disponível",
+    "export_status_downloaded": "Baixado",
+    "export_status_expired": "Expirado",
+    "export_download_error": "Não foi possível baixar os dados. Verifique a validade e tente novamente."
   } as const;
 
 export const social_pt_BR = {

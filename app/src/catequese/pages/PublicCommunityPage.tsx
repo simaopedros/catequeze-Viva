@@ -39,7 +39,7 @@ export default function PublicCommunityPage() {
   }, [params.topic]);
 
   useEffect(() => {
-    document.title = `${t("title")} · Catequese Viva`;
+    document.title = `${t("title")} · Catechis`;
   }, [t]);
 
   const canInteract = Boolean(

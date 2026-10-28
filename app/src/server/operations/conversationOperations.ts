@@ -653,6 +653,12 @@ async function assertParticipantIdsAllowed(
   workspaceId: string,
   participantUserIds: string[],
 ): Promise<string[]> {
+  if (
+    !Array.isArray(participantUserIds) ||
+    participantUserIds.some((id) => typeof id !== 'string')
+  ) {
+    throw new HttpError(400, 'Participantes inválidos.');
+  }
   const sanitizedIds = sanitizeParticipantUserIds(
     context.user.id,
     participantUserIds,
@@ -777,24 +783,26 @@ export const listConversations = async (
     };
   });
 
-  const convIds = withUnread.map((c: any) => c.id);
-  const allMessages =
-    convIds.length > 0
-      ? await context.entities.Message.findMany({
-          where: {
-            conversationId: { in: convIds },
-            senderId: { not: context.user.id },
-            deletedAt: null,
-          },
-          select: { conversationId: true, createdAt: true },
-        })
-      : [];
+  const unreadGroups = withUnread.length > 0
+    ? await context.entities.Message.groupBy({
+        by: ['conversationId'],
+        where: {
+          senderId: { not: context.user.id },
+          deletedAt: null,
+          OR: withUnread.map((conv: any) => ({
+            conversationId: conv.id,
+            createdAt: { gt: conv._lastReadAt },
+          })),
+        },
+        _count: { _all: true },
+      })
+    : [];
+  const unreadByConversation = new Map<string, number>(
+    unreadGroups.map((group: any) => [group.conversationId, group._count._all]),
+  );
 
   return withUnread.map((conv: any) => {
-    const unreadCount = allMessages.filter(
-      (m: any) =>
-        m.conversationId === conv.id && m.createdAt > conv._lastReadAt,
-    ).length;
+    const unreadCount = unreadByConversation.get(conv.id) ?? 0;
     const { _lastReadAt, messages, ...rest } = conv;
     return { ...rest, lastMessage: conv.lastMessage, unreadCount };
   });
@@ -1462,6 +1470,7 @@ export const getUnreadMessagesCount = async (
 
   // Only count conversations with a valid current workspace link
   const eligible: { conversationId: string; lastReadAt: Date | null }[] = [];
+  const workspaceAccess = new Map<string, boolean>();
   for (const p of participations) {
     const parishId = p.conversation?.parishId;
     if (!parishId) continue;
@@ -1469,12 +1478,12 @@ export const getUnreadMessagesCount = async (
       eligible.push(p);
       continue;
     }
-    const ok = await userHasValidWorkspaceRelation(
-      context,
-      context.user.id,
-      parishId,
-    );
-    if (ok) eligible.push(p);
+    if (!workspaceAccess.has(parishId)) {
+      workspaceAccess.set(parishId, await userHasValidWorkspaceRelation(
+        context, context.user.id, parishId,
+      ));
+    }
+    if (workspaceAccess.get(parishId)) eligible.push(p);
   }
 
   if (eligible.length === 0) return { count: 0 };

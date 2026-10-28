@@ -62,7 +62,7 @@ export function buildInviteEmailContent(
         '',
         'Este convite expira em 30 dias.',
         '',
-        '— Equipe Catequese Viva',
+        '— Equipe Catechis',
       ].join('\n'),
     };
   }
@@ -80,7 +80,7 @@ export function buildInviteEmailContent(
       '',
       'Este convite expira em 30 dias.',
       '',
-      '— Equipe Catequese Viva',
+      '— Equipe Catechis',
     ].join('\n'),
   };
 }

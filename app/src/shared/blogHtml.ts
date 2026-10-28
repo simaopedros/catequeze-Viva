@@ -174,7 +174,7 @@ export function buildBlogJsonLd(input: BlogArticleHtmlInput): string {
     },
     publisher: {
       "@type": "Organization",
-      name: "Catequese Viva",
+      name: "Catechis",
     },
   };
   const published = toIso(input.publishedAt);
@@ -205,11 +205,11 @@ export function renderBlogArticleHtml(input: BlogArticleHtmlInput): string {
 <html lang="${locale}">
 <head>
 <meta charset="utf-8" />
-<title>${title} | Catequese Viva</title>
+<title>${title} | Catechis</title>
 <meta name="description" content="${excerpt}" />
 <link rel="canonical" href="${url}" />
 <meta property="og:type" content="article" />
-<meta property="og:site_name" content="Catequese Viva" />
+<meta property="og:site_name" content="Catechis" />
 <meta property="og:title" content="${title}" />
 <meta property="og:description" content="${excerpt}" />
 <meta property="og:url" content="${url}" />
@@ -223,7 +223,7 @@ ${ogImage}
 </head>
 <body>
 <header>
-  <p><a href="/">Catequese Viva</a> · <a href="/blog">Blog</a></p>
+  <p><a href="/">Catechis</a> · <a href="/blog">Blog</a></p>
 </header>
 <article>
   <h1>${title}</h1>
