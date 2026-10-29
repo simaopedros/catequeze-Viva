@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { HttpError, prisma } from 'wasp/server';
 import { verifyPassword, hashPassword } from 'wasp/auth/password';
 import { createProviderId, findAuthIdentity, getProviderDataWithPassword, updateAuthIdentityProviderData } from 'wasp/auth/utils';
@@ -177,9 +178,14 @@ export const resetPasswordAndInvalidateSessions = async (
   const { token, password } = validateOrThrow(resetPasswordSchema, args);
 
   let email: string;
+  let expiresAt: Date;
   try {
-    const payload = await validateJWT<{ email: string }>(token);
+    const payload = await validateJWT<{ email: string; exp: number }>(token);
+    if (typeof payload.email !== 'string' || !Number.isFinite(payload.exp) || payload.exp * 1000 <= Date.now()) {
+      throw new Error('Invalid reset payload');
+    }
     email = payload.email;
+    expiresAt = new Date(payload.exp * 1000);
   } catch {
     throw new HttpError(400, 'Falha ao redefinir a senha: token inválido.');
   }
@@ -194,15 +200,33 @@ export const resetPasswordAndInvalidateSessions = async (
     authIdentity.providerData,
   );
 
-  await updateAuthIdentityProviderData<'email'>(providerId, providerData, {
-    isEmailVerified: true,
-    hashedPassword: password,
-  });
-
-  // Session.userId references Auth.id (Lucia), exposed as authIdentity.authId.
-  const authId = (authIdentity as { authId?: string }).authId;
-  if (authId) {
-    await (prisma as any).session.deleteMany({ where: { userId: authId } });
+  const hashedPassword = await hashPassword(password);
+  // Equivalent base64url encodings must share the same consumption marker.
+  const canonicalToken = token.split('.').map((part) => Buffer.from(part, 'base64url').toString('base64url')).join('.');
+  const key = `password-reset-used:${createHash('sha256').update(canonicalToken).digest('hex')}`;
+  try {
+    await prisma.$transaction(async (db) => {
+      // Unique key consumes the JWT across processes. Expired markers can be
+      // cleaned up safely because validateJWT rejects the expired token.
+      await db.rateLimitBucket.create({
+        data: { key, count: 1, resetAt: expiresAt },
+        select: { id: true },
+      });
+      const updated = await db.authIdentity.updateMany({
+        where: { ...providerId, providerData: authIdentity.providerData },
+        data: { providerData: JSON.stringify({ ...providerData, isEmailVerified: true, hashedPassword }) },
+      });
+      if (updated.count !== 1) {
+        throw new HttpError(400, 'Falha ao redefinir a senha: token inválido.');
+      }
+      // Consumption, credentials and session revocation commit together.
+      await db.session.deleteMany({ where: { userId: authIdentity.authId } });
+    });
+  } catch (error) {
+    if ((error as { code?: string }).code === 'P2002') {
+      throw new HttpError(400, 'Falha ao redefinir a senha: token inválido.');
+    }
+    throw error;
   }
 
   return { success: true };

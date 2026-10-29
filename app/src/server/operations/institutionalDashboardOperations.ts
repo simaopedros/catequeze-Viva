@@ -436,7 +436,7 @@ export const getInstitutionalOverview = async (
     context.entities.Document.count({
       where: { catechumenProfile: { enrollments: { some: enrollmentWhere } } },
     }),
-    documentRequirementsForWhere(context, { enrollments: { some: enrollmentWhere } }).then(rows => rows.reduce((sum: number, row: any) => sum + row.missing.length, 0)),
+    documentRequirementsForWhere(context, { enrollments: { some: enrollmentWhere } }, classWhere).then(rows => rows.reduce((sum: number, row: any) => sum + row.missing.length, 0)),
     context.entities.ConsentRecord.count({
       where: {
         granted: false,

@@ -1107,7 +1107,7 @@ query listContentItems {
 
 query getContentItem {
   fn: import { getContentItem } from "@src/server/operations/contentOperations",
-  entities: [ContentItem, ContentVersion, Activity, Meeting, User, ContentBibleReference, ContentCatechismReference, ContentDirectoryReference, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Membership, Parish]
+  entities: [ContentItem, ContentVersion, Activity, Meeting, User, ContentBibleReference, ContentCatechismReference, ContentDirectoryReference, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 
 action createContentItem {
@@ -1819,6 +1819,7 @@ api mobileAuthTwoFactorVerify {
 }
 
 api mobileAuthPasswordResetRequest {
+  entities: [RateLimitBucket],
   fn: import { mobileAuthPasswordResetRequest } from "@src/server/api/mobile",
   httpRoute: (POST, "/mobile/auth/password-reset/request")
 }
@@ -2417,7 +2418,7 @@ query getMessageReadReceipts {
 
 query getCatechumenAttendanceReport {
   fn: import { getCatechumenAttendanceReport } from "@src/server/operations/catechumenReportOperations",
-  entities: [CatechumenProfile, ClassEnrollment, AttendanceRecord, Meeting, Membership, GuardianProfile, ClassCatechist, UserTwoFactor, Parish]
+  entities: [CatechumenProfile, ClassEnrollment, AttendanceRecord, Meeting, Membership, GuardianProfile, ClassCatechist, UserTwoFactor, Parish, CatechesisClass]
 }
 
 query semanticSearchBible {
@@ -2550,7 +2551,7 @@ action getPedagogicalHooks {
 
 query globalSearch {
   fn: import { globalSearch } from "@src/server/operations/searchOperations",
-  entities: [CatechumenProfile, CatechesisClass, ContentItem, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Household, SacramentalJourney, Document, Parish, Community, Membership, GuardianProfile]
+  entities: [CatechumenProfile, CatechesisClass, ContentItem, BibleVerse, BibleChapter, BibleBook, CatechismEntry, DirectoryEntry, Household, SacramentalJourney, Document, Parish, Community, Membership, GuardianProfile, ClassCatechist]
 }
 
 query listCatechismByCategory {
@@ -2600,7 +2601,7 @@ action changePassword {
 // Public (token-gated): reset password and cut all Lucia sessions.
 action resetPasswordAndInvalidateSessions {
   fn: import { resetPasswordAndInvalidateSessions } from "@src/server/operations/userOperations",
-  entities: [User],
+  entities: [User, RateLimitBucket],
   auth: false
 }
 

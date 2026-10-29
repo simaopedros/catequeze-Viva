@@ -242,6 +242,7 @@ export const listMeetings = async (
     skip?: number;
     cursor?: string | null;
     paginated?: boolean;
+    surface?: string;
   },
   context: any,
 ): Promise<any> => {
@@ -261,12 +262,24 @@ export const listMeetings = async (
     take: useCursorPage ? pageSize + 1 : take,
     skip: useCursorPage ? 0 : skip,
     include: {
-      content: { select: { id: true, title: true } },
+      content: { select: { id: true, title: true, status: true } },
       _count: { select: { attendance: true } },
     },
   });
 
-  return wrapDateIdPage(rows, pageSize, useCursorPage, "date");
+  const classData = await context.entities.CatechesisClass.findUnique({
+    where: { id: args.classId },
+    select: { parishId: true },
+  });
+  const role = await getUserRole(context, classData?.parishId, args.surface);
+  return wrapDateIdPage(
+    rows.map((meeting: any) =>
+      shapeMeetingForRole(meeting, isCatechistOrAbove(role)),
+    ),
+    pageSize,
+    useCursorPage,
+    "date",
+  );
 };
 
 export const createMeeting = async (args: any, context: any) => {
@@ -588,7 +601,7 @@ export const saveAttendanceBatch = async (
 
   const meeting = await context.entities.Meeting.findUnique({
     where: { id: args.meetingId },
-    select: { classId: true, status: true },
+    select: { classId: true, status: true, class: { select: { parishId: true } } },
   });
   if (!meeting) throw new HttpError(404, "Encontro não encontrado.");
   if (meeting.status === "CANCELLED") {
@@ -605,7 +618,10 @@ export const saveAttendanceBatch = async (
   ];
   const [profiles, enrollments, existingRecords] = await Promise.all([
     context.entities.CatechumenProfile.findMany({
-      where: { id: { in: profileIds } },
+      where: {
+        id: { in: profileIds },
+        ...(meeting.class.parishId ? { parishId: meeting.class.parishId } : {}),
+      },
       select: { id: true, firstName: true, lastName: true },
     }),
     context.entities.ClassEnrollment.findMany({
@@ -783,7 +799,7 @@ export const saveAttendanceBatch = async (
 };
 
 export const listMeetingsForClasses = async (
-  args: { classIds: string[] },
+  args: { classIds: string[]; surface?: string },
   context: any,
 ) => {
   if (!context.user) throw new HttpError(401);
@@ -793,10 +809,30 @@ export const listMeetingsForClasses = async (
     args.classIds.map((classId) => assertUserBelongsToClass(context, classId)),
   );
 
-  return context.entities.Meeting.findMany({
+  const rolesByClass = new Map(
+    await Promise.all(
+      args.classIds.map(async (classId) => {
+        const cls = await context.entities.CatechesisClass.findUnique({
+          where: { id: classId },
+          select: { parishId: true },
+        });
+        return [
+          classId,
+          await getUserRole(context, cls?.parishId, args.surface),
+        ] as const;
+      }),
+    ),
+  );
+  const rows = await context.entities.Meeting.findMany({
     where: { classId: { in: args.classIds } },
     orderBy: { date: "desc" },
   });
+  return rows.map((meeting: any) =>
+    shapeMeetingForRole(
+      meeting,
+      isCatechistOrAbove(rolesByClass.get(meeting.classId) || ""),
+    ),
+  );
 };
 
 export const saveAttendance = async (args: any, context: any) => {
@@ -1089,6 +1125,24 @@ function shapeContentForRole(content: any, isStaff: boolean) {
   };
 }
 
+/** Shared privacy boundary for meeting detail and both list shapes. */
+function shapeMeetingForRole(meeting: any, isStaff: boolean) {
+  const fields = {
+    id: meeting.id,
+    classId: meeting.classId,
+    title: meeting.title,
+    theme: meeting.theme,
+    date: meeting.date,
+    status: meeting.status,
+    kind: meeting.kind,
+    sequenceNumber: meeting.sequenceNumber,
+    notes: isStaff ? meeting.notes : null,
+    details: isStaff ? meeting.details : null,
+    content: shapeContentForRole(meeting.content, isStaff),
+  };
+  return isStaff ? { ...meeting, ...fields } : fields;
+}
+
 export const getMeeting = async (
   args: { id: string; surface?: string },
   context: any,
@@ -1132,6 +1186,7 @@ export const getMeeting = async (
     meeting.class?.community?.name ||
     null;
 
+  const shaped = shapeMeetingForRole(meeting, isStaff);
   const base = {
     id: meeting.id,
     title: meeting.title,
@@ -1139,15 +1194,15 @@ export const getMeeting = async (
     date: meeting.date,
     status: meeting.status,
     kind: meeting.kind,
-    notes: isStaff ? meeting.notes : null,
-    details: isStaff ? meeting.details : null,
+    notes: shaped.notes,
+    details: shaped.details,
     class: {
       id: meeting.class.id,
       name: meeting.class.name,
       location: meeting.class.location ?? null,
     },
     locationHint,
-    content: shapeContentForRole(meeting.content, isStaff),
+    content: shaped.content,
     permissions: {
       canEdit: isStaff,
       canTakeAttendance: isStaff,
