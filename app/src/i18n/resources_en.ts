@@ -3257,6 +3257,42 @@ export const common_en = {
       "members_one": "{{count}} member",
       "members_other": "{{count}} members",
       "members_zero": "{{count}} members"
+    },
+    "documentRules": {
+      "title": "Document rules",
+      "stage": "Document stage",
+      "automatic": "Automatic by stage or sacrament name and age",
+      "advisory": "Missing documents only show warnings. They never block completion.",
+      "scope": "Scope",
+      "diocese": "Diocese",
+      "parish": "Parish",
+      "inherit": "Use inherited rule",
+      "restore": "Restore default",
+      "history": "Change history",
+      "saved": "Sponsors updated",
+      "sponsors": "Godfather and godmother",
+      "otherParish": "From another parish",
+      "parishName": "Parish name (optional)",
+      "missing": "Missing: {{types}}",
+      "uploadHistory": "All uploaded documents",
+      "values": {
+        "REQUIRED": "Required",
+        "OPTIONAL": "Optional",
+        "NOT_APPLICABLE": "Not applicable"
+      },
+      "roles": {
+        "PADRINHO": "Godfather",
+        "MADRINHA": "Godmother"
+      },
+      "stages": {
+        "PRE_CATECHESIS": "Pre-catechesis / childhood initiation",
+        "BAPTISM_CHILD": "Child baptism",
+        "FIRST_EUCHARIST": "First Eucharist",
+        "CONFIRMATION_TEEN": "Teen confirmation",
+        "RICA_ADULT": "Adult catechesis / RCIA",
+        "CONFIRMATION_ADULT": "Adult confirmation",
+        "PERSEVERANCE": "Perseverance / after sacraments"
+      }
     }
   } as const;
 

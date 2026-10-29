@@ -1,3 +1,4 @@
+import { DocumentStageSelect } from "../components/DocumentStageSelect";
 import { attendanceRateDisplay } from "../../shared/attendanceMetrics";
 import { attendanceExportProfiles } from '../../shared/attendanceExport';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../../client/components/ui/dialog';
@@ -174,6 +175,7 @@ export default function ClassDetailPage() {
   const [editDay, setEditDay] = useState("");
   const [editStart, setEditStart] = useState("");
   const [editEnd, setEditEnd] = useState("");
+  const [editDocumentStage, setEditDocumentStage] = useState("");
   const [editLocation, setEditLocation] = useState("");
   const [editCapacity, setEditCapacity] = useState(30);
   const [editCommunityId, setEditCommunityId] = useState("");
@@ -251,6 +253,7 @@ export default function ClassDetailPage() {
     if (cls) {
       const schedule = classScheduleFormDefaults(cls);
       setEditName(cls.name || "");
+      setEditDocumentStage((cls as any).documentStageKind || "");
       setEditDay(schedule.dayOfWeek);
       setEditStart(schedule.startTime);
       setEditEnd(schedule.endTime);
@@ -290,6 +293,7 @@ export default function ClassDetailPage() {
         location: editLocation || undefined,
         maxCapacity: editCapacity,
         communityId: editCommunityId || null,
+        documentStageKind: editDocumentStage || null,
       });
       toast({ title: t("updated_success") });
       setEditing(false);
@@ -939,6 +943,7 @@ export default function ClassDetailPage() {
                   className="flex h-9 w-full rounded-sm border border-input bg-background px-3 text-sm mt-1"
                 />
               </div>
+              <DocumentStageSelect value={editDocumentStage} onChange={setEditDocumentStage} />
               <div className="sm:col-span-2">
                 <label className="text-xs font-medium">{t("location")}</label>
                 <input

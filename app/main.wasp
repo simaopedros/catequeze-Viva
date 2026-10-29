@@ -861,7 +861,7 @@ query listCatechumens {
 
 query getCatechumenProfile {
   fn: import { getCatechumenProfile } from "@src/server/operations/catechumenOperations",
-  entities: [CatechumenProfile, Membership, GuardianProfile, ClassEnrollment, ClassCatechist, CatechesisClass, Household, Document, Parish]
+  entities: [CatechumenProfile, Membership, GuardianProfile, ClassEnrollment, ClassCatechist, CatechesisClass, Household, Document, Parish, DocumentStageRule, CatechumenSponsor]
 }
 
 action createCatechumen {
@@ -1068,7 +1068,7 @@ query getEncounterFocus {
 
 query getInstitutionalOverview {
   fn: import { getInstitutionalOverview } from "@src/server/operations/institutionalDashboardOperations",
-  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, Community, TenantBilling, Document, ConsentRecord, MessageCampaign, MessageRecipient, UserTwoFactor, Diocese]
+  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, Community, TenantBilling, Document, ConsentRecord, MessageCampaign, MessageRecipient, UserTwoFactor, Diocese, DocumentStageRule, CatechumenSponsor]
 }
 
 query getInstitutionalTrends {
@@ -1084,7 +1084,7 @@ query getInstitutionalAlerts {
 // Composite dashboard: fewer client round-trips (core above fold, insights deferred)
 query getInstitutionalDashboardCore {
   fn: import { getInstitutionalDashboardCore } from "@src/server/operations/institutionalDashboardOperations",
-  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, Community, TenantBilling, Document, ConsentRecord, MessageCampaign, MessageRecipient, UserTwoFactor, Diocese]
+  entities: [Membership, CatechesisClass, ClassEnrollment, SacramentalMilestone, SacramentalJourney, AttendanceRecord, Meeting, ContentItem, CatechumenProfile, ClassCatechist, Parish, Community, TenantBilling, Document, ConsentRecord, MessageCampaign, MessageRecipient, UserTwoFactor, Diocese, DocumentStageRule, CatechumenSponsor]
 }
 
 query getInstitutionalDashboardInsights {
@@ -2100,7 +2100,7 @@ action submitActivity {
 // ⚠️ Deprecated — guardian dashboard uses getDashboardStats instead. Remove after 2026-12.
 // query getGuardianDashboard {
 //   fn: import { getGuardianDashboard } from "@src/server/operations/guardianOperations",
-//   entities: [GuardianProfile, CatechumenProfile, AttendanceRecord, Meeting, Document]
+//   entities: [GuardianProfile, CatechumenProfile, AttendanceRecord, Meeting, Document, DocumentStageRule, CatechumenSponsor]
 // }
 //#endregion
 
@@ -2856,4 +2856,24 @@ query getAccountTermsStatus {
 action acceptAccountTerms {
   fn: import { acceptAccountTerms } from "@src/server/operations/termsOperations",
   entities: [User, TermsAcceptance]
+}
+
+query getDocumentStageRules {
+  fn: import { getDocumentStageRules } from "@src/server/operations/documentStageOperations",
+  entities: [DocumentStageRule, DocumentStageRuleChange, Parish, Membership, ClassCatechist, CatechesisClass, User]
+}
+
+query listDocumentRequirements {
+  fn: import { listDocumentRequirements } from "@src/server/operations/documentStageOperations",
+  entities: [DocumentStageRule, CatechumenSponsor, CatechumenProfile, Parish, Membership, ClassCatechist, GuardianProfile, Household, CatechesisClass, ClassEnrollment, Document, Stage, Sacrament]
+}
+
+action setDocumentStageRule {
+  fn: import { setDocumentStageRule } from "@src/server/operations/documentStageOperations",
+  entities: [DocumentStageRule, DocumentStageRuleChange, Parish, Membership, ClassCatechist, CatechesisClass]
+}
+
+action saveCatechumenSponsor {
+  fn: import { saveCatechumenSponsor } from "@src/server/operations/documentStageOperations",
+  entities: [CatechumenSponsor, CatechumenProfile, Parish, Membership, ClassCatechist, GuardianProfile, Household, CatechesisClass, ClassEnrollment, AuditLog]
 }

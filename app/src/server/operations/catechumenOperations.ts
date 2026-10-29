@@ -1,3 +1,4 @@
+import { requirementsForProfile } from "../../shared/documents/requirements";
 import { catechumenPublicSelect } from "./catechumenDto";
 import { HttpError, prisma } from "wasp/server";
 import { MembershipStatus, CatechistAssignmentRole } from "@prisma/client";
@@ -252,7 +253,7 @@ export const getCatechumenProfile = async (
       ...catechumenPublicSelect,
       // uploadToken / uploadTokenExpires intentionally omitted — staff of a
       // linked household parish must never receive them via this query.
-      parish: { select: { id: true, name: true } },
+      parish: { select: { id: true, name: true, dioceseId: true } },
       household: {
         include: {
           guardians: {
@@ -272,10 +273,11 @@ export const getCatechumenProfile = async (
       enrollments: {
         include: {
           class: {
-            select: { id: true, name: true, stage: { select: { name: true } } },
+            select: { id: true, name: true, documentStageKind: true, stage: { select: { name: true } }, sacrament: { select: { name: true } } },
           },
         },
       },
+      sponsors: true,
       sacramentalJourneys: {
         include: {
           template: { select: { id: true, name: true } },
@@ -302,7 +304,12 @@ export const getCatechumenProfile = async (
       },
     },
   });
-  return profile;
+  if (!profile) return profile;
+  const rules = await context.entities.DocumentStageRule.findMany({ where: { OR: [
+    ...(profile.parishId ? [{ parishId: profile.parishId }] : []),
+    ...(profile.parish?.dioceseId ? [{ dioceseId: profile.parish.dioceseId }] : []),
+  ] } });
+  return { ...profile, documentRequirements: requirementsForProfile(profile, rules) };
 };
 
 export const createCatechumen = async (args: any, context: any) => {

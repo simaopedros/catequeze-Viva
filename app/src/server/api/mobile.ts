@@ -1,3 +1,4 @@
+import { listDocumentRequirements } from "../operations/documentStageOperations";
 import type { Request, Response } from 'express';
 import { HttpError, prisma } from 'wasp/server';
 import { createInvalidCredentialsError, createProviderId, doFakeWork, findAuthIdentity, findAuthWithUserBy, getProviderDataWithPassword } from 'wasp/auth/utils';
@@ -524,7 +525,14 @@ export async function mobileMarkAllNotificationsRead(_req: Request, res: Respons
 export async function mobileDocuments(req: Request, res: Response, context: any) {
   const opCtx = toOperationContext(context);
   await requireMobileSessionVerification(opCtx);
-  return res.json(await listDocuments(undefined as void, opCtx));
+  const workspaceId = parseOptionalString(req.query.workspaceId);
+  const docs = await listDocuments({ workspaceId }, opCtx);
+  if (!workspaceId) return res.json(docs);
+  const requirements = await listDocumentRequirements({ workspaceId }, opCtx);
+  return res.json(docs.map((doc: any) => {
+    const row = requirements.find((r: any) => r.id === doc.catechumenProfileId);
+    return { ...doc, requirement: row?.requirements[doc.type as keyof typeof row.requirements] ?? 'OPTIONAL', missingDocumentTypes: row?.missing ?? [] };
+  }));
 }
 
 export { authenticatedDocumentUpload as mobileDocumentUpload };

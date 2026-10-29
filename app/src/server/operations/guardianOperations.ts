@@ -1,3 +1,4 @@
+import { documentRequirementsForWhere } from "../documents/requirements";
 import { HttpError } from 'wasp/server';
 
 export const getGuardianDashboard = async (_args: void, context: any) => {
@@ -54,12 +55,8 @@ export const getGuardianDashboard = async (_args: void, context: any) => {
   });
 
   // Pending documents
-  const pendingDocs = await context.entities.Document.count({
-    where: {
-      catechumenProfileId: { in: catechumenIds },
-      verifiedAt: null,
-    },
-  });
+  const requirementRows = await documentRequirementsForWhere(context, { id: { in: catechumenIds } });
+  const pendingDocs = requirementRows.reduce((sum: number, row: any) => sum + row.missing.length, 0);
 
   return { dependents, nextMeetings, recentAttendance, pendingDocs };
 };

@@ -1,3 +1,4 @@
+import { DOCUMENT_STAGES } from "../shared/documents/requirements";
 import { z } from 'zod';
 
 import { HttpError } from 'wasp/server';
@@ -65,6 +66,7 @@ const optionalUuidOrNull = z.preprocess(
 );
 
 export const createClassSchema = z.object({
+  documentStageKind: z.enum(DOCUMENT_STAGES).nullable().optional(),
   name: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres').max(100),
   parishId: z.string().uuid().optional(),
   communityId: optionalUuidOrNull,

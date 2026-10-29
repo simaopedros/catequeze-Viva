@@ -733,6 +733,7 @@ model Sacrament {
 // ─── Classes ──────────────────────────────────────────────────────────────────
 
 model CatechesisClass {
+  documentStageKind DocumentStageKind?
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -891,6 +892,7 @@ model CatechumenProfile {
   attendanceRecords   AttendanceRecord[]
   activitySubmissions ActivitySubmission[]
   sacramentalJourneys SacramentalJourney[]
+  sponsors            CatechumenSponsor[]
   documents           Document[]
 
   uploadToken        String?   @unique
@@ -2703,4 +2705,73 @@ model ConsentEvent {
   @@index([householdId, createdAt])
   @@index([consentRecordId])
   @@index([actorUserId])
+}
+
+
+enum DocumentStageKind {
+  PRE_CATECHESIS
+  BAPTISM_CHILD
+  FIRST_EUCHARIST
+  CONFIRMATION_TEEN
+  RICA_ADULT
+  CONFIRMATION_ADULT
+  PERSEVERANCE
+}
+
+enum DocumentRequirement {
+  REQUIRED
+  OPTIONAL
+  NOT_APPLICABLE
+}
+
+enum DocumentRuleScope {
+  PARISH
+  DIOCESE
+}
+
+enum SponsorRole {
+  PADRINHO
+  MADRINHA
+}
+
+model CatechumenSponsor {
+  id String @id @default(uuid())
+  catechumenProfileId String
+  catechumenProfile CatechumenProfile @relation(fields: [catechumenProfileId], references: [id], onDelete: Cascade)
+  role SponsorRole
+  name String
+  fromOtherParish Boolean @default(false)
+  parishName String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([catechumenProfileId, role])
+}
+
+model DocumentStageRule {
+  id String @id @default(uuid())
+  scope DocumentRuleScope
+  parishId String?
+  dioceseId String?
+  stageKind DocumentStageKind
+  documentType DocumentType
+  requirement DocumentRequirement
+  changedById String
+  changedAt DateTime @default(now())
+  @@unique([parishId, stageKind, documentType])
+  @@unique([dioceseId, stageKind, documentType])
+}
+
+model DocumentStageRuleChange {
+  id String @id @default(uuid())
+  scope DocumentRuleScope
+  parishId String?
+  dioceseId String?
+  stageKind DocumentStageKind
+  documentType DocumentType
+  previousValue DocumentRequirement?
+  newValue DocumentRequirement?
+  changedById String
+  changedAt DateTime @default(now())
+  @@index([parishId, changedAt])
+  @@index([dioceseId, changedAt])
 }

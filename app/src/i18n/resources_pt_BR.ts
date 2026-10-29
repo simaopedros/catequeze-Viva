@@ -3257,6 +3257,42 @@ export const common_pt_BR = {
       "members_one": "{{count}} membro",
       "members_other": "{{count}} membros",
       "members_zero": "{{count}} membros"
+    },
+    "documentRules": {
+      "title": "Regras de documentos",
+      "stage": "Etapa de documentos",
+      "automatic": "Automático pelo nome da etapa ou sacramento e pela idade",
+      "advisory": "Documentos faltantes geram apenas avisos. Não bloqueiam nenhuma conclusão.",
+      "scope": "Escopo",
+      "diocese": "Diocese",
+      "parish": "Paróquia",
+      "inherit": "Usar regra herdada",
+      "restore": "Restaurar padrão",
+      "history": "Histórico de alterações",
+      "saved": "Padrinhos atualizados",
+      "sponsors": "Padrinho e madrinha",
+      "otherParish": "É de outra paróquia",
+      "parishName": "Nome da paróquia (opcional)",
+      "missing": "Pendente: {{types}}",
+      "uploadHistory": "Todos os documentos enviados",
+      "values": {
+        "REQUIRED": "Obrigatório",
+        "OPTIONAL": "Opcional",
+        "NOT_APPLICABLE": "Não se aplica"
+      },
+      "roles": {
+        "PADRINHO": "Padrinho",
+        "MADRINHA": "Madrinha"
+      },
+      "stages": {
+        "PRE_CATECHESIS": "Pré-catequese / iniciação infantil",
+        "BAPTISM_CHILD": "Batismo de criança",
+        "FIRST_EUCHARIST": "Primeira Eucaristia",
+        "CONFIRMATION_TEEN": "Crisma de adolescentes",
+        "RICA_ADULT": "Catequese de adultos / RICA",
+        "CONFIRMATION_ADULT": "Crisma de adultos",
+        "PERSEVERANCE": "Perseverança / pós-sacramento"
+      }
     }
   } as const;
 
