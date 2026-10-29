@@ -126,35 +126,6 @@ async function resolveInviterRole(
   throw new HttpError(403, 'Apenas coordenadores e catequistas podem convidar membros.');
 }
 
-async function assertCanViewTeam(context: any, parishId: string): Promise<string> {
-  if (context.user.isAdmin) return 'SUPER_ADMIN';
-
-  const isPersonalOwner = await context.entities.Parish.findFirst({
-    where: { id: parishId, ownerId: context.user.id, type: 'PERSONAL' },
-    select: { id: true },
-  });
-  if (isPersonalOwner) return 'PERSONAL_OWNER';
-
-  const memberships = await context.entities.Membership.findMany({
-    where: { userId: context.user.id, parishId, status: 'ACTIVE' },
-    select: { role: true },
-  });
-  const roles = memberships.map((m: { role: string }) => m.role);
-  const best = pickBestInviterRole(roles);
-  if (best && canViewTeamArea(best, false)) return best;
-
-  const dioceseMembership = await context.entities.Membership.findFirst({
-    where: { userId: context.user.id, status: 'ACTIVE', role: 'DIOCESE_ADMIN' },
-    select: { parishId: true },
-  });
-  if (dioceseMembership) {
-    const dioceseParishIds = await getDioceseParishIds(context);
-    if (dioceseParishIds.includes(parishId)) return 'DIOCESE_ADMIN';
-  }
-
-  throw new HttpError(403, 'Sem permissão para ver a equipe desta paróquia.');
-}
-
 async function assertLeadOfClass(
   context: any,
   classId: string,
@@ -552,6 +523,44 @@ export const inviteUserToParish = async (
 
 const FAMILY_INVITE_ROLES = ['GUARDIAN', 'CATECHUMEN'] as const;
 
+/** Family invites have no household FK. Resolve recipients through scoped profiles. */
+async function familyInviteScope(context: any, parishId: string) {
+  const access = await requireWorkspaceAccess(context, parishId);
+  if (access.allowedClassIds === 'ALL') return null;
+  const enrollment = { some: { classId: { in: access.allowedClassIds } } };
+  const [guardians, catechumens] = await Promise.all([
+    context.entities.GuardianProfile.findMany({
+      where: { household: { parishId, catechumens: { some: { enrollments: enrollment } } } },
+      select: { email: true, user: { select: { email: true } } },
+    }),
+    context.entities.CatechumenProfile.findMany({
+      where: { enrollments: enrollment },
+      select: { email: true, user: { select: { email: true } } },
+    }),
+  ]);
+  const emails = (rows: any[]) => [...new Set<string>(rows.flatMap(p =>
+    [p.email, p.user?.email].filter(Boolean).map(normalizeInviteEmail)))];
+  return { access, guardianEmails: emails(guardians), catechumenEmails: emails(catechumens) };
+}
+
+function familyRecipientWhere(scope: NonNullable<Awaited<ReturnType<typeof familyInviteScope>>>, legacy = false) {
+  return { OR: [
+    { role: 'GUARDIAN', ...(legacy ? { user: { email: { in: scope.guardianEmails, mode: 'insensitive' } } } : { email: { in: scope.guardianEmails, mode: 'insensitive' } }) },
+    { role: 'CATECHUMEN', ...(legacy ? { user: { email: { in: scope.catechumenEmails, mode: 'insensitive' } } } : { email: { in: scope.catechumenEmails, mode: 'insensitive' } }) },
+  ] };
+}
+
+async function assertInvitationScope(context: any, invitation: any, legacy = false) {
+  if (!isFamilyPortalRole(invitation.role)) return;
+  const scope = await familyInviteScope(context, invitation.parishId);
+  if (!scope) return;
+  const email = normalizeInviteEmail(legacy ? invitation.user?.email || '' : invitation.email || '');
+  const emails = invitation.role === 'GUARDIAN' ? scope.guardianEmails : scope.catechumenEmails;
+  if (!email || !emails.includes(email)) {
+    throw new HttpError(403, 'Sem permissão para gerir este convite de família.');
+  }
+}
+
 /**
  * List pending family-portal invites (GUARDIAN / CATECHUMEN) for a parish.
  */
@@ -578,10 +587,12 @@ export const listFamilyPortalInvitations = async (
     throw new HttpError(403, 'Sem permissão para gerir convites da família.');
   }
 
+  const scope = await familyInviteScope(context, args.parishId);
   const pending = await context.entities.PendingInvitation.findMany({
     where: {
       parishId: args.parishId,
       role: { in: [...FAMILY_INVITE_ROLES] },
+      ...(scope ? { AND: [familyRecipientWhere(scope)] } : {}),
     },
     orderBy: { createdAt: 'desc' },
     take: 100,
@@ -593,6 +604,7 @@ export const listFamilyPortalInvitations = async (
       parishId: args.parishId,
       status: 'INVITED',
       role: { in: [...FAMILY_INVITE_ROLES] },
+      ...(scope ? { AND: [familyRecipientWhere(scope, true)] } : {}),
     },
     include: {
       user: { select: { id: true, email: true, firstName: true, lastName: true } },
@@ -1372,10 +1384,13 @@ export const resendInvitation = async (
       throw new HttpError(403, 'Você não tem permissão para reenviar este convite.');
     }
 
+    await assertInvitationScope(context, inv);
+
     token = crypto.randomUUID();
     await context.entities.PendingInvitation.update({
       where: { id: inv.id },
       data: { token, expiresAt: defaultExpiry() },
+      select: { id: true },
     });
 
     email = normalizeInviteEmail(inv.email);
@@ -1406,6 +1421,8 @@ export const resendInvitation = async (
       throw new HttpError(403, 'Você não tem permissão para reenviar este convite.');
     }
 
+    await assertInvitationScope(context, membership, true);
+
     token = crypto.randomUUID();
     email = normalizeInviteEmail(membership.user?.email || '');
     role = membership.role;
@@ -1419,6 +1436,7 @@ export const resendInvitation = async (
         inviteToken: token,
         inviteTokenExpiresAt: defaultExpiry(),
       },
+      select: { id: true },
     });
   }
 
@@ -1448,7 +1466,6 @@ export const resendInvitation = async (
 
   return {
     success: true,
-    token,
     inviteUrl: inviteUrlForRole(role, token),
     emailDelivery,
   };
@@ -1479,7 +1496,9 @@ export const cancelInvitation = async (
       throw new HttpError(403, 'Você não tem permissão para cancelar este convite.');
     }
 
-    await context.entities.PendingInvitation.delete({ where: { id: inv.id } });
+    await assertInvitationScope(context, inv);
+
+    await context.entities.PendingInvitation.delete({ where: { id: inv.id }, select: { id: true } });
 
     // Also revoke legacy Membership INVITED for the same email+parish so the
     // invite link cannot be accepted after cancel (token path still finds it).
@@ -1515,6 +1534,7 @@ export const cancelInvitation = async (
 
   const membership = await context.entities.Membership.findUnique({
     where: { id: args.membershipId },
+    include: { user: { select: { email: true } } },
   });
   if (!membership || membership.status !== 'INVITED') {
     throw new HttpError(404, 'Convite não encontrado ou já processado.');
@@ -1529,6 +1549,8 @@ export const cancelInvitation = async (
     throw new HttpError(403, 'Você não tem permissão para cancelar este convite.');
   }
 
+  await assertInvitationScope(context, membership, true);
+
   await context.entities.Membership.update({
     where: { id: membership.id },
     data: {
@@ -1536,6 +1558,7 @@ export const cancelInvitation = async (
       inviteToken: null,
       inviteTokenExpiresAt: null,
     },
+    select: { id: true },
   });
   await writeAuditLog(context, 'DELETE', 'Membership', membership.id, {
     operation: 'MEMBER_INVITE_CANCEL',
@@ -1670,24 +1693,20 @@ export const listParishMembers = async (
 
   if (!args.parishId) return [];
 
-  await assertCanViewTeam(context, args.parishId);
-
-  const where: any = { parishId: args.parishId };
-  if (!context.user.isAdmin) {
-    const access = await resolveWorkspaceAccess(context, args.parishId, {
-      required: false,
-    });
-    if (access?.isScopedCoordinator) {
-      Object.assign(where, memberWhereForAccess(access, context.user.id));
-    }
+  const access = await requireWorkspaceAccess(context, args.parishId);
+  if (!canViewTeamArea(access.role, context.user.isAdmin)) {
+    throw new HttpError(403, 'Sem permissão para ver a equipe desta paróquia.');
   }
+  const where: any = memberWhereForAccess(access, context.user.id);
   if (args.communityId) {
     where.communityId = args.communityId;
   }
 
   return context.entities.Membership.findMany({
     where,
-    include: {
+    select: {
+      id: true, userId: true, parishId: true, communityId: true,
+      role: true, status: true, createdAt: true,
       user: {
         select: { id: true, email: true, firstName: true, lastName: true },
       },

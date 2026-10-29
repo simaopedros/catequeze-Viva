@@ -726,17 +726,17 @@ action acceptInvitationByToken {
 
 action resendInvitation {
   fn: import { resendInvitation } from "@src/server/operations/memberOperations",
-  entities: [PendingInvitation, Membership, Parish, User, AuditLog, CatechesisClass, EmailMessage, EmailSuppression, EmailPreference]
+  entities: [ClassCatechist, GuardianProfile, CatechumenProfile, PendingInvitation, Membership, Parish, User, AuditLog, CatechesisClass, EmailMessage, EmailSuppression, EmailPreference]
 }
 
 action cancelInvitation {
   fn: import { cancelInvitation } from "@src/server/operations/memberOperations",
-  entities: [PendingInvitation, Membership, User, Parish, AuditLog]
+  entities: [ClassCatechist, GuardianProfile, CatechumenProfile, PendingInvitation, Membership, User, Parish, AuditLog]
 }
 
 query listFamilyPortalInvitations {
   fn: import { listFamilyPortalInvitations } from "@src/server/operations/memberOperations",
-  entities: [PendingInvitation, Membership, User, Parish, AuditLog]
+  entities: [ClassCatechist, GuardianProfile, CatechumenProfile, PendingInvitation, Membership, User, Parish, AuditLog]
 }
 
 action removeMembership {
