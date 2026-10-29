@@ -190,7 +190,32 @@ export async function userHasValidWorkspaceRelation(
  * Load conversation, verify participation + current workspace relation.
  * Optional activeWorkspaceId must match conversation.parishId.
  */
-async function assertCanAccessConversation(
+async function assertCurrentClassChatAccess(
+  context: any,
+  conversation: any,
+): Promise<void> {
+  if (conversation.type !== 'CLASS_CHAT' || context.user.isAdmin) return;
+  if (!conversation.classId) throw new HttpError(403, 'Chat sem turma válida.');
+  const classAccess = await assertCanAccessClass(context, conversation.classId, true);
+  if (classAccess.parishId !== conversation.parishId) {
+    throw new HttpError(403, 'Chat fora da paróquia da turma.');
+  }
+}
+
+async function hasCurrentClassChatAccess(
+  context: any,
+  conversation: any,
+): Promise<boolean> {
+  try {
+    await assertCurrentClassChatAccess(context, conversation);
+    return true;
+  } catch (error) {
+    if (error instanceof HttpError && [403, 404].includes(error.statusCode)) return false;
+    throw error;
+  }
+}
+
+export async function assertCanAccessConversation(
   context: any,
   conversationId: string,
   activeWorkspaceId?: string | null,
@@ -268,6 +293,8 @@ async function assertCanAccessConversation(
       }
     }
   }
+
+  await assertCurrentClassChatAccess(context, conversation);
 
   return { conversation, participant: participant || null };
 }
@@ -767,7 +794,12 @@ export const listConversations = async (
         context.user.id,
         workspaceId,
       );
-  const scoped = stillLinked ? conversations : [];
+  const scoped: any[] = [];
+  if (stillLinked) {
+    for (const conversation of conversations) {
+      if (await hasCurrentClassChatAccess(context, conversation)) scoped.push(conversation);
+    }
+  }
 
   const withUnread = scoped.map((conv: any) => {
     const myParticipant = conv.participants.find(
@@ -1179,7 +1211,17 @@ export const sendMessage = async (
       contentType,
       parentId: parentId || undefined,
     },
-    include: {
+    select: {
+      id: true,
+      conversationId: true,
+      senderId: true,
+      content: true,
+      contentType: true,
+      parentId: true,
+      createdAt: true,
+      updatedAt: true,
+      editedAt: true,
+      deletedAt: true,
       sender: {
         select: {
           id: true,
@@ -1463,7 +1505,7 @@ export const getUnreadMessagesCount = async (
       select: {
         conversationId: true,
         lastReadAt: true,
-        conversation: { select: { parishId: true } },
+        conversation: { select: { parishId: true, type: true, classId: true } },
       },
     },
   );
@@ -1483,7 +1525,7 @@ export const getUnreadMessagesCount = async (
         context, context.user.id, parishId,
       ));
     }
-    if (workspaceAccess.get(parishId)) eligible.push(p);
+    if (workspaceAccess.get(parishId) && await hasCurrentClassChatAccess(context, p.conversation)) eligible.push(p);
   }
 
   if (eligible.length === 0) return { count: 0 };

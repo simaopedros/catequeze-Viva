@@ -345,7 +345,7 @@ export async function assertCanAccessCatechumenProfile(
       parishId: true,
       householdId: true,
       enrollments: {
-        select: { class: { select: { parishId: true, id: true } } },
+        select: { status: true, class: { select: { parishId: true, id: true } } },
       },
       household: { select: { parishId: true, communityId: true } },
     },
@@ -438,8 +438,10 @@ export async function assertCanAccessCatechumenProfile(
         access.allowedClassIds === "ALL" ? [] : access.allowedClassIds,
       );
       const enrolledInScope = catechumen.enrollments.some(
-        (e: { class: { id: string; parishId: string } }) =>
-          e.class.parishId === parishId && allowed.has(e.class.id),
+        (e: { status: string; class: { id: string; parishId: string } }) =>
+          e.status === "ENROLLED" &&
+          e.class.parishId === parishId &&
+          allowed.has(e.class.id),
       );
       if (enrolledInScope) return;
       continue;
@@ -452,16 +454,18 @@ export async function assertCanAccessCatechumenProfile(
           ? null
           : new Set(access.allowedClassIds);
       if (allowed === null) {
-        if (catechumen.parishId === parishId) return;
         const enrolledHere = catechumen.enrollments.some(
-          (e: { class: { parishId: string } }) => e.class.parishId === parishId,
+          (e: { status: string; class: { parishId: string } }) =>
+            e.status === "ENROLLED" && e.class.parishId === parishId,
         );
         if (enrolledHere) return;
         continue;
       }
       const enrolledInAllowed = catechumen.enrollments.some(
-        (e: { class: { id: string; parishId: string } }) =>
-          e.class.parishId === parishId && allowed.has(e.class.id),
+        (e: { status: string; class: { id: string; parishId: string } }) =>
+          e.status === "ENROLLED" &&
+          e.class.parishId === parishId &&
+          allowed.has(e.class.id),
       );
       if (enrolledInAllowed) return;
     }
@@ -500,6 +504,7 @@ export async function assertCanAccessParishReports(
 export async function assertCanAccessClass(
   context: any,
   classId: string,
+  requireActiveEnrollment = false,
 ): Promise<{ parishId: string }> {
   requireAuth(context.user);
 
@@ -540,6 +545,7 @@ export async function assertCanAccessClass(
     const enrolled = await context.entities.ClassEnrollment.findFirst({
       where: {
         classId,
+        ...(requireActiveEnrollment ? { status: "ENROLLED" } : {}),
         catechumenProfile: { householdId: guardian.householdId },
       },
     });
@@ -549,6 +555,7 @@ export async function assertCanAccessClass(
   const selfEnrollment = await context.entities.ClassEnrollment.findFirst({
     where: {
       classId,
+      ...(requireActiveEnrollment ? { status: "ENROLLED" } : {}),
       catechumenProfile: { userId: context.user.id },
     },
   });

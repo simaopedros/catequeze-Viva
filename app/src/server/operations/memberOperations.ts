@@ -1,3 +1,4 @@
+import { assertCanManageHousehold } from './familyOperations';
 import { HttpError } from 'wasp/server';
 import { requireAuth, writeAuditLog, getDioceseParishIds } from '../auth/helpers';
 import { logger } from '../logger';
@@ -207,6 +208,24 @@ export const inviteUserToParish = async (
     throw new HttpError(403, `Você não tem permissão para atribuir o papel "${args.role}".`);
   }
 
+  if (args.householdId && isFamilyPortalRole(args.role)) {
+    const inviteHousehold = await context.entities.Household.findUnique({
+      where: { id: args.householdId },
+      select: { id: true, parishId: true },
+    });
+    if (!inviteHousehold || inviteHousehold.parishId !== args.parishId) {
+      throw new HttpError(
+        400,
+        'A família do convite deve pertencer à mesma paróquia.',
+      );
+    }
+    await assertCanManageHousehold(
+      context,
+      inviteHousehold,
+      'Você não tem permissão para convidar responsáveis desta família.',
+    );
+  }
+
   if (args.communityId) {
     const community = await context.entities.Community.findUnique({
       where: { id: args.communityId },
@@ -387,18 +406,8 @@ export const inviteUserToParish = async (
     rememberFamilyAuthEmail(email);
   }
 
-  // Pre-create family profiles when householdId is provided
+  // Pre-create family profiles after household authorization.
   if (args.householdId && (args.role === 'GUARDIAN' || args.role === 'CATECHUMEN')) {
-    const inviteHousehold = await context.entities.Household.findUnique({
-      where: { id: args.householdId },
-      select: { id: true, parishId: true },
-    });
-    if (!inviteHousehold || inviteHousehold.parishId !== args.parishId) {
-      throw new HttpError(
-        400,
-        'A família do convite deve pertencer à mesma paróquia.',
-      );
-    }
     try {
       if (args.role === 'GUARDIAN') {
         let existingG = await context.entities.GuardianProfile.findFirst({
