@@ -1,3 +1,4 @@
+import { CatechumenSponsors } from "../components/CatechumenSponsors";
 import { useParams, Link, useNavigate } from "react-router";
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -337,11 +338,6 @@ export default function CatechumenDetailPage() {
     return <div className="p-6 text-destructive">{t("not_found")}</div>;
 
   const getAge = (bd: string) => getAgeFromDate(bd);
-  const catechumenAge = profile?.birthDate
-    ? getAgeFromDate(String(profile.birthDate))
-    : null;
-  // Marriage certificates only make sense for adult catechumens (e.g. RICA).
-  const isAdultCatechumen = catechumenAge === null || catechumenAge >= 18;
   const age = getAge(profile.birthDate);
   const attendancePct = attendance.length
     ? Math.round(
@@ -1051,6 +1047,17 @@ export default function CatechumenDetailPage() {
           </div>
         )}
 
+        {tab === "documents" && (profile as any).documentRequirements?.missing.length > 0 && (
+          <Badge variant="warning">
+            {t("documentRules.missing", {
+              types: (profile as any).documentRequirements.missing
+                .map((type: string) => docTypeLabels[type]).join(", "),
+            })}
+          </Badge>
+        )}
+        {tab === "documents" && (
+          <CatechumenSponsors profile={profile} workspaceId={profile.parishId} canEdit={canEdit} />
+        )}
         {tab === "documents" && (
           <div className="rounded-sm border border-border/70 bg-white p-4">
             <div className="mb-3 space-y-1.5">
@@ -1080,9 +1087,8 @@ export default function CatechumenDetailPage() {
                     {Object.entries(DOC_TYPE_SHORT_KEYS)
                       .filter(
                         ([value]) =>
-                          value !== "MARRIAGE_CERTIFICATE" ||
-                          isAdultCatechumen ||
-                          docType === value,
+                          (profile as any).documentRequirements?.requirements[value] !== "NOT_APPLICABLE" ||
+                          profile.documents?.some((doc: any) => doc.type === value),
                       )
                       .map(([value, i18nKey]) => (
                         <option key={value} value={value}>

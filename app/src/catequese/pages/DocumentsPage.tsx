@@ -1,3 +1,4 @@
+import { DocumentRulesPanel } from "../components/DocumentRulesPanel";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -38,13 +39,17 @@ import { ConfirmDialog } from "../../client/components/ConfirmDialog";
 import {
   useQuery,
   listDocuments,
+  listDocumentRequirements,
   listCatechumens,
   getDashboardStats,
   verifyDocument,
   rejectDocument,
   deleteDocument,
 } from "wasp/client/operations";
-import { uploadDocumentMultipart } from "../../client/utils/documentUpload";
+import {
+  fetchAuthenticatedDocument,
+  uploadDocumentMultipart,
+} from "../../client/utils/documentUpload";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
 import { toast } from "../../client/hooks/use-toast";
@@ -91,6 +96,22 @@ export default function DocumentsPage() {
     ].includes(userRole);
 
   const { activeParishId } = useActiveParish();
+  const [showRules, setShowRules] = useState(false);
+  const { data: requirementRows = [], isLoading: loadingRequirements } =
+    useQuery(
+      listDocumentRequirements,
+      { workspaceId: activeParishId || "" },
+      { enabled: Boolean(activeParishId) },
+    );
+  const requirementMap = new Map(
+    (requirementRows as any[]).map((r) => [r.id, r]),
+  );
+  const canEditRules = [
+    "SUPER_ADMIN",
+    "DIOCESE_ADMIN",
+    "PARISH_COORDINATOR",
+    "PERSONAL_OWNER",
+  ].includes(userRole);
   const { data: docs = [], isLoading: loadingDocs } = useQuery(
     listDocuments,
     { workspaceId: activeParishId || undefined } as any,
@@ -135,6 +156,7 @@ export default function DocumentsPage() {
   }, [isGuardian, isCatechumen, stats, selfProfiles, staffCatechumens]);
 
   const loading =
+    loadingRequirements ||
     loadingDocs ||
     (isGuardian && loadingStats) ||
     (isCatechumen && loadingSelf) ||
@@ -153,12 +175,20 @@ export default function DocumentsPage() {
     for (const d of docs) {
       if (!d.catechumenProfileId) continue;
       if (!map[d.catechumenProfileId]) map[d.catechumenProfileId] = {};
-      map[d.catechumenProfileId][d.type] = d;
+      const old = map[d.catechumenProfileId][d.type];
+      if (!old || (old.status === "REJECTED" && d.status !== "REJECTED"))
+        map[d.catechumenProfileId][d.type] = d;
     }
     return map;
   }, [docs]);
 
-  const totalSlots = catechumens.length * DOC_TYPE_KEYS.length;
+  const totalSlots = (requirementRows as any[]).reduce(
+    (sum, row) =>
+      sum +
+      Object.values(row.requirements).filter((v) => v !== "NOT_APPLICABLE")
+        .length,
+    0,
+  );
   const metrics = useMemo(() => {
     let verified = 0;
     let pending = 0;
@@ -168,9 +198,12 @@ export default function DocumentsPage() {
       else if (d.status === "PENDING") pending++;
       else if (d.status === "REJECTED") rejected++;
     }
-    const missing = Math.max(0, totalSlots - (verified + pending + rejected));
+    const missing = (requirementRows as any[]).reduce(
+      (sum, row) => sum + row.missing.length,
+      0,
+    );
     return { verified, pending, rejected, missing };
-  }, [docs, totalSlots]);
+  }, [docs, requirementRows]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -262,6 +295,21 @@ export default function DocumentsPage() {
 
   return (
     <div className="space-y-6">
+      {canEditRules && activeParishId && (
+        <>
+          <Button variant="outline" onClick={() => setShowRules((v) => !v)}>
+            {tc("documentRules.title")}
+          </Button>
+          {showRules && (
+            <DocumentRulesPanel
+              workspaceId={activeParishId}
+              dioceseAdmin={
+                userRole === "DIOCESE_ADMIN" || userRole === "SUPER_ADMIN"
+              }
+            />
+          )}
+        </>
+      )}
       <AppPageHeader
         eyebrow={tc("documents.title")}
         title={tc("documents.title")}
@@ -296,10 +344,7 @@ export default function DocumentsPage() {
             label={tc("documents.rejected")}
             value={metrics.rejected}
           />
-          <AppMetric
-            label={tc("documents.missing")}
-            value={metrics.missing}
-          />
+          <AppMetric label={tc("documents.missing")} value={metrics.missing} />
         </div>
       )}
 
@@ -433,6 +478,13 @@ export default function DocumentsPage() {
         <div className="space-y-4">
           {catechumens.map((c) => {
             const catechumenDocs = docMap[c.id] || {};
+            const applicableTypes = DOC_TYPE_KEYS.filter(
+              (type) =>
+                requirementMap.get(c.id)?.requirements[type] !==
+                  "NOT_APPLICABLE" || catechumenDocs[type],
+            );
+            const missingTypes: string[] =
+              requirementMap.get(c.id)?.missing ?? [];
             const docValues = Object.values(catechumenDocs);
             const pendingCount = docValues.filter(
               (d: any) => d.status === "PENDING",
@@ -444,7 +496,7 @@ export default function DocumentsPage() {
               (d: any) => d.status === "VERIFIED",
             ).length;
             const progressPct = Math.round(
-              (verifiedCount / DOC_TYPE_KEYS.length) * 100,
+              (verifiedCount / Math.max(1, applicableTypes.length)) * 100,
             );
             const initials = `${c.firstName?.[0] || ""}${
               c.lastName?.[0] || ""
@@ -472,11 +524,22 @@ export default function DocumentsPage() {
                       <span className="text-xs text-muted-foreground flex-shrink-0">
                         {tc("documents.verified_of", {
                           verified: verifiedCount,
-                          total: DOC_TYPE_KEYS.length,
+                          total: applicableTypes.length,
                         })}
                       </span>
                     </div>
                   </div>
+                  {missingTypes.length > 0 && (
+                    <Badge variant="warning">
+                      {tc("documentRules.missing", {
+                        types: missingTypes
+                          .map(
+                            (type) => docTypes[type as keyof typeof docTypes],
+                          )
+                          .join(", "),
+                      })}
+                    </Badge>
+                  )}
                   {pendingCount > 0 && (
                     <Badge variant="warning" size="sm">
                       {tc("documents.alert_pending", { count: pendingCount })}
@@ -489,8 +552,48 @@ export default function DocumentsPage() {
                   )}
                 </div>
 
+                <details>
+                  <summary className="cursor-pointer text-sm">
+                    {tc("documentRules.uploadHistory")}
+                  </summary>
+                  <ul>
+                    {docs
+                      .filter((d: any) => d.catechumenProfileId === c.id)
+                      .map((d: any) => (
+                        <li key={d.id}>
+                          <button
+                            className="text-sm underline"
+                            onClick={async () => {
+                              try {
+                                const blob = await fetchAuthenticatedDocument(
+                                  d.id,
+                                );
+                                const url = URL.createObjectURL(blob);
+                                const link = document.createElement("a");
+                                link.href = url;
+                                link.download = d.name;
+                                link.click();
+                                setTimeout(
+                                  () => URL.revokeObjectURL(url),
+                                  1000,
+                                );
+                              } catch (error: any) {
+                                toast({
+                                  title: tc("error"),
+                                  description: error.message,
+                                  variant: "destructive",
+                                });
+                              }
+                            }}
+                          >
+                            {d.name}
+                          </button>
+                        </li>
+                      ))}
+                  </ul>
+                </details>
                 <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                  {DOC_TYPE_KEYS.map((type) => {
+                  {applicableTypes.map((type) => {
                     const label = docTypes[type];
                     const doc = catechumenDocs[type];
                     const status:
@@ -553,7 +656,9 @@ export default function DocumentsPage() {
                           )}
                           {status === "MISSING" && (
                             <span className="flex-shrink-0 text-xs italic text-muted-foreground">
-                              {tc("documents.status_missing")}
+                              {missingTypes.includes(type)
+                                ? tc("documents.status_missing")
+                                : tc("documentRules.values.OPTIONAL")}
                             </span>
                           )}
                         </div>
@@ -565,7 +670,9 @@ export default function DocumentsPage() {
                                   size="icon"
                                   variant="ghost"
                                   className="h-11 w-11 min-h-11 min-w-11 sm:h-7 sm:w-7 sm:min-h-0 sm:min-w-0"
-                                  aria-label={`${tc("documents.tooltip_upload")}: ${label} (${personName})`}
+                                  aria-label={`${tc(
+                                    "documents.tooltip_upload",
+                                  )}: ${label} (${personName})`}
                                   onClick={() =>
                                     setUploadDialog({
                                       catechumenId: c.id,
@@ -589,7 +696,9 @@ export default function DocumentsPage() {
                                     size="icon"
                                     variant="ghost"
                                     className="h-7 w-7"
-                                    aria-label={`${tc("documents.tooltip_approve")}: ${label} (${personName})`}
+                                    aria-label={`${tc(
+                                      "documents.tooltip_approve",
+                                    )}: ${label} (${personName})`}
                                     onClick={() => handleVerify(doc.id)}
                                   >
                                     <CheckCircle className="h-3.5 w-3.5 text-success" />
@@ -605,7 +714,9 @@ export default function DocumentsPage() {
                                     size="icon"
                                     variant="ghost"
                                     className="h-7 w-7"
-                                    aria-label={`${tc("documents.tooltip_reject")}: ${label} (${personName})`}
+                                    aria-label={`${tc(
+                                      "documents.tooltip_reject",
+                                    )}: ${label} (${personName})`}
                                     onClick={() => setRejectingId(doc.id)}
                                   >
                                     <XCircle className="h-3.5 w-3.5 text-destructive" />
@@ -624,7 +735,9 @@ export default function DocumentsPage() {
                                   size="icon"
                                   variant="ghost"
                                   className="h-7 w-7"
-                                  aria-label={`${tc("documents.tooltip_approve")}: ${label} (${personName})`}
+                                  aria-label={`${tc(
+                                    "documents.tooltip_approve",
+                                  )}: ${label} (${personName})`}
                                   onClick={() => handleVerify(doc.id)}
                                 >
                                   <CheckCircle className="h-3.5 w-3.5 text-success" />
@@ -643,7 +756,9 @@ export default function DocumentsPage() {
                                     size="icon"
                                     variant="ghost"
                                     className="h-11 w-11 min-h-11 min-w-11 sm:h-7 sm:w-7 sm:min-h-0 sm:min-w-0"
-                                    aria-label={`${tc("documents.tooltip_replace")}: ${label} (${personName})`}
+                                    aria-label={`${tc(
+                                      "documents.tooltip_replace",
+                                    )}: ${label} (${personName})`}
                                     onClick={() =>
                                       setUploadDialog({
                                         catechumenId: c.id,
@@ -666,7 +781,9 @@ export default function DocumentsPage() {
                                   size="icon"
                                   variant="ghost"
                                   className="h-11 w-11 min-h-11 min-w-11 sm:h-7 sm:w-7 sm:min-h-0 sm:min-w-0"
-                                  aria-label={`${tc("documents.tooltip_delete")}: ${label} (${personName})`}
+                                  aria-label={`${tc(
+                                    "documents.tooltip_delete",
+                                  )}: ${label} (${personName})`}
                                   onClick={() => handleDelete(doc.id)}
                                 >
                                   <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />

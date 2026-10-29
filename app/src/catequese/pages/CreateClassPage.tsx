@@ -1,3 +1,4 @@
+import { DocumentStageSelect } from "../components/DocumentStageSelect";
 import { useEffect, useMemo, useState } from "react";
 import { TimeInput } from "../../client/components/ui/time-input";
 import { useTranslation } from "react-i18next";
@@ -64,6 +65,7 @@ export default function CreateClassPage() {
   );
 
   const [parishId, setParishId] = useState("");
+  const [documentStageKind, setDocumentStageKind] = useState("");
   const [communityId, setCommunityId] = useState("");
 
   useEffect(() => {
@@ -146,6 +148,7 @@ export default function CreateClassPage() {
     try {
       await createClass({
         ...values,
+        documentStageKind: documentStageKind || null,
         parishId: targetParishId,
         communityId: communityId || undefined,
       });
@@ -274,6 +277,10 @@ export default function CreateClassPage() {
       <AppPanel>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <DocumentStageSelect
+              value={documentStageKind}
+              onChange={setDocumentStageKind}
+            />
             {(institutionalParishes.length > 0 || selectedIsInstitutional) && (
               <div className="space-y-3">
                 <div>

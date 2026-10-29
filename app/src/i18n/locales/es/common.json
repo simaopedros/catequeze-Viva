@@ -819,5 +819,41 @@
     "members_one": "{{count}} miembro",
     "members_other": "{{count}} miembros",
     "members_zero": "{{count}} miembros"
+  },
+  "documentRules": {
+    "title": "Reglas de documentos",
+    "stage": "Etapa de documentos",
+    "automatic": "Automático por nombre de etapa o sacramento y edad",
+    "advisory": "Los documentos faltantes solo generan avisos. Nunca bloquean la conclusión.",
+    "scope": "Ámbito",
+    "diocese": "Diócesis",
+    "parish": "Parroquia",
+    "inherit": "Usar regla heredada",
+    "restore": "Restaurar predeterminado",
+    "history": "Historial de cambios",
+    "saved": "Padrinos actualizados",
+    "sponsors": "Padrino y madrina",
+    "otherParish": "Es de otra parroquia",
+    "parishName": "Nombre de la parroquia (opcional)",
+    "missing": "Pendiente: {{types}}",
+    "uploadHistory": "Todos los documentos enviados",
+    "values": {
+      "REQUIRED": "Obligatorio",
+      "OPTIONAL": "Opcional",
+      "NOT_APPLICABLE": "No se aplica"
+    },
+    "roles": {
+      "PADRINHO": "Padrino",
+      "MADRINHA": "Madrina"
+    },
+    "stages": {
+      "PRE_CATECHESIS": "Precatequesis / iniciación infantil",
+      "BAPTISM_CHILD": "Bautismo de niños",
+      "FIRST_EUCHARIST": "Primera Eucaristía",
+      "CONFIRMATION_TEEN": "Confirmación de adolescentes",
+      "RICA_ADULT": "Catequesis de adultos / RICA",
+      "CONFIRMATION_ADULT": "Confirmación de adultos",
+      "PERSEVERANCE": "Perseverancia / después de los sacramentos"
+    }
   }
 }

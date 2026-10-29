@@ -351,6 +351,7 @@ export const createClass = async (args: any, context: any) => {
       name: args.name,
       parishId: effectiveParishId,
       communityId: effectiveCommunityId,
+      documentStageKind: args.documentStageKind || null,
       stageId: args.stageId || null,
       sacramentId: args.sacramentId || null,
       yearId: args.yearId || null,
@@ -644,7 +645,7 @@ export const updateClass = async (args: any, context: any) => {
   const { id } = parsed;
   const data: Record<string, any> = {};
   for (const key of [
-    "name", "communityId", "stageId", "sacramentId", "yearId",
+    "documentStageKind", "name", "communityId", "stageId", "sacramentId", "yearId",
     "dayOfWeek", "startTime", "endTime", "location", "maxCapacity", "status",
   ] as const) {
     if (Object.prototype.hasOwnProperty.call(parsed, key)) data[key] = parsed[key];

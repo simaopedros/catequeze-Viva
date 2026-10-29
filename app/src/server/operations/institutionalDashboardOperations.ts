@@ -1,3 +1,4 @@
+import { documentRequirementsForWhere } from "../documents/requirements";
 /**
  * Institutional Dashboard Operations
  *
@@ -435,12 +436,7 @@ export const getInstitutionalOverview = async (
     context.entities.Document.count({
       where: { catechumenProfile: { enrollments: { some: enrollmentWhere } } },
     }),
-    context.entities.Document.count({
-      where: {
-        status: "PENDING",
-        catechumenProfile: { enrollments: { some: enrollmentWhere } },
-      },
-    }),
+    documentRequirementsForWhere(context, { enrollments: { some: enrollmentWhere } }).then(rows => rows.reduce((sum: number, row: any) => sum + row.missing.length, 0)),
     context.entities.ConsentRecord.count({
       where: {
         granted: false,
