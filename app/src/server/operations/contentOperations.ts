@@ -10,6 +10,7 @@ import {
   assertCanModifyContent,
   isUnpublishedContentStatus,
 } from "../auth/contentAccess";
+import { isFamilySurface, loadActiveRoles } from "../auth/familySurface";
 import { requireWorkspaceAccess } from "./sharedScope";
 import {
   defaultPolicyFor,
@@ -178,7 +179,10 @@ export const listContentItems = async (
   };
 };
 
-export const getContentItem = async (args: { id: string }, context: any) => {
+export const getContentItem = async (
+  args: { id: string; surface?: string },
+  context: any,
+) => {
   if (!context.user) throw new HttpError(401);
   const item = await context.entities.ContentItem.findUnique({
     where: { id: args.id },
@@ -221,8 +225,15 @@ export const getContentItem = async (args: { id: string }, context: any) => {
 
   await assertCanAccessContent(context, item);
 
+  const roles = context.user.isAdmin
+    ? ["SUPER_ADMIN"]
+    : item.parishId
+      ? await loadActiveRoles(context, item.parishId)
+      : [(await getUserRoleAndParish(context, item.parishId, item.dioceseId)).role];
+  const familySurface = isFamilySurface({ context, roles, surface: args.surface });
+  const { meetings, versions, ...publicItem } = item;
   return {
-    ...item,
+    ...(familySurface ? publicItem : item),
     directoryRefs: item.ContentDirectoryReference,
   };
 };
