@@ -36,6 +36,9 @@ function contextFor(role: string) {
           catechists: [{ userId: "actor" }],
         }),
       },
+      ClassCatechist: {
+        findMany: vi.fn().mockResolvedValue([{ classId: "class-a" }]),
+      },
       GuardianProfile: {
         findMany: vi.fn().mockResolvedValue([{ householdId: "own-household" }]),
       },
