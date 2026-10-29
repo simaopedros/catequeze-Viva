@@ -56,18 +56,12 @@ export const listDocuments = async (
   const access = await requireWorkspaceAccess(context, workspaceId);
   const parishId = access.workspaceId;
 
-  // Coordinator+: documents of catechumens / members in this parish only
+  // Coordinator+: documents of catechumens enrolled in this parish only
   // (scoped community coordinators use the class-scoped branch below)
   if (
     (access.isCoordinatorOrAbove && !access.isScopedCoordinator) ||
     access.role === 'PASTORAL_VIEWER'
   ) {
-    const parishMembers = await context.entities.Membership.findMany({
-      where: { parishId },
-      select: { userId: true },
-    });
-    const parishUserIds = parishMembers.map((m: any) => m.userId);
-
     const parishClasses = await context.entities.CatechesisClass.findMany({
       where: { parishId },
       select: { id: true },
@@ -84,10 +78,7 @@ export const listDocuments = async (
 
     return context.entities.Document.findMany({
       where: {
-        OR: [
-          { uploadedById: { in: parishUserIds } },
-          { catechumenProfileId: { in: parishCatechumenIds } },
-        ],
+        catechumenProfileId: { in: parishCatechumenIds },
       },
       orderBy: { createdAt: 'desc' },
       select: documentClientSelect,

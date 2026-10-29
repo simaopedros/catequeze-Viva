@@ -605,7 +605,12 @@ export const saveAttendanceBatch = async (
   ];
   const [profiles, enrollments, existingRecords] = await Promise.all([
     context.entities.CatechumenProfile.findMany({
-      where: { id: { in: profileIds } },
+      where: {
+        id: { in: profileIds },
+        enrollments: {
+          some: { classId: meeting.classId, status: "ENROLLED" },
+        },
+      },
       select: { id: true, firstName: true, lastName: true },
     }),
     context.entities.ClassEnrollment.findMany({
