@@ -20,6 +20,7 @@ import {
 } from "../auth/helpers";
 import { ensureSacramentalJourneyForCatechumen } from "../sacramentHelpers";
 import { requireWorkspaceAccess, resolveWorkspaceAccess } from "./sharedScope";
+import type { WorkspaceAccess } from "./sharedScope";
 import {
   actorCanViewOfficialResource,
   assertCanPublish,
@@ -79,7 +80,7 @@ async function requireJourneyStaff(context: any, catechumen: any) {
       ].filter(Boolean),
     ),
   ];
-  let catechistAccess = null;
+  let catechistAccess: WorkspaceAccess | null = null;
   for (const parishId of parishIds) {
     const access = await resolveWorkspaceAccess(context, parishId, {
       required: false,

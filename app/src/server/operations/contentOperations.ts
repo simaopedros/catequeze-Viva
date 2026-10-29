@@ -147,7 +147,7 @@ export const listContentItems = async (
   } else {
     const parishIds = await getParishIds(context);
     if (parishIds.length === 0) return emptyPage(useCursorPage);
-    const localFilters = [];
+    const localFilters: any[] = [];
     for (const parishId of [...new Set(parishIds)]) {
       const access = await requireWorkspaceAccess(context, parishId);
       const staff =
