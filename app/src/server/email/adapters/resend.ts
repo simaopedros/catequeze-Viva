@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { EmailWebhookUnavailableError } from "../port";
 import { logger } from "../../logger";
 import { formatFrom } from "../config";
 import { sanitizeResendTags } from "../resendTags";
@@ -157,28 +158,23 @@ export const resendEmailAdapter: EmailProvider = {
   async verifyWebhook(payload, headers) {
     const resend = client();
     const secret = process.env.RESEND_WEBHOOK_SECRET;
-    if (resend && secret) {
-      const anyClient = resend as unknown as {
-        webhooks?: {
-          verify?: (args: {
-            payload: string;
-            headers: Record<string, string>;
-            webhookSecret: string;
-          }) => unknown;
-        };
-      };
-      if (anyClient.webhooks?.verify) {
-        const normalized: Record<string, string> = {};
-        for (const [key, value] of Object.entries(headers)) {
-          normalized[key] = Array.isArray(value) ? value[0] ?? "" : value ?? "";
-        }
-        anyClient.webhooks.verify({
-          payload,
-          headers: normalized,
-          webhookSecret: secret,
-        });
-      }
+    if (!resend || !secret?.trim()) throw new EmailWebhookUnavailableError();
+    if (typeof resend.webhooks?.verify !== "function") {
+      throw new EmailWebhookUnavailableError();
     }
+    const normalized: Record<string, string> = {};
+    for (const [key, value] of Object.entries(headers)) {
+      normalized[key] = Array.isArray(value) ? value[0] ?? "" : value ?? "";
+    }
+    await resend.webhooks.verify({
+      payload,
+      headers: {
+        id: normalized["svix-id"],
+        timestamp: normalized["svix-timestamp"],
+        signature: normalized["svix-signature"],
+      },
+      webhookSecret: secret,
+    });
     const parsed = JSON.parse(payload) as {
       type?: string;
       data?: { email_id?: string; to?: string[] | string };

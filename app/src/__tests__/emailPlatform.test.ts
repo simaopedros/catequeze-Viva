@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("express", () => ({ default: { raw: () => () => undefined } }));
 vi.mock("wasp/server/auth", () => ({}));
 vi.mock("../server/requestPortalContext", () => ({
   isFamilyPortalRequestContext: () => false,
@@ -30,6 +31,7 @@ import { fromForStream } from "../server/email/config";
 import { listUnsubscribeHeaders } from "../server/email/headers";
 import { suppressEmail } from "../server/email/suppression";
 import { setEmailPreference } from "../server/email/preferences";
+import * as emailFactory from "../server/email/factory";
 import { emailWebhookHandler } from "../server/api/emailWebhook";
 import { renderCatalogEmail } from "../server/email/templates";
 import { buildInviteEmailContent } from "../server/jobs/inviteEmailUtils";
@@ -248,7 +250,15 @@ describe("webhooks", () => {
       status: () => res,
       json: () => res,
     } as any;
-    await emailWebhookHandler(req, res, { entities: {} });
+    const provider = emailFactory.getEmailProvider();
+    const spy = vi
+      .spyOn(emailFactory, "getEmailProvider")
+      .mockReturnValue({ ...provider, name: "resend" });
+    try {
+      await emailWebhookHandler(req, res, { entities: {} });
+    } finally {
+      spy.mockRestore();
+    }
     const blocked = await enqueueEmail({
       messageId: EMAIL_MESSAGE.PASTORAL_MESSAGE,
       to: "bad@x.com",

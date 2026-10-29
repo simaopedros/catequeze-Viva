@@ -1998,6 +1998,7 @@ api emailUnsubscribeOneClickApi {
 }
 
 api emailWebhookApi {
+  middlewareConfigFn: import { emailWebhookMiddlewareConfigFn } from "@src/server/api/emailWebhook",
   fn: import { emailWebhookHandler } from "@src/server/api/emailWebhook",
   httpRoute: (POST, "/api/email/webhooks/resend"),
   entities: [User, EmailMessage, EmailSuppression, EmailPreference]

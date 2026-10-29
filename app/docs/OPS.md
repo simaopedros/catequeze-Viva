@@ -361,3 +361,17 @@ docker stats --no-stream
 | [`CLOUDFLARE_SSL.md`](CLOUDFLARE_SSL.md) | Configuração SSL Cloudflare |
 | [`plans/pendencias_go-live.md`](plans/pendencias_go-live.md) | Plano go-live completo |
 
+
+### Verificação do webhook de e-mail
+
+A rota `POST /api/email/webhooks/resend` exige o provedor Resend, a configuração
+`RESEND_API_KEY`, o segredo de assinatura `RESEND_WEBHOOK_SECRET` e o verificador
+`webhooks.verify` do SDK. O corpo bruto é preservado para validar a assinatura.
+Configuração incompleta retorna 503, sem atualizar mensagens, supressões ou
+preferências. Assinatura inválida retorna 400.
+
+A documentação e os arquivos de implantação consultados não comprovam a presença
+do segredo em produção ou homologação. Antes da publicação, revisar a configuração
+em ambos os ambientes sem copiar ou registrar valores. Sem ela, eventos legítimos
+também receberão 503 e suas atualizações ficarão pendentes. O envio de e-mails e
+as permissões de telas não são alterados por esta correção.
