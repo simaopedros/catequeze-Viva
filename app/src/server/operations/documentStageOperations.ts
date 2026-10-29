@@ -199,7 +199,7 @@ export async function listDocumentRequirements(
   context: any,
 ) {
   requireAuth(context.user);
-  await requireWorkspaceAccess(context, args.workspaceId);
+  const access = await requireWorkspaceAccess(context, args.workspaceId);
   // Reuse the existing role, household and class scope; paginate without truncation.
   const ids: string[] = [];
   let cursor: string | null = null;
@@ -216,5 +216,10 @@ export async function listDocumentRequirements(
     ids.push(...page.items.map((p: any) => p.id));
     cursor = page.nextCursor;
   } while (cursor);
-  return documentRequirementsForWhere(context, { id: { in: ids } });
+  const classWhere = access.allowedClassIds === 'ALL'
+    ? { parishId: args.workspaceId }
+    : (access.isCatechist || access.isScopedCoordinator)
+      ? { id: { in: access.allowedClassIds } }
+      : {};
+  return documentRequirementsForWhere(context, { id: { in: ids } }, classWhere);
 }

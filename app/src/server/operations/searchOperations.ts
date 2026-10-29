@@ -2,10 +2,10 @@ import { HttpError } from 'wasp/server';
 import { MembershipStatus } from '@prisma/client';
 import { getDioceseParishIds } from '../auth/helpers';
 import {
-  loadActiveRoles,
-  rolesAreFamilyOnly,
-} from '../auth/familySurface';
-import { classWhereAcrossWorkspaces } from './sharedScope';
+  classWhereAcrossWorkspaces,
+  resolveWorkspaceAccess,
+  catechumenWhereForAccess,
+} from './sharedScope';
 import {
   isCacheReady,
   triggerBackgroundLoad,
@@ -85,29 +85,43 @@ export const globalSearch = async (args: { query: string; locale?: string | null
     ? {}
     : await classWhereAcrossWorkspaces(context, parishIds);
 
-  // Family-only accounts must not discover other households via parish-wide search.
-  const roles = isAdmin ? [] : await loadActiveRoles(context);
-  const familyOnly = !isAdmin && rolesAreFamilyOnly(roles);
-  let familyHouseholdIds: string[] = [];
-  if (familyOnly) {
-    const guardians = await context.entities.GuardianProfile.findMany({
-      where: { userId: context.user.id },
-      select: { householdId: true },
-    });
-    familyHouseholdIds = guardians
-      .map((g: { householdId: string | null }) => g.householdId)
-      .filter(Boolean) as string[];
-  }
-  const familyCatechumenFilter = familyOnly
-    ? {
-        OR: [
-          ...(familyHouseholdIds.length
-            ? [{ householdId: { in: familyHouseholdIds } }]
-            : []),
-          { userId: context.user.id },
+  // Resolve each workspace separately: a role in another parish never widens
+  // this parish's profile scope. Related categories share the same predicate.
+  const profileScopes: Record<string, unknown>[] = [];
+  const householdScopes: Record<string, unknown>[] = [];
+  for (const parishId of parishIds) {
+    const access = await resolveWorkspaceAccess(context, parishId, { required: false });
+    if (!access) continue;
+    if (access.role === 'GUARDIAN' || access.role === 'CATECHUMEN') {
+      const ownProfile = {
+        AND: [
+          { OR: [
+            { parishId },
+            { enrollments: { some: { class: { parishId } } } },
+            { household: { parishId } },
+          ] },
+          { OR: [
+            { userId: context.user.id },
+            { household: { guardians: { some: { userId: context.user.id } } } },
+          ] },
         ],
-      }
-    : null;
+      };
+      profileScopes.push(ownProfile);
+      householdScopes.push({
+        parishId,
+        guardians: { some: { userId: context.user.id } },
+      }, { catechumens: { some: ownProfile } });
+    } else {
+      const profileScope = catechumenWhereForAccess(access);
+      profileScopes.push(profileScope);
+      // Full-parish staff retain families without enrolled children too.
+      householdScopes.push(access.allowedClassIds === 'ALL'
+        ? { parishId }
+        : { catechumens: { some: profileScope } });
+    }
+  }
+  const catechumenFilter = isAdmin ? {} : { OR: profileScopes };
+  const householdFilter = isAdmin ? {} : { OR: householdScopes };
 
   // Reference data: serve from cache if ready, otherwise trigger background load
   const cacheReady = isCacheReady();
@@ -139,32 +153,15 @@ export const globalSearch = async (args: { query: string; locale?: string | null
   ] = await Promise.all([
     safeQuery(() =>
       context.entities.CatechumenProfile.findMany({
-        where: isAdmin
-          ? {
-              OR: [
-                { firstName: { contains: q, mode: 'insensitive' } },
-                { lastName: { contains: q, mode: 'insensitive' } },
-              ],
-            }
-          : {
-              AND: [
-                {
-                  OR: [
-                    { firstName: { contains: q, mode: 'insensitive' } },
-                    { lastName: { contains: q, mode: 'insensitive' } },
-                  ],
-                },
-                familyCatechumenFilter
-                  ? familyCatechumenFilter
-                  : {
-                      OR: [
-                        { enrollments: { some: { class: parishFilter } } },
-                        { household: parishFilter },
-                        { parishId: { in: parishIds } },
-                      ],
-                    },
-              ],
-            },
+        where: {
+          AND: [
+            { OR: [
+              { firstName: { contains: q, mode: 'insensitive' } },
+              { lastName: { contains: q, mode: 'insensitive' } },
+            ] },
+            catechumenFilter,
+          ],
+        },
         select: { id: true, firstName: true, lastName: true },
         take: limit,
       })
@@ -234,18 +231,11 @@ export const globalSearch = async (args: { query: string; locale?: string | null
         ),
 
     safeQuery(() =>
-      familyOnly && familyHouseholdIds.length === 0
-        ? Promise.resolve([])
-        : context.entities.Household.findMany({
-            where: {
-              name: { contains: q, mode: 'insensitive' },
-              ...(familyOnly
-                ? { id: { in: familyHouseholdIds } }
-                : parishFilter),
-            },
-            select: { id: true, name: true },
-            take: limit,
-          })
+      context.entities.Household.findMany({
+        where: { AND: [{ name: { contains: q, mode: 'insensitive' } }, householdFilter] },
+        select: { id: true, name: true },
+        take: limit,
+      })
     ),
 
     // SacramentalJourney — filter via catechumenProfile relation
@@ -260,15 +250,7 @@ export const globalSearch = async (args: { query: string; locale?: string | null
                   { lastName: { contains: q, mode: 'insensitive' } },
                 ],
               },
-              ...(isAdmin
-                ? []
-                : [
-                    familyCatechumenFilter
-                      ? familyCatechumenFilter
-                      : {
-                          enrollments: { some: { class: parishFilter } },
-                        },
-                  ]),
+              catechumenFilter,
             ],
           },
         },
@@ -292,11 +274,7 @@ export const globalSearch = async (args: { query: string; locale?: string | null
         : context.entities.Document.findMany({
             where: {
               name: { contains: q, mode: 'insensitive' },
-              catechumenProfile: familyCatechumenFilter
-                ? familyCatechumenFilter
-                : {
-                    enrollments: { some: { class: parishFilter } },
-                  },
+              catechumenProfile: catechumenFilter,
             },
             select: { id: true, name: true, type: true },
             take: limit,

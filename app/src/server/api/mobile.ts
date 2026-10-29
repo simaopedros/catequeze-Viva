@@ -1,5 +1,7 @@
 import { listDocumentRequirements } from "../operations/documentStageOperations";
 import type { Request, Response } from 'express';
+import { createHash } from 'node:crypto';
+import { consumePersistentRateLimit } from '../security/persistentRateLimit';
 import { HttpError, prisma } from 'wasp/server';
 import { createInvalidCredentialsError, createProviderId, doFakeWork, findAuthIdentity, findAuthWithUserBy, getProviderDataWithPassword } from 'wasp/auth/utils';
 import { verifyPassword } from 'wasp/auth/password';
@@ -316,24 +318,34 @@ export async function mobileAuthPasswordResetRequest(req: Request, res: Response
   const args = req.body ?? {};
   ensureValidEmail(args);
 
-  const authIdentity = await findAuthIdentity(createProviderId('email', args.email));
-  if (!authIdentity) {
-    await doFakeWork();
+  // Express resolves trusted proxies; do not read raw forwarding headers here.
+  const ip = req.ip || req.socket?.remoteAddress || 'unknown';
+  const identifier = createHash('sha256').update(args.email.trim().toLowerCase()).digest('hex');
+  const [ipLimit, emailLimit] = await Promise.all([
+    consumePersistentRateLimit(ip, { scope: 'mobile-password-reset-ip', max: 20, windowMs: 15 * 60 * 1000 }),
+    consumePersistentRateLimit(identifier, { scope: 'mobile-password-reset-email', max: 1, windowMs: 60 * 1000 }),
+  ]);
+  await doFakeWork();
+  if (!ipLimit.allowed || !emailLimit.allowed || ipLimit.failedOpen || emailLimit.failedOpen) {
     return res.json({ success: true });
   }
-
-  const providerData = getProviderDataWithPassword<'email'>(authIdentity.providerData);
-  const { isResendAllowed, timeLeft } = isEmailResendAllowed(providerData, 'passwordResetSentAt');
-  if (!isResendAllowed) {
-    throw new HttpError(400, `Please wait ${timeLeft} secs before trying again.`);
+  try {
+    const authIdentity = await findAuthIdentity(createProviderId('email', args.email));
+    if (authIdentity) {
+      const providerData = getProviderDataWithPassword<'email'>(authIdentity.providerData);
+      const { isResendAllowed } = isEmailResendAllowed(providerData, 'passwordResetSentAt');
+      if (isResendAllowed) {
+        const passwordResetLink = await createPasswordResetLink(args.email, '/password-reset');
+        await sendPasswordResetEmail(args.email, {
+          from: passwordResetFromField,
+          to: args.email,
+          ...getPasswordResetEmailContent({ passwordResetLink }),
+        });
+      }
+    }
+  } catch {
+    // Provider/transport errors must not reveal whether this account exists.
   }
-
-  const passwordResetLink = await createPasswordResetLink(args.email, '/password-reset');
-  await sendPasswordResetEmail(args.email, {
-    from: passwordResetFromField,
-    to: args.email,
-    ...getPasswordResetEmailContent({ passwordResetLink }),
-  });
 
   return res.json({ success: true });
 }

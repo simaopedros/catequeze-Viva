@@ -1,7 +1,8 @@
 /**
- * Resolve the real client IP behind Caddy + Cloudflare.
- * Prefer CF-Connecting-IP (set by Cloudflare), then the first X-Forwarded-For
- * hop (trusted when Express trust proxy is enabled), then req.ip / socket.
+ * Use the IP resolved by Express, then the socket address.
+ * Caddy must sanitize forwarding headers and resolve Cloudflare client IPs
+ * only for trusted Cloudflare peers. Never read raw IP headers here.
+ * Node must remain private behind the single trusted Caddy hop.
  */
 
 type HeaderBag = string | string[] | undefined;
@@ -11,16 +12,6 @@ export type IpRequestLike = {
   headers?: Record<string, HeaderBag>;
   socket?: { remoteAddress?: string };
 };
-
-function firstHeader(value: HeaderBag): string | undefined {
-  if (typeof value === "string") {
-    return value.split(",")[0]?.trim() || undefined;
-  }
-  if (Array.isArray(value) && value[0]) {
-    return String(value[0]).split(",")[0]?.trim() || undefined;
-  }
-  return undefined;
-}
 
 function normalizeIp(raw?: string): string | undefined {
   if (!raw) return undefined;
@@ -33,16 +24,6 @@ function normalizeIp(raw?: string): string | undefined {
 /** Extract client IP from an Express-like request. */
 export function getClientIpFromRequest(req?: IpRequestLike | null): string {
   if (!req) return "unknown";
-
-  const headers = req.headers || {};
-  const fromCf = normalizeIp(firstHeader(headers["cf-connecting-ip"]));
-  if (fromCf) return fromCf;
-
-  const fromXff = normalizeIp(firstHeader(headers["x-forwarded-for"]));
-  if (fromXff) return fromXff;
-
-  const fromReal = normalizeIp(firstHeader(headers["x-real-ip"]));
-  if (fromReal) return fromReal;
 
   const fromReqIp = normalizeIp(req.ip);
   if (fromReqIp) return fromReqIp;

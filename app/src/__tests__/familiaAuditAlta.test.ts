@@ -73,7 +73,7 @@ describe("familia audit alta — PII stripping (source)", () => {
 });
 
 describe("familia audit alta — client IP", () => {
-  it("prefers CF-Connecting-IP over X-Forwarded-For", () => {
+  it("ignores raw CF-Connecting-IP and uses resolved req.ip", () => {
     expect(
       getClientIpFromRequest({
         headers: {
@@ -82,16 +82,16 @@ describe("familia audit alta — client IP", () => {
         },
         ip: "10.0.0.2",
       }),
-    ).toBe("203.0.113.50");
+    ).toBe("10.0.0.2");
   });
 
-  it("uses first X-Forwarded-For hop when CF header is absent", () => {
+  it("ignores raw X-Forwarded-For and uses resolved req.ip", () => {
     expect(
       getClientIpFromRequest({
         headers: { "x-forwarded-for": "198.51.100.9, 10.0.0.1" },
         ip: "10.0.0.2",
       }),
-    ).toBe("198.51.100.9");
+    ).toBe("10.0.0.2");
   });
 
   it("falls back to req.ip / unknown", () => {

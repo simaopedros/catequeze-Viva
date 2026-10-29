@@ -1,5 +1,11 @@
 {
   email admin@catechis.app
+  # Only these Cloudflare peers may supply the visitor IP header.
+  # Verify against Cloudflare's published IP ranges before deployment.
+  servers {
+    trusted_proxies static 173.245.48.0/20 103.21.244.0/22 103.22.200.0/22 103.31.4.0/22 141.101.64.0/18 108.162.192.0/18 190.93.240.0/20 188.114.96.0/20 197.234.240.0/22 198.41.128.0/17 162.158.0.0/15 104.16.0.0/13 104.24.0.0/14 172.64.0.0/13 131.0.72.0/22 2400:cb00::/32 2606:4700::/32 2803:f800::/32 2405:b500::/32 2405:8100::/32 2a06:98c0::/29 2c0f:f248::/32
+    client_ip_headers CF-Connecting-IP
+  }
 }
 
 # Shared reverse_proxy for same-origin /api/* (SSE-friendly: no buffering).
@@ -9,9 +15,10 @@
   }
   reverse_proxy server:3001 {
     header_up Host {host}
-    # Do not overwrite X-Forwarded-For with {remote_host} (that was the Cloudflare
-    # edge IP). Cloudflare already sends CF-Connecting-IP; Express prefers it
-    # (see getClientIpFromRequest) and falls back to X-Forwarded-For / req.ip.
+    # Collapse the validated visitor address to the one hop Express trusts.
+    header_up X-Forwarded-For {client_ip}
+    header_up -CF-Connecting-IP
+    header_up -X-Real-IP
     header_up X-Forwarded-Proto {scheme}
     # Flush immediately so Server-Sent Events reach the browser as they are written.
     flush_interval -1
@@ -85,6 +92,13 @@ catechis.app, www.catechis.app {
 
   # Hashed Vite assets: missing files must 404 (not SPA index.html as text/html),
   # otherwise open tabs after deploy get "Failed to fetch dynamically imported module".
+  # Service worker: nunca deixar edge/navegador servir sw.js antigo.
+  handle /sw.js {
+    header Cache-Control "no-cache"
+    root * /srv/web-app
+    file_server
+  }
+
   handle /assets/* {
     root * /srv/web-app
     file_server
@@ -133,6 +147,13 @@ Disallow: /
 
   handle /payments-webhook {
     import prod_api
+  }
+
+  # Service worker: nunca deixar edge/navegador servir sw.js antigo.
+  handle /sw.js {
+    header Cache-Control "no-cache"
+    root * /srv/web-app
+    file_server
   }
 
   handle /assets/* {
