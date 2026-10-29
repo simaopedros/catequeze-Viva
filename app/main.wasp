@@ -895,22 +895,22 @@ action createHousehold {
 
 action addGuardianToHousehold {
   fn: import { addGuardianToHousehold } from "@src/server/operations/familyOperations",
-  entities: [GuardianProfile, Household, Membership, Parish, ClassCatechist]
+  entities: [GuardianProfile, Household, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 
 action removeGuardianFromHousehold {
   fn: import { removeGuardianFromHousehold } from "@src/server/operations/familyOperations",
-  entities: [GuardianProfile, Household, Membership, Parish, ClassCatechist]
+  entities: [GuardianProfile, Household, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 
 action updateGuardianProfile {
   fn: import { updateGuardianProfile } from "@src/server/operations/familyOperations",
-  entities: [GuardianProfile, Household, Membership, Parish, ClassCatechist]
+  entities: [GuardianProfile, Household, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 
 action updateHousehold {
   fn: import { updateHousehold } from "@src/server/operations/familyOperations",
-  entities: [Household, Membership, Parish, ClassCatechist]
+  entities: [Household, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 //#endregion
 
@@ -2074,7 +2074,7 @@ page AppFamilyDetailPage { authRequired: true, component: import FamilyDetailPag
 //#region Catechis - Activities & Guardian
 query listActivitiesByContent {
   fn: import { listActivitiesByContent } from "@src/server/operations/activityOperations",
-  entities: [Activity, ActivitySubmission, ContentItem, Membership, Parish, CatechumenProfile, GuardianProfile]
+  entities: [Activity, ActivitySubmission, ContentItem, Membership, Parish, CatechumenProfile, GuardianProfile, ClassCatechist, CatechesisClass]
 }
 
 action createActivity {
