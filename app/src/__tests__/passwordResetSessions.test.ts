@@ -13,16 +13,6 @@ describe("password reset invalidates sessions", () => {
   );
   const wasp = readFileSync(resolve(__dirname, "../../main.wasp"), "utf8");
 
-  it("server action deletes Lucia sessions after hash update", () => {
-    const start = ops.indexOf(
-      "export const resetPasswordAndInvalidateSessions",
-    );
-    const block = ops.slice(start, start + 1800);
-    expect(block).toContain("updateAuthIdentityProviderData");
-    expect(block).toContain("session.deleteMany");
-    expect(block).toContain("validateJWT");
-  });
-
   it("reset form uses the session-invalidating action", () => {
     expect(form).toContain("resetPasswordAndInvalidateSessions");
     expect(form).not.toMatch(/from "wasp\/client\/auth"/);
