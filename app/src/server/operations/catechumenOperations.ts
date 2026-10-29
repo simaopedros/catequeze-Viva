@@ -1,3 +1,4 @@
+import { nestedClassWhere } from "./nestedClassScope";
 import { requirementsForProfile } from "../../shared/documents/requirements";
 import { catechumenPublicSelect } from "./catechumenDto";
 import { HttpError, prisma } from "wasp/server";
@@ -170,6 +171,10 @@ export const listCatechumens = async (
 
   const access = await requireWorkspaceAccess(context, workspaceId);
 
+  if (access.allowedClassIds !== "ALL" && (access.isCatechist || access.isScopedCoordinator)) {
+    Object.assign(select.enrollments.where, { classId: { in: access.allowedClassIds } });
+  }
+
   if (access.isCoordinatorOrAbove || access.role === "PASTORAL_VIEWER") {
     // Full-parish roles keep the historical query; scoped community
     // coordinators are limited to their classes / community households.
@@ -247,6 +252,7 @@ export const getCatechumenProfile = async (
   if (!context.user) throw new HttpError(401);
   await assertCanAccessCatechumenProfile(context, args.id);
 
+  const classWhere = await nestedClassWhere(context, args.id);
   const profile = await context.entities.CatechumenProfile.findUnique({
     where: { id: args.id },
     select: {
@@ -271,6 +277,7 @@ export const getCatechumenProfile = async (
         },
       },
       enrollments: {
+        where: { class: classWhere },
         include: {
           class: {
             select: { id: true, name: true, documentStageKind: true, stage: { select: { name: true } }, sacrament: { select: { name: true } } },
