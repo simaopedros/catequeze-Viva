@@ -883,9 +883,31 @@ export const removeCatechistFromClass = async (
     }
   }
 
-  return context.entities.ClassCatechist.delete({
+  const removed = await context.entities.ClassCatechist.delete({
     where: { id: assignment.id },
+    select: { id: true },
   });
+
+  // Resolve after removing the assignment, with a fresh actor context. A parish
+  // coordinator keeps their independent class access; former catechists do not.
+  const remainingAccess = await resolveWorkspaceAccess(
+    { ...context, user: { id: args.userId, isAdmin: false } },
+    classData.parishId,
+    { required: false },
+  );
+  if (
+    !remainingAccess?.isCoordinatorOrAbove ||
+    !isClassInScope(remainingAccess, args.classId)
+  ) {
+    await context.entities.ConversationParticipant.deleteMany({
+      where: {
+        userId: args.userId,
+        conversation: { type: "CLASS_CHAT", classId: args.classId },
+      },
+    });
+  }
+
+  return removed;
 };
 
 async function assertEnrollmentClassAccess(

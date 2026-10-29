@@ -41,7 +41,7 @@ const profile = {
   birthDate: new Date("2015-10-28T00:00:00Z"),
   parishId: "B",
   householdId: "other",
-  enrollments: [{ class: { id: "other", parishId: "B" } }],
+  enrollments: [{ status: "ENROLLED", class: { id: "other", parishId: "B" } }],
 };
 function context(active = true) {
   return {
@@ -186,7 +186,7 @@ it.each(["catechist", "guardian", "coordinator", "admin"])(
     const ctx = context();
     const target = {
       ...profile,
-      enrollments: [{ class: { id: "mine", parishId: "B" } }],
+      enrollments: [{ status: "ENROLLED", class: { id: "mine", parishId: "B" } }],
     };
     ctx.entities.CatechumenProfile.findUnique.mockResolvedValue(target);
     ctx.access.B =
@@ -246,7 +246,7 @@ it("does not borrow catechist authorization from an enrollment in another parish
   };
   ctx.entities.CatechumenProfile.findUnique.mockResolvedValue({
     ...profile,
-    enrollments: [{ class: { id: "mine", parishId: "A" } }],
+    enrollments: [{ status: "ENROLLED", class: { id: "mine", parishId: "A" } }],
   });
   const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
   await authenticatedDocumentUpload(
