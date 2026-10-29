@@ -1,3 +1,4 @@
+import { assertCanModifyContent as assertCanModifyScopedContent } from '../auth/contentAccess';
 import { HttpError } from 'wasp/server';
 import { MembershipStatus } from '@prisma/client';
 import { getDioceseParishIds } from '../auth/helpers';
@@ -48,10 +49,11 @@ async function getParishIds(context: any): Promise<string[]> {
 async function assertCanModifyContent(context: any, contentId: string) {
   const item = await context.entities.ContentItem.findUnique({
     where: { id: contentId },
-    select: { parishId: true, createdById: true },
+    select: { parishId: true, createdById: true, dioceseId: true, ownerType: true },
   });
   if (!item) throw new HttpError(404, 'Conteúdo não encontrado.');
 
+  if (item.ownerType === 'DIOCESE') return assertCanModifyScopedContent(context, item);
   if (context.user?.isAdmin) return;
   if (item.createdById === context.user.id) return;
 

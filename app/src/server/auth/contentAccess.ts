@@ -7,7 +7,6 @@
 import { HttpError } from 'wasp/server';
 import { MembershipStatus } from '@prisma/client';
 import { getDioceseParishIds } from './helpers';
-import { canPublishAt } from '../../shared/resourceInheritance';
 
 export function isCoordinatorOrAbove(role: string): boolean {
   return ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR', 'PERSONAL_OWNER'].includes(role);
@@ -24,13 +23,16 @@ export function canReviewContent(role: string): boolean {
 export async function getUserRoleAndParish(
   context: any,
   parishId?: string | null,
+  dioceseId?: string | null,
 ): Promise<{ role: string; parishId: string | null }> {
   if (context.user?.isAdmin) return { role: 'SUPER_ADMIN', parishId: parishId ?? null };
+  if (parishId === null && !dioceseId) return { role: '', parishId: null };
   const m = await context.entities.Membership.findFirst({
     where: {
       userId: context.user.id,
       status: MembershipStatus.ACTIVE,
       ...(parishId ? { parishId } : {}),
+      ...(dioceseId ? { parish: { dioceseId } } : {}),
     },
     select: { role: true, parishId: true },
   });
@@ -113,7 +115,7 @@ export async function assertCanAccessContent(
       throw new HttpError(403, 'Você não tem acesso a este conteúdo.');
     }
     if (PUBLISHED_STATUSES.has(item.status || '')) return;
-    const { role } = await getUserRoleAndParish(context, item.parishId);
+    const { role } = await getUserRoleAndParish(context, null, item.dioceseId);
     if (canReviewContent(role) || canCreateContent(role)) return;
   }
 
@@ -131,25 +133,26 @@ export async function assertCanModifyContent(
   },
 ) {
   if (context.user?.isAdmin) return;
-  if (item.createdById === context.user.id) {
-    if (item.ownerType === 'DIOCESE') {
-      const { role } = await getUserRoleAndParish(context, item.parishId);
-      if (!canPublishAt(role, 'DIOCESE', Boolean(context.user.isAdmin))) {
-        throw new HttpError(403, 'Sem permissão para alterar este conteúdo.');
-      }
-    }
+  // Diocese ownership must be checked before the creator shortcut.
+  if (item.ownerType === 'DIOCESE') {
+    const membership = item.dioceseId
+      ? await context.entities.Membership.findFirst({
+          where: {
+            userId: context.user.id,
+            status: MembershipStatus.ACTIVE,
+            role: 'DIOCESE_ADMIN',
+            parish: { dioceseId: item.dioceseId },
+          },
+          select: { id: true },
+        })
+      : null;
+    if (!membership) throw new HttpError(403, 'Sem permissão para alterar este conteúdo.');
     return;
   }
+  if (item.createdById === context.user.id) return;
 
   const { role } = await getUserRoleAndParish(context, item.parishId);
   if (!canCreateContent(role)) throw new HttpError(403, 'Sem permissão.');
-
-  if (item.ownerType === 'DIOCESE') {
-    if (!canPublishAt(role, 'DIOCESE', Boolean(context.user.isAdmin))) {
-      throw new HttpError(403, 'Conteúdo diocesano não pode ser editado neste nível.');
-    }
-    return;
-  }
 
   if (item.parishId) {
     const parishIds = await getParishIds(context);
@@ -201,7 +204,7 @@ export async function assertCanAccessVersion(context: any, versionId: string) {
 export async function assertCanAccessAttachment(context: any, attachmentId: string) {
   const attachment = await context.entities.ContextAttachment.findUnique({
     where: { id: attachmentId },
-    include: { session: { include: { contentItem: { select: { id: true, parishId: true, createdById: true } } } } },
+    include: { session: { include: { contentItem: { select: { id: true, parishId: true, createdById: true, dioceseId: true, ownerType: true, visibilityScope: true, status: true } } } } },
   });
   if (!attachment) throw new HttpError(404, 'Anexo não encontrado.');
   if (!attachment.session?.contentItem) throw new HttpError(404, 'Conteúdo não encontrado.');

@@ -427,7 +427,7 @@ export const getContentVersions = async (
 
   const contentItem = await context.entities.ContentItem.findUnique({
     where: { id: args.contentItemId },
-    select: { id: true, parishId: true, createdById: true },
+    select: { id: true, parishId: true, createdById: true, dioceseId: true, ownerType: true, visibilityScope: true, status: true },
   });
   if (!contentItem) throw new HttpError(404, 'Conteúdo não encontrado.');
 
@@ -453,6 +453,12 @@ export const restoreContentVersion = async (
     where: { id: args.versionId },
   });
   if (!version) throw new HttpError(404, 'Versão não encontrada.');
+
+  const content = await context.entities.ContentItem.findUnique({
+    where: { id: version.contentId },
+  });
+  if (!content) throw new HttpError(404, 'Conteúdo não encontrado.');
+  await assertCanModifyContent(context, content);
 
   const parsed: Record<string, any> = JSON.parse(version.body);
 
