@@ -196,5 +196,8 @@ describe("OfficialLibraryPage", () => {
       screen.queryByRole("button", { name: "Novo recurso" }),
     ).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Adotar" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Adaptar" }),
+    ).not.toBeInTheDocument();
   });
 });

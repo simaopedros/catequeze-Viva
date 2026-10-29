@@ -137,6 +137,7 @@ export async function serveOfficialResourceAttachment(
   res: Response,
   context: any,
 ) {
+  res.setHeader("Cache-Control", "private, no-store");
   try {
     if (!context.user) {
       return res.status(401).json({ error: "Autenticação necessária." });

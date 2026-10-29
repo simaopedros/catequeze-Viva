@@ -18,7 +18,7 @@ describe("activity ACL hardening", () => {
   it("listActivitiesByContent scopes submissions for non-staff", () => {
     const start = ops.indexOf("export const listActivitiesByContent");
     const block = ops.slice(start, start + 900);
-    expect(block).toContain("familyCatechumenIds");
+    expect(block).toContain("activityStudentScope");
     expect(block).toContain("submissionFilter");
   });
 

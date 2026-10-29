@@ -50,7 +50,7 @@ function fixture(role = "PARISH_COORDINATOR"): any {
           userId: "student",
           householdId: null,
           household: null,
-          enrollments: [{ class: { id: "assigned", parishId: "a" } }],
+          enrollments: [{ status: "ENROLLED", class: { id: "assigned", parishId: "a" } }],
         }),
       },
       CatechumenSponsor: {

@@ -13,20 +13,52 @@ import {
  * Coordinators and catechists may manage a household only inside the household's
  * own workspace. The role is resolved for that workspace alone (never merged).
  */
-async function assertCanManageHousehold(
+export async function assertCanManageHousehold(
   context: any,
-  household: { parishId: string | null } | null,
+  household: { id: string; parishId: string | null } | null,
   deniedMessage: string,
 ): Promise<void> {
   if (!household) throw new HttpError(404, 'Família não encontrada.');
   if (context.user.isAdmin) return;
-  if (!household.parishId) throw new HttpError(403, 'Esta família não pertence à sua paróquia.');
+  if (!household.parishId)
+    throw new HttpError(403, 'Esta família não pertence à sua paróquia.');
 
-  const access = await requireWorkspaceAccess(context, household.parishId).catch(() => {
+  const access = await requireWorkspaceAccess(
+    context,
+    household.parishId,
+  ).catch(() => {
     throw new HttpError(403, 'Esta família não pertence à sua paróquia.');
   });
   if (!access.isCoordinatorOrAbove && !access.isCatechist) {
     throw new HttpError(403, deniedMessage);
+  }
+  if (access.allowedClassIds !== 'ALL') {
+    // Household has no creator field. Preserve the selector's empty-family flow.
+    const permitted = await context.entities.Household.findFirst({
+      where: {
+        id: household.id,
+        parishId: access.workspaceId,
+        OR: [
+          ...(access.isCatechist ? [{ catechumens: { none: {} } }] : []),
+          ...(access.isScopedCoordinator && access.communityId
+            ? [{ communityId: access.communityId }]
+            : []),
+          {
+            catechumens: {
+              some: {
+                enrollments: {
+                  some: {
+                    classId: { in: access.allowedClassIds },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      select: { id: true },
+    });
+    if (!permitted) throw new HttpError(403, deniedMessage);
   }
 }
 
@@ -303,7 +335,7 @@ export const addGuardianToHousehold = async (
 
   const household = await context.entities.Household.findUnique({
     where: { id: args.householdId },
-    select: { parishId: true },
+    select: { id: true, parishId: true },
   });
   await assertCanManageHousehold(
     context,
@@ -315,10 +347,12 @@ export const addGuardianToHousehold = async (
   if (args.userId) {
     const existingInHousehold = await context.entities.GuardianProfile.findFirst({
       where: { userId: args.userId, householdId: args.householdId },
+      select: { id: true },
     });
     if (existingInHousehold) {
       if (args.relationship !== undefined || args.phone !== undefined || args.email !== undefined) {
         return context.entities.GuardianProfile.update({
+          select: { id: true },
           where: { id: existingInHousehold.id },
           data: {
             ...(args.relationship !== undefined && { relationship: args.relationship }),
@@ -348,6 +382,7 @@ export const addGuardianToHousehold = async (
         );
       }
       return context.entities.GuardianProfile.update({
+        select: { id: true },
         where: { id: existing.id },
         data: {
           householdId: args.householdId,
@@ -366,6 +401,7 @@ export const addGuardianToHousehold = async (
     });
     if (existingByEmail) {
       return context.entities.GuardianProfile.update({
+        select: { id: true },
         where: { id: existingByEmail.id },
         data: {
           ...(args.firstName !== undefined && { firstName: args.firstName }),
@@ -378,6 +414,7 @@ export const addGuardianToHousehold = async (
   }
 
   return context.entities.GuardianProfile.create({
+    select: { id: true },
     data: {
       userId: args.userId || null,
       email: args.email,
@@ -398,18 +435,19 @@ export const removeGuardianFromHousehold = async (
 
   const guardian = await context.entities.GuardianProfile.findUnique({
     where: { id: args.guardianProfileId },
-    select: { id: true, householdId: true, household: { select: { parishId: true } } },
+    select: { id: true, householdId: true, household: { select: { id: true, parishId: true } } },
   });
 
   if (!guardian) throw new HttpError(404, 'Responsável não encontrado.');
 
   await assertCanManageHousehold(
     context,
-    guardian.household ?? { parishId: null },
+    guardian.household ?? { id: '', parishId: null },
     'Apenas coordenadores e catequistas podem remover responsáveis.',
   );
 
   return context.entities.GuardianProfile.update({
+    select: { id: true },
     where: { id: args.guardianProfileId },
     data: { householdId: null },
   });
@@ -423,7 +461,7 @@ export const updateGuardianProfile = async (
 
   const guardian = await context.entities.GuardianProfile.findUnique({
     where: { id: args.guardianProfileId },
-    select: { id: true, userId: true, household: { select: { parishId: true } } },
+    select: { id: true, userId: true, household: { select: { id: true, parishId: true } } },
   });
 
   if (!guardian) throw new HttpError(404, 'Responsável não encontrado.');
@@ -434,7 +472,7 @@ export const updateGuardianProfile = async (
   if (!isSelfGuardian) {
     await assertCanManageHousehold(
       context,
-      guardian.household ?? { parishId: null },
+      guardian.household ?? { id: '', parishId: null },
       'Apenas coordenadores e catequistas podem editar responsáveis.',
     );
   }
@@ -448,7 +486,12 @@ export const updateGuardianProfile = async (
   if (args.relationship !== undefined) data.relationship = args.relationship;
   if (args.phone !== undefined) data.phone = args.phone;
 
+  if (Object.keys(data).length === 0) {
+    throw new HttpError(400, 'Informe ao menos um campo para atualizar.');
+  }
+
   return context.entities.GuardianProfile.update({
+    select: { id: true },
     where: { id: args.guardianProfileId },
     data,
   });
@@ -460,9 +503,13 @@ export const updateHousehold = async (
 ) => {
   if (!context.user) throw new HttpError(401);
 
+  if (args.name === undefined && args.address === undefined && args.phone === undefined) {
+    throw new HttpError(400, 'Informe ao menos um campo para atualizar.');
+  }
+
   const household = await context.entities.Household.findUnique({
     where: { id: args.id },
-    select: { parishId: true },
+    select: { id: true, parishId: true },
   });
 
   await assertCanManageHousehold(
@@ -472,6 +519,7 @@ export const updateHousehold = async (
   );
 
   return context.entities.Household.update({
+    select: { id: true },
     where: { id: args.id },
     data: {
       ...(args.name !== undefined && { name: args.name }),

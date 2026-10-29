@@ -390,6 +390,13 @@ export const adoptOfficialResource = async (args: any, context: any) => {
   }
 
   const actor = await resolveResourceActor(context, validated.workspaceId);
+  // Only adaptation creates a published local resource. Keep adoption without
+  // copying available to members who can legitimately view the source.
+  if (validated.status === "ADAPTED") assertCanPublish(actor);
+  if (!actorCanViewOfficialResource(actor, row)) {
+    throw new HttpError(403, "Você não tem acesso ao recurso de origem.");
+  }
+
   if (
     validated.status === "ADAPTED" &&
     !canAdaptResource(row.inheritancePolicy)
@@ -426,6 +433,7 @@ export const adoptOfficialResource = async (args: any, context: any) => {
         createdById: context.user.id,
         sourceResourceId: row.id,
       },
+      select: { id: true },
     });
     adaptedCopyId = copy.id;
     await copyAttachments(context, row.id, copy.id, context.user.id);
@@ -454,6 +462,7 @@ export const adoptOfficialResource = async (args: any, context: any) => {
       sourceVersion: row.version,
       copiedVersion: adaptedCopyId ? row.version : null,
     },
+    select: { id: true },
   });
 };
 
