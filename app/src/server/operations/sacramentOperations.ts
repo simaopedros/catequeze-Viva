@@ -159,7 +159,7 @@ export const listSacramentalJourneys = async (
       access.allowedClassIds === "ALL" ? [] : access.allowedClassIds;
     if (classIds.length === 0) return [];
     const enrollments = await context.entities.ClassEnrollment.findMany({
-      where: { classId: { in: classIds } },
+      where: { classId: { in: classIds }, status: "ENROLLED" },
       select: { catechumenProfileId: true },
     });
     const catechumenIds = enrollments.map((e: any) => e.catechumenProfileId);
