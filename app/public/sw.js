@@ -4,7 +4,7 @@
  * Strategies:
  * - App Shell (HTML/CSS/JS/fonts): Cache-First with background update
  * - Static assets (icons/images): Cache-First
- * - API GET: Network-First with cache fallback (never for mutations)
+ * - API GET and document downloads: Network-Only
  * - Auth + /operations: Network-Only (GET). Non-GET (POST/PUT/PATCH/DELETE)
  *   are not handled by this SW — browser goes straight to network so Wasp
  *   operation mutations (attendance batch, etc.) are never cached or SWR'd.
@@ -15,7 +15,7 @@
  * Version is derived from CACHE_NAME for easy cache busting on deploy.
  */
 
-const CACHE_VERSION = 'v6';
+const CACHE_VERSION = 'v7';
 const CACHE_NAME = `catequese-viva-${CACHE_VERSION}`;
 const IS_LOCAL_DEV =
   self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
@@ -41,14 +41,36 @@ async function openCache() {
   return caches.open(CACHE_NAME);
 }
 
+function canCache(response) {
+  return response.ok && !/(?:^|,)\s*(?:no-store|private)(?:\s|=|,|$)/i.test(
+    response.headers.get('Cache-Control') || '',
+  );
+}
+
+async function clearPrivateCaches() {
+  const names = await caches.keys();
+  await Promise.all(names.map(async (name) => {
+    const cache = await caches.open(name);
+    const requests = await cache.keys();
+    await Promise.all(requests.map(async (request) => {
+      const path = new URL(request.url).pathname;
+      const response = await cache.match(request);
+      if (API_MATCH.test(path) || AUTH_MATCH.test(path) || OPERATIONS_MATCH.test(path) ||
+          (response && !canCache(response))) {
+        await cache.delete(request);
+      }
+    }));
+  }));
+}
+
 async function cacheFirst(request) {
   const cache = await openCache();
   const cached = await cache.match(request);
   if (cached) return cached;
   try {
     const response = await fetch(request);
-    if (response.ok) {
-      cache.put(request, response.clone());
+    if (canCache(response)) {
+      await cache.put(request, response.clone());
     }
     return response;
   } catch {
@@ -62,9 +84,9 @@ async function cacheFirst(request) {
 async function networkFirst(request) {
   try {
     const response = await fetch(request);
-    if (response.ok) {
+    if (canCache(response)) {
       const cache = await openCache();
-      cache.put(request, response.clone());
+      await cache.put(request, response.clone());
     }
     return response;
   } catch (err) {
@@ -75,7 +97,7 @@ async function networkFirst(request) {
 }
 
 async function networkOnly(request) {
-  return fetch(request);
+  return fetch(request, { cache: 'no-store' });
 }
 
 self.addEventListener('install', (event) => {
@@ -90,7 +112,7 @@ self.addEventListener('install', (event) => {
         APP_SHELL.map((url) =>
           fetch(url, { cache: 'no-cache' })
             .then((resp) => {
-              if (resp.ok) cache.put(url, resp);
+              if (canCache(resp)) return cache.put(url, resp);
             })
             .catch(() => {}),
         ),
@@ -121,6 +143,7 @@ self.addEventListener('activate', (event) => {
           keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)),
         );
       })
+      .then(() => clearPrivateCaches())
       .then(() => self.clients.claim()),
   );
 });
@@ -145,7 +168,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (API_MATCH.test(url.pathname)) {
-    event.respondWith(networkFirst(request));
+    event.respondWith(networkOnly(request));
     return;
   }
 
@@ -167,9 +190,9 @@ self.addEventListener('fetch', (event) => {
           const cached = await openCache().then((c) => c.match(request));
           if (cached) return cached;
           const response = await fetch(request);
-          if (response.ok) {
+          if (canCache(response)) {
             const cache = await openCache();
-            cache.put(request, response.clone());
+            await cache.put(request, response.clone());
           }
           // Stale chunk after deploy — signal client to reload once
           if (response.status === 404 && request.destination === 'script') {
@@ -230,6 +253,9 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 self.addEventListener('message', (event) => {
+  if (event.data?.type === 'CLEAR_PRIVATE_CACHES') {
+    event.waitUntil(clearPrivateCaches());
+  }
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
