@@ -1,3 +1,4 @@
+import { nestedClassWhere } from './nestedClassScope';
 /**
  * Individual catechumen attendance report — percentage, missed classes, risk assessment.
  */
@@ -11,6 +12,7 @@ export const getCatechumenAttendanceReport = async (args: { catechumenId: string
   await assertTwoFactorSessionVerified(context);
   await assertCanAccessCatechumenProfile(context, args.catechumenId);
 
+  const classWhere = await nestedClassWhere(context, args.catechumenId);
   const catechumenWithAttendance = await context.entities.CatechumenProfile.findUnique({
     where: { id: args.catechumenId },
     select: {
@@ -19,10 +21,11 @@ export const getCatechumenAttendanceReport = async (args: { catechumenId: string
       lastName: true,
       parishId: true,
       enrollments: {
+        where: { class: classWhere },
         select: { class: { select: { id: true, name: true, parishId: true } } },
       },
       attendanceRecords: {
-        where: { meeting: { status: { not: 'CANCELLED' } } },
+        where: { meeting: { status: { not: 'CANCELLED' }, class: classWhere } },
         include: { meeting: { select: { id: true, date: true, title: true, class: { select: { name: true } } } } },
       },
     },

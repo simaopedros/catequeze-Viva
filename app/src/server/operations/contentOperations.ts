@@ -1,3 +1,4 @@
+import { nestedClassWhere } from "./nestedClassScope";
 import { HttpError } from "wasp/server";
 import { resolveUserLocale } from "../i18n/serverLocale";
 import {
@@ -186,7 +187,10 @@ export const getContentItem = async (args: { id: string }, context: any) => {
       reviewedBy: { select: { id: true, firstName: true, lastName: true } },
       versions: { orderBy: { version: "desc" } },
       activities: true,
-      meetings: true,
+      meetings: {
+        where: { class: await nestedClassWhere(context) },
+        select: { id: true, classId: true, title: true, date: true },
+      },
       bibleRefs: {
         include: {
           verse: {

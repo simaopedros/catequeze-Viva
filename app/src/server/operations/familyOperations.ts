@@ -177,6 +177,11 @@ export const listHouseholds = async (
 
   const access = await requireWorkspaceAccess(context, requestedParishId);
   const parishId = access.workspaceId;
+  if (access.allowedClassIds !== 'ALL' && (access.isCatechist || access.isScopedCoordinator)) {
+    const where = { enrollments: { some: { classId: { in: access.allowedClassIds } } } };
+    Object.assign(includeOpts.catechumens, { where });
+    Object.assign(includeOpts._count.select, { catechumens: { where } });
+  }
   const extra: any = { parishId };
   if (args.communityId) extra.communityId = args.communityId;
 
