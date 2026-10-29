@@ -1,5 +1,10 @@
 import { HttpError } from 'wasp/server';
-import { resolveUserScope, resolveWorkspaceAccess } from './sharedScope';
+import {
+  classWhereAcrossWorkspaces,
+  type WorkspaceAccess,
+  resolveUserScope,
+  resolveWorkspaceAccess,
+} from './sharedScope';
 import {
   pickFocusMeeting,
   buildPrimaryCta,
@@ -64,6 +69,8 @@ async function resolveFocusClassScope(params: {
   roles: string[];
   /** Parishes with coordinator-level role when no workspace is requested. */
   coordinatorParishIds: string[];
+  workspaceAccess?: WorkspaceAccess | null;
+  parishIds: string[];
   workspaceId?: string;
   userId: string;
   dependentId?: string;
@@ -213,6 +220,33 @@ async function resolveFocusClassScope(params: {
     };
   }
 
+  // Preserve the complete workspace policy, including community restrictions.
+  if (hasCoordinator && params.workspaceAccess) {
+    const access = params.workspaceAccess;
+    return {
+      scope:
+        access.allowedClassIds === 'ALL'
+          ? { kind: 'parish', parishWhere: { parishId: access.workspaceId } }
+          : { kind: 'classIds', classIds: access.allowedClassIds },
+      guardianHouseholdId,
+      roleKind: 'staff',
+      dependents,
+      selectedDependent,
+    };
+  }
+  if (hasCoordinator && !workspaceId && roles.includes('COMMUNITY_COORDINATOR')) {
+    return {
+      scope: {
+        kind: 'parish',
+        parishWhere: await classWhereAcrossWorkspaces(context, params.parishIds),
+      },
+      guardianHouseholdId,
+      roleKind: 'staff',
+      dependents,
+      selectedDependent,
+    };
+  }
+
   // Staff: classes assigned as catechist, restricted to the requested workspace.
   const myClassIds: string[] =
     hasCoordinator || hasCatechist
@@ -331,6 +365,7 @@ export const getEncounterFocus = async (
   let roles: string[] = [];
   let parishIds: string[] = [];
   let coordinatorParishIds: string[] = [];
+  let workspaceAccess: WorkspaceAccess | null = null;
 
   if (args.workspaceId) {
     if (!isAdmin) {
@@ -340,6 +375,7 @@ export const getEncounterFocus = async (
       if (!access) {
         throw new HttpError(403, 'Sem acesso a este espaço de trabalho.');
       }
+      workspaceAccess = access;
       roles = [access.role];
       parishIds = [args.workspaceId];
     } else {
@@ -366,6 +402,8 @@ export const getEncounterFocus = async (
     isAdmin,
     roles,
     coordinatorParishIds,
+    workspaceAccess,
+    parishIds,
     workspaceId: args.workspaceId,
     userId: context.user.id,
     dependentId: args.dependentId,

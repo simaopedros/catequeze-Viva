@@ -141,7 +141,13 @@ it.each([
           })),
       })),
     };
-    expect((await getContentItem({ id: "content" }, c)).meetings).toEqual(
+    const result = await getContentItem({ id: "content" }, c);
+    // C-15: a superfície de família não recebe a lista de encontros.
+    if (role === "GUARDIAN") {
+      expect(result.meetings).toBeUndefined();
+      return;
+    }
+    expect(result.meetings).toEqual(
       (role === "LEAD_CATECHIST" || role === "COMMUNITY_COORDINATOR"
         ? ["a"]
         : ["a", "b"]
