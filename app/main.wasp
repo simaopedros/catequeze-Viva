@@ -819,7 +819,7 @@ action addAssistantCatechist {
 
 action removeCatechistFromClass {
   fn: import { removeCatechistFromClass } from "@src/server/operations/classOperations",
-  entities: [ClassCatechist, Membership, CatechesisClass, Parish]
+  entities: [ClassCatechist, Membership, CatechesisClass, Parish, ConversationParticipant]
 }
 
 action enrollCatechumen {
@@ -2192,7 +2192,7 @@ query listConversations {
 
 query getUnreadMessagesCount {
   fn: import { getUnreadMessagesCount } from "@src/server/operations/conversationOperations",
-  entities: [ConversationParticipant, Message, Conversation, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household]
+  entities: [ConversationParticipant, Message, Conversation, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household, CatechesisClass]
 }
 
 query getConversation {
@@ -2207,12 +2207,12 @@ action createConversation {
 
 action sendMessage {
   fn: import { sendMessage } from "@src/server/operations/conversationOperations",
-  entities: [Conversation, ConversationParticipant, Message, Notification, User, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household]
+  entities: [Conversation, ConversationParticipant, Message, Notification, User, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household, CatechesisClass]
 }
 
 action markConversationRead {
   fn: import { markConversationRead } from "@src/server/operations/conversationOperations",
-  entities: [ConversationParticipant, Notification, Conversation, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household]
+  entities: [ConversationParticipant, Notification, Conversation, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household, CatechesisClass]
 }
 
 action addConversationParticipant {
@@ -2222,12 +2222,12 @@ action addConversationParticipant {
 
 action removeConversationParticipant {
   fn: import { removeConversationParticipant } from "@src/server/operations/conversationOperations",
-  entities: [Conversation, ConversationParticipant, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household]
+  entities: [Conversation, ConversationParticipant, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household, CatechesisClass]
 }
 
 action muteConversation {
   fn: import { muteConversation } from "@src/server/operations/conversationOperations",
-  entities: [Conversation, ConversationParticipant, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household]
+  entities: [Conversation, ConversationParticipant, Parish, Membership, GuardianProfile, CatechumenProfile, ClassEnrollment, ClassCatechist, Household, CatechesisClass]
 }
 
 action getOrCreateClassChat {
@@ -2402,7 +2402,7 @@ query getTwoFactorStatus {
 
 action markMessageAsRead {
   fn: import { markMessageAsRead } from "@src/server/operations/readReceiptOperations",
-  entities: [MessageReadReceipt, Message, ConversationParticipant]
+  entities: [MessageReadReceipt, Message, ConversationParticipant, Conversation, CatechesisClass, ClassCatechist, ClassEnrollment, GuardianProfile, CatechumenProfile, Household, Membership, Parish]
 }
 
 action sendClassAnnouncementByEmail {
@@ -2412,7 +2412,7 @@ action sendClassAnnouncementByEmail {
 
 query getMessageReadReceipts {
   fn: import { getMessageReadReceipts } from "@src/server/operations/readReceiptOperations",
-  entities: [MessageReadReceipt, User, Message, ConversationParticipant]
+  entities: [MessageReadReceipt, User, Message, ConversationParticipant, Conversation, CatechesisClass, ClassCatechist, ClassEnrollment, GuardianProfile, CatechumenProfile, Household, Membership, Parish]
 }
 
 query getCatechumenAttendanceReport {

@@ -3,6 +3,7 @@
  * Creates a MessageReadReceipt if one doesn't exist.
  */
 import { HttpError } from 'wasp/server';
+import { assertCanAccessConversation } from './conversationOperations';
 
 async function assertMessageParticipant(context: any, messageId: string): Promise<void> {
   const message = await context.entities.Message.findUnique({
@@ -11,18 +12,7 @@ async function assertMessageParticipant(context: any, messageId: string): Promis
   });
   if (!message) throw new HttpError(404, 'Mensagem não encontrada.');
 
-  const participant = await context.entities.ConversationParticipant.findUnique({
-    where: {
-      conversationId_userId: {
-        conversationId: message.conversationId,
-        userId: context.user.id,
-      },
-    },
-  });
-
-  if (!participant && !context.user.isAdmin) {
-    throw new HttpError(403, 'Você não participa desta conversa.');
-  }
+  await assertCanAccessConversation(context, message.conversationId);
 }
 
 export const markMessageAsRead = async (args: { messageId: string }, context: any) => {

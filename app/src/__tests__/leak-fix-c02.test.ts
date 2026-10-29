@@ -260,7 +260,7 @@ it("preserves assigned teacher submission to their content without a parish", as
     household: null,
     parishId: "parish",
     enrollments: [
-      { classId: "assigned", class: { id: "assigned", parishId: "parish" } },
+      { classId: "assigned", status: "ENROLLED", class: { id: "assigned", parishId: "parish" } },
     ],
   } as any);
   expect(
