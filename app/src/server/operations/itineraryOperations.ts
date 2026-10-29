@@ -3,6 +3,7 @@ import { z } from "zod";
 import { defaultPolicyFor } from "../../shared/resourceInheritance";
 import { validateOrThrow } from "../validation";
 import {
+  actorCanViewOfficialResource,
   assertCanManageOwned,
   assertCanPublish,
   resolveActorForResource,
@@ -262,6 +263,9 @@ export const instantiateCatecheticalItinerary = async (
     include: { stages: { orderBy: { order: "asc" } } },
   });
   if (!itinerary) throw new HttpError(404, "Itinerário não encontrado.");
+  if (!actorCanViewOfficialResource(actor, itinerary)) {
+    throw new HttpError(403, "Você não tem acesso ao itinerário de origem.");
+  }
   if (
     itinerary.status !== "PUBLISHED" &&
     itinerary.parishId !== actor.parishId
@@ -286,7 +290,7 @@ export const instantiateCatecheticalItinerary = async (
         })),
       },
     },
-    include: { stages: { orderBy: { order: "asc" } } },
+    select: { id: true },
   });
 
   await context.entities.ResourceAdoption.upsert({
