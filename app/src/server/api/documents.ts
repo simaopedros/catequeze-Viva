@@ -65,6 +65,7 @@ async function optionalAuth(req: Request, _res: Response, next: NextFunction) {
  * Public upload tokens never grant read access.
  */
 export async function serveDocument(req: Request, res: Response, context: any) {
+  res.setHeader("Cache-Control", "private, no-store");
   const docId = req.params.id;
 
   try {
