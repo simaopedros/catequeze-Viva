@@ -1,3 +1,9 @@
+export class EmailWebhookUnavailableError extends Error {
+  constructor() {
+    super("Email webhook verification unavailable");
+  }
+}
+
 import type { EmailFrom } from "./config";
 
 export type ProviderSendInput = {
