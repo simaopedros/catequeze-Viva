@@ -8,10 +8,11 @@ describe("family search scope", () => {
     "utf8",
   );
 
-  it("restricts catechumens/households/documents when roles are family-only", () => {
-    expect(ops).toContain("rolesAreFamilyOnly");
-    expect(ops).toContain("familyCatechumenFilter");
-    expect(ops).toContain("familyHouseholdIds");
-    expect(ops).toContain("familyOnly && familyHouseholdIds.length === 0");
+  it("resolves family access per workspace and shares the profile predicate", () => {
+    expect(ops).toContain("resolveWorkspaceAccess(context, parishId");
+    expect(ops).toContain("access.role === 'GUARDIAN' || access.role === 'CATECHUMEN'");
+    expect(ops).toContain("guardians: { some: { userId: context.user.id } }");
+    expect(ops).toContain("catechumenProfile: catechumenFilter");
+    expect(ops).not.toContain("rolesAreFamilyOnly");
   });
 });
