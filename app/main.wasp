@@ -895,22 +895,22 @@ action createHousehold {
 
 action addGuardianToHousehold {
   fn: import { addGuardianToHousehold } from "@src/server/operations/familyOperations",
-  entities: [GuardianProfile, Household, Membership, Parish, ClassCatechist]
+  entities: [GuardianProfile, Household, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 
 action removeGuardianFromHousehold {
   fn: import { removeGuardianFromHousehold } from "@src/server/operations/familyOperations",
-  entities: [GuardianProfile, Household, Membership, Parish, ClassCatechist]
+  entities: [GuardianProfile, Household, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 
 action updateGuardianProfile {
   fn: import { updateGuardianProfile } from "@src/server/operations/familyOperations",
-  entities: [GuardianProfile, Household, Membership, Parish, ClassCatechist]
+  entities: [GuardianProfile, Household, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 
 action updateHousehold {
   fn: import { updateHousehold } from "@src/server/operations/familyOperations",
-  entities: [Household, Membership, Parish, ClassCatechist]
+  entities: [Household, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 //#endregion
 
@@ -1102,7 +1102,7 @@ query getInstitutionalDashboardInsights {
 //#region Catechis - Content Library
 query listContentItems {
   fn: import { listContentItems } from "@src/server/operations/contentOperations",
-  entities: [ContentItem, Membership, Parish, ClassCatechist, Diocese]
+  entities: [ContentItem, Membership, Parish, ClassCatechist, Diocese, CatechesisClass]
 }
 
 query getContentItem {
@@ -1192,12 +1192,12 @@ action createSacramentalJourney {
 
 action updateMilestoneStatus {
   fn: import { updateMilestoneStatus } from "@src/server/operations/sacramentOperations",
-  entities: [SacramentalMilestone, Membership, SacramentalJourney, CatechumenProfile, ClassEnrollment, ClassCatechist, Parish]
+  entities: [SacramentalMilestone, Membership, SacramentalJourney, CatechumenProfile, ClassEnrollment, ClassCatechist, Parish, CatechesisClass]
 }
 
 action updateJourney {
   fn: import { updateJourney } from "@src/server/operations/sacramentOperations",
-  entities: [SacramentalJourney, Membership, Parish]
+  entities: [SacramentalJourney, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 
 query listJourneyTemplates {
@@ -1227,7 +1227,7 @@ action deleteMilestoneTemplate {
 
 action copyTemplate {
   fn: import { copyTemplate } from "@src/server/operations/sacramentOperations",
-  entities: [SacramentalJourneyTemplate, SacramentalMilestoneTemplate, Membership, Parish]
+  entities: [SacramentalJourneyTemplate, SacramentalMilestoneTemplate, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 
 action publishTemplate {
@@ -1300,7 +1300,7 @@ action publishOfficialResource {
 
 action adoptOfficialResource {
   fn: import { adoptOfficialResource } from "@src/server/operations/officialResourceOperations",
-  entities: [OfficialResource, OfficialResourceAdoption, OfficialResourceAttachment, Membership, Parish, ClassCatechist]
+  entities: [OfficialResource, OfficialResourceAdoption, OfficialResourceAttachment, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 
 action updateOfficialResource {
@@ -1360,7 +1360,7 @@ action publishCatecheticalItinerary {
 
 action instantiateCatecheticalItinerary {
   fn: import { instantiateCatecheticalItinerary } from "@src/server/operations/itineraryOperations",
-  entities: [CatecheticalItinerary, CatecheticalItineraryStage, CatecheticalYear, Stage, ResourceAdoption, Membership, Parish, ClassCatechist]
+  entities: [CatecheticalItinerary, CatecheticalItineraryStage, CatecheticalYear, Stage, ResourceAdoption, Membership, Parish, ClassCatechist, CatechesisClass]
 }
 
 action updateCatecheticalItinerary {
@@ -2074,7 +2074,7 @@ page AppFamilyDetailPage { authRequired: true, component: import FamilyDetailPag
 //#region Catechis - Activities & Guardian
 query listActivitiesByContent {
   fn: import { listActivitiesByContent } from "@src/server/operations/activityOperations",
-  entities: [Activity, ActivitySubmission, ContentItem, Membership, Parish, CatechumenProfile, GuardianProfile]
+  entities: [Activity, ActivitySubmission, ContentItem, Membership, Parish, CatechumenProfile, GuardianProfile, ClassCatechist, CatechesisClass]
 }
 
 action createActivity {
