@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("express", () => ({ default: { raw: () => () => undefined } }));
 vi.mock("wasp/server/auth", () => ({}));
 vi.mock("../server/requestPortalContext", () => ({
   isFamilyPortalRequestContext: () => false,
