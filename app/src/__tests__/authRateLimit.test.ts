@@ -158,7 +158,8 @@ describe("authRateLimiter middleware", () => {
       path: "/email/login",
       baseUrl: "/auth",
       originalUrl: "/auth/email/login",
-      headers: { "cf-connecting-ip": "203.0.113.10" },
+      ip: "203.0.113.10",
+      headers: { "cf-connecting-ip": "198.51.100.77" },
       body: { email: "User@Example.com", password: "x" },
       ...overrides,
     } as unknown as Request;
@@ -340,7 +341,8 @@ describe("authRateLimiter middleware", () => {
       path: "/email/signup",
       baseUrl: "/auth",
       originalUrl: "/auth/email/signup",
-      headers: { "cf-connecting-ip": "203.0.113.10" },
+      ip: "203.0.113.10",
+      headers: { "cf-connecting-ip": "198.51.100.77" },
       body: { email: "new@example.com", password: "x" },
     } as unknown as Request;
     const res = mockRes();
