@@ -40,7 +40,7 @@ export async function serveContentImage(req: Request, res: Response, context: an
 
     const item = await context.entities.ContentItem.findUnique({
       where: { id: contentId },
-      select: { id: true, parishId: true, createdById: true, documentJson: true },
+      select: { id: true, parishId: true, createdById: true, dioceseId: true, ownerType: true, visibilityScope: true, status: true, documentJson: true },
     });
 
     if (!item) {

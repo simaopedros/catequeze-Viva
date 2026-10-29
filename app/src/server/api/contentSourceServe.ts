@@ -31,7 +31,7 @@ export async function serveContentSource(
       select: {
         id: true,
         parishId: true,
-        createdById: true,
+        createdById: true, dioceseId: true, ownerType: true, visibilityScope: true, status: true,
         sourceFileKey: true,
         sourceFileName: true,
         sourceFileMimeType: true,

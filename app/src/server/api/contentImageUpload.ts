@@ -46,7 +46,7 @@ export async function uploadContentImage(req: Request, res: Response, context: a
 
     const item = await context.entities.ContentItem.findUnique({
       where: { id: contentId },
-      select: { id: true, parishId: true, createdById: true },
+      select: { id: true, parishId: true, createdById: true, dioceseId: true, ownerType: true, visibilityScope: true, status: true },
     });
 
     if (!item) {

@@ -315,7 +315,9 @@ export const updateContentStatus = async (
 
   await assertCanModifyContent(context, item);
 
-  const { role } = await getUserRoleAndParish(context);
+  const { role } = item.ownerType === "DIOCESE"
+    ? { role: "DIOCESE_ADMIN" } // Authorization above already checked this diocese.
+    : await getUserRoleAndParish(context);
   if (
     ["APPROVED", "PUBLISHED"].includes(args.status) &&
     !canReviewContent(role)
@@ -384,6 +386,7 @@ export const updateContentItem = async (
 
   return context.entities.ContentItem.update({
     where: { id: args.id },
+    select: { id: true },
     data: {
       ...(args.title !== undefined ? { title: args.title } : {}),
       ...(args.theme !== undefined ? { theme: args.theme } : {}),
@@ -428,6 +431,8 @@ export const deleteContentItem = async (args: { id: string }, context: any) => {
       id: true,
       parishId: true,
       createdById: true,
+      dioceseId: true,
+      ownerType: true,
       sourceFileKey: true,
     },
   });
@@ -474,7 +479,7 @@ export const addBibleRef = async (
   if (!context.user) throw new HttpError(401);
   const item = await context.entities.ContentItem.findUnique({
     where: { id: args.contentId },
-    select: { parishId: true, createdById: true },
+    select: { parishId: true, createdById: true, dioceseId: true, ownerType: true },
   });
   if (!item) throw new HttpError(404, "Conteúdo não encontrado.");
   await assertCanModifyContent(context, item);
@@ -498,7 +503,7 @@ export const removeBibleRef = async (args: { id: string }, context: any) => {
 
   const item = await context.entities.ContentItem.findUnique({
     where: { id: ref.contentId },
-    select: { parishId: true, createdById: true },
+    select: { parishId: true, createdById: true, dioceseId: true, ownerType: true },
   });
   if (item) await assertCanModifyContent(context, item);
 
@@ -515,7 +520,7 @@ export const addCatechismRef = async (
   if (!context.user) throw new HttpError(401);
   const item = await context.entities.ContentItem.findUnique({
     where: { id: args.contentId },
-    select: { parishId: true, createdById: true },
+    select: { parishId: true, createdById: true, dioceseId: true, ownerType: true },
   });
   if (!item) throw new HttpError(404, "Conteúdo não encontrado.");
   await assertCanModifyContent(context, item);
@@ -542,7 +547,7 @@ export const removeCatechismRef = async (
 
   const item = await context.entities.ContentItem.findUnique({
     where: { id: ref.contentId },
-    select: { parishId: true, createdById: true },
+    select: { parishId: true, createdById: true, dioceseId: true, ownerType: true },
   });
   if (item) await assertCanModifyContent(context, item);
 
