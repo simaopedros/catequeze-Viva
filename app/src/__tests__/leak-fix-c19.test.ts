@@ -12,6 +12,7 @@ vi.mock("resend", () => ({
     }
   },
 }));
+vi.mock("express", () => ({ default: { raw: () => () => undefined } }));
 vi.mock("../server/logger", () => ({ logger: { warn: vi.fn() } }));
 vi.mock("../server/email/service", () => ({ markOutboxByProviderId: m.mark }));
 vi.mock("../server/email/suppression", () => ({ suppressEmail: m.suppress }));
