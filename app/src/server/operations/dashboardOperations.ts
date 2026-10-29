@@ -1,6 +1,10 @@
 import { attendanceRateFromTotals } from "../../shared/attendanceMetrics";
 import { HttpError } from "wasp/server";
-import { resolveUserScope, requireWorkspaceAccess } from "./sharedScope";
+import {
+  classWhereAcrossWorkspaces,
+  resolveUserScope,
+  requireWorkspaceAccess,
+} from "./sharedScope";
 import {
   isFamilySurface,
   loadActiveRoles,
@@ -649,14 +653,20 @@ export const getDashboardStats = async (
     : coordinatorParishIdsFromScope(userScope);
 
   // Single source of truth for every class-derived KPI below.
-  const classScopeWhere = buildClassScopeWhere({
-    isAdmin,
-    requestedWorkspace,
-    wholeWorkspace,
-    coordinatorParishIds,
-    myClassIds,
-    guardianHouseholdId,
-  });
+  const classScopeWhere =
+    !requestedWorkspace &&
+    !isAdmin &&
+    !guardianHouseholdId &&
+    roles.includes("COMMUNITY_COORDINATOR")
+      ? await classWhereAcrossWorkspaces(context, parishIds)
+      : buildClassScopeWhere({
+          isAdmin,
+          requestedWorkspace,
+          wholeWorkspace,
+          coordinatorParishIds,
+          myClassIds,
+          guardianHouseholdId,
+        });
 
   const pendingSacramentsPromise = context.entities.SacramentalMilestone.count({
     where: {
