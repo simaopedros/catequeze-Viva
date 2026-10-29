@@ -85,6 +85,13 @@ catechis.app, www.catechis.app {
 
   # Hashed Vite assets: missing files must 404 (not SPA index.html as text/html),
   # otherwise open tabs after deploy get "Failed to fetch dynamically imported module".
+  # Service worker: nunca deixar edge/navegador servir sw.js antigo.
+  handle /sw.js {
+    header Cache-Control "no-cache"
+    root * /srv/web-app
+    file_server
+  }
+
   handle /assets/* {
     root * /srv/web-app
     file_server
@@ -133,6 +140,13 @@ Disallow: /
 
   handle /payments-webhook {
     import prod_api
+  }
+
+  # Service worker: nunca deixar edge/navegador servir sw.js antigo.
+  handle /sw.js {
+    header Cache-Control "no-cache"
+    root * /srv/web-app
+    file_server
   }
 
   handle /assets/* {
