@@ -19,11 +19,22 @@ export const requirementProfileSelect = {
     },
   },
 };
-/** Internal helper. Callers must scope the profile predicate before calling. */
-export async function documentRequirementsForWhere(context: any, where: any) {
+/** Callers scope profiles and, for staff, pass the authorized class predicate.
+ * Own-household callers retain the complete enrollment history. */
+export async function documentRequirementsForWhere(
+  context: any,
+  where: any,
+  classWhere: any = {},
+) {
   const profiles = await context.entities.CatechumenProfile.findMany({
     where,
-    select: requirementProfileSelect,
+    select: {
+      ...requirementProfileSelect,
+      enrollments: {
+        ...requirementProfileSelect.enrollments,
+        where: { status: "ENROLLED", class: classWhere },
+      },
+    },
   });
   if (!profiles.length) return [];
   const rules = await context.entities.DocumentStageRule.findMany({

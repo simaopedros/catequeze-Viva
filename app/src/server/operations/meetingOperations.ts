@@ -588,7 +588,7 @@ export const saveAttendanceBatch = async (
 
   const meeting = await context.entities.Meeting.findUnique({
     where: { id: args.meetingId },
-    select: { classId: true, status: true },
+    select: { classId: true, status: true, class: { select: { parishId: true } } },
   });
   if (!meeting) throw new HttpError(404, "Encontro não encontrado.");
   if (meeting.status === "CANCELLED") {
@@ -607,9 +607,7 @@ export const saveAttendanceBatch = async (
     context.entities.CatechumenProfile.findMany({
       where: {
         id: { in: profileIds },
-        enrollments: {
-          some: { classId: meeting.classId, status: "ENROLLED" },
-        },
+        ...(meeting.class.parishId ? { parishId: meeting.class.parishId } : {}),
       },
       select: { id: true, firstName: true, lastName: true },
     }),
