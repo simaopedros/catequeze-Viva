@@ -1,6 +1,7 @@
 import type { MiddlewareConfigFn } from 'wasp/server';
 import { portalRequestContextMiddleware } from './requestPortalContext';
 import { authRateLimiter } from './middleware/rateLimiter';
+import { passwordResetMiddleware } from './middleware/passwordReset';
 
 /**
  * Global Express middleware (runs for auth + ops).
@@ -16,5 +17,6 @@ export const serverMiddlewareConfigFn: MiddlewareConfigFn = (
   );
   // Persistent rate limit for /auth/* (family /entrar + staff /login)
   middlewareConfig.set('authRateLimiter', authRateLimiter);
+  middlewareConfig.set('passwordReset', passwordResetMiddleware);
   return middlewareConfig;
 };

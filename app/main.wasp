@@ -1819,6 +1819,7 @@ api mobileAuthTwoFactorVerify {
 }
 
 api mobileAuthPasswordResetRequest {
+  entities: [RateLimitBucket],
   fn: import { mobileAuthPasswordResetRequest } from "@src/server/api/mobile",
   httpRoute: (POST, "/mobile/auth/password-reset/request")
 }
@@ -2600,7 +2601,7 @@ action changePassword {
 // Public (token-gated): reset password and cut all Lucia sessions.
 action resetPasswordAndInvalidateSessions {
   fn: import { resetPasswordAndInvalidateSessions } from "@src/server/operations/userOperations",
-  entities: [User],
+  entities: [User, RateLimitBucket],
   auth: false
 }
 
