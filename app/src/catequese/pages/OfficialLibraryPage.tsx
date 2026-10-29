@@ -494,7 +494,7 @@ export default function OfficialLibraryPage() {
                         {t("library.adopt")}
                       </Button>
                     )}
-                    {canAdapt && adoption !== "ADAPTED" && (
+                    {canPublish && canAdapt && adoption !== "ADAPTED" && (
                       <Button
                         size="sm"
                         variant="outline"

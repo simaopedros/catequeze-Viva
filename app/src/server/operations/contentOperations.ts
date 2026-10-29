@@ -93,10 +93,7 @@ export const listContentItems = async (
     }
     if (args.status && args.status !== "all") {
       // Non-staff cannot request drafts/pending even with an explicit status.
-      if (
-        !opts?.staffCanSeeDrafts &&
-        isUnpublishedContentStatus(args.status)
-      ) {
+      if (!opts?.staffCanSeeDrafts && isUnpublishedContentStatus(args.status)) {
         and.push({ status: { in: ["APPROVED", "PUBLISHED"] } });
       } else {
         and.push({ status: args.status });
@@ -150,11 +147,16 @@ export const listContentItems = async (
   } else {
     const parishIds = await getParishIds(context);
     if (parishIds.length === 0) return emptyPage(useCursorPage);
-    parishFilter = { parishId: { in: parishIds } };
-    // Without a workspace, only show drafts if the user has content staff
-    // role in at least one parish (role resolved for first membership).
-    const { role } = await getUserRoleAndParish(context);
-    staffCanSeeDrafts = canCreateContent(role) || canReviewContent(role);
+    const localFilters = [];
+    for (const parishId of [...new Set(parishIds)]) {
+      const access = await requireWorkspaceAccess(context, parishId);
+      const staff =
+        canCreateContent(access.role) || canReviewContent(access.role);
+      localFilters.push(buildWhere({ parishId }, { staffCanSeeDrafts: staff }));
+    }
+    parishFilter = { OR: localFilters };
+    // Each branch already applies its local status policy.
+    staffCanSeeDrafts = true;
   }
 
   const rows = await context.entities.ContentItem.findMany({
