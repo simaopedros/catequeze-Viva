@@ -2974,3 +2974,20 @@ page RegistrationSharePage {
   authRequired: true,
   component: import RegistrationSharePage from "@src/registrations/RegistrationSharePage"
 }
+
+query listRegistrationApplications {
+  fn: import { listRegistrationApplications } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+}
+query getRegistrationApplication {
+  fn: import { getRegistrationApplication } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, CatechumenProfile, Household, GuardianProfile, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+}
+action reviewRegistrationApplication {
+  fn: import { reviewRegistrationApplication } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
+}
+action createAssistedRegistration {
+  fn: import { createAssistedRegistration } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, Community, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog, RateLimitBucket]
+}
