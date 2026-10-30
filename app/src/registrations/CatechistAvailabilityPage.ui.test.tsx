@@ -1,0 +1,13 @@
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, it, expect, vi } from 'vitest';
+import * as ops from 'wasp/client/operations';
+import { public_pt_BR_core as pt } from '../i18n/resources_pt_BR_core';
+import Page from './CatechistAvailabilityPage';
+vi.mock('../client/hooks/useActiveParish', () => ({ useActiveParish: () => ({ activeParishId: 'p' }) }));
+vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string, args: any = {}) => { let v: any = pt; for (const part of key.split('.')) v = v?.[part]; return typeof v === 'string' ? v.replace(/{{(\w+)}}/g, (_: string, k: string) => String(args[k])) : key; } }) }));
+let team: any;
+const current = { revision: 3, availability: { version: 1, windows: [], closures: [] } };
+beforeEach(() => { team = undefined; vi.mocked(ops.useQuery).mockImplementation(((op: any) => ({ data: op === ops.listCatecheticalYears ? [{ id: 'y', parishId: 'p', name: '2026' }] : op === ops.getCatechistAvailability ? current : op === ops.listCatechistAvailability ? team : undefined, refetch: vi.fn(), error: null })) as any); vi.mocked(ops.setCatechistAvailability).mockResolvedValue({ revision: 4 } as any); });
+it('avisa sobre disponibilidade vazia e salva revisão própria', async () => { render(<Page />); expect(screen.getByText('Sem horários marcados: a equipe não será escalada para você.')).toBeTruthy(); expect(screen.queryByText('Equipe')).toBeNull(); fireEvent.click(screen.getByText('Salvar')); await waitFor(() => expect(ops.setCatechistAvailability).toHaveBeenCalledWith({ parishId: 'p', yearId: 'y', revision: 3, availability: { version: 1, windows: [], closures: [] } })); });
+it('exibe equipe somente com resposta autorizada', () => { team = [{ userId: 'u', name: 'Ana', declared: false, windows: [] }]; render(<Page />); expect(screen.getByText(/Ana: Não declarou/)).toBeTruthy(); });
+it('rejeita horários invertidos e sobrepostos', () => { render(<Page />); fireEvent.click(screen.getByText('Adicionar horário')); fireEvent.change(screen.getByLabelText('Fim'), { target: { value: '07:00' } }); fireEvent.click(screen.getByText('Salvar')); expect(screen.getByText(/Confira os horários/)).toBeTruthy(); expect(ops.setCatechistAvailability).not.toHaveBeenCalled(); fireEvent.change(screen.getByLabelText('Fim'), { target: { value: '09:00' } }); fireEvent.click(screen.getByText('Adicionar horário')); fireEvent.click(screen.getByText('Salvar')); expect(screen.getByText(/Confira os horários/)).toBeTruthy(); expect(ops.setCatechistAvailability).not.toHaveBeenCalled(); });
