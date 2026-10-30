@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, getDashboardStats } from "wasp/client/operations";
 import { useUserContext } from "../../client/hooks/useUserContext";
 import { useActiveParish } from "../../client/hooks/useActiveParish";
@@ -17,6 +18,7 @@ import { shouldUseInstitutionalDashboard } from "../../shared/dashboardGate";
 export { shouldUseInstitutionalDashboard };
 
 export default function DashboardPage() {
+  const { t } = useTranslation("common");
   const { activeParishId } = useActiveParish();
   const { userRole, allMemberships, isLoading: loadingCtx } = useUserContext();
   const { workspaceType, workspacePlan } = useActiveWorkspace();
@@ -91,6 +93,10 @@ export default function DashboardPage() {
     PASTORAL_VIEWER: PastoralDashboard,
   };
 
+  // Pároco e secretaria não usam o painel de coordenação (listas globais).
+  if (effectiveRole === "PARISH_PRIEST" || effectiveRole === "PARISH_SECRETARY") {
+    return <p>{t("registration_role_placeholder")}</p>;
+  }
   const DashboardComponent =
     roleDashboards[effectiveRole] ||
     (isFamilyHost ? GuardianDashboard : CoordinatorDashboard);

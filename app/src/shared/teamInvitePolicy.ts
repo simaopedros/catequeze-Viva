@@ -3,7 +3,6 @@
  * Used by the server and mirrored by the UI (no divergent role lists).
  */
 
-import { isFamilyPortalRole } from './portal';
 
 /** Roles that may open the team area and invite (with role-specific limits). */
 export const TEAM_AREA_VIEW_ROLES = [
@@ -100,11 +99,14 @@ export function normalizeInviteEmail(email: string): string {
 export function getAssignableRoles(
   actorRole: string | null | undefined,
   isPlatformAdmin: boolean,
+  registrationsEnabled = false,
 ): string[] {
-  if (isPlatformAdmin || actorRole === 'SUPER_ADMIN') {
-    return ROLE_ASSIGNMENT_HIERARCHY.SUPER_ADMIN;
+  const role = isPlatformAdmin ? 'SUPER_ADMIN' : actorRole || '';
+  const roles = ROLE_ASSIGNMENT_HIERARCHY[role] || [];
+  if (registrationsEnabled && ['SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'PARISH_PRIEST'].includes(role)) {
+    return [...roles, 'PARISH_PRIEST', 'PARISH_SECRETARY'];
   }
-  return ROLE_ASSIGNMENT_HIERARCHY[actorRole || ''] || [];
+  return roles;
 }
 
 export function canViewTeamArea(
@@ -152,7 +154,7 @@ export function invitePortalPath(role: string, token: string): string {
 }
 
 export function isTeamInviteRole(role: string): boolean {
-  return !isFamilyPortalRole(role);
+  return (TEAM_MEMBER_ROLES as readonly string[]).includes(role) || role === 'PARISH_PRIEST' || role === 'PARISH_SECRETARY';
 }
 
 export function canInviteTeamRoles(actorRole: string | null | undefined): boolean {

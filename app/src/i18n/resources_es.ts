@@ -2437,6 +2437,7 @@ export const collaborative_es = {
   } as const;
 
 export const common_es = {
+    "registration_role_placeholder": "Las funciones de inscripción aún no están disponibles.",
     "app_name": "Catechis",
     "app_tagline": "Plataforma pastoral de iniciación cristiana",
     "change_language": "Cambiar idioma",
@@ -2553,6 +2554,8 @@ export const common_es = {
     "roles": {
       "SUPER_ADMIN": "Super Admin",
       "DIOCESE_ADMIN": "Diócesis",
+      "PARISH_PRIEST": "Párroco",
+      "PARISH_SECRETARY": "Secretaría parroquial",
       "PARISH_COORDINATOR": "Coordinador",
       "COMMUNITY_COORDINATOR": "Coordinador(a) de comunidad",
       "LEAD_CATECHIST": "Catequista responsable",

@@ -2879,3 +2879,13 @@ action saveCatechumenSponsor {
   fn: import { saveCatechumenSponsor } from "@src/server/operations/documentStageOperations",
   entities: [CatechumenSponsor, CatechumenProfile, Parish, Membership, ClassCatechist, GuardianProfile, Household, CatechesisClass, ClassEnrollment, AuditLog]
 }
+
+action grantRegistrationPermission {
+  fn: import { grantRegistrationPermission } from "@src/server/operations/registrationGrantOperations",
+  entities: [RegistrationPermissionGrant, Membership, Parish, AuditLog]
+}
+
+action revokeRegistrationPermission {
+  fn: import { revokeRegistrationPermission } from "@src/server/operations/registrationGrantOperations",
+  entities: [RegistrationPermissionGrant, Membership, Parish, AuditLog]
+}
