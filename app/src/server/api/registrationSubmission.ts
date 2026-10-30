@@ -8,7 +8,7 @@ import { enqueueEmail } from '../email';
 import { logger } from '../logger';
 import { getLifecycleEmailSecret } from '../lifecycle/unsubscribeToken';
 import { getClientIpFromRequest } from '../security/clientIp';
-import { consumePersistentRateLimit } from '../security/persistentRateLimit';
+import { consumePersistentRateLimit, peekPersistentRateLimit } from '../security/persistentRateLimit';
 import { passesHoneypot } from '../security/publicFormGuard';
 import { createTurnstileVerifier, type RegistrationCaptchaVerifier } from '../security/registrationCaptcha';
 import { createRegistrationFormToken, verifyRegistrationFormToken, generateRegistrationProtocol, generateRegistrationAccessToken, hashRegistrationAccessToken } from '../security/registrationTokens';
@@ -83,11 +83,20 @@ export async function registrationSubmission(req: Request, res: Response, contex
     const payloadHash = hash(JSON.stringify(payload));
     const emailHash = input.contactEmail ? createHmac('sha256', secret).update(`registration-email:${input.contactEmail}`).digest('hex') : null;
     const accessToken = input.contactEmail ? generateRegistrationAccessToken() : null;
+    const emailLimitKey = emailHash ? hash(`${campaign.id}:${emailHash}`) : null;
+    const emailLimitConfig = { scope: 'registration-submit-email', max: 3, windowMs: 3600000, failClosed: true };
+    if (emailLimitKey) {
+      // Fora da transação: evita segurar uma conexão do pool enquanto pede outra.
+      const existing = await prisma.registrationSubmission.findUnique({ where: { campaignId_requestKey: { campaignId: campaign.id, requestKey: input.requestKey } }, select: { id: true } });
+      if (!existing) {
+        const peek = await peekPersistentRateLimit(emailLimitKey, emailLimitConfig);
+        if (!peek.allowed) { res.set('Retry-After', String(peek.retryAfterSec || 60)).status(peek.failedClosed ? 503 : 429).end(); return; }
+      }
+    }
     const result: { prior?: any; limited?: boolean; submission?: any; token?: any } = await prisma.$transaction(async (tx: any) => {
       await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${`${campaign.id}:${input.requestKey}`}, 0))`;
       const prior = await tx.registrationSubmission.findUnique({ where: { campaignId_requestKey: { campaignId: campaign.id, requestKey: input.requestKey } } });
       if (prior) return { prior };
-      if (emailHash && !await limit(res, 'registration-submit-email', hash(`${campaign.id}:${emailHash}`), 3, 3600000)) return { limited: true };
       const now = new Date();
       const status = input.contactEmail ? 'PENDING_EMAIL' : 'RECEIVED';
       const contactName = input.mode === 'FAMILY' ? input.contactName : `${input.applicant.firstName} ${input.applicant.lastName}`;
@@ -104,6 +113,7 @@ export async function registrationSubmission(req: Request, res: Response, contex
       return { prior };
     });
     if (result.limited) return;
+    if (!result.prior && emailLimitKey) await consumePersistentRateLimit(emailLimitKey, emailLimitConfig);
     const submission = result.prior || result.submission;
     if (submission.payloadHash !== payloadHash) return res.status(409).json({ error: 'Dados inválidos.' });
     if (!result.prior && result.token && accessToken && input.contactEmail) {
