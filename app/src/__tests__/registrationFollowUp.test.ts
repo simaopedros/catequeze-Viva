@@ -22,6 +22,7 @@ describe('e-mails de acompanhamento', () => {
   });
 });
 
+vi.mock('express', () => ({ default: { json: () => () => undefined, raw: () => () => undefined, urlencoded: () => () => undefined } }));
 vi.mock('wasp/server', () => ({ HttpError: class extends Error { constructor(public statusCode: number, message?: string) { super(message); } }, prisma: {} }));
 vi.mock('wasp/auth/utils', () => ({ createProviderId: vi.fn(), findAuthIdentity: vi.fn(), getProviderDataWithPassword: JSON.parse, updateAuthIdentityProviderData: vi.fn() }));
 vi.mock('wasp/auth/jwt', () => ({ validateJWT: vi.fn() }));
