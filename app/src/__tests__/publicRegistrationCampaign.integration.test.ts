@@ -67,7 +67,8 @@ describe.skipIf(!process.env.DATABASE_URL)('API pública de campanha com banco',
     expect(r.headers['referrer-policy']).toBe('no-referrer');
     const body = JSON.parse(r.body!);
     expect(Object.keys(body).sort()).toEqual(['closesAt', 'opensAt', 'parishName', 'publicContact', 'publicDescription', 'stages', 'status', 'timezone', 'title', 'windows']);
-    expect(body.stages).toEqual(['Etapa Pública']);
+    expect(body.stages).toEqual([{ offeringId: id('offering'), name: 'Etapa Pública', audience: 'MINOR' }]);
+    expect(Object.keys(body.stages[0]).sort()).toEqual(['audience', 'name', 'offeringId']);
     for (const forbidden of [SENTINEL_EMAIL, id('user'), id('parish'), id('year'), id('stage'), 'plannedSeats', 'createdById', 'revision', 'seatPolicy', 'offeredCommunityIds']) expect(r.body).not.toContain(forbidden);
   });
 

@@ -229,7 +229,7 @@ async function deliverOutboxRow(
     logger.warn("[email] send failed", {
       id,
       messageId,
-      error,
+      ...(messageId === "registration.confirm" ? {} : { error }),
     });
     await db.emailMessage.update({
       where: { id },
