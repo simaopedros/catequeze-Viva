@@ -34,6 +34,7 @@ export default defineConfig({
         __dirname,
         "src/__tests__/ui/stubs/waspAuth.ts",
       ),
+      "wasp/client": path.resolve(__dirname, "src/__tests__/ui/stubs/waspConfig.ts"),
     },
   },
   test: {

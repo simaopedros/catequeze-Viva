@@ -399,5 +399,66 @@
       "ASSISTED": "Assistida"
     },
     "close": "Fechar"
+  },
+  "documents": {
+    "heading": "Documentos",
+    "sponsor": "Padrinho ou madrinha (opcional)",
+    "sponsorHelp": "A carta pastoral só é pedida quando o padrinho ou a madrinha é de outra paróquia.",
+    "role": "Papel",
+    "godfather": "Padrinho",
+    "godmother": "Madrinha",
+    "name": "Nome do padrinho ou da madrinha",
+    "otherParish": "É de outra paróquia",
+    "parishName": "Nome da paróquia",
+    "parishRequired": "Informe o nome da paróquia.",
+    "warning": "Documentos podem ser enviados depois ou levados à secretaria. Isso não impede a inscrição.",
+    "expired": "Para enviar documentos depois, procure a secretaria da paróquia.",
+    "loadError": "Não foi possível carregar os documentos. Tente novamente.",
+    "sendError": "Não foi possível enviar o documento. Tente novamente.",
+    "sending": "Enviando documento...",
+    "sent": "Documento enviado.",
+    "tooLarge": "O arquivo deve ter no máximo 10 MB.",
+    "invalidType": "Escolha um arquivo PDF, JPG, PNG ou WebP.",
+    "chooseFile": "Escolha um arquivo.",
+    "upload": "Enviar documento",
+    "download": "Baixar",
+    "verify": "Conferir",
+    "reject": "Recusar",
+    "reason": "Motivo da recusa",
+    "reasonRequired": "Informe o motivo da recusa.",
+    "confirmReject": "Confirmar recusa",
+    "conflict": "O documento já foi alterado. A lista foi atualizada.",
+    "staffUpload": "Envio no balcão",
+    "documentType": "Tipo de documento",
+    "file": "Arquivo",
+    "queue": "Fila de documentos",
+    "warningCount_one": "{{count}} aviso de documentos",
+    "warningCount_other": "{{count}} avisos de documentos",
+    "type": {
+      "BIRTH_CERTIFICATE": "Certidão de nascimento",
+      "BAPTISM_CERTIFICATE": "Certidão de batismo",
+      "CONSENT_FORM": "Termo de consentimento",
+      "MARRIAGE_CERTIFICATE": "Certidão de casamento",
+      "PASTORAL_LETTER": "Carta pastoral",
+      "OTHER": "Outro"
+    },
+    "state": {
+      "MISSING": "Faltando",
+      "AWAITING_SECURITY": "Em análise de segurança",
+      "AWAITING_REVIEW": "Aguardando conferência",
+      "VERIFIED": "Conferido",
+      "REJECTED": "Recusado",
+      "NOT_NEEDED": "Não necessário"
+    },
+    "status": {
+      "QUARANTINE": "Em análise de segurança",
+      "PENDING": "Aguardando conferência",
+      "VERIFIED": "Conferido",
+      "REJECTED": "Recusado"
+    },
+    "source": {
+      "FAMILY": "Família",
+      "STAFF": "Balcão"
+    }
   }
 }

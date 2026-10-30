@@ -9,7 +9,7 @@ export async function createSubmissionRecords(tx: any, { input, campaign, option
   const applicants = input.mode === 'FAMILY' ? input.applicants : [input.applicant];
   const ids: string[] = [];
   for (const [i, person] of applicants.entries()) {
-    const application = await tx.registrationApplication.create({ data: { submissionId: submission.id, offeringId: person.offeringId, kind: input.mode === 'FAMILY' ? 'MINOR' : 'ADULT', firstName: person.firstName, lastName: person.lastName, birthDate: new Date(`${person.birthDate}T00:00:00Z`), communityId: person.communityId, ...options[i], consents: { create: { kind: 'PARTICIPATION', granted: true, textVersion: 'registration-consent-v1', actorName: contactName, actorRelationship: input.mode === 'FAMILY' ? input.relationship : null, verifiedContactHash: emailHash } } } });
+    const application = await tx.registrationApplication.create({ data: { submissionId: submission.id, offeringId: person.offeringId, kind: input.mode === 'FAMILY' ? 'MINOR' : 'ADULT', firstName: person.firstName, lastName: person.lastName, birthDate: new Date(`${person.birthDate}T00:00:00Z`), sponsorName: person.sponsor?.name, sponsorRole: person.sponsor?.role, sponsorFromOtherParish: person.sponsor?.fromOtherParish, sponsorParishName: person.sponsor?.parishName, communityId: person.communityId, ...options[i], consents: { create: { kind: 'PARTICIPATION', granted: true, textVersion: 'registration-consent-v1', actorName: contactName, actorRelationship: input.mode === 'FAMILY' ? input.relationship : null, verifiedContactHash: emailHash } } } });
     ids.push(application.id);
   }
   return { ...submission, applicationIds: ids };

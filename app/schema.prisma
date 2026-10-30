@@ -2893,6 +2893,19 @@ enum RegistrationOfferStatus {
 
 enum RegistrationAccessTokenPurpose {
   CONFIRM_CONTACT
+  DOCUMENT_UPLOAD
+}
+
+enum RegistrationDocumentStatus {
+  QUARANTINE
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum RegistrationDocumentSource {
+  FAMILY
+  STAFF
 }
 
 model RegistrationSubmission {
@@ -2928,6 +2941,10 @@ model RegistrationApplication {
   firstName String
   lastName String
   birthDate DateTime @db.Date
+  sponsorName String? @db.VarChar(100)
+  sponsorRole SponsorRole?
+  sponsorFromOtherParish Boolean?
+  sponsorParishName String? @db.VarChar(100)
   communityId String?
   ageAtCutoff Int
   needsReview Boolean @default(false)
@@ -2941,8 +2958,34 @@ model RegistrationApplication {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   consents RegistrationConsent[]
+  documents RegistrationDocument[]
   @@index([offeringId, status])
   @@index([submissionId, status, id])
+}
+
+model RegistrationDocument {
+  id String @id @default(uuid())
+  applicationId String
+  application RegistrationApplication @relation(fields: [applicationId], references: [id])
+  campaignId String
+  type DocumentType
+  name String @db.VarChar(120)
+  s3Key String
+  mimeType String
+  sizeBytes Int
+  sha256 String
+  source RegistrationDocumentSource
+  status RegistrationDocumentStatus @default(QUARANTINE)
+  scannedAt DateTime?
+  uploadedByUserId String?
+  verifiedAt DateTime?
+  verifiedById String?
+  rejectedAt DateTime?
+  rejectedReason String? @db.VarChar(300)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([applicationId, type])
+  @@index([campaignId, status, createdAt])
 }
 
 model RegistrationConsent {
