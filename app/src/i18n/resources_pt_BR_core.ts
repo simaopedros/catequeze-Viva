@@ -3470,6 +3470,66 @@ export const public_pt_BR_core = {
       "confirmloading": "Confirmando inscrição",
       "confirminvalid": "Link inválido ou expirado. Peça um novo link pelo formulário ou informe seu protocolo à secretaria.",
       "confirmconfirmed": "Inscrição confirmada"
+    },
+    "review": {
+      "link": "Conferir inscrições",
+      "heading": "Conferência de inscrições",
+      "unavailable": "Recurso indisponível",
+      "error": "Não foi possível carregar os dados. Tente novamente.",
+      "filterStatus": "Filtrar por status",
+      "all": "Todos",
+      "needsReview": "Precisa de conferência",
+      "assisted": "Inscrever em modo assistido",
+      "empty": "Nenhuma inscrição encontrada.",
+      "age": "Idade no corte",
+      "offering": "Oferta",
+      "windows": "Janelas preferidas",
+      "contactVerified": "Contato confirmado",
+      "loadMore": "Carregar mais",
+      "detail": "Detalhe da inscrição",
+      "notProvided": "Não informado",
+      "consents": "Consentimentos",
+      "yes": "Sim",
+      "no": "Não",
+      "duplicates": "Possíveis duplicidades",
+      "suggestionWarning": "Somente sugestão, nada é unificado automaticamente.",
+      "note": "Nota opcional",
+      "start": "Iniciar conferência",
+      "correction": "Pedir correção",
+      "reopen": "Reabrir",
+      "reject": "Rejeitar",
+      "confirmReject": "Confirma a rejeição desta inscrição?",
+      "confirm": "Confirmar rejeição",
+      "cancel": "Cancelar",
+      "saved": "Decisão registrada.",
+      "conflict": "A inscrição foi alterada por outra pessoa. O detalhe foi atualizado; revise antes de decidir novamente.",
+      "noEmail": "Nenhum e-mail é enviado automaticamente no modo assistido.",
+      "closed": "A campanha não está aberta para inscrições.",
+      "optional": "Opcional",
+      "community": "Comunidade",
+      "consent": "Confirmo que o responsável autorizou o tratamento dos dados",
+      "invalid": "Confira os campos indicados.",
+      "sendError": "Não foi possível enviar. Tente novamente.",
+      "status": {
+        "SUBMITTED": "Enviada",
+        "UNDER_REVIEW": "Em conferência",
+        "APPROVED": "Aprovada",
+        "NEEDS_CORRECTION": "Precisa de correção",
+        "WAITLISTED": "Lista de espera",
+        "ENROLLED": "Matriculada",
+        "WITHDRAWN": "Retirada",
+        "REJECTED": "Rejeitada"
+      },
+      "reason": {
+        "SAME_NAME_BIRTHDATE": "Mesmo nome e data de nascimento",
+        "SAME_BIRTHDATE_SIMILAR_NAME": "Mesma data de nascimento e nome semelhante",
+        "SAME_CONTACT": "Mesmo contato"
+      },
+      "source": {
+        "PUBLIC": "Online",
+        "ASSISTED": "Assistida"
+      },
+      "close": "Fechar"
     }
   } as const;
 

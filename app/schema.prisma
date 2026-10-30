@@ -928,6 +928,7 @@ model CatechumenProfile {
   @@index([parishId])
   @@index([email])
   @@index([parishId, firstName, lastName])
+  @@index([parishId, birthDate])
 }
 
 // ─── Birthdays ──────────────────────────────────────────────────────────────────
@@ -2862,6 +2863,11 @@ enum RegistrationApplicantKind {
   ADULT
 }
 
+enum RegistrationSubmissionSource {
+  PUBLIC
+  ASSISTED
+}
+
 enum RegistrationSubmissionStatus {
   PENDING_EMAIL
   RECEIVED
@@ -2897,6 +2903,8 @@ model RegistrationSubmission {
   requestKey String
   payloadHash String
   status RegistrationSubmissionStatus
+  source RegistrationSubmissionSource @default(PUBLIC)
+  createdByUserId String?
   contactName String
   contactEmail String?
   contactPhone String?
@@ -2924,12 +2932,17 @@ model RegistrationApplication {
   ageAtCutoff Int
   needsReview Boolean @default(false)
   status RegistrationApplicationStatus @default(SUBMITTED)
+  revision Int @default(0)
+  reviewedAt DateTime?
+  reviewedByUserId String?
+  reviewNote String?
   offerStatus RegistrationOfferStatus @default(NONE)
   preferences Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   consents RegistrationConsent[]
   @@index([offeringId, status])
+  @@index([submissionId, status, id])
 }
 
 model RegistrationConsent {

@@ -7181,6 +7181,66 @@ export const public_es = {
       "confirmloading": "Confirmando inscripción",
       "confirminvalid": "Enlace inválido o caducado. Solicite otro enlace en el formulario o indique su protocolo a la secretaría.",
       "confirmconfirmed": "Inscripción confirmada"
+    },
+    "review": {
+      "link": "Revisar inscripciones",
+      "heading": "Revisión de inscripciones",
+      "unavailable": "Recurso no disponible",
+      "error": "No se pudieron cargar los datos. Inténtalo de nuevo.",
+      "filterStatus": "Filtrar por estado",
+      "all": "Todos",
+      "needsReview": "Necesita revisión",
+      "assisted": "Inscribir con asistencia",
+      "empty": "No se encontraron inscripciones.",
+      "age": "Edad en la fecha de corte",
+      "offering": "Oferta",
+      "windows": "Horarios preferidos",
+      "contactVerified": "Contacto confirmado",
+      "loadMore": "Cargar más",
+      "detail": "Detalle de la inscripción",
+      "notProvided": "No informado",
+      "consents": "Consentimientos",
+      "yes": "Sí",
+      "no": "No",
+      "duplicates": "Posibles duplicados",
+      "suggestionWarning": "Solo es una sugerencia, nada se unifica automáticamente.",
+      "note": "Nota opcional",
+      "start": "Iniciar revisión",
+      "correction": "Solicitar corrección",
+      "reopen": "Reabrir",
+      "reject": "Rechazar",
+      "confirmReject": "¿Confirmas el rechazo de esta inscripción?",
+      "confirm": "Confirmar rechazo",
+      "cancel": "Cancelar",
+      "saved": "Decisión guardada.",
+      "conflict": "Otra persona modificó la inscripción. Se actualizó el detalle; revísalo antes de decidir de nuevo.",
+      "noEmail": "No se envía ningún correo automáticamente en el modo asistido.",
+      "closed": "La campaña no está abierta para inscripciones.",
+      "optional": "Opcional",
+      "community": "Comunidad",
+      "consent": "Confirmo que la persona responsable autorizó el tratamiento de los datos",
+      "invalid": "Revisa los campos indicados.",
+      "sendError": "No se pudo enviar. Inténtalo de nuevo.",
+      "status": {
+        "SUBMITTED": "Enviada",
+        "UNDER_REVIEW": "En revisión",
+        "APPROVED": "Aprobada",
+        "NEEDS_CORRECTION": "Necesita corrección",
+        "WAITLISTED": "Lista de espera",
+        "ENROLLED": "Matriculada",
+        "WITHDRAWN": "Retirada",
+        "REJECTED": "Rechazada"
+      },
+      "reason": {
+        "SAME_NAME_BIRTHDATE": "Mismo nombre y fecha de nacimiento",
+        "SAME_BIRTHDATE_SIMILAR_NAME": "Misma fecha de nacimiento y nombre similar",
+        "SAME_CONTACT": "Mismo contacto"
+      },
+      "source": {
+        "PUBLIC": "En línea",
+        "ASSISTED": "Asistida"
+      },
+      "close": "Cerrar"
     }
   } as const;
 

@@ -1,6 +1,7 @@
 import express, { type Request, type Response } from 'express';
 import { createHash, createHmac } from 'node:crypto';
 import { prisma, type MiddlewareConfigFn } from 'wasp/server';
+import { createSubmissionRecords } from '../registrations/createSubmissionRecords';
 import { offeredWindowsSchema } from '../../shared/registrationCampaign';
 import { registrationSubmissionSchema, validateSubmissionOptions } from '../../shared/registrationSubmission';
 import { EMAIL_MESSAGE } from '../../shared/emailCatalog';
@@ -11,7 +12,7 @@ import { getClientIpFromRequest } from '../security/clientIp';
 import { consumePersistentRateLimit, peekPersistentRateLimit } from '../security/persistentRateLimit';
 import { passesHoneypot } from '../security/publicFormGuard';
 import { createTurnstileVerifier, type RegistrationCaptchaVerifier } from '../security/registrationCaptcha';
-import { createRegistrationFormToken, verifyRegistrationFormToken, generateRegistrationProtocol, generateRegistrationAccessToken, hashRegistrationAccessToken } from '../security/registrationTokens';
+import { createRegistrationFormToken, verifyRegistrationFormToken, generateRegistrationAccessToken, hashRegistrationAccessToken } from '../security/registrationTokens';
 import { loadPublicRegistrationCampaign, validPublicRegistrationSlug } from './registrationPublicCampaignLoader';
 
 export const hash = (v: string) => createHash('sha256').update(v).digest('hex');
@@ -98,12 +99,7 @@ export async function registrationSubmission(req: Request, res: Response, contex
       const prior = await tx.registrationSubmission.findUnique({ where: { campaignId_requestKey: { campaignId: campaign.id, requestKey: input.requestKey } } });
       if (prior) return { prior };
       const now = new Date();
-      const status = input.contactEmail ? 'PENDING_EMAIL' : 'RECEIVED';
-      const contactName = input.mode === 'FAMILY' ? input.contactName : `${input.applicant.firstName} ${input.applicant.lastName}`;
-      const submission = await tx.registrationSubmission.create({ data: { campaignId: campaign.id, requestKey: input.requestKey, payloadHash, protocol: generateRegistrationProtocol(), status, contactName, contactEmail: input.contactEmail, contactPhone: input.contactPhone, retentionUntil: new Date((input.contactEmail ? now : campaign.closesAt).getTime() + (input.contactEmail ? 30 : 180) * 86400000) } });
-      for (const [i, person] of applicants.entries()) {
-        await tx.registrationApplication.create({ data: { submissionId: submission.id, offeringId: person.offeringId, kind: input.mode === 'FAMILY' ? 'MINOR' : 'ADULT', firstName: person.firstName, lastName: person.lastName, birthDate: new Date(`${person.birthDate}T00:00:00Z`), communityId: person.communityId, ...options[i], consents: { create: { kind: 'PARTICIPATION', granted: true, textVersion: 'registration-consent-v1', actorName: contactName, actorRelationship: input.mode === 'FAMILY' ? input.relationship : null, verifiedContactHash: emailHash } } } });
-      }
+      const submission = await createSubmissionRecords(tx, { input, campaign, options, payloadHash, emailHash, now });
       const token = accessToken && await tx.registrationAccessToken.create({ data: { submissionId: submission.id, campaignId: campaign.id, emailHash, tokenHash: hashRegistrationAccessToken(accessToken), purpose: 'CONFIRM_CONTACT', expiresAt: new Date(now.getTime() + 86400000) } });
       return { submission, token };
     }).catch(async (error: any) => {
