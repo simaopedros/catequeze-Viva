@@ -9,6 +9,7 @@ import { registrationFormToken, registrationSubmission } from '../server/api/reg
 import express from 'express';
 import { registrationConfirm, registrationResendConfirmation, registrationConfirmationMiddleware } from '../server/api/registrationConfirmation';
 import { registrationSubmissionMiddleware } from '../server/api/registrationSubmission';
+import { registrationDocumentStatus } from '../server/api/registrationDocuments';
 import { logger } from '../server/logger';
 import { createRegistrationFormToken, hashRegistrationAccessToken } from '../server/security/registrationTokens';
 import { getFakeSentEmails, resetFakeEmailAdapter } from '../server/email';
@@ -123,6 +124,16 @@ describe.skipIf(!process.env.DATABASE_URL)('submissão pública com banco', () =
     await db.registrationConsent.updateMany({ where: { application: { submissionId: submission.id } }, data: { verifiedContactHash: null } });
     const results = await Promise.all(Array.from({ length: 10 }, () => confirmCall(token)));
     expect(results.filter(x => x.status === 200)).toHaveLength(1);
+    const confirmed = results.find(x => x.status === 200); const uploadToken = confirmed.body.uploadSession.token;
+    expect(uploadToken).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    const session = await db.registrationAccessToken.findUniqueOrThrow({ where: { tokenHash: hashRegistrationAccessToken(uploadToken) } });
+    expect(session.purpose).toBe('DOCUMENT_UPLOAD'); expect(session.submissionId).toBe(submission.id); expect(session.emailHash).toBe(submission.tokens[0].emailHash);
+    expect(new Date(confirmed.body.uploadSession.expiresAt).getTime() - session.createdAt.getTime()).toBeGreaterThan(7190000);
+    expect(JSON.stringify(getFakeSentEmails())).not.toContain(uploadToken);
+    const statusCall = async () => { const out: any = { status: 200, headers: {} }; const res: any = { set(a: any, b?: string) { if (typeof a === 'string') out.headers[a] = b; else Object.assign(out.headers, a); return res; }, status(v: number) { out.status = v; return res; }, json(v: any) { out.body = v; return res; }, end() { return res; } }; await registrationDocumentStatus({ ip: '203.0.113.47', get: () => `Bearer ${uploadToken}` } as any, res, { entities }); return out; };
+    const status = await statusCall(); expect(status.status).toBe(200); expect(status.body[0].blocking).toBe(false); expect(JSON.stringify(status.body)).not.toContain('s3Key'); expect(JSON.stringify(status.body)).not.toContain('name');
+    await db.registrationAccessToken.update({ where: { id: session.id }, data: { revokedAt: new Date() } }); expect((await statusCall()).status).toBe(401);
+
     const failures = results.filter(x => x.status === 400); expect(failures).toHaveLength(9); expect(failures.every(x => JSON.stringify(x) === JSON.stringify(failures[0]))).toBe(true);
     const updated = await db.registrationSubmission.findUniqueOrThrow({ where: { id: submission.id }, include: { applications: { include: { consents: true } } } });
     expect(updated.status).toBe('RECEIVED'); expect(updated.contactVerifiedAt).toBeTruthy();
