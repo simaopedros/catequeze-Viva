@@ -1554,6 +1554,19 @@ api registrationResendConfirmation {
   entities: [RegistrationCampaign, RegistrationOffering, Stage, Parish, TenantBilling, User, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationAccessToken, EmailMessage, EmailSuppression, EmailPreference]
 }
 
+api registrationFollowUpLink {
+  fn: import { registrationFollowUpLink } from "@src/server/api/registrationFollowUp",
+  middlewareConfigFn: import { registrationFollowUpMiddleware } from "@src/server/api/registrationFollowUp",
+  httpRoute: (POST, "/api/public/inscricoes/acompanhar/link"),
+  entities: [RegistrationCampaign, RegistrationSubmission, RegistrationAccessToken, Parish, TenantBilling, User, EmailMessage, EmailSuppression, EmailPreference]
+}
+api registrationFollowUpSession {
+  fn: import { registrationFollowUpSession } from "@src/server/api/registrationFollowUp",
+  middlewareConfigFn: import { registrationFollowUpMiddleware } from "@src/server/api/registrationFollowUp",
+  httpRoute: (POST, "/api/public/inscricoes/acompanhar/session"),
+  entities: [RegistrationCampaign, RegistrationSubmission, RegistrationApplication, RegistrationOffering, RegistrationDocument, RegistrationAccessToken, Document, DocumentStageRule, Parish, TenantBilling, User]
+}
+
 api publicUploadDocument {
   fn: import { publicUploadDocument } from "@src/server/api/publicUpload",
   middlewareConfigFn: import { publicUploadMiddleware } from "@src/server/api/publicUpload",
@@ -2014,7 +2027,7 @@ api readinessCheckApi {
 api maintenanceApi {
   fn: import { maintenanceHandler } from "@src/server/api/maintenance",
   httpRoute: (POST, "/api/internal/maintenance"),
-  entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish, SocialMedia, LifecycleEmailLog, Membership, ClassEnrollment, AttendanceRecord, PricingPlan, PricingPlanPrice, PricingEvent, EmailMessage, EmailSuppression, EmailPreference, JobRun]
+  entities: [RegistrationCampaign, RegistrationSubmission, RegistrationApplication, RegistrationOffering, RegistrationDocument, Document, DocumentStageRule, User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish, SocialMedia, LifecycleEmailLog, Membership, ClassEnrollment, AttendanceRecord, PricingPlan, PricingPlanPrice, PricingEvent, EmailMessage, EmailSuppression, EmailPreference, JobRun]
 }
 
 api subscriptionExpirationApi {
@@ -2996,7 +3009,11 @@ query listRegistrationApplications {
 }
 query getRegistrationApplication {
   fn: import { getRegistrationApplication } from "@src/server/operations/registrationReviewOperations",
-  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationDocument, Document, DocumentStageRule, CatechumenProfile, Household, GuardianProfile, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationDocument, Document, DocumentStageRule, CatechumenProfile, Household, GuardianProfile, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, EmailMessage]
+}
+action setRegistrationReminders {
+  fn: import { setRegistrationReminders } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationSubmission, RegistrationApplication, RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
 }
 action reviewRegistrationApplication {
   fn: import { reviewRegistrationApplication } from "@src/server/operations/registrationReviewOperations",

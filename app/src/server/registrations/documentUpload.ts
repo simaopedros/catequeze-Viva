@@ -1,3 +1,4 @@
+import { logger } from '../logger';
 import { syncRegistrationDocumentsToProfile } from './profileDocuments';
 import { createHash } from 'node:crypto';
 import { HttpError, prisma } from 'wasp/server';
@@ -16,7 +17,8 @@ export async function uploadRegistrationDocument(input: { applicationId: string;
       await tx.$queryRaw`SELECT "id" FROM "RegistrationApplication" WHERE "id" = ${input.applicationId} FOR UPDATE`;
       if (input.source === 'FAMILY') {
         const campaign = await tx.registrationCampaign.findUnique({ where: { id: input.campaignId }, select: { status: true } });
-        if (campaign?.status !== 'OPEN') throw new HttpError(404);
+        const application = await tx.registrationApplication.findFirst({ where: { id: input.applicationId, submission: { campaignId: input.campaignId }, status: { notIn: ['REJECTED', 'WITHDRAWN'] } }, select: { id: true } });
+        if (!application || !campaign || !['OPEN', 'CLOSED', 'ORGANIZING'].includes(campaign.status)) throw new HttpError(404);
       }
       const existing = await tx.registrationDocument.findFirst({ where: { applicationId: input.applicationId, type: type as any, sha256 }, select: { id: true, type: true, status: true } });
       if (existing) return { document: existing, created: false };
@@ -40,7 +42,7 @@ export async function uploadRegistrationDocument(input: { applicationId: string;
   if (scan === 'clean') {
     const document = await prisma.registrationDocument.update({ where: { id: created.id }, data: { status: 'PENDING', scannedAt: new Date() }, select: { id: true, type: true, status: true } });
     const application = await prisma.registrationApplication.findUnique({ where: { id: input.applicationId }, select: { status: true } });
-    if (application?.status === 'APPROVED') try { await syncRegistrationDocumentsToProfile(input.applicationId); } catch { console.error('Registration document synchronization failed', { applicationId: input.applicationId }); }
+    if (application?.status === 'APPROVED') try { await syncRegistrationDocumentsToProfile(input.applicationId); } catch { logger.warn('registration_document_sync_failed', { applicationId: input.applicationId }); }
     return document;
   }
   return created;

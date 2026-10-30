@@ -4,8 +4,10 @@ vi.mock('wasp/server', async () => { const { PrismaClient } = await import('@pri
 import { prisma } from 'wasp/server';
 import { syncRegistrationDocumentsToProfile } from '../server/registrations/profileDocuments';
 import { storeDocumentFile, deleteDocumentFile } from '../server/storage/documentStorage';
+import { registrationDocumentStatus } from '../server/api/registrationDocuments';
+import { generateRegistrationAccessToken, hashRegistrationAccessToken } from '../server/security/registrationTokens';
 import { reviewRegistrationDocument } from '../server/operations/registrationDocumentOperations';
-import { approveRegistrationApplication, linkRegistrationProfile } from '../server/operations/registrationReviewOperations';
+import { approveRegistrationApplication, linkRegistrationProfile, setRegistrationReminders, getRegistrationApplication } from '../server/operations/registrationReviewOperations';
 const db = new PrismaClient();
 const suffix = crypto.randomUUID(); const id = (s: string) => `approval-${s}-${suffix}`;
 const entities = new Proxy(db as any, { get(target, key: string) { return Reflect.get(target, key.charAt(0).toLowerCase() + key.slice(1)); } });
@@ -41,6 +43,7 @@ describe.skipIf(!process.env.DATABASE_URL)('aprovação cadastral com Postgres',
     await db.registrationDocument.deleteMany({ where: { campaignId: id('campaign') } });
     await db.registrationConsent.deleteMany({ where: { application: { submissionId: id('submission') } } });
     await db.registrationApplication.deleteMany({ where: { submissionId: id('submission') } });
+    await db.registrationAccessToken.deleteMany({ where: { submissionId: id('submission') } });
     await db.registrationSubmission.deleteMany({ where: { id: id('submission') } });
     await db.catechumenSponsor.deleteMany({ where: { catechumenProfile: { parishId: id('parish') } } });
     await db.document.deleteMany({ where: { catechumenProfile: { parishId: id('parish') } } });
@@ -49,6 +52,12 @@ describe.skipIf(!process.env.DATABASE_URL)('aprovação cadastral com Postgres',
     await db.registrationOffering.deleteMany({ where: { campaignId: id('campaign') } }); await db.registrationCampaign.deleteMany({ where: { id: id('campaign') } }); await db.stage.deleteMany({ where: { id: id('stage') } }); await db.catecheticalYear.deleteMany({ where: { id: id('year') } });
     await db.registrationPermissionGrant.deleteMany({ where: { grantedById: coordinator.user.id } }); await db.membership.deleteMany({ where: { userId: { in: users } } }); await db.tenantBilling.deleteMany({ where: { parishId: id('parish') } }); await db.community.deleteMany({ where: { parishId: id('parish') } }); await db.parish.deleteMany({ where: { id: { in: [id('parish'), id('other-parish')] } } }); await db.user.deleteMany({ where: { id: { in: users } } });
     await db.$disconnect(); await prisma.$disconnect(); if (enabled === undefined) delete process.env.REGISTRATIONS_ENABLED; else process.env.REGISTRATIONS_ENABLED = enabled;
+  });
+  it('pausa lembretes com autorização paroquial em submissão mista', async () => {
+    await expect(setRegistrationReminders({ submissionId: id('submission'), paused: true }, community)).rejects.toMatchObject({ statusCode: 403 });
+    expect(await setRegistrationReminders({ submissionId: id('submission'), paused: true }, coordinator)).toMatchObject({ paused: true });
+    const detail = await getRegistrationApplication({ id: id('linked') }, coordinator); expect(detail.reminders).toMatchObject({ count: 0, paused: true, lastStatus: null }); expect(detail.contactEmailVerified).toBe(false);
+    await setRegistrationReminders({ submissionId: id('submission'), paused: false }, coordinator);
   });
   it('aprova irmãos em paralelo com uma família, responsável e avisos', async () => {
     const results = await Promise.all(['sibling1', 'sibling2'].map(name => approveRegistrationApplication({ id: id(name), revision: 0 }, coordinator)));
@@ -71,10 +80,25 @@ describe.skipIf(!process.env.DATABASE_URL)('aprovação cadastral com Postgres',
     const originalKey = await storeDocumentFile({ buffer: Buffer.from('%PDF-original'), mimeType: 'application/pdf', keyPrefix: `documents/${id('profile')}` });
     const sourceKey = await storeDocumentFile({ buffer: Buffer.from('%PDF-new'), mimeType: 'application/pdf', keyPrefix: `registrations/${id('campaign')}/${id('linked')}` });
     await db.document.create({ data: { name: 'Original', type: 'BIRTH_CERTIFICATE', status: 'VERIFIED', s3Key: originalKey, catechumenProfileId: id('profile') } });
-    await db.registrationDocument.create({ data: { applicationId: id('linked'), campaignId: id('campaign'), type: 'BIRTH_CERTIFICATE', name: 'Novo', s3Key: sourceKey, mimeType: 'application/pdf', sizeBytes: 8, sha256: 'linked', source: 'STAFF', status: 'PENDING' } });
+    await linkRegistrationProfile({ id: id('conflict'), revision: 0, catechumenProfileId: id('profile') }, coordinator);
+    await expect(linkRegistrationProfile({ id: id('conflict'), revision: 0, catechumenProfileId: null }, coordinator)).rejects.toMatchObject({ statusCode: 409 });
+    await linkRegistrationProfile({ id: id('conflict'), revision: 1, catechumenProfileId: null }, coordinator);
+    expect((await db.registrationApplication.findUniqueOrThrow({ where: { id: id('conflict') } })).catechumenProfileId).toBeNull();
     await linkRegistrationProfile({ id: id('linked'), revision: 0, catechumenProfileId: id('profile') }, coordinator);
-    await expect(linkRegistrationProfile({ id: id('conflict'), revision: 0, catechumenProfileId: id('profile') }, coordinator)).rejects.toMatchObject({ statusCode: 409 });
+    const raw = generateRegistrationAccessToken();
+    await db.registrationSubmission.update({ where: { id: id('submission') }, data: { contactVerifiedAt: new Date() } });
+    await db.registrationAccessToken.create({ data: { submissionId: id('submission'), campaignId: id('campaign'), emailHash: 'hash', tokenHash: hashRegistrationAccessToken(raw), purpose: 'DOCUMENT_UPLOAD', expiresAt: new Date(Date.now() + 3600000) } });
+    const out: any = { status: 200 }; const res: any = { set() { return res; }, status(v: number) { out.status = v; return res; }, json(v: any) { out.body = v; return res; }, end() { return res; } };
+    await registrationDocumentStatus({ ip: '203.0.113.229', get: () => `Bearer ${raw}` } as any, res, { entities });
+    expect(out.status).toBe(200); const item = out.body.find((v: any) => v.applicationId === id('linked'));
+    expect(item.checklist.some((v: any) => v.type === 'BIRTH_CERTIFICATE' && v.reused === true)).toBe(true);
+    expect(JSON.stringify(item)).not.toContain(id('profile'));
+    await db.registrationDocument.create({ data: { applicationId: id('linked'), campaignId: id('campaign'), type: 'BIRTH_CERTIFICATE', name: 'Novo', s3Key: sourceKey, mimeType: 'application/pdf', sizeBytes: 8, sha256: 'linked', source: 'STAFF', status: 'PENDING' } });
+
+
+    await expect(linkRegistrationProfile({ id: id('conflict'), revision: 2, catechumenProfileId: id('profile') }, coordinator)).rejects.toMatchObject({ statusCode: 409 });
     await approveRegistrationApplication({ id: id('linked'), revision: 1 }, coordinator);
+    await expect(linkRegistrationProfile({ id: id('linked'), revision: 2, catechumenProfileId: null }, coordinator)).rejects.toMatchObject({ statusCode: 409 });
     expect(await db.catechumenProfile.findUniqueOrThrow({ where: { id: id('profile') } })).toEqual(before);
     expect(await db.document.count({ where: { catechumenProfileId: id('profile'), type: 'BIRTH_CERTIFICATE' } })).toBe(1);
     expect(await db.catechumenSponsor.findMany({ where: { catechumenProfileId: id('profile') } })).toHaveLength(1);

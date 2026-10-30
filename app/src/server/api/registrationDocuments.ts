@@ -37,8 +37,9 @@ export async function registrationDocumentStatus(req: Request, res: Response, co
   try {
     const record = await session(req, res, context); if (!record) return;
     const campaign = record.submission.campaign;
+    if (!['OPEN', 'CLOSED', 'ORGANIZING'].includes(campaign.status)) return unavailable(res);
     const [applications, rules] = await Promise.all([
-      context.entities.RegistrationApplication.findMany({ where: { submissionId: record.submissionId }, include: { offering: { include: { stage: true } }, documents: { select: { id: true, type: true, status: true, createdAt: true } } } }),
+      context.entities.RegistrationApplication.findMany({ where: { submissionId: record.submissionId, status: { notIn: ['REJECTED', 'WITHDRAWN'] } }, include: { offering: { include: { stage: true } }, documents: { select: { id: true, type: true, status: true, createdAt: true } } } }),
       loadRegistrationDocumentRules(context, campaign),
     ]);
     const profileDocuments = await context.entities.Document.findMany({ where: { catechumenProfileId: { in: applications.map((a: any) => a.catechumenProfileId).filter(Boolean) } }, select: { catechumenProfileId: true, type: true, status: true } });
@@ -49,10 +50,10 @@ export async function publicRegistrationDocumentUpload(req: Request, res: Respon
   headers(res);
   try {
     const record = await session(req, res, context); if (!record) return;
-    if (record.submission.campaign.status !== 'OPEN') return unavailable(res);
+    if (!['OPEN', 'CLOSED', 'ORGANIZING'].includes(record.submission.campaign.status)) return unavailable(res);
     await multipart(req, res);
     if (typeof req.body?.applicationId !== 'string' || !req.body.applicationId) return unavailable(res);
-    const application = await context.entities.RegistrationApplication.findFirst({ where: { id: req.body.applicationId, submissionId: record.submissionId }, select: { id: true } });
+    const application = await context.entities.RegistrationApplication.findFirst({ where: { id: req.body.applicationId, submissionId: record.submissionId, status: { notIn: ['REJECTED', 'WITHDRAWN'] } }, select: { id: true } });
     if (!application) return unavailable(res);
     return res.json(await uploadRegistrationDocument({ applicationId: application.id, campaignId: record.campaignId, type: req.body.type, file: req.file!, source: 'FAMILY' }));
   } catch (error) { return handleError(res, error); }
