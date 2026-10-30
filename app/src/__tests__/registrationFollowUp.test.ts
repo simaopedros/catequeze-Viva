@@ -22,6 +22,13 @@ describe('e-mails de acompanhamento', () => {
   });
 });
 
+vi.mock('wasp/server', () => ({ HttpError: class extends Error { constructor(public statusCode: number, message?: string) { super(message); } }, prisma: {} }));
+vi.mock('wasp/auth/utils', () => ({ createProviderId: vi.fn(), findAuthIdentity: vi.fn(), getProviderDataWithPassword: JSON.parse, updateAuthIdentityProviderData: vi.fn() }));
+vi.mock('wasp/auth/jwt', () => ({ validateJWT: vi.fn() }));
+vi.mock('wasp/auth/password', () => ({ hashPassword: vi.fn(), verifyPassword: vi.fn() }));
+vi.mock('../server/auth/helpers', () => ({ requireAuth: vi.fn(), writeAuditLog: vi.fn(), getDioceseParishIds: vi.fn() }));
+vi.mock('../server/requestPortalContext', () => ({ portalRequestContextMiddleware: (_r: any, _s: any, n: any) => n() }));
+vi.mock('../server/middleware/rateLimiter', () => ({ authRateLimiter: (_r: any, _s: any, n: any) => n() }));
 vi.mock('../server/security/persistentRateLimit', () => ({ consumePersistentRateLimit: vi.fn() }));
 import { consumePersistentRateLimit } from '../server/security/persistentRateLimit';
 import { registrationFollowUpLink, registrationFollowUpSession } from '../server/api/registrationFollowUp';
