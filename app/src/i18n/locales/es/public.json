@@ -399,5 +399,66 @@
       "ASSISTED": "Asistida"
     },
     "close": "Cerrar"
+  },
+  "documents": {
+    "heading": "Documentos",
+    "sponsor": "Padrino o madrina (opcional)",
+    "sponsorHelp": "La carta pastoral solo se solicita cuando el padrino o la madrina es de otra parroquia.",
+    "role": "Papel",
+    "godfather": "Padrino",
+    "godmother": "Madrina",
+    "name": "Nombre del padrino o de la madrina",
+    "otherParish": "Es de otra parroquia",
+    "parishName": "Nombre de la parroquia",
+    "parishRequired": "Indique el nombre de la parroquia.",
+    "warning": "Los documentos se pueden enviar después o llevar a la oficina parroquial. Esto no impide la inscripción.",
+    "expired": "Para enviar documentos después, contacte con la oficina parroquial.",
+    "loadError": "No se pudieron cargar los documentos. Inténtelo de nuevo.",
+    "sendError": "No se pudo enviar el documento. Inténtelo de nuevo.",
+    "sending": "Enviando documento...",
+    "sent": "Documento enviado.",
+    "tooLarge": "El archivo debe tener como máximo 10 MB.",
+    "invalidType": "Elija un archivo PDF, JPG, PNG o WebP.",
+    "chooseFile": "Elija un archivo.",
+    "upload": "Enviar documento",
+    "download": "Descargar",
+    "verify": "Verificar",
+    "reject": "Rechazar",
+    "reason": "Motivo del rechazo",
+    "reasonRequired": "Indique el motivo del rechazo.",
+    "confirmReject": "Confirmar rechazo",
+    "conflict": "El documento ya cambió. La lista se actualizó.",
+    "staffUpload": "Envío en oficina",
+    "documentType": "Tipo de documento",
+    "file": "Archivo",
+    "queue": "Cola de documentos",
+    "warningCount_one": "{{count}} aviso de documentos",
+    "warningCount_other": "{{count}} avisos de documentos",
+    "type": {
+      "BIRTH_CERTIFICATE": "Certificado de nacimiento",
+      "BAPTISM_CERTIFICATE": "Certificado de bautismo",
+      "CONSENT_FORM": "Formulario de consentimiento",
+      "MARRIAGE_CERTIFICATE": "Certificado de matrimonio",
+      "PASTORAL_LETTER": "Carta pastoral",
+      "OTHER": "Otro"
+    },
+    "state": {
+      "MISSING": "Pendiente",
+      "AWAITING_SECURITY": "En análisis de seguridad",
+      "AWAITING_REVIEW": "Pendiente de revisión",
+      "VERIFIED": "Verificado",
+      "REJECTED": "Rechazado",
+      "NOT_NEEDED": "No necesario"
+    },
+    "status": {
+      "QUARANTINE": "En análisis de seguridad",
+      "PENDING": "Pendiente de revisión",
+      "VERIFIED": "Verificado",
+      "REJECTED": "Rechazado"
+    },
+    "source": {
+      "FAMILY": "Familia",
+      "STAFF": "Oficina"
+    }
   }
 }

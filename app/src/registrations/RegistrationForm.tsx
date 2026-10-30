@@ -1,9 +1,10 @@
+import SponsorFields, { type Sponsor } from './SponsorFields';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from 'wasp/client/api';
 import { registrationSubmissionSchema } from '../shared/registrationSubmission';
 
-type Person = { firstName: string; lastName: string; birthDate: string; offeringId: string; windows: string[] };
+type Person = { sponsor?: Sponsor; firstName: string; lastName: string; birthDate: string; offeringId: string; windows: string[] };
 type Campaign = { windows?: { id: string; label: string; startTime: string; endTime: string }[]; stages?: { offeringId: string; name: string; audience: 'MINOR' | 'ADULT' | 'BOTH' }[] };
 type Turnstile = { render: (element: HTMLElement, options: Record<string, unknown>) => string; remove: (id: string) => void; reset: (id: string) => void };
 declare global { interface Window { turnstile?: Turnstile } }
@@ -66,7 +67,8 @@ export default function RegistrationForm({ slug, campaign }: { slug: string; cam
     if (!parsed.success) {
       const next: Record<string, string> = {};
       for (const issue of parsed.error.issues) {
-        const key = issue.path.join('.');
+        const path = issue.path.join('.');
+        const key = path.endsWith('.sponsor') ? `${path}.parishName` : path;
         if (key === 'formToken' || key === 'captchaToken' || key === 'requestKey' || key === 'honeypot') continue;
         next[key] = t('registration.fieldError');
       }
@@ -101,6 +103,7 @@ export default function RegistrationForm({ slug, campaign }: { slug: string; cam
       {(['firstName', 'lastName', 'birthDate'] as const).map(field => { const key = `${prefix}.${field}`; return <div key={key}><label htmlFor={key}>{t(`registration.${field}`)}</label><input {...attrs(key)} type={field === 'birthDate' ? 'date' : 'text'} value={person[field]} onChange={e => updatePerson(index, { [field]: e.target.value })} />{fieldError(key)}</div>; })}
       <div><label htmlFor={`${prefix}.offeringId`}>{t('registration.desiredStage')}</label><select {...attrs(`${prefix}.offeringId`)} value={person.offeringId} onChange={e => updatePerson(index, { offeringId: e.target.value })}><option value="">{t('registration.selectStage')}</option>{stages.map(stage => <option key={stage.offeringId} value={stage.offeringId}>{stage.name}</option>)}</select>{fieldError(`${prefix}.offeringId`)}</div>
       <fieldset><legend>{t('registration.preferenceHelp')}</legend>{campaign.windows?.map((window, windowIndex) => { const rank = person.windows.indexOf(window.id); return <label key={window.id} className="flex gap-2 py-1"><input id={windowIndex === 0 ? `${prefix}.windows` : undefined} type="checkbox" checked={rank !== -1} aria-invalid={!!errors[`${prefix}.windows`]} aria-describedby={errors[`${prefix}.windows`] ? `${prefix}.windows-error` : undefined} onChange={e => updatePerson(index, { windows: e.target.checked ? [...person.windows, window.id] : person.windows.filter(id => id !== window.id) })} />{window.label}: {window.startTime} - {window.endTime}{rank !== -1 && ` (${rank + 1})`}</label>; })}{fieldError(`${prefix}.windows`)}</fieldset>
+      <SponsorFields prefix={prefix} value={person.sponsor} errors={errors} onChange={sponsor => { if (sponsor) updatePerson(index, { sponsor }); else setPeople(old => old.map((p, i) => { if (i !== index) return p; const { sponsor: _sponsor, ...rest } = p; return rest; })); }} />
       {mode === 'FAMILY' && people.length > 1 && <button type="button" className="rounded border px-3 py-2" onClick={() => setPeople(current => current.filter((_, i) => i !== index))}>{t('registration.removePerson', { number: index + 1 })}</button>}
     </fieldset>; })}
     {mode === 'FAMILY' && people.length < 10 && <button type="button" className="rounded border px-4 py-2" onClick={() => setPeople(current => [...current, emptyPerson()])}>{t('registration.addPerson')}</button>}

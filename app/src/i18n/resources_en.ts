@@ -7241,6 +7241,67 @@ export const public_en = {
         "ASSISTED": "Assisted"
       },
       "close": "Close"
+    },
+    "documents": {
+      "heading": "Documents",
+      "sponsor": "Godparent (optional)",
+      "sponsorHelp": "A pastoral letter is only requested when the godparent is from another parish.",
+      "role": "Role",
+      "godfather": "Godfather",
+      "godmother": "Godmother",
+      "name": "Godparent name",
+      "otherParish": "From another parish",
+      "parishName": "Parish name",
+      "parishRequired": "Enter the parish name.",
+      "warning": "Documents can be sent later or brought to the parish office. This does not prevent registration.",
+      "expired": "To send documents later, please contact the parish office.",
+      "loadError": "Could not load documents. Please try again.",
+      "sendError": "Could not send the document. Please try again.",
+      "sending": "Sending document...",
+      "sent": "Document sent.",
+      "tooLarge": "The file must be at most 10 MB.",
+      "invalidType": "Choose a PDF, JPG, PNG or WebP file.",
+      "chooseFile": "Choose a file.",
+      "upload": "Upload document",
+      "download": "Download",
+      "verify": "Verify",
+      "reject": "Reject",
+      "reason": "Reason for rejection",
+      "reasonRequired": "Enter a reason for rejection.",
+      "confirmReject": "Confirm rejection",
+      "conflict": "The document has already changed. The list was refreshed.",
+      "staffUpload": "Office upload",
+      "documentType": "Document type",
+      "file": "File",
+      "queue": "Document queue",
+      "warningCount_one": "{{count}} document notice",
+      "warningCount_other": "{{count}} document notices",
+      "type": {
+        "BIRTH_CERTIFICATE": "Birth certificate",
+        "BAPTISM_CERTIFICATE": "Baptism certificate",
+        "CONSENT_FORM": "Consent form",
+        "MARRIAGE_CERTIFICATE": "Marriage certificate",
+        "PASTORAL_LETTER": "Pastoral letter",
+        "OTHER": "Other"
+      },
+      "state": {
+        "MISSING": "Missing",
+        "AWAITING_SECURITY": "Security review",
+        "AWAITING_REVIEW": "Awaiting review",
+        "VERIFIED": "Verified",
+        "REJECTED": "Rejected",
+        "NOT_NEEDED": "Not needed"
+      },
+      "status": {
+        "QUARANTINE": "Security review",
+        "PENDING": "Awaiting review",
+        "VERIFIED": "Verified",
+        "REJECTED": "Rejected"
+      },
+      "source": {
+        "FAMILY": "Family",
+        "STAFF": "Office"
+      }
     }
   } as const;
 

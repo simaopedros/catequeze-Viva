@@ -2969,6 +2969,11 @@ query getRegistrationCampaignShare {
   entities: [RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese]
 }
 
+route RegistrationDocumentQueueRoute { path: "/app/inscricoes/:campaignId/documentos", to: RegistrationDocumentQueuePage }
+page RegistrationDocumentQueuePage {
+  authRequired: true,
+  component: import RegistrationDocumentQueuePage from "@src/registrations/RegistrationDocumentQueuePage"
+}
 route RegistrationReviewRoute { path: "/app/inscricoes/:campaignId/conferencia", to: RegistrationReviewPage }
 page RegistrationReviewPage {
   authRequired: true,
