@@ -2987,11 +2987,11 @@ page RegistrationSharePage {
 
 query listRegistrationApplications {
   fn: import { listRegistrationApplications } from "@src/server/operations/registrationReviewOperations",
-  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationDocument, DocumentStageRule, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
 }
 query getRegistrationApplication {
   fn: import { getRegistrationApplication } from "@src/server/operations/registrationReviewOperations",
-  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, CatechumenProfile, Household, GuardianProfile, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationDocument, DocumentStageRule, CatechumenProfile, Household, GuardianProfile, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
 }
 action reviewRegistrationApplication {
   fn: import { reviewRegistrationApplication } from "@src/server/operations/registrationReviewOperations",

@@ -27,13 +27,15 @@ describe.skipIf(!process.env.DATABASE_URL)('conferência com banco real', () => 
   afterAll(async () => {
     await db.rateLimitBucket.deleteMany({ where: { key: `registration-assisted-user:${secretary.user.id}` } });
     await db.auditLog.deleteMany({ where: { parishId: id('parish') } });
+    await db.registrationDocument.deleteMany({ where: { campaignId: id('campaign') } }); await db.documentStageRule.deleteMany({ where: { parishId: id('parish') } });
     await db.registrationConsent.deleteMany({ where: { application: { submission: { campaignId: id('campaign') } } } }); await db.registrationApplication.deleteMany({ where: { submission: { campaignId: id('campaign') } } }); await db.registrationSubmission.deleteMany({ where: { campaignId: id('campaign') } });
     await db.registrationOffering.deleteMany({ where: { campaignId: id('campaign') } }); await db.registrationCampaign.deleteMany({ where: { id: id('campaign') } }); await db.stage.deleteMany({ where: { id: id('stage') } }); await db.catecheticalYear.deleteMany({ where: { id: id('year') } });
     await db.catechumenProfile.deleteMany({ where: { id: { in: [id('local'), id('foreign')] } } }); await db.membership.deleteMany({ where: { userId: { in: [actor, secretary, priest, catechist, other].map(c => c.user.id) } } }); await db.tenantBilling.deleteMany({ where: { parishId: id('parish') } }); await db.parish.deleteMany({ where: { id: { in: [id('parish'), id('other-parish')] } } }); await db.user.deleteMany({ where: { id: { in: [actor, secretary, priest, catechist, other].map(c => c.user.id) } } }); await db.$disconnect(); await prisma.$disconnect();
   });
   it('cria com consentimento, sem e-mail e com idempotência', async () => {
-    const data = input(); submission = await create(data); expect(await create(data)).toEqual(submission);
+    const data: any = input(); const withSponsor = { ...data, applicant: { ...data.applicant, sponsor: { role: 'MADRINHA', name: 'Maria', fromOtherParish: true, parishName: 'Outra' } } }; submission = await create(withSponsor); data.applicant = withSponsor.applicant; expect(await create(data)).toEqual(submission);
     const record = await db.registrationSubmission.findUniqueOrThrow({ where: { id: submission.submissionId }, include: { applications: { include: { consents: true } } } });
+    expect(record.applications[0]).toMatchObject({ sponsorName: 'Maria', sponsorRole: 'MADRINHA', sponsorFromOtherParish: true, sponsorParishName: 'Outra' });
     expect(record).toMatchObject({ source: 'ASSISTED', status: 'RECEIVED', createdByUserId: secretary.user.id, contactVerifiedAt: null }); expect(record.applications[0].consents[0].textVersion).toBe('registration-consent-v1'); expect(getFakeSentEmails()).toHaveLength(0);
     await expect(create({ ...data, contactPhone: '11988888888' })).rejects.toMatchObject({ statusCode: 409 });
   });
@@ -51,8 +53,18 @@ describe.skipIf(!process.env.DATABASE_URL)('conferência com banco real', () => 
     await db.tenantBilling.delete({ where: { parishId: id('parish') } }); try { await expect(listRegistrationApplications(args, { ...actor, entities: Object.create(entities) })).rejects.toMatchObject({ statusCode: 403 }); } finally { await db.tenantBilling.create({ data: { parishId: id('parish'), plan: 'parish', status: 'ACTIVE' } }); }
   });
   it('pagina sem contato e limita duplicidades à paróquia', async () => {
-    await create(input()); const one = await listRegistrationApplications({ campaignId: id('campaign'), take: 1 }, actor); const two = await listRegistrationApplications({ campaignId: id('campaign'), take: 1, cursor: one[0].id }, actor); expect(two).toHaveLength(1); expect(two[0].id).not.toBe(one[0].id); expect(JSON.stringify(one)).not.toContain('sentinela-review@example.invalid'); expect(JSON.stringify(one)).not.toContain('11999999999');
+    const withoutSponsor = await create(input()); const stored = await db.registrationApplication.findUniqueOrThrow({ where: { id: withoutSponsor.applicationIds[0] } }); expect(stored.sponsorFromOtherParish).toBeNull();
+    const one = await listRegistrationApplications({ campaignId: id('campaign'), take: 1 }, actor); const two = await listRegistrationApplications({ campaignId: id('campaign'), take: 1, cursor: one[0].id }, actor); expect(two).toHaveLength(1); expect(two[0].id).not.toBe(one[0].id); expect(JSON.stringify(one)).not.toContain('sentinela-review@example.invalid'); expect(JSON.stringify(one)).not.toContain('11999999999');
     const detail = await getRegistrationApplication({ id: submission.applicationIds[0] }, actor); expect(detail.contactEmail).toBe('sentinela-review@example.invalid'); expect(detail.duplicateSuggestions.map((x: any) => x.id)).toEqual([id('local')]);
+  });
+  it('apresenta avisos e documentos sem chave e aplica regra da paróquia', async () => {
+    await db.documentStageRule.create({ data: { scope: 'PARISH', parishId: id('parish'), stageKind: 'PRE_CATECHESIS', documentType: 'BIRTH_CERTIFICATE', requirement: 'REQUIRED', changedById: actor.user.id } });
+    await db.registrationDocument.create({ data: { applicationId: submission.applicationIds[0], campaignId: id('campaign'), type: 'BIRTH_CERTIFICATE', name: 'Certidão', s3Key: 'private-key', mimeType: 'application/pdf', sizeBytes: 10, sha256: 'hash', source: 'STAFF', status: 'REJECTED' } });
+    const detail = await getRegistrationApplication({ id: submission.applicationIds[0] }, actor);
+    expect(detail.documents).toHaveLength(1); expect(JSON.stringify(detail)).not.toContain('private-key');
+    expect(detail.documentChecklist.warnings).toContain('BIRTH_CERTIFICATE'); expect(detail.documentChecklist.blocking).toBe(false);
+    const list = await listRegistrationApplications({ campaignId: id('campaign') }, actor);
+    expect(list.find((x: any) => x.id === submission.applicationIds[0]).documentWarnings).toBe(detail.documentChecklist.warnings.length);
   });
   it('revisa com concorrência e auditoria sem dados pessoais', async () => {
     const args = { id: submission.applicationIds[0], revision: 0, decision: 'START_REVIEW', note: 'Sentinela Pessoa' }; await reviewRegistrationApplication(args, actor);
