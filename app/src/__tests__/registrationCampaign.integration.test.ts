@@ -1,0 +1,62 @@
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { PrismaClient } from '@prisma/client';
+vi.mock('wasp/server', async () => {
+  const { PrismaClient } = await import('@prisma/client');
+  return { prisma: new PrismaClient(), HttpError: class extends Error { constructor(public statusCode: number, message?: string) { super(message); } } };
+});
+import { prisma as opPrisma } from 'wasp/server';
+import { createRegistrationCampaign, getRegistrationCampaign, setRegistrationOfferings, transitionRegistrationCampaign, updateRegistrationCampaign } from '../server/operations/registrationCampaignOperations';
+const db = new PrismaClient();
+const suffix = crypto.randomUUID();
+const id = (s: string) => `campaign-test-${s}-${suffix}`;
+const entities = new Proxy(db as any, { get(target, key: string) { return Reflect.get(target, key.charAt(0).toLowerCase() + key.slice(1)); } });
+const actor = { user: { id: id('actor'), isAdmin: false }, entities };
+const other = { user: { id: id('other'), isAdmin: false }, entities };
+const secretary = { user: { id: id('secretary'), isAdmin: false }, entities };
+const priest = { user: { id: id('priest'), isAdmin: false }, entities };
+const data = { yearId: id('year'), title: 'Campanha de teste', opensAt: new Date('2027-01-01'), closesAt: new Date('2027-02-01'), ageCutoffDate: new Date('2027-03-01'), timezone: 'America/Sao_Paulo', offeredWindows: [{ id: 'sat', weekday: 6, startTime: '09:00', endTime: '10:00', label: 'Manhã' }], offeredCommunityIds: [] };
+describe.skipIf(!process.env.DATABASE_URL)('campanhas no banco local', () => {
+  beforeAll(async () => {
+    process.env.REGISTRATIONS_ENABLED = 'true';
+    await db.user.createMany({ data: [{ id: actor.user.id }, { id: other.user.id }, { id: secretary.user.id }, { id: priest.user.id }] });
+    await db.parish.createMany({ data: [{ id: id('parish'), name: 'Teste' }, { id: id('other-parish'), name: 'Outra' }] });
+    await db.membership.createMany({ data: [{ userId: actor.user.id, parishId: id('parish'), role: 'PARISH_COORDINATOR' }, { userId: other.user.id, parishId: id('other-parish'), role: 'PARISH_COORDINATOR' }, { id: id('secretary-membership'), userId: secretary.user.id, parishId: id('parish'), role: 'PARISH_SECRETARY' }, { userId: priest.user.id, parishId: id('parish'), role: 'PARISH_PRIEST' }] });
+    await db.tenantBilling.create({ data: { parishId: id('parish'), plan: 'parish', status: 'ACTIVE' } });
+    await db.catecheticalYear.create({ data: { id: data.yearId, parishId: id('parish'), name: 'Teste', startDate: data.opensAt, endDate: data.closesAt } });
+    await db.stage.create({ data: { id: id('stage'), yearId: data.yearId, name: 'Teste' } });
+  });
+  afterAll(async () => {
+    await db.auditLog.deleteMany({ where: { userId: { in: [actor.user.id, other.user.id, secretary.user.id, priest.user.id] } } });
+    await db.registrationOffering.deleteMany({ where: { campaign: { parishId: id('parish') } } });
+    await db.registrationCampaign.deleteMany({ where: { parishId: id('parish') } });
+    await db.stage.deleteMany({ where: { yearId: data.yearId } });
+    await db.catecheticalYear.deleteMany({ where: { id: data.yearId } });
+    await db.registrationPermissionGrant.deleteMany({ where: { membershipId: id('secretary-membership') } });
+    await db.membership.deleteMany({ where: { userId: { in: [actor.user.id, other.user.id, secretary.user.id, priest.user.id] } } });
+    await db.tenantBilling.deleteMany({ where: { parishId: id('parish') } });
+    await db.parish.deleteMany({ where: { id: { in: [id('parish'), id('other-parish')] } } });
+    await db.user.deleteMany({ where: { id: { in: [actor.user.id, other.user.id, secretary.user.id, priest.user.id] } } });
+    await db.$disconnect(); await opPrisma.$disconnect(); delete process.env.REGISTRATIONS_ENABLED;
+  });
+  it('isola paróquias, aplica revisão e audita abertura', async () => {
+    await expect(createRegistrationCampaign({ parishId: id('other-parish'), data }, other)).rejects.toMatchObject({ statusCode: 403 });
+    await expect(createRegistrationCampaign({ parishId: id('parish'), data }, secretary)).rejects.toMatchObject({ statusCode: 403 });
+    await db.registrationPermissionGrant.create({ data: { membershipId: id('secretary-membership'), action: 'CONFIGURE_CAMPAIGN', reason: 'Teste', grantedById: actor.user.id } });
+    const delegated = await createRegistrationCampaign({ parishId: id('parish'), data }, secretary);
+    await expect(getRegistrationCampaign({ id: delegated.id }, priest)).resolves.toMatchObject({ id: delegated.id });
+    const c = await createRegistrationCampaign({ parishId: id('parish'), data }, actor);
+    const c2 = await createRegistrationCampaign({ parishId: id('parish'), data }, actor);
+    expect(c.slug).not.toBe(c2.slug);
+    await expect(getRegistrationCampaign({ id: c.id }, other)).rejects.toMatchObject({ statusCode: 404 });
+    await expect(transitionRegistrationCampaign({ id: c.id, revision: 1, status: 'OPEN' }, actor)).rejects.toMatchObject({ statusCode: 400 });
+    const offering = { stageId: id('stage'), documentStageKind: 'FIRST_EUCHARIST', plannedSeats: 20, minAge: 7, maxAge: 12, audience: 'MINOR' };
+    await setRegistrationOfferings({ id: c.id, revision: 1, offerings: [offering] }, actor);
+    await expect(updateRegistrationCampaign({ id: c.id, revision: 1, data }, actor)).rejects.toMatchObject({ statusCode: 409 });
+    await expect(db.registrationOffering.create({ data: { ...offering, campaignId: c.id } as any })).rejects.toMatchObject({ code: 'P2002' });
+    const opened = await transitionRegistrationCampaign({ id: c.id, revision: 2, status: 'OPEN' }, actor);
+    expect(opened.status).toBe('OPEN');
+    expect(await db.auditLog.count({ where: { entityId: c.id } })).toBe(3);
+    delete process.env.REGISTRATIONS_ENABLED;
+    await expect(getRegistrationCampaign({ id: c.id }, actor)).rejects.toMatchObject({ statusCode: 404 });
+  });
+});

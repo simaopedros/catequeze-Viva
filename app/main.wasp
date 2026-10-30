@@ -2889,3 +2889,33 @@ action revokeRegistrationPermission {
   fn: import { revokeRegistrationPermission } from "@src/server/operations/registrationGrantOperations",
   entities: [RegistrationPermissionGrant, Membership, Parish, AuditLog]
 }
+
+action createRegistrationCampaign {
+  fn: import { createRegistrationCampaign } from "@src/server/operations/registrationCampaignOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, CatecheticalYear, Stage, Community, Parish, Membership, RegistrationPermissionGrant, AuditLog, TenantBilling, User]
+}
+
+action updateRegistrationCampaign {
+  fn: import { updateRegistrationCampaign } from "@src/server/operations/registrationCampaignOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, CatecheticalYear, Stage, Community, Parish, Membership, RegistrationPermissionGrant, AuditLog, TenantBilling, User]
+}
+
+action setRegistrationOfferings {
+  fn: import { setRegistrationOfferings } from "@src/server/operations/registrationCampaignOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, CatecheticalYear, Stage, Community, Parish, Membership, RegistrationPermissionGrant, AuditLog, TenantBilling, User]
+}
+
+action transitionRegistrationCampaign {
+  fn: import { transitionRegistrationCampaign } from "@src/server/operations/registrationCampaignOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, CatecheticalYear, Stage, Community, Parish, Membership, RegistrationPermissionGrant, AuditLog, TenantBilling, User]
+}
+
+query getRegistrationCampaign {
+  fn: import { getRegistrationCampaign } from "@src/server/operations/registrationCampaignOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, CatecheticalYear, Stage, Community, Parish, Membership, RegistrationPermissionGrant, AuditLog, TenantBilling, User]
+}
+
+query listRegistrationCampaigns {
+  fn: import { listRegistrationCampaigns } from "@src/server/operations/registrationCampaignOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, CatecheticalYear, Stage, Community, Parish, Membership, RegistrationPermissionGrant, AuditLog, TenantBilling, User]
+}
