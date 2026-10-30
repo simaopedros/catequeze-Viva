@@ -434,6 +434,8 @@ export function getBottomNavKeysForRole(
   if (role === "PASTORAL_VIEWER" || role === "CONTENT_REVIEWER") {
     return ["dashboard", "classes", "calendar", "reports"].filter(Boolean);
   }
+  // Pároco e secretaria (inscrições) não herdam a barra padrão de turmas e mensagens.
+  if (role === "PARISH_PRIEST" || role === "PARISH_SECRETARY") return [];
   return [...BOTTOM_NAV_KEYS];
 }
 

@@ -15,6 +15,8 @@ export function inviteLink(token: string, role?: string): string {
 export function roleLabel(role: string): string {
   const map: Record<string, string> = {
     PARISH_COORDINATOR: 'Coordenador(a) Paroquial',
+    PARISH_PRIEST: 'Pároco',
+    PARISH_SECRETARY: 'Secretaria paroquial',
     COMMUNITY_COORDINATOR: 'Coordenador(a) de Comunidade',
     LEAD_CATECHIST: 'Catequista responsável',
     ASSISTANT_CATECHIST: 'Catequista auxiliar',

@@ -108,6 +108,7 @@ async function resolveInviterRole(
     select: { role: true },
   });
   const roles = memberships.map((m: { role: string }) => m.role);
+  if (process.env.REGISTRATIONS_ENABLED === 'true' && roles.includes('PARISH_PRIEST') && !roles.includes('PARISH_COORDINATOR')) return { role: 'PARISH_PRIEST', isPersonalOwner: false };
   const best = pickBestInviterRole(roles);
   if (best && (ALLOWED_INVITER_ROLES as readonly string[]).includes(best)) {
     return { role: best, isPersonalOwner: best === 'PERSONAL_OWNER' };
@@ -203,7 +204,7 @@ export const inviteUserToParish = async (
   }
 
   const { role: inviterRole } = await resolveInviterRole(context, args.parishId);
-  const assignableRoles = getAssignableRoles(inviterRole, context.user.isAdmin);
+  const assignableRoles = getAssignableRoles(inviterRole, context.user.isAdmin, process.env.REGISTRATIONS_ENABLED === 'true');
   if (!assignableRoles.includes(args.role)) {
     throw new HttpError(403, `Você não tem permissão para atribuir o papel "${args.role}".`);
   }
@@ -379,6 +380,10 @@ export const inviteUserToParish = async (
     where: { email_parishId: { email, parishId: args.parishId } },
   });
 
+  // Updating an existing invitation must not change a role the actor cannot assign.
+  if (existingPending && !assignableRoles.includes(existingPending.role)) {
+    throw new HttpError(403, 'Você não tem permissão para alterar este convite.');
+  }
   const pendingData = {
     role: args.role as any,
     communityId: args.communityId || null,
@@ -578,7 +583,7 @@ export const listFamilyPortalInvitations = async (
   });
 
   const { role: inviterRole } = await resolveInviterRole(context, args.parishId);
-  const assignable = getAssignableRoles(inviterRole, context.user.isAdmin);
+  const assignable = getAssignableRoles(inviterRole, context.user.isAdmin, process.env.REGISTRATIONS_ENABLED === 'true');
   if (
     !assignable.includes('GUARDIAN') &&
     !assignable.includes('CATECHUMEN') &&
@@ -690,7 +695,7 @@ export const getParishTeam = async (
     throw new HttpError(403, 'Sem permissão para ver a equipe desta paróquia.');
   }
 
-  const assignableRoles = getAssignableRoles(actorRole, context.user.isAdmin);
+  const assignableRoles = getAssignableRoles(actorRole, context.user.isAdmin, process.env.REGISTRATIONS_ENABLED === 'true');
   const isCatechistViewer = isCatechist(actorRole) && !access.isCoordinatorOrAbove;
 
   // Classes this catechist may see / administer invites for
@@ -1379,7 +1384,7 @@ export const resendInvitation = async (
     if (!inv) throw new HttpError(404, 'Convite pendente não encontrado.');
 
     const { role: inviterRole } = await resolveInviterRole(context, inv.parishId);
-    const allowed = getAssignableRoles(inviterRole, context.user.isAdmin);
+    const allowed = getAssignableRoles(inviterRole, context.user.isAdmin, process.env.REGISTRATIONS_ENABLED === 'true');
     if (!allowed.includes(inv.role)) {
       throw new HttpError(403, 'Você não tem permissão para reenviar este convite.');
     }
@@ -1416,7 +1421,7 @@ export const resendInvitation = async (
       context,
       membership.parishId,
     );
-    const allowed = getAssignableRoles(inviterRole, context.user.isAdmin);
+    const allowed = getAssignableRoles(inviterRole, context.user.isAdmin, process.env.REGISTRATIONS_ENABLED === 'true');
     if (!allowed.includes(membership.role)) {
       throw new HttpError(403, 'Você não tem permissão para reenviar este convite.');
     }
@@ -1491,7 +1496,7 @@ export const cancelInvitation = async (
     if (!inv) throw new HttpError(404, 'Convite não encontrado.');
 
     const { role: inviterRole } = await resolveInviterRole(context, inv.parishId);
-    const allowed = getAssignableRoles(inviterRole, context.user.isAdmin);
+    const allowed = getAssignableRoles(inviterRole, context.user.isAdmin, process.env.REGISTRATIONS_ENABLED === 'true');
     if (!allowed.includes(inv.role) && !context.user.isAdmin) {
       throw new HttpError(403, 'Você não tem permissão para cancelar este convite.');
     }
@@ -1544,7 +1549,7 @@ export const cancelInvitation = async (
     context,
     membership.parishId,
   );
-  const allowed = getAssignableRoles(inviterRole, context.user.isAdmin);
+  const allowed = getAssignableRoles(inviterRole, context.user.isAdmin, process.env.REGISTRATIONS_ENABLED === 'true');
   if (!allowed.includes(membership.role) && !context.user.isAdmin) {
     throw new HttpError(403, 'Você não tem permissão para cancelar este convite.');
   }
@@ -1743,13 +1748,17 @@ export const updateMembershipRole = async (
     isAdmin ||
     userRole === 'SUPER_ADMIN' ||
     userRole === 'DIOCESE_ADMIN' ||
-    userRole === 'PARISH_COORDINATOR';
+    userRole === 'PARISH_COORDINATOR' ||
+    (userRole === 'PARISH_PRIEST' && process.env.REGISTRATIONS_ENABLED === 'true');
   if (!canManage) throw new HttpError(403, 'Sem permissão para alterar permissões.');
 
-  const allowedRoles = getAssignableRoles(userRole, isAdmin);
+  const allowedRoles = getAssignableRoles(userRole, isAdmin, process.env.REGISTRATIONS_ENABLED === 'true');
 
   if (!allowedRoles.includes(args.role)) {
     throw new HttpError(403, `Não pode atribuir o papel "${args.role}".`);
+  }
+  if (!isAdmin && !allowedRoles.includes(membership.role)) {
+    throw new HttpError(403, 'Não pode alterar o papel deste membro.');
   }
 
   const data: Record<string, unknown> = { role: args.role as any };

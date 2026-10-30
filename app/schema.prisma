@@ -13,6 +13,8 @@ enum UserRole {
   SUPER_ADMIN
   DIOCESE_ADMIN
   PARISH_COORDINATOR
+  PARISH_PRIEST
+  PARISH_SECRETARY
   COMMUNITY_COORDINATOR
   LEAD_CATECHIST
   ASSISTANT_CATECHIST
@@ -386,6 +388,7 @@ model File {
 // ─── Existing Models (Extended) ───────────────────────────────────────────────
 
 model User {
+  registrationGrantsIssued RegistrationPermissionGrant[] @relation("RegistrationGrantIssuer")
   dataExportRequests DataExportRequest[]
   termsAcceptanceRequired Boolean @default(false)
   termsAcceptances TermsAcceptance[]
@@ -613,6 +616,7 @@ model Community {
 }
 
 model Membership {
+  registrationPermissionGrants RegistrationPermissionGrant[]
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -636,6 +640,21 @@ model Membership {
   @@index([userId, status])
   @@index([parishId])
   @@index([inviteToken])
+}
+
+model RegistrationPermissionGrant {
+  id           String @id @default(uuid())
+  membershipId String
+  membership   Membership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  action       String
+  grantedById  String
+  grantedBy    User @relation("RegistrationGrantIssuer", fields: [grantedById], references: [id])
+  grantedAt    DateTime @default(now())
+  revokedAt    DateTime?
+  reason       String
+
+  @@index([membershipId, action, revokedAt])
+  @@index([grantedById])
 }
 
 // Unaccepted invitation for an email (with or without an existing User account).

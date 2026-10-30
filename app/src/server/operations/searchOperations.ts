@@ -38,7 +38,12 @@ async function getParishIds(context: any): Promise<string[]> {
     where: { userId: context.user.id, status: MembershipStatus.ACTIVE },
     select: { parishId: true, role: true },
   });
-  const ids = memberships.map((m: any) => m.parishId);
+  const searchableRoles = new Set([
+    'SUPER_ADMIN', 'DIOCESE_ADMIN', 'PARISH_COORDINATOR', 'COMMUNITY_COORDINATOR',
+    'LEAD_CATECHIST', 'ASSISTANT_CATECHIST', 'GUARDIAN', 'CATECHUMEN',
+    'CONTENT_REVIEWER', 'PASTORAL_VIEWER', 'PERSONAL_OWNER',
+  ]);
+  const ids = memberships.filter((m: any) => searchableRoles.has(m.role)).map((m: any) => m.parishId);
 
   // DIOCESE_ADMIN: include all parishes in the diocese
   if (memberships.some((m: any) => m.role === 'DIOCESE_ADMIN')) {

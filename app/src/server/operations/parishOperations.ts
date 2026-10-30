@@ -686,6 +686,11 @@ export const getOrCreateParishByOsmId = async (
     await ensureOnboardingMembership(context, existing.id);
     // Update with osmId if missing, but don't overwrite
     if (args.osmId && !existing.osmId) {
+      const membership = await context.entities.Membership.findFirst({
+        where: { userId: context.user.id, parishId: existing.id, status: 'ACTIVE' },
+        select: { role: true },
+      });
+      if (!context.user.isAdmin && ['PARISH_PRIEST', 'PARISH_SECRETARY'].includes(membership?.role)) return existing;
       await context.entities.Parish.update({
         where: { id: existing.id },
         data: { osmId: args.osmId },
