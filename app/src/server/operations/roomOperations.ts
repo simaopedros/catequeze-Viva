@@ -19,12 +19,20 @@ async function validateCommunity(context: any, parishId: string, communityId: st
 function normalized(data: any) { try { return { ...data, ...normalizeRoomName(data.name) }; } catch { throw new HttpError(400, 'Nome inválido.'); } }
 function duplicate(error: any): never { if (error.code === 'P2002') throw new HttpError(409, 'Nome de sala já existe.'); throw error; }
 export async function listRooms(args: unknown, context: any) {
-  const input = parse(z.object({ parishId: idSchema, includeInactive: z.boolean().optional() }).strict(), args);
+  const input = parse(z.object({ parishId: idSchema, includeInactive: z.boolean().optional(), yearId: idSchema.optional() }).strict(), args);
   const member = await access(context, input.parishId);
   if (level(context, member, 'CONFIGURE_ROOMS') === 'N') throw new HttpError(403);
   const rooms = await context.entities.Room.findMany({ where: { parishId: input.parishId, ...(input.includeInactive ? {} : { active: true }), ...(scoped(member) ? { OR: [{ communityId: member.communityId }, { communityId: null }] } : {}) }, select: roomSelect, orderBy: { name: 'asc' }, take: 200 });
-  const classes = await context.entities.CatechesisClass.findMany({ where: { roomId: { in: rooms.map((r: any) => r.id) }, ...(scoped(member) ? { communityId: member.communityId } : {}) }, include: classInclude, orderBy: { id: 'asc' }, take: 300 });
-  return Promise.all(rooms.map(async (r: any) => ({ ...r, canEdit: await permitted(context, input.parishId, r.communityId, 'CONFIGURE_ROOMS'), classes: classes.filter((c: any) => c.roomId === r.id).map((c: any) => ({ id: c.id, name: c.name, status: c.status, dayOfWeek: c.dayOfWeek, startTime: c.startTime, endTime: c.endTime, maxCapacity: c.maxCapacity, enrolled: c.enrollments.length, capacity: capacity(c, r.capacity) })) })));
+  const classes = await context.entities.CatechesisClass.findMany({ where: { roomId: { in: rooms.map((r: any) => r.id) }, ...(input.yearId ? { yearId: input.yearId } : {}), ...(scoped(member) ? { communityId: member.communityId } : {}) }, include: classInclude, orderBy: { id: 'asc' }, take: 300 });
+  const editable = new Map<string, boolean>();
+  for (const communityId of new Set<string | null>(rooms.map((r: any) => r.communityId ?? null))) editable.set(communityId ?? '', await permitted(context, input.parishId, communityId, 'CONFIGURE_ROOMS'));
+  const result = rooms.map((r: any) => ({ ...r, canEdit: editable.get(r.communityId ?? '') === true, classes: classes.filter((c: any) => c.roomId === r.id).map((c: any) => ({ id: c.id, name: c.name, status: c.status, dayOfWeek: c.dayOfWeek, startTime: c.startTime, endTime: c.endTime, maxCapacity: c.maxCapacity, enrolled: c.enrollments.length, capacity: capacity(c, r.capacity) })) }));
+  if (!input.yearId) return result;
+  if (!await context.entities.CatecheticalYear.findFirst({ where: { id: input.yearId, parishId: input.parishId } })) throw new HttpError(404);
+  const assignable = await context.entities.CatechesisClass.findMany({ where: { parishId: input.parishId, yearId: input.yearId, ...(scoped(member) ? { communityId: member.communityId } : {}) }, select: { id: true, name: true, communityId: true, dayOfWeek: true, startTime: true, endTime: true, roomId: true }, orderBy: { name: 'asc' }, take: 500 });
+  const scopeFlags = new Map<string, { canEdit: boolean; canOverride: boolean }>();
+  for (const communityId of new Set<string | null>(assignable.map((c: any) => c.communityId ?? null))) scopeFlags.set(communityId ?? '', { canEdit: await permitted(context, input.parishId, communityId, 'CONFIGURE_ROOMS'), canOverride: await permitted(context, input.parishId, communityId, 'OVERRIDE_CAPACITY') });
+  return { rooms: result, canCreate: await permitted(context, input.parishId, scoped(member) ? member.communityId : null, 'CONFIGURE_ROOMS'), assignableClasses: assignable.map((c: any) => ({ ...c, ...scopeFlags.get(c.communityId ?? '') })) };
 }
 export async function createRoom(args: unknown, context: any) {
   const input = parse(z.object({ parishId: idSchema, data: roomData }).strict(), args); await access(context, input.parishId);
@@ -39,7 +47,7 @@ export async function updateRoom(args: unknown, context: any) {
   try { return await prisma.$transaction(async (tx: any) => {
     const updated = await tx.room.updateMany({ where: { id: value.id, revision: input.revision }, data: { ...data, revision: { increment: 1 }, updatedByUserId: context.user.id } }); if (!updated.count) throw new HttpError(409, 'Versão desatualizada.');
     const classes = await tx.catechesisClass.findMany({ where: { roomId: value.id }, include: classInclude });
-    const affectedClasses = classes.map((c: any) => ({ classId: c.id, overBy: capacity(c, data.capacity).overBy })).filter((c: any) => c.overBy > 0);
+    const affectedClasses = classes.map((c: any) => ({ classId: c.id, name: c.name, overBy: capacity(c, data.capacity).overBy })).filter((c: any) => c.overBy > 0);
     await audit(tx, context, value.parishId, 'Room', value.id, 'UPDATE', { previousCapacity: value.capacity, capacity: data.capacity, communityId: data.communityId });
     return { ...(await tx.room.findUnique({ where: { id: value.id }, select: roomSelect })), affectedClasses };
   }); } catch (e) { return duplicate(e); }

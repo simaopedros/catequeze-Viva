@@ -6,4 +6,10 @@ Coordenador paroquial e pároco configuram salas; secretaria e coordenador de co
 
 A disponibilidade usa JSON estrito: `{"version":1,"windows":[{"weekday":0,"startTime":"08:00","endTime":"09:00"}],"closures":[{"from":"2026-01-01","to":"2026-01-02","reason":"Manutenção"}]}`. Dias da semana vão de 0 (domingo) a 6 (sábado); horários são HH:mm entre 05:00 e 23:59. Janelas não podem se sobrepor. Fechamentos usam datas civis inclusivas e o motivo é opcional. Sala sem janelas está livre; catequista sem janelas está indisponível. Janela de sala incompatível bloqueia, enquanto fechamento e indisponibilidade do catequista geram avisos.
 
-Este passo não cria turmas, matrículas ou alocações, nem inclui páginas, calendário, notificações ou cobrança. A flag REGISTRATIONS_ENABLED permanece desligada por padrão.
+Este passo não cria turmas, matrículas ou alocações, nem altera calendário, notificações ou cobrança. A flag REGISTRATIONS_ENABLED permanece desligada por padrão.
+
+## Telas
+
+Em `/app/salas`, pessoas autorizadas consultam salas, ocupação e conflitos do ano. Quem tem permissão para configurar salas pode criá-las, editá-las, ativá-las e atribuí-las às turmas dentro do seu escopo. A tela mostra se a pessoa pode autorizar um encaixe acima da capacidade, que exigirá motivo na etapa posterior.
+
+Em `/app/disponibilidade`, catequistas consultam e editam seus próprios horários. Pessoas com permissão para configurar salas podem consultar a equipe e editar a disponibilidade de cada integrante no seu escopo. Uma disponibilidade sem horários significa indisponibilidade. As rotas exigem autenticação e as operações verificam a flag, o plano e as permissões no servidor.

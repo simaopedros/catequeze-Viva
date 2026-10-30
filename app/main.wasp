@@ -3121,3 +3121,14 @@ action setCatechistAvailability {
   fn: import { setCatechistAvailability } from "@src/server/operations/catechistAvailabilityOperations",
   entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
 }
+
+route RoomsRoute { path: "/app/salas", to: RoomsPage }
+page RoomsPage {
+  authRequired: true,
+  component: import RoomsPage from "@src/registrations/RoomsPage"
+}
+route CatechistAvailabilityRoute { path: "/app/disponibilidade", to: CatechistAvailabilityPage }
+page CatechistAvailabilityPage {
+  authRequired: true,
+  component: import CatechistAvailabilityPage from "@src/registrations/CatechistAvailabilityPage"
+}

@@ -50,11 +50,21 @@ describe.skipIf(!process.env.DATABASE_URL)('salas e disponibilidade com Postgres
     await grant(community, 'CONFIGURE_ROOMS'); await create('Comunidade', id('comm'), 15, community);
     await expect(create('Outra comunidade', id('comm2'), 15, community)).rejects.toMatchObject({ statusCode: 403 });
     await expect(create('Paroquial', null, 15, community)).rejects.toMatchObject({ statusCode: 403 });
-    expect((await listRooms({ parishId: id('parish') }, catechist)).some((r: any) => r.id === roomId && !r.canEdit)).toBe(true);
+    expect(((await listRooms({ parishId: id('parish') }, catechist)) as any[]).some((r: any) => r.id === roomId && !r.canEdit)).toBe(true);
     await updateRoom({ id: roomId, revision: room.revision, data: roomData('Salão Azul', null, 10) }, coordinator);
     await expect(updateRoom({ id: roomId, revision: room.revision, data: roomData('Salão Azul') }, coordinator)).rejects.toMatchObject({ statusCode: 409 });
     process.env.REGISTRATIONS_ENABLED = 'false'; try { await expect(listRooms({ parishId: id('parish') }, coordinator)).rejects.toMatchObject({ statusCode: 404 }); } finally { process.env.REGISTRATIONS_ENABLED = 'true'; }
     await db.parish.update({ where: { id: id('parish') }, data: { type: 'PERSONAL' } }); try { await expect(listRooms({ parishId: id('parish') }, coordinator)).rejects.toMatchObject({ statusCode: 403 }); } finally { await db.parish.update({ where: { id: id('parish') }, data: { type: 'PARISH' } }); }
+  });
+  it('lista turmas do ano e permissões no retorno opcional', async () => {
+    const result: any = await listRooms({ parishId: id('parish'), yearId: id('year') }, coordinator);
+    expect(result.canCreate).toBe(true);
+    expect(result.assignableClasses).toEqual(expect.arrayContaining([expect.objectContaining({ id: id('one'), name: 'one', canEdit: true })]));
+    expect(result.assignableClasses.some((c: any) => c.id === id('year2'))).toBe(false);
+    const readOnly: any = await listRooms({ parishId: id('parish'), yearId: id('year') }, catechist);
+    expect(readOnly.canCreate).toBe(false);
+    expect(readOnly.assignableClasses.every((c: any) => !c.canEdit)).toBe(true);
+    await expect(listRooms({ parishId: id('parish'), yearId: 'invalid' }, coordinator)).rejects.toMatchObject({ statusCode: 404 });
   });
   it('atribui, impede conflitos e serializa concorrência', async () => {
     const foreignRoom = await db.room.create({ data: { parishId: id('foreign'), name: 'Outra', nameKey: 'outra', capacity: 10 } });

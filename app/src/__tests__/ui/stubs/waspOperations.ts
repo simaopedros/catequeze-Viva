@@ -103,3 +103,14 @@ export const reviewRegistrationDocument = vi.fn();
 export const linkRegistrationProfile = vi.fn();
 export const approveRegistrationApplication = vi.fn();
 export const setRegistrationReminders = vi.fn();
+
+export const listRooms = vi.fn();
+export const createRoom = vi.fn();
+export const updateRoom = vi.fn();
+export const setRoomActive = vi.fn();
+export const setClassRoom = vi.fn();
+export const getClassCapacity = vi.fn();
+export const listSchedulingConflicts = vi.fn();
+export const getCatechistAvailability = vi.fn();
+export const listCatechistAvailability = vi.fn();
+export const setCatechistAvailability = vi.fn();
