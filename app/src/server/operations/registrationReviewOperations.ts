@@ -93,3 +93,16 @@ export async function createAssistedRegistration(args: { campaignId: string; dat
     return { protocol: submission.protocol, submissionId: submission.id, applicationIds: submission.applicationIds };
   });
 }
+
+/** Opções mínimas para a equipe que pode conferir inscrições. */
+export async function getRegistrationReviewOptions(args: { campaignId: string }, context: any) {
+  const campaign = await loadCampaign(context, args.campaignId);
+  const communityId = await membershipCommunity(context, campaign.parishId);
+  await authorize(context, campaign, communityId ?? undefined);
+  const windows = offeredWindowsSchema.safeParse(campaign.offeredWindows);
+  if (!windows.success || !Array.isArray(campaign.offeredCommunityIds)) throw new HttpError(503);
+  const offerings = await context.entities.RegistrationOffering.findMany({ where: { campaignId: campaign.id }, include: { stage: { select: { name: true } } } });
+  const ids = campaign.offeredCommunityIds as string[];
+  const communities = await context.entities.Community.findMany({ where: { parishId: campaign.parishId, ...(communityId ? { id: communityId } : ids.length ? { id: { in: ids } } : {}) }, select: { id: true, name: true }, orderBy: { name: 'asc' } });
+  return { windows: windows.data, offerings: offerings.map((o: any) => ({ id: o.id, name: o.stage.name, audience: o.audience })), communities, requiredCommunityId: communityId ?? null, status: campaign.status };
+}

@@ -89,3 +89,10 @@ export const useAction = (fn: unknown) => fn;
 
 export const listHouseholds = vi.fn();
 export const listCommunities = vi.fn();
+
+export const getRegistrationCampaignShare = vi.fn();
+export const listRegistrationApplications = vi.fn();
+export const getRegistrationApplication = vi.fn();
+export const reviewRegistrationApplication = vi.fn();
+export const createAssistedRegistration = vi.fn();
+export const getRegistrationReviewOptions = vi.fn();

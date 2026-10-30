@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { PrismaClient } from '@prisma/client';
 vi.mock('wasp/server', async () => { const { PrismaClient } = await import('@prisma/client'); return { prisma: new PrismaClient(), HttpError: class extends Error { constructor(public statusCode: number, message?: string) { super(message); } } }; });
 import { prisma } from 'wasp/server';
-import { createAssistedRegistration, getRegistrationApplication, listRegistrationApplications, reviewRegistrationApplication } from '../server/operations/registrationReviewOperations';
+import { createAssistedRegistration, getRegistrationApplication, getRegistrationReviewOptions, listRegistrationApplications, reviewRegistrationApplication } from '../server/operations/registrationReviewOperations';
 import { getFakeSentEmails, resetFakeEmailAdapter } from '../server/email';
 const db = new PrismaClient(); const suffix = crypto.randomUUID(); const id = (s: string) => `review-${s}-${suffix}`;
 const entities = new Proxy(db as any, { get(target, key: string) { return Reflect.get(target, key.charAt(0).toLowerCase() + key.slice(1)); } });
@@ -36,6 +36,13 @@ describe.skipIf(!process.env.DATABASE_URL)('conferência com banco real', () => 
     const record = await db.registrationSubmission.findUniqueOrThrow({ where: { id: submission.submissionId }, include: { applications: { include: { consents: true } } } });
     expect(record).toMatchObject({ source: 'ASSISTED', status: 'RECEIVED', createdByUserId: secretary.user.id, contactVerifiedAt: null }); expect(record.applications[0].consents[0].textVersion).toBe('registration-consent-v1'); expect(getFakeSentEmails()).toHaveLength(0);
     await expect(create({ ...data, contactPhone: '11988888888' })).rejects.toMatchObject({ statusCode: 409 });
+  });
+  it('entrega opções da campanha só a quem pode conferir', async () => {
+    const args = { campaignId: id('campaign') };
+    const options = await getRegistrationReviewOptions(args, secretary);
+    expect(options.windows.map((w: any) => w.id)).toEqual(['sat']); expect(options.offerings).toEqual([{ id: id('offering'), name: 'Etapa', audience: 'BOTH' }]); expect(options.status).toBe('OPEN');
+    for (const user of [priest, catechist, other]) await expect(getRegistrationReviewOptions(args, user)).rejects.toMatchObject({ statusCode: 403 });
+    process.env.REGISTRATIONS_ENABLED = 'false'; try { await expect(getRegistrationReviewOptions(args, actor)).rejects.toMatchObject({ statusCode: 404 }); } finally { process.env.REGISTRATIONS_ENABLED = 'true'; }
   });
   it('aplica permissões, flag e plano', async () => {
     const args = { campaignId: id('campaign') }; await expect(listRegistrationApplications(args, actor)).resolves.toHaveLength(1); await expect(listRegistrationApplications(args, secretary)).resolves.toHaveLength(1);

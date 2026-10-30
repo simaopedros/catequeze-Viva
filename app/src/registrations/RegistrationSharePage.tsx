@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { Link } from 'react-router';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useTranslation } from 'react-i18next';
 import { getRegistrationCampaignShare, useQuery } from 'wasp/client/operations';
@@ -16,6 +17,7 @@ export function ShareCard({ campaign }: { campaign: Share }) {
     <p>{t('registration.period')}: {date(campaign.opensAt)} - {date(campaign.closesAt)} ({campaign.timezone})</p>
     {campaign.url ? <><QRCodeCanvas value={campaign.url} size={200} aria-label={t('registration.qrAlt')} /><p className="break-all">{campaign.url}</p>
       <div className="registration-share-actions flex gap-3"><button onClick={() => navigator.clipboard.writeText(campaign.url!)}>{t('registration.copy')}</button><button onClick={download}>{t('registration.download')}</button><button onClick={() => window.print()}>{t('registration.print')}</button></div></> : <p>{t('registration.draft')}</p>}
+    <Link className="inline-flex min-h-11 items-center underline" to={`/app/inscricoes/${encodeURIComponent(campaign.id)}/conferencia`}>{t('review.link')}</Link>
   </article>;
 }
 export default function RegistrationSharePage() {

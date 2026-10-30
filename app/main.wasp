@@ -2969,6 +2969,16 @@ query getRegistrationCampaignShare {
   entities: [RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese]
 }
 
+route RegistrationReviewRoute { path: "/app/inscricoes/:campaignId/conferencia", to: RegistrationReviewPage }
+page RegistrationReviewPage {
+  authRequired: true,
+  component: import RegistrationReviewPage from "@src/registrations/RegistrationReviewPage"
+}
+query getRegistrationReviewOptions {
+  fn: import { getRegistrationReviewOptions } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, Stage, Community, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+}
+
 route RegistrationShareRoute { path: "/app/inscricoes", to: RegistrationSharePage }
 page RegistrationSharePage {
   authRequired: true,
