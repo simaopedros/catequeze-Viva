@@ -282,5 +282,23 @@
         ]
       }
     ]
+  },
+  "registration": {
+    "loading": "Cargando información",
+    "unavailable": "Enlace de inscripción no disponible",
+    "open": "Inscripciones abiertas",
+    "upcoming": "Las inscripciones aún no están abiertas",
+    "closed": "Inscripciones cerradas",
+    "period": "Período",
+    "windows": "Horarios disponibles",
+    "stages": "Etapas disponibles",
+    "soon": "Inscripción próximamente",
+    "soonExplanation": "El formulario de inscripción estará disponible en una próxima etapa.",
+    "heading": "Inscripciones",
+    "qrAlt": "Código QR del enlace público",
+    "copy": "Copiar enlace",
+    "download": "Descargar QR en PNG",
+    "print": "Imprimir",
+    "draft": "Vista previa del borrador, sin enlace público."
   }
 }

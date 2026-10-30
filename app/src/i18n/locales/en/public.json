@@ -282,5 +282,23 @@
         ]
       }
     ]
+  },
+  "registration": {
+    "loading": "Loading information",
+    "unavailable": "Registration link unavailable",
+    "open": "Registration open",
+    "upcoming": "Registration not yet open",
+    "closed": "Registration closed",
+    "period": "Period",
+    "windows": "Available times",
+    "stages": "Available stages",
+    "soon": "Registration coming soon",
+    "soonExplanation": "The registration form will be available in a future stage.",
+    "heading": "Registrations",
+    "qrAlt": "Public link QR code",
+    "copy": "Copy link",
+    "download": "Download QR as PNG",
+    "print": "Print",
+    "draft": "Draft preview, without a public link."
   }
 }

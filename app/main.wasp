@@ -118,6 +118,11 @@ app OpenSaaS {
   },
 }
 
+route PublicRegistrationRoute { path: "/inscricoes/:slug", to: PublicRegistrationPage }
+page PublicRegistrationPage {
+  component: import PublicRegistrationPage from "@src/registrations/PublicRegistrationPage"
+}
+
 route LandingPageRoute { path: "/", to: LandingPage }
 page LandingPage {
   component: import LandingPage from "@src/landing-page/LandingPage"
@@ -1508,6 +1513,12 @@ api serveDocument {
   auth: true,
   httpRoute: (GET, "/api/documents/:id"),
   entities: [Document, CatechumenProfile, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
+}
+
+api publicRegistrationCampaign {
+  fn: import { publicRegistrationCampaign } from "@src/server/api/publicRegistrationCampaign",
+  httpRoute: (GET, "/api/public/inscricoes/:slug"),
+  entities: [RegistrationCampaign, RegistrationOffering, Stage, Parish, TenantBilling, User]
 }
 
 api publicUploadDocument {
@@ -2918,4 +2929,15 @@ query getRegistrationCampaign {
 query listRegistrationCampaigns {
   fn: import { listRegistrationCampaigns } from "@src/server/operations/registrationCampaignOperations",
   entities: [RegistrationCampaign, RegistrationOffering, CatecheticalYear, Stage, Community, Parish, Membership, RegistrationPermissionGrant, AuditLog, TenantBilling, User]
+}
+
+query getRegistrationCampaignShare {
+  fn: import { getRegistrationCampaignShare } from "@src/server/operations/registrationCampaignOperations",
+  entities: [RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese]
+}
+
+route RegistrationShareRoute { path: "/app/inscricoes", to: RegistrationSharePage }
+page RegistrationSharePage {
+  authRequired: true,
+  component: import RegistrationSharePage from "@src/registrations/RegistrationSharePage"
 }
