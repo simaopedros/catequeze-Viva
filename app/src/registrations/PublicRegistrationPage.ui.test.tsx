@@ -79,7 +79,7 @@ it('filtra ofertas para adulto e apresenta limite 429', async () => {
 it('confirma uma única vez, limpa fragmento e mostra protocolo', async () => {
   window.history.replaceState({}, '', '/inscricoes/confirmar#token=synthetic');
   vi.mocked(api.post).mockResolvedValue({ data: { protocol: 'XYZ123' } } as any);
-  const { container } = render(<React.StrictMode><RegistrationConfirmationPage /></React.StrictMode>);
+  const { container } = render(<React.StrictMode><MemoryRouter><RegistrationConfirmationPage /></MemoryRouter></React.StrictMode>);
   expect(window.location.hash).toBe('');
   expect(await screen.findByText('XYZ123')).toBeTruthy();
   expect(api.post).toHaveBeenCalledTimes(1);
@@ -90,7 +90,7 @@ it('confirma uma única vez, limpa fragmento e mostra protocolo', async () => {
 it('mostra mensagem uniforme para confirmação inválida', async () => {
   window.history.replaceState({}, '', '/inscricoes/confirmar#token=synthetic');
   vi.mocked(api.post).mockRejectedValue(new Error());
-  render(<RegistrationConfirmationPage />);
+  render(<MemoryRouter><RegistrationConfirmationPage /></MemoryRouter>);
   expect(await screen.findByText(/Link inválido ou expirado/)).toBeTruthy();
 });
 it('reutiliza a chave ao reenviar o mesmo conteúdo após falha de rede', async () => {
@@ -122,7 +122,7 @@ it('envia documentos com Bearer em memória e trata expiração', async () => {
   window.history.replaceState({}, '', '/inscricoes/confirmar#token=confirmacao');
   vi.mocked(api.post).mockResolvedValueOnce({ data: { protocol: 'P', uploadSession: { token: 'segredo', expiresAt: '2030-01-01' } } } as any);
   const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({ ok: true, status: 200, json: async () => [{ applicationId: 'a', firstName: 'Ana Maria', checklist: [{ type: 'BIRTH_CERTIFICATE', requirement: 'REQUIRED', state: 'MISSING' }] }] } as Response).mockResolvedValueOnce({ ok: false, status: 401 } as Response);
-  const storage = vi.spyOn(Storage.prototype, 'setItem'); render(<RegistrationConfirmationPage />);
+  const storage = vi.spyOn(Storage.prototype, 'setItem'); render(<MemoryRouter><RegistrationConfirmationPage /></MemoryRouter>);
   expect(await screen.findByText('Ana')).toBeTruthy(); expect(screen.getByText(/Isso não impede a inscrição/)).toBeTruthy(); expect(screen.getByText(/Faltando/)).toBeTruthy();
   const input = screen.getByLabelText('Enviar documento');
   fireEvent.change(input, { target: { files: [new File(['x'], 'a.txt', { type: 'text/plain' })] } }); expect(await screen.findByText(/Escolha um arquivo PDF/)).toBeTruthy();
@@ -135,5 +135,5 @@ it('recarrega checklist após envio de arquivo válido', async () => {
  window.history.replaceState({}, '', '/inscricoes/confirmar#token=confirmacao'); vi.mocked(api.post).mockResolvedValueOnce({ data: { protocol: 'P', uploadSession: { token: 'segredo', expiresAt: '2030-01-01' } } } as any);
  const rows = (state: string) => [{ applicationId: 'a', firstName: 'Ana', checklist: [{ type: 'OTHER', requirement: 'OPTIONAL', state }] }];
  const request = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({ ok: true, status: 200, json: async () => rows('REJECTED') } as Response).mockResolvedValueOnce({ ok: true, status: 200 } as Response).mockResolvedValueOnce({ ok: true, status: 200, json: async () => rows('AWAITING_SECURITY') } as Response);
- render(<RegistrationConfirmationPage />); await screen.findByText(/Recusado/); fireEvent.change(screen.getByLabelText('Enviar documento'), { target: { files: [new File(['pdf'], 'a.pdf', { type: 'application/pdf' })] } }); expect(await screen.findByText(/Em análise de segurança/)).toBeTruthy(); expect(request).toHaveBeenCalledTimes(3); expect(request.mock.calls[1][1]).toMatchObject({ method: 'POST', credentials: 'omit', headers: { Authorization: 'Bearer segredo' } }); request.mockRestore();
+ render(<MemoryRouter><RegistrationConfirmationPage /></MemoryRouter>); await screen.findByText(/Recusado/); fireEvent.change(screen.getByLabelText('Enviar documento'), { target: { files: [new File(['pdf'], 'a.pdf', { type: 'application/pdf' })] } }); expect(await screen.findByText(/Em análise de segurança/)).toBeTruthy(); expect(request).toHaveBeenCalledTimes(3); expect(request.mock.calls[1][1]).toMatchObject({ method: 'POST', credentials: 'omit', headers: { Authorization: 'Bearer segredo' } }); request.mockRestore();
 });

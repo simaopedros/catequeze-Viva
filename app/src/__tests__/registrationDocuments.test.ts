@@ -33,4 +33,13 @@ describe('documentos da inscrição', () => {
       expect(result.blocking).toBe(false);
     }
   });
+  it('reaproveita documentos do perfil apenas quando não há documento da inscrição', () => {
+    const doc = (status: 'PENDING' | 'VERIFIED' | 'REJECTED') => ({ type: 'BAPTISM_CERTIFICATE' as const, status });
+    const result = evaluate({ profileDocuments: [doc('VERIFIED')] });
+    expect(result.checklist.find(x => x.type === 'BAPTISM_CERTIFICATE')).toMatchObject({ state: 'VERIFIED', reused: true });
+    expect(evaluate({ profileDocuments: [doc('PENDING')] }).checklist.find(x => x.type === 'BAPTISM_CERTIFICATE')).toMatchObject({ state: 'AWAITING_REVIEW', reused: true });
+    expect(evaluate({ profileDocuments: [doc('REJECTED')] }).checklist.find(x => x.type === 'BAPTISM_CERTIFICATE')).toMatchObject({ state: 'MISSING', reused: false });
+    expect(evaluate({ documents: [doc('REJECTED')], profileDocuments: [doc('VERIFIED')] }).checklist.find(x => x.type === 'BAPTISM_CERTIFICATE')).toMatchObject({ state: 'REJECTED', reused: false });
+    expect(result.blocking).toBe(false);
+  });
 });

@@ -398,7 +398,36 @@
       "PUBLIC": "Online",
       "ASSISTED": "Assisted"
     },
-    "close": "Close"
+    "close": "Close",
+    "profileLinked": "Linked profile",
+    "profileCreated": "Profile created",
+    "reused": "Already on file",
+    "linkProfile": "Link to this profile",
+    "linkedExisting": "Linked to an existing profile",
+    "unlink": "Unlink",
+    "linkExplanation": "This associates the application with the existing profile. Nothing in the existing profile will be changed.",
+    "approve": "Approve application",
+    "approveExisting": "The linked profile will be used without changing its information",
+    "approveNew": "A family and catechumen profile will be created",
+    "approveWarnings_one": "There is {{count}} pending document. You may approve anyway; the family will continue to receive reminders.",
+    "approveWarnings_other": "There are {{count}} pending documents. You may approve anyway; the family will continue to receive reminders.",
+    "approvalNote": "Optional note",
+    "approvedSuccess": "Application approved",
+    "approvedAt": "Approved on {{date}}",
+    "reminders": "Document reminders",
+    "reminderCount": "Sent: {{count}} of 2",
+    "reminderLast": "Last sent",
+    "reminderSituation": "Status",
+    "emailUnverified": "No confirmed email: no reminders are sent",
+    "pauseReminders": "Pause reminders",
+    "resumeReminders": "Resume reminders",
+    "reminderStatus": {
+      "NONE": "none",
+      "QUEUED": "queued",
+      "SENT": "sent",
+      "FAILED": "failed",
+      "SUPPRESSED": "suppressed"
+    }
   },
   "documents": {
     "heading": "Documents",
@@ -459,6 +488,29 @@
     "source": {
       "FAMILY": "Family",
       "STAFF": "Office"
+    }
+  },
+  "followUp": {
+    "title": "Follow up on an application",
+    "returnLater": "To return later, use the",
+    "returnLink": "follow-up page",
+    "invalid": "Invalid or expired link",
+    "validation": "Enter the protocol and a valid email.",
+    "tryLater": "Unable to send now. Please try again later.",
+    "send": "Send link",
+    "sent": "If the details match, we sent a private link to the application email. It is valid for 24 hours.",
+    "documentsWarning": "Documents are missing. This does not prevent the application.",
+    "correction": "The office needs some information. Please contact the parish office.",
+    "contactForDocuments": "To send documents, please contact the parish office.",
+    "status": {
+      "SUBMITTED": "received",
+      "UNDER_REVIEW": "under review",
+      "NEEDS_CORRECTION": "needs correction",
+      "APPROVED": "approved",
+      "WAITLISTED": "waitlisted",
+      "ENROLLED": "enrolled",
+      "WITHDRAWN": "withdrawn",
+      "REJECTED": "not accepted"
     }
   }
 }

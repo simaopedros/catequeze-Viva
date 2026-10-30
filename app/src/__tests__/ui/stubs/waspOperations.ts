@@ -99,3 +99,7 @@ export const getRegistrationReviewOptions = vi.fn();
 
 export const listRegistrationDocumentQueue = vi.fn();
 export const reviewRegistrationDocument = vi.fn();
+
+export const linkRegistrationProfile = vi.fn();
+export const approveRegistrationApplication = vi.fn();
+export const setRegistrationReminders = vi.fn();

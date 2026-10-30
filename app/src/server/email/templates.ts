@@ -53,6 +53,14 @@ export function renderCatalogEmail(
       )}" style="color:#64748b">${ns.unsubscribe}</a>`
     : ns.footer_reason;
 
+  if (messageId === EMAIL_MESSAGE.REGISTRATION_REMINDER || messageId === EMAIL_MESSAGE.REGISTRATION_FOLLOWUP) {
+    const reminder = messageId === EMAIL_MESSAGE.REGISTRATION_REMINDER;
+    const heading = reminder ? "Documentos da sua inscrição" : "Acompanhe sua inscrição";
+    const body = `${str(payload, "parishName")}\n${str(payload, "campaignTitle")}\nProtocolo: ${str(payload, "protocol")}${reminder ? "\n\nAinda há documentos a enviar. Isso não impede a sua inscrição. Para ver a situação e enviar, peça seu link privado na página de acompanhamento." : ""}`;
+    const rendered = renderBrandedEmail({ heading, body, ctaLabel: "Acompanhar inscrição", ctaUrl: str(payload, "link") });
+    return { ...rendered, subject: heading, heading };
+  }
+
   if (messageId === EMAIL_MESSAGE.REGISTRATION_RECEIVED) {
     const heading = "Recebimento da inscrição";
     const body = `${str(payload, "parishName")}\n${str(payload, "campaignTitle")}\nProtocolo: ${str(payload, "protocol")}`;

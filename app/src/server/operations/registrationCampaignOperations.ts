@@ -3,10 +3,13 @@ import { assertRegistrationPermission, assertRegistrationsEnabled } from '../aut
 import { campaignSchema, offeringsSchema, canTransitionCampaign, generateCampaignSlug, slugBase, type CampaignStatus } from '../../shared/registrationCampaign';
 import { isBillingActive, isInstitutionalPlan, resolveEffectiveBilling } from './billingEnforcement';
 
+export function registrationsPlanEligible(parish: any, billing: any): boolean {
+  return !!parish && parish.type !== 'PERSONAL' && !!billing && isBillingActive(billing) && isInstitutionalPlan(billing.plan);
+}
 export async function assertRegistrationsPlan(context: any, parishId: string) {
   const parish = await context.entities.Parish.findUnique({ where: { id: parishId }, select: { type: true } });
   const billing = await resolveEffectiveBilling(context, parishId);
-  if (!parish || parish.type === 'PERSONAL' || !billing || !isBillingActive(billing) || !isInstitutionalPlan(billing.plan)) throw new HttpError(403, 'Plano institucional ativo necessário.');
+  if (!registrationsPlanEligible(parish, billing)) throw new HttpError(403, 'Plano institucional ativo necessário.');
 }
 async function authorize(context: any, parishId: string, action: 'CONFIGURE_CAMPAIGN' | 'OPEN_CLOSE_PERIOD') {
   await assertRegistrationPermission(context, { parishId, action });

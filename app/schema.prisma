@@ -862,6 +862,7 @@ model Household {
 
   guardians   GuardianProfile[]
   catechumens CatechumenProfile[]
+  registrationApplications RegistrationApplication[]
   consents    ConsentRecord[]
   consentEvents ConsentEvent[]
 
@@ -917,6 +918,7 @@ model CatechumenProfile {
   sacramentalJourneys SacramentalJourney[]
   sponsors            CatechumenSponsor[]
   documents           Document[]
+  registrationApplications RegistrationApplication[]
 
   uploadToken        String?   @unique
   uploadTokenExpires DateTime?
@@ -1519,6 +1521,7 @@ model Document {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  sourceRegistrationDocumentId String? @unique
   name     String
   type     DocumentType @default(OTHER)
   s3Key    String
@@ -2894,6 +2897,12 @@ enum RegistrationOfferStatus {
 enum RegistrationAccessTokenPurpose {
   CONFIRM_CONTACT
   DOCUMENT_UPLOAD
+  FOLLOW_UP
+}
+
+enum RegistrationProfileLinkKind {
+  EXISTING
+  CREATED
 }
 
 enum RegistrationDocumentStatus {
@@ -2922,6 +2931,9 @@ model RegistrationSubmission {
   contactEmail String?
   contactPhone String?
   contactVerifiedAt DateTime?
+  reminderCount Int @default(0)
+  lastReminderAt DateTime?
+  remindersPausedAt DateTime?
   formVersion Int @default(1)
   submittedAt DateTime @default(now())
   retentionUntil DateTime
@@ -2953,12 +2965,23 @@ model RegistrationApplication {
   reviewedAt DateTime?
   reviewedByUserId String?
   reviewNote String?
+  catechumenProfileId String?
+  catechumenProfile CatechumenProfile? @relation(fields: [catechumenProfileId], references: [id], onDelete: SetNull)
+  householdId String?
+  household Household? @relation(fields: [householdId], references: [id], onDelete: SetNull)
+  profileLinkKind RegistrationProfileLinkKind?
+  profileLinkedAt DateTime?
+  profileLinkedByUserId String?
+  approvedAt DateTime?
+  approvedByUserId String?
   offerStatus RegistrationOfferStatus @default(NONE)
   preferences Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   consents RegistrationConsent[]
   documents RegistrationDocument[]
+  @@index([catechumenProfileId])
+  @@index([householdId])
   @@index([offeringId, status])
   @@index([submissionId, status, id])
 }

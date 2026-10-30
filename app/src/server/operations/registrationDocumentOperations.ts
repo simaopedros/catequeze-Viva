@@ -1,3 +1,5 @@
+import { logger } from '../logger';
+import { syncRegistrationDocumentsToProfile } from '../registrations/profileDocuments';
 import { HttpError, prisma } from 'wasp/server';
 import { z } from 'zod';
 import { assertRegistrationPermission, assertRegistrationsEnabled } from '../auth/registrationPermissions';
@@ -42,5 +44,6 @@ export async function reviewRegistrationDocument(args: unknown, context: any) {
     if (!result.count) throw new HttpError(409, 'Conflito de revisão.');
     await tx.auditLog.create({ data: { action: 'UPDATE', entityType: 'RegistrationDocument', entityId: doc.id, parishId: application.submission.campaign.parishId, userId: context.user.id, metadata: JSON.stringify({ applicationId: application.id }) } });
   });
+  try { await syncRegistrationDocumentsToProfile(application.id); } catch { logger.warn('registration_document_sync_failed', { applicationId: application.id }); }
   return { id: doc.id, status };
 }
