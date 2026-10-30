@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import PublicDocuments from './PublicDocuments';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,5 +22,5 @@ export default function RegistrationConfirmationPage() {
     if (!token) { setState({ status: 'invalid' }); return; }
     api.post('/api/public/inscricoes/confirm', { token }).then(response => setState({ status: 'confirmed', protocol: response.data.protocol, uploadSession: response.data.uploadSession })).catch(() => setState({ status: 'invalid' }));
   }, []);
-  return <main className="mx-auto max-w-2xl px-5 py-10 text-slate-900"><h1 className="text-2xl font-bold">{t('registration.confirmTitle')}</h1><p role="status" className="mt-4">{t(`registration.confirm${state.status}`)}</p>{state.protocol && <p>{t('registration.protocol')}: <strong>{state.protocol}</strong></p>}{state.uploadSession && <PublicDocuments token={state.uploadSession.token} />}</main>;
+  return <main className="mx-auto max-w-2xl px-5 py-10 text-slate-900"><h1 className="text-2xl font-bold">{t('registration.confirmTitle')}</h1><p role="status" className="mt-4">{t(`registration.confirm${state.status}`)}</p>{state.protocol && <p>{t('registration.protocol')}: <strong>{state.protocol}</strong></p>}{state.uploadSession && <><PublicDocuments token={state.uploadSession.token} /><p className="mt-4">{t('followUp.returnLater')} <Link className="inline-flex min-h-11 items-center underline" to="/inscricoes/acompanhar">{t('followUp.returnLink')}</Link></p></>}</main>;
 }

@@ -15,3 +15,7 @@ A tela de conferência é acessível pelo cartão de divulgação. A equipe filt
 ## Aprovação cadastral e perfis
 
 A equipe pode vincular explicitamente um perfil da mesma paróquia antes da aprovação; sugestões de duplicidade nunca criam vínculos automaticamente. A aprovação exige a revisão atual e uma inscrição em conferência. Perfis existentes não são sobrescritos; para novos cadastros, irmãos da mesma submissão compartilham a família. Documentos disponíveis podem ser copiados para o perfil e aproveitados no checklist. Documentos faltantes geram avisos e não impedem a aprovação. Esta etapa não cria matrícula em turma nem envia e-mail.
+
+### Vínculo e aprovação
+
+Na conferência, a equipe pode vincular uma sugestão de cadastro existente ou desfazer o vínculo antes da aprovação. Ao aprovar, a tela explica se um cadastro será criado ou reutilizado e apresenta documentos pendentes como avisos não bloqueantes. A página pública de acompanhamento apresenta a situação da inscrição sem expor notas internas.

@@ -3529,7 +3529,36 @@ export const public_pt_BR_core = {
         "PUBLIC": "Online",
         "ASSISTED": "Assistida"
       },
-      "close": "Fechar"
+      "close": "Fechar",
+      "profileLinked": "Cadastro vinculado",
+      "profileCreated": "Cadastro criado",
+      "reused": "Já consta no cadastro",
+      "linkProfile": "Vincular a este cadastro",
+      "linkedExisting": "Vinculada a um cadastro existente",
+      "unlink": "Desvincular",
+      "linkExplanation": "Isso associa esta inscrição ao cadastro existente. Nada no cadastro existente será alterado.",
+      "approve": "Aprovar inscrição",
+      "approveExisting": "Será usado o cadastro vinculado, sem alterar seus dados",
+      "approveNew": "Será criado o cadastro da família e do catequizando",
+      "approveWarnings_one": "Há {{count}} documento pendente. Você pode aprovar mesmo assim; a família continuará sendo avisada.",
+      "approveWarnings_other": "Há {{count}} documentos pendentes. Você pode aprovar mesmo assim; a família continuará sendo avisada.",
+      "approvalNote": "Nota opcional",
+      "approvedSuccess": "Inscrição aprovada",
+      "approvedAt": "Aprovada em {{date}}",
+      "reminders": "Lembretes de documentos",
+      "reminderCount": "Quantidade enviada: {{count}} de 2",
+      "reminderLast": "Último envio",
+      "reminderSituation": "Situação",
+      "emailUnverified": "Sem e-mail confirmado: nenhum lembrete é enviado",
+      "pauseReminders": "Pausar lembretes",
+      "resumeReminders": "Retomar lembretes",
+      "reminderStatus": {
+        "NONE": "nenhum",
+        "QUEUED": "na fila",
+        "SENT": "enviado",
+        "FAILED": "falhou",
+        "SUPPRESSED": "suprimido"
+      }
     },
     "documents": {
       "heading": "Documentos",
@@ -3590,6 +3619,29 @@ export const public_pt_BR_core = {
       "source": {
         "FAMILY": "Família",
         "STAFF": "Balcão"
+      }
+    },
+    "followUp": {
+      "title": "Acompanhar inscrição",
+      "returnLater": "Para voltar depois, use a",
+      "returnLink": "página de acompanhamento",
+      "invalid": "Link inválido ou expirado",
+      "validation": "Informe o protocolo e um e-mail válido.",
+      "tryLater": "Não foi possível enviar agora. Tente mais tarde.",
+      "send": "Enviar link",
+      "sent": "Se os dados conferem, enviamos um link privado para o e-mail da inscrição. Ele vale por 24 horas.",
+      "documentsWarning": "Faltam documentos. Isso não impede a inscrição.",
+      "correction": "A secretaria precisa de uma informação. Procure a secretaria da paróquia.",
+      "contactForDocuments": "Para enviar documentos, procure a secretaria da paróquia.",
+      "status": {
+        "SUBMITTED": "recebida",
+        "UNDER_REVIEW": "em conferência",
+        "NEEDS_CORRECTION": "precisa de correção",
+        "APPROVED": "aprovada",
+        "WAITLISTED": "lista de espera",
+        "ENROLLED": "matriculada",
+        "WITHDRAWN": "retirada",
+        "REJECTED": "não aceita"
       }
     }
   } as const;

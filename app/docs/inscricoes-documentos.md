@@ -18,3 +18,7 @@ Na confirmação, a família pode consultar os estados e enviar documentos duran
 A família pode solicitar um link de acompanhamento com protocolo e e-mail verificado. O link tem validade de 24 horas e uso único; ao acessá-lo, uma nova sessão de envio substitui as anteriores. O envio e a consulta de documentos ficam disponíveis nas campanhas OPEN, CLOSED ou ORGANIZING para inscrições não terminais. Novas inscrições continuam disponíveis somente em OPEN.
 
 Até dois lembretes transacionais podem ser enviados quando há avisos de documentos: o primeiro após três dias e o segundo após sete dias. A equipe pode pausá-los. O e-mail de lembrete não contém token, nomes de menores nem lista de documentos; ele aponta para a página onde a família pode pedir o link privado. Documentos faltantes nunca impedem a inscrição.
+
+### Acompanhamento e lembretes
+
+A página pública de acompanhamento permite solicitar um link privado com protocolo e e-mail. A sessão mostra a situação de cada inscrito e permite enviar documentos quando disponível. Documentos pendentes são avisos e não impedem a aprovação. Na conferência, a equipe pode consultar e pausar ou retomar os lembretes de documentos.

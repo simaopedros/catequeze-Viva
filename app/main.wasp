@@ -123,6 +123,11 @@ page RegistrationConfirmationPage {
   component: import RegistrationConfirmationPage from "@src/registrations/RegistrationConfirmationPage"
 }
 
+route RegistrationFollowUpRoute { path: "/inscricoes/acompanhar", to: RegistrationFollowUpPage }
+page RegistrationFollowUpPage {
+  component: import RegistrationFollowUpPage from "@src/registrations/RegistrationFollowUpPage"
+}
+
 route PublicRegistrationRoute { path: "/inscricoes/:slug", to: PublicRegistrationPage }
 page PublicRegistrationPage {
   component: import PublicRegistrationPage from "@src/registrations/PublicRegistrationPage"
