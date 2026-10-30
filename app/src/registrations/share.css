@@ -1,0 +1,6 @@
+@media print {
+  body * { visibility: hidden; }
+  .registration-share-card, .registration-share-card * { visibility: visible; }
+  .registration-share-card { break-inside: avoid; border: 0; }
+  .registration-share-actions { display: none; }
+}

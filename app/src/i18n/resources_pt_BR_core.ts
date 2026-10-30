@@ -3413,6 +3413,24 @@ export const public_pt_BR_core = {
           ]
         }
       ]
+    },
+    "registration": {
+      "loading": "Carregando informações",
+      "unavailable": "Link de inscrição indisponível",
+      "open": "Inscrições abertas",
+      "upcoming": "Inscrições ainda não abertas",
+      "closed": "Inscrições encerradas",
+      "period": "Período",
+      "windows": "Horários oferecidos",
+      "stages": "Etapas oferecidas",
+      "soon": "Inscrição em breve",
+      "soonExplanation": "O formulário de inscrição será disponibilizado em uma próxima etapa.",
+      "heading": "Inscrições",
+      "qrAlt": "QR code do link público",
+      "copy": "Copiar link",
+      "download": "Baixar QR em PNG",
+      "print": "Imprimir",
+      "draft": "Prévia de rascunho, sem link público."
     }
   } as const;
 

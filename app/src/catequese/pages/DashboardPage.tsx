@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import RegistrationShareNavigation from "../../registrations/RegistrationShareNavigation";
 import { useTranslation } from "react-i18next";
 import { useQuery, getDashboardStats } from "wasp/client/operations";
 import { useUserContext } from "../../client/hooks/useUserContext";
@@ -79,7 +80,7 @@ export default function DashboardPage() {
   }
 
   if (isInstitutional) {
-    return <InstitutionalDashboard />;
+    return <><RegistrationShareNavigation /><InstitutionalDashboard /></>;
   }
 
   if (statsError && !stats) {
@@ -95,11 +96,11 @@ export default function DashboardPage() {
 
   // Pároco e secretaria não usam o painel de coordenação (listas globais).
   if (effectiveRole === "PARISH_PRIEST" || effectiveRole === "PARISH_SECRETARY") {
-    return <p>{t("registration_role_placeholder")}</p>;
+    return <><RegistrationShareNavigation /><p>{t("registration_role_placeholder")}</p></>;
   }
   const DashboardComponent =
     roleDashboards[effectiveRole] ||
     (isFamilyHost ? GuardianDashboard : CoordinatorDashboard);
 
-  return <DashboardComponent stats={stats} />;
+  return <><RegistrationShareNavigation /><DashboardComponent stats={stats} /></>;
 }

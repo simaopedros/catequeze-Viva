@@ -11,6 +11,12 @@ import { passwordResetMiddleware } from './middleware/passwordReset';
 export const serverMiddlewareConfigFn: MiddlewareConfigFn = (
   middlewareConfig,
 ) => {
+  middlewareConfig.set('publicRegistrationMethods', (req: any, res: any, next: any) => {
+    if (/^\/api\/public\/inscricoes\/[^/]+\/?$/.test(req.path) && req.method !== 'GET' && req.method !== 'HEAD') {
+      return res.set({ 'Allow': 'GET, HEAD', 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer', 'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex, nofollow' }).status(405).end();
+    }
+    next();
+  });
   middlewareConfig.set(
     'portalRequestContext',
     portalRequestContextMiddleware,

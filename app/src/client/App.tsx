@@ -176,6 +176,7 @@ trackAxiosActivity(api);
 
 export default function App() {
   const location = useLocation();
+  const isPublicRegistration = location.pathname.startsWith("/inscricoes/");
   const isOnline = useOnlineStatus();
   const { t } = useTranslation("common");
   const { t: tNavigation } = useTranslation("navigation");
@@ -296,6 +297,7 @@ export default function App() {
       routes.EmailVerificationRoute.build(),
     ];
     if (publicPaths.includes(location.pathname)) return false;
+    if (location.pathname.startsWith("/inscricoes/")) return false;
     if (location.pathname.startsWith("/upload-docs/")) return false;
     if (location.pathname.startsWith("/blog")) return false;
     return true;
@@ -334,6 +336,7 @@ export default function App() {
   }, [isAppRoute, isAdminDashboard, location.pathname, location.search]);
 
   useEffect(() => {
+    if (isPublicRegistration) return;
     ensureFbcFromFbclid();
     persistAttributionParams();
   }, [location.pathname, location.search]);
@@ -341,6 +344,7 @@ export default function App() {
   useEffect(() => {
     // SPA landing meta first so document.title is route-specific for analytics.
     // Crawler-first HTML still comes from main.wasp head (SEO follow-up).
+    if (isPublicRegistration) return;
     applyLandingRouteMeta(location.pathname);
     rememberLandingOrigin(location.pathname);
     trackPageView(location.pathname, document.title);
@@ -438,7 +442,7 @@ export default function App() {
       </Suspense>
       <InstallPrompt />
       {/* GTM + Meta Pixel (LGPD: only after analytics/marketing consent) */}
-      <GoogleTagScripts />
+      {!isPublicRegistration && <GoogleTagScripts />}
     </>
   );
 }
