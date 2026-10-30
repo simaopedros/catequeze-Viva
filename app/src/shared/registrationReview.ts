@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 const transitions = {
+  APPROVE: { UNDER_REVIEW: 'APPROVED' },
   START_REVIEW: { SUBMITTED: 'UNDER_REVIEW' },
   REQUEST_CORRECTION: { UNDER_REVIEW: 'NEEDS_CORRECTION' },
   REJECT: { SUBMITTED: 'REJECTED', UNDER_REVIEW: 'REJECTED', NEEDS_CORRECTION: 'REJECTED' },
@@ -24,3 +25,6 @@ export function duplicateReason(a: { name: string; birthDate: Date | null; email
   if ((a.email && b.email && a.email.toLowerCase() === b.email.toLowerCase()) || (phone(a.phone) && phone(a.phone) === phone(b.phone))) return { reason: 'SAME_CONTACT', score: 1 };
   return null;
 }
+
+export const linkRegistrationProfileSchema = z.object({ id: z.string().min(1), revision: z.number().int().nonnegative(), catechumenProfileId: z.string().min(1).nullable() }).strict();
+export const approveRegistrationApplicationSchema = z.object({ id: z.string().min(1), revision: z.number().int().nonnegative(), note: z.string().trim().max(500).optional() }).strict();

@@ -41,7 +41,8 @@ export async function registrationDocumentStatus(req: Request, res: Response, co
       context.entities.RegistrationApplication.findMany({ where: { submissionId: record.submissionId }, include: { offering: { include: { stage: true } }, documents: { select: { id: true, type: true, status: true, createdAt: true } } } }),
       loadRegistrationDocumentRules(context, campaign),
     ]);
-    return res.json(applications.map((a: any) => ({ applicationId: a.id, firstName: a.firstName, offeringName: a.offering.stage.name, ...registrationDocumentChecklist(a, rules, a.documents), documents: a.documents })));
+    const profileDocuments = await context.entities.Document.findMany({ where: { catechumenProfileId: { in: applications.map((a: any) => a.catechumenProfileId).filter(Boolean) } }, select: { catechumenProfileId: true, type: true, status: true } });
+    return res.json(applications.map((a: any) => ({ applicationId: a.id, firstName: a.firstName, offeringName: a.offering.stage.name, ...registrationDocumentChecklist(a, rules, a.documents, profileDocuments.filter((d: any) => d.catechumenProfileId === a.catechumenProfileId)), documents: a.documents })));
   } catch (error) { return handleError(res, error); }
 }
 export async function publicRegistrationDocumentUpload(req: Request, res: Response, context: any) {

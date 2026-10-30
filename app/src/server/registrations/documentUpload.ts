@@ -1,3 +1,4 @@
+import { syncRegistrationDocumentsToProfile } from './profileDocuments';
 import { createHash } from 'node:crypto';
 import { HttpError, prisma } from 'wasp/server';
 import { storeDocumentFile, deleteDocumentFile } from '../storage/documentStorage';
@@ -36,6 +37,11 @@ export async function uploadRegistrationDocument(input: { applicationId: string;
     await deleteDocumentFile(key!);
     return prisma.registrationDocument.update({ where: { id: created.id }, data: { status: 'REJECTED', rejectedAt: new Date(), rejectedReason: 'Arquivo recusado pela análise de segurança', scannedAt: new Date() }, select: { id: true, type: true, status: true } });
   }
-  if (scan === 'clean') return prisma.registrationDocument.update({ where: { id: created.id }, data: { status: 'PENDING', scannedAt: new Date() }, select: { id: true, type: true, status: true } });
+  if (scan === 'clean') {
+    const document = await prisma.registrationDocument.update({ where: { id: created.id }, data: { status: 'PENDING', scannedAt: new Date() }, select: { id: true, type: true, status: true } });
+    const application = await prisma.registrationApplication.findUnique({ where: { id: input.applicationId }, select: { status: true } });
+    if (application?.status === 'APPROVED') try { await syncRegistrationDocumentsToProfile(input.applicationId); } catch { console.error('Registration document synchronization failed', { applicationId: input.applicationId }); }
+    return document;
+  }
   return created;
 }

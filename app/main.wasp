@@ -2992,15 +2992,23 @@ page RegistrationSharePage {
 
 query listRegistrationApplications {
   fn: import { listRegistrationApplications } from "@src/server/operations/registrationReviewOperations",
-  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationDocument, DocumentStageRule, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationDocument, Document, DocumentStageRule, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
 }
 query getRegistrationApplication {
   fn: import { getRegistrationApplication } from "@src/server/operations/registrationReviewOperations",
-  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationDocument, DocumentStageRule, CatechumenProfile, Household, GuardianProfile, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationDocument, Document, DocumentStageRule, CatechumenProfile, Household, GuardianProfile, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
 }
 action reviewRegistrationApplication {
   fn: import { reviewRegistrationApplication } from "@src/server/operations/registrationReviewOperations",
   entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
+}
+action linkRegistrationProfile {
+  fn: import { linkRegistrationProfile } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationApplication, RegistrationSubmission, RegistrationCampaign, CatechumenProfile, Household, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
+}
+action approveRegistrationApplication {
+  fn: import { approveRegistrationApplication } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationApplication, RegistrationSubmission, RegistrationCampaign, RegistrationOffering, RegistrationConsent, RegistrationDocument, CatechumenProfile, CatechumenSponsor, Household, GuardianProfile, Document, DocumentStageRule, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
 }
 action createAssistedRegistration {
   fn: import { createAssistedRegistration } from "@src/server/operations/registrationReviewOperations",
@@ -3011,7 +3019,7 @@ api registrationDocumentStatus {
   fn: import { registrationDocumentStatus } from "@src/server/api/registrationDocuments",
   middlewareConfigFn: import { registrationDocumentsMiddleware } from "@src/server/api/registrationDocuments",
   httpRoute: (GET, "/api/public/inscricoes/documents/status"),
-  entities: [RegistrationAccessToken, RegistrationSubmission, RegistrationCampaign, RegistrationApplication, RegistrationOffering, RegistrationDocument, DocumentStageRule, Stage, Parish, TenantBilling, User]
+  entities: [RegistrationAccessToken, RegistrationSubmission, RegistrationCampaign, RegistrationApplication, RegistrationOffering, RegistrationDocument, Document, DocumentStageRule, Stage, Parish, TenantBilling, User]
 }
 api publicRegistrationDocumentUpload {
   fn: import { publicRegistrationDocumentUpload } from "@src/server/api/registrationDocuments",

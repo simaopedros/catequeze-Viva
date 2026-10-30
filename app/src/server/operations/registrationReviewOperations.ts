@@ -1,10 +1,11 @@
+import { syncRegistrationDocumentsToProfile } from '../registrations/profileDocuments';
 import { createHash } from 'node:crypto';
 import { HttpError, prisma } from 'wasp/server';
 import { assertRegistrationPermission, assertRegistrationsEnabled } from '../auth/registrationPermissions';
 import { assertRegistrationsPlan } from './registrationCampaignOperations';
 import { offeredWindowsSchema } from '../../shared/registrationCampaign';
 import { assistedRegistrationSchema, validateSubmissionOptions } from '../../shared/registrationSubmission';
-import { duplicateReason, listReviewSchema, reviewSchema, reviewTransition } from '../../shared/registrationReview';
+import { duplicateReason, listReviewSchema, reviewSchema, reviewTransition, linkRegistrationProfileSchema, approveRegistrationApplicationSchema } from '../../shared/registrationReview';
 import { loadRegistrationDocumentRules, registrationDocumentChecklist, registrationDocumentSelect } from '../registrations/documentRules';
 import { createSubmissionRecords } from '../registrations/createSubmissionRecords';
 import { consumePersistentRateLimit } from '../security/persistentRateLimit';
@@ -46,7 +47,8 @@ export async function listRegistrationApplications(args: unknown, context: any) 
   const [rules, documents] = await Promise.all([loadRegistrationDocumentRules(context, campaign), context.entities.RegistrationDocument.findMany({ where: { applicationId: { in: rows.map((row: any) => row.id) } }, select: registrationDocumentSelect })]);
   const byApplication = new Map<string, any[]>();
   for (const document of documents) { const group = byApplication.get(document.applicationId) ?? []; group.push(document); byApplication.set(document.applicationId, group); }
-  return rows.map((row: any) => ({ ...summary(row, campaign), documentWarnings: registrationDocumentChecklist(row, rules, byApplication.get(row.id) ?? []).warnings.length }));
+  const profileDocuments = await context.entities.Document.findMany({ where: { catechumenProfileId: { in: rows.map((row: any) => row.catechumenProfileId).filter(Boolean) } }, select: { catechumenProfileId: true, type: true, status: true } });
+  return rows.map((row: any) => ({ ...summary(row, campaign), profileLinked: !!row.catechumenProfileId, documentWarnings: registrationDocumentChecklist(row, rules, byApplication.get(row.id) ?? [], profileDocuments.filter((d: any) => d.catechumenProfileId === row.catechumenProfileId)).warnings.length }));
 }
 export async function getRegistrationApplication(args: { id: string }, context: any) {
   const item = await loadApplication(context, args.id); const campaign = item.submission.campaign;
@@ -64,8 +66,9 @@ export async function getRegistrationApplication(args: { id: string }, context: 
     return matches.length ? [{ id: c.id, name: base.name, birthDate: c.birthDate, householdName: household?.name ?? null, reason: matches[0].reason, score: matches[0].score }] : [];
   }).sort((a: any, b: any) => b.score - a.score || a.id.localeCompare(b.id)).slice(0, 5).map(({ score, ...rest }: any) => rest);
   const [rules, documents] = await Promise.all([loadRegistrationDocumentRules(context, campaign), context.entities.RegistrationDocument.findMany({ where: { applicationId: item.id }, select: registrationDocumentSelect })]);
-  const documentChecklist = registrationDocumentChecklist(item, rules, documents);
-  return { ...summary(item, campaign), documents: documents.map(({ applicationId, ...document }: any) => document), documentChecklist, birthDate: item.birthDate, revision: item.revision, reviewedAt: item.reviewedAt, reviewedByUserId: item.reviewedByUserId, reviewNote: item.reviewNote, contactName: item.submission.contactName, contactEmail: email, contactPhone: phone, consents: item.consents.map((c: any) => ({ kind: c.kind, granted: c.granted, textVersion: c.textVersion, actorName: c.actorName, actorRelationship: c.actorRelationship, createdAt: c.createdAt })), duplicateSuggestions: suggestions };
+  const profileDocuments = item.catechumenProfileId ? await context.entities.Document.findMany({ where: { catechumenProfileId: item.catechumenProfileId }, select: { type: true, status: true } }) : [];
+  const documentChecklist = registrationDocumentChecklist(item, rules, documents, profileDocuments);
+  return { ...summary(item, campaign), profileLink: item.profileLinkKind ? { kind: item.profileLinkKind, catechumenProfileId: item.catechumenProfileId, linkedAt: item.profileLinkedAt } : null, approvedAt: item.approvedAt, documents: documents.map(({ applicationId, ...document }: any) => document), documentChecklist, birthDate: item.birthDate, revision: item.revision, reviewedAt: item.reviewedAt, reviewedByUserId: item.reviewedByUserId, reviewNote: item.reviewNote, contactName: item.submission.contactName, contactEmail: email, contactPhone: phone, consents: item.consents.map((c: any) => ({ kind: c.kind, granted: c.granted, textVersion: c.textVersion, actorName: c.actorName, actorRelationship: c.actorRelationship, createdAt: c.createdAt })), duplicateSuggestions: suggestions };
 }
 export async function reviewRegistrationApplication(args: unknown, context: any) {
   const data = parse(reviewSchema, args); const item = await loadApplication(context, data.id); const status = reviewTransition(item.status, data.decision);
@@ -111,4 +114,77 @@ export async function getRegistrationReviewOptions(args: { campaignId: string },
   const ids = campaign.offeredCommunityIds as string[];
   const communities = await context.entities.Community.findMany({ where: { parishId: campaign.parishId, ...(communityId ? { id: communityId } : ids.length ? { id: { in: ids } } : {}) }, select: { id: true, name: true }, orderBy: { name: 'asc' } });
   return { windows: windows.data, offerings: offerings.map((o: any) => ({ id: o.id, name: o.stage.name, audience: o.audience })), communities, requiredCommunityId: communityId ?? null, status: campaign.status };
+}
+
+async function approvalApplication(context: any, id: string, action: 'REVIEW_REGISTRATION' | 'APPROVE_ENROLLMENT') {
+  assertRegistrationsEnabled(); if (!context.user) throw new HttpError(401);
+  const item = await context.entities.RegistrationApplication.findUnique({ where: { id }, include: { submission: { include: { campaign: true } }, offering: true } });
+  if (!item) throw new HttpError(404);
+  await assertRegistrationPermission(context, { parishId: item.submission.campaign.parishId, communityId: item.communityId ?? undefined, action });
+  await assertRegistrationsPlan(context, item.submission.campaign.parishId);
+  return item;
+}
+export async function linkRegistrationProfile(args: unknown, context: any) {
+  const data = parse(linkRegistrationProfileSchema, args);
+  const item = await approvalApplication(context, data.id, 'REVIEW_REGISTRATION');
+  const parishId = item.submission.campaign.parishId;
+  await assertRegistrationPermission(context, { parishId, communityId: item.communityId ?? undefined, action: 'VIEW_IDENTIFIABLE_DATA' });
+  return prisma.$transaction(async (tx: any) => {
+    await tx.$queryRaw`SELECT "id" FROM "RegistrationApplication" WHERE "id" = ${item.id} FOR UPDATE`;
+    const current = await tx.registrationApplication.findUnique({ where: { id: item.id } });
+    if (current.revision !== data.revision || !['SUBMITTED', 'UNDER_REVIEW', 'NEEDS_CORRECTION'].includes(current.status)) throw new HttpError(409);
+    let profile: { id: string; householdId: string | null } | null = null;
+    if (data.catechumenProfileId) {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${`${item.submission.campaignId}:${data.catechumenProfileId}`}, 0))`;
+      profile = await tx.catechumenProfile.findFirst({ where: { id: data.catechumenProfileId, parishId }, select: { id: true, householdId: true } });
+      if (!profile) throw new HttpError(404);
+      const conflict = await tx.registrationApplication.findFirst({ where: { id: { not: item.id }, catechumenProfileId: profile.id, submission: { campaignId: item.submission.campaignId }, status: { notIn: ['REJECTED', 'WITHDRAWN'] } }, select: { id: true } });
+      if (conflict) throw new HttpError(409);
+    }
+    await tx.registrationApplication.update({ where: { id: item.id }, data: { catechumenProfileId: profile?.id ?? null, householdId: profile?.householdId ?? null, profileLinkKind: profile ? 'EXISTING' : null, profileLinkedAt: profile ? new Date() : null, profileLinkedByUserId: profile ? context.user.id : null, revision: { increment: 1 } } });
+    await tx.auditLog.create({ data: { action: 'UPDATE', entityType: 'RegistrationApplication', entityId: item.id, parishId, userId: context.user.id, metadata: JSON.stringify({ catechumenProfileId: profile?.id ?? null }) } });
+    return { id: item.id, revision: data.revision + 1 };
+  });
+}
+export async function approveRegistrationApplication(args: unknown, context: any) {
+  const data = parse(approveRegistrationApplicationSchema, args);
+  const item = await approvalApplication(context, data.id, 'APPROVE_ENROLLMENT');
+  const parishId = item.submission.campaign.parishId;
+  const result = await prisma.$transaction(async (tx: any) => {
+    await tx.$queryRaw`SELECT "id" FROM "RegistrationSubmission" WHERE "id" = ${item.submissionId} FOR UPDATE`;
+    await tx.$queryRaw`SELECT "id" FROM "RegistrationApplication" WHERE "id" = ${item.id} FOR UPDATE`;
+    const current = await tx.registrationApplication.findUnique({ where: { id: item.id }, include: { submission: true, consents: true } });
+    if (current.revision !== data.revision || current.status !== 'UNDER_REVIEW') throw new HttpError(409);
+    const audit = async (entityType: string, entityId: string) => tx.auditLog.create({ data: { action: 'CREATE', entityType, entityId, parishId, userId: context.user.id, metadata: JSON.stringify({ applicationId: item.id }) } });
+    let profileId = current.catechumenProfileId; let householdId: string | null = null;
+    const existing = current.profileLinkKind === 'EXISTING' && profileId;
+    if (existing) {
+      const profile = await tx.catechumenProfile.findFirst({ where: { id: profileId, parishId }, select: { householdId: true } });
+      if (!profile) throw new HttpError(404); householdId = profile.householdId;
+    } else {
+      if (current.kind === 'MINOR') {
+        const sibling = await tx.registrationApplication.findFirst({ where: { submissionId: current.submissionId, id: { not: item.id }, householdId: { not: null } }, select: { householdId: true } });
+        householdId = sibling?.householdId ?? null;
+        if (!householdId) {
+          const names = current.submission.contactName.trim().split(/\s+/); const lastName = names.length > 1 ? names.pop() : '';
+          const household = await tx.household.create({ data: { name: `Família ${lastName || names[0]}`, phone: current.submission.contactPhone, parishId, communityId: current.communityId } }); householdId = household.id;
+          await audit('Household', household.id);
+          const guardian = await tx.guardianProfile.create({ data: { firstName: names.join(' '), lastName, email: current.submission.contactEmail, phone: current.submission.contactPhone, relationship: current.consents.find((c: any) => c.actorRelationship)?.actorRelationship ?? null, householdId } });
+          await audit('GuardianProfile', guardian.id);
+        }
+      }
+      const profile = await tx.catechumenProfile.create({ data: { firstName: current.firstName, lastName: current.lastName, birthDate: current.birthDate, parishId, householdId, email: current.kind === 'ADULT' ? current.submission.contactEmail : null } }); profileId = profile.id;
+      await audit('CatechumenProfile', profile.id);
+    }
+    if (current.sponsorName && current.sponsorRole && !await tx.catechumenSponsor.findUnique({ where: { catechumenProfileId_role: { catechumenProfileId: profileId, role: current.sponsorRole } } })) {
+      const sponsor = await tx.catechumenSponsor.create({ data: { catechumenProfileId: profileId, role: current.sponsorRole, name: current.sponsorName, fromOtherParish: current.sponsorFromOtherParish ?? false, parishName: current.sponsorParishName } }); await audit('CatechumenSponsor', sponsor.id);
+    }
+    const now = new Date();
+    await tx.registrationApplication.update({ where: { id: item.id }, data: { status: 'APPROVED', revision: { increment: 1 }, catechumenProfileId: profileId, householdId, profileLinkKind: existing ? 'EXISTING' : 'CREATED', profileLinkedAt: current.profileLinkedAt ?? now, profileLinkedByUserId: current.profileLinkedByUserId ?? context.user.id, approvedAt: now, approvedByUserId: context.user.id, reviewNote: data.note ?? current.reviewNote } });
+    await tx.auditLog.create({ data: { action: 'UPDATE', entityType: 'RegistrationApplication', entityId: item.id, parishId, userId: context.user.id, metadata: JSON.stringify({ catechumenProfileId: profileId, householdId }) } });
+    return { id: item.id, status: 'APPROVED', revision: data.revision + 1, profileId, householdId };
+  });
+  try { await syncRegistrationDocumentsToProfile(item.id); } catch { console.error('Registration document synchronization failed', { applicationId: item.id }); }
+  const [rules, documents, profileDocuments] = await Promise.all([loadRegistrationDocumentRules(context, item.submission.campaign), context.entities.RegistrationDocument.findMany({ where: { applicationId: item.id }, select: registrationDocumentSelect }), context.entities.Document.findMany({ where: { catechumenProfileId: result.profileId }, select: { type: true, status: true } })]);
+  return { ...result, documentWarnings: registrationDocumentChecklist(item, rules, documents, profileDocuments).warnings.length };
 }

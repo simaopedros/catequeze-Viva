@@ -1,0 +1,10 @@
+ALTER TYPE "RegistrationAccessTokenPurpose" ADD VALUE 'FOLLOW_UP';
+CREATE TYPE "RegistrationProfileLinkKind" AS ENUM ('EXISTING', 'CREATED');
+ALTER TABLE "RegistrationApplication" ADD COLUMN "catechumenProfileId" TEXT, ADD COLUMN "householdId" TEXT, ADD COLUMN "profileLinkKind" "RegistrationProfileLinkKind", ADD COLUMN "profileLinkedAt" TIMESTAMP(3), ADD COLUMN "profileLinkedByUserId" TEXT, ADD COLUMN "approvedAt" TIMESTAMP(3), ADD COLUMN "approvedByUserId" TEXT;
+ALTER TABLE "RegistrationSubmission" ADD COLUMN "reminderCount" INTEGER NOT NULL DEFAULT 0, ADD COLUMN "lastReminderAt" TIMESTAMP(3), ADD COLUMN "remindersPausedAt" TIMESTAMP(3);
+ALTER TABLE "Document" ADD COLUMN "sourceRegistrationDocumentId" TEXT;
+CREATE UNIQUE INDEX "Document_sourceRegistrationDocumentId_key" ON "Document"("sourceRegistrationDocumentId");
+CREATE INDEX "RegistrationApplication_catechumenProfileId_idx" ON "RegistrationApplication"("catechumenProfileId");
+CREATE INDEX "RegistrationApplication_householdId_idx" ON "RegistrationApplication"("householdId");
+ALTER TABLE "RegistrationApplication" ADD CONSTRAINT "RegistrationApplication_catechumenProfileId_fkey" FOREIGN KEY ("catechumenProfileId") REFERENCES "CatechumenProfile"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "RegistrationApplication" ADD CONSTRAINT "RegistrationApplication_householdId_fkey" FOREIGN KEY ("householdId") REFERENCES "Household"("id") ON DELETE SET NULL ON UPDATE CASCADE;
