@@ -2,7 +2,7 @@
 
 Nesta fase, o link será divulgado somente em homologação. A página não recebe inscrições e não deve ser indexada.
 
-A API pública retorna apenas título, nome da paróquia, descrição e contato públicos, estado, período, fuso, janelas com seus identificadores estáveis e nomes das etapas. Campanhas encerradas retornam apenas estado, título, paróquia e contato público. Rascunhos e campanhas indisponíveis retornam 404 uniforme. Não há dados de pessoas, vagas ou políticas internas na resposta.
+A API pública retorna apenas título, nome da paróquia, descrição e contato públicos, estado, período, fuso, janelas com seus identificadores estáveis e etapas no formato `{ offeringId, name, audience }`. O público é `MINOR`, `ADULT` ou `BOTH`. Campanhas encerradas retornam apenas estado, título, paróquia e contato público. Rascunhos e campanhas indisponíveis retornam 404 uniforme. Não há dados de pessoas, vagas ou políticas internas na resposta.
 
 O limite persistente é de 60 leituras por minuto por IP e 30 por combinação de slug e IP. O IP é resolvido pelo Express e os identificadores dos buckets são hashes. Uma falha no banco do limitador impede a leitura temporariamente. O proxy confiável deve sanitizar os cabeçalhos de encaminhamento conforme a configuração existente.
 

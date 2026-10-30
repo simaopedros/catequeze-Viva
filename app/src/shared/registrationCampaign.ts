@@ -39,7 +39,7 @@ export function calculateAgeAtCutoff(birthDate: Date, cutoff: Date): number {
   const birthday = Date.UTC(y, m, anniversaryDay);
   return y - birthDate.getUTCFullYear() - (Date.UTC(y, cutoff.getUTCMonth(), cutoff.getUTCDate()) < birthday ? 1 : 0);
 }
-const reserved = new Set(['admin', 'api', 'app', 'login', 'nova', 'novo', 'inscricoes', 'www']);
+const reserved = new Set(['admin', 'api', 'app', 'login', 'nova', 'novo', 'inscricoes', 'www', 'confirm', 'confirmar']);
 export function slugBase(title: string): string {
   const slug = title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 80).replace(/-$/, '') || 'campanha';
   return reserved.has(slug) ? `${slug}-campanha` : slug;

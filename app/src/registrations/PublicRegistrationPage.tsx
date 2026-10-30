@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { api } from 'wasp/client/api';
+import RegistrationForm from './RegistrationForm';
 
-type Campaign = { status: 'open' | 'upcoming' | 'closed'; title: string; parishName: string; publicContact: string | null; publicDescription?: string | null; opensAt?: string; closesAt?: string; timezone?: string; windows?: { id: string; weekday: number; startTime: string; endTime: string; label: string }[]; stages?: string[] };
+type Campaign = { status: 'open' | 'upcoming' | 'closed'; title: string; parishName: string; publicContact: string | null; publicDescription?: string | null; opensAt?: string; closesAt?: string; timezone?: string; windows?: { id: string; weekday: number; startTime: string; endTime: string; label: string }[]; stages?: { offeringId: string; name: string; audience: 'MINOR' | 'ADULT' | 'BOTH' }[] };
 
 export default function PublicRegistrationPage() {
   const { slug } = useParams();
   const { t, i18n } = useTranslation('public');
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [loading, setLoading] = useState(true);
+  const [formOpen, setFormOpen] = useState(false);
   useEffect(() => {
     let active = true;
     setLoading(true);
@@ -33,8 +35,8 @@ export default function PublicRegistrationPage() {
       {campaign.status !== 'closed' && <>
         {campaign.opensAt && campaign.closesAt && <p className="mt-4">{t('registration.period')}: {date(campaign.opensAt)} - {date(campaign.closesAt)} ({campaign.timezone})</p>}
         <section className="mt-6"><h2 className="text-xl font-semibold">{t('registration.windows')}</h2><ul className="list-disc pl-6">{campaign.windows?.map(w => <li key={w.id}>{w.label}: {w.startTime} - {w.endTime}</li>)}</ul></section>
-        <section className="mt-6"><h2 className="text-xl font-semibold">{t('registration.stages')}</h2><ul className="list-disc pl-6">{campaign.stages?.map((s, i) => <li key={i}>{s}</li>)}</ul></section>
-        <button disabled className="mt-6 rounded bg-slate-200 px-4 py-2 text-slate-700">{t('registration.soon')}</button><p className="mt-2">{t('registration.soonExplanation')}</p>
+        <section className="mt-6"><h2 className="text-xl font-semibold">{t('registration.stages')}</h2><ul className="list-disc pl-6">{campaign.stages?.map(s => <li key={s.offeringId}>{s.name}</li>)}</ul></section>
+        {campaign.status === 'open' && (formOpen ? <RegistrationForm slug={slug || ''} campaign={campaign} /> : <button onClick={() => setFormOpen(true)} className="mt-6 rounded bg-slate-900 px-4 py-2 text-white">{t('registration.openForm')}</button>)}
       </>}
     </>}
   </main>;

@@ -118,6 +118,11 @@ app OpenSaaS {
   },
 }
 
+route RegistrationConfirmationRoute { path: "/inscricoes/confirmar", to: RegistrationConfirmationPage }
+page RegistrationConfirmationPage {
+  component: import RegistrationConfirmationPage from "@src/registrations/RegistrationConfirmationPage"
+}
+
 route PublicRegistrationRoute { path: "/inscricoes/:slug", to: PublicRegistrationPage }
 page PublicRegistrationPage {
   component: import PublicRegistrationPage from "@src/registrations/PublicRegistrationPage"
@@ -1519,6 +1524,34 @@ api publicRegistrationCampaign {
   fn: import { publicRegistrationCampaign } from "@src/server/api/publicRegistrationCampaign",
   httpRoute: (GET, "/api/public/inscricoes/:slug"),
   entities: [RegistrationCampaign, RegistrationOffering, Stage, Parish, TenantBilling, User]
+}
+
+api registrationFormToken {
+  fn: import { registrationFormToken } from "@src/server/api/registrationSubmission",
+  middlewareConfigFn: import { registrationTokenMiddleware } from "@src/server/api/registrationSubmission",
+  httpRoute: (GET, "/api/public/inscricoes/:slug/form-token"),
+  entities: [RegistrationCampaign, RegistrationOffering, Stage, Parish, TenantBilling, User]
+}
+
+api registrationSubmission {
+  fn: import { registrationSubmission } from "@src/server/api/registrationSubmission",
+  middlewareConfigFn: import { registrationSubmissionMiddleware } from "@src/server/api/registrationSubmission",
+  httpRoute: (POST, "/api/public/inscricoes/:slug/submissions"),
+  entities: [RegistrationCampaign, RegistrationOffering, Stage, Parish, TenantBilling, User, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationAccessToken, EmailMessage, EmailSuppression, EmailPreference]
+}
+
+api registrationConfirm {
+  fn: import { registrationConfirm } from "@src/server/api/registrationConfirmation",
+  middlewareConfigFn: import { registrationConfirmationMiddleware } from "@src/server/api/registrationConfirmation",
+  httpRoute: (POST, "/api/public/inscricoes/confirm"),
+  entities: [RegistrationCampaign, RegistrationOffering, Stage, Parish, TenantBilling, User, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationAccessToken, EmailMessage, EmailSuppression, EmailPreference]
+}
+
+api registrationResendConfirmation {
+  fn: import { registrationResendConfirmation } from "@src/server/api/registrationConfirmation",
+  middlewareConfigFn: import { registrationConfirmationMiddleware } from "@src/server/api/registrationConfirmation",
+  httpRoute: (POST, "/api/public/inscricoes/:slug/resend-confirmation"),
+  entities: [RegistrationCampaign, RegistrationOffering, Stage, Parish, TenantBilling, User, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationAccessToken, EmailMessage, EmailSuppression, EmailPreference]
 }
 
 api publicUploadDocument {
