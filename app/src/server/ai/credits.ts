@@ -429,36 +429,6 @@ export async function resetAllAiCredits(entities: any): Promise<number> {
     }
   }
 
-  // Also reset parish pools under diocese
-  const dioceseParishCredits = await entities.UserAiCredits.findMany({
-    where: {
-      user: {
-        memberships: {
-          some: {
-            status: 'ACTIVE',
-                parish: {
-              diocese: {
-                billing: {
-                  // Unlimited covers diocese; DIOCESE kept for pre-migration data.
-                  plan: { in: [...PRISMA_INSTITUTIONAL_PLANS] },
-                  status: 'ACTIVE',
-                  pricingVersion: { gte: 2 },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    include: {
-      user: { select: { subscriptions: true } },
-    },
-  });
-
-  // Note: The above query may need adjustment based on actual schema.
-  // For now, the per-parish pool users are reset alongside regular users
-  // since both use UserAiCredits.
-
   return resetCount;
 }
 
