@@ -118,3 +118,5 @@ export const setCatechistAvailability = vi.fn();
 export const listFormationPlans = vi.fn();
 export const generateFormationPreview = vi.fn();
 export const updateFormationPlacement = vi.fn();
+
+export const exportRegistrationApplications = vi.fn();

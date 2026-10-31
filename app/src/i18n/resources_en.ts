@@ -7521,6 +7521,27 @@ export const public_en = {
       "overCapacity_other": "Room over capacity: {{occupied}} of {{capacity}} ({{count}} over)",
       "windowCount_one": "{{count}} time slots",
       "windowCount_other": "{{count}} time slots"
+    },
+    "export": {
+      "title": "Export registrations",
+      "back": "Back to review",
+      "description": "Choose only the data you need. The purpose and number exported are recorded.",
+      "fields": "Fields",
+      "purpose": "Purpose",
+      "management": "Registration management",
+      "report": "Institutional report",
+      "download": "Download CSV",
+      "success": "Export complete: {{count}} registration(s).",
+      "error": "Could not export. Check your access and try again.",
+      "field": {
+        "applicationId": "Identifier",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "birthDate": "Date of birth",
+        "status": "Status",
+        "offeringId": "Offering identifier",
+        "submittedAt": "Submitted at"
+      }
     }
   } as const;
 
