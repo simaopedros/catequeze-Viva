@@ -388,6 +388,9 @@ model File {
 // ─── Existing Models (Extended) ───────────────────────────────────────────────
 
 model User {
+  formationPlansCreated ClassFormationPlan[]
+  plannedClassAssignments PlannedClassCatechist[]
+  formationPlacementsChanged FormationPlacement[]
   catechistAvailabilities CatechistAvailability[]
   registrationCampaigns RegistrationCampaign[]
   registrationGrantsIssued RegistrationPermissionGrant[] @relation("RegistrationGrantIssuer")
@@ -529,6 +532,7 @@ model Diocese {
 }
 
 model Parish {
+  formationPlans ClassFormationPlan[]
   rooms Room[]
   catechistAvailabilities CatechistAvailability[]
   registrationCampaigns RegistrationCampaign[]
@@ -584,6 +588,7 @@ enum CommunityType {
 }
 
 model Community {
+  plannedClasses PlannedClass[]
   rooms Room[]
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -811,6 +816,7 @@ model CatechesisClass {
 }
 
 model Room {
+  plannedClasses PlannedClass[]
   id String @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2864,6 +2870,7 @@ enum RegistrationCampaignStatus {
 }
 
 model RegistrationCampaign {
+  formationPlans ClassFormationPlan[]
   id String @id @default(uuid())
   parishId String
   parish Parish @relation(fields: [parishId], references: [id])
@@ -2896,6 +2903,7 @@ model RegistrationCampaign {
 }
 
 model RegistrationOffering {
+  plannedClasses PlannedClass[]
   id String @id @default(uuid())
   campaignId String
   campaign RegistrationCampaign @relation(fields: [campaignId], references: [id])
@@ -2994,6 +3002,7 @@ model RegistrationSubmission {
 }
 
 model RegistrationApplication {
+  formationPlacements FormationPlacement[]
   id String @id @default(uuid())
   submissionId String
   submission RegistrationSubmission @relation(fields: [submissionId], references: [id])
@@ -3089,4 +3098,104 @@ model RegistrationAccessToken {
   createdAt DateTime @default(now())
   @@index([campaignId, emailHash])
   @@index([expiresAt])
+}
+
+
+enum FormationPlanStatus {
+  DRAFT
+  REVIEWED
+  PUBLISHED
+  SUPERSEDED
+}
+
+enum FormationPlacementStatus {
+  ALLOCATED
+  WAITLISTED
+  NEEDS_REVIEW
+  UNPLACEABLE
+}
+
+model ClassFormationPlan {
+  id String @id @default(uuid())
+  parishId String
+  parish Parish @relation(fields: [parishId], references: [id])
+  campaignId String
+  campaign RegistrationCampaign @relation(fields: [campaignId], references: [id])
+  status FormationPlanStatus @default(DRAFT)
+  inputHash String
+  algorithmVersion String
+  sourceRevision Int
+  revision Int @default(1)
+  policySnapshot Json
+  inputSnapshot Json
+  resultSummary Json
+  createdById String
+  createdBy User @relation(fields: [createdById], references: [id])
+  createdAt DateTime @default(now())
+  publishedAt DateTime?
+  plannedClasses PlannedClass[]
+  placements FormationPlacement[]
+  @@unique([campaignId, inputHash, algorithmVersion])
+  @@index([campaignId])
+  @@index([parishId])
+}
+
+model PlannedClass {
+  id String @id @default(uuid())
+  planId String
+  plan ClassFormationPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  offeringId String
+  offering RegistrationOffering @relation(fields: [offeringId], references: [id])
+  roomId String
+  room Room @relation(fields: [roomId], references: [id])
+  communityId String?
+  community Community? @relation(fields: [communityId], references: [id])
+  candidateKey String
+  name String
+  minAge Int?
+  maxAge Int?
+  maxCapacity Int
+  schedule Json
+  locked Boolean @default(false)
+  catechists PlannedClassCatechist[]
+  placements FormationPlacement[]
+  @@unique([planId, candidateKey])
+  @@index([offeringId])
+  @@index([roomId])
+  @@index([communityId])
+}
+
+model PlannedClassCatechist {
+  id String @id @default(uuid())
+  plannedClassId String
+  plannedClass PlannedClass @relation(fields: [plannedClassId], references: [id], onDelete: Cascade)
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  role CatechistAssignmentRole @default(LEAD)
+  @@unique([plannedClassId, userId])
+  @@index([userId])
+}
+
+model FormationPlacement {
+  id String @id @default(uuid())
+  planId String
+  plan ClassFormationPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  applicationId String
+  application RegistrationApplication @relation(fields: [applicationId], references: [id])
+  plannedClassId String?
+  plannedClass PlannedClass? @relation(fields: [plannedClassId], references: [id], onDelete: SetNull)
+  status FormationPlacementStatus
+  waitlistOrder Int?
+  reasonCodes Json
+  scoreDetails Json
+  manual Boolean @default(false)
+  locked Boolean @default(false)
+  overCapacity Boolean @default(false)
+  changedById String?
+  changedBy User? @relation(fields: [changedById], references: [id])
+  manualReason String?
+  @@unique([planId, applicationId])
+  @@index([applicationId])
+  @@index([plannedClassId])
+  @@index([changedById])
 }
