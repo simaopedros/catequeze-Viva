@@ -114,3 +114,7 @@ export const listSchedulingConflicts = vi.fn();
 export const getCatechistAvailability = vi.fn();
 export const listCatechistAvailability = vi.fn();
 export const setCatechistAvailability = vi.fn();
+
+export const listFormationPlans = vi.fn();
+export const generateFormationPreview = vi.fn();
+export const updateFormationPlacement = vi.fn();
