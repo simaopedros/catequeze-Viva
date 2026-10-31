@@ -3024,7 +3024,7 @@ query listRegistrationApplications {
 }
 query getRegistrationApplication {
   fn: import { getRegistrationApplication } from "@src/server/operations/registrationReviewOperations",
-  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationDocument, Document, DocumentStageRule, CatechumenProfile, Household, GuardianProfile, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, EmailMessage]
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationDocument, Document, DocumentStageRule, CatechumenProfile, Household, GuardianProfile, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, EmailMessage, AuditLog]
 }
 action setRegistrationReminders {
   fn: import { setRegistrationReminders } from "@src/server/operations/registrationReviewOperations",
@@ -3071,7 +3071,7 @@ api registrationDocumentFile {
   middlewareConfigFn: import { registrationDocumentsMiddleware } from "@src/server/api/registrationDocuments",
   auth: true,
   httpRoute: (GET, "/api/registrations/documents/:id/file"),
-  entities: [RegistrationDocument, RegistrationApplication, RegistrationSubmission, RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+  entities: [RegistrationDocument, RegistrationApplication, RegistrationSubmission, RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
 }
 query listRegistrationDocumentQueue {
   fn: import { listRegistrationDocumentQueue } from "@src/server/operations/registrationDocumentOperations",
@@ -3163,4 +3163,19 @@ query listFormationPlans {
 action exportRegistrationApplications {
   fn: import { exportRegistrationApplications } from "@src/server/operations/registrationExportOperations",
   entities: [RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant]
+}
+
+query previewRegistrationRetention {
+  fn: import { previewRegistrationRetention } from "@src/server/operations/registrationRetentionOperations",
+  entities: [RegistrationCampaign, RegistrationSubmission, RegistrationApplication, RegistrationAccessToken, Membership, RegistrationPermissionGrant, Diocese]
+}
+query getRegistrationOperationalReport {
+  fn: import { getRegistrationOperationalReport } from "@src/server/operations/registrationRetentionOperations",
+  entities: [RegistrationCampaign, RegistrationSubmission, RegistrationApplication, Membership, RegistrationPermissionGrant, Diocese]
+}
+
+route RegistrationOperationsRoute { path: "/app/inscricoes/:campaignId/operacoes", to: RegistrationOperationsPage }
+page RegistrationOperationsPage {
+  authRequired: true,
+  component: import RegistrationOperationsPage from "@src/registrations/RegistrationOperationsPage"
 }

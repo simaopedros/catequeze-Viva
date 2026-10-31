@@ -7542,6 +7542,30 @@ export const public_en = {
         "offeringId": "Offering identifier",
         "submittedAt": "Submitted at"
       }
+    },
+    "operations": {
+      "title": "Campaign operations",
+      "report": "Operational report",
+      "reportDescription": "Aggregate counts by status, without personal data.",
+      "loading": "Loading…",
+      "error": "Could not load data. Check your access and try again.",
+      "empty": "No applications found.",
+      "export": "Export applications",
+      "retention": "Retention preview",
+      "simulation": "Simulation: this page does not delete any information.",
+      "expiredTokens": "Eligible expired credentials",
+      "submissions": "Eligible submissions",
+      "protected": "Protected submissions",
+      "status": {
+        "SUBMITTED": "Submitted",
+        "UNDER_REVIEW": "Under review",
+        "APPROVED": "Approved",
+        "NEEDS_CORRECTION": "Needs correction",
+        "WAITLISTED": "Waitlisted",
+        "ENROLLED": "Enrolled",
+        "WITHDRAWN": "Withdrawn",
+        "REJECTED": "Rejected"
+      }
     }
   } as const;
 

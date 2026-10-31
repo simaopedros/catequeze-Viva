@@ -7542,6 +7542,30 @@ export const public_pt_BR = {
         "offeringId": "Identificador da oferta",
         "submittedAt": "Data de envio"
       }
+    },
+    "operations": {
+      "title": "Operações da campanha",
+      "report": "Relatório operacional",
+      "reportDescription": "Contagens agregadas por situação, sem dados pessoais.",
+      "loading": "Carregando…",
+      "error": "Não foi possível carregar os dados. Verifique seu acesso e tente novamente.",
+      "empty": "Nenhuma inscrição encontrada.",
+      "export": "Exportar inscrições",
+      "retention": "Prévia de retenção",
+      "simulation": "Simulação: nenhuma informação é excluída por esta tela.",
+      "expiredTokens": "Credenciais expiradas elegíveis",
+      "submissions": "Inscrições elegíveis",
+      "protected": "Inscrições protegidas",
+      "status": {
+        "SUBMITTED": "Enviada",
+        "UNDER_REVIEW": "Em análise",
+        "APPROVED": "Aprovada",
+        "NEEDS_CORRECTION": "Precisa de correção",
+        "WAITLISTED": "Lista de espera",
+        "ENROLLED": "Matriculada",
+        "WITHDRAWN": "Desistência",
+        "REJECTED": "Rejeitada"
+      }
     }
   } as const;
 

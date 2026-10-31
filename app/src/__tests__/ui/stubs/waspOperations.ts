@@ -120,3 +120,5 @@ export const generateFormationPreview = vi.fn();
 export const updateFormationPlacement = vi.fn();
 
 export const exportRegistrationApplications = vi.fn();
+export const previewRegistrationRetention = vi.fn();
+export const getRegistrationOperationalReport = vi.fn();

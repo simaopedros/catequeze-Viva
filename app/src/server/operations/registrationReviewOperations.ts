@@ -54,6 +54,7 @@ export async function listRegistrationApplications(args: unknown, context: any) 
 export async function getRegistrationApplication(args: { id: string }, context: any) {
   const item = await loadApplication(context, args.id); const campaign = item.submission.campaign;
   await assertRegistrationPermission(context, { parishId: campaign.parishId, communityId: item.communityId ?? undefined, action: 'VIEW_IDENTIFIABLE_DATA' });
+  await prisma.auditLog.create({ data: { action: 'UPDATE', entityType: 'RegistrationApplication', entityId: item.id, parishId: campaign.parishId, userId: context.user.id, metadata: JSON.stringify({ operation: 'READ' }) } });
   const email = item.submission.contactEmail; const phone = item.submission.contactPhone;
   const or: any[] = [{ birthDate: item.birthDate }];
   if (email) or.push({ email: { equals: email, mode: 'insensitive' } }, { household: { parishId: campaign.parishId, guardians: { some: { email: { equals: email, mode: 'insensitive' } } } } });
