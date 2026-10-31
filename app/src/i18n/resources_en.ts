@@ -2379,6 +2379,15 @@ export const classes_en = {
         "SCHEDULE_CONFLICT": "Schedule conflict",
         "OTHER": "Other reason"
       }
+    },
+    "publication": {
+      "title": "Publish classes",
+      "description": "Review the plan before approving publication of the classes and meetings.",
+      "excess": "There are {{count}} people above capacity in the proposed classes.",
+      "excess_one": "There is {{count}} person above capacity in the proposed classes.",
+      "excess_other": "There are {{count}} people above capacity in the proposed classes.",
+      "approval": "I approve publication of this plan and the indicated capacity excesses.",
+      "confirm": "Publish classes"
     }
   } as const;
 
