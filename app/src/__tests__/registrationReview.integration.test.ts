@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 vi.mock('wasp/server', async () => { const { PrismaClient } = await import('@prisma/client'); return { prisma: new PrismaClient(), HttpError: class extends Error { constructor(public statusCode: number, message?: string) { super(message); } } }; });
 import { prisma } from 'wasp/server';
 import { createAssistedRegistration, getRegistrationApplication, getRegistrationReviewOptions, listRegistrationApplications, reviewRegistrationApplication } from '../server/operations/registrationReviewOperations';
+import { previewRegistrationRetention, getRegistrationOperationalReport } from '../server/operations/registrationRetentionOperations';
 import { getFakeSentEmails, resetFakeEmailAdapter } from '../server/email';
 const db = new PrismaClient(); const suffix = crypto.randomUUID(); const id = (s: string) => `review-${s}-${suffix}`;
 const entities = new Proxy(db as any, { get(target, key: string) { return Reflect.get(target, key.charAt(0).toLowerCase() + key.slice(1)); } });
@@ -38,6 +39,20 @@ describe.skipIf(!process.env.DATABASE_URL)('conferência com banco real', () => 
     expect(record.applications[0]).toMatchObject({ sponsorName: 'Maria', sponsorRole: 'MADRINHA', sponsorFromOtherParish: true, sponsorParishName: 'Outra' });
     expect(record).toMatchObject({ source: 'ASSISTED', status: 'RECEIVED', createdByUserId: secretary.user.id, contactVerifiedAt: null }); expect(record.applications[0].consents[0].textVersion).toBe('registration-consent-v1'); expect(getFakeSentEmails()).toHaveLength(0);
     await expect(create({ ...data, contactPhone: '11988888888' })).rejects.toMatchObject({ statusCode: 409 });
+  });
+  it('simula retenção por campanha e protege inscrições vinculadas', async () => {
+    const args = { campaignId: id('campaign') };
+    await db.registrationSubmission.update({ where: { id: submission.submissionId }, data: { retentionUntil: new Date('2020-01-01') } });
+    try {
+      expect(await previewRegistrationRetention(args, actor)).toMatchObject({ simulated: true, submissions: 1, protectedSubmissions: 0 });
+      await db.registrationApplication.update({ where: { id: submission.applicationIds[0] }, data: { catechumenProfileId: id('local') } });
+      expect(await previewRegistrationRetention(args, actor)).toMatchObject({ submissions: 0, protectedSubmissions: 1 });
+      await expect(previewRegistrationRetention(args, other)).rejects.toMatchObject({ statusCode: 403 });
+      expect(await getRegistrationOperationalReport(args, actor)).toEqual({ counts: [{ status: 'SUBMITTED', count: 1 }] });
+    } finally {
+      await db.registrationApplication.update({ where: { id: submission.applicationIds[0] }, data: { catechumenProfileId: null } });
+      await db.registrationSubmission.update({ where: { id: submission.submissionId }, data: { retentionUntil: new Date('2099-01-01') } });
+    }
   });
   it('entrega opções da campanha só a quem pode conferir', async () => {
     const args = { campaignId: id('campaign') };

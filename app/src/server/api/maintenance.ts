@@ -4,6 +4,7 @@ import { logger } from "../logger";
 import { recordJobRun } from "../jobs/recordJobRun";
 import { cleanupAiCacheJob } from "../scripts/aiCacheCleanupJob";
 import { resetAiCreditsJob } from "../scripts/aiCreditsResetJob";
+import { registrationRetentionJob } from "../scripts/registrationRetentionJob";
 import { sendRegistrationRemindersJob } from "../scripts/registrationRemindersJob";
 import { sendRemindersJob } from "../scripts/remindersJob";
 import { reconcileSocialMediaJob } from "../scripts/socialMediaReconcileJob";
@@ -72,6 +73,10 @@ export async function maintenanceHandler(
       {
         name: "registrationReminders",
         run: () => sendRegistrationRemindersJob(undefined, context),
+      },
+      {
+        name: "registrationRetention",
+        run: () => registrationRetentionJob(),
       },
       {
         name: "meetingReminders",

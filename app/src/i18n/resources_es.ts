@@ -7542,6 +7542,30 @@ export const public_es = {
         "offeringId": "Identificador de la oferta",
         "submittedAt": "Fecha de envío"
       }
+    },
+    "operations": {
+      "title": "Operaciones de la campaña",
+      "report": "Informe operativo",
+      "reportDescription": "Conteos agregados por estado, sin datos personales.",
+      "loading": "Cargando…",
+      "error": "No se pudieron cargar los datos. Compruebe su acceso e inténtelo de nuevo.",
+      "empty": "No se encontraron inscripciones.",
+      "export": "Exportar inscripciones",
+      "retention": "Vista previa de retención",
+      "simulation": "Simulación: esta página no elimina información.",
+      "expiredTokens": "Credenciales vencidas elegibles",
+      "submissions": "Inscripciones elegibles",
+      "protected": "Inscripciones protegidas",
+      "status": {
+        "SUBMITTED": "Enviada",
+        "UNDER_REVIEW": "En revisión",
+        "APPROVED": "Aprobada",
+        "NEEDS_CORRECTION": "Necesita corrección",
+        "WAITLISTED": "Lista de espera",
+        "ENROLLED": "Matriculada",
+        "WITHDRAWN": "Retirada",
+        "REJECTED": "Rechazada"
+      }
     }
   } as const;
 

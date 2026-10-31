@@ -74,8 +74,10 @@ export async function registrationDocumentFile(req: Request, res: Response, cont
     assertRegistrationsEnabled(); if (!context.user) throw new HttpError(401);
     const doc = await context.entities.RegistrationDocument.findUnique({ where: { id: req.params.id } });
     if (!doc || !['PENDING', 'VERIFIED'].includes(doc.status) || !(ALLOWED_MIME_TYPES as readonly string[]).includes(doc.mimeType)) return unavailable(res);
-    try { await documentApplication(context, doc.applicationId, 'VIEW_SENSITIVE_FILES'); } catch (error: any) { if (error?.statusCode === 403) return unavailable(res); throw error; }
+    let application: any;
+    try { application = await documentApplication(context, doc.applicationId, 'VIEW_SENSITIVE_FILES'); } catch (error: any) { if (error?.statusCode === 403) return unavailable(res); throw error; }
     const file = await readDocumentFile(doc.s3Key); if (!file) return unavailable(res);
+    await context.entities.AuditLog.create({ data: { action: 'UPDATE', entityType: 'RegistrationDocument', entityId: doc.id, parishId: application.submission.campaign.parishId, userId: context.user.id, metadata: JSON.stringify({ operation: 'READ', applicationId: doc.applicationId }) } });
     return res.set({ 'Content-Type': doc.mimeType, 'Content-Disposition': 'attachment; filename="documento"' }).send(file.buffer);
   } catch (error) { return handleError(res, error); }
 }
