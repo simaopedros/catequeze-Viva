@@ -7521,6 +7521,27 @@ export const public_pt_BR = {
       "overCapacity_other": "Sala acima da capacidade: {{occupied}} de {{capacity}} ({{count}} excedentes)",
       "windowCount_one": "{{count}} horários",
       "windowCount_other": "{{count}} horários"
+    },
+    "export": {
+      "title": "Exportar inscrições",
+      "back": "Voltar à conferência",
+      "description": "Escolha apenas os dados necessários. A finalidade e a quantidade exportada são registradas.",
+      "fields": "Campos",
+      "purpose": "Finalidade",
+      "management": "Gestão das inscrições",
+      "report": "Relatório institucional",
+      "download": "Baixar CSV",
+      "success": "Exportação concluída: {{count}} inscrição(ões).",
+      "error": "Não foi possível exportar. Verifique seu acesso e tente novamente.",
+      "field": {
+        "applicationId": "Identificador",
+        "firstName": "Nome",
+        "lastName": "Sobrenome",
+        "birthDate": "Data de nascimento",
+        "status": "Situação",
+        "offeringId": "Identificador da oferta",
+        "submittedAt": "Data de envio"
+      }
     }
   } as const;
 

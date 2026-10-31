@@ -2997,6 +2997,11 @@ page ClassFormationPage {
   authRequired: true,
   component: import ClassFormationPage from "@src/registrations/ClassFormationPage"
 }
+route RegistrationExportRoute { path: "/app/inscricoes/:campaignId/exportar", to: RegistrationExportPage }
+page RegistrationExportPage {
+  authRequired: true,
+  component: import RegistrationExportPage from "@src/registrations/RegistrationExportPage"
+}
 route RegistrationReviewRoute { path: "/app/inscricoes/:campaignId/conferencia", to: RegistrationReviewPage }
 page RegistrationReviewPage {
   authRequired: true,
@@ -3153,4 +3158,9 @@ query getFormationPlan {
 query listFormationPlans {
   fn: import { listFormationPlans } from "@src/server/operations/formationPlanOperations",
   entities: [ClassFormationPlan, PlannedClass, PlannedClassCatechist, FormationPlacement, RegistrationApplication, RegistrationCampaign, Membership, RegistrationPermissionGrant, Parish, Diocese, TenantBilling]
+}
+
+action exportRegistrationApplications {
+  fn: import { exportRegistrationApplications } from "@src/server/operations/registrationExportOperations",
+  entities: [RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant]
 }

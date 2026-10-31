@@ -609,5 +609,26 @@
     "overCapacity_other": "Sala por encima de su capacidad: {{occupied}} de {{capacity}} ({{count}} excedentes)",
     "windowCount_one": "{{count}} horarios",
     "windowCount_other": "{{count}} horarios"
+  },
+  "export": {
+    "title": "Exportar inscripciones",
+    "back": "Volver a revisión",
+    "description": "Seleccione solo los datos necesarios. Se registran la finalidad y la cantidad exportada.",
+    "fields": "Campos",
+    "purpose": "Finalidad",
+    "management": "Gestión de inscripciones",
+    "report": "Informe institucional",
+    "download": "Descargar CSV",
+    "success": "Exportación completa: {{count}} inscripción(es).",
+    "error": "No se pudo exportar. Compruebe su acceso e inténtelo de nuevo.",
+    "field": {
+      "applicationId": "Identificador",
+      "firstName": "Nombre",
+      "lastName": "Apellidos",
+      "birthDate": "Fecha de nacimiento",
+      "status": "Estado",
+      "offeringId": "Identificador de la oferta",
+      "submittedAt": "Fecha de envío"
+    }
   }
 }
