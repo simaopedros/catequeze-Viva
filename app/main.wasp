@@ -3132,3 +3132,16 @@ page CatechistAvailabilityPage {
   authRequired: true,
   component: import CatechistAvailabilityPage from "@src/registrations/CatechistAvailabilityPage"
 }
+
+action generateFormationPreview {
+  fn: import { generateFormationPreview } from "@src/server/operations/formationPlanOperations",
+  entities: [ClassFormationPlan, PlannedClass, PlannedClassCatechist, FormationPlacement, RegistrationCampaign, RegistrationOffering, RegistrationApplication, RegistrationSubmission, Room, CatechistAvailability, CatechesisClass, ClassEnrollment, ClassCatechist, Membership, RegistrationPermissionGrant, Parish, Diocese, TenantBilling, AuditLog]
+}
+query getFormationPlan {
+  fn: import { getFormationPlan } from "@src/server/operations/formationPlanOperations",
+  entities: [ClassFormationPlan, PlannedClass, PlannedClassCatechist, FormationPlacement, RegistrationCampaign, Membership, RegistrationPermissionGrant, Parish, Diocese, TenantBilling]
+}
+query listFormationPlans {
+  fn: import { listFormationPlans } from "@src/server/operations/formationPlanOperations",
+  entities: [ClassFormationPlan, PlannedClass, PlannedClassCatechist, FormationPlacement, RegistrationCampaign, Membership, RegistrationPermissionGrant, Parish, Diocese, TenantBilling]
+}
