@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { PrismaClient } from '@prisma/client';
 vi.mock('wasp/server', async () => { const { PrismaClient } = await import('@prisma/client'); const url = new URL(process.env.DATABASE_URL!); url.searchParams.set('connection_limit', '2'); return { prisma: new PrismaClient({ datasources: { db: { url: url.toString() } } }), HttpError: class extends Error { constructor(public statusCode: number, message?: string) { super(message); } } }; });
 import { prisma } from 'wasp/server';
-import { generateFormationPreview, getFormationPlan, listFormationPlans } from '../server/operations/formationPlanOperations';
+import { generateFormationPreview, getFormationPlan, listFormationPlans, updateFormationPlacement } from '../server/operations/formationPlanOperations';
 const db = new PrismaClient();
 const suffix = crypto.randomUUID(), id = (v: string) => `formation-${v}-${suffix}`;
 const entities = new Proxy(db as any, { get(target, key: string) { return Reflect.get(target, key.charAt(0).toLowerCase() + key.slice(1)); } });
@@ -175,6 +175,24 @@ describe.skipIf(!process.env.DATABASE_URL)('prévia de formação com Postgres',
   await expect(generateFormationPreview({ campaignId: id('campaign'), extra: true }, coordinator)).rejects.toMatchObject({ statusCode: 400 });
   await db.tenantBilling.update({ where: { parishId: id('parish') }, data: { status: 'CANCELED' } });
   try { await expect(generate({ ...coordinator, entities: new Proxy(entities, {}) })).rejects.toMatchObject({ statusCode: 403 }); } finally { await db.tenantBilling.update({ where: { parishId: id('parish') }, data: { status: 'ACTIVE' } }); }
+ });
+
+ it('revisa com versão esperada, autorização e confirmação de capacidade', async () => {
+  await db.classFormationPlan.deleteMany({ where: { campaignId: id('campaign') } });
+  const plan = await generate();
+  const waiting = plan.placements.find((p: any) => p.status === 'WAITLISTED');
+  const args = { planId: plan.id, applicationId: waiting.applicationId, plannedClassId: plan.plannedClasses[0].id, expectedRevision: plan.revision, locked: true, reason: 'PASTORAL_DECISION' };
+  await expect(updateFormationPlacement(args, coordinator)).rejects.toMatchObject({ statusCode: 409 });
+  await expect(updateFormationPlacement({ ...args, confirmOverCapacity: true }, secretary)).rejects.toMatchObject({ statusCode: 403 });
+  await db.catechistAvailability.updateMany({ where: { parishId: id('parish') }, data: { availability: { version: 1, windows: [], closures: [] } } });
+  await expect(updateFormationPlacement({ ...args, confirmOverCapacity: true }, coordinator)).rejects.toMatchObject({ statusCode: 409 });
+  await db.catechistAvailability.updateMany({ where: { parishId: id('parish') }, data: { availability } });
+  const reviewed = await updateFormationPlacement({ ...args, confirmOverCapacity: true }, coordinator);
+  expect(reviewed.revision).toBe(plan.revision + 1);
+  expect(reviewed.placements.find((p: any) => p.applicationId === waiting.applicationId)).toMatchObject({ manual: true, locked: true, overCapacity: true });
+  await expect(updateFormationPlacement({ ...args, confirmOverCapacity: true }, coordinator)).rejects.toMatchObject({ statusCode: 409 });
+  const audit = await db.auditLog.findFirstOrThrow({ where: { entityType: 'FormationPlacement', parishId: id('parish') }, orderBy: { createdAt: 'desc' } });
+  expect(JSON.parse(audit.metadata!)).toMatchObject({ reasonCode: 1 });
  });
 
 });

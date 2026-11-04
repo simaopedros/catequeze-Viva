@@ -179,7 +179,7 @@ export function validatePlan(input: FormationInput, output: FormationOutput): st
     if (!c.catechistIds.length || new Set(c.catechistIds).size !== c.catechistIds.length || c.catechistIds.some(id => { const t = input.catechists.find(t => t.userId === id); return !t || t.active === false || !['LEAD','ASSISTANT','LEAD_CATECHIST','ASSISTANT_CATECHIST'].includes(t.role) || !fitsWindows(slot(c.schedule),t.availability.windows) || closuresOnWeekday(t.availability.closures,c.schedule.weekday).length > 0; })) errors.add('CATECHIST_UNAVAILABLE');
     if (hasResourceConflict(c,classes.slice(i+1),input.existingClasses)) errors.add('RESOURCE_CONFLICT');
     const occupants = output.placements.filter(p => p.status === 'ALLOCATED' && p.plannedClassKey === c.candidateKey);
-    if (occupants.length > c.capacity && (occupants.some(p => !p.manual && !p.locked) || occupants.some(p => (p.manual || p.locked) && !p.overCapacity))) errors.add('CAPACITY_EXCEEDED');
+    if (occupants.length > c.capacity && occupants.filter(p => (p.manual || p.locked) && p.overCapacity).length < occupants.length - c.capacity) errors.add('CAPACITY_EXCEEDED');
   }
   for (const o of input.offerings) if (o.plannedSeats != null && classes.filter(c => c.offeringId === o.id).reduce((n,c) => n+c.capacity,0) > o.plannedSeats) errors.add('PLANNED_SEATS_EXCEEDED');
   const waiting = apps.map(a => output.placements.find(p => p.applicationId === a.id)).filter((p): p is FormationPlacement => p?.status === 'WAITLISTED');

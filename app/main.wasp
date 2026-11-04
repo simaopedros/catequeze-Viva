@@ -2992,6 +2992,11 @@ page RegistrationDocumentQueuePage {
   authRequired: true,
   component: import RegistrationDocumentQueuePage from "@src/registrations/RegistrationDocumentQueuePage"
 }
+route ClassFormationRoute { path: "/app/inscricoes/:campaignId/formacao", to: ClassFormationPage }
+page ClassFormationPage {
+  authRequired: true,
+  component: import ClassFormationPage from "@src/registrations/ClassFormationPage"
+}
 route RegistrationReviewRoute { path: "/app/inscricoes/:campaignId/conferencia", to: RegistrationReviewPage }
 page RegistrationReviewPage {
   authRequired: true,
@@ -3137,11 +3142,15 @@ action generateFormationPreview {
   fn: import { generateFormationPreview } from "@src/server/operations/formationPlanOperations",
   entities: [ClassFormationPlan, PlannedClass, PlannedClassCatechist, FormationPlacement, RegistrationCampaign, RegistrationOffering, RegistrationApplication, RegistrationSubmission, Room, CatechistAvailability, CatechesisClass, ClassEnrollment, ClassCatechist, Membership, RegistrationPermissionGrant, Parish, Diocese, TenantBilling, AuditLog]
 }
+action updateFormationPlacement {
+  fn: import { updateFormationPlacement } from "@src/server/operations/formationPlanOperations",
+  entities: [ClassFormationPlan, PlannedClass, PlannedClassCatechist, FormationPlacement, RegistrationCampaign, RegistrationApplication, RegistrationSubmission, Room, CatechistAvailability, CatechesisClass, ClassEnrollment, ClassCatechist, Membership, RegistrationPermissionGrant, Parish, Diocese, TenantBilling, AuditLog]
+}
 query getFormationPlan {
   fn: import { getFormationPlan } from "@src/server/operations/formationPlanOperations",
-  entities: [ClassFormationPlan, PlannedClass, PlannedClassCatechist, FormationPlacement, RegistrationCampaign, Membership, RegistrationPermissionGrant, Parish, Diocese, TenantBilling]
+  entities: [ClassFormationPlan, PlannedClass, PlannedClassCatechist, FormationPlacement, RegistrationApplication, RegistrationCampaign, Membership, RegistrationPermissionGrant, Parish, Diocese, TenantBilling]
 }
 query listFormationPlans {
   fn: import { listFormationPlans } from "@src/server/operations/formationPlanOperations",
-  entities: [ClassFormationPlan, PlannedClass, PlannedClassCatechist, FormationPlacement, RegistrationCampaign, Membership, RegistrationPermissionGrant, Parish, Diocese, TenantBilling]
+  entities: [ClassFormationPlan, PlannedClass, PlannedClassCatechist, FormationPlacement, RegistrationApplication, RegistrationCampaign, Membership, RegistrationPermissionGrant, Parish, Diocese, TenantBilling]
 }
