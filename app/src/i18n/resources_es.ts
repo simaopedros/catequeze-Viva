@@ -2379,6 +2379,15 @@ export const classes_es = {
         "SCHEDULE_CONFLICT": "Conflicto de horario",
         "OTHER": "Otro motivo"
       }
+    },
+    "publication": {
+      "title": "Publicar grupos",
+      "description": "Revise el plan antes de aprobar la publicación de los grupos y encuentros.",
+      "excess": "Hay {{count}} personas por encima de la capacidad en los grupos propuestos.",
+      "excess_one": "Hay {{count}} persona por encima de la capacidad en los grupos propuestos.",
+      "excess_other": "Hay {{count}} personas por encima de la capacidad en los grupos propuestos.",
+      "approval": "Apruebo la publicación de este plan y los excesos de capacidad indicados.",
+      "confirm": "Publicar grupos"
     }
   } as const;
 

@@ -2379,6 +2379,15 @@ export const classes_pt_BR = {
         "SCHEDULE_CONFLICT": "Conflito de horário",
         "OTHER": "Outro motivo"
       }
+    },
+    "publication": {
+      "title": "Publicar turmas",
+      "description": "Revise o plano antes de autorizar a publicação das turmas e dos encontros.",
+      "excess": "Há {{count}} pessoa acima da capacidade nas turmas propostas.",
+      "excess_one": "Há {{count}} pessoa acima da capacidade nas turmas propostas.",
+      "excess_other": "Há {{count}} pessoas acima da capacidade nas turmas propostas.",
+      "approval": "Aprovo a publicação deste plano e os excessos de capacidade indicados.",
+      "confirm": "Publicar turmas"
     }
   } as const;
 
