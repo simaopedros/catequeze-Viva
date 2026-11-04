@@ -388,6 +388,7 @@ model File {
 // ─── Existing Models (Extended) ───────────────────────────────────────────────
 
 model User {
+  catechistAvailabilities CatechistAvailability[]
   registrationCampaigns RegistrationCampaign[]
   registrationGrantsIssued RegistrationPermissionGrant[] @relation("RegistrationGrantIssuer")
   dataExportRequests DataExportRequest[]
@@ -528,6 +529,8 @@ model Diocese {
 }
 
 model Parish {
+  rooms Room[]
+  catechistAvailabilities CatechistAvailability[]
   registrationCampaigns RegistrationCampaign[]
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -581,6 +584,7 @@ enum CommunityType {
 }
 
 model Community {
+  rooms Room[]
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -698,6 +702,7 @@ model PendingInvitation {
 // ─── Catechetical Year ────────────────────────────────────────────────────────
 
 model CatecheticalYear {
+  catechistAvailabilities CatechistAvailability[]
   registrationCampaigns RegistrationCampaign[]
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -770,6 +775,8 @@ model CatechesisClass {
   startTime String?
   endTime   String?
   location  String?
+  roomId String?
+  room Room? @relation(fields: [roomId], references: [id], onDelete: SetNull)
 
   parishId String
   parish   Parish @relation(fields: [parishId], references: [id])
@@ -800,6 +807,49 @@ model CatechesisClass {
   @@index([communityId])
   @@index([stageId])
   @@index([parishId, status])
+  @@index([roomId])
+}
+
+model Room {
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  parishId String
+  parish Parish @relation(fields: [parishId], references: [id])
+  communityId String?
+  community Community? @relation(fields: [communityId], references: [id])
+  name String
+  nameKey String
+  capacity Int
+  active Boolean @default(true)
+  notes String?
+  availability Json @default("{\"version\":1,\"windows\":[],\"closures\":[]}")
+  revision Int @default(1)
+  createdByUserId String?
+  updatedByUserId String?
+  classes CatechesisClass[]
+
+  @@unique([parishId, nameKey])
+  @@index([parishId, active])
+  @@index([communityId])
+}
+
+model CatechistAvailability {
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  parishId String
+  parish Parish @relation(fields: [parishId], references: [id])
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  yearId String
+  year CatecheticalYear @relation(fields: [yearId], references: [id])
+  availability Json @default("{\"version\":1,\"windows\":[],\"closures\":[]}")
+  revision Int @default(1)
+  updatedByUserId String?
+
+  @@unique([userId, parishId, yearId])
+  @@index([parishId, yearId])
 }
 
 model ClassCatechist {

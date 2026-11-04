@@ -3071,3 +3071,64 @@ action reviewRegistrationDocument {
   fn: import { reviewRegistrationDocument } from "@src/server/operations/registrationDocumentOperations",
   entities: [RegistrationDocument, RegistrationApplication, RegistrationSubmission, RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
 }
+
+query listRooms {
+  fn: import { listRooms } from "@src/server/operations/roomOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+query getClassCapacity {
+  fn: import { getClassCapacity } from "@src/server/operations/roomOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+query listSchedulingConflicts {
+  fn: import { listSchedulingConflicts } from "@src/server/operations/roomOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+action createRoom {
+  fn: import { createRoom } from "@src/server/operations/roomOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+action updateRoom {
+  fn: import { updateRoom } from "@src/server/operations/roomOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+action setRoomActive {
+  fn: import { setRoomActive } from "@src/server/operations/roomOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+action setClassRoom {
+  fn: import { setClassRoom } from "@src/server/operations/roomOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+query getCatechistAvailability {
+  fn: import { getCatechistAvailability } from "@src/server/operations/catechistAvailabilityOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+query listCatechistAvailability {
+  fn: import { listCatechistAvailability } from "@src/server/operations/catechistAvailabilityOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+action setCatechistAvailability {
+  fn: import { setCatechistAvailability } from "@src/server/operations/catechistAvailabilityOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+route RoomsRoute { path: "/app/salas", to: RoomsPage }
+page RoomsPage {
+  authRequired: true,
+  component: import RoomsPage from "@src/registrations/RoomsPage"
+}
+route CatechistAvailabilityRoute { path: "/app/disponibilidade", to: CatechistAvailabilityPage }
+page CatechistAvailabilityPage {
+  authRequired: true,
+  component: import CatechistAvailabilityPage from "@src/registrations/CatechistAvailabilityPage"
+}
