@@ -1,3 +1,4 @@
+import { useCheckoutConfiguration } from "../../client/hooks/useCheckoutConfiguration";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -66,6 +67,7 @@ export default function PricingPage() {
   const { data: user } = useAuth();
   const navigate = useNavigate();
   const isLoggedIn = !!user;
+  const { checkoutUrl } = useCheckoutConfiguration();
   const [billingInterval, setBillingInterval] =
     useState<BillingInterval>(getIntendedInterval);
   const { publicPlans, localize } = usePlanCatalog();
@@ -121,6 +123,11 @@ export default function PricingPage() {
     : [];
 
   const handleSelect = (plan: PricingPlan) => {
+    const hotmartUrl = checkoutUrl(plan.planId, billingInterval);
+    if (hotmartUrl) {
+      window.open(hotmartUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
     setIntendedInterval(billingInterval);
     trackMarketingEvent("plan_selected", {
       plan: plan.planId,
@@ -356,7 +363,7 @@ function DiocesePricingCard({
         {translatedString(
           tp,
           "pricing.diocese_audience",
-          "Para a diocese — venda assistida",
+          "Para a diocese, venda assistida",
         )}
       </div>
       <AppDisplayTitle as="h3" className="text-lg sm:text-lg">

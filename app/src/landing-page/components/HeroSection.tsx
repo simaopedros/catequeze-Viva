@@ -1,4 +1,5 @@
-import { Link, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
+import { CheckoutLink as Link } from "../../client/components/CheckoutLink";
 import {
   ArrowRight,
   Check,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { CheckoutLink as Link } from "../client/components/CheckoutLink";
 import { useTranslation } from "react-i18next";
 import { Menu, X } from "lucide-react";
 import { Button } from "../client/components/ui/button";

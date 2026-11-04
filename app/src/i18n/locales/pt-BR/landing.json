@@ -4,9 +4,9 @@
     "headline_line2": "A gente organiza a turma.",
     "subheadline": "O Catechis deixa encontros, turmas e catequizandos organizados para você ter mais tempo para estar com eles.",
     "badge": "Para quem diz sim à missão de catequizar",
-    "cta_primary": "Começar 7 dias grátis",
+    "cta_primary": "Assinar agora",
     "cta_secondary": "Ver como funciona",
-    "trust_signals": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser",
+    "trust_signals": "Acesso após assinar · Cancele quando quiser",
     "cta_secondary_href": "/#como",
     "highlights": [
       "Chamada e acompanhamento pelo celular",
@@ -49,7 +49,7 @@
     "image_alt": "Painel do Catechis com próximas ações, frequência, turmas e pendências sacramentais"
   },
   "pain_title": "A missão já pede muito de você. A papelada não precisa pedir mais.",
-  "pain_subtitle": "O Catechis reúne preparação, turma, presença e famílias — para a burocracia não roubar o tempo da evangelização.",
+  "pain_subtitle": "O Catechis reúne preparação, turma, presença e famílias. para a burocracia não roubar o tempo da evangelização.",
   "pains": [
     {
       "text": "Preparar o encontro toda semana exige tempo, referências e criatividade"
@@ -120,8 +120,8 @@
     }
   },
   "mission_title": "Encontro preparado. Turma acolhida. Fé compartilhada com as famílias.",
-  "mission_text": "O Catechis existe para servir a sua missão — não o contrário. Menos improviso e papelada, mais presença de verdade com cada catequizando que Deus confiou a você.",
-  "personas_title": "Feito para o catequista — e pronto para as famílias da sua turma",
+  "mission_text": "O Catechis existe para servir a sua missão. não o contrário. Menos improviso e papelada, mais presença de verdade com cada catequizando que Deus confiou a você.",
+  "personas_title": "Feito para o catequista. e pronto para as famílias da sua turma",
   "personas_subtitle": "Nesta fase, a caminhada é sua: você cuida da turma e as famílias acompanham pelo portal.",
   "personas": [
     {
@@ -191,7 +191,7 @@
       "name": "Plano Catequista",
       "audience": "Para você",
       "desc": "Para organizar sua turma e seus encontros.",
-      "price": "R$ 9,90",
+      "price": "R$ 47",
       "features": [
         "Até 3 turmas",
         "150 catequizandos",
@@ -230,10 +230,10 @@
   "price_monthly": "Mensal",
   "price_annual": "Anual",
   "price_cta_free": "Ver caminhos",
-  "price_cta_start": "Começar teste gratuito de 7 dias",
+  "price_cta_start": "Assinar agora",
   "per_month": "/mês",
   "per_year": "/ano",
-  "annual_discount": "2 meses grátis",
+  "annual_discount": "Economize no anual",
   "compare_plans": "Ver detalhes do plano",
   "faq_title": "Alguma dúvida?",
   "faq_subtitle": "Respostas objetivas para você começar com tranquilidade.",
@@ -251,8 +251,8 @@
       "a": "Sim. Comece no Plano Catequista e, quando sua catequese crescer, leve a organização para o Plano Paróquia."
     },
     {
-      "q": "Preciso informar cartão para testar?",
-      "a": "Não. O teste de 7 dias do Plano Catequista começa sem cartão, assim que você cria sua primeira turma. O cartão só é pedido quando você decidir assinar."
+      "q": "Como começo a usar?",
+      "a": "Crie sua conta e assine um plano. Depois, configure seu espaço e cadastre sua primeira turma."
     },
     {
       "q": "Posso cancelar quando quiser?",
@@ -267,8 +267,8 @@
   "cta_title": "Volte a ter tempo para aquilo que chamou você à catequese.",
   "cta_subtitle": "Deixe a organização com o Catechis e viva o encontro com mais presença, tranquilidade e propósito.",
   "cta_lines": [],
-  "cta_button": "Começar 7 dias grátis",
-  "cta_badge": "Teste gratuito",
+  "cta_button": "Assinar agora",
+  "cta_badge": "Assinar agora",
   "cta_see_plans": "Ver o plano",
   "mock": {
     "ai_title": "Assistência para encontros",
@@ -278,11 +278,11 @@
     "generate": "Gerar encontro",
     "generated": "Roteiro gerado",
     "credits": "Rascunho para você revisar",
-    "ai_step1": "Objetivo — Compreender os sacramentos como sinais visíveis da graça",
-    "ai_step2": "Dinâmica inicial — \"Os sete presentes\"",
-    "ai_step3": "Leitura bíblica — Mt 28:19-20 (ide e fazei discípulos)",
-    "ai_step4": "Reflexão — O que são os sacramentos? (CIC §1131)",
-    "ai_step5": "Atividade — Quiz interativo em grupo + Oração final"
+    "ai_step1": "Objetivo. Compreender os sacramentos como sinais visíveis da graça",
+    "ai_step2": "Dinâmica inicial. \"Os sete presentes\"",
+    "ai_step3": "Leitura bíblica. Mt 28:19-20 (ide e fazei discípulos)",
+    "ai_step4": "Reflexão. O que são os sacramentos? (CIC §1131)",
+    "ai_step5": "Atividade. Quiz interativo em grupo + Oração final"
   },
   "mockup_dashboard": {
     "title": "Painel",
@@ -292,7 +292,7 @@
     "avg_attendance": "Presença média",
     "sacraments": "Sacramentos",
     "today": "Hoje",
-    "today_class": "Crisma — Turma A",
+    "today_class": "Crisma. Turma A",
     "today_detail": "19:30 · 18 inscritos",
     "upcoming": "Próximos",
     "upcoming_class": "1ª Eucaristia",
@@ -303,7 +303,7 @@
     "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
   },
   "mockup_attendance": {
-    "title": "Chamada — Crisma Turma A",
+    "title": "Chamada. Crisma Turma A",
     "meeting": "Encontro 12 · 19/03/2026",
     "present": "Presentes",
     "absent": "Faltas",
@@ -318,19 +318,19 @@
     "celebration": "Celebração",
     "title": "Jornada Sacramental",
     "subtitle": "Primeira Eucaristia · 2026",
-    "class": "Turma 1ª Eucaristia — Comunidade São José"
+    "class": "Turma 1ª Eucaristia. Comunidade São José"
   },
   "mockup_family": {
     "title": "Portal da Família",
-    "greeting": "Olá, Carlos — filhos: Ana e Pedro",
+    "greeting": "Olá, Carlos. filhos: Ana e Pedro",
     "first_eucharist": "1ª Eucaristia",
     "confirmation": "Crisma",
     "attendance_pct": "92% presença",
     "absence_recent": "1 falta recente",
     "notice_title": "Aviso da catequese",
-    "notice_text": "Encontro especial no sábado às 14h — trazer material de artesanato.",
+    "notice_text": "Encontro especial no sábado às 14h. trazer material de artesanato.",
     "next_meeting": "Próximo encontro",
-    "next_meeting_detail": "Pedro — Crisma · Sáb 19/03 · 19:30",
+    "next_meeting_detail": "Pedro. Crisma · Sáb 19/03 · 19:30",
     "justify_absence": "Justificar falta",
     "send_certificate": "Enviar certidão de batismo",
     "pending_doc": "Documento pendente para Ana"
@@ -350,7 +350,7 @@
     "plan_detail": "Crisma · 45 min"
   },
   "footer": {
-    "create_account": "Começar os 7 dias",
+    "create_account": "Assinar agora",
     "login": "Entrar",
     "about": "Sobre",
     "privacy": "Privacidade",
@@ -370,7 +370,7 @@
       "desc": "Informações protegidas em trânsito e em repouso, com acesso restrito por papel."
     },
     {
-      "title": "7 dias gratuitos",
+      "title": "Plano Catequista",
       "desc": "Acesso a todos os recursos. Se não fizer sentido, cancele quando quiser."
     },
     {
@@ -381,24 +381,24 @@
   "testimonials_title": "Depoimentos",
   "testimonials_subtitle": "Quando tivermos autorizações reais de catequistas e paróquias, elas aparecem aqui.",
   "testimonials": [],
-  "cta_helper": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser",
+  "cta_helper": "Assinar agora",
   "mobile_cta": {
-    "title": "7 dias gratuitos",
+    "title": "Plano Catequista",
     "subtitle": "Acesso a todos os recursos · Cancele quando quiser",
-    "button": "Começar 7 dias grátis"
+    "button": "Assinar agora"
   },
   "proof": {
     "badge": "Comece com tranquilidade",
     "title": "Feito para quem vive a catequese de verdade",
-    "subtitle": "Você prepara o encontro, acompanha cada catequizando e caminha junto com as famílias — tudo a serviço da sua missão, do primeiro encontro ao último.",
+    "subtitle": "Você prepara o encontro, acompanha cada catequizando e caminha junto com as famílias. tudo a serviço da sua missão, do primeiro encontro ao último.",
     "stats": [
       {
         "title": "Para a sua missão",
-        "desc": "Sua turma, a chamada no celular e o preparo dos encontros no mesmo lugar — para sobrar tempo para as pessoas."
+        "desc": "Sua turma, a chamada no celular e o preparo dos encontros no mesmo lugar. para sobrar tempo para as pessoas."
       },
       {
         "title": "Para as famílias da sua turma",
-        "desc": "Avisos, presenças e justificativas pelo portal — as famílias caminham junto com você."
+        "desc": "Avisos, presenças e justificativas pelo portal. as famílias caminham junto com você."
       },
       {
         "title": "No celular",
@@ -406,26 +406,26 @@
       }
     ],
     "chips": [
-      "7 dias gratuitos",
+      "Acesso após assinar · Cancele quando quiser",
       "Acesso a todos os recursos",
       "Cancele quando quiser",
       "LGPD",
       "Cancelamento simples"
     ],
-    "launch_title": "Experimente na sua turma",
-    "launch_text": "Crie a conta e teste 7 dias com acesso a todos os recursos. Cancele quando quiser.",
+    "launch_title": "Plano Catequista",
+    "launch_text": "Crie sua conta, escolha um plano e assine para começar a organizar sua catequese.",
     "promises": [
-      "7 dias gratuitos, com acesso a todos os recursos",
+      "Crie sua conta, escolha um plano e assine para começar a organizar sua catequese.",
       "Biblioteca com Bíblia e Catecismo no mesmo lugar",
       "Dados de crianças com cuidado e LGPD",
       "Cancele quando quiser"
     ],
-    "launch_cta": "Começar grátis por 7 dias",
-    "launch_helper": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser"
+    "launch_cta": "Crie sua conta, escolha um plano e assine para começar a organizar sua catequese.",
+    "launch_helper": "Acesso após assinar · Cancele quando quiser"
   },
   "simple_features": {
     "title": "Tudo que o catequista precisa, sem complicação",
-    "subtitle": "Prepare encontros, registre presença e conecte as famílias — pelo celular, sem papel.",
+    "subtitle": "Prepare encontros, registre presença e conecte as famílias. pelo celular, sem papel.",
     "attendance": {
       "title": "Chamada digital pelo celular",
       "desc": "Registre presença com um toque durante o encontro. Sem papel, sem planilha.",
@@ -435,14 +435,14 @@
     },
     "ai": {
       "title": "Assistência editorial que prepara o encontro para você revisar",
-      "desc": "Crie roteiros, atividades e mensagens para as famílias em minutos — com base teológica católica.",
+      "desc": "Crie roteiros, atividades e mensagens para as famílias em minutos. com base teológica católica.",
       "b1": "Roteiros com Bíblia, Catecismo e Diretório",
       "b2": "Atividades e quizzes adaptáveis",
       "b3": "Mensagens prontas para enviar às famílias"
     },
     "family": {
       "title": "Famílias acompanham pelo portal",
-      "desc": "Pais e responsáveis veem presenças, justificam faltas e recebem avisos — sem precisar ligar.",
+      "desc": "Pais e responsáveis veem presenças, justificam faltas e recebem avisos. sem precisar ligar.",
       "b1": "Portal personalizado por filho",
       "b2": "Justificativa de faltas online",
       "b3": "Envio de documentos por link seguro"
@@ -450,7 +450,7 @@
   },
   "steps_endowed_title": "Você já está aqui",
   "steps_endowed_desc": "Conhecendo a plataforma",
-  "price_trial_badge": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser",
+  "price_trial_badge": "Plano Catequista",
   "price_trial_note": "",
   "comparison": {
     "title": "Pare de espalhar a sua catequese em papel, planilha e WhatsApp",
@@ -458,8 +458,8 @@
     "col_criterion": "O que você precisa",
     "col_old": "Papel + planilha + WhatsApp",
     "col_next": "Catechis",
-    "cta": "Começar grátis por 7 dias",
-    "helper": "7 dias gratuitos, com acesso a todos os recursos. Cancele quando quiser.",
+    "cta": "Assinar agora",
+    "helper": "Acesso após assinar · Cancele quando quiser",
     "rows": [
       {
         "criterion": "Preparar o encontro",
@@ -493,11 +493,11 @@
       }
     ]
   },
-  "faq_cta": "Começar 7 dias grátis",
-  "faq_cta_helper": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser",
-  "price_cta_single": "Começar 7 dias grátis",
-  "price_annual_note": "ou R$ 99/ano",
-  "price_cta_unlimited": "Começar 7 dias grátis",
+  "faq_cta": "Assinar agora",
+  "faq_cta_helper": "Acesso após assinar · Cancele quando quiser",
+  "price_cta_single": "Assinar agora",
+  "price_annual_note": "ou R$ 297/ano",
+  "price_cta_unlimited": "Assinar agora",
   "price_cta_diocese": "Falar com vendas",
   "price_annual_equivalent": "Equivale a {{price}}/mês",
   "demo": {
@@ -518,7 +518,7 @@
     "result_title": "Encontro preparado",
     "result_badge": "",
     "done_note": "Isso vai te ajudar no próximo domingo. Você revisa tudo antes de usar.",
-    "cta": "Começar 7 dias grátis",
+    "cta": "Assinar agora",
     "topics": [
       {
         "id": "perdao",
@@ -670,11 +670,26 @@
     "col_before": "Antes",
     "col_after": "Com Catechis",
     "rows": [
-      { "before": "Caderno", "after": "Encontros organizados" },
-      { "before": "WhatsApp", "after": "Comunicação centralizada" },
-      { "before": "Planilhas", "after": "Presenças registradas" },
-      { "before": "Arquivos", "after": "Histórico dos catequizandos" },
-      { "before": "Improviso", "after": "Encontro preparado" }
+      {
+        "before": "Caderno",
+        "after": "Encontros organizados"
+      },
+      {
+        "before": "WhatsApp",
+        "after": "Comunicação centralizada"
+      },
+      {
+        "before": "Planilhas",
+        "after": "Presenças registradas"
+      },
+      {
+        "before": "Arquivos",
+        "after": "Histórico dos catequizandos"
+      },
+      {
+        "before": "Improviso",
+        "after": "Encontro preparado"
+      }
     ]
   },
   "presence": {
@@ -698,22 +713,31 @@
       "Registre as presenças",
       "Continue de onde parou"
     ],
-    "cta": "Começar minha catequese — 7 dias grátis"
+    "cta": "Assinar agora"
   },
   "growth": {
     "eyebrow": "Comece do seu jeito",
     "title": "Um plano para cada etapa da missão.",
     "subtitle": "Comece como catequista. Quando sua catequese crescer, leve a organização para sua paróquia ou diocese.",
     "featured": "Mais escolhido",
-    "note": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser",
-    "billed_annual": "Cobrado anualmente · 7 dias grátis",
-    "billed_monthly": "Cobrado mensalmente · 7 dias grátis",
+    "note": "Acesso após assinar · Cancele quando quiser",
+    "billed_annual": "Cobrado anualmente",
+    "billed_monthly": "Cobrado mensalmente",
     "diocese_note": "Fale com nossa equipe",
     "discount": "{{percent}}% de desconto",
     "ladder": [
-      { "label": "Você", "step": "Catequista" },
-      { "label": "Equipe", "step": "Paróquia" },
-      { "label": "Rede", "step": "Diocese" }
+      {
+        "label": "Você",
+        "step": "Catequista"
+      },
+      {
+        "label": "Equipe",
+        "step": "Paróquia"
+      },
+      {
+        "label": "Rede",
+        "step": "Diocese"
+      }
     ],
     "stories": [
       {
@@ -798,8 +822,8 @@
       "minutes": "{{count}} min",
       "done_title": "Gostou? Prepare o seu de verdade.",
       "done_text": "Com o tema da sua turma e a Bíblia e o Catecismo ao lado. Você revisa tudo antes de usar.",
-      "done_cta": "Começar 7 dias grátis",
-      "done_helper": "7 dias gratuitos · Cancele quando quiser",
+      "done_cta": "Crie sua conta, escolha um plano e assine para começar a organizar sua catequese.",
+      "done_helper": "Acesso após assinar · Cancele quando quiser",
       "topics": {
         "perdao": [
           {
@@ -814,7 +838,7 @@
           },
           {
             "title": "Evangelho",
-            "detail": "Lc 15,11-32 — o pai misericordioso.",
+            "detail": "Lc 15,11-32. o pai misericordioso.",
             "minutes": 10
           },
           {
@@ -846,7 +870,7 @@
           },
           {
             "title": "Evangelho",
-            "detail": "Jo 6,35-40 — Eu sou o pão da vida.",
+            "detail": "Jo 6,35-40. Eu sou o pão da vida.",
             "minutes": 10
           },
           {
@@ -878,7 +902,7 @@
           },
           {
             "title": "Evangelho",
-            "detail": "At 2,1-11 — Pentecostes.",
+            "detail": "At 2,1-11. Pentecostes.",
             "minutes": 10
           },
           {

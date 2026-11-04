@@ -1,3 +1,4 @@
+import { isNewPricingAccount } from "../../shared/newPricing";
 /**
  * Daily lifecycle emails: activation next-step, trial D-3/D-1, and win-back.
  * Runs after trial expiration so expired users are eligible for win-back the same morning.
@@ -161,6 +162,7 @@ export const lifecycleNudgeJob = async (
 
   for (let i = 0; i < candidates.length; i++) {
     const user = candidates[i];
+    if (isNewPricingAccount(user.createdAt)) continue;
     const membershipRoles = (user.memberships || []).map(
       (m: { role: string }) => m.role,
     );

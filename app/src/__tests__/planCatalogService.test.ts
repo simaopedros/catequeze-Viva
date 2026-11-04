@@ -35,14 +35,14 @@ describe('planCatalogService', () => {
     }));
   });
 
-  it('static mode matches DEFAULT_PLANS and attaches env price ids', async () => {
+  it('static mode attaches env IDs only for unchanged plans', async () => {
     const { loadPlanCatalog, getPricingCatalogSource } = await import('../server/pricing/planCatalogService');
     const { DEFAULT_PLANS_BY_SLUG } = await import('../shared/planCatalog');
     expect(getPricingCatalogSource()).toBe('static');
     const snapshot = await loadPlanCatalog();
     expect(snapshot.source).toBe('static');
     expect(snapshot.bySlug.single.limits.maxClasses).toBe(DEFAULT_PLANS_BY_SLUG.single.limits.maxClasses);
-    expect(snapshot.bySlug.single.prices.find((p) => p.interval === 'monthly')?.stripePriceId).toBe(ENV_SINGLE_MONTHLY);
+    expect(snapshot.bySlug.single.prices.find((p) => p.interval === 'monthly')?.stripePriceId).toBeNull();
     expect(snapshot.bySlug.unlimited.isPublic).toBe(true);
     expect(snapshot.bySlug.unlimited.prices.find((p) => p.interval === 'monthly')?.stripePriceId).toBe(ENV_UNLIMITED_MONTHLY);
   });
@@ -233,5 +233,34 @@ describe('planCatalogService', () => {
     expect(snapshot.bySlug.paroquia_plus.name).toBe('Paróquia Plus');
     expect(snapshot.bySlug.paroquia_plus.isPublic).toBe(true);
     expect(snapshot.bySlug.paroquia_plus.limits.maxParishes).toBe(5);
+  });
+});
+
+describe('pricing v4 sale eligibility', () => {
+  it('does not sell an archived Stripe price and never falls back to its env ID', async () => {
+    process.env.PRICING_CATALOG_SOURCE = 'db';
+    const { invalidatePlanCatalogCache, requireActiveStripePriceId, resolvePlanByStripePriceId } = await import('../server/pricing/planCatalogService');
+    invalidatePlanCatalogCache();
+    const ctx = { entities: { PricingPlan: { findMany: vi.fn(async () => [{
+      slug: 'single', name: 'Catequista', kind: 'SUBSCRIPTION', level: 'PERSONAL', isActive: true, isPublic: true,
+      prices: [
+        { interval: 'MONTHLY', unitAmountCents: 990, stripePriceId: 'price_1LegacyMonthlyXX', isActive: false, archivedAt: new Date() },
+        { interval: 'ANNUAL', unitAmountCents: 9900, stripePriceId: 'price_1LegacyAnnualXXX', isActive: false, archivedAt: new Date() },
+        { interval: 'MONTHLY', unitAmountCents: 4700, stripePriceId: null, isActive: true },
+        { interval: 'ANNUAL', unitAmountCents: 29700, stripePriceId: null, isActive: true },
+      ],
+    }]) } } };
+    await expect(requireActiveStripePriceId(ctx, 'single', 'monthly')).rejects.toThrow('Pagamento indisponível');
+    await expect(requireActiveStripePriceId(ctx, 'single', 'annual')).rejects.toThrow('Pagamento indisponível');
+    expect((await resolvePlanByStripePriceId(ctx, 'price_1LegacyMonthlyXX')).slug).toBe('single');
+    expect((await resolvePlanByStripePriceId(ctx, 'price_1LegacyAnnualXXX')).slug).toBe('single');
+  });
+
+  it('still resolves a legacy environment price while static new sales are unavailable', async () => {
+    process.env.PRICING_CATALOG_SOURCE = 'static';
+    const { invalidatePlanCatalogCache, requireActiveStripePriceId, resolvePlanByStripePriceId } = await import('../server/pricing/planCatalogService');
+    invalidatePlanCatalogCache();
+    await expect(requireActiveStripePriceId(undefined, 'single')).rejects.toThrow('Pagamento indisponível');
+    expect((await resolvePlanByStripePriceId(undefined, ENV_SINGLE_MONTHLY)).slug).toBe('single');
   });
 });

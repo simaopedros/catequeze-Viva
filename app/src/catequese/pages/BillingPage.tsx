@@ -1,3 +1,4 @@
+import { useCheckoutConfiguration } from "../../client/hooks/useCheckoutConfiguration";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router";
@@ -38,7 +39,6 @@ import {
   isOnInstitutionalTrial,
   getInstitutionalTrialDaysLeft,
   hasStripeManagedSubscription,
-  SUBSCRIPTION_TRIAL_DAYS,
   formatPriceLabel,
 } from "../../shared/pricing";
 import { resolveStripeCheckoutTrialDays } from "../../shared/checkoutTrialDays";
@@ -151,6 +151,7 @@ export default function BillingPage() {
 
   const navigate = useNavigate();
   const { data: user } = useAuth();
+  const { checkoutUrl, config: checkoutConfig, isLoading: checkoutConfigLoading } = useCheckoutConfiguration();
   const {
     parishId,
     userRole,
@@ -274,6 +275,7 @@ export default function BillingPage() {
   const isPaidActive = isActive && !isTrialAccess;
   const checkoutTrialDays = resolveStripeCheckoutTrialDays({
     user,
+    cutoffISO: checkoutConfig?.cutoffISO,
     institutionalBilling: !isPersonal ? parish?.billing ?? null : null,
   });
   const hasStripeSubscription = workspaceHasStripeManagedSubscription({
@@ -405,6 +407,12 @@ export default function BillingPage() {
         );
         return;
       }
+      if (checkoutConfigLoading || !checkoutConfig) return;
+      const hotmartUrl = checkoutUrl(planId, interval);
+      if (hotmartUrl) {
+        window.open(hotmartUrl, '_blank', 'noopener,noreferrer');
+        return;
+      }
       setError(null);
       setUpgradingPlan(planId);
       try {
@@ -424,7 +432,7 @@ export default function BillingPage() {
           plan_id: planId,
           value: checkoutValue,
           currency: "BRL",
-          trial_days: SUBSCRIPTION_TRIAL_DAYS,
+          trial_days: checkoutTrialDays,
         });
 
         trackMarketingEvent("checkout_started", {
@@ -476,6 +484,10 @@ export default function BillingPage() {
       getPlanDef,
       getBySlug,
       hasStripeSubscription,
+      checkoutConfig,
+      checkoutConfigLoading,
+      checkoutTrialDays,
+      checkoutUrl,
     ],
   );
 
@@ -613,7 +625,9 @@ export default function BillingPage() {
   ]);
 
   useEffect(() => {
-    if (!requestedPlanId || !allowAutoCheckout) return;
+    if (!requestedPlanId || !allowAutoCheckout || checkoutConfigLoading || !checkoutConfig) return;
+    // Hotmart opens from an explicit click so browsers allow the new tab.
+    if (checkoutUrl(requestedPlanId, billingInterval)) return;
 
     const checkoutInterval =
       showParishConversion && peekIntendedInterval() === null

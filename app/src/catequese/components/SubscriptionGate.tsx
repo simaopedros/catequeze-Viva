@@ -1,3 +1,5 @@
+import { useCheckoutConfiguration } from "../../client/hooks/useCheckoutConfiguration";
+import { isNewPricingAccount } from "../../shared/newPricing";
 import { ReactNode, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useAuth } from "wasp/client/auth";
@@ -41,13 +43,16 @@ function workspaceHasAccess(
     | undefined,
   billing: WorkspaceBilling | null | undefined,
   parishType?: string | null,
-  opts?: { isBillingManager?: boolean },
+  opts?: { isBillingManager?: boolean; cutoffISO?: string },
 ): boolean {
   // Collaborators (lead/assistant, etc.) are guests of the workspace plan —
   // do not gate them on their own User.subscription*.
   if (opts?.isBillingManager === false) {
     return true;
   }
+
+  if (user && !isNewPricingAccount(user.createdAt, opts?.cutoffISO) &&
+      (user.subscriptionPlan || '').toLowerCase() === 'catechist_free' && !user.subscriptionStatus) return true;
 
   if (isPersonal) {
     return hasPersonalAccess(user) || isOnProductTrial(user);
@@ -78,6 +83,7 @@ function workspaceHasAccess(
 /** Whether the active workspace is paid/trialing for the current user. */
 export function useWorkspaceSubscriptionAccess() {
   const { data: user } = useAuth();
+  const { config } = useCheckoutConfiguration();
   const {
     isPersonal,
     workspace,
@@ -104,7 +110,7 @@ export function useWorkspaceSubscriptionAccess() {
     user,
     workspaceBilling,
     workspace?.type ?? (isPersonal ? "PERSONAL" : "PARISH"),
-    { isBillingManager },
+    { isBillingManager, cutoffISO: config?.cutoffISO },
   );
 
   return {

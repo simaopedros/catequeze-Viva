@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { CheckoutLink as Link } from "../../client/components/CheckoutLink";
 import { ArrowRight } from "lucide-react";
 import { useLandingText } from "../hooks/useLandingText";
 import { cn } from "../../client/utils";

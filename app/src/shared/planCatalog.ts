@@ -11,7 +11,7 @@
 
 import { AI_FEATURES_ENABLED } from './aiFeatures';
 
-export const PRICING_VERSION = 3;
+export const PRICING_VERSION = 4;
 export const SUBSCRIPTION_TRIAL_DAYS = 7;
 
 export type PricingPlanKind = 'subscription' | 'credits';
@@ -266,8 +266,8 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
     },
     stripeProductId: null,
     prices: [
-      price('monthly', 990, 'single_monthly'),
-      price('annual', 9900, 'single_annual'),
+      price('monthly', 4700, 'single_monthly_v4'),
+      price('annual', 29700, 'single_annual_v4'),
     ],
     pricingVersion: PRICING_VERSION,
   },
@@ -742,7 +742,7 @@ export function publicCatalogPlans(catalog: CatalogBySlug = DEFAULT_PLANS_BY_SLU
     .sort((a, b) => a.sortOrder - b.sortOrder)
     .map((plan) => ({
       ...plan,
-      prices: plan.prices.filter((p) => p.isActive),
+      prices: plan.prices.filter((p) => p.isActive && !p.archivedAt),
     }));
 }
 
@@ -753,6 +753,7 @@ export function lookupKeyFor(slug: string, interval: PricingInterval): string {
 /** Inverse of lookupKeyFor. Handles slugs that themselves contain underscores. */
 export function slugFromLookupKey(lookupKey: string | null | undefined): string | null {
   if (!lookupKey) return null;
+  lookupKey = lookupKey.replace(/_v\d+$/, '');
   for (const suffix of ['_monthly', '_annual', '_one_time'] as const) {
     if (lookupKey.endsWith(suffix)) {
       return lookupKey.slice(0, -suffix.length);

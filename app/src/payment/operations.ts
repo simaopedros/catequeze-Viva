@@ -1,3 +1,5 @@
+import { readCheckoutConfiguration } from "../server/operations/checkoutConfiguration";
+import { hotmartCheckoutUrl } from "../shared/hotmartCheckout";
 import { HttpError } from "wasp/server";
 import type {
   GenerateCheckoutSession,
@@ -115,6 +117,13 @@ export const generateCheckoutSession: GenerateCheckoutSession<
   if (!userEmail) {
     throw new HttpError(403, "User needs an email to make a payment.");
   }
+
+  const checkoutUser = await context.entities.User.findUnique({
+    where: { id: userId },
+    select: { email: true, paymentProcessorUserId: true, stripeSubscriptionId: true, subscriptionStatus: true },
+  });
+  const hotmartUrl = hotmartCheckoutUrl(readCheckoutConfiguration(), paymentPlanId, interval, checkoutUser);
+  if (hotmartUrl) return { sessionUrl: hotmartUrl, sessionId: "hotmart" };
 
   const catalog = await loadPlanCatalog(context);
   const catalogPlan = catalog.bySlug[paymentPlanId] ?? catalog.bySlug[paymentPlanId.toLowerCase()];

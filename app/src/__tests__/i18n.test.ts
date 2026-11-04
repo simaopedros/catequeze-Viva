@@ -87,7 +87,9 @@ describe("public launch-phase copy", () => {
       expect(blob, lang).not.toMatch(
         /Two clear plans|Dos planes claros|dois planos/i,
       );
-      expect(pub.pricing.subtitle).toMatch(/9[,.]90/);
+      expect(pub.pricing.subtitle).toContain("R$ 47");
+      expect(pub.pricing.subtitle).toContain("R$ 297");
+      expect(blob).not.toMatch(/grátis|gratuit|free trial|sem cartão|sin tarjeta|no card/i);
     }
   });
 

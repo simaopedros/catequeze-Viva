@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { CheckoutLink as Link } from "../../client/components/CheckoutLink";
 import { ArrowRight, Check, Star } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { CheckoutLink as Link } from "../../client/components/CheckoutLink";
 import { ArrowRight, Check } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";
