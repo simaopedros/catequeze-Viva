@@ -62,14 +62,15 @@ function scrubEvent<T extends Record<string, any>>(input: T): T {
 }
 
 async function initSentryDeferred() {
-  if (!SENTRY_DSN) return;
+  if (!SENTRY_DSN || window.location.pathname.startsWith("/inscricoes/")) return;
   try {
     const Sentry = await import("@sentry/react");
     Sentry.init({
       dsn: SENTRY_DSN,
       environment: process.env.NODE_ENV || "production",
       sendDefaultPii: false,
-      beforeSend: (event) => scrubEvent(event),
+      beforeSend: (event) => window.location.pathname.startsWith("/inscricoes/") ? null : scrubEvent(event),
+      beforeSendTransaction: (event) => window.location.pathname.startsWith("/inscricoes/") ? null : event,
       beforeBreadcrumb: (crumb) => {
         if (crumb.message) crumb.message = scrubString(crumb.message);
         if (crumb.data?.url) crumb.data.url = scrubString(String(crumb.data.url));

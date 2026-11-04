@@ -113,3 +113,18 @@ export async function listRegistrationCampaigns(args: { parishId: string }, cont
   assertRegistrationsEnabled(); await authorize(context, args.parishId, 'CONFIGURE_CAMPAIGN');
   return context.entities.RegistrationCampaign.findMany({ where: { parishId: args.parishId }, include: { offerings: true }, orderBy: { createdAt: 'desc' } });
 }
+
+/** Retorna somente o material necessário para divulgação no workspace autorizado. */
+export async function getRegistrationCampaignShare(args: { parishId: string }, context: any) {
+  assertRegistrationsEnabled();
+  if (!context.user) throw new HttpError(401);
+  const membership = await context.entities.Membership.findFirst({ where: { userId: context.user.id, parishId: args.parishId, status: 'ACTIVE' }, select: { communityId: true } });
+  await assertRegistrationPermission(context, { parishId: args.parishId, communityId: membership?.communityId ?? undefined, action: 'SHARE_LINK' });
+  const base = process.env.WASP_WEB_CLIENT_URL;
+  if (!base) throw new HttpError(503, 'Endereço público indisponível.');
+  let origin: string;
+  try { const parsed = new URL(base); if (!['http:', 'https:'].includes(parsed.protocol) || parsed.username || parsed.password) throw new Error(); origin = parsed.origin; }
+  catch { throw new HttpError(503, 'Endereço público indisponível.'); }
+  const records = await context.entities.RegistrationCampaign.findMany({ where: { parishId: args.parishId, status: { in: ['DRAFT', 'OPEN'] } }, select: { id: true, slug: true, title: true, status: true, opensAt: true, closesAt: true, timezone: true, parish: { select: { name: true } } }, orderBy: { createdAt: 'desc' } });
+  return records.map((c: any) => ({ id: c.id, title: c.title, status: c.status, parishName: c.parish.name, opensAt: c.opensAt, closesAt: c.closesAt, timezone: c.timezone, url: c.status === 'OPEN' ? `${origin}/inscricoes/${encodeURIComponent(c.slug)}` : null }));
+}

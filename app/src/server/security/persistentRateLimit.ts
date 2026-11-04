@@ -16,6 +16,7 @@ export type PersistentRateLimitConfig = {
   /** Window length in milliseconds */
   windowMs: number;
   message?: string;
+  failClosed?: boolean;
 };
 
 export type RateLimitConsumeResult = {
@@ -24,6 +25,7 @@ export type RateLimitConsumeResult = {
   retryAfterSec?: number;
   /** True when the check was skipped due to a DB error */
   failedOpen?: boolean;
+  failedClosed?: boolean;
 };
 
 function bucketKey(scope: string, id: string): string {
@@ -69,11 +71,13 @@ export async function peekPersistentRateLimit(
 
     return { allowed: true };
   } catch (err) {
-    logger.warn("[rateLimit] fail-open on DB error", {
+    logger.warn(config.failClosed ? "[rateLimit] fail-closed on DB error" : "[rateLimit] fail-open on DB error", {
       scope: config.scope,
       error: err instanceof Error ? err.message : String(err),
     });
-    return { allowed: true, failedOpen: true };
+    return config.failClosed
+      ? { allowed: false, failedClosed: true, retryAfterSec: 60 }
+      : { allowed: true, failedOpen: true };
   }
 }
 
@@ -110,10 +114,12 @@ export async function consumePersistentRateLimit(
 
     const row = rows[0];
     if (!row) {
-      logger.warn("[rateLimit] fail-open: empty RETURNING row", {
+      logger.warn(config.failClosed ? "[rateLimit] fail-closed: empty RETURNING row" : "[rateLimit] fail-open: empty RETURNING row", {
         scope: config.scope,
       });
-      return { allowed: true, failedOpen: true };
+      return config.failClosed
+      ? { allowed: false, failedClosed: true, retryAfterSec: 60 }
+      : { allowed: true, failedOpen: true };
     }
 
     // PG INTEGER via $queryRaw may arrive as number or bigint
@@ -128,11 +134,13 @@ export async function consumePersistentRateLimit(
 
     return { allowed: true };
   } catch (err) {
-    logger.warn("[rateLimit] fail-open on DB error", {
+    logger.warn(config.failClosed ? "[rateLimit] fail-closed on DB error" : "[rateLimit] fail-open on DB error", {
       scope: config.scope,
       error: err instanceof Error ? err.message : String(err),
     });
-    return { allowed: true, failedOpen: true };
+    return config.failClosed
+      ? { allowed: false, failedClosed: true, retryAfterSec: 60 }
+      : { allowed: true, failedOpen: true };
   }
 }
 
