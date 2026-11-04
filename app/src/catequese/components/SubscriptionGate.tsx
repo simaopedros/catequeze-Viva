@@ -18,6 +18,8 @@ import {
   isSubscriptionFreeAppPath,
   shouldRenderGatedRoute,
 } from "../../client/appRouteGates";
+import { isMemberInstitutionPaused, memberPauseKind } from "../../shared/memberAccessPause";
+import { MemberAccessPausedNotice } from "./MemberAccessPausedNotice";
 
 interface WorkspaceBilling {
   plan?: string | null;
@@ -113,6 +115,12 @@ export function useWorkspaceSubscriptionAccess() {
     { isBillingManager, cutoffISO: config?.cutoffISO },
   );
 
+  const memberAccessPaused = isMemberInstitutionPaused({
+    isPersonal,
+    isBillingManager,
+    billing: workspaceBilling,
+  });
+
   return {
     user,
     userLoaded: user !== undefined,
@@ -120,12 +128,21 @@ export function useWorkspaceSubscriptionAccess() {
     isBillingManager,
     hasAccess,
     workspaceLoading,
+    memberAccessPaused,
+    pauseKind: memberPauseKind(workspace?.type),
   };
 }
 
 export function SubscriptionGate({ children }: { children: ReactNode }) {
-  const { user, isPersonal, isBillingManager, hasAccess, workspaceLoading } =
-    useWorkspaceSubscriptionAccess();
+  const {
+    user,
+    isPersonal,
+    isBillingManager,
+    hasAccess,
+    workspaceLoading,
+    memberAccessPaused,
+    pauseKind,
+  } = useWorkspaceSubscriptionAccess();
   const location = useLocation();
   const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
@@ -135,7 +152,7 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (user === undefined) return;
     if (workspaceLoading && !alwaysAccessible) return;
-    if (alwaysAccessible) {
+    if (alwaysAccessible || memberAccessPaused) {
       setChecked(true);
       return;
     }
@@ -161,6 +178,7 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
     isPersonal,
     isBillingManager,
     workspaceLoading,
+    memberAccessPaused,
   ]);
 
   if (
@@ -171,6 +189,10 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
     })
   ) {
     return null;
+  }
+
+  if (memberAccessPaused && !alwaysAccessible) {
+    return <MemberAccessPausedNotice kind={pauseKind} />;
   }
 
   return <>{children}</>;

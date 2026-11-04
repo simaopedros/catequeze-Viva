@@ -381,6 +381,10 @@
     "support_question": "¿Dudas sobre la suscripción?",
     "support_cta": "WhatsApp"
   },
+  "member_access_paused": {
+    "parish": "El acceso de su parroquia no está disponible por ahora. Hable con el administrador de su parroquia.",
+    "diocese": "El acceso de su diócesis no está disponible por ahora. Hable con el administrador de su diócesis."
+  },
   "managed_notice": {
     "eyebrow": "Este espacio",
     "badge": "Participando",

@@ -714,6 +714,21 @@ export const admin_pt_BR = {
         "status_ARCHIVED": "Arquivado",
         "status_deleted": "Excluído"
       },
+      "hotmart_pending": {
+        "title": "Compras Hotmart sem conta",
+        "subtitle": "Vincule a compra ao usuário certo. Conta liberada manualmente ou com Stripe ativo não é sobrescrita.",
+        "empty": "Nenhuma compra pendente.",
+        "loading": "Carregando compras pendentes.",
+        "col_email": "E-mail da compra",
+        "col_plan": "Plano",
+        "col_transaction": "Transação",
+        "col_until": "Acesso até",
+        "col_user": "Usuário",
+        "user_placeholder": "ID do usuário",
+        "user_required": "Informe o ID do usuário.",
+        "link": "Vincular",
+        "error": "Não foi possível vincular a compra."
+      },
       "owner": {
         "title": "Visão do dono",
         "subtitle": "Receita, conversão, inadimplência, trials e saúde de e-mail — calculados ao vivo (sem DailyStats).",
@@ -1836,6 +1851,10 @@ export const billing_pt_BR = {
       "usage_catechumens": "{{used}} de {{limit}} catequizandos",
       "support_question": "Dúvidas sobre a assinatura?",
       "support_cta": "WhatsApp"
+    },
+    "member_access_paused": {
+      "parish": "O acesso da sua paróquia está temporariamente indisponível. Fale com o administrador da sua paróquia.",
+      "diocese": "O acesso da sua diocese está temporariamente indisponível. Fale com o administrador da sua diocese."
     },
     "managed_notice": {
       "eyebrow": "Este espaço",

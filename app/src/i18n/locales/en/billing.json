@@ -381,6 +381,10 @@
     "support_question": "Questions about the subscription?",
     "support_cta": "WhatsApp"
   },
+  "member_access_paused": {
+    "parish": "Your parish access is temporarily unavailable. Please talk to your parish administrator.",
+    "diocese": "Your diocese access is temporarily unavailable. Please talk to your diocese administrator."
+  },
   "managed_notice": {
     "eyebrow": "This workspace",
     "badge": "Participating",

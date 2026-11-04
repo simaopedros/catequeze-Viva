@@ -143,6 +143,8 @@ function purchase(args: {
   ucode?: string;
   subscriber?: string;
   planName?: string;
+  nextCharge?: number | null;
+  approvedAt?: number;
   extra?: Record<string, unknown>;
 }) {
   return {
@@ -163,8 +165,10 @@ function purchase(args: {
         recurrence_number: args.recurrence ?? 1,
         price: { value: args.amount ?? 47 },
         original_offer_price: { value: args.amount ?? 47 },
-        approved_date: Date.parse("2026-11-06T15:00:00Z"),
-        date_next_charge: Date.parse("2026-12-06T15:00:00Z"),
+        approved_date: args.approvedAt ?? Date.parse("2026-11-06T15:00:00Z"),
+        ...(args.nextCharge === null
+          ? {}
+          : { date_next_charge: args.nextCharge ?? Date.parse("2026-12-06T15:00:00Z") }),
         offer: { code: "offer-1" },
       },
       subscription: {
@@ -333,6 +337,12 @@ describe("hotmart webhook", () => {
     ctx.users[0].billingProvider = "HOTMART";
     await hotmartWebhook(post(purchase({ id: "e-charge", event: "PURCHASE_CHARGEBACK", transaction: "HP-CB" })) as any, response() as any, ctx);
     expect(ctx.users[0].subscriptionStatus).toBe("deleted");
+
+    ctx.users[0].subscriptionStatus = "active";
+    ctx.users[0].subscriptionPlan = "single";
+    await hotmartWebhook(post(purchase({ id: "e-protest", event: "PURCHASE_PROTEST", transaction: "HP-PROTEST" })) as any, response() as any, ctx);
+    expect(ctx.users[0].subscriptionStatus).toBe("past_due");
+    expect(ctx.users[0].subscriptionPlan).toBe("single");
   });
 
   it("records purchase complete, ignores an unknown product, switches plan and activates parish price", async () => {
@@ -379,5 +389,30 @@ describe("hotmart webhook", () => {
       ctx,
     );
     expect(ctx.users[0]).toMatchObject({ subscriptionPlan: "unlimited", subscriptionStatus: "active" });
+  });
+
+  it("computes accessEndsAt from the approved date when Hotmart omits date_next_charge", async () => {
+    const ctx = memory();
+    ctx.users.push({
+      id: "user-1",
+      email: "catequista@example.com",
+      emailVerifiedAt: new Date(),
+      subscriptionPlan: null,
+      subscriptionStatus: null,
+    });
+    const approvedAt = Date.parse("2026-11-06T15:00:00Z");
+    await hotmartWebhook(
+      post(purchase({ id: "e-month", amount: 47, transaction: "HP-MONTH", nextCharge: null, approvedAt })) as any,
+      response() as any,
+      ctx,
+    );
+    expect(ctx.users[0].accessEndsAt).toEqual(new Date("2026-12-07T15:00:00.000Z"));
+
+    await hotmartWebhook(
+      post(purchase({ id: "e-year", amount: 297, transaction: "HP-YEAR", nextCharge: null, approvedAt })) as any,
+      response() as any,
+      ctx,
+    );
+    expect(ctx.users[0].accessEndsAt).toEqual(new Date("2027-11-07T15:00:00.000Z"));
   });
 });

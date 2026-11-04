@@ -1,4 +1,16 @@
 import { describe, expect, it, vi } from "vitest";
+
+vi.mock("wasp/server", () => ({
+  HttpError: class HttpError extends Error {
+    statusCode: number;
+    constructor(statusCode: number, message?: string) {
+      super(message);
+      this.statusCode = statusCode;
+    }
+  },
+  env: {},
+}));
+
 import { expireSubscriptionsJob } from "../server/scripts/subscriptionExpirationJob";
 
 describe("expireSubscriptionsJob", () => {
@@ -77,6 +89,7 @@ describe("expireSubscriptionsJob", () => {
     const userUpdate = vi.fn(async ({ where, data }: any) => {
       Object.assign(rows.find((row) => row.id === where.id)!, data);
     });
+    const tenantUpdateMany = vi.fn().mockResolvedValue({ count: 1 });
     await expireSubscriptionsJob(undefined, {
       entities: {
         User: {
@@ -88,7 +101,10 @@ describe("expireSubscriptionsJob", () => {
         TenantBilling: {
           findMany: vi.fn().mockResolvedValue([]),
           update: vi.fn(),
+          updateMany: tenantUpdateMany,
         },
+        Membership: { findMany: vi.fn().mockResolvedValue([]) },
+        Parish: { findMany: vi.fn().mockResolvedValue([]) },
       },
     });
     expect(rows.find((row) => row.id === "overdue")).toMatchObject({
@@ -98,5 +114,11 @@ describe("expireSubscriptionsJob", () => {
     expect(rows.find((row) => row.id === "canceled-ended")?.subscriptionStatus).toBe("deleted");
     expect(rows.find((row) => row.id === "in-grace")?.subscriptionStatus).toBe("past_due");
     expect(rows.find((row) => row.id === "still-paid")?.subscriptionStatus).toBe("active");
+    const suspended = tenantUpdateMany.mock.calls.map((call) => call[0].where.parish.ownerId);
+    expect(suspended).toEqual(["overdue", "canceled-ended"]);
+    expect(tenantUpdateMany.mock.calls[0][0].data).toMatchObject({
+      status: "CANCELED",
+      plan: "catechist_free",
+    });
   });
 });

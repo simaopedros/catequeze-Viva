@@ -16,6 +16,8 @@ export const getContactsForConversation = vi.fn(async () => []);
 export const createConversation = vi.fn(async () => ({ id: "conversa-teste" }));
 
 export const listAdminLicenses = vi.fn();
+export const listPendingHotmartEntitlements = vi.fn();
+export const linkPendingHotmartEntitlement = vi.fn();
 export const listPricingPlansAdmin = vi.fn();
 export const extendTenantTrial = vi.fn();
 export const setComplimentaryPlan = vi.fn();

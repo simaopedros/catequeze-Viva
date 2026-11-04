@@ -2,6 +2,8 @@ import { createHash, timingSafeEqual } from "node:crypto";
 
 export const HOTMART_POSTBACK_VERSION = "2.0.0";
 export const DEFAULT_OVERDUE_GRACE_DAYS = 3;
+/** Extra day so a missing Hotmart charge date still has a suspendable end. */
+export const PERIOD_FALLBACK_GRACE_MS = 24 * 60 * 60 * 1000;
 
 export type HotmartInterval = "monthly" | "annual";
 export type HotmartPlanSlug = "single" | "unlimited";
@@ -255,6 +257,29 @@ function accessEndsAtFrom(data: Record<string, any>): Date | null {
   );
 }
 
+export function accessEndFromPeriod(start: Date, interval: HotmartInterval): Date {
+  const end = new Date(start.getTime());
+  if (interval === "annual") end.setUTCFullYear(end.getUTCFullYear() + 1);
+  else end.setUTCMonth(end.getUTCMonth() + 1);
+  return new Date(end.getTime() + PERIOD_FALLBACK_GRACE_MS);
+}
+
+function purchaseStart(data: Record<string, any>): Date | null {
+  const purchase = asRecord(data.purchase);
+  return parseHotmartDate(purchase?.approved_date) || parseHotmartDate(purchase?.order_date);
+}
+
+function resolveAccessEnd(
+  data: Record<string, any>,
+  offer: MappedOffer | null,
+  start: Date | null,
+): Date | null {
+  const explicit = accessEndsAtFrom(data);
+  if (explicit) return explicit;
+  if (!offer) return null;
+  return accessEndFromPeriod(start ?? new Date(), offer.interval);
+}
+
 function switchOffer(data: Record<string, any>, env: Record<string, string | undefined>): MappedOffer | null {
   const plans = Array.isArray(data.plans) ? data.plans : [];
   const current = plans.find((plan) => asRecord(plan)?.current) || plans[plans.length - 1];
@@ -303,6 +328,7 @@ export function parseHotmartPostback(
   if (event === "PURCHASE_APPROVED") {
     const offer = offerFromPurchase(data, env);
     if (!offer) return { ok: true, parsed: { ...base, effect: { kind: "fail", reason: "unmapped_offer" } } };
+    const paidAt = parseHotmartDate(purchase?.approved_date) || parseHotmartDate(purchase?.order_date);
     return {
       ok: true,
       parsed: {
@@ -311,13 +337,13 @@ export function parseHotmartPostback(
           kind: "activate",
           offer,
           recurrence: Number(purchase?.recurrence_number) || 1,
-          accessEndsAt: accessEndsAtFrom(data),
-          paidAt: parseHotmartDate(purchase?.approved_date) || parseHotmartDate(purchase?.order_date),
+          accessEndsAt: resolveAccessEnd(data, offer, paidAt),
+          paidAt,
         },
       },
     };
   }
-  if (event === "PURCHASE_DELAYED") {
+  if (event === "PURCHASE_DELAYED" || event === "PURCHASE_PROTEST") {
     return { ok: true, parsed: { ...base, effect: { kind: "past_due", accessEndsAt: accessEndsAtFrom(data) } } };
   }
   if (event === "PURCHASE_CANCELED" || event === "PURCHASE_EXPIRED") {
@@ -337,7 +363,10 @@ export function parseHotmartPostback(
     if (!offer) return { ok: true, parsed: { ...base, effect: { kind: "fail", reason: "unmapped_offer" } } };
     return {
       ok: true,
-      parsed: { ...base, effect: { kind: "switch_plan", offer, accessEndsAt: accessEndsAtFrom(data) } },
+      parsed: {
+        ...base,
+        effect: { kind: "switch_plan", offer, accessEndsAt: resolveAccessEnd(data, offer, purchaseStart(data)) },
+      },
     };
   }
   if (event === "UPDATE_SUBSCRIPTION_CHARGE_DATE") {

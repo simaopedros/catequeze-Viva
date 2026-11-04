@@ -2044,7 +2044,7 @@ api maintenanceApi {
 api subscriptionExpirationApi {
   fn: import { subscriptionExpirationHandler } from "@src/server/api/subscriptionExpiration",
   httpRoute: (POST, "/api/internal/subscription-expiration"),
-  entities: [User, TenantBilling, Parish, Notification, EmailMessage, EmailSuppression, EmailPreference]
+  entities: [User, TenantBilling, Parish, Membership, Notification, EmailMessage, EmailSuppression, EmailPreference]
 }
 
 api lifecycleUnsubscribeApi {
@@ -2854,6 +2854,16 @@ action cancelTenantLicense {
 action cancelUserSubscriptionImmediate {
   fn: import { cancelUserSubscriptionImmediate } from "@src/server/operations/billingAdminOperations",
   entities: [User, AuditLog]
+}
+
+query listPendingHotmartEntitlements {
+  fn: import { listPendingHotmartEntitlements } from "@src/payment/hotmart/pendingAdmin",
+  entities: [PendingEntitlement, User]
+}
+
+action linkPendingHotmartEntitlement {
+  fn: import { linkPendingHotmartEntitlement } from "@src/payment/hotmart/pendingAdmin",
+  entities: [PendingEntitlement, User, UserAiCredits, TenantBilling, Diocese, Parish, Membership, PricingPlan, PricingPlanPrice, AuditLog]
 }
 //#endregion
 

@@ -714,6 +714,21 @@ export const admin_en = {
         "status_ARCHIVED": "Archived",
         "status_deleted": "Deleted"
       },
+      "hotmart_pending": {
+        "title": "Hotmart purchases without an account",
+        "subtitle": "Link the purchase to the right user. A manual grant or a live Stripe subscription is not overwritten.",
+        "empty": "No pending purchases.",
+        "loading": "Loading pending purchases.",
+        "col_email": "Purchase email",
+        "col_plan": "Plan",
+        "col_transaction": "Transaction",
+        "col_until": "Access until",
+        "col_user": "User",
+        "user_placeholder": "User ID",
+        "user_required": "Enter the user ID.",
+        "link": "Link",
+        "error": "Could not link the purchase."
+      },
       "owner": {
         "title": "Owner view",
         "subtitle": "Revenue, conversion, delinquency, trials, and email health — computed live (no DailyStats).",
@@ -1836,6 +1851,10 @@ export const billing_en = {
       "usage_catechumens": "{{used}} of {{limit}} catechumens",
       "support_question": "Questions about the subscription?",
       "support_cta": "WhatsApp"
+    },
+    "member_access_paused": {
+      "parish": "Your parish access is temporarily unavailable. Please talk to your parish administrator.",
+      "diocese": "Your diocese access is temporarily unavailable. Please talk to your diocese administrator."
     },
     "managed_notice": {
       "eyebrow": "This workspace",

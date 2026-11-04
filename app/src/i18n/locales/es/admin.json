@@ -568,6 +568,21 @@
       "status_ARCHIVED": "Archivado",
       "status_deleted": "Eliminado"
     },
+    "hotmart_pending": {
+      "title": "Compras Hotmart sin cuenta",
+      "subtitle": "Vincule la compra al usuario correcto. Una cuenta liberada a mano o con Stripe activo no se sobrescribe.",
+      "empty": "Ninguna compra pendiente.",
+      "loading": "Cargando compras pendientes.",
+      "col_email": "Correo de la compra",
+      "col_plan": "Plan",
+      "col_transaction": "Transacción",
+      "col_until": "Acceso hasta",
+      "col_user": "Usuario",
+      "user_placeholder": "ID del usuario",
+      "user_required": "Indique el ID del usuario.",
+      "link": "Vincular",
+      "error": "No fue posible vincular la compra."
+    },
     "owner": {
       "title": "Visión del dueño",
       "subtitle": "Ingresos, conversión, morosidad, trials y salud de email — calculados en vivo (sin DailyStats).",

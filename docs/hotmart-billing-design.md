@@ -37,7 +37,7 @@ Rota nova `POST /api/hotmart/webhook` (Wasp `api`), pública, sem sessão.
 ### 3.2 Eventos e efeito (mesmo plano do Catechis)
 | Evento | Efeito |
 |---|---|
-| `PURCHASE_APPROVED` (recorrência 1) | Achar o usuário pelo e-mail do comprador; mapear oferta/plano para `single` ou `unlimited`; `subscriptionPlan`, `subscriptionStatus='active'`, `billingProvider='HOTMART'`, `hotmartSubscriberCode`, `datePaid`, `accessEndsAt = date_next_charge`. Paróquia/Diocese: mesma cascata em `TenantBilling` que a Stripe usa (`cascadeActivatePlanToTenantBilling`). |
+| `PURCHASE_APPROVED` (recorrência 1) | Achar o usuário pelo e-mail do comprador; mapear oferta/plano para `single` ou `unlimited`; `subscriptionPlan`, `subscriptionStatus='active'`, `billingProvider='HOTMART'`, `hotmartSubscriberCode`, `datePaid`, `accessEndsAt = date_next_charge`. Sem `date_next_charge`: data aprovada + 1 mês ou 1 ano + 1 dia. Paróquia/Diocese: mesma cascata em `TenantBilling` que a Stripe usa (`cascadeActivatePlanToTenantBilling`). |
 | `PURCHASE_APPROVED` (recorrência > 1) | Renovação: atualiza `datePaid` e estende `accessEndsAt`; zera atraso. |
 | `PURCHASE_COMPLETE` | Fim da garantia: só registra (sem mudar acesso). |
 | `PURCHASE_DELAYED` | `subscriptionStatus='past_due'`; acesso segue por carência de 3 dias (config), depois job suspende. |
@@ -45,7 +45,8 @@ Rota nova `POST /api/hotmart/webhook` (Wasp `api`), pública, sem sessão.
 | `SUBSCRIPTION_CANCELLATION` | Cancelamento pelo cliente: **mantém acesso até `date_next_charge`** (período já pago), depois `canceled` via job. Payload não traz `product.ucode`; achar por `subscriber.code`. |
 | `SWITCH_PLAN` | Troca de plano (mensal <-> anual, Catequista <-> Paróquia): reaplica mapeamento por `plan.id`/`offer.code`, sem perder datas. |
 | `UPDATE_SUBSCRIPTION_CHARGE_DATE` | Atualiza `accessEndsAt`. |
-| `PURCHASE_REFUNDED` / `PURCHASE_CHARGEBACK` | **Corta o acesso na hora** (`canceled`, cascata de cancelamento do tenant se for Paróquia) e marca no log. `PURCHASE_PROTEST`: só alerta ao Simão. |
+| `PURCHASE_REFUNDED` / `PURCHASE_CHARGEBACK` | **Corta o acesso na hora** (`deleted`, cascata de cancelamento do tenant se for Paróquia) e marca no log. |
+| `PURCHASE_PROTEST` | Chargeback pendente: `subscriptionStatus='past_due'`. O acesso segue até `accessEndsAt` mais a carência; o job suspende e faz a mesma cascata da Stripe. |
 
 Regras gerais: o webhook nunca rebaixa conta com `billingProvider='MANUAL'` nem contas grátis existentes; nunca altera quem tem `stripeSubscriptionId` ativo sem passar pelo fluxo de migração (seção 6).
 
@@ -53,14 +54,14 @@ Regras gerais: o webhook nunca rebaixa conta com `billingProvider='MANUAL'` nem 
 1. `subscriber.code` já conhecido: usa o usuário vinculado.
 2. Senão, e-mail do comprador (minúsculas). Se a conta existe **e o e-mail está verificado**: vincula.
 3. Se não existe conta (comprou antes de cadastrar): grava `PendingEntitlement(email, plano, accessEndsAt, subscriberCode)` e o aplica no cadastro, depois da verificação de e-mail. Sem verificação, nenhum acesso (quem digitar o e-mail de outra pessoa não pega o plano).
-4. Se o e-mail do checkout diferir do da conta: o link de checkout do app já leva `email` e `sck=catechis`; se mesmo assim divergir, cai em fila "compras sem conta" no painel admin para vincular à mão.
+4. Se o e-mail do checkout diferir do da conta: o link de checkout do app já leva `email` e `sck=catechis`; se mesmo assim divergir, a compra fica em `PendingEntitlement` e um admin vincula à mão em `/admin/billing`.
 
 ## 4. Mudanças no banco (migração aditiva, sem tocar dados existentes)
 - `User`: `billingProvider` (enum `STRIPE | HOTMART | MANUAL`, nulo = legado), `hotmartSubscriberCode` (único, nulo), `accessEndsAt` (DateTime, nulo). Backfill: `STRIPE` para quem tem `stripeSubscriptionId`; `MANUAL` para ACTIVE sem Stripe; demais nulos (não muda nenhum valor de plano/status).
 - `HotmartWebhookEvent`: `id`, `eventId` único, `event`, `receivedAt`, `processedAt`, `status` (`PROCESSED|IGNORED|FAILED`), `userId?`, `transaction?`, `error?`, payload mínimo sem dado pessoal sensível.
 - `PendingEntitlement`: `email`, `planSlug`, `accessEndsAt`, `hotmartSubscriberCode`, `appliedAt`.
 - Catálogo: `PricingPlanPrice.hotmartOfferCode` e `hotmartPlanId` (nulos) para mapear oferta Hotmart -> plano/intervalo.
-- Job diário novo (ou extensão de `subscriptionExpirationJob`): suspende `billingProvider='HOTMART'` com `accessEndsAt` vencido + carência.
+- Job diário (`subscriptionExpirationJob`): suspende `billingProvider='HOTMART'` com `accessEndsAt` vencido + carência e cancela o `TenantBilling` da paróquia/diocese do responsável, como a Stripe.
 - Backup do banco antes de aplicar; migração roda no deploy padrão.
 
 ## 5. Checkout e cobrança: Hotmart como principal

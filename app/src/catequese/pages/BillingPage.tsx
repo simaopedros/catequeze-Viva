@@ -71,6 +71,8 @@ import { RequestDioceseCoverageCard } from "../components/RequestDioceseCoverage
 import { ParishBillingConversion } from "../components/ParishBillingConversion";
 import { PersonalBillingActive } from "../components/PersonalBillingActive";
 import { ManagedBillingNotice } from "../components/ManagedBillingNotice";
+import { MemberAccessPausedNotice } from "../components/MemberAccessPausedNotice";
+import { isMemberInstitutionPaused, memberPauseKind } from "../../shared/memberAccessPause";
 
 function toPlanCard(
   plan: CatalogPlan,
@@ -780,6 +782,22 @@ export default function BillingPage() {
         </div>
       </div>
     );
+  }
+
+  if (
+    isMemberInstitutionPaused({
+      isPersonal,
+      isBillingManager: canManageBilling,
+      billing: workspace
+        ? {
+            plan: workspace.plan,
+            status: workspace.billingStatus ?? workspace.billing?.status ?? null,
+            trialEndsAt: workspace.trialEndsAt ?? null,
+          }
+        : null,
+    })
+  ) {
+    return <MemberAccessPausedNotice kind={memberPauseKind(workspace?.type)} />;
   }
 
   if (showCollaborator) {

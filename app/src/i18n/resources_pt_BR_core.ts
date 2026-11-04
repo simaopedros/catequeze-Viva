@@ -579,6 +579,10 @@ export const billing_pt_BR_core = {
       "support_question": "Dúvidas sobre a assinatura?",
       "support_cta": "WhatsApp"
     },
+    "member_access_paused": {
+      "parish": "O acesso da sua paróquia está temporariamente indisponível. Fale com o administrador da sua paróquia.",
+      "diocese": "O acesso da sua diocese está temporariamente indisponível. Fale com o administrador da sua diocese."
+    },
     "managed_notice": {
       "eyebrow": "Este espaço",
       "badge": "Participando",
