@@ -140,6 +140,24 @@ describe('resolveStripeCheckoutTrialDays', () => {
     ).toBe(0);
   });
 
+  it('gives no trial to an account created on or after the pricing cutoff, including parish billing', () => {
+    expect(
+      resolveStripeCheckoutTrialDays({
+        user: {
+          subscriptionStatus: null,
+          subscriptionPlan: null,
+          createdAt: new Date('2026-11-05T03:00:00.000Z'),
+        },
+        institutionalBilling: {
+          plan: 'UNLIMITED',
+          status: 'TRIAL',
+          trialEndsAt: new Date('2026-11-12T03:00:00.000Z'),
+        },
+        now: new Date('2026-11-06T12:00:00.000Z'),
+      }),
+    ).toBe(0);
+  });
+
   it('credits remaining institutional trial days only for grandfather accounts', () => {
     expect(
       resolveStripeCheckoutTrialDays({

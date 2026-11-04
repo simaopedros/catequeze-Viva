@@ -4,6 +4,7 @@ import { defineEnvValidationSchema } from 'wasp/env'
 import { authEnvSchema } from './auth/env'
 import { metaEnvSchema } from './payment/meta/env'
 import { stripeEnvSchema } from './payment/stripe/env'
+import { hotmartEnvSchema } from './payment/hotmart/env'
 import { fileUploadEnvSchema } from './file-upload/env'
 import { plausibleEnvSchema, googleAnalyticsEnvSchema } from './analytics/env'
 import { aiEnvSchema } from './server/ai/env'
@@ -35,6 +36,7 @@ export const serverEnvValidationSchema = defineEnvValidationSchema(
   authEnvSchema
     .merge(metaEnvSchema)
     .merge(stripeEnvSchema)
+    .merge(hotmartEnvSchema)
     .merge(aiEnvSchema)
     .merge(fileUploadEnvSchema)
     .merge(plausibleEnvSchema)

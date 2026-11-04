@@ -100,7 +100,10 @@ describe('new pricing cohorts and preserved accounts', () => {
     const beforeUsers = structuredClone(users); const beforeTenants = structuredClone(tenants);
     const ctx = { entities: {
       User: {
-        findMany: vi.fn(async ({ where }: any) => users.filter(u => where.subscriptionStatus.in.includes(u.subscriptionStatus) && u.paymentProcessorUserId === where.paymentProcessorUserId && u.createdAt < where.createdAt.lt)),
+        findMany: vi.fn(async ({ where }: any) => {
+          if (where?.billingProvider) return [];
+          return users.filter(u => where.subscriptionStatus.in.includes(u.subscriptionStatus) && u.paymentProcessorUserId === where.paymentProcessorUserId && u.createdAt < where.createdAt.lt);
+        }),
         update: vi.fn(async ({ where, data }: any) => Object.assign(users.find(u => u.id === where.id)!, data)),
       },
       TenantBilling: {
@@ -116,17 +119,20 @@ describe('new pricing cohorts and preserved accounts', () => {
     expect(isOnProductTrial(users.find(u => u.id === 'ongoing'))).toBe(true);
   });
 
-  it('only the catalog tables are referenced by every migration introduced for pricing v4', () => {
+  it('pricing v4 only rewrites the catalog and the hotmart migration does not rewrite subscription rows', () => {
     const migrations = resolve(__dirname, '../../migrations');
-    const additions = readdirSync(migrations).filter(name => /^\d{14}_/.test(name) && name >= '20261105030000');
-    expect(additions).toContain('20261105030000_single_pricing_v4');
-    for (const name of additions) {
-      const sql = readFileSync(resolve(migrations, name, 'migration.sql'), 'utf8');
-      expect(sql).not.toMatch(/\b(?:User|TenantBilling)\b/);
-      const tables = [...sql.matchAll(/(?:UPDATE|INSERT INTO|ALTER TABLE)\s+"(\w+)"/g)].map(m => m[1]);
-      expect(tables.length).toBeGreaterThan(0);
-      expect(tables.every(table => ['PricingPlan', 'PricingPlanPrice'].includes(table))).toBe(true);
-      expect(sql).not.toMatch(/DELETE|DROP TABLE/);
+    const priceSql = readFileSync(resolve(migrations, '20261105030000_single_pricing_v4', 'migration.sql'), 'utf8');
+    expect(priceSql).not.toMatch(/\b(?:User|TenantBilling)\b/);
+    expect(priceSql).not.toMatch(/DELETE|DROP TABLE/);
+    const hotmartSql = readFileSync(resolve(migrations, '20261105120000_hotmart_webhook', 'migration.sql'), 'utf8');
+    expect(hotmartSql).not.toMatch(/\bDELETE\b|\bDROP TABLE\b|\bDROP COLUMN\b|\bTRUNCATE\b/i);
+    for (const statement of hotmartSql.split(';')) {
+      const setClause = statement.match(/SET([\s\S]*?)(?:WHERE|$)/i)?.[1] ?? '';
+      expect(setClause).not.toMatch(/"subscriptionPlan"|"subscriptionStatus"/);
     }
+    expect(hotmartSql).toMatch(/HotmartWebhookEvent/);
+    expect(hotmartSql).toMatch(/PendingEntitlement/);
+    const additions = readdirSync(migrations).filter(name => /^\d{14}_/.test(name) && name >= '20261105030000');
+    expect(additions).toEqual(expect.arrayContaining(['20261105030000_single_pricing_v4', '20261105120000_hotmart_webhook']));
   });
 });

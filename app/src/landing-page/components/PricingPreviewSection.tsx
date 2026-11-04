@@ -22,6 +22,7 @@ import {
   landingFeatureList,
 } from "../hooks/useLandingText";
 import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
+import { useCheckoutConfiguration } from "../../client/hooks/useCheckoutConfiguration";
 
 type BillingInterval = "monthly" | "annual";
 
@@ -386,6 +387,8 @@ function DioceseContactCard({
     "Licença guarda-chuva que cobre as paróquias.",
   );
   const features = landingFeatureList(tr, "plans.diocese.features", []);
+  const { checkoutUrl } = useCheckoutConfiguration();
+  const dioceseHref = checkoutUrl("diocese", "monthly") || checkoutUrl("diocese", "annual");
 
   return (
     <div
@@ -413,11 +416,22 @@ function DioceseContactCard({
         ))}
       </ul>
       <div className="mt-6">
-        <SalesWhatsAppCta
-          placement={`${ns}_pricing_diocese`}
-          variant="inline"
-          cta={String(tr("price_cta_diocese"))}
-        />
+        {dioceseHref ? (
+          <a
+            href={dioceseHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-ink underline underline-offset-2 hover:text-brand-ink-soft"
+          >
+            {String(tr("price_cta_diocese"))}
+          </a>
+        ) : (
+          <SalesWhatsAppCta
+            placement={`${ns}_pricing_diocese`}
+            variant="inline"
+            cta={String(tr("price_cta_diocese"))}
+          />
+        )}
       </div>
     </div>
   );

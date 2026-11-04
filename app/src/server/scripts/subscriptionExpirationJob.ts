@@ -187,6 +187,36 @@ export const expireSubscriptionsJob = async (
       remindersSent++;
     }
 
+    const graceDays = Number(process.env.HOTMART_OVERDUE_GRACE_DAYS || 3);
+    const graceMs =
+      (Number.isFinite(graceDays) && graceDays >= 0 ? graceDays : 3) *
+      24 *
+      60 *
+      60 *
+      1000;
+    const hotmartUsers = await context.entities.User.findMany({
+      where: {
+        billingProvider: "HOTMART",
+        accessEndsAt: { not: null },
+        subscriptionStatus: { in: ["active", "past_due", "cancel_at_period_end"] },
+      },
+      select: { id: true, subscriptionStatus: true, accessEndsAt: true },
+    });
+    for (const hotmartUser of hotmartUsers) {
+      if (!hotmartUser.accessEndsAt) continue;
+      const ends = new Date(hotmartUser.accessEndsAt).getTime();
+      const extra = hotmartUser.subscriptionStatus === "past_due" ? graceMs : 0;
+      if (now.getTime() <= ends + extra) continue;
+      await context.entities.User.update({
+        where: { id: hotmartUser.id },
+        data: {
+          subscriptionStatus: "deleted",
+          subscriptionPlan: "catechist_free",
+        },
+      });
+      expiredCount++;
+    }
+
     logger.info(
       `[subscriptionExpirationJob] Expired ${expiredCount} trials; sent ${remindersSent} reminders.`,
     );

@@ -346,6 +346,8 @@ function DiocesePricingCard({
 }: {
   tp: (key: string, options?: any) => any;
 }) {
+  const { checkoutUrl } = useCheckoutConfiguration();
+  const dioceseHref = checkoutUrl("diocese", "monthly") || checkoutUrl("diocese", "annual");
   const featuresResult = tp("pricing.diocese_features", {
     returnObjects: true,
   });
@@ -388,15 +390,30 @@ function DiocesePricingCard({
         ))}
       </ul>
       <div className="mt-6">
-        <SalesWhatsAppCta
-          placement="pricing_page_diocese"
-          variant="inline"
-          cta={translatedString(
-            tp,
-            "pricing.diocese_cta",
-            "Falar com vendas sobre a diocese",
-          )}
-        />
+        {dioceseHref ? (
+          <a
+            href={dioceseHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-ink underline underline-offset-2 hover:text-brand-ink-soft"
+          >
+            {translatedString(
+              tp,
+              "pricing.diocese_cta",
+              "Falar com vendas sobre a diocese",
+            )}
+          </a>
+        ) : (
+          <SalesWhatsAppCta
+            placement="pricing_page_diocese"
+            variant="inline"
+            cta={translatedString(
+              tp,
+              "pricing.diocese_cta",
+              "Falar com vendas sobre a diocese",
+            )}
+          />
+        )}
       </div>
     </div>
   );

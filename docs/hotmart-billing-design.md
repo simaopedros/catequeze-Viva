@@ -21,9 +21,9 @@ Produção lê o catálogo do banco (`PRICING_CATALOG_SOURCE=db`: `PricingPlan`/
 - Textos i18n/landing/FAQ/ads sem "grátis" e "sem cartão", com R$ 47/R$ 297.
 - Chaves de ambiente `HOTMART_CHECKOUT_URL_*` e `HOTMART_PRIMARY_CHECKOUT` (desligada por padrão): com a flag ligada, os botões de assinar levam ao checkout Hotmart (e-mail do usuário no link) em vez do Stripe Checkout.
 - Stripe (webhook, sync, portal, cascata) continua funcionando para os assinantes atuais.
-- NÃO inclui: webhook da Hotmart, criação de preços na Stripe, mudança de env, deploy.
+- Webhook Hotmart postback v2 em `POST /api/hotmart/webhook`, desligado enquanto `HOTMART_PRIMARY_CHECKOUT` não for `true` (padrão). Não inclui criação de preços na Stripe, mudança de env de produção nem deploy.
 
-## 3. Webhook da Hotmart (a implementar numa 2ª branch, depois do ok)
+## 3. Webhook da Hotmart
 Rota nova `POST /api/hotmart/webhook` (Wasp `api`), pública, sem sessão.
 
 ### 3.1 Validação
@@ -88,7 +88,7 @@ Não dá para mover cartão da Stripe para a Hotmart; o cliente assina de novo.
 7. Liberados manualmente, plano grátis e trials em curso: **não entram** na migração.
 
 ## 8. Pontos em aberto para o Simão
-- Paróquia/Diocese também só pela Hotmart? Paróquias costumam pedir nota no CNPJ delas, boleto e às vezes contrato; a Diocese é venda assistida.
+- Paróquia e Diocese também vendem só pela Hotmart quando `HOTMART_PRIMARY_CHECKOUT=true` (decisão de 04/11/2026, nesta branch). Sem a flag, a Diocese continua no contato de vendas. Nota no CNPJ, boleto e contrato continuam operação fora do app.
 - Nota fiscal sem CNPJ a partir de 2027 (Simples excluído em 01/01/2027): falar com o contador antes de D0.
 - Taxa cerca de 3 vezes maior e recebimento em 30 dias (fluxo de caixa).
 - Hotmart pode recusar ou remover o produto (política de uso) e desativa o webhook se a URL falhar: ter monitor da rota e um "painel de compras sem conta".
