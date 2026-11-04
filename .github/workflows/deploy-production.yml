@@ -83,6 +83,7 @@ jobs:
             --build-arg REACT_APP_FAMILY_PORTAL_HOST=familia.catechis.app \
             --build-arg REACT_APP_STAFF_PORTAL_HOST=catechis.app \
             --build-arg REACT_APP_META_PIXEL_ID=2069332313989772 \
+            --build-arg REACT_APP_TURNSTILE_SITE_KEY="${{ vars.REACT_APP_TURNSTILE_SITE_KEY }}" \
             -t "${IMAGE}:prod-${{ github.sha }}" -t "${IMAGE}:prod-latest" .
           # GHCR sometimes returns "unknown blob" on the first push (layer race).
           push_with_retry() {
