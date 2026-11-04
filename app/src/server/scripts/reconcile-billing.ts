@@ -282,14 +282,13 @@ export async function reconcileCatalog(prisma: any): Promise<CatalogReconcileRep
       report.divergences.push(`missing plan ${expected.slug} in database`);
       continue;
     }
-    const monthly = expected.prices.find((p) => p.interval === 'monthly' || p.interval === 'one_time');
-    const dbMonthly = (row.prices || []).find((p: any) =>
-      (p.interval === 'MONTHLY' || p.interval === 'ONE_TIME') && p.isActive,
-    );
-    if (monthly && dbMonthly && dbMonthly.unitAmountCents !== monthly.unitAmountCents) {
-      report.divergences.push(
-        `${expected.slug} monthly/one_time cents db=${dbMonthly.unitAmountCents} expected=${monthly.unitAmountCents}`,
-      );
+    // Compare only prices offered to new sales, including the annual interval.
+    for (const price of expected.prices) {
+      const interval = price.interval === 'annual' ? 'ANNUAL' : price.interval === 'one_time' ? 'ONE_TIME' : 'MONTHLY';
+      const active = (row.prices || []).filter((p: any) => p.interval === interval && p.isActive && !p.archivedAt);
+      if (active.length !== 1 || active[0]?.unitAmountCents !== price.unitAmountCents) {
+        report.divergences.push(`${expected.slug} ${price.interval} cents expected=${price.unitAmountCents}; active prices=${active.map((p: any) => p.unitAmountCents).join(',') || 'missing'}`);
+      }
     }
     if (row.isPublic !== expected.isPublic) {
       report.divergences.push(`${expected.slug} isPublic db=${row.isPublic} expected=${expected.isPublic}`);

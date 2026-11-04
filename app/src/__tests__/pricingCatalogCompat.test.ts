@@ -45,7 +45,7 @@ describe('compatibility regression', () => {
     expect(DEFAULT_PLANS_BY_SLUG.unlimited.isPublic).toBe(true);
     expect(DEFAULT_PLANS_BY_SLUG.unlimited.isActive).toBe(true);
     expect(DEFAULT_PLANS_BY_SLUG.unlimited.name).toBe('Plano Paróquia');
-    expect(DEFAULT_PLANS_BY_SLUG.single.prices.find((p) => p.interval === 'monthly')?.unitAmountCents).toBe(990);
+    expect(DEFAULT_PLANS_BY_SLUG.single.prices.find((p) => p.interval === 'monthly')?.unitAmountCents).toBe(4700);
   });
 
   it('catalog reconcile blockers helper', () => {

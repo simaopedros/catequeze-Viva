@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Link } from "react-router";
+import { CheckoutLink as Link } from "../../client/components/CheckoutLink";
 import { ArrowRight, Check } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import {

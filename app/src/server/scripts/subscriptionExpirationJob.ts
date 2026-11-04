@@ -6,6 +6,7 @@ import { emitProductEventSafe } from "../email/events";
 import { appBaseUrl } from "../email/config";
 import { resolveUserLocale } from "../i18n/serverLocale";
 import { pluralPt } from "../../shared/pluralPt";
+import { cascadeCancelToTenantBilling } from "../../payment/billingCascade";
 
 /**
  * Daily job:
@@ -31,11 +32,13 @@ function daysBetween(from: Date, to: Date) {
 export const expireSubscriptionsJob = async (
   _args: unknown,
   context: {
-    entities: {
-      User: any;
-      TenantBilling: any;
-      Notification?: any;
-    };
+      entities: {
+        User: any;
+        TenantBilling: any;
+        Notification?: any;
+        Membership?: any;
+        Parish?: any;
+      };
   },
 ) => {
   const now = new Date();
@@ -185,6 +188,37 @@ export const expireSubscriptionsJob = async (
         });
       }
       remindersSent++;
+    }
+
+    const graceDays = Number(process.env.HOTMART_OVERDUE_GRACE_DAYS || 3);
+    const graceMs =
+      (Number.isFinite(graceDays) && graceDays >= 0 ? graceDays : 3) *
+      24 *
+      60 *
+      60 *
+      1000;
+    const hotmartUsers = await context.entities.User.findMany({
+      where: {
+        billingProvider: "HOTMART",
+        accessEndsAt: { not: null },
+        subscriptionStatus: { in: ["active", "past_due", "cancel_at_period_end"] },
+      },
+      select: { id: true, subscriptionStatus: true, accessEndsAt: true },
+    });
+    for (const hotmartUser of hotmartUsers) {
+      if (!hotmartUser.accessEndsAt) continue;
+      const ends = new Date(hotmartUser.accessEndsAt).getTime();
+      const extra = hotmartUser.subscriptionStatus === "past_due" ? graceMs : 0;
+      if (now.getTime() <= ends + extra) continue;
+      await cascadeCancelToTenantBilling(context, hotmartUser.id);
+      await context.entities.User.update({
+        where: { id: hotmartUser.id },
+        data: {
+          subscriptionStatus: "deleted",
+          subscriptionPlan: "catechist_free",
+        },
+      });
+      expiredCount++;
     }
 
     logger.info(

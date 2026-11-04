@@ -171,6 +171,7 @@ export const onAfterSignup = async ({
         userId: user.id,
         metadata: { provider: providerName },
       });
+      await applyPendingHotmartIfPresent(prisma, user);
     }
   }
 
@@ -293,7 +294,23 @@ export const onAfterEmailVerified = async ({
     userId: user.id,
     metadata: { provider: "email" },
   });
+  await applyPendingHotmartIfPresent(prisma, user);
 };
+
+async function applyPendingHotmartIfPresent(
+  prisma: any,
+  user: { id: string; email?: string | null },
+): Promise<void> {
+  if (!prisma?.pendingEntitlement?.findMany) return;
+  try {
+    const { applyPendingHotmartEntitlements } = await import(
+      "../payment/hotmart/applyEntitlement"
+    );
+    await applyPendingHotmartEntitlements(prisma, user);
+  } catch {
+    // Signup must succeed even if a pending purchase cannot be applied yet.
+  }
+}
 
 /** Extract client IP + UA from the Wasp/Express signup request for Meta EMQ. */
 export function extractClientMetaFromReq(req: unknown): {

@@ -55,7 +55,7 @@ export function toCatalogPlan(plan: PublicCatalogPlan): CatalogPlan {
       isPublic: plan.isPublic,
       creditsAmount: plan.creditsAmount,
       stripeProductId: null,
-      pricingVersion: 3,
+      pricingVersion: 4,
       prices: [],
     }),
     slug: plan.slug,

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router";
+import { CheckoutLink as Link } from "../../client/components/CheckoutLink";
 import * as m from "motion/react-m";
 import { AnimatePresence } from "motion/react";
 import { ArrowRight, Loader2, Sparkles, Wand2 } from "lucide-react";

@@ -263,6 +263,12 @@ enum BillingStatus {
   TRIAL
 }
 
+enum BillingProvider {
+  STRIPE
+  HOTMART
+  MANUAL
+}
+
 enum AuditAction {
   CREATE
   UPDATE
@@ -413,7 +419,7 @@ model User {
   locale    String  @default("pt-BR")
   timezone  String  @default("America/Sao_Paulo")
 
-  // Payment (Stripe only, BRL)
+  // Payment (Stripe for current subscribers, Hotmart for new sales)
   paymentProcessorUserId        String?   @unique
   stripeSubscriptionId          String?
   subscriptionStatus            String?
@@ -421,6 +427,10 @@ model User {
   datePaid                      DateTime?
   trialEndsAt                   DateTime?
   credits                       Int       @default(3)
+  /// Null means legacy (classified only by the fields above).
+  billingProvider               BillingProvider?
+  hotmartSubscriberCode         String?   @unique
+  accessEndsAt                  DateTime?
 
   // Pricing version (grandfathering)
   pricingVersion      Int?          @default(2)
@@ -1721,7 +1731,7 @@ model PricingPlan {
   translations Json?
 
   stripeProductId String? @unique
-  pricingVersion  Int     @default(3)
+  pricingVersion  Int     @default(4)
 
   prices PricingPlanPrice[]
 }
@@ -1741,9 +1751,13 @@ model PricingPlanPrice {
   stripeLookupKey String?         @unique
   isActive        Boolean         @default(true)
   archivedAt      DateTime?
+  hotmartOfferCode String?
+  hotmartPlanId    String?
 
   @@index([planId, interval, isActive])
   @@index([stripePriceId])
+  @@index([hotmartOfferCode])
+  @@index([hotmartPlanId])
 }
 
 // ─── AI Credits ────────────────────────────────────────────────────────────────
@@ -1946,6 +1960,41 @@ model PricingEvent {
   @@index([event])
   @@index([createdAt])
   @@index([sessionId])
+}
+
+/// Hotmart postback v2 audit. Payload is redacted (no document, phone or address).
+model HotmartWebhookEvent {
+  id          String    @id @default(uuid())
+  eventId     String    @unique
+  event       String
+  receivedAt  DateTime  @default(now())
+  processedAt DateTime?
+  /// PROCESSED | IGNORED | FAILED
+  status      String
+  userId      String?
+  transaction String?
+  error       String?
+  payload     Json
+
+  @@index([transaction, event])
+  @@index([status])
+  @@index([receivedAt])
+}
+
+/// Purchase that arrived before a verified account existed. Applied after email verification.
+model PendingEntitlement {
+  id                    String    @id @default(uuid())
+  createdAt             DateTime  @default(now())
+  email                 String
+  planSlug              String
+  interval              String?
+  accessEndsAt          DateTime?
+  hotmartSubscriberCode String?
+  transaction           String?   @unique
+  appliedAt             DateTime?
+  voidedAt              DateTime?
+
+  @@index([email])
 }
 
 model TrackedEvent {

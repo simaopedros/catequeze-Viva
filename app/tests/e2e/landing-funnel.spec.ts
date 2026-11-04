@@ -120,6 +120,13 @@ test.describe("landing funnel — meta and conversion surfaces", () => {
     await expect(pricing.locator('a[href="/pricing"]')).toHaveCount(0);
   });
 
+  test("pricing uses the new subscription offer", async ({ page }) => {
+    await openLanding(page, "/pricing");
+    await expect(page.getByText("R$ 47", { exact: true })).toBeVisible();
+    await expect(page.getByText(/R\$ 297/).first()).toBeVisible();
+    await expect(page.getByText(/7 dias grátis|sem cartão|9,90/i)).toHaveCount(0);
+  });
+
   test("viewport meta never pins maximum-scale=1", async ({ page }) => {
     await openLanding(page, "/");
     const metas = page.locator('meta[name="viewport"]');

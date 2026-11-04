@@ -80,5 +80,8 @@ function generateMockUserData(): MockUserData {
     lifecycleEmailsOptOutAt: null,
     emailVerifiedAt: null,
     onboardingCompletedAt: null,
+    billingProvider: null,
+    hotmartSubscriberCode: null,
+    accessEndsAt: null,
   };
 }

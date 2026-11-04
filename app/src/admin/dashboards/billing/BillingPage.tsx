@@ -49,6 +49,7 @@ import {
   resolveAdminCodeLabel,
   resolveAdminPlanLabel,
 } from "../../../shared/adminLabels";
+import { PendingHotmartPanel } from "./PendingHotmartPanel";
 
 type LicenseRow = {
   id: string;
@@ -196,6 +197,8 @@ const BillingPage = ({ user }: { user: AuthUser }) => {
         />
 
         {error && <p className="text-sm text-destructive">{error}</p>}
+
+        <PendingHotmartPanel />
 
         {isLoading ? (
           <div className="space-y-4" aria-busy="true">

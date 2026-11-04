@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router";
+import { CheckoutLink as Link } from "../../client/components/CheckoutLink";
 import { ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { Button } from "../../client/components/ui/button";

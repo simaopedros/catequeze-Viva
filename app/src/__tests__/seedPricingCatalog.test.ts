@@ -33,8 +33,8 @@ describe("seedPricingCatalog snapshot", () => {
       },
       {
         slug: "single",
-        monthlyCents: 990,
-        annualCents: 9900,
+        monthlyCents: 4700,
+        annualCents: 29700,
         maxClasses: 3,
         maxCatechumens: 150,
         isSystem: true,

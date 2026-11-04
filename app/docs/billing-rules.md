@@ -1,214 +1,59 @@
-# Billing Rules — Catequese Viva
+# Regras de assinatura do Catechis
 
-Canonical source of truth for how billing state governs access across scopes.
+Preços da versão 4, a partir de 05/11/2026:
 
-Public catalog (self-serve Stripe): **Catequista** (`single`, R$ 9,90 / R$ 99) and **Paróquia** (`unlimited`, R$ 99 / R$ 990). **Diocese** is assisted sales (WhatsApp + admin license), not a public SKU.
+| Plano | Mensal | Anual |
+| --- | --- | --- |
+| Catequista (`single`) | R$ 47 | R$ 297 |
+| Paróquia (`unlimited`) | R$ 99 | R$ 990 |
+| Diocese | Sob consulta | Sob consulta |
 
----
+O anual Catequista economiza R$ 267 em relação a 12 mensalidades (R$ 564), aproximadamente 47%. Os limites continuam iguais: Catequista até 3 turmas e 150 catequizandos; os demais limites vêm do catálogo, sem mudança nesta versão.
 
-## 1. Scopes
+## Contas novas e data de corte
 
-| Scope | Governed by | Stored in |
-|-------|-------------|-----------|
-| Personal workspace | `User.subscriptionStatus` + `User.subscriptionPlan` | `User` model |
-| Institutional workspace | `TenantBilling.status` + `TenantBilling.plan` | `TenantBilling` model |
+`NEW_PRICING_ACCOUNT_CUTOFF` tem o valor padrão `2026-11-05T00:00:00-03:00` (03:00 UTC). O override opcional `NEW_PRICING_ACCOUNT_CUTOFF_ISO` deve ser uma data ISO válida. O helper puro `isNewPricingAccount(createdAt)` compara a criação da conta com esse corte, incluindo a igualdade. A query pública `getPlanCatalog` fornece a configuração de checkout e o mesmo corte ao navegador.
 
-A user may have **both** a personal subscription AND be part of an institutional workspace with its own license. These are independent. Organizing as a parish does **not** convert the personal account; the personal subscription stays until canceled in the portal.
+Para contas criadas a partir do corte, o cadastro não concede plano nem período promocional. O campo `subscriptionPlan` começa nulo, sem alterar o schema de User. Após autenticar e verificar o e-mail, a conta vai para `/app/billing` e precisa assinar para iniciar seu espaço. `ensureProductTrial` não grava nada para essas contas e o Stripe Checkout recebe zero dias promocionais. Não há nova oferta de acesso gratuito.
 
----
+Convites e contas do Portal da Família continuam com acesso conforme o papel e o plano do espaço que as recebe. Colaboradores convidados não são responsáveis pela assinatura do coordenador.
 
-## 2. Personal entitlement
+## Contas existentes
 
-A user's **personal** access is determined solely by `User.subscriptionStatus` and `User.subscriptionPlan`.
+Contas anteriores ao corte conservam o comportamento anterior de `ensureProductTrial`. Não existe migração ou seed desta versão que reescreva User ou TenantBilling.
 
-### 2.1. Status semantics for personal access
+- `catechist_free` com status nulo permanece com os mesmos campos e limites.
+- Liberações manuais ACTIVE, inclusive TenantBilling sem assinatura Stripe, conservam plano, status e acesso.
+- Assinantes Stripe conservam plano, identificadores, portal, renovação e tratamento de webhooks, inclusive `past_due` e `cancel_at_period_end`.
+- Trials existentes continuam com a regra anterior de concessão e expiração. **Não são congelados.** `subscriptionExpirationJob.ts` continua expirando TenantBilling TRIAL vencido sem gestão Stripe e User `trialing`/`trial` sem cliente Stripe quando `createdAt + 7 dias` venceu. O job não passa a usar `trialEndsAt` do User. Além disso, suspende acesso Hotmart vencido e aplica a mesma cascata de cancelamento de paróquia/diocese que a Stripe. Trials Stripe seguem os webhooks. Os banners e avisos de estado continuam disponíveis para essas contas.
 
-| `subscriptionStatus` | Has access? | Notes |
-|---------------------|-------------|-------|
-| `active` | **Yes** | Full paid access if plan is `single` (legacy aliases `catechist_pro`, `catechist_ai` resolve to `single`) |
-| `cancel_at_period_end` | **Yes** — until `currentPeriodEnd` | Stripe: `cancel_at_period_end = true` on the subscription |
-| `past_due` | **Yes** (grace period) | Stripe: payment failed, retrying. Access preserved during dunning. |
-| `trialing` | **Yes** — until `User.trialEndsAt` | Stripe Checkout trial (`subscription.status = trialing`). Card is collected at checkout; first charge is at trial end. |
-| `deleted` | **No** | Subscription fully canceled/expired |
-| `null` / `undefined` | **No** (free plan) | Never subscribed or trial expired |
+Administração de licenças e contagens permanece com a classificação atual de liberações manuais, assinantes e trials. O job de lifecycle deixa de selecionar a nova coorte para campanhas de trial; os avisos da coorte anterior continuam normalmente.
 
-Product trial is **7 days** (`SUBSCRIPTION_TRIAL_DAYS`).
+## Catálogo e preços legados
 
-- **No-card in-app trial**: `ensureProductTrial` (called before creating the personal workspace, a class, or a parish) grants `trialing` + `subscriptionPlan = single` + `trialEndsAt = createdAt + 7 days` when the account has no `subscriptionStatus`, no `paymentProcessorUserId`, no `trialEndsAt`, no `datePaid`, is on `catechist_free`, and is less than 7 days old. The write is conditional (`updateMany`), so it is idempotent and never overrides a Stripe subscription or re-grants a previous trial.
-- **Stripe Checkout trial**: card collected at checkout. Users still inside the in-app trial only get the remaining days (`isInAppProductTrial`); users whose trial already ended (any `trialEndsAt` left behind) get 0 days.
-- Grandfather: in-app `trialing` without `trialEndsAt` still uses `createdAt + 7 days`.
+Produção usa `PRICING_CATALOG_SOURCE=db`. A migração `20261105030000_single_pricing_v4` altera somente PricingPlan e PricingPlanPrice. Inclui os valores 4700/29700, ativos e sem `stripePriceId`. Os preços antigos ficam arquivados para novas vendas, conservando os IDs Stripe e os valores para resolver assinaturas existentes. Não são apagados.
 
-### 2.2. Personal plan resolution
+O catálogo público e checkout usam somente preços ativos e não arquivados. A resolução de assinaturas por ID Stripe inclui os preços arquivados. O seed não vincula IDs de ambiente antigos aos novos preços Catequista. `reconcile-billing --catalog` confere os intervalos mensal e anual ativos, sem reescrever assinaturas. `stripeCatalogSync` continua disponível para a gestão já existente, mas não é executado por esta migração nem por esta entrega. Nenhuma chamada à API Stripe faz parte desta operação.
 
-- If `subscriptionStatus` is `trialing` and the trial window is open (`trialEndsAt` or grandfather `createdAt + 7`), the user has **Plano Catequista**.
-- If `subscriptionStatus` is active-like (`active`, `cancel_at_period_end`, `past_due`) AND `subscriptionPlan` is a personal plan (`single` or legacy `catechist_pro` / `catechist_ai`), the user has **Plano Catequista**.
-- In all other cases, the user has `catechist_free`.
-- Institutional plan values (`unlimited`, legacy `parish_*`, `diocese`) on `User.subscription*` fields are **never** treated as personal plans. Institutional access is resolved through `TenantBilling`.
+**Disponibilidade Stripe para novas vendas Catequista:** não existe Price Stripe dos valores novos nesta entrega. A flag Hotmart desligada preserva o fluxo Stripe dos planos com preços válidos, mas o checkout Catequista falha com mensagem de indisponibilidade até haver uma oferta de checkout configurada. O sistema nunca usa um ID antigo para cobrar um valor diferente do anunciado. Nenhum Price/Product Stripe será criado nesta branch.
 
-### 2.3. Personal transitions
+## Checkout Hotmart
 
-```
-null → trialing (no-card in-app grant by ensureProductTrial; trialEndsAt = createdAt + 7 days)
-null → trialing (Stripe Checkout with trial_period_days; webhook sets trialing + trialEndsAt)
-trialing → active (trial ends and Stripe charges; invoice.paid / subscription.updated)
-null → active (checkout without remaining trial days)
-active → cancel_at_period_end (user cancels; Stripe sets cancel_at_period_end)
-cancel_at_period_end → active (user reactivates before period end)
-cancel_at_period_end → deleted (period ends; webhook fires subscription.deleted)
-trialing → deleted (trial canceled / payment method missing at trial end)
-active → past_due (payment fails; Stripe sets past_due)
-past_due → active (payment recovered)
-past_due → deleted (dunning exhausted; Stripe cancels)
-```
+`HOTMART_PRIMARY_CHECKOUT` é `false` por padrão. As URLs públicas, inicialmente vazias nos exemplos, são:
 
----
+- `HOTMART_CHECKOUT_URL_SINGLE_MONTHLY`
+- `HOTMART_CHECKOUT_URL_SINGLE_ANNUAL`
+- `HOTMART_CHECKOUT_URL_UNLIMITED_MONTHLY`
+- `HOTMART_CHECKOUT_URL_UNLIMITED_ANNUAL`
 
-## 3. Institutional entitlement
+Com a flag ligada e URL HTTPS válida para o plano/intervalo, os links de assinatura, preços e landing abrem a Hotmart em nova aba, com `sck=catechis` e `email` da conta autenticada. A action de checkout aplica a mesma política antes de qualquer chamada à Stripe. Catequista (`single`), Paróquia (`unlimited`) e Diocese (`diocese`, URLs `HOTMART_CHECKOUT_URL_DIOCESE_MONTHLY` e `HOTMART_CHECKOUT_URL_DIOCESE_ANNUAL`) usam essas URLs. Com a flag ligada, uma conta que não é assinante Stripe atual não cai no Checkout Stripe desses planos, mesmo se a URL estiver vazia. Assinantes Stripe atuais continuam com gestão e portal Stripe. Sem flag, permanece o fluxo Stripe, respeitando a disponibilidade de preços ativos. A Diocese sem flag continua no contato de vendas.
 
-A **parish's** institutional access is determined by `TenantBilling`, resolved in this precedence order:
+O postback v2 fica em `POST /api/hotmart/webhook` e também só processa com `HOTMART_PRIMARY_CHECKOUT=true`, `HOTMART_HOTTOK` e `HOTMART_PRODUCT_UCODES`. Sem isso, a rota responde 404 ou ignora o produto e não altera assinatura. O hottok não é gravado nem logado. A compra aprovada ativa o plano no modelo atual (`subscriptionPlan`/`subscriptionStatus`): R$ 47 e R$ 297 viram Catequista (`single`); R$ 99 e R$ 990, e as ofertas de Diocese, viram Paróquia (`unlimited`) com a mesma cascata de `TenantBilling`. Sem `date_next_charge`, `accessEndsAt` fica na data aprovada mais um mês ou um ano, mais um dia. Reembolso e chargeback cortam o acesso. Atraso e `PURCHASE_PROTEST` ficam `past_due` com carência. Cancelamento mantém acesso até `accessEndsAt`. O job de expiração, ao suspender, cancela o `TenantBilling` da paróquia e da diocese do responsável. Quem administra continua vendo a cobrança. Catequistas e demais membros veem só “O acesso da sua paróquia está temporariamente indisponível. Fale com o administrador da sua paróquia.” (ou a frase da diocese), sem pagamento, plano ou assinatura. Compra sem conta verificada aparece em `/admin/billing` para um admin vincular ao usuário. Conta manual e assinante Stripe ativo não são reescritos. Abrir ou voltar do checkout não libera acesso e não comprova pagamento.
 
-### 3.1. Coverage resolution order (highest to lowest)
+## Gestão e segurança das assinaturas atuais
 
-1. **Diocese umbrella** — If the parish belongs to a diocese that has an **ACTIVE** `TenantBilling` with plan `UNLIMITED` or `DIOCESE`, all parishes under that diocese are covered (“coberta pela diocese”).
-2. **Parish own billing** — If the parish has its own **active** `TenantBilling` with an institutional plan (`unlimited` / Plano Paróquia, or legacy parish slugs), that plan applies.
-3. **Owner umbrella** — If the parish owner (`ownerId`) has an **active** personal subscription with an institutional plan, OR owns another parish that has an active institutional `TenantBilling`, that coverage extends.
-4. **Free fallback** — If none of the above apply, the parish has `CATECHIST_FREE`.
+Escopos pessoal e institucional continuam distintos. TenantBilling ativo próprio, cobertura da diocese e cobertura institucional do dono seguem a ordem atual de resolução. Status ACTIVE e PAST_DUE continuam válidos; TRIAL requer prazo válido. Nenhum limite de plano foi alterado.
 
-### 3.2. Status semantics for institutional access
+O portal, cancelamento ao final do período, prevenção de assinatura duplicada, `syncUserSubscription`, `billingCascade` e `webhook.ts` continuam existentes. Eventos de cobrança precisam continuar vinculados à assinatura correta e tratados com a idempotência atual. O arquivamento de um preço no catálogo não encerra a assinatura Stripe que o usa.
 
-| `TenantBilling.status` | Has access? | Notes |
-|------------------------|-------------|-------|
-| `ACTIVE` | **Yes** | Paid license or complimentary (admin) |
-| `TRIAL` | **Yes** — if `trialEndsAt >= now` | **7-day** Stripe trial of Plano Paróquia |
-| `TRIAL` | **No** — if `trialEndsAt < now` | Trial expired |
-| `PAST_DUE` | **Yes** (grace period) | Payment failed, retrying |
-| `CANCELED` | **No** | License canceled |
-| `null` (no TenantBilling record) | Fall through to coverage resolution | |
-
-### 3.3. Institutional transitions
-
-```
-(no TenantBilling / CANCELED) → unpaid parish workspace (created so Checkout can attach)
-CANCELED → TRIAL (Stripe Checkout of unlimited with trial_period_days; webhook cascade)
-TRIAL → ACTIVE (trial ends and Stripe charges)
-(no TenantBilling) → ACTIVE (new parish under diocese umbrella or owner umbrella)
-ACTIVE → PAST_DUE (payment fails)
-ACTIVE → CANCELED (owner cancels subscription; cascadeCancel fires)
-PAST_DUE → ACTIVE (payment recovered)
-PAST_DUE → CANCELED (dunning exhausted)
-CANCELED → ACTIVE (new subscription purchased or admin complimentary)
-```
-
----
-
-## 4. New parish creation billing
-
-When a new institutional parish (type ≠ `PERSONAL`) is created:
-
-1. If the parish has a `dioceseId` and the diocese has an **ACTIVE** `TenantBilling` with plan `UNLIMITED` or `DIOCESE` → **no `TenantBilling` created** (covered by diocese umbrella).
-2. If the creator (`ownerId`) has an **active** personal subscription with an institutional plan → the parish gets `ACTIVE` `TenantBilling` with the creator's plan.
-3. Otherwise → `CANCELED` / `CATECHIST_FREE` until Stripe Checkout of Plano Paróquia. The UI may create that unpaid workspace (`startTrial`) and send the user to `/app/billing?plan=unlimited`. Webhook sets `TRIAL` + `trialEndsAt` from `subscription.trial_end`.
-
-Checkout of Plano Paróquia (`unlimited`) requires a non-personal workspace. Personal → parish is a migration that **creates** a `PARISH` workspace; it does not convert the personal space.
-
-The billing page catalog is **scoped to the active workspace**: personal shows only Catequista (`single`); parish/community/diocese shows only Plano Paróquia (`unlimited`). A `?plan=` query for the other scope must not hide the local offer. Parish trial is the **Plano Paróquia** Stripe trial, not Catequista limits.
-
----
-
-## 5. Entitlement helper contract
-
-These functions are the **only** way code should reason about billing state:
-
-### Personal
-- `hasPersonalAccess(user)` → `boolean`
-- `getPersonalPlan(user)` → `PlanId`
-
-### Institutional
-- `hasInstitutionalAccess(billing)` → `boolean`
-- `getInstitutionalPlan(billing)` → `PlanId`
-
-### Workspace-effective
-- `getWorkspaceEffectivePlan({ user, parish, billing })` → `{ plan: PlanId, source: 'personal' | 'institutional' | 'free' }`
-
-### Active-like status check
-- `isSubscriptionActiveLike(status)` → `boolean` — true for `active`, `cancel_at_period_end`, `past_due`
-
-Rules:
-- Never compare `subscriptionStatus === 'active'` directly in UI or backend guards.
-- `cancel_at_period_end` **always** counts as access.
-- `past_due` counts as access (grace period).
-- `trial` counts as access until `trialEndsAt`.
-
----
-
-## 6. Subscription management rules
-
-### 6.1. Upgrade (change plan within same scope)
-- Must find the **existing active subscription** on the same scope
-- Use Stripe's `subscriptions.update()` with the new `priceId`
-- **Never** create a new checkout session when an active subscription exists
-- Apply proration immediately (`proration_behavior: 'always_invoice'`)
-
-### 6.2. Downgrade
-- Schedule at period end by updating subscription with new price and `proration_behavior: 'none'`
-- Effective at `currentPeriodEnd`
-
-### 6.3. New subscription
-- Only allowed when **no active subscription** exists for that scope
-- Creates a new Stripe Checkout session
-- Plano Paróquia (`unlimited`) checkout requires a non-personal workspace
-- Diocese is **not** sold via checkout; admin assigns `UNLIMITED`/`DIOCESE` on the diocese `TenantBilling`
-
-### 6.4. Cancel
-- Default: schedule cancel at period end (`cancel_at_period_end: true`)
-- Access preserved until `currentPeriodEnd`
-- Immediate cancel (admin-only) requires explicit override
-- Never zero out plan locally before the final webhook
-- Canceling personal `single` does not cancel parish `TenantBilling`, and vice versa
-
-### 6.5. Duplicate prevention
-- One active subscription per scope per customer
-- Before opening checkout, verify no active subscription exists
-- `paymentProcessorUserId` (Stripe customer ID) must be unique per user
-
----
-
-## 7. Webhook rules
-
-### 7.1. Idempotency
-- Webhooks must be idempotent by Stripe `event.id`
-- Re-processed events must be no-ops
-
-### 7.2. Subscription identity
-- Every webhook event must be matched to the correct subscription via `subscription.id` from Stripe
-- Never update `subscriptionPlan`/`subscriptionStatus` based solely on `customerId`
-- An old subscription's events must not overwrite a newer subscription's state
-
-### 7.3. Valid transitions only
-- `active → cancel_at_period_end` (valid)
-- `active → past_due` (valid)
-- `cancel_at_period_end → active` (valid)
-- `cancel_at_period_end → deleted` (valid)
-- `past_due → active` (valid)
-- `past_due → deleted` (valid)
-- Any other transitions must be logged and validated
-
-### 7.4. Cascade
-- `subscription.deleted` → cascade cancel all tenant billing for that user's owned parishes
-- `invoice.paid` with institutional plan → cascade activate tenant billing
-
----
-
-## 8. State matrix summary
-
-| User.subscriptionStatus | TenantBilling.status | Personal access | Institutional access |
-|------------------------|---------------------|-----------------|---------------------|
-| `active` (`single`) | — | Plano Catequista | — |
-| `cancel_at_period_end` | — | Plano Catequista (until end) | — |
-| `past_due` | — | Plano Catequista (grace) | — |
-| `deleted` / null | `ACTIVE` (`unlimited`) | Free | Plano Paróquia |
-| `active` (institutional vestigial) | `ACTIVE` | Free | Parish plan |
-| `deleted` / null | `TRIAL` (valid) | Free | Free (7-day trial) |
-| `deleted` / null | `TRIAL` (expired) | Free | Free |
-| `deleted` / null | `CANCELED` / null | Free | Free |
-| `deleted` / null | Diocese `ACTIVE` (`UNLIMITED`/`DIOCESE`) | Free | Diocese umbrella |
+A mudança de preço na renovação dos assinantes atuais, com aviso prévio de 30 dias, é uma operação manual fora desta branch. Esta entrega não altera assinaturas, não envia avisos, não publica anúncios e não executa migração em produção.

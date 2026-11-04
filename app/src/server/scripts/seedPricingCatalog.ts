@@ -72,7 +72,7 @@ function planRowData(plan: CatalogPlan) {
     socialMaxVideoSeconds: plan.social.maxVideoSeconds,
     features: plan.features as any,
     translations: plan.translations as any,
-    pricingVersion: plan.pricingVersion ?? 3,
+    pricingVersion: plan.pricingVersion ?? 4,
   };
 }
 
@@ -97,6 +97,10 @@ async function resolveStripeImport(
   plan: CatalogPlan,
   price: CatalogPlan["prices"][number],
 ) {
+  if (plan.slug === 'single') {
+    return { stripePriceId: null, unitAmountCents: price.unitAmountCents,
+      lookupKey: price.stripeLookupKey, productId: null };
+  }
   const envPriceId = readEnvStripePriceId(
     plan.slug,
     envIntervalFor(price.interval),

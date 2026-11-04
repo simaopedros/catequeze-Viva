@@ -5,7 +5,7 @@ import {
   ShieldCheck,
   Smartphone,
 } from "lucide-react";
-import { Link } from "react-router";
+import { CheckoutLink as Link } from "../../client/components/CheckoutLink";
 import { Badge } from "../../client/components/ui/badge";
 import { Button } from "../../client/components/ui/button";
 import { Card } from "../../client/components/ui/card";

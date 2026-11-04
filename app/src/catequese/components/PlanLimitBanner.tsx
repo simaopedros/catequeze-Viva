@@ -1,5 +1,5 @@
 import { Info, ArrowRight, ArrowUpRight, Building2 } from "lucide-react";
-import { Link } from "react-router";
+import { CheckoutLink as Link } from "../../client/components/CheckoutLink";
 import { useTranslation, Trans } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";

@@ -1,7 +1,7 @@
 {
   "kicker": "Para catequistas",
   "title": "Blog do Catechis",
-  "intro": "Formação, dicas de encontro, liturgia e gestão da catequese — conteúdo para quem acompanha turmas de verdade.",
+  "intro": "Formação, dicas de encontro, liturgia e gestão da catequese. conteúdo para quem acompanha turmas de verdade.",
   "all_categories": "Todos",
   "empty_title": "Ainda não há artigos publicados",
   "empty_desc": "Em breve, conteúdos práticos para a rotina do catequista.",
@@ -9,7 +9,7 @@
   "not_found": "Artigo não encontrado",
   "not_found_desc": "Este endereço não corresponde a um artigo publicado.",
   "cta_title": "Organize a catequese no mesmo lugar",
-  "cta_text": "Prepare encontros, faça a chamada e fale com as famílias. Comece os 7 dias grátis.",
+  "cta_text": "Assinar agora",
   "categories": {
     "FORMATION": "Formação",
     "PRACTICAL_TIPS": "Dicas práticas",

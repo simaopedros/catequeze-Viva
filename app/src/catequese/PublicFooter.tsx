@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { CheckoutLink as Link } from "../client/components/CheckoutLink";
 import { useTranslation } from "react-i18next";
 import { BrandLockup } from "../client/components/brand/Brand";
 import { useHasBlogPosts } from "../client/hooks/useHasBlogPosts";

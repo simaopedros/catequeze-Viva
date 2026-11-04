@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { CheckoutLink as Link } from "../../client/components/CheckoutLink";
 import { ArrowRight, Check } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";
@@ -9,6 +9,7 @@ import {
   trackViewPricing,
 } from "../../client/analytics/metaTracking";
 import { usePlanCatalog } from "../../client/hooks/usePlanCatalog";
+import { useCheckoutConfiguration } from "../../client/hooks/useCheckoutConfiguration";
 import {
   annualDiscountPercent,
   formatMonthlyFromAnnualCents,
@@ -32,6 +33,7 @@ export function GrowthPricingSection({ ns = "landing" }: { ns?: string }) {
   const tr = useLandingText(ns);
   const { t } = useTranslation("public");
   const { localize, getBySlug } = usePlanCatalog();
+  const { checkoutUrl } = useCheckoutConfiguration();
   const {
     ref: headerRef,
     className: headerClass,
@@ -66,8 +68,11 @@ export function GrowthPricingSection({ ns = "landing" }: { ns?: string }) {
   const note = String(tr("growth.note") || "").trim();
   const billedAnnual = String(tr("growth.billed_annual") || "").trim();
   const billedMonthly = String(tr("growth.billed_monthly") || "").trim();
-  const dioceseHref = getSalesWhatsAppUrl(t("sales_whatsapp.prefill"));
   const queryInterval = interval === "annual" ? "annual" : "monthly";
+  const dioceseHref =
+    checkoutUrl("diocese", queryInterval) ||
+    checkoutUrl("diocese", queryInterval === "annual" ? "monthly" : "annual") ||
+    getSalesWhatsAppUrl(t("sales_whatsapp.prefill"));
 
   useEffect(() => {
     if (!isVisible || tracked.current) return;

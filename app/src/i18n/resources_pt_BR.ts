@@ -714,6 +714,21 @@ export const admin_pt_BR = {
         "status_ARCHIVED": "Arquivado",
         "status_deleted": "Excluído"
       },
+      "hotmart_pending": {
+        "title": "Compras Hotmart sem conta",
+        "subtitle": "Vincule a compra ao usuário certo. Conta liberada manualmente ou com Stripe ativo não é sobrescrita.",
+        "empty": "Nenhuma compra pendente.",
+        "loading": "Carregando compras pendentes.",
+        "col_email": "E-mail da compra",
+        "col_plan": "Plano",
+        "col_transaction": "Transação",
+        "col_until": "Acesso até",
+        "col_user": "Usuário",
+        "user_placeholder": "ID do usuário",
+        "user_required": "Informe o ID do usuário.",
+        "link": "Vincular",
+        "error": "Não foi possível vincular a compra."
+      },
       "owner": {
         "title": "Visão do dono",
         "subtitle": "Receita, conversão, inadimplência, trials e saúde de e-mail — calculados ao vivo (sem DailyStats).",
@@ -1240,7 +1255,7 @@ export const auth_pt_BR = {
     "login_google": "Continuar com Google",
     "login_continue_with_email": "Continuar com email",
     "login_no_account": "Ainda não tem uma conta?",
-    "login_create_account": "Começar os 7 dias",
+    "login_create_account": "Assinar agora",
     "login_create_account_family": "Criar conta da família",
     "login_error_fill_all": "Preencha todos os campos.",
     "login_error_invalid": "Email ou senha incorretos.",
@@ -1261,7 +1276,7 @@ export const auth_pt_BR = {
     "two_factor_back_button": "Voltar ao login",
     "two_factor_error_required": "Digite o código de 6 dígitos.",
     "two_factor_error_invalid": "Código inválido.",
-    "signup_title": "Começar os 7 dias",
+    "signup_title": "Criar conta",
     "signup_subtitle": "Crie sua conta e organize turma, chamada e encontros no mesmo lugar.",
     "signup_email_label": "Email",
     "signup_email_placeholder": "seu@email.com",
@@ -1336,12 +1351,12 @@ export const auth_pt_BR = {
     "two_factor_setup_success_activate": "Autenticação de dois fatores ativada com sucesso!",
     "two_factor_setup_success_deactivate": "2FA desativado com sucesso.",
     "two_factor_setup_verify_button": "Verificar",
-    "email_verification_subject": "Confirme seu email da equipe de catequese — Catechis",
+    "email_verification_subject": "Confirme seu email da equipe de catequese. Catechis",
     "email_verification_body": "Você criou uma conta no painel pastoral (catequistas e coordenação). Clique no link para confirmar seu email:",
     "email_verification_button": "Confirmar email da equipe",
     "email_verification_family_body": "Se você criou conta no <strong>portal da família</strong>, use este link:",
     "email_verification_family_button": "Verificar email (portal da família)",
-    "password_reset_subject": "Redefinir senha da equipe de catequese — Catechis",
+    "password_reset_subject": "Redefinir senha da equipe de catequese. Catechis",
     "password_reset_body": "Use este link para redefinir a senha da sua conta no painel pastoral:",
     "password_reset_button": "Redefinir senha da equipe",
     "password_reset_family_alt": "Ou no portal da família:",
@@ -1350,7 +1365,7 @@ export const auth_pt_BR = {
     "email_footer_portal": "portal da família",
     "email_footer_disclaimer": "Se você não criou esta conta, ignore este email.",
     "language_label": "Idioma",
-    "signup_panel_eyebrow": "Experimente 7 dias",
+    "signup_panel_eyebrow": "Plano Catequista",
     "signup_panel_title": "Sua catequese organizada começa aqui",
     "signup_panel_subtitle": "Uma conta. Um lugar para a turma, a presença e o próximo encontro.",
     "signup_panel_points": [
@@ -1370,7 +1385,7 @@ export const auth_pt_BR = {
     "signup_plan_unlimited": "Plano Paróquia",
     "signup_interval_monthly": "cobrança mensal",
     "signup_interval_annual": "cobrança anual",
-    "signup_context_no_card": "7 dias grátis, sem cartão",
+    "signup_context_no_card": "Acesso após assinar · Cancele quando quiser",
     "signup_context_change": "Alterar",
     "signup_success_next_steps": "Próximos passos",
     "signup_success_step_1": "Verifique a caixa de entrada e também a pasta de spam.",
@@ -1378,21 +1393,21 @@ export const auth_pt_BR = {
     "signup_success_step_3": "Continue a configuração da sua primeira turma.",
     "signup_password_rule_length": "Pelo menos 8 caracteres",
     "signup_password_rule_match": "As senhas coincidem",
-    "email_verification_subject_staff": "Confirme seu email da equipe de catequese — Catechis",
+    "email_verification_subject_staff": "Confirme seu email da equipe de catequese. Catechis",
     "email_verification_body_staff": "Você criou uma conta no painel pastoral (catequistas e coordenação). Clique no link para confirmar seu email:",
     "email_verification_button_staff": "Confirmar email da equipe",
-    "email_verification_subject_family": "Confirme seu email do Portal da Família — Catechis",
+    "email_verification_subject_family": "Confirme seu email do Portal da Família. Catechis",
     "email_verification_body_family": "Você criou uma conta no Portal da Família. Clique no link para confirmar seu email:",
     "email_verification_button_family": "Confirmar email do Portal da Família",
-    "password_reset_subject_staff": "Redefinir senha da equipe de catequese — Catechis",
+    "password_reset_subject_staff": "Redefinir senha da equipe de catequese. Catechis",
     "password_reset_body_staff": "Use este link para redefinir a senha da sua conta no painel pastoral:",
     "password_reset_button_staff": "Redefinir senha da equipe",
-    "password_reset_subject_family": "Redefinir senha do Portal da Família — Catechis",
+    "password_reset_subject_family": "Redefinir senha do Portal da Família. Catechis",
     "password_reset_body_family": "Use este link para redefinir a senha da sua conta no Portal da Família:",
     "password_reset_button_family": "Redefinir senha do Portal da Família",
     "forgot_panel_eyebrow": "Recuperar acesso",
     "forgot_panel_title": "Redefina sua senha com tranquilidade",
-    "forgot_panel_subtitle": "Enviamos um link seguro para o e-mail da sua conta. Sem cartão, sem complicação.",
+    "forgot_panel_subtitle": "Enviamos um link seguro para o e-mail da sua conta.",
     "forgot_title": "Esqueceu a senha?",
     "forgot_subtitle": "Informe o e-mail da sua conta. Se ele existir, enviaremos um link para criar uma nova senha.",
     "forgot_email_placeholder": "você@paróquia.org",
@@ -1609,7 +1624,7 @@ export const billing_pt_BR = {
     "unlimited": "ilimitado",
     "limit_caption": "Limite {{limit}}",
     "conversion_badge": "Assinatura",
-    "conversion_trial_cta": "Testar por 7 dias",
+    "conversion_trial_cta": "Assinar agora",
     "conversion_payment_title": "Confirme sua assinatura",
     "conversion_required_title": "Escolha seu plano para continuar",
     "conversion_personal_title": "Escolha o plano do seu espaço pessoal",
@@ -1837,6 +1852,10 @@ export const billing_pt_BR = {
       "support_question": "Dúvidas sobre a assinatura?",
       "support_cta": "WhatsApp"
     },
+    "member_access_paused": {
+      "parish": "O acesso da sua paróquia está temporariamente indisponível. Fale com o administrador da sua paróquia.",
+      "diocese": "O acesso da sua diocese está temporariamente indisponível. Fale com o administrador da sua diocese."
+    },
     "managed_notice": {
       "eyebrow": "Este espaço",
       "badge": "Participando",
@@ -1861,10 +1880,10 @@ export const billing_pt_BR = {
       "diocese_cta": "Falar com vendas sobre a diocese",
       "diocese_prefill": "Olá! Gostaria de falar sobre o Plano Diocese para {{name}} no Catechis."
     },
-    "checkout_cta_start_trial_one": "Começar 1 dia grátis",
-    "checkout_cta_start_trial_other": "Começar {{count}} dias grátis",
-    "checkout_charge_after_trial_one": "Não precisa de cartão agora. Você tem 1 dia grátis; a primeira cobrança é em {{date}} se houver cartão cadastrado. Sem cartão até lá, a assinatura é cancelada sem cobrança.",
-    "checkout_charge_after_trial_other": "Não precisa de cartão agora. Você tem {{count}} dias grátis; a primeira cobrança é em {{date}} se houver cartão cadastrado. Sem cartão até lá, a assinatura é cancelada sem cobrança.",
+    "checkout_cta_start_trial_one": "Assinar agora",
+    "checkout_cta_start_trial_other": "Assinar agora",
+    "checkout_charge_after_trial_one": "Escolha um plano e conclua o pagamento para liberar o acesso. Cancele quando quiser.",
+    "checkout_charge_after_trial_other": "Escolha um plano e conclua o pagamento para liberar o acesso. Cancele quando quiser.",
     "checkout_charge_today": "A cobrança é feita no Stripe assim que você confirmar a assinatura.",
     "checkout_plan_includes_label": "O que o plano inclui",
     "distinct_people_usage": "Cada pessoa conta uma vez, mesmo com várias matrículas. Pessoas em turmas concluídas continuam contando."
@@ -1893,7 +1912,7 @@ export const birthdays_pt_BR = {
 export const blog_pt_BR = {
     "kicker": "Para catequistas",
     "title": "Blog do Catechis",
-    "intro": "Formação, dicas de encontro, liturgia e gestão da catequese — conteúdo para quem acompanha turmas de verdade.",
+    "intro": "Formação, dicas de encontro, liturgia e gestão da catequese. conteúdo para quem acompanha turmas de verdade.",
     "all_categories": "Todos",
     "empty_title": "Ainda não há artigos publicados",
     "empty_desc": "Em breve, conteúdos práticos para a rotina do catequista.",
@@ -1901,7 +1920,7 @@ export const blog_pt_BR = {
     "not_found": "Artigo não encontrado",
     "not_found_desc": "Este endereço não corresponde a um artigo publicado.",
     "cta_title": "Organize a catequese no mesmo lugar",
-    "cta_text": "Prepare encontros, faça a chamada e fale com as famílias. Comece os 7 dias grátis.",
+    "cta_text": "Assinar agora",
     "categories": {
       "FORMATION": "Formação",
       "PRACTICAL_TIPS": "Dicas práticas",
@@ -4498,9 +4517,9 @@ export const landing_pt_BR = {
       "headline_line2": "A gente organiza a turma.",
       "subheadline": "O Catechis deixa encontros, turmas e catequizandos organizados para você ter mais tempo para estar com eles.",
       "badge": "Para quem diz sim à missão de catequizar",
-      "cta_primary": "Começar 7 dias grátis",
+      "cta_primary": "Assinar agora",
       "cta_secondary": "Ver como funciona",
-      "trust_signals": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser",
+      "trust_signals": "Acesso após assinar · Cancele quando quiser",
       "cta_secondary_href": "/#como",
       "highlights": [
         "Chamada e acompanhamento pelo celular",
@@ -4543,7 +4562,7 @@ export const landing_pt_BR = {
       "image_alt": "Painel do Catechis com próximas ações, frequência, turmas e pendências sacramentais"
     },
     "pain_title": "A missão já pede muito de você. A papelada não precisa pedir mais.",
-    "pain_subtitle": "O Catechis reúne preparação, turma, presença e famílias — para a burocracia não roubar o tempo da evangelização.",
+    "pain_subtitle": "O Catechis reúne preparação, turma, presença e famílias. para a burocracia não roubar o tempo da evangelização.",
     "pains": [
       {
         "text": "Preparar o encontro toda semana exige tempo, referências e criatividade"
@@ -4614,8 +4633,8 @@ export const landing_pt_BR = {
       }
     },
     "mission_title": "Encontro preparado. Turma acolhida. Fé compartilhada com as famílias.",
-    "mission_text": "O Catechis existe para servir a sua missão — não o contrário. Menos improviso e papelada, mais presença de verdade com cada catequizando que Deus confiou a você.",
-    "personas_title": "Feito para o catequista — e pronto para as famílias da sua turma",
+    "mission_text": "O Catechis existe para servir a sua missão. não o contrário. Menos improviso e papelada, mais presença de verdade com cada catequizando que Deus confiou a você.",
+    "personas_title": "Feito para o catequista. e pronto para as famílias da sua turma",
     "personas_subtitle": "Nesta fase, a caminhada é sua: você cuida da turma e as famílias acompanham pelo portal.",
     "personas": [
       {
@@ -4685,7 +4704,7 @@ export const landing_pt_BR = {
         "name": "Plano Catequista",
         "audience": "Para você",
         "desc": "Para organizar sua turma e seus encontros.",
-        "price": "R$ 9,90",
+        "price": "R$ 47",
         "features": [
           "Até 3 turmas",
           "150 catequizandos",
@@ -4724,10 +4743,10 @@ export const landing_pt_BR = {
     "price_monthly": "Mensal",
     "price_annual": "Anual",
     "price_cta_free": "Ver caminhos",
-    "price_cta_start": "Começar teste gratuito de 7 dias",
+    "price_cta_start": "Assinar agora",
     "per_month": "/mês",
     "per_year": "/ano",
-    "annual_discount": "2 meses grátis",
+    "annual_discount": "Economize no anual",
     "compare_plans": "Ver detalhes do plano",
     "faq_title": "Alguma dúvida?",
     "faq_subtitle": "Respostas objetivas para você começar com tranquilidade.",
@@ -4745,8 +4764,8 @@ export const landing_pt_BR = {
         "a": "Sim. Comece no Plano Catequista e, quando sua catequese crescer, leve a organização para o Plano Paróquia."
       },
       {
-        "q": "Preciso informar cartão para testar?",
-        "a": "Não. O teste de 7 dias do Plano Catequista começa sem cartão, assim que você cria sua primeira turma. O cartão só é pedido quando você decidir assinar."
+        "q": "Como começo a usar?",
+        "a": "Crie sua conta e assine um plano. Depois, configure seu espaço e cadastre sua primeira turma."
       },
       {
         "q": "Posso cancelar quando quiser?",
@@ -4761,8 +4780,8 @@ export const landing_pt_BR = {
     "cta_title": "Volte a ter tempo para aquilo que chamou você à catequese.",
     "cta_subtitle": "Deixe a organização com o Catechis e viva o encontro com mais presença, tranquilidade e propósito.",
     "cta_lines": [],
-    "cta_button": "Começar 7 dias grátis",
-    "cta_badge": "Teste gratuito",
+    "cta_button": "Assinar agora",
+    "cta_badge": "Assinar agora",
     "cta_see_plans": "Ver o plano",
     "mock": {
       "ai_title": "Assistência para encontros",
@@ -4772,11 +4791,11 @@ export const landing_pt_BR = {
       "generate": "Gerar encontro",
       "generated": "Roteiro gerado",
       "credits": "Rascunho para você revisar",
-      "ai_step1": "Objetivo — Compreender os sacramentos como sinais visíveis da graça",
-      "ai_step2": "Dinâmica inicial — \"Os sete presentes\"",
-      "ai_step3": "Leitura bíblica — Mt 28:19-20 (ide e fazei discípulos)",
-      "ai_step4": "Reflexão — O que são os sacramentos? (CIC §1131)",
-      "ai_step5": "Atividade — Quiz interativo em grupo + Oração final"
+      "ai_step1": "Objetivo. Compreender os sacramentos como sinais visíveis da graça",
+      "ai_step2": "Dinâmica inicial. \"Os sete presentes\"",
+      "ai_step3": "Leitura bíblica. Mt 28:19-20 (ide e fazei discípulos)",
+      "ai_step4": "Reflexão. O que são os sacramentos? (CIC §1131)",
+      "ai_step5": "Atividade. Quiz interativo em grupo + Oração final"
     },
     "mockup_dashboard": {
       "title": "Painel",
@@ -4786,7 +4805,7 @@ export const landing_pt_BR = {
       "avg_attendance": "Presença média",
       "sacraments": "Sacramentos",
       "today": "Hoje",
-      "today_class": "Crisma — Turma A",
+      "today_class": "Crisma. Turma A",
       "today_detail": "19:30 · 18 inscritos",
       "upcoming": "Próximos",
       "upcoming_class": "1ª Eucaristia",
@@ -4797,7 +4816,7 @@ export const landing_pt_BR = {
       "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
     },
     "mockup_attendance": {
-      "title": "Chamada — Crisma Turma A",
+      "title": "Chamada. Crisma Turma A",
       "meeting": "Encontro 12 · 19/03/2026",
       "present": "Presentes",
       "absent": "Faltas",
@@ -4812,19 +4831,19 @@ export const landing_pt_BR = {
       "celebration": "Celebração",
       "title": "Jornada Sacramental",
       "subtitle": "Primeira Eucaristia · 2026",
-      "class": "Turma 1ª Eucaristia — Comunidade São José"
+      "class": "Turma 1ª Eucaristia. Comunidade São José"
     },
     "mockup_family": {
       "title": "Portal da Família",
-      "greeting": "Olá, Carlos — filhos: Ana e Pedro",
+      "greeting": "Olá, Carlos. filhos: Ana e Pedro",
       "first_eucharist": "1ª Eucaristia",
       "confirmation": "Crisma",
       "attendance_pct": "92% presença",
       "absence_recent": "1 falta recente",
       "notice_title": "Aviso da catequese",
-      "notice_text": "Encontro especial no sábado às 14h — trazer material de artesanato.",
+      "notice_text": "Encontro especial no sábado às 14h. trazer material de artesanato.",
       "next_meeting": "Próximo encontro",
-      "next_meeting_detail": "Pedro — Crisma · Sáb 19/03 · 19:30",
+      "next_meeting_detail": "Pedro. Crisma · Sáb 19/03 · 19:30",
       "justify_absence": "Justificar falta",
       "send_certificate": "Enviar certidão de batismo",
       "pending_doc": "Documento pendente para Ana"
@@ -4844,7 +4863,7 @@ export const landing_pt_BR = {
       "plan_detail": "Crisma · 45 min"
     },
     "footer": {
-      "create_account": "Começar os 7 dias",
+      "create_account": "Assinar agora",
       "login": "Entrar",
       "about": "Sobre",
       "privacy": "Privacidade",
@@ -4864,7 +4883,7 @@ export const landing_pt_BR = {
         "desc": "Informações protegidas em trânsito e em repouso, com acesso restrito por papel."
       },
       {
-        "title": "7 dias gratuitos",
+        "title": "Plano Catequista",
         "desc": "Acesso a todos os recursos. Se não fizer sentido, cancele quando quiser."
       },
       {
@@ -4875,24 +4894,24 @@ export const landing_pt_BR = {
     "testimonials_title": "Depoimentos",
     "testimonials_subtitle": "Quando tivermos autorizações reais de catequistas e paróquias, elas aparecem aqui.",
     "testimonials": [],
-    "cta_helper": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser",
+    "cta_helper": "Assinar agora",
     "mobile_cta": {
-      "title": "7 dias gratuitos",
+      "title": "Plano Catequista",
       "subtitle": "Acesso a todos os recursos · Cancele quando quiser",
-      "button": "Começar 7 dias grátis"
+      "button": "Assinar agora"
     },
     "proof": {
       "badge": "Comece com tranquilidade",
       "title": "Feito para quem vive a catequese de verdade",
-      "subtitle": "Você prepara o encontro, acompanha cada catequizando e caminha junto com as famílias — tudo a serviço da sua missão, do primeiro encontro ao último.",
+      "subtitle": "Você prepara o encontro, acompanha cada catequizando e caminha junto com as famílias. tudo a serviço da sua missão, do primeiro encontro ao último.",
       "stats": [
         {
           "title": "Para a sua missão",
-          "desc": "Sua turma, a chamada no celular e o preparo dos encontros no mesmo lugar — para sobrar tempo para as pessoas."
+          "desc": "Sua turma, a chamada no celular e o preparo dos encontros no mesmo lugar. para sobrar tempo para as pessoas."
         },
         {
           "title": "Para as famílias da sua turma",
-          "desc": "Avisos, presenças e justificativas pelo portal — as famílias caminham junto com você."
+          "desc": "Avisos, presenças e justificativas pelo portal. as famílias caminham junto com você."
         },
         {
           "title": "No celular",
@@ -4900,26 +4919,26 @@ export const landing_pt_BR = {
         }
       ],
       "chips": [
-        "7 dias gratuitos",
+        "Acesso após assinar · Cancele quando quiser",
         "Acesso a todos os recursos",
         "Cancele quando quiser",
         "LGPD",
         "Cancelamento simples"
       ],
-      "launch_title": "Experimente na sua turma",
-      "launch_text": "Crie a conta e teste 7 dias com acesso a todos os recursos. Cancele quando quiser.",
+      "launch_title": "Plano Catequista",
+      "launch_text": "Crie sua conta, escolha um plano e assine para começar a organizar sua catequese.",
       "promises": [
-        "7 dias gratuitos, com acesso a todos os recursos",
+        "Crie sua conta, escolha um plano e assine para começar a organizar sua catequese.",
         "Biblioteca com Bíblia e Catecismo no mesmo lugar",
         "Dados de crianças com cuidado e LGPD",
         "Cancele quando quiser"
       ],
-      "launch_cta": "Começar grátis por 7 dias",
-      "launch_helper": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser"
+      "launch_cta": "Crie sua conta, escolha um plano e assine para começar a organizar sua catequese.",
+      "launch_helper": "Acesso após assinar · Cancele quando quiser"
     },
     "simple_features": {
       "title": "Tudo que o catequista precisa, sem complicação",
-      "subtitle": "Prepare encontros, registre presença e conecte as famílias — pelo celular, sem papel.",
+      "subtitle": "Prepare encontros, registre presença e conecte as famílias. pelo celular, sem papel.",
       "attendance": {
         "title": "Chamada digital pelo celular",
         "desc": "Registre presença com um toque durante o encontro. Sem papel, sem planilha.",
@@ -4929,14 +4948,14 @@ export const landing_pt_BR = {
       },
       "ai": {
         "title": "Assistência editorial que prepara o encontro para você revisar",
-        "desc": "Crie roteiros, atividades e mensagens para as famílias em minutos — com base teológica católica.",
+        "desc": "Crie roteiros, atividades e mensagens para as famílias em minutos. com base teológica católica.",
         "b1": "Roteiros com Bíblia, Catecismo e Diretório",
         "b2": "Atividades e quizzes adaptáveis",
         "b3": "Mensagens prontas para enviar às famílias"
       },
       "family": {
         "title": "Famílias acompanham pelo portal",
-        "desc": "Pais e responsáveis veem presenças, justificam faltas e recebem avisos — sem precisar ligar.",
+        "desc": "Pais e responsáveis veem presenças, justificam faltas e recebem avisos. sem precisar ligar.",
         "b1": "Portal personalizado por filho",
         "b2": "Justificativa de faltas online",
         "b3": "Envio de documentos por link seguro"
@@ -4944,7 +4963,7 @@ export const landing_pt_BR = {
     },
     "steps_endowed_title": "Você já está aqui",
     "steps_endowed_desc": "Conhecendo a plataforma",
-    "price_trial_badge": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser",
+    "price_trial_badge": "Plano Catequista",
     "price_trial_note": "",
     "comparison": {
       "title": "Pare de espalhar a sua catequese em papel, planilha e WhatsApp",
@@ -4952,8 +4971,8 @@ export const landing_pt_BR = {
       "col_criterion": "O que você precisa",
       "col_old": "Papel + planilha + WhatsApp",
       "col_next": "Catechis",
-      "cta": "Começar grátis por 7 dias",
-      "helper": "7 dias gratuitos, com acesso a todos os recursos. Cancele quando quiser.",
+      "cta": "Assinar agora",
+      "helper": "Acesso após assinar · Cancele quando quiser",
       "rows": [
         {
           "criterion": "Preparar o encontro",
@@ -4987,11 +5006,11 @@ export const landing_pt_BR = {
         }
       ]
     },
-    "faq_cta": "Começar 7 dias grátis",
-    "faq_cta_helper": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser",
-    "price_cta_single": "Começar 7 dias grátis",
-    "price_annual_note": "ou R$ 99/ano",
-    "price_cta_unlimited": "Começar 7 dias grátis",
+    "faq_cta": "Assinar agora",
+    "faq_cta_helper": "Acesso após assinar · Cancele quando quiser",
+    "price_cta_single": "Assinar agora",
+    "price_annual_note": "ou R$ 297/ano",
+    "price_cta_unlimited": "Assinar agora",
     "price_cta_diocese": "Falar com vendas",
     "price_annual_equivalent": "Equivale a {{price}}/mês",
     "demo": {
@@ -5012,7 +5031,7 @@ export const landing_pt_BR = {
       "result_title": "Encontro preparado",
       "result_badge": "",
       "done_note": "Isso vai te ajudar no próximo domingo. Você revisa tudo antes de usar.",
-      "cta": "Começar 7 dias grátis",
+      "cta": "Assinar agora",
       "topics": [
         {
           "id": "perdao",
@@ -5207,16 +5226,16 @@ export const landing_pt_BR = {
         "Registre as presenças",
         "Continue de onde parou"
       ],
-      "cta": "Começar minha catequese — 7 dias grátis"
+      "cta": "Assinar agora"
     },
     "growth": {
       "eyebrow": "Comece do seu jeito",
       "title": "Um plano para cada etapa da missão.",
       "subtitle": "Comece como catequista. Quando sua catequese crescer, leve a organização para sua paróquia ou diocese.",
       "featured": "Mais escolhido",
-      "note": "7 dias gratuitos · Acesso a todos os recursos · Cancele quando quiser",
-      "billed_annual": "Cobrado anualmente · 7 dias grátis",
-      "billed_monthly": "Cobrado mensalmente · 7 dias grátis",
+      "note": "Acesso após assinar · Cancele quando quiser",
+      "billed_annual": "Cobrado anualmente",
+      "billed_monthly": "Cobrado mensalmente",
       "diocese_note": "Fale com nossa equipe",
       "discount": "{{percent}}% de desconto",
       "ladder": [
@@ -5316,8 +5335,8 @@ export const landing_pt_BR = {
         "minutes": "{{count}} min",
         "done_title": "Gostou? Prepare o seu de verdade.",
         "done_text": "Com o tema da sua turma e a Bíblia e o Catecismo ao lado. Você revisa tudo antes de usar.",
-        "done_cta": "Começar 7 dias grátis",
-        "done_helper": "7 dias gratuitos · Cancele quando quiser",
+        "done_cta": "Crie sua conta, escolha um plano e assine para começar a organizar sua catequese.",
+        "done_helper": "Acesso após assinar · Cancele quando quiser",
         "topics": {
           "perdao": [
             {
@@ -5332,7 +5351,7 @@ export const landing_pt_BR = {
             },
             {
               "title": "Evangelho",
-              "detail": "Lc 15,11-32 — o pai misericordioso.",
+              "detail": "Lc 15,11-32. o pai misericordioso.",
               "minutes": 10
             },
             {
@@ -5364,7 +5383,7 @@ export const landing_pt_BR = {
             },
             {
               "title": "Evangelho",
-              "detail": "Jo 6,35-40 — Eu sou o pão da vida.",
+              "detail": "Jo 6,35-40. Eu sou o pão da vida.",
               "minutes": 10
             },
             {
@@ -5396,7 +5415,7 @@ export const landing_pt_BR = {
             },
             {
               "title": "Evangelho",
-              "detail": "At 2,1-11 — Pentecostes.",
+              "detail": "At 2,1-11. Pentecostes.",
               "minutes": 10
             },
             {
@@ -5428,7 +5447,7 @@ export const landingIa_pt_BR = {
       "badge": "Assistência com referências católicas e revisão humana",
       "cta_primary": "Experimentar a assistência editorial",
       "cta_secondary": "Ver como funciona",
-      "trust_signals": "R$ 9,90/mês • Base teológica CNBB • Cancele quando quiser",
+      "trust_signals": "R$ 47/mês • Base teológica CNBB • Cancele quando quiser",
       "visual_title": "Roteiro de encontro",
       "visual_item_1": "Informe tema e faixa etária",
       "visual_item_2": "Revise referências católicas",
@@ -5445,7 +5464,7 @@ export const landingIa_pt_BR = {
       "sacraments"
     ],
     "ai_showcase_title": "Seu próximo encontro pronto em menos de 30 segundos",
-    "ai_showcase_subtitle": "Digite o tema e a faixa etária. A assistência editorial gera o encontro completo — da acolhida à oração final.",
+    "ai_showcase_subtitle": "Digite o tema e a faixa etária. A assistência editorial gera o encontro completo. da acolhida à oração final.",
     "ai_showcase_cta": "Experimentar a assistência editorial",
     "mission_title": "Menos tempo preparando. Mais tempo evangelizando.",
     "mission_text": "Cada minuto que a assistência editorial economiza na preparação é um minuto a mais para o que realmente importa: estar presente para seus catequizandos.",
@@ -5457,7 +5476,7 @@ export const landingIa_pt_BR = {
       "avg_attendance": "Presença média",
       "sacraments": "Sacramentos",
       "today": "Hoje",
-      "today_class": "Crisma — Turma A",
+      "today_class": "Crisma. Turma A",
       "today_detail": "19:30 · 18 inscritos",
       "upcoming": "Próximos",
       "upcoming_class": "1ª Eucaristia",
@@ -5468,7 +5487,7 @@ export const landingIa_pt_BR = {
       "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
     },
     "mockup_attendance": {
-      "title": "Chamada — Crisma Turma A",
+      "title": "Chamada. Crisma Turma A",
       "meeting": "Encontro 12 · 19/03/2026",
       "present": "Presentes",
       "absent": "Faltas",
@@ -5483,19 +5502,19 @@ export const landingIa_pt_BR = {
       "celebration": "Celebração",
       "title": "Jornada Sacramental",
       "subtitle": "Primeira Eucaristia · 2026",
-      "class": "Turma 1ª Eucaristia — Comunidade São José"
+      "class": "Turma 1ª Eucaristia. Comunidade São José"
     },
     "mockup_family": {
       "title": "Portal da Família",
-      "greeting": "Olá, Carlos — filhos: Ana e Pedro",
+      "greeting": "Olá, Carlos. filhos: Ana e Pedro",
       "first_eucharist": "1ª Eucaristia",
       "confirmation": "Crisma",
       "attendance_pct": "92% presença",
       "absence_recent": "1 falta recente",
       "notice_title": "Aviso da catequese",
-      "notice_text": "Encontro especial no sábado às 14h — trazer material de artesanato.",
+      "notice_text": "Encontro especial no sábado às 14h. trazer material de artesanato.",
       "next_meeting": "Próximo encontro",
-      "next_meeting_detail": "Pedro — Crisma · Sáb 19/03 · 19:30",
+      "next_meeting_detail": "Pedro. Crisma · Sáb 19/03 · 19:30",
       "justify_absence": "Justificar falta",
       "send_certificate": "Enviar certidão de batismo",
       "pending_doc": "Documento pendente para Ana"
@@ -5515,7 +5534,7 @@ export const landingIa_pt_BR = {
       "plan_detail": "Crisma · 45 min"
     },
     "footer": {
-      "create_account": "Criar conta gratuita",
+      "create_account": "Assinar agora",
       "login": "Entrar",
       "about": "Sobre",
       "privacy": "Privacidade",
@@ -5533,14 +5552,14 @@ export const landingPresenca_pt_BR = {
       "badge": "Controle de presença digital",
       "cta_primary": "Começar agora",
       "cta_secondary": "Ver demonstração",
-      "trust_signals": "7 dias gratuitos • Acesso a todos os recursos • Cancele quando quiser",
+      "trust_signals": "Acesso após assinar · Cancele quando quiser",
       "visual_title": "Chamada no celular",
       "visual_item_1": "Marque a turma rapidamente",
       "visual_item_2": "Registre justificativas",
       "visual_item_3": "Sincronize quando a internet voltar"
     },
     "features_title": "Controle total de presenças",
-    "features_subtitle": "Do registro à justificativa — tudo integrado e em tempo real.",
+    "features_subtitle": "Do registro à justificativa. tudo integrado e em tempo real.",
     "features_order": [
       "attendance",
       "family-portal",
@@ -5559,7 +5578,7 @@ export const landingPresenca_pt_BR = {
       "avg_attendance": "Presença média",
       "sacraments": "Sacramentos",
       "today": "Hoje",
-      "today_class": "Crisma — Turma A",
+      "today_class": "Crisma. Turma A",
       "today_detail": "19:30 · 18 inscritos",
       "upcoming": "Próximos",
       "upcoming_class": "1ª Eucaristia",
@@ -5570,7 +5589,7 @@ export const landingPresenca_pt_BR = {
       "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
     },
     "mockup_attendance": {
-      "title": "Chamada — Crisma Turma A",
+      "title": "Chamada. Crisma Turma A",
       "meeting": "Encontro 12 · 19/03/2026",
       "present": "Presentes",
       "absent": "Faltas",
@@ -5585,19 +5604,19 @@ export const landingPresenca_pt_BR = {
       "celebration": "Celebração",
       "title": "Jornada Sacramental",
       "subtitle": "Primeira Eucaristia · 2026",
-      "class": "Turma 1ª Eucaristia — Comunidade São José"
+      "class": "Turma 1ª Eucaristia. Comunidade São José"
     },
     "mockup_family": {
       "title": "Portal da Família",
-      "greeting": "Olá, Carlos — filhos: Ana e Pedro",
+      "greeting": "Olá, Carlos. filhos: Ana e Pedro",
       "first_eucharist": "1ª Eucaristia",
       "confirmation": "Crisma",
       "attendance_pct": "92% presença",
       "absence_recent": "1 falta recente",
       "notice_title": "Aviso da catequese",
-      "notice_text": "Encontro especial no sábado às 14h — trazer material de artesanato.",
+      "notice_text": "Encontro especial no sábado às 14h. trazer material de artesanato.",
       "next_meeting": "Próximo encontro",
-      "next_meeting_detail": "Pedro — Crisma · Sáb 19/03 · 19:30",
+      "next_meeting_detail": "Pedro. Crisma · Sáb 19/03 · 19:30",
       "justify_absence": "Justificar falta",
       "send_certificate": "Enviar certidão de batismo",
       "pending_doc": "Documento pendente para Ana"
@@ -5617,7 +5636,7 @@ export const landingPresenca_pt_BR = {
       "plan_detail": "Crisma · 45 min"
     },
     "footer": {
-      "create_account": "Criar conta gratuita",
+      "create_account": "Assinar agora",
       "login": "Entrar",
       "about": "Sobre",
       "privacy": "Privacidade",
@@ -5635,7 +5654,7 @@ export const landingSistema_pt_BR = {
       "badge": "Gestão completa para catequese",
       "cta_primary": "Começar agora",
       "cta_secondary": "Ver recursos",
-      "trust_signals": "7 dias gratuitos • Acesso a todos os recursos • Cancele quando quiser",
+      "trust_signals": "Acesso após assinar · Cancele quando quiser",
       "visual_title": "Visão da coordenação",
       "visual_item_1": "Turmas e equipes em um painel",
       "visual_item_2": "Indicadores de presença",
@@ -5661,7 +5680,7 @@ export const landingSistema_pt_BR = {
       "avg_attendance": "Presença média",
       "sacraments": "Sacramentos",
       "today": "Hoje",
-      "today_class": "Crisma — Turma A",
+      "today_class": "Crisma. Turma A",
       "today_detail": "19:30 · 18 inscritos",
       "upcoming": "Próximos",
       "upcoming_class": "1ª Eucaristia",
@@ -5672,7 +5691,7 @@ export const landingSistema_pt_BR = {
       "birthdays_list": "Lucas M. · Sofia R. · Pedro A."
     },
     "mockup_attendance": {
-      "title": "Chamada — Crisma Turma A",
+      "title": "Chamada. Crisma Turma A",
       "meeting": "Encontro 12 · 19/03/2026",
       "present": "Presentes",
       "absent": "Faltas",
@@ -5687,19 +5706,19 @@ export const landingSistema_pt_BR = {
       "celebration": "Celebração",
       "title": "Jornada Sacramental",
       "subtitle": "Primeira Eucaristia · 2026",
-      "class": "Turma 1ª Eucaristia — Comunidade São José"
+      "class": "Turma 1ª Eucaristia. Comunidade São José"
     },
     "mockup_family": {
       "title": "Portal da Família",
-      "greeting": "Olá, Carlos — filhos: Ana e Pedro",
+      "greeting": "Olá, Carlos. filhos: Ana e Pedro",
       "first_eucharist": "1ª Eucaristia",
       "confirmation": "Crisma",
       "attendance_pct": "92% presença",
       "absence_recent": "1 falta recente",
       "notice_title": "Aviso da catequese",
-      "notice_text": "Encontro especial no sábado às 14h — trazer material de artesanato.",
+      "notice_text": "Encontro especial no sábado às 14h. trazer material de artesanato.",
       "next_meeting": "Próximo encontro",
-      "next_meeting_detail": "Pedro — Crisma · Sáb 19/03 · 19:30",
+      "next_meeting_detail": "Pedro. Crisma · Sáb 19/03 · 19:30",
       "justify_absence": "Justificar falta",
       "send_certificate": "Enviar certidão de batismo",
       "pending_doc": "Documento pendente para Ana"
@@ -5719,7 +5738,7 @@ export const landingSistema_pt_BR = {
       "plan_detail": "Crisma · 45 min"
     },
     "footer": {
-      "create_account": "Criar conta gratuita",
+      "create_account": "Assinar agora",
       "login": "Entrar",
       "about": "Sobre",
       "privacy": "Privacidade",
@@ -6224,20 +6243,20 @@ export const onboarding_pt_BR = {
       "hello_default": "Bem-vindo(a)",
       "question": "Como você vai usar o Catechis?",
       "personal_title": "Sou catequista e cuido da minha turma",
-      "personal_desc": "Crie sua turma e inclua os catequizandos. Você ganha 7 dias grátis do Plano Catequista, sem cartão.",
+      "personal_desc": "Organize sua turma, os encontros e as presenças com o Plano Catequista.",
       "personal_features": [],
       "manager_title": "Organizo a catequese da paróquia",
-      "manager_desc": "Paróquia, ano catequético e turmas da equipe. O teste de 7 dias do Plano Paróquia é iniciado no Stripe, sem cartão.",
+      "manager_desc": "Organize a paróquia, o ano catequético e as turmas da equipe com o Plano Paróquia.",
       "manager_features": [],
       "helper": "Você pode mudar de caminho depois, se precisar.",
       "launch_question": "Vamos preparar o espaço da sua turma.",
       "launch_helper": "Comece pela sua turma. Depois você pode organizar como paróquia ou pedir cobertura da diocese.",
       "diocese_title": "Sou da diocese",
-      "diocese_desc": "Licença guarda-chuva para várias paróquias. Fale com vendas — não há checkout público.",
+      "diocese_desc": "Licença guarda-chuva para várias paróquias. Fale com vendas. não há checkout público.",
       "invite_hint": "Já tem convite para uma paróquia? Entre pelo e-mail do convite. Não crie outro espaço.",
       "eyebrow": "Primeiros passos",
       "skip_explore": "Pular e explorar o app primeiro",
-      "skip_explore_hint": "Criamos seu espaço pessoal com os 7 dias grátis. Você cria a turma quando quiser."
+      "skip_explore_hint": "Organize sua turma, os encontros e as presenças com o Plano Catequista."
     },
     "personal_setup": {
       "title": "Conta Pessoal",
@@ -6299,7 +6318,7 @@ export const onboarding_pt_BR = {
       "create_btn": "Criar diocese",
       "not_found_link": "+ Não encontrou? Falar sobre o plano Diocese",
       "not_found_title": "Criar diocese é um plano institucional",
-      "not_found_body": "Só a equipe da plataforma cadastra dioceses novas. Você pode seguir sem diocese e organizar a paróquia normalmente — ou falar com vendas sobre o plano Diocese.",
+      "not_found_body": "Só a equipe da plataforma cadastra dioceses novas. Você pode seguir sem diocese e organizar a paróquia normalmente. ou falar com vendas sobre o plano Diocese.",
       "continue_without": "Continuar sem diocese",
       "whatsapp_question": "Quer o plano Diocese para a sua região?",
       "whatsapp_helper": "A equipe de vendas explica cobertura, preços e como ativar o plano Diocese.",
@@ -6331,8 +6350,8 @@ export const onboarding_pt_BR = {
       "create_error": "Erro ao criar paróquia.",
       "city_state_required": "Informe a cidade e o estado (UF) antes de criar a paróquia.",
       "trial_offer_title": "Limite do plano atual",
-      "trial_offer_body": "Seu plano atual não inclui criar paróquia. Comece 7 dias grátis do plano Paróquia no Stripe — sem cartão agora; a cobrança só começa depois do trial se houver cartão cadastrado.",
-      "trial_offer_cta": "Começar 7 dias grátis",
+      "trial_offer_body": "Assine o Plano Paróquia para criar e organizar as turmas da sua paróquia.",
+      "trial_offer_cta": "Assinar agora",
       "creating": "Criando...",
       "create_btn": "Criar paróquia",
       "default_name": "Paróquia",
@@ -6473,7 +6492,7 @@ export const onboarding_pt_BR = {
       "submit": "Criar e continuar"
     },
     "plan_free": "Sem assinatura",
-    "limits_free": "Nenhum — assine um plano para começar",
+    "limits_free": "Nenhum. assine um plano para começar",
     "subtitle_welcome": "Escolha o caminho que leva você ao primeiro resultado com menos esforço.",
     "shell": {
       "welcome_title": "Vamos preparar seu espaço",
@@ -6485,9 +6504,9 @@ export const onboarding_pt_BR = {
       "manager_details_title": "Ano e primeira turma",
       "manager_details_subtitle": "Organize o calendário e a equipe com um ponto de partida.",
       "personal_class_title": "Primeira turma",
-      "personal_class_subtitle": "Dê um nome claro — o restante você ajusta quando quiser.",
+      "personal_class_subtitle": "Dê um nome claro. o restante você ajusta quando quiser.",
       "personal_people_title": "Quem faz parte da turma",
-      "personal_people_subtitle": "Adicione nomes agora ou pule — a chamada já está pronta.",
+      "personal_people_subtitle": "Adicione nomes agora ou pule. a chamada já está pronta.",
       "diocese_title": "Licença da diocese",
       "diocese_subtitle": "Não há checkout público. Fale com vendas e, se quiser, escolha a diocese.",
       "step_current": "Você está aqui",
@@ -6509,7 +6528,7 @@ export const onboarding_pt_BR = {
       "title": "Dê nome à sua primeira turma",
       "subtitle": "É o núcleo da sua catequese. Horário e local podem vir agora ou depois.",
       "name_label": "Nome da turma",
-      "name_placeholder": "Ex.: Crisma 2026 — Turma A",
+      "name_placeholder": "Ex.: Crisma 2026. Turma A",
       "name_hint": "Use um nome que você e as famílias reconheçam com facilidade.",
       "name_required": "Informe o nome da turma para continuar.",
       "optional_show": "Adicionar dia, horário e local",
@@ -6524,7 +6543,7 @@ export const onboarding_pt_BR = {
       "saving": "Criando turma…",
       "continue": "Continuar",
       "transient_error": "O servidor estava ocupado. Espere uns segundos e clique em Continuar de novo.",
-      "plan_limit": "Seu período de teste não está ativo, então ainda não dá para criar a turma. Assine o Plano Catequista para continuar ou fale com o suporte.",
+      "plan_limit": "O acesso começa após a assinatura. Depois do cadastro, você vai para a página Assinatura.",
       "plan_limit_subscribe": "Assinar o Plano Catequista",
       "plan_limit_support": "Falar com o suporte",
       "plan_limit_support_prefill": "Olá! Estou no cadastro do Catechis e não consegui criar minha primeira turma (limite do plano).",
@@ -6655,13 +6674,13 @@ export const parishes_pt_BR = {
     "new_parish_btn": "Nova Paróquia",
     "create_error": "Erro ao criar paróquia.",
     "trial_offer_title": "Limite do plano atual",
-    "trial_offer_body": "Seu plano atual não inclui criar paróquia. Comece 7 dias grátis do plano Paróquia no Stripe — sem cartão agora; a cobrança só começa depois do trial se houver cartão cadastrado.",
-    "trial_offer_cta": "Começar 7 dias grátis",
+    "trial_offer_body": "Assine o Plano Paróquia para criar e organizar as turmas da sua paróquia.",
+    "trial_offer_cta": "Assinar agora",
     "diocese_license": "Diocese (licença)",
     "independent_option": "Independente / sob minha licença",
     "licensed_suffix": "(licenciada)",
     "coverage_licensed": "Será criada sob a licença da {{name}} (sem cobrança adicional).",
-    "coverage_unlicensed": "Será vinculada a {{name}}. A diocese ainda não tem licença ativa — a paróquia ficará bloqueada até a licença ser ativada.",
+    "coverage_unlicensed": "Será vinculada a {{name}}. A diocese ainda não tem licença ativa. a paróquia ficará bloqueada até a licença ser ativada.",
     "coverage_owner": "Será criada sob a sua licença {{plan}} (sem cobrança adicional).",
     "coverage_independent": "Paróquia independente: sem assinatura ativa. Assine um plano institucional para liberá-la.",
     "members_count_one": "{{count}} membro",
@@ -6918,12 +6937,12 @@ export const public_pt_BR = {
       "mission_text": "Facilitar e fortalecer a missão catequética da Igreja Católica, oferecendo ferramentas modernas que permitam aos coordenadores, catequistas e famílias acompanhar a formação cristã com excelência, simplicidade e segurança.",
       "offer_title": "O que oferecemos",
       "offers": {
-        "classes": "Gestão de turmas e catequistas — organize turmas por etapa, ano catequético e comunidade.",
-        "attendance": "Controle de presença — registre presenças, ausências e justificativas com facilidade.",
-        "sacraments": "Acompanhamento sacramental — configure jornadas sacramentais personalizadas.",
-        "content": "Biblioteca de conteúdo — crie, revise e publique planos de encontro.",
-        "communication": "Comunicação pastoral — envie mensagens segmentadas para famílias e catequistas.",
-        "reports": "Relatórios e indicadores — acompanhe a saúde da catequese com KPIs."
+        "classes": "Gestão de turmas e catequistas. organize turmas por etapa, ano catequético e comunidade.",
+        "attendance": "Controle de presença. registre presenças, ausências e justificativas com facilidade.",
+        "sacraments": "Acompanhamento sacramental. configure jornadas sacramentais personalizadas.",
+        "content": "Biblioteca de conteúdo. crie, revise e publique planos de encontro.",
+        "communication": "Comunicação pastoral. envie mensagens segmentadas para famílias e catequistas.",
+        "reports": "Relatórios e indicadores. acompanhe a saúde da catequese com KPIs."
       },
       "audience_title": "Para quem é",
       "audience": [
@@ -6969,7 +6988,7 @@ export const public_pt_BR = {
     },
     "pricing": {
       "title": "Três caminhos: catequista, paróquia e diocese",
-      "subtitle": "Catequista R$ 9,90/mês (ou R$ 99/ano). Paróquia a partir de R$ 99/mês. Diocese sob consulta. 7 dias grátis no Plano Catequista, sem cartão.",
+      "subtitle": "Catequista R$ 47/mês ou R$ 297/ano. Paróquia R$ 99/mês ou R$ 990/ano. Diocese sob consulta.",
       "payment_card": "Cartão",
       "annual_savings": "Economize 17% no anual",
       "monthly_tab": "Mensal",
@@ -6978,14 +6997,14 @@ export const public_pt_BR = {
       "faq_title": "Perguntas frequentes",
       "per_month": "/mês",
       "per_year": "/ano",
-      "cta_paid": "Começar os 7 dias",
+      "cta_paid": "Assinar agora",
       "most_popular": "Feito para o catequista",
       "plan_desc": {
-        "single": "Para você cuidar da sua turma — chamada, histórico e calendário no mesmo lugar, com mais tempo para as pessoas. Cobre até 3 turmas, se você acompanhar mais de uma.",
+        "single": "Para você cuidar da sua turma. chamada, histórico e calendário no mesmo lugar, com mais tempo para as pessoas. Cobre até 3 turmas, se você acompanhar mais de uma.",
         "unlimited": "Para a paróquia: turmas, catequizandos e equipe ilimitados no espaço institucional."
       },
       "diocese_name": "Plano Diocese",
-      "diocese_audience": "Para a diocese — venda assistida",
+      "diocese_audience": "Para a diocese. venda assistida",
       "diocese_desc": "Licença guarda-chuva que cobre as paróquias da diocese. Sem checkout público.",
       "diocese_price": "Sob consulta",
       "diocese_cta": "Falar com vendas sobre a diocese",
@@ -6996,16 +7015,16 @@ export const public_pt_BR = {
       ],
       "faq": [
         {
-          "q": "Como conheço a plataforma antes de assinar?",
-          "a": "Você testa por 7 dias, sem cartão. Use na sua turma de verdade; se fizer sentido continuar, assine antes do fim do teste."
+          "q": "Como começo a usar?",
+          "a": "Crie sua conta e assine um plano. Depois, configure seu espaço e cadastre sua primeira turma."
         },
         {
           "q": "Qual é o preço?",
-          "a": "O Plano Catequista custa R$ 9,90/mês (ou R$ 99/ano) e cobre até 3 turmas e 150 catequizandos no total — mais do que suficiente para a sua realidade."
+          "a": "O Plano Catequista custa R$ 47/mês ou R$ 297/ano e inclui até 3 turmas e 150 catequizandos no total."
         },
         {
           "q": "Como funciona o pagamento?",
-          "a": "Você começa com 7 dias de teste sem cartão. Ao assinar, o pagamento é feito pelo Stripe. Sem fidelidade — cancele quando quiser."
+          "a": "Escolha um plano e conclua o pagamento para liberar o acesso. Cancele quando quiser."
         },
         {
           "q": "E o reembolso do plano anual?",
@@ -7013,7 +7032,7 @@ export const public_pt_BR = {
         },
         {
           "q": "E se a minha catequese crescer?",
-          "a": "O Plano Catequista cobre até 3 turmas e 150 catequizandos. Se precisar de equipe e mais turmas, organize como paróquia (Plano Paróquia). Se a diocese assume, fale com vendas — a licença diocesana cobre as paróquias. Seus dados e o histórico da turma são preservados."
+          "a": "O Plano Catequista cobre até 3 turmas e 150 catequizandos. Se precisar de equipe e mais turmas, organize como paróquia (Plano Paróquia). Se a diocese assume, fale com vendas. a licença diocesana cobre as paróquias. Seus dados e o histórico da turma são preservados."
         },
         {
           "q": "Os dados ficam seguros?",
@@ -7122,19 +7141,19 @@ export const public_pt_BR = {
       "contact_cta": "Falar com a equipe",
       "groups": [
         {
-          "title": "Conta e período de teste",
+          "title": "Conta e assinatura",
           "items": [
             {
               "q": "Como começo a usar?",
-              "a": "Crie sua conta com email e senha (ou Google), confirme o email e siga os primeiros passos: escolha como vai usar (catequista ou paróquia) e crie sua primeira turma."
+              "a": "Crie sua conta e assine um plano. Depois, configure seu espaço e cadastre sua primeira turma."
             },
             {
-              "q": "Preciso informar cartão para testar?",
-              "a": "Não. O teste gratuito de 7 dias do Plano Catequista começa sem cartão. O cartão só é pedido quando você decidir assinar."
+              "q": "Quando o acesso é liberado?",
+              "a": "O acesso começa após a assinatura. Depois do cadastro, você vai para a página Assinatura."
             },
             {
-              "q": "O que acontece quando o teste termina?",
-              "a": "Seus dados continuam guardados. Para seguir registrando presença e usando as ferramentas da turma, escolha um plano na página Assinatura. A Bíblia, o Catecismo, as Configurações e a Central de suporte continuam abertos."
+              "q": "Como mantenho meu acesso?",
+              "a": "Mantenha sua assinatura ativa. Se precisar de ajuda, acesse a Central de suporte."
             },
             {
               "q": "Como troco o cartão ou cancelo a assinatura?",
@@ -7577,26 +7596,26 @@ export const publicNav_pt_BR = {
     "privacy": "Privacidade",
     "terms": "Termos",
     "login": "Entrar",
-    "signup": "Começar 7 dias grátis",
+    "signup": "Assinar agora",
     "openMenu": "Abrir menu",
     "closeMenu": "Fechar menu",
     "tagline": "Você semeia a fé. A gente organiza a turma.",
     "audience": "feito para catequistas",
-    "cta": "Começar 7 dias grátis",
+    "cta": "Assinar agora",
     "share": "Compartilhar",
     "share_copied": "Link copiado para compartilhar",
     "share_error": "Não foi possível compartilhar agora",
     "share_hook": "Você semeia a fé. A gente organiza a turma.",
     "share_subhook": "Compartilhe com outro catequista.",
     "share_title": "Catechis",
-    "share_text": "Organize a catequese sem papel e improviso — prepare encontros, faça a chamada e fale com as famílias no mesmo lugar.",
+    "share_text": "Organize a catequese sem papel e improviso. prepare encontros, faça a chamada e fale com as famílias no mesmo lugar.",
     "how_it_works": "Como funciona",
     "faq": "Dúvidas",
     "blog": "Blog",
     "footer_explore": "Explorar",
     "footer_talk": "Fale com a gente",
     "footer_start": "Experimentar",
-    "footer_start_desc": "Mais presença no encontro, menos peso na semana. Comece os 7 dias.",
+    "footer_start_desc": "Crie sua conta, escolha um plano e assine para começar a organizar sua catequese.",
     "language": "Idioma",
     "help": "Ajuda",
     "main_nav": "Navegação principal"

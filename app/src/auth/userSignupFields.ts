@@ -1,3 +1,4 @@
+import { isNewPricingAccount } from "../shared/newPricing";
 import { defineUserSignupFields } from "wasp/auth/providers/types";
 import { env } from "wasp/server";
 import { z } from "zod";
@@ -11,6 +12,8 @@ const emailDataSchema = z.object({
 });
 
 export const getEmailUserFields = defineUserSignupFields({
+  // This runs only for account creation, never for existing accounts.
+  subscriptionPlan: () => isNewPricingAccount(new Date()) ? null : "catechist_free",
   termsAcceptanceRequired: () => true,
   email: (data) => {
     const emailData = emailDataSchema.parse(data);
@@ -44,6 +47,8 @@ const githubDataSchema = z.object({
 });
 
 export const getGitHubUserFields = defineUserSignupFields({
+  // This runs only for account creation, never for existing accounts.
+  subscriptionPlan: () => isNewPricingAccount(new Date()) ? null : "catechist_free",
   email: (data) => {
     const githubData = githubDataSchema.parse(data);
     return getGithubEmailInfo(githubData).email;
@@ -84,6 +89,8 @@ const googleDataSchema = z.object({
 });
 
 export const getGoogleUserFields = defineUserSignupFields({
+  // This runs only for account creation, never for existing accounts.
+  subscriptionPlan: () => isNewPricingAccount(new Date()) ? null : "catechist_free",
   termsAcceptanceRequired: () => true,
   email: (data) => {
     const googleData = googleDataSchema.parse(data);
@@ -117,6 +124,8 @@ const discordDataSchema = z.object({
 });
 
 export const getDiscordUserFields = defineUserSignupFields({
+  // This runs only for account creation, never for existing accounts.
+  subscriptionPlan: () => isNewPricingAccount(new Date()) ? null : "catechist_free",
   email: (data) => {
     const discordData = discordDataSchema.parse(data);
     // Users need to have an email for payment processing.

@@ -1,3 +1,5 @@
+import { useCheckoutConfiguration } from "../../client/hooks/useCheckoutConfiguration";
+import { requiresNewAccountSubscription } from "../../shared/newPricing";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useAuth } from "wasp/client/auth";
@@ -12,6 +14,7 @@ const LOGOUT_REDIRECT_GUARD_KEY = "catequese-viva-just-logged-out";
 
 export function useRedirectIfLoggedIn(options: Options = {}) {
   const { data: user, isLoading } = useAuth();
+  const { config } = useCheckoutConfiguration();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
@@ -40,11 +43,16 @@ export function useRedirectIfLoggedIn(options: Options = {}) {
       return;
     }
 
+    if (!config) return;
+    if (!isFamilyPortalHost() && requiresNewAccountSubscription(user, config.cutoffISO)) {
+      navigate('/app/billing', { replace: true });
+      return;
+    }
     const target = isSafeInternalPath(nextParam)
       ? nextParam
       : options.redirectTo
         ? redirectTo
         : consumeIntendedPath() ?? redirectTo;
     navigate(target, { replace: true });
-  }, [user, isLoading, navigate, redirectTo, token, nextParam, options.redirectTo]);
+  }, [user, isLoading, config, navigate, redirectTo, token, nextParam, options.redirectTo]);
 }

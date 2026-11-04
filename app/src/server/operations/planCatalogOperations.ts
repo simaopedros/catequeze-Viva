@@ -1,3 +1,5 @@
+import { readCheckoutConfiguration } from "./checkoutConfiguration";
+import type { CheckoutConfiguration } from "../../shared/hotmartCheckout";
 import { publicCatalogPlans } from '../../shared/planCatalog';
 import { loadPlanCatalog } from '../pricing/planCatalogService';
 
@@ -7,6 +9,7 @@ import { loadPlanCatalog } from '../pricing/planCatalogService';
  */
 export type PublicPlanDto = {
   [key: string]: any;
+  checkoutConfiguration: CheckoutConfiguration;
   slug: string;
   name: string;
   description: string | null;
@@ -50,7 +53,9 @@ export type PublicPlanDto = {
 
 export const getPlanCatalog = async (_args: void, context: any): Promise<PublicPlanDto[]> => {
   const snapshot = await loadPlanCatalog(context);
+  const checkoutConfiguration = readCheckoutConfiguration();
   return publicCatalogPlans(snapshot.bySlug).map((plan) => ({
+    checkoutConfiguration,
     slug: plan.slug,
     name: plan.name,
     description: plan.description ?? null,
@@ -84,7 +89,7 @@ export const getPlanCatalog = async (_args: void, context: any): Promise<PublicP
       ? JSON.parse(JSON.stringify(plan.translations))
       : null,
     prices: plan.prices
-      .filter((price) => price.isActive)
+      .filter((price) => price.isActive && !price.archivedAt)
       .map((price) => ({
         interval: price.interval,
         currency: price.currency,

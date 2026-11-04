@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
-import { Link, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
+import { CheckoutLink as Link } from "../../client/components/CheckoutLink";
 import { ArrowRight } from "lucide-react";
 import { Button } from "../../client/components/ui/button";
 import { cn } from "../../client/utils";

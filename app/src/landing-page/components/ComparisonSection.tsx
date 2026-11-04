@@ -1,5 +1,5 @@
 import { Check, X, ArrowRight } from "lucide-react";
-import { Link } from "react-router";
+import { CheckoutLink as Link } from "../../client/components/CheckoutLink";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { trackMarketingEvent } from "../../client/analytics/marketingAnalytics";
 import { Button } from "../../client/components/ui/button";

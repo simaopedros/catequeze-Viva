@@ -1,3 +1,5 @@
+import { readCheckoutConfiguration } from "../server/operations/checkoutConfiguration";
+import { hotmartBlocksStripeCheckout, hotmartCheckoutUrl } from "../shared/hotmartCheckout";
 import { HttpError } from "wasp/server";
 import type {
   GenerateCheckoutSession,
@@ -114,6 +116,17 @@ export const generateCheckoutSession: GenerateCheckoutSession<
   const userEmail = context.user.email;
   if (!userEmail) {
     throw new HttpError(403, "User needs an email to make a payment.");
+  }
+
+  const checkoutUser = await context.entities.User.findUnique({
+    where: { id: userId },
+    select: { email: true, paymentProcessorUserId: true, stripeSubscriptionId: true, subscriptionStatus: true },
+  });
+  const checkoutConfig = readCheckoutConfiguration();
+  const hotmartUrl = hotmartCheckoutUrl(checkoutConfig, paymentPlanId, interval, checkoutUser);
+  if (hotmartUrl) return { sessionUrl: hotmartUrl, sessionId: "hotmart" };
+  if (hotmartBlocksStripeCheckout(checkoutConfig, paymentPlanId, checkoutUser)) {
+    throw new HttpError(400, "Pagamento indisponível para este plano. Entre em contato com o suporte.");
   }
 
   const catalog = await loadPlanCatalog(context);

@@ -153,7 +153,7 @@
   "unlimited": "ilimitado",
   "limit_caption": "Límite {{limit}}",
   "conversion_badge": "Suscripcion",
-  "conversion_trial_cta": "Probar por 7 días",
+  "conversion_trial_cta": "Suscribirse ahora",
   "conversion_payment_title": "Confirma tu suscripción",
   "conversion_required_title": "Elige tu plan para continuar",
   "conversion_personal_title": "Elige el plan de tu espacio personal",
@@ -381,6 +381,10 @@
     "support_question": "¿Dudas sobre la suscripción?",
     "support_cta": "WhatsApp"
   },
+  "member_access_paused": {
+    "parish": "El acceso de su parroquia no está disponible por ahora. Hable con el administrador de su parroquia.",
+    "diocese": "El acceso de su diócesis no está disponible por ahora. Hable con el administrador de su diócesis."
+  },
   "managed_notice": {
     "eyebrow": "Este espacio",
     "badge": "Participando",
@@ -405,10 +409,10 @@
     "diocese_cta": "Hablar con ventas sobre la diócesis",
     "diocese_prefill": "Hola! Quisiera hablar sobre el Plan Diócesis para {{name}} en Catechis."
   },
-  "checkout_cta_start_trial_one": "Empezar 1 día gratis",
-  "checkout_cta_start_trial_other": "Empezar {{count}} días gratis",
-  "checkout_charge_after_trial_one": "No hace falta tarjeta ahora. Tienes 1 día gratis; el primer cobro es el {{date}} si hay tarjeta registrada. Sin tarjeta para entonces, la suscripción se cancela sin cobro.",
-  "checkout_charge_after_trial_other": "No hace falta tarjeta ahora. Tienes {{count}} días gratis; el primer cobro es el {{date}} si hay tarjeta registrada. Sin tarjeta para entonces, la suscripción se cancela sin cobro.",
+  "checkout_cta_start_trial_one": "Suscribirse ahora",
+  "checkout_cta_start_trial_other": "Suscribirse ahora",
+  "checkout_charge_after_trial_one": "Elige un plan y completa el pago para activar el acceso. Cancela cuando quieras.",
+  "checkout_charge_after_trial_other": "Elige un plan y completa el pago para activar el acceso. Cancela cuando quieras.",
   "checkout_charge_today": "El cobro se hace en Stripe en cuanto confirmes la suscripción.",
   "checkout_plan_includes_label": "Qué incluye el plan",
   "distinct_people_usage": "Cada persona cuenta una vez, incluso con varias matrículas. Las personas en clases concluidas siguen contando."

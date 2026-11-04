@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { CheckoutLink as Link } from "../../client/components/CheckoutLink";
 import { useTranslation } from "react-i18next";
 import { Feather, ChevronRight } from "lucide-react";
 import { useScrollReveal } from "../hooks/useScrollReveal";

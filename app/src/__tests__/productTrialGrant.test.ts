@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 vi.mock('wasp/server', () => ({
   HttpError: class HttpError extends Error {
@@ -32,7 +32,11 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 beforeAll(() => {
   process.env.PRICING_CATALOG_SOURCE = 'static';
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2026-11-04T12:00:00Z'));
 });
+
+afterAll(() => vi.useRealTimers());
 
 type FakeUser = {
   id: string;
@@ -95,7 +99,7 @@ function makeCtx(user: FakeUser, opts: { activeClasses?: number } = {}) {
 }
 
 describe('ensureProductTrial — no-card 7-day grant', () => {
-  it('grants trialing on the trial plan until createdAt + 7 days for a new signup', async () => {
+  it('grants trialing on the trial plan until createdAt + 7 days for a signup before the pricing cutoff', async () => {
     const user = newUser();
     const ctx = makeCtx(user);
 
@@ -216,7 +220,7 @@ describe('isEligibleForNoCardProductTrial', () => {
 });
 
 describe('assertCanCreateClass — personal workspace onboarding', () => {
-  it('lets a brand-new signup create the first class', async () => {
+  it('lets a legacy signup create the first class', async () => {
     const user = newUser();
     const ctx = makeCtx(user);
 

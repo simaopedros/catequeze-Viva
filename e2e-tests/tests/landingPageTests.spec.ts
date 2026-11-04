@@ -2,6 +2,7 @@ import { Cookie, expect, test } from '@playwright/test';
 
 test.describe('general landing page tests', () => {
   test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('i18nextLng', 'pt-BR'));
     await page.goto('/');
   });
 
@@ -15,6 +16,14 @@ test.describe('general landing page tests', () => {
       .first()
       .click();
     await page.waitForURL('**/signup');
+  });
+
+  test('offers a subscription without a free trial', async ({ page }) => {
+    await expect(page.locator('[data-landing-hero]')).toContainText('Assinar agora');
+    await expect(page.getByText(/7 dias grátis|sem cartão|9,90/i)).toHaveCount(0);
+    await page.goto('/pricing');
+    await expect(page.getByText('R$ 47', { exact: true })).toBeVisible();
+    await expect(page.getByText(/R\$ 297/).first()).toBeVisible();
   });
 
   test('headings', async ({ page }) => {
@@ -53,6 +62,7 @@ test.describe('general landing page tests', () => {
 
 test.describe('cookie consent tests', () => {
   test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('i18nextLng', 'pt-BR'));
     await page.goto('/');
   });
 
