@@ -1,6 +1,8 @@
 /** Stable email catalog — product contract, not provider IDs. */
 
 export const EMAIL_MESSAGE = {
+  REGISTRATION_REMINDER: "registration.reminder",
+  REGISTRATION_FOLLOWUP: "registration.followup",
   REGISTRATION_RECEIVED: "registration.received",
   REGISTRATION_CONFIRM: "registration.confirm",
   AUTH_VERIFY: "auth.verify",

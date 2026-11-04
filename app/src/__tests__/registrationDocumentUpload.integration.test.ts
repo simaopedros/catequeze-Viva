@@ -94,8 +94,17 @@ describe.skipIf(!process.env.DATABASE_URL)('documentos da inscrição com banco 
       expect((await send(id('application'), '%PDF-' + 'x'.repeat(10 * 1024 * 1024))).status).toBe(400);
       const responses = await Promise.all(Array.from({ length: 10 }, () => send(id('application')))); expect(responses.every(r => r.status === 200)).toBe(true); const receipts = await Promise.all(responses.map(r => r.json())); expect(new Set(receipts.map(r => r.id)).size).toBe(1); const receipt = receipts[0]; expect(receipt.status).toBe('QUARANTINE'); expect(Object.keys(receipt).sort()).toEqual(['id', 'status', 'type']);
       expect((await send(id('application'), 'invalid')).status).toBe(400);
+      for (const status of ['CLOSED', 'ORGANIZING'] as const) { await db.registrationCampaign.update({ where: { id: id('campaign') }, data: { status } }); expect((await send(id('application'), `%PDF-${status}`)).status).toBe(200); }
+      await db.registrationApplication.update({ where: { id: id('application') }, data: { status: 'REJECTED' } }); expect((await send(id('application'), '%PDF-rejected')).status).toBe(404);
+      await db.registrationApplication.update({ where: { id: id('application') }, data: { status: 'SUBMITTED' } }); await db.registrationCampaign.update({ where: { id: id('campaign') }, data: { status: 'OPEN' } });
       await db.registrationAccessToken.update({ where: { tokenHash }, data: { expiresAt: new Date('2020-01-01') } }); expect((await send(id('application'))).status).toBe(401);
       await db.registrationAccessToken.update({ where: { tokenHash }, data: { expiresAt: new Date(Date.now() + 3600000), revokedAt: new Date() } }); expect((await send(id('application'))).status).toBe(401);
+      await db.registrationAccessToken.update({ where: { tokenHash }, data: { revokedAt: null } });
+      const followToken = 'c'.repeat(43); await db.registrationAccessToken.create({ data: { submissionId: id('submission'), campaignId: id('campaign'), emailHash: 'hash', tokenHash: createHash('sha256').update(followToken).digest('hex'), purpose: 'FOLLOW_UP', expiresAt: new Date(Date.now() + 3600000) } });
+      const follow = await import('../server/api/registrationFollowUp'); const result: any = { status: 200 }; const res: any = { set() { return res; }, status(v: number) { result.status = v; return res; }, json(v: any) { result.body = v; return res; }, end() { return res; } };
+      await follow.registrationFollowUpSession({ method: 'POST', ip: '203.0.113.45', is: () => true, body: { token: followToken } } as any, res, { entities });
+      expect(result.status).toBe(200); expect((await send(id('application'))).status).toBe(401); expect((await send(id('application'), '%PDF-reissued', result.body.uploadSession.token)).status).toBe(200);
+
     } finally { await new Promise<void>(resolve => server.close(() => resolve())); }
   });
   it('limita documentos ativos e arquivos grandes', async () => {

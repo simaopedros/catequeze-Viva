@@ -5,6 +5,8 @@ import { assistedRegistrationSchema } from '../shared/registrationSubmission';
 describe('conferência de inscrições', () => {
   it('permite apenas as transições especificadas', () => {
     const statuses = ['SUBMITTED', 'UNDER_REVIEW', 'NEEDS_CORRECTION', 'APPROVED'];
+    expect(statuses.map(s => reviewTransition(s, 'APPROVE'))).toEqual([null, 'APPROVED', null, null]);
+    expect(reviewSchema.safeParse({ id: 'x', revision: 0, decision: 'APPROVE' }).success).toBe(false);
     expect(statuses.map(s => reviewTransition(s, 'START_REVIEW'))).toEqual(['UNDER_REVIEW', null, null, null]);
     expect(statuses.map(s => reviewTransition(s, 'REQUEST_CORRECTION'))).toEqual([null, 'NEEDS_CORRECTION', null, null]);
     expect(statuses.map(s => reviewTransition(s, 'REJECT'))).toEqual(['REJECTED', 'REJECTED', 'REJECTED', null]);
