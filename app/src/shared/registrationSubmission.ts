@@ -14,16 +14,21 @@ const birthDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(value => {
 }, 'Data inválida');
 const windows = z.array(id).min(1).max(50).refine(values => new Set(values).size === values.length, 'Janelas repetidas');
 const applicant = z.object({ firstName: name, lastName: name, birthDate, offeringId: id, communityId: id.optional(), windows }).strict();
-const common = { requestKey: z.string().uuid(), contactEmail: optionalEmail, contactPhone: optionalPhone, consent: z.literal(true), formToken: z.string().min(1).max(2048), captchaToken: z.string().min(1).max(2048), honeypot: z.string().max(200).optional() };
+const shared = { requestKey: z.string().uuid(), contactEmail: optionalEmail, contactPhone: optionalPhone };
+const common = { ...shared, consent: z.literal(true), formToken: z.string().min(1).max(2048), captchaToken: z.string().min(1).max(2048), honeypot: z.string().max(200).optional() };
 export const registrationSubmissionSchema = z.discriminatedUnion('mode', [
   z.object({ ...common, mode: z.literal('FAMILY'), contactName: name, relationship: plain(100), applicants: z.array(applicant).min(1).max(10) }).strict(),
   z.object({ ...common, mode: z.literal('ADULT'), applicant }).strict(),
+]);
+export const assistedRegistrationSchema = z.discriminatedUnion('mode', [
+  z.object({ ...shared, consentConfirmedByStaff: z.literal(true), mode: z.literal('FAMILY'), contactName: name, relationship: plain(100), applicants: z.array(applicant).min(1).max(10) }).strict(),
+  z.object({ ...shared, consentConfirmedByStaff: z.literal(true), mode: z.literal('ADULT'), applicant }).strict(),
 ]);
 export type RegistrationSubmissionInput = z.infer<typeof registrationSubmissionSchema>;
 
 export type SubmissionOffering = { id: string; audience: 'MINOR' | 'ADULT' | 'BOTH'; minAge: number | null; maxAge: number | null };
 /** Valida opções em relação à campanha persistida, antes de criar qualquer registro. */
-export function validateSubmissionOptions(input: RegistrationSubmissionInput, campaign: { windows: string[]; communityIds: string[]; offerings: SubmissionOffering[]; ageCutoffDate: Date }) {
+export function validateSubmissionOptions(input: RegistrationSubmissionInput | z.infer<typeof assistedRegistrationSchema>, campaign: { windows: string[]; communityIds: string[]; offerings: SubmissionOffering[]; ageCutoffDate: Date }) {
   const applicants = input.mode === 'FAMILY' ? input.applicants : [input.applicant];
   const kind = input.mode === 'FAMILY' ? 'MINOR' : 'ADULT';
   return applicants.map(person => {
