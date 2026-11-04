@@ -388,6 +388,7 @@ model File {
 // ─── Existing Models (Extended) ───────────────────────────────────────────────
 
 model User {
+  registrationCampaigns RegistrationCampaign[]
   registrationGrantsIssued RegistrationPermissionGrant[] @relation("RegistrationGrantIssuer")
   dataExportRequests DataExportRequest[]
   termsAcceptanceRequired Boolean @default(false)
@@ -527,6 +528,7 @@ model Diocese {
 }
 
 model Parish {
+  registrationCampaigns RegistrationCampaign[]
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -696,6 +698,7 @@ model PendingInvitation {
 // ─── Catechetical Year ────────────────────────────────────────────────────────
 
 model CatecheticalYear {
+  registrationCampaigns RegistrationCampaign[]
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -722,6 +725,7 @@ model CatecheticalYear {
 }
 
 model Stage {
+  registrationOfferings RegistrationOffering[]
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2793,4 +2797,59 @@ model DocumentStageRuleChange {
   changedAt DateTime @default(now())
   @@index([parishId, changedAt])
   @@index([dioceseId, changedAt])
+}
+
+
+enum RegistrationCampaignStatus {
+  DRAFT
+  OPEN
+  CLOSED
+  ORGANIZING
+  PUBLISHED
+  ARCHIVED
+}
+
+model RegistrationCampaign {
+  id String @id @default(uuid())
+  parishId String
+  parish Parish @relation(fields: [parishId], references: [id])
+  yearId String
+  year CatecheticalYear @relation(fields: [yearId], references: [id])
+  slug String @unique
+  title String
+  publicDescription String?
+  publicContact String?
+  status RegistrationCampaignStatus @default(DRAFT)
+  opensAt DateTime
+  closesAt DateTime
+  ageCutoffDate DateTime @db.Date
+  timezone String @default("America/Sao_Paulo")
+  maxApplications Int?
+  allowWaitlist Boolean @default(true)
+  seatPolicy String @default("RESERVE")
+  responseDeadlineDays Int @default(7)
+  onNoResponse String @default("NOTIFY_COORDINATOR")
+  offeredWindows Json
+  offeredCommunityIds Json
+  revision Int @default(1)
+  createdById String
+  createdBy User @relation(fields: [createdById], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  offerings RegistrationOffering[]
+  @@index([parishId, status])
+}
+
+model RegistrationOffering {
+  id String @id @default(uuid())
+  campaignId String
+  campaign RegistrationCampaign @relation(fields: [campaignId], references: [id])
+  stageId String
+  stage Stage @relation(fields: [stageId], references: [id])
+  documentStageKind DocumentStageKind
+  plannedSeats Int?
+  minAge Int?
+  maxAge Int?
+  audience String
+  @@unique([campaignId, stageId])
 }
