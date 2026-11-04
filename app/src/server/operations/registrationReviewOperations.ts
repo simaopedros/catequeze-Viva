@@ -5,6 +5,7 @@ import { assertRegistrationsPlan } from './registrationCampaignOperations';
 import { offeredWindowsSchema } from '../../shared/registrationCampaign';
 import { assistedRegistrationSchema, validateSubmissionOptions } from '../../shared/registrationSubmission';
 import { duplicateReason, listReviewSchema, reviewSchema, reviewTransition } from '../../shared/registrationReview';
+import { loadRegistrationDocumentRules, registrationDocumentChecklist, registrationDocumentSelect } from '../registrations/documentRules';
 import { createSubmissionRecords } from '../registrations/createSubmissionRecords';
 import { consumePersistentRateLimit } from '../security/persistentRateLimit';
 
@@ -42,7 +43,10 @@ export async function listRegistrationApplications(args: unknown, context: any) 
   const where = { submission: { campaignId: campaign.id }, ...(communityId ? { communityId } : {}), ...(data.status ? { status: data.status } : {}), ...(data.needsReview !== undefined ? { needsReview: data.needsReview } : {}) };
   if (data.cursor && !await context.entities.RegistrationApplication.findFirst({ where: { ...where, id: data.cursor }, select: { id: true } })) throw new HttpError(400, 'Cursor inválido.');
   const rows = await context.entities.RegistrationApplication.findMany({ where, take: data.take ?? 50, ...(data.cursor ? { cursor: { id: data.cursor }, skip: 1 } : {}), orderBy: { id: 'asc' }, include: { submission: { select: { protocol: true, contactVerifiedAt: true, source: true } }, offering: { include: { stage: true } } } });
-  return rows.map((row: any) => summary(row, campaign));
+  const [rules, documents] = await Promise.all([loadRegistrationDocumentRules(context, campaign), context.entities.RegistrationDocument.findMany({ where: { applicationId: { in: rows.map((row: any) => row.id) } }, select: registrationDocumentSelect })]);
+  const byApplication = new Map<string, any[]>();
+  for (const document of documents) { const group = byApplication.get(document.applicationId) ?? []; group.push(document); byApplication.set(document.applicationId, group); }
+  return rows.map((row: any) => ({ ...summary(row, campaign), documentWarnings: registrationDocumentChecklist(row, rules, byApplication.get(row.id) ?? []).warnings.length }));
 }
 export async function getRegistrationApplication(args: { id: string }, context: any) {
   const item = await loadApplication(context, args.id); const campaign = item.submission.campaign;
@@ -59,7 +63,9 @@ export async function getRegistrationApplication(args: { id: string }, context: 
     const matches = [{ ...base, email: c.email, phone: household?.phone }, ...(household?.guardians ?? []).map((g: any) => ({ ...base, email: g.email, phone: g.phone }))].map(v => duplicateReason(reference, v)).filter((v): v is { reason: string; score: number } => v !== null).sort((a, b) => b.score - a.score);
     return matches.length ? [{ id: c.id, name: base.name, birthDate: c.birthDate, householdName: household?.name ?? null, reason: matches[0].reason, score: matches[0].score }] : [];
   }).sort((a: any, b: any) => b.score - a.score || a.id.localeCompare(b.id)).slice(0, 5).map(({ score, ...rest }: any) => rest);
-  return { ...summary(item, campaign), birthDate: item.birthDate, revision: item.revision, reviewedAt: item.reviewedAt, reviewedByUserId: item.reviewedByUserId, reviewNote: item.reviewNote, contactName: item.submission.contactName, contactEmail: email, contactPhone: phone, consents: item.consents.map((c: any) => ({ kind: c.kind, granted: c.granted, textVersion: c.textVersion, actorName: c.actorName, actorRelationship: c.actorRelationship, createdAt: c.createdAt })), duplicateSuggestions: suggestions };
+  const [rules, documents] = await Promise.all([loadRegistrationDocumentRules(context, campaign), context.entities.RegistrationDocument.findMany({ where: { applicationId: item.id }, select: registrationDocumentSelect })]);
+  const documentChecklist = registrationDocumentChecklist(item, rules, documents);
+  return { ...summary(item, campaign), documents: documents.map(({ applicationId, ...document }: any) => document), documentChecklist, birthDate: item.birthDate, revision: item.revision, reviewedAt: item.reviewedAt, reviewedByUserId: item.reviewedByUserId, reviewNote: item.reviewNote, contactName: item.submission.contactName, contactEmail: email, contactPhone: phone, consents: item.consents.map((c: any) => ({ kind: c.kind, granted: c.granted, textVersion: c.textVersion, actorName: c.actorName, actorRelationship: c.actorRelationship, createdAt: c.createdAt })), duplicateSuggestions: suggestions };
 }
 export async function reviewRegistrationApplication(args: unknown, context: any) {
   const data = parse(reviewSchema, args); const item = await loadApplication(context, data.id); const status = reviewTransition(item.status, data.decision);

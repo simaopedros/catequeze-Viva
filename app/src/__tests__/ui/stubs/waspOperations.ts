@@ -96,3 +96,6 @@ export const getRegistrationApplication = vi.fn();
 export const reviewRegistrationApplication = vi.fn();
 export const createAssistedRegistration = vi.fn();
 export const getRegistrationReviewOptions = vi.fn();
+
+export const listRegistrationDocumentQueue = vi.fn();
+export const reviewRegistrationDocument = vi.fn();

@@ -12,6 +12,12 @@ export const serverMiddlewareConfigFn: MiddlewareConfigFn = (
   middlewareConfig,
 ) => {
   middlewareConfig.set('publicRegistrationMethods', (req: any, res: any, next: any) => {
+    if (/^\/api\/public\/inscricoes\/documents(?:\/status)?\/?$/.test(req.path)) {
+      const method = /\/status\/?$/.test(req.path) ? 'GET' : 'POST';
+      res.set({ 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer', 'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex, nofollow' });
+      if (req.method !== method) return res.set('Allow', method).status(405).end();
+      return next();
+    }
     if (/^\/api\/public\/inscricoes\/confirm\/?$/.test(req.path)) {
       if (req.method !== 'POST') return res.set({ 'Allow': 'POST', 'Cache-Control': 'no-store' }).status(405).end();
       return next();

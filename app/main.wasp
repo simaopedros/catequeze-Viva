@@ -2969,6 +2969,11 @@ query getRegistrationCampaignShare {
   entities: [RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese]
 }
 
+route RegistrationDocumentQueueRoute { path: "/app/inscricoes/:campaignId/documentos", to: RegistrationDocumentQueuePage }
+page RegistrationDocumentQueuePage {
+  authRequired: true,
+  component: import RegistrationDocumentQueuePage from "@src/registrations/RegistrationDocumentQueuePage"
+}
 route RegistrationReviewRoute { path: "/app/inscricoes/:campaignId/conferencia", to: RegistrationReviewPage }
 page RegistrationReviewPage {
   authRequired: true,
@@ -2987,11 +2992,11 @@ page RegistrationSharePage {
 
 query listRegistrationApplications {
   fn: import { listRegistrationApplications } from "@src/server/operations/registrationReviewOperations",
-  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationDocument, DocumentStageRule, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
 }
 query getRegistrationApplication {
   fn: import { getRegistrationApplication } from "@src/server/operations/registrationReviewOperations",
-  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, CatechumenProfile, Household, GuardianProfile, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationDocument, DocumentStageRule, CatechumenProfile, Household, GuardianProfile, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
 }
 action reviewRegistrationApplication {
   fn: import { reviewRegistrationApplication } from "@src/server/operations/registrationReviewOperations",
@@ -3000,4 +3005,39 @@ action reviewRegistrationApplication {
 action createAssistedRegistration {
   fn: import { createAssistedRegistration } from "@src/server/operations/registrationReviewOperations",
   entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, Community, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog, RateLimitBucket]
+}
+
+api registrationDocumentStatus {
+  fn: import { registrationDocumentStatus } from "@src/server/api/registrationDocuments",
+  middlewareConfigFn: import { registrationDocumentsMiddleware } from "@src/server/api/registrationDocuments",
+  httpRoute: (GET, "/api/public/inscricoes/documents/status"),
+  entities: [RegistrationAccessToken, RegistrationSubmission, RegistrationCampaign, RegistrationApplication, RegistrationOffering, RegistrationDocument, DocumentStageRule, Stage, Parish, TenantBilling, User]
+}
+api publicRegistrationDocumentUpload {
+  fn: import { publicRegistrationDocumentUpload } from "@src/server/api/registrationDocuments",
+  middlewareConfigFn: import { registrationDocumentsMiddleware } from "@src/server/api/registrationDocuments",
+  httpRoute: (POST, "/api/public/inscricoes/documents"),
+  entities: [RegistrationAccessToken, RegistrationSubmission, RegistrationCampaign, RegistrationApplication, RegistrationDocument, Parish, TenantBilling, User]
+}
+api staffRegistrationDocumentUpload {
+  fn: import { staffRegistrationDocumentUpload } from "@src/server/api/registrationDocuments",
+  middlewareConfigFn: import { registrationDocumentsMiddleware } from "@src/server/api/registrationDocuments",
+  auth: true,
+  httpRoute: (POST, "/api/registrations/documents/upload"),
+  entities: [RegistrationApplication, RegistrationSubmission, RegistrationCampaign, RegistrationDocument, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
+}
+api registrationDocumentFile {
+  fn: import { registrationDocumentFile } from "@src/server/api/registrationDocuments",
+  middlewareConfigFn: import { registrationDocumentsMiddleware } from "@src/server/api/registrationDocuments",
+  auth: true,
+  httpRoute: (GET, "/api/registrations/documents/:id/file"),
+  entities: [RegistrationDocument, RegistrationApplication, RegistrationSubmission, RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+}
+query listRegistrationDocumentQueue {
+  fn: import { listRegistrationDocumentQueue } from "@src/server/operations/registrationDocumentOperations",
+  entities: [RegistrationDocument, RegistrationApplication, RegistrationSubmission, RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+}
+action reviewRegistrationDocument {
+  fn: import { reviewRegistrationDocument } from "@src/server/operations/registrationDocumentOperations",
+  entities: [RegistrationDocument, RegistrationApplication, RegistrationSubmission, RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { registrationSubmissionSchema, validateSubmissionOptions } from '../shared/registrationSubmission';
+import { assistedRegistrationSchema, registrationSubmissionSchema, validateSubmissionOptions } from '../shared/registrationSubmission';
 
 const person = { firstName: ' Ana ', lastName: ' Silva ', birthDate: '2015-02-28', offeringId: 'offer', windows: ['morning'] };
 const common = { requestKey: '60b4d692-8f95-48ca-b556-746b46b84120', consent: true, formToken: 'token', captchaToken: 'captcha' };
@@ -31,4 +31,14 @@ describe('submissão pública', () => {
     expect(() => validateSubmissionOptions(input, { ...campaign, offerings: [] })).toThrow();
     expect(() => validateSubmissionOptions(input, { ...campaign, offerings: [{ ...campaign.offerings[0], audience: 'ADULT' }] })).toThrow();
   });
+});
+
+it('valida padrinho opcional nos dois caminhos', () => {
+  const sponsor = { role: 'PADRINHO', name: 'José', fromOtherParish: true, parishName: 'São José' };
+  const assisted = { requestKey: common.requestKey, mode: 'FAMILY', contactName: 'Maria', relationship: 'Mãe', consentConfirmedByStaff: true, applicants: [person] };
+  for (const [schema, base] of [[registrationSubmissionSchema, family], [assistedRegistrationSchema, assisted]] as const) {
+    expect(schema.safeParse(base).success).toBe(true);
+    expect(schema.safeParse({ ...base, applicants: [{ ...person, sponsor }] }).success).toBe(true);
+    for (const invalid of [{ ...sponsor, parishName: undefined }, { ...sponsor, extra: 1 }, { ...sponsor, name: '123' }]) expect(schema.safeParse({ ...base, applicants: [{ ...person, sponsor: invalid }] }).success).toBe(false);
+  }
 });

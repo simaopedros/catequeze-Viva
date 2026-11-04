@@ -13,7 +13,8 @@ const birthDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(value => {
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value && value < new Date().toISOString().slice(0, 10);
 }, 'Data inválida');
 const windows = z.array(id).min(1).max(50).refine(values => new Set(values).size === values.length, 'Janelas repetidas');
-const applicant = z.object({ firstName: name, lastName: name, birthDate, offeringId: id, communityId: id.optional(), windows }).strict();
+const sponsor = z.object({ role: z.enum(['PADRINHO', 'MADRINHA']), name, fromOtherParish: z.boolean(), parishName: plain(100).optional() }).strict().refine(value => !value.fromOtherParish || !!value.parishName, 'Paróquia obrigatória');
+const applicant = z.object({ sponsor: sponsor.optional(), firstName: name, lastName: name, birthDate, offeringId: id, communityId: id.optional(), windows }).strict();
 const shared = { requestKey: z.string().uuid(), contactEmail: optionalEmail, contactPhone: optionalPhone };
 const common = { ...shared, consent: z.literal(true), formToken: z.string().min(1).max(2048), captchaToken: z.string().min(1).max(2048), honeypot: z.string().max(200).optional() };
 export const registrationSubmissionSchema = z.discriminatedUnion('mode', [

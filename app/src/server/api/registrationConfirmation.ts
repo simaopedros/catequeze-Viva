@@ -38,6 +38,7 @@ export async function registrationConfirm(req: Request, res: Response, context: 
     if (!candidate || candidate.campaignId !== candidate.submission.campaignId) return invalid(res);
     const campaign = await loadPublicRegistrationCampaign(context, candidate.submission.campaign.slug);
     if (!campaign || campaign.id !== candidate.campaignId) return invalid(res);
+    const uploadToken = generateRegistrationAccessToken();
     const result = await prisma.$transaction(async tx => {
       await tx.$queryRaw`SELECT "id" FROM "RegistrationSubmission" WHERE "id" = ${candidate.submissionId} FOR UPDATE`;
       const now = new Date();
@@ -47,14 +48,17 @@ export async function registrationConfirm(req: Request, res: Response, context: 
       if (consumed.count !== 1) return null;
       await tx.registrationSubmission.update({ where: { id: submission.id }, data: { status: 'RECEIVED', contactVerifiedAt: now, retentionUntil: new Date(campaign.closesAt.getTime() + 180 * 86400000) } });
       await tx.registrationConsent.updateMany({ where: { application: { submissionId: submission.id }, verifiedContactHash: null }, data: { verifiedContactHash: candidate.emailHash } });
-      return submission;
+      const expiresAt = new Date(now.getTime() + 2 * 3600000);
+      await tx.registrationAccessToken.updateMany({ where: { submissionId: submission.id, purpose: 'DOCUMENT_UPLOAD', revokedAt: null }, data: { revokedAt: now } });
+      await tx.registrationAccessToken.create({ data: { submissionId: submission.id, campaignId: campaign.id, emailHash: candidate.emailHash, tokenHash: hashRegistrationAccessToken(uploadToken), purpose: 'DOCUMENT_UPLOAD', expiresAt } });
+      return { ...submission, uploadExpiresAt: expiresAt };
     });
     if (!result) return invalid(res);
     if (result.contactEmail) {
       try { await enqueueEmail({ messageId: EMAIL_MESSAGE.REGISTRATION_RECEIVED, to: result.contactEmail, idempotencyKey: `registration.received:${result.id}`, context, payload: { parishName: campaign.parish.name, campaignTitle: campaign.title, protocol: result.protocol } }); }
       catch { logger.warn('registration_received_enqueue_failed', { reason: 'backend_error' }); }
     }
-    return res.json({ status: 'confirmed', protocol: result.protocol });
+    return res.json({ status: 'confirmed', protocol: result.protocol, uploadSession: { token: uploadToken, expiresAt: result.uploadExpiresAt } });
   } catch { logger.warn('registration_confirmation_failed', { reason: 'backend_error' }); return invalid(res); }
 }
 
