@@ -11,6 +11,8 @@ describe('campanhas de inscrição', () => {
     expect(canTransitionCampaign('CLOSED', 'OPEN')).toBe(true);
     expect(canTransitionCampaign('ORGANIZING', 'OPEN')).toBe(false);
     expect(generateCampaignSlug('Inscrições', [])).toBe('inscricoes-campanha');
+    expect(generateCampaignSlug('Confirm', [])).toBe('confirm-campanha');
+    expect(generateCampaignSlug('Confirmar', [])).toBe('confirmar-campanha');
     expect(generateCampaignSlug('Crisma', ['crisma', 'crisma-2'])).toBe('crisma-3');
   });
   it('valida período, data civil, fuso e faixa de idade', () => {

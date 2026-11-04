@@ -2837,6 +2837,7 @@ model RegistrationCampaign {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   offerings RegistrationOffering[]
+  submissions RegistrationSubmission[]
   @@index([parishId, status])
 }
 
@@ -2851,5 +2852,112 @@ model RegistrationOffering {
   minAge Int?
   maxAge Int?
   audience String
+  applications RegistrationApplication[]
   @@unique([campaignId, stageId])
+}
+
+
+enum RegistrationApplicantKind {
+  MINOR
+  ADULT
+}
+
+enum RegistrationSubmissionStatus {
+  PENDING_EMAIL
+  RECEIVED
+}
+
+enum RegistrationApplicationStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  NEEDS_CORRECTION
+  WAITLISTED
+  ENROLLED
+  WITHDRAWN
+  REJECTED
+}
+
+enum RegistrationOfferStatus {
+  NONE
+  AWAITING_RESPONSE
+  ACCEPTED
+  DECLINED
+}
+
+enum RegistrationAccessTokenPurpose {
+  CONFIRM_CONTACT
+}
+
+model RegistrationSubmission {
+  id String @id @default(uuid())
+  campaignId String
+  campaign RegistrationCampaign @relation(fields: [campaignId], references: [id])
+  protocol String @unique
+  requestKey String
+  payloadHash String
+  status RegistrationSubmissionStatus
+  contactName String
+  contactEmail String?
+  contactPhone String?
+  contactVerifiedAt DateTime?
+  formVersion Int @default(1)
+  submittedAt DateTime @default(now())
+  retentionUntil DateTime
+  applications RegistrationApplication[]
+  tokens RegistrationAccessToken[]
+  @@unique([campaignId, requestKey])
+  @@index([campaignId, submittedAt])
+}
+
+model RegistrationApplication {
+  id String @id @default(uuid())
+  submissionId String
+  submission RegistrationSubmission @relation(fields: [submissionId], references: [id])
+  offeringId String
+  offering RegistrationOffering @relation(fields: [offeringId], references: [id])
+  kind RegistrationApplicantKind
+  firstName String
+  lastName String
+  birthDate DateTime @db.Date
+  communityId String?
+  ageAtCutoff Int
+  needsReview Boolean @default(false)
+  status RegistrationApplicationStatus @default(SUBMITTED)
+  offerStatus RegistrationOfferStatus @default(NONE)
+  preferences Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  consents RegistrationConsent[]
+  @@index([offeringId, status])
+}
+
+model RegistrationConsent {
+  id String @id @default(uuid())
+  applicationId String
+  application RegistrationApplication @relation(fields: [applicationId], references: [id])
+  kind String
+  granted Boolean
+  textVersion String
+  actorName String
+  actorRelationship String?
+  verifiedContactHash String?
+  createdAt DateTime @default(now())
+  @@index([applicationId, createdAt])
+}
+
+model RegistrationAccessToken {
+  id String @id @default(uuid())
+  submissionId String
+  submission RegistrationSubmission @relation(fields: [submissionId], references: [id])
+  campaignId String
+  emailHash String
+  tokenHash String @unique
+  purpose RegistrationAccessTokenPurpose
+  expiresAt DateTime
+  consumedAt DateTime?
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([campaignId, emailHash])
+  @@index([expiresAt])
 }

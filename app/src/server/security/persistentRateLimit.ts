@@ -73,7 +73,7 @@ export async function peekPersistentRateLimit(
   } catch (err) {
     logger.warn(config.failClosed ? "[rateLimit] fail-closed on DB error" : "[rateLimit] fail-open on DB error", {
       scope: config.scope,
-      error: err instanceof Error ? err.message : String(err),
+      ...(config.failClosed ? {} : { error: err instanceof Error ? err.message : String(err) }),
     });
     return config.failClosed
       ? { allowed: false, failedClosed: true, retryAfterSec: 60 }
@@ -136,7 +136,7 @@ export async function consumePersistentRateLimit(
   } catch (err) {
     logger.warn(config.failClosed ? "[rateLimit] fail-closed on DB error" : "[rateLimit] fail-open on DB error", {
       scope: config.scope,
-      error: err instanceof Error ? err.message : String(err),
+      ...(config.failClosed ? {} : { error: err instanceof Error ? err.message : String(err) }),
     });
     return config.failClosed
       ? { allowed: false, failedClosed: true, retryAfterSec: 60 }

@@ -12,8 +12,21 @@ export const serverMiddlewareConfigFn: MiddlewareConfigFn = (
   middlewareConfig,
 ) => {
   middlewareConfig.set('publicRegistrationMethods', (req: any, res: any, next: any) => {
+    if (/^\/api\/public\/inscricoes\/confirm\/?$/.test(req.path)) {
+      if (req.method !== 'POST') return res.set({ 'Allow': 'POST', 'Cache-Control': 'no-store' }).status(405).end();
+      return next();
+    }
+    if (/^\/api\/public\/inscricoes\/[^/]+\/resend-confirmation\/?$/.test(req.path) && req.method !== 'POST') {
+      return res.set({ 'Allow': 'POST', 'Cache-Control': 'no-store' }).status(405).end();
+    }
     if (/^\/api\/public\/inscricoes\/[^/]+\/?$/.test(req.path) && req.method !== 'GET' && req.method !== 'HEAD') {
       return res.set({ 'Allow': 'GET, HEAD', 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer', 'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex, nofollow' }).status(405).end();
+    }
+    if (/^\/api\/public\/inscricoes\/[^/]+\/form-token\/?$/.test(req.path) && req.method !== 'GET' && req.method !== 'HEAD') {
+      return res.set({ 'Allow': 'GET, HEAD', 'Cache-Control': 'no-store' }).status(405).end();
+    }
+    if (/^\/api\/public\/inscricoes\/[^/]+\/submissions\/?$/.test(req.path) && req.method !== 'POST') {
+      return res.set({ 'Allow': 'POST', 'Cache-Control': 'no-store' }).status(405).end();
     }
     next();
   });
