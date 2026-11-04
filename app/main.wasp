@@ -118,6 +118,21 @@ app OpenSaaS {
   },
 }
 
+route RegistrationConfirmationRoute { path: "/inscricoes/confirmar", to: RegistrationConfirmationPage }
+page RegistrationConfirmationPage {
+  component: import RegistrationConfirmationPage from "@src/registrations/RegistrationConfirmationPage"
+}
+
+route RegistrationFollowUpRoute { path: "/inscricoes/acompanhar", to: RegistrationFollowUpPage }
+page RegistrationFollowUpPage {
+  component: import RegistrationFollowUpPage from "@src/registrations/RegistrationFollowUpPage"
+}
+
+route PublicRegistrationRoute { path: "/inscricoes/:slug", to: PublicRegistrationPage }
+page PublicRegistrationPage {
+  component: import PublicRegistrationPage from "@src/registrations/PublicRegistrationPage"
+}
+
 route LandingPageRoute { path: "/", to: LandingPage }
 page LandingPage {
   component: import LandingPage from "@src/landing-page/LandingPage"
@@ -1510,6 +1525,53 @@ api serveDocument {
   entities: [Document, CatechumenProfile, Membership, Parish, ClassCatechist, ClassEnrollment, GuardianProfile]
 }
 
+api publicRegistrationCampaign {
+  fn: import { publicRegistrationCampaign } from "@src/server/api/publicRegistrationCampaign",
+  httpRoute: (GET, "/api/public/inscricoes/:slug"),
+  entities: [RegistrationCampaign, RegistrationOffering, Stage, Parish, TenantBilling, User]
+}
+
+api registrationFormToken {
+  fn: import { registrationFormToken } from "@src/server/api/registrationSubmission",
+  middlewareConfigFn: import { registrationTokenMiddleware } from "@src/server/api/registrationSubmission",
+  httpRoute: (GET, "/api/public/inscricoes/:slug/form-token"),
+  entities: [RegistrationCampaign, RegistrationOffering, Stage, Parish, TenantBilling, User]
+}
+
+api registrationSubmission {
+  fn: import { registrationSubmission } from "@src/server/api/registrationSubmission",
+  middlewareConfigFn: import { registrationSubmissionMiddleware } from "@src/server/api/registrationSubmission",
+  httpRoute: (POST, "/api/public/inscricoes/:slug/submissions"),
+  entities: [RegistrationCampaign, RegistrationOffering, Stage, Parish, TenantBilling, User, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationAccessToken, EmailMessage, EmailSuppression, EmailPreference]
+}
+
+api registrationConfirm {
+  fn: import { registrationConfirm } from "@src/server/api/registrationConfirmation",
+  middlewareConfigFn: import { registrationConfirmationMiddleware } from "@src/server/api/registrationConfirmation",
+  httpRoute: (POST, "/api/public/inscricoes/confirm"),
+  entities: [RegistrationCampaign, RegistrationOffering, Stage, Parish, TenantBilling, User, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationAccessToken, EmailMessage, EmailSuppression, EmailPreference]
+}
+
+api registrationResendConfirmation {
+  fn: import { registrationResendConfirmation } from "@src/server/api/registrationConfirmation",
+  middlewareConfigFn: import { registrationConfirmationMiddleware } from "@src/server/api/registrationConfirmation",
+  httpRoute: (POST, "/api/public/inscricoes/:slug/resend-confirmation"),
+  entities: [RegistrationCampaign, RegistrationOffering, Stage, Parish, TenantBilling, User, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationAccessToken, EmailMessage, EmailSuppression, EmailPreference]
+}
+
+api registrationFollowUpLink {
+  fn: import { registrationFollowUpLink } from "@src/server/api/registrationFollowUp",
+  middlewareConfigFn: import { registrationFollowUpMiddleware } from "@src/server/api/registrationFollowUp",
+  httpRoute: (POST, "/api/public/inscricoes/acompanhar/link"),
+  entities: [RegistrationCampaign, RegistrationSubmission, RegistrationAccessToken, Parish, TenantBilling, User, EmailMessage, EmailSuppression, EmailPreference]
+}
+api registrationFollowUpSession {
+  fn: import { registrationFollowUpSession } from "@src/server/api/registrationFollowUp",
+  middlewareConfigFn: import { registrationFollowUpMiddleware } from "@src/server/api/registrationFollowUp",
+  httpRoute: (POST, "/api/public/inscricoes/acompanhar/session"),
+  entities: [RegistrationCampaign, RegistrationSubmission, RegistrationApplication, RegistrationOffering, RegistrationDocument, RegistrationAccessToken, Document, DocumentStageRule, Parish, TenantBilling, User]
+}
+
 api publicUploadDocument {
   fn: import { publicUploadDocument } from "@src/server/api/publicUpload",
   middlewareConfigFn: import { publicUploadMiddleware } from "@src/server/api/publicUpload",
@@ -1970,7 +2032,7 @@ api readinessCheckApi {
 api maintenanceApi {
   fn: import { maintenanceHandler } from "@src/server/api/maintenance",
   httpRoute: (POST, "/api/internal/maintenance"),
-  entities: [User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish, SocialMedia, LifecycleEmailLog, Membership, ClassEnrollment, AttendanceRecord, PricingPlan, PricingPlanPrice, PricingEvent, EmailMessage, EmailSuppression, EmailPreference, JobRun]
+  entities: [RegistrationCampaign, RegistrationSubmission, RegistrationApplication, RegistrationOffering, RegistrationDocument, Document, DocumentStageRule, User, DailyStats, Logs, PageViewSource, UserAiCredits, AiResponseCache, Meeting, Notification, CatechesisClass, TenantBilling, Parish, SocialMedia, LifecycleEmailLog, Membership, ClassEnrollment, AttendanceRecord, PricingPlan, PricingPlanPrice, PricingEvent, EmailMessage, EmailSuppression, EmailPreference, JobRun]
 }
 
 api subscriptionExpirationApi {
@@ -2878,4 +2940,242 @@ action setDocumentStageRule {
 action saveCatechumenSponsor {
   fn: import { saveCatechumenSponsor } from "@src/server/operations/documentStageOperations",
   entities: [CatechumenSponsor, CatechumenProfile, Parish, Membership, ClassCatechist, GuardianProfile, Household, CatechesisClass, ClassEnrollment, AuditLog]
+}
+
+action grantRegistrationPermission {
+  fn: import { grantRegistrationPermission } from "@src/server/operations/registrationGrantOperations",
+  entities: [RegistrationPermissionGrant, Membership, Parish, AuditLog]
+}
+
+action revokeRegistrationPermission {
+  fn: import { revokeRegistrationPermission } from "@src/server/operations/registrationGrantOperations",
+  entities: [RegistrationPermissionGrant, Membership, Parish, AuditLog]
+}
+
+action createRegistrationCampaign {
+  fn: import { createRegistrationCampaign } from "@src/server/operations/registrationCampaignOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, CatecheticalYear, Stage, Community, Parish, Membership, RegistrationPermissionGrant, AuditLog, TenantBilling, User]
+}
+
+action updateRegistrationCampaign {
+  fn: import { updateRegistrationCampaign } from "@src/server/operations/registrationCampaignOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, CatecheticalYear, Stage, Community, Parish, Membership, RegistrationPermissionGrant, AuditLog, TenantBilling, User]
+}
+
+action setRegistrationOfferings {
+  fn: import { setRegistrationOfferings } from "@src/server/operations/registrationCampaignOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, CatecheticalYear, Stage, Community, Parish, Membership, RegistrationPermissionGrant, AuditLog, TenantBilling, User]
+}
+
+action transitionRegistrationCampaign {
+  fn: import { transitionRegistrationCampaign } from "@src/server/operations/registrationCampaignOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, CatecheticalYear, Stage, Community, Parish, Membership, RegistrationPermissionGrant, AuditLog, TenantBilling, User]
+}
+
+query getRegistrationCampaign {
+  fn: import { getRegistrationCampaign } from "@src/server/operations/registrationCampaignOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, CatecheticalYear, Stage, Community, Parish, Membership, RegistrationPermissionGrant, AuditLog, TenantBilling, User]
+}
+
+query listRegistrationCampaigns {
+  fn: import { listRegistrationCampaigns } from "@src/server/operations/registrationCampaignOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, CatecheticalYear, Stage, Community, Parish, Membership, RegistrationPermissionGrant, AuditLog, TenantBilling, User]
+}
+
+query getRegistrationCampaignShare {
+  fn: import { getRegistrationCampaignShare } from "@src/server/operations/registrationCampaignOperations",
+  entities: [RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese]
+}
+
+route RegistrationDocumentQueueRoute { path: "/app/inscricoes/:campaignId/documentos", to: RegistrationDocumentQueuePage }
+page RegistrationDocumentQueuePage {
+  authRequired: true,
+  component: import RegistrationDocumentQueuePage from "@src/registrations/RegistrationDocumentQueuePage"
+}
+route ClassFormationRoute { path: "/app/inscricoes/:campaignId/formacao", to: ClassFormationPage }
+page ClassFormationPage {
+  authRequired: true,
+  component: import ClassFormationPage from "@src/registrations/ClassFormationPage"
+}
+route RegistrationExportRoute { path: "/app/inscricoes/:campaignId/exportar", to: RegistrationExportPage }
+page RegistrationExportPage {
+  authRequired: true,
+  component: import RegistrationExportPage from "@src/registrations/RegistrationExportPage"
+}
+route RegistrationReviewRoute { path: "/app/inscricoes/:campaignId/conferencia", to: RegistrationReviewPage }
+page RegistrationReviewPage {
+  authRequired: true,
+  component: import RegistrationReviewPage from "@src/registrations/RegistrationReviewPage"
+}
+query getRegistrationReviewOptions {
+  fn: import { getRegistrationReviewOptions } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, Stage, Community, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+}
+
+route RegistrationShareRoute { path: "/app/inscricoes", to: RegistrationSharePage }
+page RegistrationSharePage {
+  authRequired: true,
+  component: import RegistrationSharePage from "@src/registrations/RegistrationSharePage"
+}
+
+query listRegistrationApplications {
+  fn: import { listRegistrationApplications } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationDocument, Document, DocumentStageRule, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+}
+query getRegistrationApplication {
+  fn: import { getRegistrationApplication } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, RegistrationDocument, Document, DocumentStageRule, CatechumenProfile, Household, GuardianProfile, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, EmailMessage, AuditLog]
+}
+action setRegistrationReminders {
+  fn: import { setRegistrationReminders } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationSubmission, RegistrationApplication, RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
+}
+action reviewRegistrationApplication {
+  fn: import { reviewRegistrationApplication } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, Stage, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
+}
+action linkRegistrationProfile {
+  fn: import { linkRegistrationProfile } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationApplication, RegistrationSubmission, RegistrationCampaign, CatechumenProfile, Household, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
+}
+action approveRegistrationApplication {
+  fn: import { approveRegistrationApplication } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationApplication, RegistrationSubmission, RegistrationCampaign, RegistrationOffering, RegistrationConsent, RegistrationDocument, CatechumenProfile, CatechumenSponsor, Household, GuardianProfile, Document, DocumentStageRule, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
+}
+action createAssistedRegistration {
+  fn: import { createAssistedRegistration } from "@src/server/operations/registrationReviewOperations",
+  entities: [RegistrationCampaign, RegistrationOffering, RegistrationSubmission, RegistrationApplication, RegistrationConsent, Community, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog, RateLimitBucket]
+}
+
+api registrationDocumentStatus {
+  fn: import { registrationDocumentStatus } from "@src/server/api/registrationDocuments",
+  middlewareConfigFn: import { registrationDocumentsMiddleware } from "@src/server/api/registrationDocuments",
+  httpRoute: (GET, "/api/public/inscricoes/documents/status"),
+  entities: [RegistrationAccessToken, RegistrationSubmission, RegistrationCampaign, RegistrationApplication, RegistrationOffering, RegistrationDocument, Document, DocumentStageRule, Stage, Parish, TenantBilling, User]
+}
+api publicRegistrationDocumentUpload {
+  fn: import { publicRegistrationDocumentUpload } from "@src/server/api/registrationDocuments",
+  middlewareConfigFn: import { registrationDocumentsMiddleware } from "@src/server/api/registrationDocuments",
+  httpRoute: (POST, "/api/public/inscricoes/documents"),
+  entities: [RegistrationAccessToken, RegistrationSubmission, RegistrationCampaign, RegistrationApplication, RegistrationDocument, Parish, TenantBilling, User]
+}
+api staffRegistrationDocumentUpload {
+  fn: import { staffRegistrationDocumentUpload } from "@src/server/api/registrationDocuments",
+  middlewareConfigFn: import { registrationDocumentsMiddleware } from "@src/server/api/registrationDocuments",
+  auth: true,
+  httpRoute: (POST, "/api/registrations/documents/upload"),
+  entities: [RegistrationApplication, RegistrationSubmission, RegistrationCampaign, RegistrationDocument, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
+}
+api registrationDocumentFile {
+  fn: import { registrationDocumentFile } from "@src/server/api/registrationDocuments",
+  middlewareConfigFn: import { registrationDocumentsMiddleware } from "@src/server/api/registrationDocuments",
+  auth: true,
+  httpRoute: (GET, "/api/registrations/documents/:id/file"),
+  entities: [RegistrationDocument, RegistrationApplication, RegistrationSubmission, RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
+}
+query listRegistrationDocumentQueue {
+  fn: import { listRegistrationDocumentQueue } from "@src/server/operations/registrationDocumentOperations",
+  entities: [RegistrationDocument, RegistrationApplication, RegistrationSubmission, RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User]
+}
+action reviewRegistrationDocument {
+  fn: import { reviewRegistrationDocument } from "@src/server/operations/registrationDocumentOperations",
+  entities: [RegistrationDocument, RegistrationApplication, RegistrationSubmission, RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant, Diocese, TenantBilling, User, AuditLog]
+}
+
+query listRooms {
+  fn: import { listRooms } from "@src/server/operations/roomOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+query getClassCapacity {
+  fn: import { getClassCapacity } from "@src/server/operations/roomOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+query listSchedulingConflicts {
+  fn: import { listSchedulingConflicts } from "@src/server/operations/roomOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+action createRoom {
+  fn: import { createRoom } from "@src/server/operations/roomOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+action updateRoom {
+  fn: import { updateRoom } from "@src/server/operations/roomOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+action setRoomActive {
+  fn: import { setRoomActive } from "@src/server/operations/roomOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+action setClassRoom {
+  fn: import { setClassRoom } from "@src/server/operations/roomOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+query getCatechistAvailability {
+  fn: import { getCatechistAvailability } from "@src/server/operations/catechistAvailabilityOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+query listCatechistAvailability {
+  fn: import { listCatechistAvailability } from "@src/server/operations/catechistAvailabilityOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+action setCatechistAvailability {
+  fn: import { setCatechistAvailability } from "@src/server/operations/catechistAvailabilityOperations",
+  entities: [Room, CatechesisClass, ClassEnrollment, ClassCatechist, CatechistAvailability, CatecheticalYear, Community, Membership, User, Parish, AuditLog, RegistrationPermissionGrant, Diocese, TenantBilling]
+}
+
+route RoomsRoute { path: "/app/salas", to: RoomsPage }
+page RoomsPage {
+  authRequired: true,
+  component: import RoomsPage from "@src/registrations/RoomsPage"
+}
+route CatechistAvailabilityRoute { path: "/app/disponibilidade", to: CatechistAvailabilityPage }
+page CatechistAvailabilityPage {
+  authRequired: true,
+  component: import CatechistAvailabilityPage from "@src/registrations/CatechistAvailabilityPage"
+}
+
+action generateFormationPreview {
+  fn: import { generateFormationPreview } from "@src/server/operations/formationPlanOperations",
+  entities: [ClassFormationPlan, PlannedClass, PlannedClassCatechist, FormationPlacement, RegistrationCampaign, RegistrationOffering, RegistrationApplication, RegistrationSubmission, Room, CatechistAvailability, CatechesisClass, ClassEnrollment, ClassCatechist, Membership, RegistrationPermissionGrant, Parish, Diocese, TenantBilling, AuditLog]
+}
+action updateFormationPlacement {
+  fn: import { updateFormationPlacement } from "@src/server/operations/formationPlanOperations",
+  entities: [ClassFormationPlan, PlannedClass, PlannedClassCatechist, FormationPlacement, RegistrationCampaign, RegistrationApplication, RegistrationSubmission, Room, CatechistAvailability, CatechesisClass, ClassEnrollment, ClassCatechist, Membership, RegistrationPermissionGrant, Parish, Diocese, TenantBilling, AuditLog]
+}
+query getFormationPlan {
+  fn: import { getFormationPlan } from "@src/server/operations/formationPlanOperations",
+  entities: [ClassFormationPlan, PlannedClass, PlannedClassCatechist, FormationPlacement, RegistrationApplication, RegistrationCampaign, Membership, RegistrationPermissionGrant, Parish, Diocese, TenantBilling]
+}
+query listFormationPlans {
+  fn: import { listFormationPlans } from "@src/server/operations/formationPlanOperations",
+  entities: [ClassFormationPlan, PlannedClass, PlannedClassCatechist, FormationPlacement, RegistrationApplication, RegistrationCampaign, Membership, RegistrationPermissionGrant, Parish, Diocese, TenantBilling]
+}
+
+action exportRegistrationApplications {
+  fn: import { exportRegistrationApplications } from "@src/server/operations/registrationExportOperations",
+  entities: [RegistrationCampaign, Parish, Membership, RegistrationPermissionGrant]
+}
+
+query previewRegistrationRetention {
+  fn: import { previewRegistrationRetention } from "@src/server/operations/registrationRetentionOperations",
+  entities: [RegistrationCampaign, RegistrationSubmission, RegistrationApplication, RegistrationAccessToken, Membership, RegistrationPermissionGrant, Diocese]
+}
+query getRegistrationOperationalReport {
+  fn: import { getRegistrationOperationalReport } from "@src/server/operations/registrationRetentionOperations",
+  entities: [RegistrationCampaign, RegistrationSubmission, RegistrationApplication, Membership, RegistrationPermissionGrant, Diocese]
+}
+
+route RegistrationOperationsRoute { path: "/app/inscricoes/:campaignId/operacoes", to: RegistrationOperationsPage }
+page RegistrationOperationsPage {
+  authRequired: true,
+  component: import RegistrationOperationsPage from "@src/registrations/RegistrationOperationsPage"
 }

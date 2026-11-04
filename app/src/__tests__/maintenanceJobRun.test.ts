@@ -11,6 +11,8 @@ vi.mock("../server/scripts/aiCacheCleanupJob", () => ({
 vi.mock("../server/scripts/aiCreditsResetJob", () => ({
   resetAiCreditsJob: vi.fn().mockResolvedValue({ reset: 0 }),
 }));
+vi.mock("../server/scripts/registrationRetentionJob", () => ({ registrationRetentionJob: vi.fn().mockResolvedValue({ simulated: true }) }));
+vi.mock("../server/scripts/registrationRemindersJob", () => ({ sendRegistrationRemindersJob: vi.fn().mockResolvedValue({}) }));
 vi.mock("../server/scripts/remindersJob", () => ({
   sendRemindersJob: vi.fn().mockResolvedValue({ sent: 0 }),
 }));
@@ -84,6 +86,8 @@ describe("maintenanceHandler JobRun recording", () => {
         "emailOutbox",
         "lifecycleNudge",
         "meetingReminders",
+        "registrationReminders",
+        "registrationRetention",
         "socialMediaReconcile",
       ].sort(),
     );

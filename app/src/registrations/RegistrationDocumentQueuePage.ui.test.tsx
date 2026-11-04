@@ -1,0 +1,10 @@
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router';
+import { beforeEach, it, expect, vi } from 'vitest';
+import * as ops from 'wasp/client/operations';
+import Page from './RegistrationDocumentQueuePage';
+vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
+const show = () => render(<MemoryRouter initialEntries={['/app/inscricoes/c/documentos']}><Routes><Route path="/app/inscricoes/:campaignId/documentos" element={<Page />} /></Routes></MemoryRouter>);
+beforeEach(() => { vi.mocked(ops.listRegistrationDocumentQueue).mockReset(); vi.mocked(ops.reviewRegistrationDocument).mockReset(); });
+it('lista documentos, permite filtrar e restringe ações', async () => { vi.mocked(ops.listRegistrationDocumentQueue).mockResolvedValue([{ id: '1', protocol: 'P1', name: 'Ana', type: 'OTHER', status: 'PENDING', source: 'FAMILY', createdAt: '2026-01-01', sizeBytes: 10 }, { id: '2', protocol: 'P2', name: 'Bia', type: 'OTHER', status: 'REJECTED', source: 'STAFF', createdAt: '2026-01-01', sizeBytes: 10 }] as any); show(); await screen.findByText(/P1/); expect(screen.getAllByText('documents.download')).toHaveLength(1); fireEvent.change(screen.getByLabelText('review.filterStatus'), { target: { value: 'VERIFIED' } }); await waitFor(() => expect(ops.listRegistrationDocumentQueue).toHaveBeenLastCalledWith(expect.objectContaining({ status: 'VERIFIED' }))); });
+it('mostra mensagem neutra em 403', async () => { vi.mocked(ops.listRegistrationDocumentQueue).mockRejectedValue({ statusCode: 403 }); show(); expect(await screen.findByText('review.unavailable')).toBeTruthy(); });

@@ -62,6 +62,10 @@ export const completeCoordinatorOnboarding = async (
     const existingMembership = await context.entities.Membership.findFirst({
       where: { userId: context.user.id, parishId: existing.id },
     });
+    if (existingMembership && !context.user.isAdmin &&
+        ['PARISH_PRIEST', 'PARISH_SECRETARY'].includes(existingMembership.role)) {
+      throw new HttpError(403, 'Apenas a coordenação pode configurar esta paróquia.');
+    }
     if (!existingMembership) {
       if (!context.user.isAdmin && (await isParishClaimedByOthers(context, existing.id, context.user.id))) {
         throw new HttpError(

@@ -31,6 +31,12 @@ export const ensurePersonalWorkspace = async (_args: void, context: any) => {
     context,
     'Contas do Portal da Família não criam workspace pessoal.',
   );
+  const { loadActiveRoles } = await import('../auth/familySurface');
+  const { isStaffPortalRole } = await import('../../shared/familySurface');
+  const roles = await loadActiveRoles(context);
+  if (roles.some((role: string) => role === 'PARISH_PRIEST' || role === 'PARISH_SECRETARY') && !roles.some(isStaffPortalRole)) {
+    throw new HttpError(403, 'Este papel não permite criar workspace pessoal.');
+  }
 
   // Heal product trial so first-class creation during onboarding is not blocked.
   await ensureProductTrial(context, context.user.id);

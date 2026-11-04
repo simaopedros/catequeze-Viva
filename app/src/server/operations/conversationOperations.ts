@@ -671,7 +671,11 @@ async function listAllowedConversationContactsInternal(
     }
   }
 
-  // Coordinators, personal owners, diocese admins, platform admin (workspace-only)
+  // Unknown roles must never fall through to the parish-wide contact list.
+  if (!access.isPlatformAdmin && !access.isCoordinatorOrAbove &&
+      !['PASTORAL_VIEWER', 'CONTENT_REVIEWER'].includes(access.role)) {
+    throw new HttpError(403, 'Sem permissão para listar contatos.');
+  }
   return listCoordinatorScopedContacts(context, access.workspaceId);
 }
 

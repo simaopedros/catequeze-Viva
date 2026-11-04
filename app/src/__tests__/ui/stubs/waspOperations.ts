@@ -89,3 +89,36 @@ export const useAction = (fn: unknown) => fn;
 
 export const listHouseholds = vi.fn();
 export const listCommunities = vi.fn();
+
+export const getRegistrationCampaignShare = vi.fn();
+export const listRegistrationApplications = vi.fn();
+export const getRegistrationApplication = vi.fn();
+export const reviewRegistrationApplication = vi.fn();
+export const createAssistedRegistration = vi.fn();
+export const getRegistrationReviewOptions = vi.fn();
+
+export const listRegistrationDocumentQueue = vi.fn();
+export const reviewRegistrationDocument = vi.fn();
+
+export const linkRegistrationProfile = vi.fn();
+export const approveRegistrationApplication = vi.fn();
+export const setRegistrationReminders = vi.fn();
+
+export const listRooms = vi.fn();
+export const createRoom = vi.fn();
+export const updateRoom = vi.fn();
+export const setRoomActive = vi.fn();
+export const setClassRoom = vi.fn();
+export const getClassCapacity = vi.fn();
+export const listSchedulingConflicts = vi.fn();
+export const getCatechistAvailability = vi.fn();
+export const listCatechistAvailability = vi.fn();
+export const setCatechistAvailability = vi.fn();
+
+export const listFormationPlans = vi.fn();
+export const generateFormationPreview = vi.fn();
+export const updateFormationPlacement = vi.fn();
+
+export const exportRegistrationApplications = vi.fn();
+export const previewRegistrationRetention = vi.fn();
+export const getRegistrationOperationalReport = vi.fn();

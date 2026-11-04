@@ -13,6 +13,8 @@ enum UserRole {
   SUPER_ADMIN
   DIOCESE_ADMIN
   PARISH_COORDINATOR
+  PARISH_PRIEST
+  PARISH_SECRETARY
   COMMUNITY_COORDINATOR
   LEAD_CATECHIST
   ASSISTANT_CATECHIST
@@ -386,6 +388,12 @@ model File {
 // ─── Existing Models (Extended) ───────────────────────────────────────────────
 
 model User {
+  formationPlansCreated ClassFormationPlan[]
+  plannedClassAssignments PlannedClassCatechist[]
+  formationPlacementsChanged FormationPlacement[]
+  catechistAvailabilities CatechistAvailability[]
+  registrationCampaigns RegistrationCampaign[]
+  registrationGrantsIssued RegistrationPermissionGrant[] @relation("RegistrationGrantIssuer")
   dataExportRequests DataExportRequest[]
   termsAcceptanceRequired Boolean @default(false)
   termsAcceptances TermsAcceptance[]
@@ -524,6 +532,10 @@ model Diocese {
 }
 
 model Parish {
+  formationPlans ClassFormationPlan[]
+  rooms Room[]
+  catechistAvailabilities CatechistAvailability[]
+  registrationCampaigns RegistrationCampaign[]
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -576,6 +588,8 @@ enum CommunityType {
 }
 
 model Community {
+  plannedClasses PlannedClass[]
+  rooms Room[]
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -613,6 +627,7 @@ model Community {
 }
 
 model Membership {
+  registrationPermissionGrants RegistrationPermissionGrant[]
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -636,6 +651,21 @@ model Membership {
   @@index([userId, status])
   @@index([parishId])
   @@index([inviteToken])
+}
+
+model RegistrationPermissionGrant {
+  id           String @id @default(uuid())
+  membershipId String
+  membership   Membership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  action       String
+  grantedById  String
+  grantedBy    User @relation("RegistrationGrantIssuer", fields: [grantedById], references: [id])
+  grantedAt    DateTime @default(now())
+  revokedAt    DateTime?
+  reason       String
+
+  @@index([membershipId, action, revokedAt])
+  @@index([grantedById])
 }
 
 // Unaccepted invitation for an email (with or without an existing User account).
@@ -677,6 +707,8 @@ model PendingInvitation {
 // ─── Catechetical Year ────────────────────────────────────────────────────────
 
 model CatecheticalYear {
+  catechistAvailabilities CatechistAvailability[]
+  registrationCampaigns RegistrationCampaign[]
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -703,6 +735,7 @@ model CatecheticalYear {
 }
 
 model Stage {
+  registrationOfferings RegistrationOffering[]
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -747,6 +780,8 @@ model CatechesisClass {
   startTime String?
   endTime   String?
   location  String?
+  roomId String?
+  room Room? @relation(fields: [roomId], references: [id], onDelete: SetNull)
 
   parishId String
   parish   Parish @relation(fields: [parishId], references: [id])
@@ -777,6 +812,50 @@ model CatechesisClass {
   @@index([communityId])
   @@index([stageId])
   @@index([parishId, status])
+  @@index([roomId])
+}
+
+model Room {
+  plannedClasses PlannedClass[]
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  parishId String
+  parish Parish @relation(fields: [parishId], references: [id])
+  communityId String?
+  community Community? @relation(fields: [communityId], references: [id])
+  name String
+  nameKey String
+  capacity Int
+  active Boolean @default(true)
+  notes String?
+  availability Json @default("{\"version\":1,\"windows\":[],\"closures\":[]}")
+  revision Int @default(1)
+  createdByUserId String?
+  updatedByUserId String?
+  classes CatechesisClass[]
+
+  @@unique([parishId, nameKey])
+  @@index([parishId, active])
+  @@index([communityId])
+}
+
+model CatechistAvailability {
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  parishId String
+  parish Parish @relation(fields: [parishId], references: [id])
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  yearId String
+  year CatecheticalYear @relation(fields: [yearId], references: [id])
+  availability Json @default("{\"version\":1,\"windows\":[],\"closures\":[]}")
+  revision Int @default(1)
+  updatedByUserId String?
+
+  @@unique([userId, parishId, yearId])
+  @@index([parishId, yearId])
 }
 
 model ClassCatechist {
@@ -839,6 +918,7 @@ model Household {
 
   guardians   GuardianProfile[]
   catechumens CatechumenProfile[]
+  registrationApplications RegistrationApplication[]
   consents    ConsentRecord[]
   consentEvents ConsentEvent[]
 
@@ -894,6 +974,7 @@ model CatechumenProfile {
   sacramentalJourneys SacramentalJourney[]
   sponsors            CatechumenSponsor[]
   documents           Document[]
+  registrationApplications RegistrationApplication[]
 
   uploadToken        String?   @unique
   uploadTokenExpires DateTime?
@@ -905,6 +986,7 @@ model CatechumenProfile {
   @@index([parishId])
   @@index([email])
   @@index([parishId, firstName, lastName])
+  @@index([parishId, birthDate])
 }
 
 // ─── Birthdays ──────────────────────────────────────────────────────────────────
@@ -1495,6 +1577,7 @@ model Document {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  sourceRegistrationDocumentId String? @unique
   name     String
   type     DocumentType @default(OTHER)
   s3Key    String
@@ -2774,4 +2857,345 @@ model DocumentStageRuleChange {
   changedAt DateTime @default(now())
   @@index([parishId, changedAt])
   @@index([dioceseId, changedAt])
+}
+
+
+enum RegistrationCampaignStatus {
+  DRAFT
+  OPEN
+  CLOSED
+  ORGANIZING
+  PUBLISHED
+  ARCHIVED
+}
+
+model RegistrationCampaign {
+  formationPlans ClassFormationPlan[]
+  id String @id @default(uuid())
+  parishId String
+  parish Parish @relation(fields: [parishId], references: [id])
+  yearId String
+  year CatecheticalYear @relation(fields: [yearId], references: [id])
+  slug String @unique
+  title String
+  publicDescription String?
+  publicContact String?
+  status RegistrationCampaignStatus @default(DRAFT)
+  opensAt DateTime
+  closesAt DateTime
+  ageCutoffDate DateTime @db.Date
+  timezone String @default("America/Sao_Paulo")
+  maxApplications Int?
+  allowWaitlist Boolean @default(true)
+  seatPolicy String @default("RESERVE")
+  responseDeadlineDays Int @default(7)
+  onNoResponse String @default("NOTIFY_COORDINATOR")
+  offeredWindows Json
+  offeredCommunityIds Json
+  revision Int @default(1)
+  createdById String
+  createdBy User @relation(fields: [createdById], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  offerings RegistrationOffering[]
+  submissions RegistrationSubmission[]
+  @@index([parishId, status])
+}
+
+model RegistrationOffering {
+  plannedClasses PlannedClass[]
+  id String @id @default(uuid())
+  campaignId String
+  campaign RegistrationCampaign @relation(fields: [campaignId], references: [id])
+  stageId String
+  stage Stage @relation(fields: [stageId], references: [id])
+  documentStageKind DocumentStageKind
+  plannedSeats Int?
+  minAge Int?
+  maxAge Int?
+  audience String
+  applications RegistrationApplication[]
+  @@unique([campaignId, stageId])
+}
+
+
+enum RegistrationApplicantKind {
+  MINOR
+  ADULT
+}
+
+enum RegistrationSubmissionSource {
+  PUBLIC
+  ASSISTED
+}
+
+enum RegistrationSubmissionStatus {
+  PENDING_EMAIL
+  RECEIVED
+}
+
+enum RegistrationApplicationStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  NEEDS_CORRECTION
+  WAITLISTED
+  ENROLLED
+  WITHDRAWN
+  REJECTED
+}
+
+enum RegistrationOfferStatus {
+  NONE
+  AWAITING_RESPONSE
+  ACCEPTED
+  DECLINED
+}
+
+enum RegistrationAccessTokenPurpose {
+  CONFIRM_CONTACT
+  DOCUMENT_UPLOAD
+  FOLLOW_UP
+}
+
+enum RegistrationProfileLinkKind {
+  EXISTING
+  CREATED
+}
+
+enum RegistrationDocumentStatus {
+  QUARANTINE
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum RegistrationDocumentSource {
+  FAMILY
+  STAFF
+}
+
+model RegistrationSubmission {
+  id String @id @default(uuid())
+  campaignId String
+  campaign RegistrationCampaign @relation(fields: [campaignId], references: [id])
+  protocol String @unique
+  requestKey String
+  payloadHash String
+  status RegistrationSubmissionStatus
+  source RegistrationSubmissionSource @default(PUBLIC)
+  createdByUserId String?
+  contactName String
+  contactEmail String?
+  contactPhone String?
+  contactVerifiedAt DateTime?
+  reminderCount Int @default(0)
+  lastReminderAt DateTime?
+  remindersPausedAt DateTime?
+  formVersion Int @default(1)
+  submittedAt DateTime @default(now())
+  retentionUntil DateTime
+  applications RegistrationApplication[]
+  tokens RegistrationAccessToken[]
+  @@unique([campaignId, requestKey])
+  @@index([campaignId, submittedAt])
+}
+
+model RegistrationApplication {
+  formationPlacements FormationPlacement[]
+  id String @id @default(uuid())
+  submissionId String
+  submission RegistrationSubmission @relation(fields: [submissionId], references: [id])
+  offeringId String
+  offering RegistrationOffering @relation(fields: [offeringId], references: [id])
+  kind RegistrationApplicantKind
+  firstName String
+  lastName String
+  birthDate DateTime @db.Date
+  sponsorName String? @db.VarChar(100)
+  sponsorRole SponsorRole?
+  sponsorFromOtherParish Boolean?
+  sponsorParishName String? @db.VarChar(100)
+  communityId String?
+  ageAtCutoff Int
+  needsReview Boolean @default(false)
+  status RegistrationApplicationStatus @default(SUBMITTED)
+  revision Int @default(0)
+  reviewedAt DateTime?
+  reviewedByUserId String?
+  reviewNote String?
+  catechumenProfileId String?
+  catechumenProfile CatechumenProfile? @relation(fields: [catechumenProfileId], references: [id], onDelete: SetNull)
+  householdId String?
+  household Household? @relation(fields: [householdId], references: [id], onDelete: SetNull)
+  profileLinkKind RegistrationProfileLinkKind?
+  profileLinkedAt DateTime?
+  profileLinkedByUserId String?
+  approvedAt DateTime?
+  approvedByUserId String?
+  offerStatus RegistrationOfferStatus @default(NONE)
+  preferences Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  consents RegistrationConsent[]
+  documents RegistrationDocument[]
+  @@index([catechumenProfileId])
+  @@index([householdId])
+  @@index([offeringId, status])
+  @@index([submissionId, status, id])
+}
+
+model RegistrationDocument {
+  id String @id @default(uuid())
+  applicationId String
+  application RegistrationApplication @relation(fields: [applicationId], references: [id])
+  campaignId String
+  type DocumentType
+  name String @db.VarChar(120)
+  s3Key String
+  mimeType String
+  sizeBytes Int
+  sha256 String
+  source RegistrationDocumentSource
+  status RegistrationDocumentStatus @default(QUARANTINE)
+  scannedAt DateTime?
+  uploadedByUserId String?
+  verifiedAt DateTime?
+  verifiedById String?
+  rejectedAt DateTime?
+  rejectedReason String? @db.VarChar(300)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([applicationId, type])
+  @@index([campaignId, status, createdAt])
+}
+
+model RegistrationConsent {
+  id String @id @default(uuid())
+  applicationId String
+  application RegistrationApplication @relation(fields: [applicationId], references: [id])
+  kind String
+  granted Boolean
+  textVersion String
+  actorName String
+  actorRelationship String?
+  verifiedContactHash String?
+  createdAt DateTime @default(now())
+  @@index([applicationId, createdAt])
+}
+
+model RegistrationAccessToken {
+  id String @id @default(uuid())
+  submissionId String
+  submission RegistrationSubmission @relation(fields: [submissionId], references: [id])
+  campaignId String
+  emailHash String
+  tokenHash String @unique
+  purpose RegistrationAccessTokenPurpose
+  expiresAt DateTime
+  consumedAt DateTime?
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([campaignId, emailHash])
+  @@index([expiresAt])
+}
+
+
+enum FormationPlanStatus {
+  DRAFT
+  REVIEWED
+  PUBLISHED
+  SUPERSEDED
+}
+
+enum FormationPlacementStatus {
+  ALLOCATED
+  WAITLISTED
+  NEEDS_REVIEW
+  UNPLACEABLE
+}
+
+model ClassFormationPlan {
+  id String @id @default(uuid())
+  parishId String
+  parish Parish @relation(fields: [parishId], references: [id])
+  campaignId String
+  campaign RegistrationCampaign @relation(fields: [campaignId], references: [id])
+  status FormationPlanStatus @default(DRAFT)
+  inputHash String
+  algorithmVersion String
+  sourceRevision Int
+  revision Int @default(1)
+  policySnapshot Json
+  inputSnapshot Json
+  resultSummary Json
+  createdById String
+  createdBy User @relation(fields: [createdById], references: [id])
+  createdAt DateTime @default(now())
+  publishedAt DateTime?
+  plannedClasses PlannedClass[]
+  placements FormationPlacement[]
+  @@unique([campaignId, inputHash, algorithmVersion])
+  @@index([campaignId])
+  @@index([parishId])
+}
+
+model PlannedClass {
+  id String @id @default(uuid())
+  planId String
+  plan ClassFormationPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  offeringId String
+  offering RegistrationOffering @relation(fields: [offeringId], references: [id])
+  roomId String
+  room Room @relation(fields: [roomId], references: [id])
+  communityId String?
+  community Community? @relation(fields: [communityId], references: [id])
+  candidateKey String
+  name String
+  minAge Int?
+  maxAge Int?
+  maxCapacity Int
+  schedule Json
+  locked Boolean @default(false)
+  catechists PlannedClassCatechist[]
+  placements FormationPlacement[]
+  @@unique([planId, candidateKey])
+  @@index([offeringId])
+  @@index([roomId])
+  @@index([communityId])
+}
+
+model PlannedClassCatechist {
+  id String @id @default(uuid())
+  plannedClassId String
+  plannedClass PlannedClass @relation(fields: [plannedClassId], references: [id], onDelete: Cascade)
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  role CatechistAssignmentRole @default(LEAD)
+  @@unique([plannedClassId, userId])
+  @@index([userId])
+}
+
+model FormationPlacement {
+  id String @id @default(uuid())
+  planId String
+  plan ClassFormationPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  applicationId String
+  application RegistrationApplication @relation(fields: [applicationId], references: [id])
+  plannedClassId String?
+  plannedClass PlannedClass? @relation(fields: [plannedClassId], references: [id], onDelete: SetNull)
+  status FormationPlacementStatus
+  waitlistOrder Int?
+  reasonCodes Json
+  scoreDetails Json
+  manual Boolean @default(false)
+  locked Boolean @default(false)
+  overCapacity Boolean @default(false)
+  changedById String?
+  changedBy User? @relation(fields: [changedById], references: [id])
+  manualReason String?
+  @@unique([planId, applicationId])
+  @@index([applicationId])
+  @@index([plannedClassId])
+  @@index([changedById])
 }
