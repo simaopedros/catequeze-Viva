@@ -193,6 +193,24 @@ Protocolo: ${str(payload, "protocol")}`;
     };
   }
 
+
+  if (messageId === EMAIL_MESSAGE.BILLING_HOTMART_WELCOME) {
+    const heading = str(payload, "heading") || "Bem-vindo ao Catechis";
+    const body = str(payload, "body");
+    const rendered = renderBrandedEmail({
+      heading,
+      body,
+      ctaLabel: str(payload, "ctaLabel") || "Criar conta",
+      ctaUrl: str(payload, "ctaUrl"),
+      footer: ns.billing?.footer || ns.footer_reason,
+    });
+    return {
+      ...rendered,
+      subject: str(payload, "subject") || heading,
+      heading,
+    };
+  }
+
   if (
     messageId === EMAIL_MESSAGE.BILLING_CANCELED ||
     messageId === EMAIL_MESSAGE.BILLING_PAYMENT_FAILED ||

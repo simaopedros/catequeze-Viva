@@ -1,5 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+
+const sendHotmartWelcomeEmailSafe = vi.fn(async () => "sent" as const);
+
+vi.mock("./welcomeEmail", () => ({
+  sendHotmartWelcomeEmailSafe: (...args: unknown[]) => sendHotmartWelcomeEmailSafe(...args),
+}));
+
 vi.mock("wasp/server", () => ({
   HttpError: class HttpError extends Error {
     statusCode: number;
@@ -183,6 +190,8 @@ function purchase(args: {
 describe("hotmart webhook", () => {
   const logs: string[] = [];
   beforeEach(() => {
+    sendHotmartWelcomeEmailSafe.mockReset();
+    sendHotmartWelcomeEmailSafe.mockResolvedValue("sent");
     vi.stubEnv("HOTMART_PRIMARY_CHECKOUT", "true");
     vi.stubEnv("HOTMART_HOTTOK", SECRET);
     vi.stubEnv("HOTMART_PRODUCT_UCODES", UCODE);
@@ -300,6 +309,16 @@ describe("hotmart webhook", () => {
     expect(ctx.pending.map((row) => row.email).sort()).toEqual(["ghost@example.com", "novo@example.com"]);
     expect(ctx.events.find((event) => event.transaction === "HP-MANUAL").error).toBe("manual_account");
     expect(ctx.events.find((event) => event.transaction === "HP-STRIPE").error).toBe("active_stripe_subscription");
+    expect(sendHotmartWelcomeEmailSafe).toHaveBeenCalledWith(
+      expect.objectContaining({ email: "novo@example.com", transaction: "HP-NEW", eventId: "e1", userId: "unverified" }),
+    );
+    expect(sendHotmartWelcomeEmailSafe).toHaveBeenCalledWith(
+      expect.objectContaining({ email: "ghost@example.com", transaction: "HP-GHOST", eventId: "e2" }),
+    );
+    expect(sendHotmartWelcomeEmailSafe.mock.calls.map((call) => call[0].transaction).sort()).toEqual([
+      "HP-GHOST",
+      "HP-NEW",
+    ]);
   });
 
   it("marks delay and cancellation without cutting paid access, and cuts refunds immediately", async () => {
@@ -415,4 +434,34 @@ describe("hotmart webhook", () => {
     );
     expect(ctx.users[0].accessEndsAt).toEqual(new Date("2027-11-07T15:00:00.000Z"));
   });
+  it("does not send welcome when a confirmed account activates", async () => {
+    const ctx = memory();
+    ctx.users.push({
+      id: "user-1",
+      email: "catequista@example.com",
+      emailVerifiedAt: new Date("2026-11-01T00:00:00Z"),
+      subscriptionPlan: null,
+      subscriptionStatus: null,
+      stripeSubscriptionId: null,
+      billingProvider: null,
+    });
+    await hotmartWebhook(post(purchase({ amount: 47, transaction: "HP-OK" })) as any, response() as any, ctx);
+    expect(ctx.users[0].subscriptionStatus).toBe("active");
+    expect(sendHotmartWelcomeEmailSafe).not.toHaveBeenCalled();
+  });
+
+  it("still returns 200 when welcome email delivery fails", async () => {
+    sendHotmartWelcomeEmailSafe.mockResolvedValueOnce("failed");
+    const ctx = memory();
+    const res = response();
+    await hotmartWebhook(
+      post(purchase({ id: "e-mail-fail", email: "ghost2@example.com", transaction: "HP-MAIL-FAIL" })) as any,
+      res as any,
+      ctx,
+    );
+    expect(res.statusCode).toBe(200);
+    expect(ctx.pending.map((row) => row.email)).toContain("ghost2@example.com");
+    expect(ctx.events.at(-1)).toMatchObject({ status: "PROCESSED", error: "pending_account" });
+  });
+
 });

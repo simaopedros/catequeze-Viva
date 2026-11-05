@@ -16,6 +16,7 @@ import {
   type HotmartPlanSlug,
   type ParsedPostback,
 } from "./postback";
+import { sendHotmartWelcomeEmailSafe } from "./welcomeEmail";
 
 type EventStatus = "PROCESSED" | "IGNORED" | "FAILED";
 
@@ -128,11 +129,28 @@ async function applyParsed(parsed: ParsedPostback, context: any): Promise<{ stat
     if (!user) {
       if (!parsed.email) return { status: "FAILED", error: "missing_buyer" };
       await savePending(pending, parsed, offer.planSlug, offer.interval, accessEndsAt);
+      if (effect.kind === "activate") {
+        await sendHotmartWelcomeEmailSafe({
+          email: parsed.email,
+          transaction: parsed.transaction,
+          eventId: parsed.id,
+          context,
+        });
+      }
       return { status: "PROCESSED", error: "pending_account" };
     }
     const linked = Boolean(parsed.subscriberCode && user.hotmartSubscriberCode === parsed.subscriberCode);
     if (!linked && !user.emailVerifiedAt) {
       await savePending(pending, parsed, offer.planSlug, offer.interval, accessEndsAt);
+      if (effect.kind === "activate") {
+        await sendHotmartWelcomeEmailSafe({
+          email: parsed.email || user.email,
+          transaction: parsed.transaction,
+          eventId: parsed.id,
+          userId: user.id,
+          context,
+        });
+      }
       return { status: "PROCESSED", error: "pending_verification", userId: user.id };
     }
     await grantPlanAccess(
