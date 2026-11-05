@@ -50,6 +50,7 @@ import {
   AI_FEATURES_ENABLED,
   isAiAppPath,
 } from "../shared/aiFeatures";
+import { shouldRedirectHiddenAppPath } from "../shared/hiddenFeatures";
 import { SOCIAL_FEATURES_ENABLED } from "../shared/socialFeatures";
 import i18n, {
   areAppNamespacesLoaded,
@@ -368,7 +369,10 @@ export default function App() {
   // Plausible intentionally not loaded — CORS / missing site noise in prod console.
   // Marketing events still go to dataLayer / GTM when configured.
 
-  if (!AI_FEATURES_ENABLED && isAiAppPath(location.pathname)) {
+  if (
+    (!AI_FEATURES_ENABLED && isAiAppPath(location.pathname)) ||
+    shouldRedirectHiddenAppPath(location.pathname)
+  ) {
     return <Navigate to={AI_APP_HOME} replace />;
   }
 

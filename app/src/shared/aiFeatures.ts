@@ -3,9 +3,12 @@
  * Independent from LAUNCH_CATEQUISTA_ONLY (pricing / unlimited),
  * but both stay off during the catequista-only launch.
  *
- * Re-enable by setting this to true and pointing /app/ai-hub back to AIHubPage.
+ * The switch lives in HIDDEN_FEATURES.ai (src/shared/hiddenFeatures.ts).
+ * Re-enable there and point /app/ai-hub back to AIHubPage in main.wasp.
  */
-export const AI_FEATURES_ENABLED = false;
+import { HIDDEN_FEATURES } from "./hiddenFeatures";
+
+export const AI_FEATURES_ENABLED = !HIDDEN_FEATURES.ai;
 
 export const AI_APP_HOME = "/app";
 

@@ -38,6 +38,7 @@ import { Alert } from "../../client/components/ui/alert";
 import { OriginBadge } from "../components/OriginBadge";
 import { toast } from "../../client/hooks/use-toast";
 import { INHERITANCE_POLICIES } from "../../shared/resourceInheritance";
+import { isFeatureHidden } from "../../shared/hiddenFeatures";
 
 interface CatecheticalYear {
   id: string;
@@ -65,6 +66,7 @@ export default function CatecheticalYearsPage() {
     "PARISH_COORDINATOR",
     "PERSONAL_OWNER",
   ].includes(userRole);
+  const itineraryHidden = isFeatureHidden("itinerary");
 
   const { data: years = [], isLoading: loading } = useQuery(
     listCatecheticalYears,
@@ -72,7 +74,7 @@ export default function CatecheticalYearsPage() {
   const { data: itineraries = [] } = useQuery(
     listCatecheticalItineraries,
     { workspaceId: activeParishId || undefined } as any,
-    { enabled: Boolean(activeParishId) },
+    { enabled: Boolean(activeParishId) && !itineraryHidden },
   );
   const [error, setError] = useState("");
 
@@ -277,6 +279,7 @@ export default function CatecheticalYearsPage() {
 
       {error && <Alert variant="destructive">{error}</Alert>}
 
+      {!itineraryHidden && (
       <AppPanel className="space-y-3">
         <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
           {th("itinerary.section")}
@@ -383,8 +386,9 @@ export default function CatecheticalYearsPage() {
           </div>
         )}
       </AppPanel>
+      )}
 
-      {canPublishItinerary && (
+      {!itineraryHidden && canPublishItinerary && (
         <AppPanel className="space-y-3">
           <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {editingItineraryId ? th("itinerary.edit") : th("itinerary.new")}

@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router";
+import { isFeatureHidden } from "../../shared/hiddenFeatures";
 import { useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../client/components/ui/button";
@@ -692,12 +693,18 @@ export default function FamilyDetailPage() {
                   <Building2 className="h-3 w-3" />
                   {t("families.community")}
                 </h3>
-                <Link
-                  to={`/app/communities/${household.community.id}`}
-                  className="text-sm font-semibold tracking-tight text-brand-ink hover:underline"
-                >
-                  {household.community.name}
-                </Link>
+                {isFeatureHidden("communities") ? (
+                  <p className="text-sm font-semibold tracking-tight text-brand-ink">
+                    {household.community.name}
+                  </p>
+                ) : (
+                  <Link
+                    to={`/app/communities/${household.community.id}`}
+                    className="text-sm font-semibold tracking-tight text-brand-ink hover:underline"
+                  >
+                    {household.community.name}
+                  </Link>
+                )}
               </div>
             )}
           </div>

@@ -3,6 +3,11 @@
  * parish trial (PARISH_TRIAL_AVAILABLE) instead of a dead-end 0/0 LIMIT.
  */
 import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { NEW_PRICING_ACCOUNT_CUTOFF } from '../shared/newPricing';
+
+/** One hour before the new-pricing cutoff: a legacy account inside its 7-day signup window. */
+const LEGACY_NOW = new Date(new Date(NEW_PRICING_ACCOUNT_CUTOFF).getTime() - 60 * 60 * 1000);
+const legacyCreatedAt = () => new Date(LEGACY_NOW);
 
 vi.mock('wasp/server', () => {
   class HttpError extends Error {
@@ -84,6 +89,7 @@ function makeContext(user: {
 
 describe('assertCanCreateParish — parish trial offer', () => {
   beforeEach(() => {
+    vi.useRealTimers();
     vi.clearAllMocks();
   });
 
@@ -115,11 +121,14 @@ describe('assertCanCreateParish — parish trial offer', () => {
   });
 
   it('grants the no-card in-app trial to new users still inside the signup window', async () => {
+    // Pin the clock so the 7-day window does not depend on today's date.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(LEGACY_NOW);
     const ctx = makeContext({
       id: 'user-1',
       subscriptionStatus: null,
       subscriptionPlan: 'catechist_free',
-      createdAt: new Date(),
+      createdAt: legacyCreatedAt(),
     });
 
     await expect(assertCanCreateParish(ctx, {})).resolves.toBeUndefined();

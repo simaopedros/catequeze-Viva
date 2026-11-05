@@ -6,6 +6,7 @@ import { UserDropdown } from "../user/UserDropdown";
 import { TwoFactorGate } from "./components/TwoFactorGate";
 import { Home, Calendar, MessageSquare, FileText, ClipboardCheck } from "lucide-react";
 import { BrandLockup } from "../client/components/brand/Brand";
+import { shouldShowConfiguredNavItem } from "../shared/hiddenFeatures";
 
 interface FamilyAppShellProps {
   children: ReactNode;
@@ -39,12 +40,12 @@ export function FamilyAppShell({ children }: FamilyAppShellProps) {
   }, [location.pathname, navigate]);
 
   const navItems = [
-    { to: "/app", icon: Home, label: t("dashboard") },
-    { to: "/app/calendar", icon: Calendar, label: t("calendar") },
-    { to: "/app/messages", icon: MessageSquare, label: t("messages") },
-    { to: "/app/documents", icon: FileText, label: t("documents") },
-    { to: "/app/consents", icon: ClipboardCheck, label: t("consents") },
-  ];
+    { to: "/app", icon: Home, label: t("dashboard"), iconKey: "dashboard" },
+    { to: "/app/calendar", icon: Calendar, label: t("calendar"), iconKey: "calendar" },
+    { to: "/app/messages", icon: MessageSquare, label: t("messages"), iconKey: "messages" },
+    { to: "/app/documents", icon: FileText, label: t("documents"), iconKey: "documents" },
+    { to: "/app/consents", icon: ClipboardCheck, label: t("consents"), iconKey: "consents" },
+  ].filter((item) => shouldShowConfiguredNavItem(item));
 
   return (
     <TwoFactorGate>
