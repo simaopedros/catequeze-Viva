@@ -6,6 +6,7 @@ import {
   protectedBillingReason,
   type BillingAccount,
 } from "./applyEntitlement";
+import { isValidBuyerEmail, normalizeBuyerEmail } from "./buyerAccount";
 import {
   headerHottok,
   hottokMatches,
@@ -16,7 +17,16 @@ import {
   type HotmartPlanSlug,
   type ParsedPostback,
 } from "./postback";
-import { sendHotmartWelcomeEmailSafe } from "./welcomeEmail";
+import {
+  BuyerAlreadyExists,
+  confirmBuyerEmail,
+  createVerifiedBuyer,
+  readEmailIdentity,
+} from "./provisionBuyer";
+import {
+  sendHotmartAccessEmailSafe,
+  sendHotmartPlanActiveEmailSafe,
+} from "./welcomeEmail";
 
 type EventStatus = "PROCESSED" | "IGNORED" | "FAILED";
 
@@ -27,10 +37,17 @@ function readBody(req: Request): unknown {
 }
 
 function isUniqueConflict(error: unknown): boolean {
-  return Boolean(error && typeof error === "object" && (error as { code?: string }).code === "P2002");
+  return Boolean(
+    error &&
+      typeof error === "object" &&
+      (error as { code?: string }).code === "P2002",
+  );
 }
 
-async function findAccount(users: any, parsed: ParsedPostback): Promise<BillingAccount | null> {
+async function findAccount(
+  users: any,
+  parsed: ParsedPostback,
+): Promise<BillingAccount | null> {
   if (!users?.findFirst && !users?.findUnique) return null;
   if (parsed.subscriberCode && users.findFirst) {
     const byCode = await users.findFirst({
@@ -44,7 +61,13 @@ async function findAccount(users: any, parsed: ParsedPostback): Promise<BillingA
   });
 }
 
-async function savePending(pending: any, parsed: ParsedPostback, planSlug: HotmartPlanSlug, interval: string, accessEndsAt: Date | null) {
+async function savePending(
+  pending: any,
+  parsed: ParsedPostback,
+  planSlug: HotmartPlanSlug,
+  interval: string,
+  accessEndsAt: Date | null,
+) {
   if (!pending?.create || !parsed.email) return;
   const data = {
     email: parsed.email,
@@ -57,7 +80,9 @@ async function savePending(pending: any, parsed: ParsedPostback, planSlug: Hotma
     voidedAt: null,
   };
   if (parsed.transaction && pending.findUnique) {
-    const existing = await pending.findUnique({ where: { transaction: parsed.transaction } });
+    const existing = await pending.findUnique({
+      where: { transaction: parsed.transaction },
+    });
     if (existing && pending.update) {
       await pending.update({ where: { id: existing.id }, data });
       return;
@@ -79,7 +104,11 @@ async function storeEvent(
   events: any,
   parsed: ParsedPostback,
   body: unknown,
-  outcome: { status: EventStatus; error?: string | null; userId?: string | null },
+  outcome: {
+    status: EventStatus;
+    error?: string | null;
+    userId?: string | null;
+  },
 ) {
   await events.create({
     data: {
@@ -95,19 +124,107 @@ async function storeEvent(
   });
 }
 
+async function applyApprovedPurchase(
+  parsed: ParsedPostback,
+  effect: Extract<ParsedPostback["effect"], { kind: "activate" }>,
+  context: any,
+  existing: BillingAccount | null,
+): Promise<{ status: EventStatus; error?: string; userId?: string }> {
+  const users = context.entities.User;
+  let user = existing;
+  if (!user) {
+    const email = normalizeBuyerEmail(parsed.email);
+    if (!email) return { status: "FAILED", error: "missing_buyer" };
+    if (!isValidBuyerEmail(email)) {
+      console.info(`[hotmart] invalid_buyer_email id=${parsed.id}`);
+      return { status: "FAILED", error: "invalid_email" };
+    }
+    try {
+      await createVerifiedBuyer({ email, buyerName: parsed.buyerName });
+    } catch (error) {
+      if (!(error instanceof BuyerAlreadyExists)) throw error;
+    }
+    user = await findAccount(users, { ...parsed, email });
+    if (!user) throw new BuyerAlreadyExists();
+  }
+
+  const email = normalizeBuyerEmail(user.email || parsed.email);
+  const wasVerified = Boolean(user.emailVerifiedAt);
+  const identity = email ? await readEmailIdentity(email) : null;
+  // No password yet: new account, unconfirmed signup that never finished, or an
+  // email identity whose hash was never set. A confirmed account with no email
+  // identity (for example Google) keeps the login link.
+  const needsSetPassword =
+    !identity?.hasPassword && (!wasVerified || Boolean(identity));
+  if (email && !wasVerified) {
+    await confirmBuyerEmail(email);
+    await users.update({
+      where: { id: user.id },
+      data: { emailVerifiedAt: new Date() },
+    });
+  } else if (email && needsSetPassword) {
+    await confirmBuyerEmail(email);
+  }
+
+  const offer = effect.offer;
+  await grantPlanAccess(
+    users,
+    user.id,
+    activationUpdate({
+      planSlug: offer.planSlug,
+      subscriberCode: parsed.subscriberCode || user.hotmartSubscriberCode,
+      accessEndsAt: effect.accessEndsAt,
+      paidAt: effect.paidAt,
+    }),
+    context,
+    offer.planSlug,
+  );
+
+  if (email && isValidBuyerEmail(email)) {
+    try {
+      const notice = {
+        email,
+        transaction: parsed.transaction,
+        eventId: parsed.id,
+        userId: user.id,
+        planSlug: offer.planSlug,
+        context,
+      };
+      if (needsSetPassword) await sendHotmartAccessEmailSafe(notice);
+      else await sendHotmartPlanActiveEmailSafe(notice);
+    } catch (error) {
+      console.warn(
+        `[hotmart] purchase_email_failed id=${parsed.id} reason=${
+          error instanceof Error ? error.message : "unknown"
+        }`,
+      );
+    }
+  }
+
+  return { status: "PROCESSED", userId: user.id };
+}
+
 function productBlocked(parsed: ParsedPostback, allowlist: string[]): boolean {
   if (parsed.event.startsWith("PURCHASE_")) {
     return !productIsAllowed(parsed.productUcode, allowlist);
   }
-  if (parsed.productUcode && allowlist.length > 0 && !allowlist.includes(parsed.productUcode)) {
+  if (
+    parsed.productUcode &&
+    allowlist.length > 0 &&
+    !allowlist.includes(parsed.productUcode)
+  ) {
     return true;
   }
   return false;
 }
 
-async function applyParsed(parsed: ParsedPostback, context: any): Promise<{ status: EventStatus; error?: string; userId?: string }> {
+async function applyParsed(
+  parsed: ParsedPostback,
+  context: any,
+): Promise<{ status: EventStatus; error?: string; userId?: string }> {
   const effect = parsed.effect;
-  if (effect.kind === "ignore") return { status: "IGNORED", error: effect.reason };
+  if (effect.kind === "ignore")
+    return { status: "IGNORED", error: effect.reason };
   if (effect.kind === "fail") return { status: "FAILED", error: effect.reason };
   if (effect.kind === "record") return { status: "PROCESSED" };
 
@@ -116,42 +233,47 @@ async function applyParsed(parsed: ParsedPostback, context: any): Promise<{ stat
   const user = await findAccount(users, parsed);
   const guard = protectedBillingReason(user);
   if (user && guard) {
-    return {
-      status: "IGNORED",
-      error: guard === "manual" ? "manual_account" : "active_stripe_subscription",
-      userId: user.id,
-    };
+    const error =
+      guard === "manual" ? "manual_account" : "active_stripe_subscription";
+    console.info(`[hotmart] skip_protected id=${parsed.id} reason=${error}`);
+    return { status: "IGNORED", error, userId: user.id };
   }
 
-  if (effect.kind === "activate" || effect.kind === "switch_plan") {
+  if (effect.kind === "activate") {
+    return applyApprovedPurchase(parsed, effect, context, user);
+  }
+
+  if (effect.kind === "switch_plan") {
     const offer = effect.offer;
     const accessEndsAt = effect.accessEndsAt;
     if (!user) {
       if (!parsed.email) return { status: "FAILED", error: "missing_buyer" };
-      await savePending(pending, parsed, offer.planSlug, offer.interval, accessEndsAt);
-      if (effect.kind === "activate") {
-        await sendHotmartWelcomeEmailSafe({
-          email: parsed.email,
-          transaction: parsed.transaction,
-          eventId: parsed.id,
-          context,
-        });
-      }
+      await savePending(
+        pending,
+        parsed,
+        offer.planSlug,
+        offer.interval,
+        accessEndsAt,
+      );
       return { status: "PROCESSED", error: "pending_account" };
     }
-    const linked = Boolean(parsed.subscriberCode && user.hotmartSubscriberCode === parsed.subscriberCode);
+    const linked = Boolean(
+      parsed.subscriberCode &&
+        user.hotmartSubscriberCode === parsed.subscriberCode,
+    );
     if (!linked && !user.emailVerifiedAt) {
-      await savePending(pending, parsed, offer.planSlug, offer.interval, accessEndsAt);
-      if (effect.kind === "activate") {
-        await sendHotmartWelcomeEmailSafe({
-          email: parsed.email || user.email,
-          transaction: parsed.transaction,
-          eventId: parsed.id,
-          userId: user.id,
-          context,
-        });
-      }
-      return { status: "PROCESSED", error: "pending_verification", userId: user.id };
+      await savePending(
+        pending,
+        parsed,
+        offer.planSlug,
+        offer.interval,
+        accessEndsAt,
+      );
+      return {
+        status: "PROCESSED",
+        error: "pending_verification",
+        userId: user.id,
+      };
     }
     await grantPlanAccess(
       users,
@@ -160,22 +282,31 @@ async function applyParsed(parsed: ParsedPostback, context: any): Promise<{ stat
         planSlug: offer.planSlug,
         subscriberCode: parsed.subscriberCode || user.hotmartSubscriberCode,
         accessEndsAt,
-        paidAt: effect.kind === "activate" ? effect.paidAt : undefined,
-        keepStatus: effect.kind === "switch_plan",
+        keepStatus: true,
       }),
       context,
       offer.planSlug,
     );
-    if (effect.kind === "switch_plan" && offer.planSlug !== "unlimited" && user.subscriptionPlan === "unlimited") {
-      const { cascadeCancelToTenantBilling } = await import("../billingCascade");
+    if (
+      offer.planSlug !== "unlimited" &&
+      user.subscriptionPlan === "unlimited"
+    ) {
+      const { cascadeCancelToTenantBilling } = await import(
+        "../billingCascade"
+      );
       await cascadeCancelToTenantBilling(context, user.id);
     }
     return { status: "PROCESSED", userId: user.id };
   }
 
   if (!user || !isHotmartSubscriber(user)) {
-    if (effect.kind === "revoke") await voidPending(pending, parsed.transaction);
-    return { status: "IGNORED", error: user ? "not_hotmart_subscriber" : "user_not_found", userId: user?.id };
+    if (effect.kind === "revoke")
+      await voidPending(pending, parsed.transaction);
+    return {
+      status: "IGNORED",
+      error: user ? "not_hotmart_subscriber" : "user_not_found",
+      userId: user?.id,
+    };
   }
 
   if (effect.kind === "past_due") {
@@ -229,12 +360,21 @@ async function applyParsed(parsed: ParsedPostback, context: any): Promise<{ stat
  * POST /api/hotmart/webhook
  * Off unless HOTMART_PRIMARY_CHECKOUT=true. The hottok is compared and never logged.
  */
-export async function hotmartWebhook(req: Request, res: Response, context: any) {
+export async function hotmartWebhook(
+  req: Request,
+  res: Response,
+  context: any,
+) {
   const env = readHotmartEnv();
   if (!env.enabled) {
     return res.status(404).json({ error: "Not found" });
   }
-  if (!hottokMatches(headerHottok(req.headers as Record<string, unknown>), env.hottok)) {
+  if (
+    !hottokMatches(
+      headerHottok(req.headers as Record<string, unknown>),
+      env.hottok,
+    )
+  ) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
@@ -260,28 +400,42 @@ export async function hotmartWebhook(req: Request, res: Response, context: any) 
 
     if (parsed.transaction && events.findFirst) {
       const prior = await events.findFirst({
-        where: { transaction: parsed.transaction, event: parsed.event, status: "PROCESSED" },
+        where: {
+          transaction: parsed.transaction,
+          event: parsed.event,
+          status: "PROCESSED",
+        },
       });
       if (prior) {
-        await storeEvent(events, parsed, body, { status: "IGNORED", error: "duplicate_transaction" });
+        await storeEvent(events, parsed, body, {
+          status: "IGNORED",
+          error: "duplicate_transaction",
+        });
         return res.status(200).json({ received: true });
       }
     }
 
     if (productBlocked(parsed, env.productUcodes)) {
-      await storeEvent(events, parsed, body, { status: "IGNORED", error: "unknown_product" });
+      await storeEvent(events, parsed, body, {
+        status: "IGNORED",
+        error: "unknown_product",
+      });
       return res.status(200).json({ received: true });
     }
 
     const outcome = await applyParsed(parsed, context);
     await storeEvent(events, parsed, body, outcome);
-    console.info(`[hotmart] event=${parsed.event} id=${parsed.id} status=${outcome.status}`);
+    console.info(
+      `[hotmart] event=${parsed.event} id=${parsed.id} status=${outcome.status}`,
+    );
     return res.status(200).json({ received: true });
   } catch (error) {
     if (isUniqueConflict(error)) {
       return res.status(200).json({ received: true });
     }
-    console.error(`[hotmart] event=${parsed.event} id=${parsed.id} status=error`);
+    console.error(
+      `[hotmart] event=${parsed.event} id=${parsed.id} status=error`,
+    );
     return res.status(500).json({ error: "Temporary failure" });
   }
 }
