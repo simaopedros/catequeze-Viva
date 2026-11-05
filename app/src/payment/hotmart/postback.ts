@@ -167,6 +167,7 @@ export type ParsedPostback = {
   version: string;
   transaction: string | null;
   email: string | null;
+  buyerName: string | null;
   subscriberCode: string | null;
   productUcode: string | null;
   effect: HotmartEffect;
@@ -247,6 +248,14 @@ function emailFrom(data: Record<string, any>): string | null {
   );
 }
 
+function buyerNameFrom(data: Record<string, any>): string | null {
+  return (
+    text(asRecord(data.buyer)?.name) ||
+    text(asRecord(data.subscriber)?.name) ||
+    text(asRecord(asRecord(data.subscription)?.subscriber)?.name)
+  );
+}
+
 function accessEndsAtFrom(data: Record<string, any>): Date | null {
   const purchase = asRecord(data.purchase);
   const subscription = asRecord(data.subscription);
@@ -318,6 +327,7 @@ export function parseHotmartPostback(
     version,
     transaction,
     email: emailFrom(data),
+    buyerName: buyerNameFrom(data),
     subscriberCode: subscriberCodeFrom(data),
     productUcode,
   };
