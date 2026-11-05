@@ -12,6 +12,7 @@ export const EMAIL_MESSAGE = {
   SUPPORT_REPLY: "support.reply",
   BILLING_CANCELED: "billing.canceled",
   BILLING_PAYMENT_FAILED: "billing.payment_failed",
+  BILLING_HOTMART_WELCOME: "billing.hotmart_welcome",
   BILLING_INSTITUTIONAL_TRIAL_D3: "billing.institutional_trial_d3",
   BILLING_INSTITUTIONAL_TRIAL_D1: "billing.institutional_trial_d1",
   LIFECYCLE_WELCOME: "lifecycle.welcome",
