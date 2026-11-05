@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 
-const sendHotmartWelcomeEmailSafe = vi.fn(async () => "sent" as const);
+const sendHotmartWelcomeEmailSafe = vi.fn(async (..._args: any[]): Promise<string> => "sent");
 
 vi.mock("./welcomeEmail", () => ({
   sendHotmartWelcomeEmailSafe: (...args: unknown[]) => sendHotmartWelcomeEmailSafe(...args),
