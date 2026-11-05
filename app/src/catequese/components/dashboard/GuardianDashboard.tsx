@@ -10,6 +10,7 @@ import { EmptyState } from "../../../client/components/EmptyState";
 import { formatDate } from "../../../i18n/format";
 import { useLocale } from "../../../i18n/useLocale";
 import { Heart, Calendar, MessageSquare, FileText } from "lucide-react";
+import { isFeatureHidden } from "../../../shared/hiddenFeatures";
 import { EncounterFocusCard } from "./EncounterFocusCard";
 import { useActiveParish } from "../../../client/hooks/useActiveParish";
 
@@ -111,12 +112,14 @@ export function GuardianDashboard({ stats }: GuardianDashboardProps) {
             {tn("messages")}
           </Link>
         </Button>
-        <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
-          <Link to="/app/documents">
-            <FileText className="mr-2 h-4 w-4" />
-            {tn("documents")}
-          </Link>
-        </Button>
+        {!isFeatureHidden("files") && (
+          <Button asChild variant="outline" className="h-11 min-h-11 rounded-sm">
+            <Link to="/app/documents">
+              <FileText className="mr-2 h-4 w-4" />
+              {tn("documents")}
+            </Link>
+          </Button>
+        )}
       </div>
     </div>
   );

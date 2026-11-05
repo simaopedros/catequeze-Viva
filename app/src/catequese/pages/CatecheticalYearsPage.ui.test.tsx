@@ -21,6 +21,7 @@ import {
   renderPage,
   stubUseQuery,
 } from "../../__tests__/ui/hierarchyTestUtils";
+import { isFeatureHidden } from "../../shared/hiddenFeatures";
 
 const userCtx = vi.hoisted(() => ({
   current: { userRole: "PARISH_COORDINATOR", userId: "user-coord" },
@@ -56,7 +57,9 @@ vi.mock("../../client/hooks/use-toast", () => ({
   toast: vi.fn(),
 }));
 
-describe("CatecheticalYearsPage — itinerários", () => {
+describe.skipIf(isFeatureHidden("itinerary"))(
+  "CatecheticalYearsPage — itinerários",
+  () => {
   beforeEach(() => {
     userCtx.current = parishCoordinator();
     workspace.type = "PARISH";
@@ -168,6 +171,28 @@ describe("CatecheticalYearsPage — itinerários", () => {
     renderPage(<CatecheticalYearsPage />);
     expect(
       screen.queryByRole("button", { name: "Instanciar ano" }),
+    ).not.toBeInTheDocument();
+  });
+  },
+);
+
+describe("CatecheticalYearsPage — itinerário oculto", () => {
+  beforeEach(() => {
+    userCtx.current = parishCoordinator();
+    workspace.type = "PARISH";
+  });
+
+  it("mantém Anos Catequéticos e esconde a seção Itinerários oficiais", () => {
+    if (!isFeatureHidden("itinerary")) return;
+    stubUseQuery([
+      [listCatecheticalYears, []],
+      [listCatecheticalItineraries, [PUBLISHED_ITINERARY]],
+    ]);
+    renderPage(<CatecheticalYearsPage />);
+    expect(screen.getByText("Anos Catequéticos")).toBeInTheDocument();
+    expect(screen.queryByText("Itinerários oficiais")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Criar itinerário" }),
     ).not.toBeInTheDocument();
   });
 });

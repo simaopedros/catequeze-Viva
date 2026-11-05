@@ -14,6 +14,7 @@ import {
   PERSONAL_HIDDEN_ICON_KEYS,
 } from '../shared/navigation';
 import { AI_FEATURES_ENABLED, isAiAppPath } from '../shared/aiFeatures';
+import { isFeatureHidden } from '../shared/hiddenFeatures';
 
 describe('Navigation Role Filtering', () => {
   function visiblePaths(userRole: string, isAdmin = false) {
@@ -38,12 +39,26 @@ describe('Navigation Role Filtering', () => {
 
     it('sees parish management items', () => {
       expect(paths).toContain('/app/parishes');
-      expect(paths).toContain('/app/communities');
       expect(paths).toContain('/app/families');
       expect(paths).toContain('/app/classes');
-      expect(paths).toContain('/app/official-library');
       expect(paths).toContain('/app/announcements');
-      expect(paths).toContain('/app/formation');
+      expect(paths).toContain('/app/sacramental-journeys');
+      expect(paths).toContain('/app/catechetical-years');
+      if (isFeatureHidden('communities')) {
+        expect(paths).not.toContain('/app/communities');
+      } else {
+        expect(paths).toContain('/app/communities');
+      }
+      if (isFeatureHidden('officialLibrary')) {
+        expect(paths).not.toContain('/app/official-library');
+      } else {
+        expect(paths).toContain('/app/official-library');
+      }
+      if (isFeatureHidden('formation')) {
+        expect(paths).not.toContain('/app/formation');
+      } else {
+        expect(paths).toContain('/app/formation');
+      }
     });
 
     it('does NOT see admin (only isAdmin users see /admin)', () => {
@@ -114,8 +129,12 @@ describe('Navigation Role Filtering', () => {
 
     it('sees pastoral items (sacraments, documents, messages)', () => {
       expect(paths).toContain('/app/sacramental-journeys');
-      expect(paths).toContain('/app/documents');
       expect(paths).toContain('/app/messages');
+      if (isFeatureHidden('files')) {
+        expect(paths).not.toContain('/app/documents');
+      } else {
+        expect(paths).toContain('/app/documents');
+      }
     });
   });
 
@@ -270,7 +289,11 @@ describe('getVisibleNavigation SSOT', () => {
     }
     expect(nav.sheetItems.map((i) => i.iconKey)).toContain('settings');
     expect(nav.sheetItems.map((i) => i.iconKey)).toContain('catechumens');
-    expect(nav.sheetItems.map((i) => i.iconKey)).toContain('documents');
+    if (isFeatureHidden('files')) {
+      expect(nav.sheetItems.map((i) => i.iconKey)).not.toContain('documents');
+    } else {
+      expect(nav.sheetItems.map((i) => i.iconKey)).toContain('documents');
+    }
     // Invited catechists do not manage payment
     expect(nav.sheetItems.map((i) => i.iconKey)).not.toContain('billing');
   });

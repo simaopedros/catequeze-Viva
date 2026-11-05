@@ -42,6 +42,11 @@ import { cn } from "../client/utils";
 import { ContextSelector } from "./components/ContextSelector";
 import { MobileSearchDialog } from "./components/MobileSearchDialog";
 import { OPEN_SEARCH_EVENT } from "../client/utils/globalSearchEvent";
+import {
+  HIDDEN_APP_REDIRECT,
+  isHiddenSearchHit,
+  shouldRedirectHiddenAppPath,
+} from "../shared/hiddenFeatures";
 
 const MODULE_ICONS: Record<string, React.ComponentType<any>> = {
   catechumen: Users,
@@ -110,7 +115,13 @@ export const TopBar = memo(function TopBar() {
         await markNotificationRead({ notificationId: notif.id });
       } catch {}
     }
-    if (notif.link) navigate(notif.link);
+    if (notif.link) {
+      navigate(
+        shouldRedirectHiddenAppPath(notif.link)
+          ? HIDDEN_APP_REDIRECT
+          : notif.link,
+      );
+    }
     setNotifOpen(false);
   };
 
@@ -135,8 +146,12 @@ export const TopBar = memo(function TopBar() {
     { enabled: debouncedQuery.length >= 3, refetchOnWindowFocus: false },
   );
 
+  const visibleResults = (results as any[]).filter(
+    (hit) => !isHiddenSearchHit(hit),
+  );
+
   // Group results by module
-  const grouped = (results as any[]).reduce<Record<string, any[]>>(
+  const grouped = visibleResults.reduce<Record<string, any[]>>(
     (acc, r: any) => {
       if (!acc[r.module]) acc[r.module] = [];
       acc[r.module].push(r);
@@ -522,7 +537,7 @@ export const TopBar = memo(function TopBar() {
           setQuery(q);
           setSelectedIndex(0);
         }}
-        results={debouncedQuery.length >= 3 ? results || [] : []}
+        results={debouncedQuery.length >= 3 ? visibleResults : []}
         isLoading={isLoading}
         onSelect={handleSelect}
       />
