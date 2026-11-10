@@ -17,7 +17,7 @@
 | Posicionamento | Feed |
 | Verba sugerida | R$ 40/dia. **proposta, não ligada** |
 | Formato | Só imagem, 5 artes 1:1 (9:16 depois, se o Simão pedir) |
-| Oferta | Plano Catequista R$ 47/mês ou R$ 297/ano |
+| Oferta | Plano Catequista R$ 9,90/mês ou R$ 99/ano |
 
 **Avatar único:** catequista brasileiro que cuida da própria turma na paróquia. Não é coordenador de pastoral, não é diocese, não é escola. Ele tem 1 a 3 turmas, entre 15 e 40 catequizandos, e organiza tudo sozinho no fim de semana.
 
@@ -73,7 +73,7 @@ Anúncio quadrado 1:1 com fundo branco liso e muito espaço em branco, estilo ed
 
 **3. Texto principal**
 
-Você não virou catequista para preencher planilha. Na Catequese Viva sua turma, os encontros e a presença ficam num lugar só. Sobra tempo para o que importa de verdade. Assine por R$ 47/mês ou R$ 297/ano.
+Você não virou catequista para preencher planilha. Na Catequese Viva sua turma, os encontros e a presença ficam num lugar só. Sobra tempo para o que importa de verdade. Assine por R$ 9,90/mês ou R$ 99/ano.
 
 **4. Título**
 
@@ -106,7 +106,7 @@ Anúncio quadrado 1:1 com fundo branco liso, layout editorial limpo e generoso e
 
 **3. Texto principal**
 
-Recado no grupo, lista em outro arquivo, presença na memória. Catequese Viva junta turma, encontros, chamada e recados das famílias numa tela só, e funciona no celular. Assine por R$ 47/mês ou R$ 297/ano.
+Recado no grupo, lista em outro arquivo, presença na memória. Catequese Viva junta turma, encontros, chamada e recados das famílias numa tela só, e funciona no celular. Assine por R$ 9,90/mês ou R$ 99/ano.
 
 **4. Título**
 
@@ -139,7 +139,7 @@ Anúncio quadrado 1:1, fundo branco liso, composição centralizada e arejada, e
 
 **3. Texto principal**
 
-Se o seu encontro só existe na véspera, a semana inteira pesa. Aqui você deixa o roteiro e a agenda da turma prontos com calma, revisa quando quiser e chega leve no dia. Assine por R$ 47/mês ou R$ 297/ano.
+Se o seu encontro só existe na véspera, a semana inteira pesa. Aqui você deixa o roteiro e a agenda da turma prontos com calma, revisa quando quiser e chega leve no dia. Assine por R$ 9,90/mês ou R$ 99/ano.
 
 **4. Título**
 
@@ -172,7 +172,7 @@ Anúncio quadrado 1:1 com fundo branco liso e layout editorial limpo. No topo, c
 
 **3. Texto principal**
 
-Faça a chamada no celular durante o encontro e deixe as famílias acompanharem o que aconteceu, sem ficar respondendo mensagem solta a semana toda. Catequese Viva organiza isso por você. Assine por R$ 47/mês ou R$ 297/ano.
+Faça a chamada no celular durante o encontro e deixe as famílias acompanharem o que aconteceu, sem ficar respondendo mensagem solta a semana toda. Catequese Viva organiza isso por você. Assine por R$ 9,90/mês ou R$ 99/ano.
 
 **4. Título**
 
@@ -194,15 +194,15 @@ Assinar agora
 
 ```
 PLANO CATEQUISTA
-R$ 47 POR MÊS
-ou R$ 297 POR ANO
+R$ 9,90 POR MÊS
+ou R$ 99 POR ANO
 pela sua turma organizada.
 ```
 
 **Prompt para criação:** anúncio quadrado 1:1 com fundo branco, bastante espaço e tipografia preta. Destaque o texto acima com detalhes em âmbar. Inclua uma tela do painel com turmas, encontros e presença. O painel deve representar uma conta assinante, sem selo promocional.
 
-**Texto principal:** Sua catequese organizada: turmas, encontros, chamada e portal das famílias. Assine o Plano Catequista por R$ 47/mês ou R$ 297/ano e comece a usar.
+**Texto principal:** Sua catequese organizada: turmas, encontros, chamada e portal das famílias. Assine o Plano Catequista por R$ 9,90/mês ou R$ 99/ano e comece a usar.
 
-**Título:** `R$ 47/mês ou R$ 297/ano`
+**Título:** `R$ 9,90/mês ou R$ 99/ano`
 
 **Descrição:** `Assine o Plano Catequista`

@@ -143,9 +143,9 @@ export default function CustomSignupForm({
         password,
         username: email,
         isAdmin: false,
-        // Ignorados pelo servidor (userSignupFields calcula os dois); exigidos apenas pelo tipo do SDK.
+        // Ignorados pelo servidor (userSignupFields define os dois); exigidos apenas pelo tipo do SDK.
         termsAcceptanceRequired: true,
-        subscriptionPlan: null,
+        subscriptionPlan: "catechist_free",
       });
       // Email verification may leave the new account unauthenticated.
       // The first authenticated access requires the same explicit acceptance.

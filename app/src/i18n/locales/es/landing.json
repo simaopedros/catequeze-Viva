@@ -4,9 +4,9 @@
     "headline_line2": "Nosotros organizamos el grupo.",
     "subheadline": "Catechis deja encuentros, grupos y catequizandos organizados para que tengas más tiempo para estar con ellos.",
     "badge": "Para quien dice sí a la misión de catequizar",
-    "cta_primary": "Suscribirse ahora",
+    "cta_primary": "Empezar 7 días gratis",
     "cta_secondary": "Ver cómo funciona",
-    "trust_signals": "Acceso al suscribirse · Cancela cuando quieras",
+    "trust_signals": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
     "cta_secondary_href": "/#como",
     "highlights": [
       "Asistencia y seguimiento desde el celular",
@@ -191,7 +191,7 @@
       "name": "Plan Catequista",
       "audience": "Para ti",
       "desc": "Para organizar tu grupo y tus encuentros.",
-      "price": "R$ 47",
+      "price": "R$ 9,90",
       "features": [
         "Hasta 3 grupos",
         "150 catequizandos",
@@ -230,10 +230,10 @@
   "price_monthly": "Mensual",
   "price_annual": "Anual",
   "price_cta_free": "Ver caminos",
-  "price_cta_start": "Suscribirse ahora",
+  "price_cta_start": "Empezar trial de 7 días",
   "per_month": "/mes",
   "per_year": "/año",
-  "annual_discount": "Ahorra con el plan anual",
+  "annual_discount": "2 meses gratis",
   "compare_plans": "Ver detalles del plan",
   "faq_title": "¿Alguna duda?",
   "faq_subtitle": "Respuestas objetivas para que empieces con tranquilidad.",
@@ -251,8 +251,8 @@
       "a": "Sí. Empieza en el Plan Catequista y, cuando tu catequesis crezca, lleva la organización al Plan Parroquia."
     },
     {
-      "q": "¿Cómo empiezo?",
-      "a": "Crea tu cuenta y suscríbete a un plan. Después, configura tu espacio y crea tu primer grupo."
+      "q": "¿Necesito informar tarjeta para probar?",
+      "a": "No. La prueba de 7 días del Plan Catequista empieza sin tarjeta en cuanto creas tu primer grupo. Solo pedimos la tarjeta cuando decidas suscribirte."
     },
     {
       "q": "¿Puedo cancelar cuando quiera?",
@@ -267,7 +267,7 @@
   "cta_title": "Vuelve a tener tiempo para aquello que te llamó a la catequesis.",
   "cta_subtitle": "Deja la organización con Catechis y vive el encuentro con más presencia, tranquilidad y propósito.",
   "cta_lines": [],
-  "cta_button": "Suscribirse ahora",
+  "cta_button": "Empezar 7 días gratis",
   "cta_badge": "Trial",
   "cta_see_plans": "Ver el plan",
   "mock": {
@@ -350,7 +350,7 @@
     "plan_detail": "Confirmación · 45 min"
   },
   "footer": {
-    "create_account": "Suscribirse ahora",
+    "create_account": "Empezar los 7 días",
     "login": "Iniciar sesión",
     "about": "Acerca de",
     "privacy": "Privacidad",
@@ -370,7 +370,7 @@
       "desc": "Información protegida en tránsito y en reposo, con acceso restringido por rol."
     },
     {
-      "title": "Plan Catequista",
+      "title": "7 días gratis",
       "desc": "Acceso a todos los recursos. Si no encaja, cancela cuando quieras."
     },
     {
@@ -381,11 +381,11 @@
   "testimonials_title": "Testimonios",
   "testimonials_subtitle": "Cuando tengamos citas autorizadas de catequistas y parroquias, aparecerán aquí.",
   "testimonials": [],
-  "cta_helper": "Suscribirse ahora",
+  "cta_helper": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
   "mobile_cta": {
-    "title": "Plan Catequista",
+    "title": "7 días gratis",
     "subtitle": "Acceso a todos los recursos · Cancela cuando quieras",
-    "button": "Suscribirse ahora"
+    "button": "Empezar 7 días gratis"
   },
   "proof": {
     "badge": "Empieza con tranquilidad",
@@ -406,22 +406,22 @@
       }
     ],
     "chips": [
-      "Acceso al suscribirse · Cancela cuando quieras",
+      "7 días gratis",
       "Acceso a todos los recursos",
       "Cancela cuando quieras",
       "LGPD",
       "Cancelación simple"
     ],
-    "launch_title": "Plan Catequista",
-    "launch_text": "Crea tu cuenta, elige un plan y suscríbete para empezar a organizar tu catequesis.",
+    "launch_title": "Pruébalo con tu grupo",
+    "launch_text": "Crea la cuenta y prueba 7 días con acceso a todos los recursos. Cancela cuando quieras.",
     "promises": [
-      "Crea tu cuenta, elige un plan y suscríbete para empezar a organizar tu catequesis.",
+      "7 días gratis, con acceso a todos los recursos",
       "Biblioteca con Biblia y Catecismo en el mismo lugar",
       "Datos de niños con cuidado y LGPD",
       "Cancela cuando quieras"
     ],
-    "launch_cta": "Crea tu cuenta, elige un plan y suscríbete para empezar a organizar tu catequesis.",
-    "launch_helper": "Acceso al suscribirse · Cancela cuando quieras"
+    "launch_cta": "Empezar gratis por 7 días",
+    "launch_helper": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras"
   },
   "simple_features": {
     "title": "Todo lo que el catequista necesita, sin complicaciones",
@@ -450,7 +450,7 @@
   },
   "steps_endowed_title": "Ya estás aquí",
   "steps_endowed_desc": "Conociendo la plataforma",
-  "price_trial_badge": "Plan Catequista",
+  "price_trial_badge": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
   "price_trial_note": "",
   "comparison": {
     "title": "Deja de dispersar tu catequesis en papel, planilla y WhatsApp",
@@ -458,8 +458,8 @@
     "col_criterion": "Lo que necesitas",
     "col_old": "Papel + planilla + WhatsApp",
     "col_next": "Catechis",
-    "cta": "Suscribirse ahora",
-    "helper": "Acceso al suscribirse · Cancela cuando quieras",
+    "cta": "Empezar gratis por 7 días",
+    "helper": "7 días gratis, con acceso a todos los recursos. Cancela cuando quieras.",
     "rows": [
       {
         "criterion": "Preparar el encuentro",
@@ -493,11 +493,11 @@
       }
     ]
   },
-  "faq_cta": "Suscribirse ahora",
-  "faq_cta_helper": "Acceso al suscribirse · Cancela cuando quieras",
-  "price_cta_single": "Suscribirse ahora",
-  "price_annual_note": "o R$ 297/año",
-  "price_cta_unlimited": "Suscribirse ahora",
+  "faq_cta": "Empezar 7 días gratis",
+  "faq_cta_helper": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
+  "price_cta_single": "Empezar 7 días gratis",
+  "price_annual_note": "o R$ 99/año",
+  "price_cta_unlimited": "Empezar 7 días gratis",
   "price_cta_diocese": "Hablar con ventas",
   "price_annual_equivalent": "Equivale a {{price}}/mes",
   "demo": {
@@ -518,7 +518,7 @@
     "result_title": "Encuentro preparado",
     "result_badge": "",
     "done_note": "Esto te ayuda el domingo. Tú revisas todo antes de usarlo.",
-    "cta": "Suscribirse ahora",
+    "cta": "Empezar 7 días gratis",
     "topics": [
       {
         "id": "perdao",
@@ -713,16 +713,16 @@
       "Registra las asistencias",
       "Continúa donde lo dejaste"
     ],
-    "cta": "Suscribirse ahora"
+    "cta": "Empezar mi catequesis — 7 días gratis"
   },
   "growth": {
     "eyebrow": "Empieza a tu manera",
     "title": "Un plan para cada etapa de la misión.",
     "subtitle": "Empieza como catequista. Cuando tu catequesis crezca, lleva la organización a tu parroquia o diócesis.",
     "featured": "Más elegido",
-    "note": "Acceso al suscribirse · Cancela cuando quieras",
-    "billed_annual": "Cobrado anualmente",
-    "billed_monthly": "Cobrado mensualmente",
+    "note": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
+    "billed_annual": "Cobrado anualmente · 7 días gratis",
+    "billed_monthly": "Cobrado mensualmente · 7 días gratis",
     "diocese_note": "Habla con nuestro equipo",
     "discount": "{{percent}}% de descuento",
     "ladder": [
@@ -822,8 +822,8 @@
       "minutes": "{{count}} min",
       "done_title": "¿Te gustó? Prepara el tuyo de verdad.",
       "done_text": "Con el tema de tu grupo y la Biblia y el Catecismo al lado. Revisas todo antes de usarlo.",
-      "done_cta": "Crea tu cuenta, elige un plan y suscríbete para empezar a organizar tu catequesis.",
-      "done_helper": "Acceso al suscribirse · Cancela cuando quieras",
+      "done_cta": "Empezar 7 días gratis",
+      "done_helper": "7 días gratis · Cancela cuando quieras",
       "topics": {
         "perdao": [
           {

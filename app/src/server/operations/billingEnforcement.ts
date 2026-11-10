@@ -4,7 +4,6 @@
  *
  * All limit data is sourced from shared/pricing.ts (single source of truth).
  */
-import { isNewPricingAccount } from "../../shared/newPricing";
 import { HttpError } from "wasp/server";
 import {
   getPlanLimits,
@@ -360,7 +359,7 @@ export function isEligibleForNoCardProductTrial(
   user: Partial<ProductTrialUser> | null | undefined,
   now: Date = new Date(),
 ): boolean {
-  if (!user || isNewPricingAccount(user.createdAt)) return false;
+  if (!user) return false;
   if (user.paymentProcessorUserId) return false;
   if (user.subscriptionStatus) return false;
   if (user.trialEndsAt) return false;
@@ -390,9 +389,6 @@ export async function ensureProductTrial(
   if (!user) {
     throw new HttpError(401);
   }
-
-  // New cohort never receives or heals a trial. Legacy behavior stays intact.
-  if (isNewPricingAccount(user.createdAt)) return user;
 
   // Stripe-managed or already paid — leave alone.
   if (user.paymentProcessorUserId) return user;
@@ -582,7 +578,7 @@ export async function assertCanCreateParish(
     if (ownedParishes < 1) {
       throw new HttpError(
         403,
-        `${PARISH_TRIAL_AVAILABLE_PREFIX} Limite de paróquias do plano ${planName(plan)} atingido (${ownedParishes}/${limits.maxParishes}). Assine o plano Paróquia para continuar.`,
+        `${PARISH_TRIAL_AVAILABLE_PREFIX} Limite de paróquias do plano ${planName(plan)} atingido (${ownedParishes}/${limits.maxParishes}). Você pode iniciar 7 dias grátis do plano Paróquia para continuar.`,
       );
     }
     throw new HttpError(

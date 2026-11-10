@@ -3,7 +3,8 @@ import * as z from "zod";
 const optionalText = z.string().optional().default("");
 
 /**
- * Hotmart stays off until HOTMART_PRIMARY_CHECKOUT=true.
+ * The webhook is enabled by HOTMART_HOTTOK + HOTMART_PRODUCT_UCODES.
+ * HOTMART_PRIMARY_CHECKOUT controls checkout links only.
  * HOTMART_HOTTOK is a secret: never log it and never return it to the client.
  */
 export const hotmartEnvSchema = z.object({

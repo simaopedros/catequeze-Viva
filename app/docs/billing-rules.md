@@ -1,59 +1,67 @@
 # Regras de assinatura do Catechis
 
-Preços da versão 4, a partir de 05/11/2026:
+Preços do catálogo versão 3, restaurados para novas vendas pela Stripe:
 
 | Plano | Mensal | Anual |
 | --- | --- | --- |
-| Catequista (`single`) | R$ 47 | R$ 297 |
+| Catequista (`single`) | R$ 9,90 | R$ 99 |
 | Paróquia (`unlimited`) | R$ 99 | R$ 990 |
 | Diocese | Sob consulta | Sob consulta |
 
-O anual Catequista economiza R$ 267 em relação a 12 mensalidades (R$ 564), aproximadamente 47%. Os limites continuam iguais: Catequista até 3 turmas e 150 catequizandos; os demais limites vêm do catálogo, sem mudança nesta versão.
+O anual Catequista economiza R$ 19,80 em relação a 12 mensalidades (R$ 118,80), aproximadamente 17%. O anual Paróquia economiza R$ 198, também aproximadamente 17%. Diocese continua com venda assistida. Os limites continuam iguais: Catequista até 3 turmas e 150 catequizandos; os demais limites vêm do catálogo.
 
-## Contas novas e data de corte
+## Trial sem cartão
 
-`NEW_PRICING_ACCOUNT_CUTOFF` tem o valor padrão `2026-11-05T00:00:00-03:00` (03:00 UTC). O override opcional `NEW_PRICING_ACCOUNT_CUTOFF_ISO` deve ser uma data ISO válida. O helper puro `isNewPricingAccount(createdAt)` compara a criação da conta com esse corte, incluindo a igualdade. A query pública `getPlanCatalog` fornece a configuração de checkout e o mesmo corte ao navegador.
+Novas contas voltam a iniciar com `catechist_free` e recebem o trial de 7 dias por `ensureProductTrial`, ao criar o espaço pessoal ou a primeira turma. O prazo termina em `createdAt + 7 dias`; não começa uma nova semana a cada acesso. A data de corte e sua variável de ambiente foram removidas. Não há redirecionamento obrigatório para cobrança antes do onboarding por data de criação da conta.
 
-Para contas criadas a partir do corte, o cadastro não concede plano nem período promocional. O campo `subscriptionPlan` começa nulo, sem alterar o schema de User. Após autenticar e verificar o e-mail, a conta vai para `/app/billing` e precisa assinar para iniciar seu espaço. `ensureProductTrial` não grava nada para essas contas e o Stripe Checkout recebe zero dias promocionais. Não há nova oferta de acesso gratuito.
+Stripe Checkout usa a regra anterior: assinaturas elegíveis recebem até 7 dias; um trial no produto recebe somente os dias restantes. Trials já consumidos e assinaturas pagas não recebem outro trial. Créditos avulsos recebem zero dias. O Checkout com trial usa `payment_method_collection=if_required` e cancela ao terminar sem meio de pagamento. A elegibilidade do trial Paróquia permanece com as regras anteriores. O job de lifecycle volta a considerar as novas contas para campanhas de trial.
 
 Convites e contas do Portal da Família continuam com acesso conforme o papel e o plano do espaço que as recebe. Colaboradores convidados não são responsáveis pela assinatura do coordenador.
 
-## Contas existentes
+## Contas existentes e expiração
 
-Contas anteriores ao corte conservam o comportamento anterior de `ensureProductTrial`. Não existe migração ou seed desta versão que reescreva User ou TenantBilling.
+Esta alteração não reescreve User ou TenantBilling. Contas grátis antigas, liberações manuais ACTIVE e assinantes atuais preservam seus campos e sua gestão de cobrança.
 
-- `catechist_free` com status nulo permanece com os mesmos campos e limites.
-- Liberações manuais ACTIVE, inclusive TenantBilling sem assinatura Stripe, conservam plano, status e acesso.
-- Assinantes Stripe conservam plano, identificadores, portal, renovação e tratamento de webhooks, inclusive `past_due` e `cancel_at_period_end`.
-- Trials existentes continuam com a regra anterior de concessão e expiração. **Não são congelados.** `subscriptionExpirationJob.ts` continua expirando TenantBilling TRIAL vencido sem gestão Stripe e User `trialing`/`trial` sem cliente Stripe quando `createdAt + 7 dias` venceu. O job não passa a usar `trialEndsAt` do User. Além disso, suspende acesso Hotmart vencido e aplica a mesma cascata de cancelamento de paróquia/diocese que a Stripe. Trials Stripe seguem os webhooks. Os banners e avisos de estado continuam disponíveis para essas contas.
+`subscriptionExpirationJob` continua expirando TenantBilling TRIAL vencido sem gestão Stripe e User `trialing`/`trial` sem cliente Stripe quando `createdAt + 7 dias` venceu. Trials Stripe seguem os webhooks. Não há congelamento nem renovação de trial vencido. O job também suspende acesso Hotmart vencido e aplica a mesma cascata de cancelamento de paróquia/diocese que a Stripe.
 
-Administração de licenças e contagens permanece com a classificação atual de liberações manuais, assinantes e trials. O job de lifecycle deixa de selecionar a nova coorte para campanhas de trial; os avisos da coorte anterior continuam normalmente.
+A pausa de membros permanece: depende da licença institucional, sem relação com preços ou data de criação da conta. Quem administra continua vendo a cobrança. Os demais membros veem apenas o aviso para falar com o administrador da paróquia ou diocese.
 
-## Catálogo e preços legados
+## Catálogo e migração
 
-Produção usa `PRICING_CATALOG_SOURCE=db`. A migração `20261105030000_single_pricing_v4` altera somente PricingPlan e PricingPlanPrice. Inclui os valores 4700/29700, ativos e sem `stripePriceId`. Os preços antigos ficam arquivados para novas vendas, conservando os IDs Stripe e os valores para resolver assinaturas existentes. Não são apagados.
+Produção usa `PRICING_CATALOG_SOURCE=db`. A migração forward `20261110190000_restore_single_stripe_pricing`:
 
-O catálogo público e checkout usam somente preços ativos e não arquivados. A resolução de assinaturas por ID Stripe inclui os preços arquivados. O seed não vincula IDs de ambiente antigos aos novos preços Catequista. `reconcile-billing --catalog` confere os intervalos mensal e anual ativos, sem reescrever assinaturas. `stripeCatalogSync` continua disponível para a gestão já existente, mas não é executado por esta migração nem por esta entrega. Nenhuma chamada à API Stripe faz parte desta operação.
+- Reativa e desarquiva somente os registros `single_monthly` / `single_annual` com os IDs Stripe provisionados abaixo.
+- Desativa e arquiva os registros v4, sem apagar preços. Reconhece os IDs `single_v4_*` e as lookup keys `single_*_v4`.
+- Volta `PricingPlan.pricingVersion` de `single` e o DEFAULT da coluna para 3. Não há dependência do valor 4 para resolver assinaturas arquivadas.
+- Não altera assinaturas, colunas, tabelas ou enums Hotmart. Pode ser reaplicada sem mudar o resultado.
 
-**Disponibilidade Stripe para novas vendas Catequista:** não existe Price Stripe dos valores novos nesta entrega. A flag Hotmart desligada preserva o fluxo Stripe dos planos com preços válidos, mas o checkout Catequista falha com mensagem de indisponibilidade até haver uma oferta de checkout configurada. O sistema nunca usa um ID antigo para cobrar um valor diferente do anunciado. Nenhum Price/Product Stripe será criado nesta branch.
+| Plano / intervalo | Stripe Price ID |
+| --- | --- |
+| Catequista mensal | `price_1U9rzyLlEZ4s7RNR2O1n9dqF` |
+| Catequista anual | `price_1U9s8mLlEZ4s7RNRdQc1DCNw` |
+| Paróquia mensal | `price_1TpxW1LlEZ4s7RNRdvx0BNW7` |
+| Paróquia anual | `price_1TpxWVLlEZ4s7RNRtoJdwVb4` |
 
-## Checkout Hotmart
+Catálogo público e checkout usam somente preços ativos e não arquivados. A resolução de assinaturas por ID Stripe inclui preços arquivados, independentemente de `pricingVersion`. Um preço do catálogo sem ID utilizável não pode cobrar por um ID de ambiente de valor diferente.
 
-`HOTMART_PRIMARY_CHECKOUT` é `false` por padrão. As URLs públicas, inicialmente vazias nos exemplos, são:
+O seed insere os preços antigos e reutiliza os IDs existentes; não gera preços v4 nem cria produtos/preços Stripe. Para `single`, não precisa consultar a API Stripe. A gestão administrativa existente por `stripeCatalogSync` não é disparada pela migração ou automaticamente por este retorno de preços. Não executar sincronização para recriar os preços já provisionados.
 
-- `HOTMART_CHECKOUT_URL_SINGLE_MONTHLY`
-- `HOTMART_CHECKOUT_URL_SINGLE_ANNUAL`
-- `HOTMART_CHECKOUT_URL_UNLIMITED_MONTHLY`
-- `HOTMART_CHECKOUT_URL_UNLIMITED_ANNUAL`
+## Checkout e webhook Hotmart independentes
 
-Com a flag ligada e URL HTTPS válida para o plano/intervalo, os links de assinatura, preços e landing abrem a Hotmart em nova aba, com `sck=catechis` e `email` da conta autenticada. A action de checkout aplica a mesma política antes de qualquer chamada à Stripe. Catequista (`single`), Paróquia (`unlimited`) e Diocese (`diocese`, URLs `HOTMART_CHECKOUT_URL_DIOCESE_MONTHLY` e `HOTMART_CHECKOUT_URL_DIOCESE_ANNUAL`) usam essas URLs. Com a flag ligada, uma conta que não é assinante Stripe atual não cai no Checkout Stripe desses planos, mesmo se a URL estiver vazia. Assinantes Stripe atuais continuam com gestão e portal Stripe. Sem flag, permanece o fluxo Stripe, respeitando a disponibilidade de preços ativos. A Diocese sem flag continua no contato de vendas.
+`HOTMART_PRIMARY_CHECKOUT=false` é o padrão e mantém novas vendas na Stripe. URLs Hotmart configuradas não mudam isso. Diocese permanece no contato de vendas. A flag afeta somente o roteamento de checkout; não controla entitlements nem o recebimento de eventos.
 
-O postback v2 fica em `POST /api/hotmart/webhook` e também só processa com `HOTMART_PRIMARY_CHECKOUT=true`, `HOTMART_HOTTOK` e `HOTMART_PRODUCT_UCODES`. Sem isso, a rota responde 404 ou ignora o produto e não altera assinatura. O hottok não é gravado nem logado. A compra aprovada ativa o plano no modelo atual (`subscriptionPlan`/`subscriptionStatus`): R$ 47 e R$ 297 viram Catequista (`single`); R$ 99 e R$ 990, e as ofertas de Diocese, viram Paróquia (`unlimited`) com a mesma cascata de `TenantBilling`. Sem `date_next_charge`, `accessEndsAt` fica na data aprovada mais um mês ou um ano, mais um dia. Reembolso e chargeback cortam o acesso. Atraso e `PURCHASE_PROTEST` ficam `past_due` com carência. Cancelamento mantém acesso até `accessEndsAt`. O job de expiração, ao suspender, cancela o `TenantBilling` da paróquia e da diocese do responsável. Quem administra continua vendo a cobrança. Catequistas e demais membros veem só “O acesso da sua paróquia está temporariamente indisponível. Fale com o administrador da sua paróquia.” (ou a frase da diocese), sem pagamento, plano ou assinatura. Compra sem conta verificada aparece em `/admin/billing` para um admin vincular ao usuário. Conta manual e assinante Stripe ativo não são reescritos. Abrir ou voltar do checkout não libera acesso e não comprova pagamento.
+A integração de checkout Hotmart continua disponível como opt-in: com a flag ligada e URL HTTPS válida `HOTMART_CHECKOUT_URL_<PLANO>_<INTERVALO>`, os links abrem a Hotmart com `sck=catechis` e o email autenticado. Assinantes Stripe atuais continuam com gestão e portal Stripe. Com a flag ligada, um plano de venda Hotmart sem URL válida continua indisponível para novos compradores, em vez de iniciar outra cobrança Stripe.
 
-## Gestão e segurança das assinaturas atuais
+O postback v2 `POST /api/hotmart/webhook` processa quando `HOTMART_HOTTOK` e a lista `HOTMART_PRODUCT_UCODES` estão preenchidos, inclusive com `HOTMART_PRIMARY_CHECKOUT=false`. Sem uma dessas configurações, responde 404. Token inválido recebe 401; produtos fora da lista são ignorados. O hottok nunca é gravado ou logado.
 
-Escopos pessoal e institucional continuam distintos. TenantBilling ativo próprio, cobertura da diocese e cobertura institucional do dono seguem a ordem atual de resolução. Status ACTIVE e PAST_DUE continuam válidos; TRIAL requer prazo válido. Nenhum limite de plano foi alterado.
+As ofertas Hotmart legadas conservam seu mapeamento de valor e identificadores para compras já feitas, renovações, cancelamentos e reembolsos. Isso não define o preço das novas vendas Stripe. Compras Catequista aprovadas continuam ativando `single`, status `active` e `billingProvider=HOTMART`, sem receber trial adicional.
 
-O portal, cancelamento ao final do período, prevenção de assinatura duplicada, `syncUserSubscription`, `billingCascade` e `webhook.ts` continuam existentes. Eventos de cobrança precisam continuar vinculados à assinatura correta e tratados com a idempotência atual. O arquivamento de um preço no catálogo não encerra a assinatura Stripe que o usa.
+O fluxo de conta automática dos PRs #240/#241 permanece: provisiona a conta do comprador quando necessário, aplica o plano e envia o email/link de acesso conforme a credencial existente. Casos pendentes continuam disponíveis em `PendingHotmartPanel`, em `/admin/billing`. Contas manuais e assinantes Stripe ativos não são reescritos.
 
-A mudança de preço na renovação dos assinantes atuais, com aviso prévio de 30 dias, é uma operação manual fora desta branch. Esta entrega não altera assinaturas, não envia avisos, não publica anúncios e não executa migração em produção.
+Sem `date_next_charge`, `accessEndsAt` usa a data aprovada mais um mês ou um ano, mais um dia. Reembolso e chargeback cortam o acesso. Atraso e `PURCHASE_PROTEST` ficam `past_due` com carência. Cancelamento mantém acesso até `accessEndsAt`. Abrir ou voltar do checkout não comprova pagamento nem libera acesso.
+
+## Gestão das assinaturas atuais
+
+Escopos pessoal e institucional continuam distintos. TenantBilling ativo próprio, cobertura da diocese e cobertura institucional do dono seguem a ordem atual de resolução. Status ACTIVE e PAST_DUE continuam válidos; TRIAL requer prazo válido.
+
+Portal, cancelamento ao final do período, prevenção de assinatura duplicada, `syncUserSubscription`, `billingCascade` e webhooks permanecem. O arquivamento no catálogo não encerra assinaturas Stripe. Esta entrega não muda o produto Hotmart, não cria objetos Stripe, não altera renovações de assinantes existentes e não executa operações em produção.

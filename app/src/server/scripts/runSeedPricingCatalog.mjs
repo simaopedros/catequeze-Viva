@@ -91,8 +91,8 @@ const DEFAULT_PLANS = [
       es: { name: 'Plan Catequista', features: ['Hasta 3 grupos', '150 catecúmenos en total'] },
     },
     prices: [
-      { interval: 'MONTHLY', unitAmountCents: 990, lookup: 'single_monthly', env: 'STRIPE_SINGLE_PLAN_ID' },
-      { interval: 'ANNUAL', unitAmountCents: 9900, lookup: 'single_annual', env: 'STRIPE_SINGLE_ANNUAL_PLAN_ID' },
+      { interval: 'MONTHLY', unitAmountCents: 990, lookup: 'single_monthly', stripePriceId: 'price_1U9rzyLlEZ4s7RNR2O1n9dqF', env: 'STRIPE_SINGLE_PLAN_ID' },
+      { interval: 'ANNUAL', unitAmountCents: 9900, lookup: 'single_annual', stripePriceId: 'price_1U9s8mLlEZ4s7RNRdQc1DCNw', env: 'STRIPE_SINGLE_ANNUAL_PLAN_ID' },
     ],
   },
   {
@@ -128,8 +128,8 @@ const DEFAULT_PLANS = [
       es: { name: 'Plan Ilimitado', features: ['Parroquias y grupos ilimitados'] },
     },
     prices: [
-      { interval: 'MONTHLY', unitAmountCents: 9900, lookup: 'unlimited_monthly', env: 'STRIPE_UNLIMITED_PLAN_ID' },
-      { interval: 'ANNUAL', unitAmountCents: 99000, lookup: 'unlimited_annual', env: 'STRIPE_UNLIMITED_ANNUAL_PLAN_ID' },
+      { interval: 'MONTHLY', unitAmountCents: 9900, lookup: 'unlimited_monthly', stripePriceId: 'price_1TpxW1LlEZ4s7RNRdvx0BNW7', env: 'STRIPE_UNLIMITED_PLAN_ID' },
+      { interval: 'ANNUAL', unitAmountCents: 99000, lookup: 'unlimited_annual', stripePriceId: 'price_1TpxWVLlEZ4s7RNRtoJdwVb4', env: 'STRIPE_UNLIMITED_ANNUAL_PLAN_ID' },
     ],
   },
   {
@@ -234,7 +234,7 @@ async function main() {
             interval: price.interval,
             currency: 'BRL',
             unitAmountCents: price.unitAmountCents,
-            stripePriceId: price.env ? envPrice(price.env) : null,
+            stripePriceId: (price.env ? envPrice(price.env) : null) || price.stripePriceId || null,
             stripeLookupKey: price.lookup,
             isActive: true,
           },

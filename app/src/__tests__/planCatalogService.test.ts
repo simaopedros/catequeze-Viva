@@ -35,14 +35,14 @@ describe('planCatalogService', () => {
     }));
   });
 
-  it('static mode attaches env IDs only for unchanged plans', async () => {
+  it('static mode attaches env IDs for Stripe subscription plans', async () => {
     const { loadPlanCatalog, getPricingCatalogSource } = await import('../server/pricing/planCatalogService');
     const { DEFAULT_PLANS_BY_SLUG } = await import('../shared/planCatalog');
     expect(getPricingCatalogSource()).toBe('static');
     const snapshot = await loadPlanCatalog();
     expect(snapshot.source).toBe('static');
     expect(snapshot.bySlug.single.limits.maxClasses).toBe(DEFAULT_PLANS_BY_SLUG.single.limits.maxClasses);
-    expect(snapshot.bySlug.single.prices.find((p) => p.interval === 'monthly')?.stripePriceId).toBeNull();
+    expect(snapshot.bySlug.single.prices.find((p) => p.interval === 'monthly')?.stripePriceId).toBe(ENV_SINGLE_MONTHLY);
     expect(snapshot.bySlug.unlimited.isPublic).toBe(true);
     expect(snapshot.bySlug.unlimited.prices.find((p) => p.interval === 'monthly')?.stripePriceId).toBe(ENV_UNLIMITED_MONTHLY);
   });
@@ -236,7 +236,7 @@ describe('planCatalogService', () => {
   });
 });
 
-describe('pricing v4 sale eligibility', () => {
+describe('Stripe sale eligibility', () => {
   it('does not sell an archived Stripe price and never falls back to its env ID', async () => {
     process.env.PRICING_CATALOG_SOURCE = 'db';
     const { invalidatePlanCatalogCache, requireActiveStripePriceId, resolvePlanByStripePriceId } = await import('../server/pricing/planCatalogService');
@@ -256,11 +256,30 @@ describe('pricing v4 sale eligibility', () => {
     expect((await resolvePlanByStripePriceId(ctx, 'price_1LegacyAnnualXXX')).slug).toBe('single');
   });
 
-  it('still resolves a legacy environment price while static new sales are unavailable', async () => {
+  it('sells reactivated v3 prices from the DB and retains archived v4 resolution', async () => {
+    process.env.PRICING_CATALOG_SOURCE = 'db';
+    const { invalidatePlanCatalogCache, requireActiveStripePriceId, resolvePlanByStripePriceId } = await import('../server/pricing/planCatalogService');
+    invalidatePlanCatalogCache();
+    const ctx = { entities: { PricingPlan: { findMany: vi.fn(async () => [{
+      slug: 'single', name: 'Catequista', kind: 'SUBSCRIPTION', level: 'PERSONAL', isActive: true, isPublic: true, pricingVersion: 3,
+      prices: [
+        { interval: 'MONTHLY', unitAmountCents: 990, stripePriceId: 'price_1U9rzyLlEZ4s7RNR2O1n9dqF', isActive: true, archivedAt: null },
+        { interval: 'ANNUAL', unitAmountCents: 9900, stripePriceId: 'price_1U9s8mLlEZ4s7RNRdQc1DCNw', isActive: true, archivedAt: null },
+        { interval: 'MONTHLY', unitAmountCents: 4700, stripePriceId: 'price_1ArchivedV4XXXXX', isActive: false, archivedAt: new Date() },
+        { interval: 'ANNUAL', unitAmountCents: 29700, stripePriceId: null, isActive: false, archivedAt: new Date() },
+      ],
+    }]) } } };
+    await expect(requireActiveStripePriceId(ctx, 'single', 'monthly')).resolves.toBe('price_1U9rzyLlEZ4s7RNR2O1n9dqF');
+    await expect(requireActiveStripePriceId(ctx, 'single', 'annual')).resolves.toBe('price_1U9s8mLlEZ4s7RNRdQc1DCNw');
+    expect((await resolvePlanByStripePriceId(ctx, 'price_1ArchivedV4XXXXX')).slug).toBe('single');
+  });
+
+  it('sells the previous single prices in static mode', async () => {
     process.env.PRICING_CATALOG_SOURCE = 'static';
     const { invalidatePlanCatalogCache, requireActiveStripePriceId, resolvePlanByStripePriceId } = await import('../server/pricing/planCatalogService');
     invalidatePlanCatalogCache();
-    await expect(requireActiveStripePriceId(undefined, 'single')).rejects.toThrow('Pagamento indisponível');
+    await expect(requireActiveStripePriceId(undefined, 'single')).resolves.toBe(ENV_SINGLE_MONTHLY);
+    await expect(requireActiveStripePriceId(undefined, 'single', 'annual')).resolves.toBe(ENV_SINGLE_ANNUAL);
     expect((await resolvePlanByStripePriceId(undefined, ENV_SINGLE_MONTHLY)).slug).toBe('single');
   });
 });

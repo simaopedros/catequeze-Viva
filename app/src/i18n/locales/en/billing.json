@@ -153,7 +153,7 @@
   "unlimited": "unlimited",
   "limit_caption": "Limit {{limit}}",
   "conversion_badge": "Subscription",
-  "conversion_trial_cta": "Subscribe now",
+  "conversion_trial_cta": "Try for 7 days",
   "conversion_payment_title": "Confirm your subscription",
   "conversion_required_title": "Choose your plan to continue",
   "conversion_personal_title": "Choose the plan for your personal space",
@@ -409,10 +409,10 @@
     "diocese_cta": "Talk to sales about the diocese",
     "diocese_prefill": "Hi! I would like to talk about the Diocese Plan for {{name}} on Catechis."
   },
-  "checkout_cta_start_trial_one": "Subscribe now",
-  "checkout_cta_start_trial_other": "Subscribe now",
-  "checkout_charge_after_trial_one": "Choose a plan and complete payment to unlock access. Cancel anytime.",
-  "checkout_charge_after_trial_other": "Choose a plan and complete payment to unlock access. Cancel anytime.",
+  "checkout_cta_start_trial_one": "Start 1 free day",
+  "checkout_cta_start_trial_other": "Start {{count}} free days",
+  "checkout_charge_after_trial_one": "No card needed now. You get 1 free day; the first charge is on {{date}} if a card is on file. Without a card by then, the subscription is canceled with no charge.",
+  "checkout_charge_after_trial_other": "No card needed now. You get {{count}} free days; the first charge is on {{date}} if a card is on file. Without a card by then, the subscription is canceled with no charge.",
   "checkout_charge_today": "You are charged on Stripe as soon as you confirm the subscription.",
   "checkout_plan_includes_label": "What the plan includes",
   "distinct_people_usage": "Each person counts once, even with multiple enrollments. People in completed classes still count."

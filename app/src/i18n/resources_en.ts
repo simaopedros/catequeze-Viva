@@ -1255,7 +1255,7 @@ export const auth_en = {
     "login_google": "Continue with Google",
     "login_continue_with_email": "Continue with email",
     "login_no_account": "Don't have an account?",
-    "login_create_account": "Subscribe now",
+    "login_create_account": "Start your 7 days",
     "login_create_account_family": "Create family account",
     "login_error_fill_all": "Please fill in all fields.",
     "login_error_invalid": "Invalid email or password.",
@@ -1276,7 +1276,7 @@ export const auth_en = {
     "two_factor_back_button": "Back to login",
     "two_factor_error_required": "Enter the 6-digit code.",
     "two_factor_error_invalid": "Invalid code.",
-    "signup_title": "Create account",
+    "signup_title": "Start your 7 days",
     "signup_subtitle": "Create your account and organize class, attendance, and meetings in one place.",
     "signup_email_label": "Email",
     "signup_email_placeholder": "your@email.com",
@@ -1365,7 +1365,7 @@ export const auth_en = {
     "email_footer_portal": "family portal",
     "email_footer_disclaimer": "If you did not create this account, ignore this email.",
     "language_label": "Language",
-    "signup_panel_eyebrow": "Catechist Plan",
+    "signup_panel_eyebrow": "Try 7 days",
     "signup_panel_title": "Organized catechesis starts here",
     "signup_panel_subtitle": "One account. One place for the class, attendance, and the next meeting.",
     "signup_panel_points": [
@@ -1385,7 +1385,7 @@ export const auth_en = {
     "signup_plan_unlimited": "Parish Plan",
     "signup_interval_monthly": "monthly billing",
     "signup_interval_annual": "annual billing",
-    "signup_context_no_card": "Access after subscribing · Cancel anytime",
+    "signup_context_no_card": "7 days free, no card required",
     "signup_context_change": "Change",
     "signup_success_next_steps": "Next steps",
     "signup_success_step_1": "Check your inbox and spam folder.",
@@ -1624,7 +1624,7 @@ export const billing_en = {
     "unlimited": "unlimited",
     "limit_caption": "Limit {{limit}}",
     "conversion_badge": "Subscription",
-    "conversion_trial_cta": "Subscribe now",
+    "conversion_trial_cta": "Try for 7 days",
     "conversion_payment_title": "Confirm your subscription",
     "conversion_required_title": "Choose your plan to continue",
     "conversion_personal_title": "Choose the plan for your personal space",
@@ -1880,10 +1880,10 @@ export const billing_en = {
       "diocese_cta": "Talk to sales about the diocese",
       "diocese_prefill": "Hi! I would like to talk about the Diocese Plan for {{name}} on Catechis."
     },
-    "checkout_cta_start_trial_one": "Subscribe now",
-    "checkout_cta_start_trial_other": "Subscribe now",
-    "checkout_charge_after_trial_one": "Choose a plan and complete payment to unlock access. Cancel anytime.",
-    "checkout_charge_after_trial_other": "Choose a plan and complete payment to unlock access. Cancel anytime.",
+    "checkout_cta_start_trial_one": "Start 1 free day",
+    "checkout_cta_start_trial_other": "Start {{count}} free days",
+    "checkout_charge_after_trial_one": "No card needed now. You get 1 free day; the first charge is on {{date}} if a card is on file. Without a card by then, the subscription is canceled with no charge.",
+    "checkout_charge_after_trial_other": "No card needed now. You get {{count}} free days; the first charge is on {{date}} if a card is on file. Without a card by then, the subscription is canceled with no charge.",
     "checkout_charge_today": "You are charged on Stripe as soon as you confirm the subscription.",
     "checkout_plan_includes_label": "What the plan includes",
     "distinct_people_usage": "Each person counts once, even with multiple enrollments. People in completed classes still count."
@@ -1920,7 +1920,7 @@ export const blog_en = {
     "not_found": "Article not found",
     "not_found_desc": "This address does not match a published article.",
     "cta_title": "Organize catechesis in one place",
-    "cta_text": "Subscribe now",
+    "cta_text": "Prepare meetings, take attendance, and reach families. Start your 7 free days.",
     "categories": {
       "FORMATION": "Formation",
       "PRACTICAL_TIPS": "Practical tips",
@@ -4517,9 +4517,9 @@ export const landing_en = {
       "headline_line2": "We organize the class.",
       "subheadline": "Catechis keeps meetings, classes, and catechumens organized so you have more time to be with them.",
       "badge": "For those who say yes to the mission of catechizing",
-      "cta_primary": "Subscribe now",
+      "cta_primary": "Start 7 days free",
       "cta_secondary": "See how it works",
-      "trust_signals": "Access after subscribing · Cancel anytime",
+      "trust_signals": "7 days free · Full access to every feature · Cancel anytime",
       "cta_secondary_href": "/#como",
       "highlights": [
         "Attendance and follow-up on mobile",
@@ -4704,7 +4704,7 @@ export const landing_en = {
         "name": "Catechist Plan",
         "audience": "For you",
         "desc": "To organize your class and your meetings.",
-        "price": "R$ 47",
+        "price": "R$ 9.90",
         "features": [
           "Up to 3 classes",
           "150 catechumens",
@@ -4743,10 +4743,10 @@ export const landing_en = {
     "price_monthly": "Monthly",
     "price_annual": "Annual",
     "price_cta_free": "See paths",
-    "price_cta_start": "Subscribe now",
+    "price_cta_start": "Start 7-day trial",
     "per_month": "/month",
     "per_year": "/year",
-    "annual_discount": "Save with annual billing",
+    "annual_discount": "2 months free",
     "compare_plans": "See plan details",
     "faq_title": "Any questions?",
     "faq_subtitle": "Clear answers so you can start with peace of mind.",
@@ -4764,8 +4764,8 @@ export const landing_en = {
         "a": "Yes. Start on the Catechist Plan and, as your catechesis grows, move the organization to the Parish Plan."
       },
       {
-        "q": "How do I get started?",
-        "a": "Create an account and subscribe to a plan. Then set up your workspace and create your first class."
+        "q": "Do I need a card to try it?",
+        "a": "No. The 7-day Catechist Plan trial starts without a card as soon as you create your first class. We only ask for a card when you decide to subscribe."
       },
       {
         "q": "Can I cancel anytime?",
@@ -4780,7 +4780,7 @@ export const landing_en = {
     "cta_title": "Get back the time for what called you to catechesis.",
     "cta_subtitle": "Leave the organization to Catechis and live the meeting with more presence, calm, and purpose.",
     "cta_lines": [],
-    "cta_button": "Subscribe now",
+    "cta_button": "Start 7 days free",
     "cta_badge": "Trial",
     "cta_see_plans": "See the plan",
     "mock": {
@@ -4863,7 +4863,7 @@ export const landing_en = {
       "plan_detail": "Confirmation · 45 min"
     },
     "footer": {
-      "create_account": "Subscribe now",
+      "create_account": "Start the 7 days",
       "login": "Login",
       "about": "About",
       "privacy": "Privacy",
@@ -4883,7 +4883,7 @@ export const landing_en = {
         "desc": "Information protected in transit and at rest, with restricted access by role."
       },
       {
-        "title": "Catechist Plan",
+        "title": "7 days free",
         "desc": "Full access to every feature. Cancel anytime if it is not a fit."
       },
       {
@@ -4894,11 +4894,11 @@ export const landing_en = {
     "testimonials_title": "Testimonials",
     "testimonials_subtitle": "When we have authorized quotes from catechists and parishes, they will appear here.",
     "testimonials": [],
-    "cta_helper": "Subscribe now",
+    "cta_helper": "7 days free · Full access to every feature · Cancel anytime",
     "mobile_cta": {
-      "title": "Catechist Plan",
+      "title": "7 days free",
       "subtitle": "Full access to every feature · Cancel anytime",
-      "button": "Subscribe now"
+      "button": "Start 7 days free"
     },
     "proof": {
       "badge": "Start with confidence",
@@ -4919,22 +4919,22 @@ export const landing_en = {
         }
       ],
       "chips": [
-        "Access after subscribing · Cancel anytime",
+        "7 days free",
         "Full access to every feature",
         "Cancel anytime",
         "LGPD-oriented",
         "Easy cancel"
       ],
-      "launch_title": "Catechist Plan",
-      "launch_text": "Create an account, choose a plan and subscribe to start organizing your catechesis.",
+      "launch_title": "Try it with your class",
+      "launch_text": "Create an account and try 7 days with access to every feature. Cancel anytime.",
       "promises": [
-        "Create an account, choose a plan and subscribe to start organizing your catechesis.",
+        "7 days free, with access to every feature",
         "Bible and Catechism library in the same place",
         "Children’s data handled with care and LGPD",
         "Cancel anytime"
       ],
-      "launch_cta": "Create an account, choose a plan and subscribe to start organizing your catechesis.",
-      "launch_helper": "Access after subscribing · Cancel anytime"
+      "launch_cta": "Start free for 7 days",
+      "launch_helper": "7 days free · Full access to every feature · Cancel anytime"
     },
     "simple_features": {
       "title": "Everything a catechist needs, without the clutter",
@@ -4963,7 +4963,7 @@ export const landing_en = {
     },
     "steps_endowed_title": "You're already here",
     "steps_endowed_desc": "Getting to know the platform",
-    "price_trial_badge": "Catechist Plan",
+    "price_trial_badge": "7 days free · Full access to every feature · Cancel anytime",
     "price_trial_note": "",
     "comparison": {
       "title": "Stop scattering your catechesis across paper, spreadsheets, and WhatsApp",
@@ -4971,8 +4971,8 @@ export const landing_en = {
       "col_criterion": "What you need",
       "col_old": "Paper + spreadsheet + WhatsApp",
       "col_next": "Catechis",
-      "cta": "Subscribe now",
-      "helper": "Access after subscribing · Cancel anytime",
+      "cta": "Start free for 7 days",
+      "helper": "7 days free, with access to every feature. Cancel anytime.",
       "rows": [
         {
           "criterion": "Prepare the meeting",
@@ -5006,11 +5006,11 @@ export const landing_en = {
         }
       ]
     },
-    "faq_cta": "Subscribe now",
-    "faq_cta_helper": "Access after subscribing · Cancel anytime",
-    "price_cta_single": "Subscribe now",
-    "price_annual_note": "or R$ 297/year",
-    "price_cta_unlimited": "Subscribe now",
+    "faq_cta": "Start 7 days free",
+    "faq_cta_helper": "7 days free · Full access to every feature · Cancel anytime",
+    "price_cta_single": "Start 7 days free",
+    "price_annual_note": "or R$ 99/year",
+    "price_cta_unlimited": "Start 7 days free",
     "price_cta_diocese": "Talk to sales",
     "price_annual_equivalent": "Equals {{price}}/month",
     "demo": {
@@ -5031,7 +5031,7 @@ export const landing_en = {
       "result_title": "Meeting prepared",
       "result_badge": "",
       "done_note": "This helps you on Sunday. You review everything before using it.",
-      "cta": "Subscribe now",
+      "cta": "Start 7 days free",
       "topics": [
         {
           "id": "perdao",
@@ -5226,16 +5226,16 @@ export const landing_en = {
         "Take attendance",
         "Pick up where you left off"
       ],
-      "cta": "Subscribe now"
+      "cta": "Start my catechesis — 7 days free"
     },
     "growth": {
       "eyebrow": "Start your way",
       "title": "A plan for each stage of the mission.",
       "subtitle": "Start as a catechist. When your catechesis grows, bring the organization to your parish or diocese.",
       "featured": "Most chosen",
-      "note": "Access after subscribing · Cancel anytime",
-      "billed_annual": "Billed annually",
-      "billed_monthly": "Billed monthly",
+      "note": "7 days free · Full access to every feature · Cancel anytime",
+      "billed_annual": "Billed annually · 7 days free",
+      "billed_monthly": "Billed monthly · 7 days free",
       "diocese_note": "Talk with our team",
       "discount": "{{percent}}% off",
       "ladder": [
@@ -5335,8 +5335,8 @@ export const landing_en = {
         "minutes": "{{count}} min",
         "done_title": "Like it? Prepare yours for real.",
         "done_text": "With your class theme, the Bible and the Catechism side by side. You review everything before using it.",
-        "done_cta": "Create an account, choose a plan and subscribe to start organizing your catechesis.",
-        "done_helper": "Access after subscribing · Cancel anytime",
+        "done_cta": "Start 7-day free trial",
+        "done_helper": "7 free days · Cancel anytime",
         "topics": {
           "perdao": [
             {
@@ -5447,7 +5447,7 @@ export const landingIa_en = {
       "badge": "Theologically trained AI",
       "cta_primary": "Try the AI",
       "cta_secondary": "See how it works",
-      "trust_signals": "R$ 47/month • CNBB theological base • Cancel anytime",
+      "trust_signals": "R$ 9.90/month • CNBB theological base • Cancel anytime",
       "visual_title": "Meeting outline",
       "visual_item_1": "Enter topic and age group",
       "visual_item_2": "Review Catholic references",
@@ -5534,7 +5534,7 @@ export const landingIa_en = {
       "plan_detail": "Confirmation · 45 min"
     },
     "footer": {
-      "create_account": "Subscribe now",
+      "create_account": "Create free account",
       "login": "Login",
       "about": "About",
       "privacy": "Privacy",
@@ -5552,7 +5552,7 @@ export const landingPresenca_en = {
       "badge": "Digital attendance control",
       "cta_primary": "Start now",
       "cta_secondary": "See demo",
-      "trust_signals": "Access after subscribing · Cancel anytime",
+      "trust_signals": "7 days free • Full access to every feature • Cancel anytime",
       "visual_title": "Mobile attendance",
       "visual_item_1": "Mark the class quickly",
       "visual_item_2": "Record justifications",
@@ -5636,7 +5636,7 @@ export const landingPresenca_en = {
       "plan_detail": "Confirmation · 45 min"
     },
     "footer": {
-      "create_account": "Subscribe now",
+      "create_account": "Create free account",
       "login": "Login",
       "about": "About",
       "privacy": "Privacy",
@@ -5654,7 +5654,7 @@ export const landingSistema_en = {
       "badge": "Complete catechesis management",
       "cta_primary": "Get started",
       "cta_secondary": "See features",
-      "trust_signals": "Access after subscribing · Cancel anytime",
+      "trust_signals": "7 days free • Full access to every feature • Cancel anytime",
       "visual_title": "Coordination overview",
       "visual_item_1": "Classes and teams in one dashboard",
       "visual_item_2": "Attendance indicators",
@@ -5738,7 +5738,7 @@ export const landingSistema_en = {
       "plan_detail": "Confirmation · 45 min"
     },
     "footer": {
-      "create_account": "Subscribe now",
+      "create_account": "Create free account",
       "login": "Login",
       "about": "About",
       "privacy": "Privacy",
@@ -6243,10 +6243,10 @@ export const onboarding_en = {
       "hello_default": "Welcome",
       "question": "How will you use Catechis?",
       "personal_title": "I am a catechist and run my class",
-      "personal_desc": "Organize your class, meetings and attendance with the Catechist Plan.",
+      "personal_desc": "Create your class and add your catechumens. You get 7 days of the Catechist Plan free, no card required.",
       "personal_features": [],
       "manager_title": "I organize parish catechesis",
-      "manager_desc": "Organize your parish, catechetical year and team classes with the Parish Plan.",
+      "manager_desc": "Parish, catechetical year, and team classes. The 7-day Parish Plan trial starts on Stripe, no card required.",
       "manager_features": [],
       "helper": "You can change path later if needed.",
       "launch_question": "Let's set up your class workspace.",
@@ -6256,7 +6256,7 @@ export const onboarding_en = {
       "invite_hint": "Already invited to a parish? Join from the invite email. Do not create another space.",
       "eyebrow": "First steps",
       "skip_explore": "Skip and explore the app first",
-      "skip_explore_hint": "Organize your class, meetings and attendance with the Catechist Plan."
+      "skip_explore_hint": "We set up your personal space with the 7 free days. Create your class whenever you like."
     },
     "personal_setup": {
       "title": "Personal Account",
@@ -6350,8 +6350,8 @@ export const onboarding_en = {
       "create_error": "Error creating parish.",
       "city_state_required": "Enter the city and state before creating the parish.",
       "trial_offer_title": "Current plan limit",
-      "trial_offer_body": "Subscribe to the Parish Plan to create and organize your parish classes.",
-      "trial_offer_cta": "Subscribe now",
+      "trial_offer_body": "Your current plan does not include creating a parish. Start a 7-day Parish plan trial on Stripe — no card now; you are only charged after the trial if a card is on file.",
+      "trial_offer_cta": "Start 7-day free trial",
       "creating": "Creating...",
       "create_btn": "Create parish",
       "default_name": "Parish",
@@ -6543,7 +6543,7 @@ export const onboarding_en = {
       "saving": "Creating class…",
       "continue": "Continue",
       "transient_error": "The server was busy. Wait a few seconds and tap Continue again.",
-      "plan_limit": "Access starts after subscribing. After signup, you go to the Subscription page.",
+      "plan_limit": "Your trial isn't active, so you can't create the class yet. Subscribe to the Catechist Plan to continue or contact support.",
       "plan_limit_subscribe": "Subscribe to the Catechist Plan",
       "plan_limit_support": "Contact support",
       "plan_limit_support_prefill": "Hi! I'm signing up for Catechis and couldn't create my first class (plan limit).",
@@ -6674,8 +6674,8 @@ export const parishes_en = {
     "new_parish_btn": "New Parish",
     "create_error": "Error creating parish.",
     "trial_offer_title": "Current plan limit",
-    "trial_offer_body": "Subscribe to the Parish Plan to create and organize your parish classes.",
-    "trial_offer_cta": "Subscribe now",
+    "trial_offer_body": "Your current plan does not include creating a parish. Start a 7-day Parish plan trial on Stripe — no card now; you are only charged after the trial if a card is on file.",
+    "trial_offer_cta": "Start 7-day free trial",
     "diocese_license": "Diocese (license)",
     "independent_option": "Independent / under my license",
     "licensed_suffix": "(licensed)",
@@ -6988,7 +6988,7 @@ export const public_en = {
     },
     "pricing": {
       "title": "Three paths: catechist, parish, and diocese",
-      "subtitle": "Catechist R$ 47/month or R$ 297/year. Parish R$ 99/month or R$ 990/year. Diocese on request.",
+      "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7 days free on the Catechist Plan, no card required.",
       "payment_card": "Card",
       "annual_savings": "Save 17% on annual",
       "monthly_tab": "Monthly",
@@ -6997,7 +6997,7 @@ export const public_en = {
       "faq_title": "Frequently asked questions",
       "per_month": "/month",
       "per_year": "/year",
-      "cta_paid": "Subscribe now",
+      "cta_paid": "Start the 7 days",
       "most_popular": "Built for the catechist",
       "plan_desc": {
         "single": "For you to care for your class — attendance, history, and calendar in one place, with more time left for people. Covers up to 3 classes if you walk with more than one.",
@@ -7015,16 +7015,16 @@ export const public_en = {
       ],
       "faq": [
         {
-          "q": "How do I get started?",
-          "a": "Create an account and subscribe to a plan. Then set up your workspace and create your first class."
+          "q": "How can I try the platform before subscribing?",
+          "a": "You try it for 7 days, no card required. Use it with your real class; if it makes sense to continue, subscribe before the trial ends."
         },
         {
           "q": "What is the price?",
-          "a": "The Catechist Plan costs R$ 47/month or R$ 297/year and includes up to 3 classes and 150 catechumens in total."
+          "a": "The Catechist Plan costs R$ 9.90/month (or R$ 99/year) and covers up to 3 classes and 150 catechumens in total — more than enough for your reality."
         },
         {
           "q": "How does payment work?",
-          "a": "Choose a plan and complete payment to unlock access. Cancel anytime."
+          "a": "You start with a 7-day trial, no card required. When you subscribe, payment is handled by Stripe. No lock-in — cancel anytime."
         },
         {
           "q": "What about annual plan refunds?",
@@ -7141,19 +7141,19 @@ export const public_en = {
       "contact_cta": "Contact the team",
       "groups": [
         {
-          "title": "Account and subscription",
+          "title": "Account and free trial",
           "items": [
             {
               "q": "How do I get started?",
-              "a": "Create an account and subscribe to a plan. Then set up your workspace and create your first class."
+              "a": "Create your account with email and password (or Google), confirm your email and follow the first steps: choose how you'll use it (catechist or parish) and create your first class."
             },
             {
-              "q": "When does access start?",
-              "a": "Access starts after subscribing. After signup, you go to the Subscription page."
+              "q": "Do I need a card to try it?",
+              "a": "No. The 7-day free trial of the Catechist plan starts without a card. You are only asked for a card when you decide to subscribe."
             },
             {
-              "q": "How do I keep access?",
-              "a": "Keep your subscription active. Contact support if you need help."
+              "q": "What happens when the trial ends?",
+              "a": "Your data stays saved. To keep taking attendance and using class tools, choose a plan on the Subscription page. The Bible, Catechism, Settings and Support center stay open."
             },
             {
               "q": "How do I change my card or cancel?",
@@ -7596,12 +7596,12 @@ export const publicNav_en = {
     "privacy": "Privacy",
     "terms": "Terms",
     "login": "Log in",
-    "signup": "Subscribe now",
+    "signup": "Start 7 days free",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "tagline": "You sow the faith. We organize the class.",
     "audience": "built for catechists",
-    "cta": "Subscribe now",
+    "cta": "Start 7 days free",
     "share": "Share",
     "share_copied": "Link copied to share",
     "share_error": "Could not share right now",
@@ -7615,7 +7615,7 @@ export const publicNav_en = {
     "footer_explore": "Explore",
     "footer_talk": "Talk to us",
     "footer_start": "Try it",
-    "footer_start_desc": "Create an account, choose a plan and subscribe to start organizing your catechesis.",
+    "footer_start_desc": "More presence in the meeting, less weight in the week. Start your 7 days.",
     "language": "Language",
     "help": "Help",
     "main_nav": "Main navigation"

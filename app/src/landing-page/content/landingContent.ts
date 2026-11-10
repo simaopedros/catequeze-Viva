@@ -212,7 +212,7 @@ export const PRICING_PREVIEW: PricingPlan[] = [
     planId: 'single',
     level: 'personal',
     name: 'Plano Catequista',
-    price: 'R$ 47',
+    price: 'R$ 9,90',
     period: '/mês',
     desc: 'Para você organizar sua turma com presença e calendário',
     features: [
@@ -247,8 +247,8 @@ export const TESTIMONIALS: Testimonial[] = [
 
 export const FAQ: FaqItem[] = [
   {
-    q: 'Como começo a usar?',
-    a: 'Crie sua conta e assine um plano. Depois, configure seu espaço e cadastre sua primeira turma.',
+    q: 'Os 7 dias grátis são realmente grátis?',
+    a: 'Sim. Você testa por 7 dias sem cartão ao criar seu espaço e sua primeira turma. Depois, escolha um plano para continuar.',
   },
   {
     q: 'Meus dados estão seguros? A plataforma segue a LGPD?',

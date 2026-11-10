@@ -1,4 +1,3 @@
-import { requiresNewAccountSubscription } from "../../shared/newPricing";
 import { HttpError } from 'wasp/server';
 import {
   resolveEffectiveBilling,
@@ -40,10 +39,7 @@ export const ensurePersonalWorkspace = async (_args: void, context: any) => {
   }
 
   // Heal product trial so first-class creation during onboarding is not blocked.
-  const billingUser = await ensureProductTrial(context, context.user.id);
-  if (requiresNewAccountSubscription(billingUser)) {
-    throw new HttpError(403, 'Assine um plano para começar. Acesse /app/billing.');
-  }
+  await ensureProductTrial(context, context.user.id);
 
   // Check if user already has a personal workspace
   const existing = await context.entities.Parish.findFirst({

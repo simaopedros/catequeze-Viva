@@ -1,4 +1,3 @@
-import { isNewPricingAccount } from './newPricing';
 import {
   SUBSCRIPTION_TRIAL_DAYS,
   getInstitutionalTrialDaysLeft,
@@ -13,7 +12,7 @@ import {
 /**
  * Days of Stripe trial to grant at checkout.
  *
- * Accounts created before the pricing cutoff keep SUBSCRIPTION_TRIAL_DAYS. Users who already
+ * New commercial subscriptions get SUBSCRIPTION_TRIAL_DAYS. Users who already
  * consumed a Stripe trial (or a paid subscription) get 0. Grandfathered
  * in-app trials receive only remaining days so Assinar does not add a second
  * full week.
@@ -25,9 +24,8 @@ export function resolveStripeCheckoutTrialDays(args: {
   user?: UserSubscriptionFields | null;
   institutionalBilling?: BillingInfo | null;
   now?: Date;
-  cutoffISO?: string;
 }): number {
-  if (args.isCredits || isNewPricingAccount(args.user?.createdAt, args.cutoffISO)) return 0;
+  if (args.isCredits) return 0;
 
   const now = args.now ?? new Date();
   const user = args.user;

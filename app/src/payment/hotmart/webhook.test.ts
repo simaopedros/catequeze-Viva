@@ -367,7 +367,7 @@ describe("hotmart webhook", () => {
     sendHotmartPlanActiveEmailSafe.mockResolvedValue("sent");
     for (const mock of Object.values(authMocks)) mock.mockReset();
     installAuthMocks();
-    vi.stubEnv("HOTMART_PRIMARY_CHECKOUT", "true");
+    vi.stubEnv("HOTMART_PRIMARY_CHECKOUT", "false");
     vi.stubEnv("HOTMART_HOTTOK", SECRET);
     vi.stubEnv("HOTMART_PRODUCT_UCODES", UCODE);
     vi.stubEnv("PRICING_CATALOG_SOURCE", "static");
@@ -383,8 +383,9 @@ describe("hotmart webhook", () => {
     vi.restoreAllMocks();
   });
 
-  it("stays off and does not record or log the hottok when the flag is false", async () => {
-    vi.stubEnv("HOTMART_PRIMARY_CHECKOUT", "false");
+  it.each(["HOTMART_HOTTOK", "HOTMART_PRODUCT_UCODES"])("stays off without %s even if checkout is enabled", async (missing) => {
+    vi.stubEnv("HOTMART_PRIMARY_CHECKOUT", "true");
+    vi.stubEnv(missing, "");
     const ctx = memory();
     const res = response();
     await hotmartWebhook(post(purchase({}), SECRET) as any, res as any, ctx);
@@ -420,7 +421,7 @@ describe("hotmart webhook", () => {
     expect(ctx.events).toHaveLength(0);
   });
 
-  it("activates the Catequista plan for R$ 47 and R$ 297 and redacts the stored event", async () => {
+  it("activates legacy Catequista offers with Stripe checkout selected and redacts the event", async () => {
     const ctx = memory();
     ctx.users.push({
       id: "user-1",

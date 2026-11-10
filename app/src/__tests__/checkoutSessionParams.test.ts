@@ -44,7 +44,7 @@ describe("buildStripeCheckoutSessionCreateParams", () => {
     expect(params.line_items).toEqual([
       { price: HOMOLOG_TEST_MONTHLY, quantity: 1 },
     ]);
-    expect(getPlanPriceCents("single", "monthly")).toBe(4700);
+    expect(getPlanPriceCents("single", "monthly")).toBe(990);
     expect(params.success_url).toBe(
       "https://homolog.catechis.app/obrigado?session_id={CHECKOUT_SESSION_ID}",
     );

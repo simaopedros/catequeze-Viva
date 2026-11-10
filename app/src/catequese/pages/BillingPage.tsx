@@ -277,7 +277,6 @@ export default function BillingPage() {
   const isPaidActive = isActive && !isTrialAccess;
   const checkoutTrialDays = resolveStripeCheckoutTrialDays({
     user,
-    cutoffISO: checkoutConfig?.cutoffISO,
     institutionalBilling: !isPersonal ? parish?.billing ?? null : null,
   });
   const hasStripeSubscription = workspaceHasStripeManagedSubscription({

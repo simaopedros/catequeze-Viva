@@ -1,6 +1,5 @@
 export type CheckoutConfiguration = {
   primary: boolean;
-  cutoffISO: string;
   urls: Record<string, string>;
 };
 

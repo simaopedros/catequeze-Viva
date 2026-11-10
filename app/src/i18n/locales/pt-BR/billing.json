@@ -153,7 +153,7 @@
   "unlimited": "ilimitado",
   "limit_caption": "Limite {{limit}}",
   "conversion_badge": "Assinatura",
-  "conversion_trial_cta": "Assinar agora",
+  "conversion_trial_cta": "Testar por 7 dias",
   "conversion_payment_title": "Confirme sua assinatura",
   "conversion_required_title": "Escolha seu plano para continuar",
   "conversion_personal_title": "Escolha o plano do seu espaço pessoal",
@@ -409,10 +409,10 @@
     "diocese_cta": "Falar com vendas sobre a diocese",
     "diocese_prefill": "Olá! Gostaria de falar sobre o Plano Diocese para {{name}} no Catechis."
   },
-  "checkout_cta_start_trial_one": "Assinar agora",
-  "checkout_cta_start_trial_other": "Assinar agora",
-  "checkout_charge_after_trial_one": "Escolha um plano e conclua o pagamento para liberar o acesso. Cancele quando quiser.",
-  "checkout_charge_after_trial_other": "Escolha um plano e conclua o pagamento para liberar o acesso. Cancele quando quiser.",
+  "checkout_cta_start_trial_one": "Começar 1 dia grátis",
+  "checkout_cta_start_trial_other": "Começar {{count}} dias grátis",
+  "checkout_charge_after_trial_one": "Não precisa de cartão agora. Você tem 1 dia grátis; a primeira cobrança é em {{date}} se houver cartão cadastrado. Sem cartão até lá, a assinatura é cancelada sem cobrança.",
+  "checkout_charge_after_trial_other": "Não precisa de cartão agora. Você tem {{count}} dias grátis; a primeira cobrança é em {{date}} se houver cartão cadastrado. Sem cartão até lá, a assinatura é cancelada sem cobrança.",
   "checkout_charge_today": "A cobrança é feita no Stripe assim que você confirmar a assinatura.",
   "checkout_plan_includes_label": "O que o plano inclui",
   "distinct_people_usage": "Cada pessoa conta uma vez, mesmo com várias matrículas. Pessoas em turmas concluídas continuam contando."
