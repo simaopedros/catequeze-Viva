@@ -33,8 +33,8 @@ describe("seedPricingCatalog snapshot", () => {
       },
       {
         slug: "single",
-        monthlyCents: 4700,
-        annualCents: 29700,
+        monthlyCents: 990,
+        annualCents: 9900,
         maxClasses: 3,
         maxCatechumens: 150,
         isSystem: true,
@@ -125,7 +125,7 @@ function memoryCatalogDb() {
 
 describe("ensurePricingCatalogSeeded", () => {
   it("inserts the five current DEFAULT_PLANS and their prices, then no-ops", async () => {
-    const { db, plans } = memoryCatalogDb();
+    const { db, plans, prices } = memoryCatalogDb();
     const expectedPrices = DEFAULT_PLAN_LIST.reduce(
       (sum, plan) => sum + plan.prices.length,
       0,
@@ -141,6 +141,19 @@ describe("ensurePricingCatalogSeeded", () => {
       "single",
       "unlimited",
     ]);
+
+    expect(plans.get('single').pricingVersion).toBe(3);
+    expect(prices.filter(row => row.planId === plans.get('single').id)).toEqual([
+      expect.objectContaining({ interval: 'MONTHLY', unitAmountCents: 990,
+        stripeLookupKey: 'single_monthly', stripePriceId: 'price_1U9rzyLlEZ4s7RNR2O1n9dqF', isActive: true }),
+      expect.objectContaining({ interval: 'ANNUAL', unitAmountCents: 9900,
+        stripeLookupKey: 'single_annual', stripePriceId: 'price_1U9s8mLlEZ4s7RNRdQc1DCNw', isActive: true }),
+    ]);
+    expect(prices.some(row => /v4/.test(row.stripeLookupKey))).toBe(false);
+    // Provisioned single prices need no API lookup or new Stripe object.
+    const { importStripePrice } = await import('../server/pricing/stripeCatalogSync');
+    expect(importStripePrice).not.toHaveBeenCalledWith('price_1U9rzyLlEZ4s7RNR2O1n9dqF');
+    expect(importStripePrice).not.toHaveBeenCalledWith('price_1U9s8mLlEZ4s7RNRdQc1DCNw');
 
     const second = await ensurePricingCatalogSeeded(db);
     expect(second.createdPlans).toBe(0);

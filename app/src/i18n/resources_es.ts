@@ -1255,7 +1255,7 @@ export const auth_es = {
     "login_google": "Continuar con Google",
     "login_continue_with_email": "Continuar con email",
     "login_no_account": "¿Aún no tienes una cuenta?",
-    "login_create_account": "Suscribirse ahora",
+    "login_create_account": "Empezar los 7 días",
     "login_create_account_family": "Crear cuenta familiar",
     "login_error_fill_all": "Complete todos los campos.",
     "login_error_invalid": "Email o contraseña incorrectos.",
@@ -1276,7 +1276,7 @@ export const auth_es = {
     "two_factor_back_button": "Volver al inicio de sesión",
     "two_factor_error_required": "Ingrese el código de 6 dígitos.",
     "two_factor_error_invalid": "Código inválido.",
-    "signup_title": "Crear cuenta",
+    "signup_title": "Empezar los 7 días",
     "signup_subtitle": "Crea tu cuenta y organiza grupo, asistencia y encuentros en un solo lugar.",
     "signup_email_label": "Email",
     "signup_email_placeholder": "tu@email.com",
@@ -1365,7 +1365,7 @@ export const auth_es = {
     "email_footer_portal": "portal familiar",
     "email_footer_disclaimer": "Si no creó esta cuenta, ignore este email.",
     "language_label": "Idioma",
-    "signup_panel_eyebrow": "Plan Catequista",
+    "signup_panel_eyebrow": "Prueba 7 días",
     "signup_panel_title": "Tu catequesis organizada empieza aquí",
     "signup_panel_subtitle": "Una cuenta. Un lugar para el grupo, la asistencia y el próximo encuentro.",
     "signup_panel_points": [
@@ -1385,7 +1385,7 @@ export const auth_es = {
     "signup_plan_unlimited": "Plan Parroquia",
     "signup_interval_monthly": "facturación mensual",
     "signup_interval_annual": "facturación anual",
-    "signup_context_no_card": "Acceso al suscribirse · Cancela cuando quieras",
+    "signup_context_no_card": "7 días gratis, sin tarjeta",
     "signup_context_change": "Cambiar",
     "signup_success_next_steps": "Próximos pasos",
     "signup_success_step_1": "Revisa tu bandeja de entrada y la carpeta de spam.",
@@ -1624,7 +1624,7 @@ export const billing_es = {
     "unlimited": "ilimitado",
     "limit_caption": "Límite {{limit}}",
     "conversion_badge": "Suscripcion",
-    "conversion_trial_cta": "Suscribirse ahora",
+    "conversion_trial_cta": "Probar por 7 días",
     "conversion_payment_title": "Confirma tu suscripción",
     "conversion_required_title": "Elige tu plan para continuar",
     "conversion_personal_title": "Elige el plan de tu espacio personal",
@@ -1880,10 +1880,10 @@ export const billing_es = {
       "diocese_cta": "Hablar con ventas sobre la diócesis",
       "diocese_prefill": "Hola! Quisiera hablar sobre el Plan Diócesis para {{name}} en Catechis."
     },
-    "checkout_cta_start_trial_one": "Suscribirse ahora",
-    "checkout_cta_start_trial_other": "Suscribirse ahora",
-    "checkout_charge_after_trial_one": "Elige un plan y completa el pago para activar el acceso. Cancela cuando quieras.",
-    "checkout_charge_after_trial_other": "Elige un plan y completa el pago para activar el acceso. Cancela cuando quieras.",
+    "checkout_cta_start_trial_one": "Empezar 1 día gratis",
+    "checkout_cta_start_trial_other": "Empezar {{count}} días gratis",
+    "checkout_charge_after_trial_one": "No hace falta tarjeta ahora. Tienes 1 día gratis; el primer cobro es el {{date}} si hay tarjeta registrada. Sin tarjeta para entonces, la suscripción se cancela sin cobro.",
+    "checkout_charge_after_trial_other": "No hace falta tarjeta ahora. Tienes {{count}} días gratis; el primer cobro es el {{date}} si hay tarjeta registrada. Sin tarjeta para entonces, la suscripción se cancela sin cobro.",
     "checkout_charge_today": "El cobro se hace en Stripe en cuanto confirmes la suscripción.",
     "checkout_plan_includes_label": "Qué incluye el plan",
     "distinct_people_usage": "Cada persona cuenta una vez, incluso con varias matrículas. Las personas en clases concluidas siguen contando."
@@ -1920,7 +1920,7 @@ export const blog_es = {
     "not_found": "Artículo no encontrado",
     "not_found_desc": "Esta dirección no corresponde a un artículo publicado.",
     "cta_title": "Organiza la catequesis en un solo lugar",
-    "cta_text": "Suscribirse ahora",
+    "cta_text": "Prepara encuentros, pasa lista y habla con las familias. Empieza los 7 días gratis.",
     "categories": {
       "FORMATION": "Formación",
       "PRACTICAL_TIPS": "Consejos prácticos",
@@ -4517,9 +4517,9 @@ export const landing_es = {
       "headline_line2": "Nosotros organizamos el grupo.",
       "subheadline": "Catechis deja encuentros, grupos y catequizandos organizados para que tengas más tiempo para estar con ellos.",
       "badge": "Para quien dice sí a la misión de catequizar",
-      "cta_primary": "Suscribirse ahora",
+      "cta_primary": "Empezar 7 días gratis",
       "cta_secondary": "Ver cómo funciona",
-      "trust_signals": "Acceso al suscribirse · Cancela cuando quieras",
+      "trust_signals": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
       "cta_secondary_href": "/#como",
       "highlights": [
         "Asistencia y seguimiento desde el celular",
@@ -4704,7 +4704,7 @@ export const landing_es = {
         "name": "Plan Catequista",
         "audience": "Para ti",
         "desc": "Para organizar tu grupo y tus encuentros.",
-        "price": "R$ 47",
+        "price": "R$ 9,90",
         "features": [
           "Hasta 3 grupos",
           "150 catequizandos",
@@ -4743,10 +4743,10 @@ export const landing_es = {
     "price_monthly": "Mensual",
     "price_annual": "Anual",
     "price_cta_free": "Ver caminos",
-    "price_cta_start": "Suscribirse ahora",
+    "price_cta_start": "Empezar trial de 7 días",
     "per_month": "/mes",
     "per_year": "/año",
-    "annual_discount": "Ahorra con el plan anual",
+    "annual_discount": "2 meses gratis",
     "compare_plans": "Ver detalles del plan",
     "faq_title": "¿Alguna duda?",
     "faq_subtitle": "Respuestas objetivas para que empieces con tranquilidad.",
@@ -4764,8 +4764,8 @@ export const landing_es = {
         "a": "Sí. Empieza en el Plan Catequista y, cuando tu catequesis crezca, lleva la organización al Plan Parroquia."
       },
       {
-        "q": "¿Cómo empiezo?",
-        "a": "Crea tu cuenta y suscríbete a un plan. Después, configura tu espacio y crea tu primer grupo."
+        "q": "¿Necesito informar tarjeta para probar?",
+        "a": "No. La prueba de 7 días del Plan Catequista empieza sin tarjeta en cuanto creas tu primer grupo. Solo pedimos la tarjeta cuando decidas suscribirte."
       },
       {
         "q": "¿Puedo cancelar cuando quiera?",
@@ -4780,7 +4780,7 @@ export const landing_es = {
     "cta_title": "Vuelve a tener tiempo para aquello que te llamó a la catequesis.",
     "cta_subtitle": "Deja la organización con Catechis y vive el encuentro con más presencia, tranquilidad y propósito.",
     "cta_lines": [],
-    "cta_button": "Suscribirse ahora",
+    "cta_button": "Empezar 7 días gratis",
     "cta_badge": "Trial",
     "cta_see_plans": "Ver el plan",
     "mock": {
@@ -4863,7 +4863,7 @@ export const landing_es = {
       "plan_detail": "Confirmación · 45 min"
     },
     "footer": {
-      "create_account": "Suscribirse ahora",
+      "create_account": "Empezar los 7 días",
       "login": "Iniciar sesión",
       "about": "Acerca de",
       "privacy": "Privacidad",
@@ -4883,7 +4883,7 @@ export const landing_es = {
         "desc": "Información protegida en tránsito y en reposo, con acceso restringido por rol."
       },
       {
-        "title": "Plan Catequista",
+        "title": "7 días gratis",
         "desc": "Acceso a todos los recursos. Si no encaja, cancela cuando quieras."
       },
       {
@@ -4894,11 +4894,11 @@ export const landing_es = {
     "testimonials_title": "Testimonios",
     "testimonials_subtitle": "Cuando tengamos citas autorizadas de catequistas y parroquias, aparecerán aquí.",
     "testimonials": [],
-    "cta_helper": "Suscribirse ahora",
+    "cta_helper": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
     "mobile_cta": {
-      "title": "Plan Catequista",
+      "title": "7 días gratis",
       "subtitle": "Acceso a todos los recursos · Cancela cuando quieras",
-      "button": "Suscribirse ahora"
+      "button": "Empezar 7 días gratis"
     },
     "proof": {
       "badge": "Empieza con tranquilidad",
@@ -4919,22 +4919,22 @@ export const landing_es = {
         }
       ],
       "chips": [
-        "Acceso al suscribirse · Cancela cuando quieras",
+        "7 días gratis",
         "Acceso a todos los recursos",
         "Cancela cuando quieras",
         "LGPD",
         "Cancelación simple"
       ],
-      "launch_title": "Plan Catequista",
-      "launch_text": "Crea tu cuenta, elige un plan y suscríbete para empezar a organizar tu catequesis.",
+      "launch_title": "Pruébalo con tu grupo",
+      "launch_text": "Crea la cuenta y prueba 7 días con acceso a todos los recursos. Cancela cuando quieras.",
       "promises": [
-        "Crea tu cuenta, elige un plan y suscríbete para empezar a organizar tu catequesis.",
+        "7 días gratis, con acceso a todos los recursos",
         "Biblioteca con Biblia y Catecismo en el mismo lugar",
         "Datos de niños con cuidado y LGPD",
         "Cancela cuando quieras"
       ],
-      "launch_cta": "Crea tu cuenta, elige un plan y suscríbete para empezar a organizar tu catequesis.",
-      "launch_helper": "Acceso al suscribirse · Cancela cuando quieras"
+      "launch_cta": "Empezar gratis por 7 días",
+      "launch_helper": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras"
     },
     "simple_features": {
       "title": "Todo lo que el catequista necesita, sin complicaciones",
@@ -4963,7 +4963,7 @@ export const landing_es = {
     },
     "steps_endowed_title": "Ya estás aquí",
     "steps_endowed_desc": "Conociendo la plataforma",
-    "price_trial_badge": "Plan Catequista",
+    "price_trial_badge": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
     "price_trial_note": "",
     "comparison": {
       "title": "Deja de dispersar tu catequesis en papel, planilla y WhatsApp",
@@ -4971,8 +4971,8 @@ export const landing_es = {
       "col_criterion": "Lo que necesitas",
       "col_old": "Papel + planilla + WhatsApp",
       "col_next": "Catechis",
-      "cta": "Suscribirse ahora",
-      "helper": "Acceso al suscribirse · Cancela cuando quieras",
+      "cta": "Empezar gratis por 7 días",
+      "helper": "7 días gratis, con acceso a todos los recursos. Cancela cuando quieras.",
       "rows": [
         {
           "criterion": "Preparar el encuentro",
@@ -5006,11 +5006,11 @@ export const landing_es = {
         }
       ]
     },
-    "faq_cta": "Suscribirse ahora",
-    "faq_cta_helper": "Acceso al suscribirse · Cancela cuando quieras",
-    "price_cta_single": "Suscribirse ahora",
-    "price_annual_note": "o R$ 297/año",
-    "price_cta_unlimited": "Suscribirse ahora",
+    "faq_cta": "Empezar 7 días gratis",
+    "faq_cta_helper": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
+    "price_cta_single": "Empezar 7 días gratis",
+    "price_annual_note": "o R$ 99/año",
+    "price_cta_unlimited": "Empezar 7 días gratis",
     "price_cta_diocese": "Hablar con ventas",
     "price_annual_equivalent": "Equivale a {{price}}/mes",
     "demo": {
@@ -5031,7 +5031,7 @@ export const landing_es = {
       "result_title": "Encuentro preparado",
       "result_badge": "",
       "done_note": "Esto te ayuda el domingo. Tú revisas todo antes de usarlo.",
-      "cta": "Suscribirse ahora",
+      "cta": "Empezar 7 días gratis",
       "topics": [
         {
           "id": "perdao",
@@ -5226,16 +5226,16 @@ export const landing_es = {
         "Registra las asistencias",
         "Continúa donde lo dejaste"
       ],
-      "cta": "Suscribirse ahora"
+      "cta": "Empezar mi catequesis — 7 días gratis"
     },
     "growth": {
       "eyebrow": "Empieza a tu manera",
       "title": "Un plan para cada etapa de la misión.",
       "subtitle": "Empieza como catequista. Cuando tu catequesis crezca, lleva la organización a tu parroquia o diócesis.",
       "featured": "Más elegido",
-      "note": "Acceso al suscribirse · Cancela cuando quieras",
-      "billed_annual": "Cobrado anualmente",
-      "billed_monthly": "Cobrado mensualmente",
+      "note": "7 días gratis · Acceso a todos los recursos · Cancela cuando quieras",
+      "billed_annual": "Cobrado anualmente · 7 días gratis",
+      "billed_monthly": "Cobrado mensualmente · 7 días gratis",
       "diocese_note": "Habla con nuestro equipo",
       "discount": "{{percent}}% de descuento",
       "ladder": [
@@ -5335,8 +5335,8 @@ export const landing_es = {
         "minutes": "{{count}} min",
         "done_title": "¿Te gustó? Prepara el tuyo de verdad.",
         "done_text": "Con el tema de tu grupo y la Biblia y el Catecismo al lado. Revisas todo antes de usarlo.",
-        "done_cta": "Crea tu cuenta, elige un plan y suscríbete para empezar a organizar tu catequesis.",
-        "done_helper": "Acceso al suscribirse · Cancela cuando quieras",
+        "done_cta": "Empezar 7 días gratis",
+        "done_helper": "7 días gratis · Cancela cuando quieras",
         "topics": {
           "perdao": [
             {
@@ -5447,7 +5447,7 @@ export const landingIa_es = {
       "badge": "Asistencia teológicamente entrenada",
       "cta_primary": "Probar la asistencia editorial",
       "cta_secondary": "Ver cómo funciona",
-      "trust_signals": "R$ 47/mes • Base teológica CNBB • Cancela cuando quieras",
+      "trust_signals": "R$ 9,90/mes • Base teológica CNBB • Cancela cuando quieras",
       "visual_title": "Guion del encuentro",
       "visual_item_1": "Indica tema y grupo de edad",
       "visual_item_2": "Revisa referencias católicas",
@@ -5534,7 +5534,7 @@ export const landingIa_es = {
       "plan_detail": "Confirmación · 45 min"
     },
     "footer": {
-      "create_account": "Suscribirse ahora",
+      "create_account": "Crear cuenta gratuita",
       "login": "Iniciar sesión",
       "about": "Acerca de",
       "privacy": "Privacidad",
@@ -5552,7 +5552,7 @@ export const landingPresenca_es = {
       "badge": "Control de asistencia digital",
       "cta_primary": "Comenzar ahora",
       "cta_secondary": "Ver demo",
-      "trust_signals": "Acceso al suscribirse · Cancela cuando quieras",
+      "trust_signals": "7 días gratis • Acceso a todos los recursos • Cancela cuando quieras",
       "visual_title": "Asistencia en el móvil",
       "visual_item_1": "Marca el grupo rápidamente",
       "visual_item_2": "Registra justificaciones",
@@ -5636,7 +5636,7 @@ export const landingPresenca_es = {
       "plan_detail": "Confirmación · 45 min"
     },
     "footer": {
-      "create_account": "Suscribirse ahora",
+      "create_account": "Crear cuenta gratuita",
       "login": "Iniciar sesión",
       "about": "Acerca de",
       "privacy": "Privacidad",
@@ -5654,7 +5654,7 @@ export const landingSistema_es = {
       "badge": "Gestión completa para catequesis",
       "cta_primary": "Empezar ahora",
       "cta_secondary": "Ver recursos",
-      "trust_signals": "Acceso al suscribirse · Cancela cuando quieras",
+      "trust_signals": "7 días gratis • Acceso a todos los recursos • Cancela cuando quieras",
       "visual_title": "Visión de coordinación",
       "visual_item_1": "Grupos y equipos en un panel",
       "visual_item_2": "Indicadores de asistencia",
@@ -5738,7 +5738,7 @@ export const landingSistema_es = {
       "plan_detail": "Confirmación · 45 min"
     },
     "footer": {
-      "create_account": "Suscribirse ahora",
+      "create_account": "Crear cuenta gratuita",
       "login": "Iniciar sesión",
       "about": "Acerca de",
       "privacy": "Privacidad",
@@ -6243,10 +6243,10 @@ export const onboarding_es = {
       "hello_default": "Bienvenido/a",
       "question": "¿Cómo vas a usar Catechis?",
       "personal_title": "Soy catequista y cuido mi grupo",
-      "personal_desc": "Organiza tu grupo, encuentros y asistencia con el Plan Catequista.",
+      "personal_desc": "Crea tu grupo e incluye a los catequizandos. Tienes 7 días gratis del Plan Catequista, sin tarjeta.",
       "personal_features": [],
       "manager_title": "Organizo la catequesis de la parroquia",
-      "manager_desc": "Organiza tu parroquia, año catequético y grupos del equipo con el Plan Parroquia.",
+      "manager_desc": "Parroquia, año catequético y grupos del equipo. La prueba de 7 días del Plan Parroquia empieza en Stripe, sin tarjeta.",
       "manager_features": [],
       "helper": "Puedes cambiar de camino después si lo necesitas.",
       "launch_question": "Vamos a preparar el espacio de tu grupo.",
@@ -6256,7 +6256,7 @@ export const onboarding_es = {
       "invite_hint": "¿Ya tiene invitación a una parroquia? Entre por el correo. No cree otro espacio.",
       "eyebrow": "Primeros pasos",
       "skip_explore": "Saltar y explorar la app primero",
-      "skip_explore_hint": "Organiza tu grupo, encuentros y asistencia con el Plan Catequista."
+      "skip_explore_hint": "Creamos tu espacio personal con los 7 días gratis. Crea tu grupo cuando quieras."
     },
     "personal_setup": {
       "title": "Cuenta Personal",
@@ -6350,8 +6350,8 @@ export const onboarding_es = {
       "create_error": "Error al crear parroquia.",
       "city_state_required": "Indica la ciudad y el estado (UF) antes de crear la parroquia.",
       "trial_offer_title": "Límite del plan actual",
-      "trial_offer_body": "Suscríbete al Plan Parroquia para crear y organizar los grupos de tu parroquia.",
-      "trial_offer_cta": "Suscribirse ahora",
+      "trial_offer_body": "Tu plan actual no incluye crear parroquia. Empieza 7 días gratis del plan Parroquia en Stripe — sin tarjeta ahora; el cobro solo empieza después del trial si hay tarjeta registrada.",
+      "trial_offer_cta": "Empezar 7 días gratis",
       "creating": "Creando...",
       "create_btn": "Crear parroquia",
       "default_name": "Parroquia",
@@ -6543,7 +6543,7 @@ export const onboarding_es = {
       "saving": "Creando grupo…",
       "continue": "Continuar",
       "transient_error": "El servidor estaba ocupado. Espera unos segundos y pulsa Continuar otra vez.",
-      "plan_limit": "El acceso empieza al suscribirse. Después del registro, vas a la página Suscripción.",
+      "plan_limit": "Tu período de prueba no está activo, así que aún no puedes crear el grupo. Suscríbete al Plan Catequista para continuar o contacta con soporte.",
       "plan_limit_subscribe": "Suscribirme al Plan Catequista",
       "plan_limit_support": "Contactar con soporte",
       "plan_limit_support_prefill": "¡Hola! Me estoy registrando en Catechis y no pude crear mi primer grupo (límite del plan).",
@@ -6674,8 +6674,8 @@ export const parishes_es = {
     "new_parish_btn": "Nueva Parroquia",
     "create_error": "Error al crear parroquia.",
     "trial_offer_title": "Límite del plan actual",
-    "trial_offer_body": "Suscríbete al Plan Parroquia para crear y organizar los grupos de tu parroquia.",
-    "trial_offer_cta": "Suscribirse ahora",
+    "trial_offer_body": "Tu plan actual no incluye crear parroquia. Empieza 7 días gratis del plan Parroquia en Stripe — sin tarjeta ahora; el cobro solo empieza después del trial si hay tarjeta registrada.",
+    "trial_offer_cta": "Empezar 7 días gratis",
     "diocese_license": "Diócesis (licencia)",
     "independent_option": "Independiente / bajo mi licencia",
     "licensed_suffix": "(licenciada)",
@@ -6988,7 +6988,7 @@ export const public_es = {
     },
     "pricing": {
       "title": "Tres caminos: catequista, parroquia y diócesis",
-      "subtitle": "Catequista R$ 47/mes o R$ 297/año. Parroquia R$ 99/mes o R$ 990/año. Diócesis a consulta.",
+      "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis en el Plan Catequista, sin tarjeta.",
       "payment_card": "Tarjeta",
       "annual_savings": "Ahorre 17% en anual",
       "monthly_tab": "Mensual",
@@ -6997,7 +6997,7 @@ export const public_es = {
       "faq_title": "Preguntas frecuentes",
       "per_month": "/mes",
       "per_year": "/año",
-      "cta_paid": "Suscribirse ahora",
+      "cta_paid": "Empezar los 7 días",
       "most_popular": "Hecho para el catequista",
       "plan_desc": {
         "single": "Para que cuides de tu grupo — asistencia, historial y calendario en el mismo lugar, con más tiempo para las personas. Cubre hasta 3 grupos si acompañas más de uno.",
@@ -7015,16 +7015,16 @@ export const public_es = {
       ],
       "faq": [
         {
-          "q": "¿Cómo empiezo?",
-          "a": "Crea tu cuenta y suscríbete a un plan. Después, configura tu espacio y crea tu primer grupo."
+          "q": "¿Cómo conozco la plataforma antes de suscribirme?",
+          "a": "Pruebas 7 días, sin tarjeta. Úsalo con tu grupo de verdad; si tiene sentido continuar, suscríbete antes de que termine la prueba."
         },
         {
           "q": "¿Cuál es el precio?",
-          "a": "El Plan Catequista cuesta R$ 47/mes o R$ 297/año e incluye hasta 3 grupos y 150 catecúmenos en total."
+          "a": "El Plan Catequista cuesta R$ 9,90/mes (o R$ 99/año) y cubre hasta 3 grupos y 150 catecúmenos en total — más que suficiente para tu realidad."
         },
         {
           "q": "¿Cómo funciona el pago?",
-          "a": "Elige un plan y completa el pago para activar el acceso. Cancela cuando quieras."
+          "a": "Empiezas con 7 días de prueba sin tarjeta. Al suscribirte, el pago se hace con Stripe. Sin permanencia — cancela cuando quieras."
         },
         {
           "q": "¿Y el reembolso del plan anual?",
@@ -7141,19 +7141,19 @@ export const public_es = {
       "contact_cta": "Hablar con el equipo",
       "groups": [
         {
-          "title": "Cuenta y suscripción",
+          "title": "Cuenta y período de prueba",
           "items": [
             {
               "q": "¿Cómo empiezo?",
-              "a": "Crea tu cuenta y suscríbete a un plan. Después, configura tu espacio y crea tu primer grupo."
+              "a": "Cree su cuenta con email y contraseña (o Google), confirme el email y siga los primeros pasos: elija cómo la usará (catequista o parroquia) y cree su primer grupo."
             },
             {
-              "q": "¿Cuándo empieza el acceso?",
-              "a": "El acceso empieza al suscribirse. Después del registro, vas a la página Suscripción."
+              "q": "¿Necesito tarjeta para probar?",
+              "a": "No. La prueba gratuita de 7 días del Plan Catequista empieza sin tarjeta. La tarjeta solo se pide cuando decida suscribirse."
             },
             {
-              "q": "¿Cómo mantengo mi acceso?",
-              "a": "Mantén tu suscripción activa. Contacta con soporte si necesitas ayuda."
+              "q": "¿Qué pasa cuando termina la prueba?",
+              "a": "Sus datos siguen guardados. Para seguir registrando asistencia y usando las herramientas del grupo, elija un plan en la página Suscripción. La Biblia, el Catecismo, la Configuración y el Centro de soporte siguen disponibles."
             },
             {
               "q": "¿Cómo cambio la tarjeta o cancelo?",
@@ -7596,12 +7596,12 @@ export const publicNav_es = {
     "privacy": "Privacidad",
     "terms": "Términos",
     "login": "Iniciar sesión",
-    "signup": "Suscribirse ahora",
+    "signup": "Empezar 7 días gratis",
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
     "tagline": "Tú siembras la fe. Nosotros organizamos el grupo.",
     "audience": "hecho para catequistas",
-    "cta": "Suscribirse ahora",
+    "cta": "Empezar 7 días gratis",
     "share": "Compartir",
     "share_copied": "Enlace copiado para compartir",
     "share_error": "No fue posible compartir ahora",
@@ -7615,7 +7615,7 @@ export const publicNav_es = {
     "footer_explore": "Explorar",
     "footer_talk": "Habla con nosotros",
     "footer_start": "Probar",
-    "footer_start_desc": "Crea tu cuenta, elige un plan y suscríbete para empezar a organizar tu catequesis.",
+    "footer_start_desc": "Más presencia en el encuentro, menos peso en la semana. Empieza los 7 días.",
     "language": "Idioma",
     "help": "Ayuda",
     "main_nav": "Navegación principal"

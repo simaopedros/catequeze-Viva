@@ -86,7 +86,6 @@ function attachEnvPriceIds(snapshot: PlanCatalogSnapshot): PlanCatalogSnapshot {
   };
 
   for (const plan of snapshot.plans) {
-    if (plan.slug === "single") continue; // v4 has no provisioned Stripe prices.
     const mapping = envInterval[plan.slug];
     if (!mapping) continue;
     for (const price of plan.prices) {
@@ -173,7 +172,7 @@ function rowToCatalogPlan(row: any): CatalogPlan {
       isActive: Boolean(price.isActive),
       archivedAt: price.archivedAt ?? null,
     })),
-    pricingVersion: row.pricingVersion ?? 4,
+    pricingVersion: row.pricingVersion ?? 3,
   };
 }
 
@@ -307,24 +306,19 @@ export async function requireActiveStripePriceId(
   interval: 'monthly' | 'annual' | 'one_time' = 'monthly',
 ): Promise<string> {
   const source = getPricingCatalogSource();
-  if (source === 'db') {
-    const catalog = await loadPlanCatalog(context);
-    const plan = catalog.bySlug[slug];
-    const wanted = interval === 'annual' ? 'annual' : interval === 'one_time' ? 'one_time' : 'monthly';
-    const match = plan?.prices.find(
-      (price) => price.interval === wanted && price.isActive && !price.archivedAt && isUsableStripePriceId(price.stripePriceId),
-    );
-    if (match?.stripePriceId) return match.stripePriceId.trim();
-    // Never fall back to legacy env IDs for a catalog price with no Stripe ID.
-    if (plan?.prices.some((price) => price.interval === wanted) || slug === 'single') {
-      throw new Error('Pagamento indisponível para este plano. Entre em contato com o suporte.');
-    }
-    console.warn('[pricing] missing db price, falling back to env', slug, interval);
-  }
-
-  if (slug === 'single') {
+  const catalog = await loadPlanCatalog(context);
+  const plan = catalog.bySlug[slug];
+  const wanted = interval === 'annual' ? 'annual' : interval === 'one_time' ? 'one_time' : 'monthly';
+  const match = plan?.prices.find(
+    (price) => price.interval === wanted && price.isActive && !price.archivedAt && isUsableStripePriceId(price.stripePriceId),
+  );
+  if (match?.stripePriceId) return match.stripePriceId.trim();
+  // Never fall back to legacy env IDs for a catalog price with no Stripe ID.
+  if (source === 'db' && plan?.prices.some((price) => price.interval === wanted)) {
     throw new Error('Pagamento indisponível para este plano. Entre em contato com o suporte.');
   }
+  if (source === 'db') console.warn('[pricing] missing db price, falling back to env', slug, interval);
+
   const envInterval = interval === 'one_time' ? 'monthly' : interval;
   const fromEnv = readEnvStripePriceId(slug, envInterval);
   if (isUsableStripePriceId(fromEnv)) return fromEnv.trim();

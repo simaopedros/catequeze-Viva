@@ -1,5 +1,3 @@
-import { useCheckoutConfiguration } from "../client/hooks/useCheckoutConfiguration";
-import { requiresNewAccountSubscription } from "../shared/newPricing";
 import { OrganizationNameNotice } from "./components/OrganizationNameNotice";
 import {
   ReactNode,
@@ -87,7 +85,6 @@ export function AppShell({ children }: AppShellProps) {
   // Track the auth session inside the shell so we can actively redirect when
   // it disappears instead of depending on the protected page wrapper mounting.
   const { data: authUser } = useAuth();
-  const { config: checkoutConfig } = useCheckoutConfiguration();
 
   const isMinimalPath = useMemo(
     () =>
@@ -196,11 +193,6 @@ export function AppShell({ children }: AppShellProps) {
       navigate("/app/select-workspace");
       return;
     }
-    if (checkoutConfig && needsOnboarding && !hasActiveMembership && !hasPendingInvitations && !isFamilyOnlyRole &&
-        requiresNewAccountSubscription(authUser, checkoutConfig.cutoffISO)) {
-      if (!path.startsWith('/app/billing') && !path.startsWith('/app/settings')) navigate('/app/billing', { replace: true });
-      return;
-    }
     const holdOnBilling = shouldHoldOnboardingRedirectOnBilling({
       pathname: path,
       search: location.search,
@@ -217,7 +209,6 @@ export function AppShell({ children }: AppShellProps) {
     }
   }, [
     authUser,
-    checkoutConfig,
     isLoading,
     isFetching,
     needsOnboarding,

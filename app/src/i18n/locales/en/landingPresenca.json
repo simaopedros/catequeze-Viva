@@ -6,7 +6,7 @@
     "badge": "Digital attendance control",
     "cta_primary": "Start now",
     "cta_secondary": "See demo",
-    "trust_signals": "Access after subscribing · Cancel anytime",
+    "trust_signals": "7 days free • Full access to every feature • Cancel anytime",
     "visual_title": "Mobile attendance",
     "visual_item_1": "Mark the class quickly",
     "visual_item_2": "Record justifications",
@@ -90,7 +90,7 @@
     "plan_detail": "Confirmation · 45 min"
   },
   "footer": {
-    "create_account": "Subscribe now",
+    "create_account": "Create free account",
     "login": "Login",
     "about": "About",
     "privacy": "Privacy",

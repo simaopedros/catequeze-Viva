@@ -1,4 +1,3 @@
-import { NEW_PRICING_ACCOUNT_CUTOFF } from '../../shared/newPricing';
 import type { CheckoutConfiguration } from '../../shared/hotmartCheckout';
 
 export function readCheckoutConfiguration(env: Record<string, string | undefined> = process.env): CheckoutConfiguration {
@@ -10,8 +9,8 @@ export function readCheckoutConfiguration(env: Record<string, string | undefined
       if (raw) urls[key] = raw;
     }
   }
-  return { primary: env.HOTMART_PRIMARY_CHECKOUT === 'true', cutoffISO: NEW_PRICING_ACCOUNT_CUTOFF, urls };
+  return { primary: env.HOTMART_PRIMARY_CHECKOUT === 'true', urls };
 }
 
 // Public configuration. No credentials or private environment values are returned.
-// TODO: entitlement confirmation via webhook: docs/hotmart-billing-design.md.
+// Webhook credentials are independent of checkout routing.

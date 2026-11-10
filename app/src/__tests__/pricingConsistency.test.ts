@@ -49,8 +49,8 @@ describe('pricing.ts — Plan ID integrity', () => {
     expect(getAllPlanIds()).toEqual(PLAN_IDS);
   });
 
-  it('PRICING_VERSION is 4', () => {
-    expect(PRICING_VERSION).toBe(4);
+  it('PRICING_VERSION is 3', () => {
+    expect(PRICING_VERSION).toBe(3);
   });
 });
 
@@ -89,9 +89,9 @@ describe('Plan IDs ↔ PaymentPlanId consistency', () => {
     }
   });
 
-  it('single is R$ 47 monthly / R$ 297 annual', () => {
-    expect(getPlanPriceCents('single', 'monthly')).toBe(4700);
-    expect(getPlanPriceCents('single', 'annual')).toBe(29700);
+  it('single is R$ 9.90 monthly / R$ 99 annual (launch phase)', () => {
+    expect(getPlanPriceCents('single', 'monthly')).toBe(990);
+    expect(getPlanPriceCents('single', 'annual')).toBe(9900);
   });
 
   it('unlimited is R$ 99 monthly / R$ 990 annual', () => {

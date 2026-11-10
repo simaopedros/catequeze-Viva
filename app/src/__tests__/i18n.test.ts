@@ -87,9 +87,20 @@ describe("public launch-phase copy", () => {
       expect(blob, lang).not.toMatch(
         /Two clear plans|Dos planes claros|dois planos/i,
       );
-      expect(pub.pricing.subtitle).toContain("R$ 47");
-      expect(pub.pricing.subtitle).toContain("R$ 297");
-      expect(blob).not.toMatch(/grátis|gratuit|free trial|sem cartão|sin tarjeta|no card/i);
+      expect(pub.pricing.subtitle).toMatch(/9[,.]90/);
+    }
+  });
+
+  it("advertises restored Stripe pricing, annual savings and no-card trial in every locale", () => {
+    for (const lang of LANGS) {
+      const pub = JSON.parse(fs.readFileSync(path.join(LOCALES_DIR, lang, "public.json"), "utf8"));
+      const landing = JSON.parse(fs.readFileSync(path.join(LOCALES_DIR, lang, "landing.json"), "utf8"));
+      expect(landing.plans.single.price).toMatch(/9[,.]90/);
+      expect(landing.price_annual_note).toMatch(/R\$ 99/);
+      expect(pub.pricing.annual_savings_badge).toContain("17%");
+      expect(JSON.stringify(pub.pricing.faq)).toContain("Stripe");
+      expect(pub.pricing.subtitle).toMatch(/7/);
+      expect(JSON.stringify({ public: pub, landing })).not.toMatch(/R\$\s*(?:47|297)\b|47%|R\$\s*267\b/);
     }
   });
 

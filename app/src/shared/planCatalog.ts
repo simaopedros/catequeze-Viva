@@ -11,7 +11,7 @@
 
 import { AI_FEATURES_ENABLED } from './aiFeatures';
 
-export const PRICING_VERSION = 4;
+export const PRICING_VERSION = 3;
 export const SUBSCRIPTION_TRIAL_DAYS = 7;
 
 export type PricingPlanKind = 'subscription' | 'credits';
@@ -168,12 +168,13 @@ function price(
   interval: PricingInterval,
   cents: number,
   lookup: string,
+  stripePriceId: string | null = null,
 ): CatalogPrice {
   return {
     interval,
     currency: 'BRL',
     unitAmountCents: cents,
-    stripePriceId: null,
+    stripePriceId,
     stripeLookupKey: lookup,
     isActive: true,
     archivedAt: null,
@@ -266,8 +267,8 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
     },
     stripeProductId: null,
     prices: [
-      price('monthly', 4700, 'single_monthly_v4'),
-      price('annual', 29700, 'single_annual_v4'),
+      price('monthly', 990, 'single_monthly', 'price_1U9rzyLlEZ4s7RNR2O1n9dqF'),
+      price('annual', 9900, 'single_annual', 'price_1U9s8mLlEZ4s7RNRdQc1DCNw'),
     ],
     pricingVersion: PRICING_VERSION,
   },
@@ -325,8 +326,8 @@ export const DEFAULT_PLAN_LIST: CatalogPlan[] = [
     },
     stripeProductId: null,
     prices: [
-      price('monthly', 9900, 'unlimited_monthly'),
-      price('annual', 99000, 'unlimited_annual'),
+      price('monthly', 9900, 'unlimited_monthly', 'price_1TpxW1LlEZ4s7RNRdvx0BNW7'),
+      price('annual', 99000, 'unlimited_annual', 'price_1TpxWVLlEZ4s7RNRtoJdwVb4'),
     ],
     pricingVersion: PRICING_VERSION,
   },

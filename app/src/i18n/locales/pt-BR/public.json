@@ -57,7 +57,7 @@
   },
   "pricing": {
     "title": "Três caminhos: catequista, paróquia e diocese",
-    "subtitle": "Catequista R$ 47/mês ou R$ 297/ano. Paróquia R$ 99/mês ou R$ 990/ano. Diocese sob consulta.",
+    "subtitle": "Catequista R$ 9,90/mês (ou R$ 99/ano). Paróquia a partir de R$ 99/mês. Diocese sob consulta. 7 dias grátis no Plano Catequista, sem cartão.",
     "payment_card": "Cartão",
     "annual_savings": "Economize 17% no anual",
     "monthly_tab": "Mensal",
@@ -66,7 +66,7 @@
     "faq_title": "Perguntas frequentes",
     "per_month": "/mês",
     "per_year": "/ano",
-    "cta_paid": "Assinar agora",
+    "cta_paid": "Começar os 7 dias",
     "most_popular": "Feito para o catequista",
     "plan_desc": {
       "single": "Para você cuidar da sua turma. chamada, histórico e calendário no mesmo lugar, com mais tempo para as pessoas. Cobre até 3 turmas, se você acompanhar mais de uma.",
@@ -84,16 +84,16 @@
     ],
     "faq": [
       {
-        "q": "Como começo a usar?",
-        "a": "Crie sua conta e assine um plano. Depois, configure seu espaço e cadastre sua primeira turma."
+        "q": "Como conheço a plataforma antes de assinar?",
+        "a": "Você testa por 7 dias, sem cartão. Use na sua turma de verdade; se fizer sentido continuar, assine antes do fim do teste."
       },
       {
         "q": "Qual é o preço?",
-        "a": "O Plano Catequista custa R$ 47/mês ou R$ 297/ano e inclui até 3 turmas e 150 catequizandos no total."
+        "a": "O Plano Catequista custa R$ 9,90/mês (ou R$ 99/ano) e cobre até 3 turmas e 150 catequizandos no total — mais do que suficiente para a sua realidade."
       },
       {
         "q": "Como funciona o pagamento?",
-        "a": "Escolha um plano e conclua o pagamento para liberar o acesso. Cancele quando quiser."
+        "a": "Você começa com 7 dias de teste sem cartão. Ao assinar, o pagamento é feito pelo Stripe. Sem fidelidade — cancele quando quiser."
       },
       {
         "q": "E o reembolso do plano anual?",
@@ -210,19 +210,19 @@
     "contact_cta": "Falar com a equipe",
     "groups": [
       {
-        "title": "Conta e assinatura",
+        "title": "Conta e período de teste",
         "items": [
           {
             "q": "Como começo a usar?",
-            "a": "Crie sua conta e assine um plano. Depois, configure seu espaço e cadastre sua primeira turma."
+            "a": "Crie sua conta com email e senha (ou Google), confirme o email e siga os primeiros passos: escolha como vai usar (catequista ou paróquia) e crie sua primeira turma."
           },
           {
-            "q": "Quando o acesso é liberado?",
-            "a": "O acesso começa após a assinatura. Depois do cadastro, você vai para a página Assinatura."
+            "q": "Preciso informar cartão para testar?",
+            "a": "Não. O teste gratuito de 7 dias do Plano Catequista começa sem cartão. O cartão só é pedido quando você decidir assinar."
           },
           {
-            "q": "Como mantenho meu acesso?",
-            "a": "Mantenha sua assinatura ativa. Se precisar de ajuda, acesse a Central de suporte."
+            "q": "O que acontece quando o teste termina?",
+            "a": "Seus dados continuam guardados. Para seguir registrando presença e usando as ferramentas da turma, escolha um plano na página Assinatura. A Bíblia, o Catecismo, as Configurações e a Central de suporte continuam abertos."
           },
           {
             "q": "Como troco o cartão ou cancelo a assinatura?",

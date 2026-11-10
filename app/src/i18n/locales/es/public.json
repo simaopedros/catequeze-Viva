@@ -57,7 +57,7 @@
   },
   "pricing": {
     "title": "Tres caminos: catequista, parroquia y diócesis",
-    "subtitle": "Catequista R$ 47/mes o R$ 297/año. Parroquia R$ 99/mes o R$ 990/año. Diócesis a consulta.",
+    "subtitle": "Plan Catequista R$ 9,90/mes (o R$ 99/año). Parroquia desde R$ 99/mes. Diócesis a consulta. 7 días gratis en el Plan Catequista, sin tarjeta.",
     "payment_card": "Tarjeta",
     "annual_savings": "Ahorre 17% en anual",
     "monthly_tab": "Mensual",
@@ -66,7 +66,7 @@
     "faq_title": "Preguntas frecuentes",
     "per_month": "/mes",
     "per_year": "/año",
-    "cta_paid": "Suscribirse ahora",
+    "cta_paid": "Empezar los 7 días",
     "most_popular": "Hecho para el catequista",
     "plan_desc": {
       "single": "Para que cuides de tu grupo — asistencia, historial y calendario en el mismo lugar, con más tiempo para las personas. Cubre hasta 3 grupos si acompañas más de uno.",
@@ -84,16 +84,16 @@
     ],
     "faq": [
       {
-        "q": "¿Cómo empiezo?",
-        "a": "Crea tu cuenta y suscríbete a un plan. Después, configura tu espacio y crea tu primer grupo."
+        "q": "¿Cómo conozco la plataforma antes de suscribirme?",
+        "a": "Pruebas 7 días, sin tarjeta. Úsalo con tu grupo de verdad; si tiene sentido continuar, suscríbete antes de que termine la prueba."
       },
       {
         "q": "¿Cuál es el precio?",
-        "a": "El Plan Catequista cuesta R$ 47/mes o R$ 297/año e incluye hasta 3 grupos y 150 catecúmenos en total."
+        "a": "El Plan Catequista cuesta R$ 9,90/mes (o R$ 99/año) y cubre hasta 3 grupos y 150 catecúmenos en total — más que suficiente para tu realidad."
       },
       {
         "q": "¿Cómo funciona el pago?",
-        "a": "Elige un plan y completa el pago para activar el acceso. Cancela cuando quieras."
+        "a": "Empiezas con 7 días de prueba sin tarjeta. Al suscribirte, el pago se hace con Stripe. Sin permanencia — cancela cuando quieras."
       },
       {
         "q": "¿Y el reembolso del plan anual?",
@@ -210,19 +210,19 @@
     "contact_cta": "Hablar con el equipo",
     "groups": [
       {
-        "title": "Cuenta y suscripción",
+        "title": "Cuenta y período de prueba",
         "items": [
           {
             "q": "¿Cómo empiezo?",
-            "a": "Crea tu cuenta y suscríbete a un plan. Después, configura tu espacio y crea tu primer grupo."
+            "a": "Cree su cuenta con email y contraseña (o Google), confirme el email y siga los primeros pasos: elija cómo la usará (catequista o parroquia) y cree su primer grupo."
           },
           {
-            "q": "¿Cuándo empieza el acceso?",
-            "a": "El acceso empieza al suscribirse. Después del registro, vas a la página Suscripción."
+            "q": "¿Necesito tarjeta para probar?",
+            "a": "No. La prueba gratuita de 7 días del Plan Catequista empieza sin tarjeta. La tarjeta solo se pide cuando decida suscribirse."
           },
           {
-            "q": "¿Cómo mantengo mi acceso?",
-            "a": "Mantén tu suscripción activa. Contacta con soporte si necesitas ayuda."
+            "q": "¿Qué pasa cuando termina la prueba?",
+            "a": "Sus datos siguen guardados. Para seguir registrando asistencia y usando las herramientas del grupo, elija un plan en la página Suscripción. La Biblia, el Catecismo, la Configuración y el Centro de soporte siguen disponibles."
           },
           {
             "q": "¿Cómo cambio la tarjeta o cancelo?",

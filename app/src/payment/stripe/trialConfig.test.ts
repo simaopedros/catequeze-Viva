@@ -140,7 +140,7 @@ describe('resolveStripeCheckoutTrialDays', () => {
     ).toBe(0);
   });
 
-  it('gives no trial to an account created on or after the pricing cutoff, including parish billing', () => {
+  it('grants remaining parish trial days to accounts created after the retired cutoff', () => {
     expect(
       resolveStripeCheckoutTrialDays({
         user: {
@@ -155,10 +155,10 @@ describe('resolveStripeCheckoutTrialDays', () => {
         },
         now: new Date('2026-11-06T12:00:00.000Z'),
       }),
-    ).toBe(0);
+    ).toBe(6);
   });
 
-  it('credits remaining institutional trial days only for grandfather accounts', () => {
+  it('credits remaining institutional trial days without a Stripe customer', () => {
     expect(
       resolveStripeCheckoutTrialDays({
         user: {

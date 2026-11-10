@@ -6,7 +6,7 @@
     "badge": "Complete catechesis management",
     "cta_primary": "Get started",
     "cta_secondary": "See features",
-    "trust_signals": "Access after subscribing · Cancel anytime",
+    "trust_signals": "7 days free • Full access to every feature • Cancel anytime",
     "visual_title": "Coordination overview",
     "visual_item_1": "Classes and teams in one dashboard",
     "visual_item_2": "Attendance indicators",
@@ -90,7 +90,7 @@
     "plan_detail": "Confirmation · 45 min"
   },
   "footer": {
-    "create_account": "Subscribe now",
+    "create_account": "Create free account",
     "login": "Login",
     "about": "About",
     "privacy": "Privacy",

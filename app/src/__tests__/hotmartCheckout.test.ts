@@ -1,13 +1,29 @@
 import { describe, expect, it } from 'vitest';
 import { hotmartBlocksStripeCheckout, hotmartCheckoutUrl } from '../shared/hotmartCheckout';
 import { readCheckoutConfiguration } from '../server/operations/checkoutConfiguration';
+import { readHotmartEnv } from '../payment/hotmart/postback';
 import { annualDiscountPercent } from '../shared/currency';
 
 const config = readCheckoutConfiguration({ HOTMART_PRIMARY_CHECKOUT: 'true', HOTMART_CHECKOUT_URL_SINGLE_MONTHLY: 'https://pay.hotmart.com/example?off=monthly', HOTMART_CHECKOUT_URL_SINGLE_ANNUAL: 'https://pay.hotmart.com/example?off=annual' });
 describe('Hotmart sales checkout', () => {
   it('is off by default, with no public URLs or private environment fields', () => {
-    expect(readCheckoutConfiguration({ SECRET: 'private' })).toEqual({ primary: false, urls: {}, cutoffISO: '2026-11-05T00:00:00-03:00' });
-    expect(hotmartCheckoutUrl({ ...config, primary: false }, 'single')).toBeNull();
+    expect(readCheckoutConfiguration({ SECRET: 'private' })).toEqual({ primary: false, urls: {} });
+    for (const plan of ['single', 'unlimited', 'diocese']) {
+      expect(hotmartCheckoutUrl({ ...config, primary: false }, plan)).toBeNull();
+      expect(hotmartBlocksStripeCheckout({ ...config, primary: false }, plan, null)).toBe(false);
+    }
+  });
+  it('keeps configured checkout links on Stripe while the Hotmart webhook is enabled', () => {
+    const env = {
+      HOTMART_PRIMARY_CHECKOUT: 'false',
+      HOTMART_HOTTOK: 'unit-test-secret',
+      HOTMART_PRODUCT_UCODES: 'unit-test-product',
+      HOTMART_CHECKOUT_URL_SINGLE_MONTHLY: 'https://pay.hotmart.com/legacy-offer',
+    };
+    const checkout = readCheckoutConfiguration(env);
+    expect(readHotmartEnv(env).enabled).toBe(true);
+    expect(hotmartCheckoutUrl(checkout, 'single')).toBeNull();
+    expect(hotmartBlocksStripeCheckout(checkout, 'single', null)).toBe(false);
   });
   it('keeps the offer parameters and adds encoded email and attribution', () => {
     const url = new URL(hotmartCheckoutUrl(config, 'single', 'annual', { email: 'catequista+turma@example.com' })!);
@@ -39,8 +55,8 @@ describe('Hotmart sales checkout', () => {
     expect(hotmartBlocksStripeCheckout(config, 'single', { stripeSubscriptionId: 'sub_existing', subscriptionStatus: 'active' })).toBe(false);
     expect(hotmartBlocksStripeCheckout({ ...config, primary: false }, 'unlimited', null)).toBe(false);
   });
-  it('calculates 47 percent annual savings from 564 to 297 reais', () => {
-    expect(annualDiscountPercent(4700, 29700)).toBe(47);
-    expect(4700 * 12 - 29700).toBe(26700);
+  it('calculates 17 percent annual savings from 118.80 to 99 reais', () => {
+    expect(annualDiscountPercent(990, 9900)).toBe(17);
+    expect(990 * 12 - 9900).toBe(1980);
   });
 });

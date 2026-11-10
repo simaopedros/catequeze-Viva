@@ -57,7 +57,7 @@
   },
   "pricing": {
     "title": "Three paths: catechist, parish, and diocese",
-    "subtitle": "Catechist R$ 47/month or R$ 297/year. Parish R$ 99/month or R$ 990/year. Diocese on request.",
+    "subtitle": "Catechist Plan R$ 9.90/month (or R$ 99/year). Parish from R$ 99/month. Diocese on request. 7 days free on the Catechist Plan, no card required.",
     "payment_card": "Card",
     "annual_savings": "Save 17% on annual",
     "monthly_tab": "Monthly",
@@ -66,7 +66,7 @@
     "faq_title": "Frequently asked questions",
     "per_month": "/month",
     "per_year": "/year",
-    "cta_paid": "Subscribe now",
+    "cta_paid": "Start the 7 days",
     "most_popular": "Built for the catechist",
     "plan_desc": {
       "single": "For you to care for your class — attendance, history, and calendar in one place, with more time left for people. Covers up to 3 classes if you walk with more than one.",
@@ -84,16 +84,16 @@
     ],
     "faq": [
       {
-        "q": "How do I get started?",
-        "a": "Create an account and subscribe to a plan. Then set up your workspace and create your first class."
+        "q": "How can I try the platform before subscribing?",
+        "a": "You try it for 7 days, no card required. Use it with your real class; if it makes sense to continue, subscribe before the trial ends."
       },
       {
         "q": "What is the price?",
-        "a": "The Catechist Plan costs R$ 47/month or R$ 297/year and includes up to 3 classes and 150 catechumens in total."
+        "a": "The Catechist Plan costs R$ 9.90/month (or R$ 99/year) and covers up to 3 classes and 150 catechumens in total — more than enough for your reality."
       },
       {
         "q": "How does payment work?",
-        "a": "Choose a plan and complete payment to unlock access. Cancel anytime."
+        "a": "You start with a 7-day trial, no card required. When you subscribe, payment is handled by Stripe. No lock-in — cancel anytime."
       },
       {
         "q": "What about annual plan refunds?",
@@ -210,19 +210,19 @@
     "contact_cta": "Contact the team",
     "groups": [
       {
-        "title": "Account and subscription",
+        "title": "Account and free trial",
         "items": [
           {
             "q": "How do I get started?",
-            "a": "Create an account and subscribe to a plan. Then set up your workspace and create your first class."
+            "a": "Create your account with email and password (or Google), confirm your email and follow the first steps: choose how you'll use it (catechist or parish) and create your first class."
           },
           {
-            "q": "When does access start?",
-            "a": "Access starts after subscribing. After signup, you go to the Subscription page."
+            "q": "Do I need a card to try it?",
+            "a": "No. The 7-day free trial of the Catechist plan starts without a card. You are only asked for a card when you decide to subscribe."
           },
           {
-            "q": "How do I keep access?",
-            "a": "Keep your subscription active. Contact support if you need help."
+            "q": "What happens when the trial ends?",
+            "a": "Your data stays saved. To keep taking attendance and using class tools, choose a plan on the Subscription page. The Bible, Catechism, Settings and Support center stay open."
           },
           {
             "q": "How do I change my card or cancel?",

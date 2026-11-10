@@ -13,6 +13,8 @@ export type MappedOffer = {
   interval: HotmartInterval;
 };
 
+// Existing Hotmart offers keep their original amounts for renewals/refunds.
+// New Stripe sales use the separate PricingPlanPrice catalog.
 const AMOUNT_CENTS: Record<number, MappedOffer> = {
   4700: { planSlug: "single", interval: "monthly" },
   29700: { planSlug: "single", interval: "annual" },
@@ -67,13 +69,15 @@ export function readHotmartEnv(
   env: Record<string, string | undefined> = process.env,
 ): HotmartEnv {
   const grace = Number(env.HOTMART_OVERDUE_GRACE_DAYS || DEFAULT_OVERDUE_GRACE_DAYS);
+  const hottok = env.HOTMART_HOTTOK?.trim() || "";
+  const productUcodes = (env.HOTMART_PRODUCT_UCODES || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
   return {
-    enabled: env.HOTMART_PRIMARY_CHECKOUT === "true",
-    hottok: env.HOTMART_HOTTOK?.trim() || "",
-    productUcodes: (env.HOTMART_PRODUCT_UCODES || "")
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean),
+    enabled: Boolean(hottok && productUcodes.length),
+    hottok,
+    productUcodes,
     graceDays: Number.isFinite(grace) && grace >= 0 ? grace : DEFAULT_OVERDUE_GRACE_DAYS,
   };
 }

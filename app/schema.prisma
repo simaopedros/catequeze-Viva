@@ -1731,7 +1731,7 @@ model PricingPlan {
   translations Json?
 
   stripeProductId String? @unique
-  pricingVersion  Int     @default(4)
+  pricingVersion  Int     @default(3)
 
   prices PricingPlanPrice[]
 }

@@ -61,6 +61,7 @@ describe("lifecycleNudgeJob", () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     if (prevMax === undefined) delete process.env.LIFECYCLE_MAX_PER_RUN;
     else process.env.LIFECYCLE_MAX_PER_RUN = prevMax;
   });
@@ -87,6 +88,22 @@ describe("lifecycleNudgeJob", () => {
     expect(result.sent).toBe(0);
     expect(enqueueEmail).not.toHaveBeenCalled();
     expect(logCreate).not.toHaveBeenCalled();
+  });
+
+  it("nudges a new no-card trial account after the retired cutoff", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-10T12:00:00Z"));
+    const logCreate = vi.fn().mockResolvedValue({});
+    const result = await lifecycleNudgeJob(undefined, {
+      entities: {
+        User: { findMany: vi.fn().mockResolvedValue([eligibleUser()]) },
+        LifecycleEmailLog: { create: logCreate },
+        ...emptyActivationEntities(),
+      },
+    });
+    expect(result.sent).toBe(1);
+    expect(enqueueEmail).toHaveBeenCalledTimes(1);
+    expect(logCreate).toHaveBeenCalledTimes(1);
   });
 
   it("caps emails per run and logs remaining candidates", async () => {

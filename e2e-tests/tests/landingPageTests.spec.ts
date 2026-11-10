@@ -18,12 +18,12 @@ test.describe('general landing page tests', () => {
     await page.waitForURL('**/signup');
   });
 
-  test('offers a subscription without a free trial', async ({ page }) => {
-    await expect(page.locator('[data-landing-hero]')).toContainText('Assinar agora');
-    await expect(page.getByText(/7 dias grátis|sem cartão|9,90/i)).toHaveCount(0);
+  test('offers the restored 7-day trial and Stripe prices', async ({ page }) => {
+    await expect(page.locator('[data-landing-hero]')).toContainText('Começar 7 dias grátis');
+    await expect(page.getByText(/7 dias grátis.*sem cartão/i).first()).toBeVisible();
     await page.goto('/pricing');
-    await expect(page.getByText('R$ 47', { exact: true })).toBeVisible();
-    await expect(page.getByText(/R\$ 297/).first()).toBeVisible();
+    await expect(page.getByText('R$ 9,90', { exact: true })).toBeVisible();
+    await expect(page.getByText(/R\$ 99/).first()).toBeVisible();
   });
 
   test('headings', async ({ page }) => {

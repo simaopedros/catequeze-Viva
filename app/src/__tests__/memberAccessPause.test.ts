@@ -46,6 +46,17 @@ describe("member institution pause", () => {
     expect(memberPauseKind("PARISH")).toBe("parish");
   });
 
+  it("allows a current institutional trial and never pauses personal trial users", () => {
+    expect(isMemberInstitutionPaused({
+      isPersonal: false, isBillingManager: false,
+      billing: { plan: "unlimited", status: "TRIAL", trialEndsAt: new Date(Date.now() + 86400000) },
+    })).toBe(false);
+    expect(isMemberInstitutionPaused({
+      isPersonal: true, isBillingManager: false,
+      billing: { plan: "catechist_free", status: "CANCELED" },
+    })).toBe(false);
+  });
+
   it("uses a discreet pt-BR sentence with no payment words", () => {
     const billing = JSON.parse(
       readFileSync(resolve(__dirname, "../i18n/locales/pt-BR/billing.json"), "utf8"),

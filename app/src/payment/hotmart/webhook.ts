@@ -358,7 +358,8 @@ async function applyParsed(
 
 /**
  * POST /api/hotmart/webhook
- * Off unless HOTMART_PRIMARY_CHECKOUT=true. The hottok is compared and never logged.
+ * Enabled by HOTMART_HOTTOK + HOTMART_PRODUCT_UCODES, independently of checkout.
+ * The hottok is compared and never logged.
  */
 export async function hotmartWebhook(
   req: Request,

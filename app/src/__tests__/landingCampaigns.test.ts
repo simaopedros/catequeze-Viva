@@ -15,11 +15,11 @@ describe("landing campaign contracts", () => {
     expect(new Set(paid.map((item) => item.heroVisual)).size).toBe(paid.length);
   });
 
-  it("uses the subscription commitment consistently", () => {
+  it("uses the no-card trial commitment consistently", () => {
     for (const campaign of Object.values(landingCampaigns)) {
       expect(campaign.cta).toEqual({
         destination: "/signup",
-        commitment: "subscription",
+        commitment: "7-days-no-card",
       });
     }
   });

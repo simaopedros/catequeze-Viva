@@ -1,6 +1,6 @@
 /**
  * Idempotent seed of the admin pricing catalog from DEFAULT_PLANS.
- * Imports existing Stripe Price IDs from env vars — never creates Stripe objects.
+ * Reuses provisioned Stripe Price IDs, with env overrides — never creates Stripe objects.
  *
  * Missing default slugs/prices are inserted. Existing admin rows are never
  * overwritten (so a later deploy cannot wipe edits in /admin/planos).
@@ -72,7 +72,7 @@ function planRowData(plan: CatalogPlan) {
     socialMaxVideoSeconds: plan.social.maxVideoSeconds,
     features: plan.features as any,
     translations: plan.translations as any,
-    pricingVersion: plan.pricingVersion ?? 4,
+    pricingVersion: plan.pricingVersion ?? 3,
   };
 }
 
@@ -97,17 +97,22 @@ async function resolveStripeImport(
   plan: CatalogPlan,
   price: CatalogPlan["prices"][number],
 ) {
-  if (plan.slug === 'single') {
-    return { stripePriceId: null, unitAmountCents: price.unitAmountCents,
-      lookupKey: price.stripeLookupKey, productId: null };
-  }
   const envPriceId = readEnvStripePriceId(
     plan.slug,
     envIntervalFor(price.interval),
   );
-  let stripePriceId: string | null = isUsableStripePriceId(envPriceId)
+  const stripePriceId: string | null = isUsableStripePriceId(envPriceId)
     ? envPriceId
-    : null;
+    : price.stripePriceId;
+  // These prices already exist. Seeding single never calls Stripe or creates a Price.
+  if (plan.slug === 'single') {
+    return {
+      stripePriceId,
+      unitAmountCents: price.unitAmountCents,
+      lookupKey: price.stripeLookupKey,
+      productId: null,
+    };
+  }
   let unitAmountCents = price.unitAmountCents;
   let lookupKey =
     price.stripeLookupKey || lookupKeyFor(plan.slug, price.interval);
