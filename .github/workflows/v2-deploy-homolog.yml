@@ -1,0 +1,25 @@
+name: v2 Deploy Homolog
+
+# Esqueleto manual, só homologação. Sem segredos e sem deploy real:
+# o Neon de homolog é o marco M1 e exige ok do Simão. Não existe deploy de produção do v2.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch ou commit (homologação)'
+        required: false
+        default: 'main'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-homolog:
+    name: v2 homolog (esqueleto)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+      - name: Deploy (não implementado)
+        run: echo "Esqueleto - nenhum deploy executado. Aguarda M1 (Neon homolog) e T8."

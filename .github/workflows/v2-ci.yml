@@ -1,0 +1,44 @@
+name: v2 CI
+
+on:
+  push:
+    branches: [main]
+    paths: ['v2/**', '.github/workflows/v2-ci.yml']
+  pull_request:
+    paths: ['v2/**', '.github/workflows/v2-ci.yml']
+
+jobs:
+  lint:
+    name: v2 lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Placeholder: passa enquanto não há código em v2/.
+      - name: Lint (placeholder)
+        run: echo "sem código v2 para lint ainda"
+
+  test:
+    name: v2 tests (Postgres 16)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: ci_only_password
+          POSTGRES_DB: v2_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      V2_DATABASE_URL: postgres://postgres:ci_only_password@localhost:5432/v2_ci
+    steps:
+      - uses: actions/checkout@v4
+      # Placeholder: migrations, suíte de RLS e ETL (dados fictícios) entram com T2/T3.
+      - name: Postgres disponível
+        run: pg_isready -h localhost -p 5432
+      - name: Tests (placeholder)
+        run: echo "sem testes v2 ainda (migrations/RLS/ETL entram com T2 e T3)"

@@ -3,7 +3,9 @@ name: CI
 on:
   push:
     branches: [main, master]
+    paths-ignore: ['v2/**']
   pull_request:
+    paths-ignore: ['v2/**']
 
 jobs:
   unit-tests:
