@@ -13,5 +13,8 @@ drop trigger if exists poc_tenant_guard on "CatechumenProfile";
 drop trigger if exists poc_tenant_guard on "ClassEnrollment";
 drop trigger if exists poc_tenant_guard on "Meeting";
 drop trigger if exists poc_tenant_guard on "AttendanceRecord";
+drop trigger if exists poc_tenant_guard on "User";
+drop trigger if exists poc_tenant_guard on "Auth";
+drop trigger if exists poc_tenant_guard on "AuthIdentity";
 drop schema if exists migracao cascade;
 commit;

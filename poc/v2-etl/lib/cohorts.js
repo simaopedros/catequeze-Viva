@@ -19,7 +19,10 @@ async function userParishLinks(client = db.legacy()) {
     union select g."userId", h."parishId" from "GuardianProfile" g join "Household" h on h.id = g."householdId" where g."userId" is not null and h."parishId" is not null
     union select g."userId", c."parishId" from "GuardianProfile" g join "CatechumenProfile" k on k."householdId" = g."householdId"
           join "ClassEnrollment" e on e."catechumenProfileId" = k.id and e.status = 'ENROLLED'
-          join "CatechesisClass" c on c.id = e."classId" where g."userId" is not null`);
+          join "CatechesisClass" c on c.id = e."classId" where g."userId" is not null
+    union select "ownerId", id from "Parish" where "ownerId" is not null
+    union select a."recordedById", c."parishId" from "AttendanceRecord" a join "Meeting" m on m.id = a."meetingId"
+          join "CatechesisClass" c on c.id = m."classId" where a."recordedById" is not null`);
   return rows;
 }
 

@@ -55,7 +55,9 @@ grant usage on schema ${schemas.join(', ')} to app_rw, etl;
          from pg_index i cross join lateral unnest(i.indkey) with ordinality k(attnum, ord)
          join pg_attribute a on a.attrelid = i.indrelid and a.attnum = k.attnum
         where i.indrelid = $1::regclass and i.indisunique and not i.indisprimary group by i.indexrelid`, [q(t.legacy)]);
-    for (const u of uniq) up.push(`create unique index on ${qv2(t.v2)} (${u.cols.map((c) => q(snake(c))).join(', ')});`);
+    // F3: unicidade de negócio só entre linhas vivas. Par apagado (soft-delete) e recriado com outro id
+    // no legado não colide; o ETL aplica os soft-deletes antes dos upserts (lib/etl.js).
+    for (const u of uniq) up.push(`create unique index on ${qv2(t.v2)} (${u.cols.map((c) => q(snake(c))).join(', ')}) where deleted_at is null;`);
 
     const { rows: fk } = await L.query(
       `select c.confrelid::regclass::text as ref,
@@ -145,12 +147,35 @@ create schema migracao;
 create table migracao.tenant_guard (
   parish_id text primary key, state text not null check (state in ('frozen', 'v2')), updated_at timestamptz not null default now()
 );
+-- F1: quem escreve segura o lock compartilhado da paróquia até o fim da transação. O congelamento
+-- (lib/cutover.js) grava 'frozen' e toma o lock exclusivo: espera as transações abertas terminarem
+-- antes de o ETL ler o snapshot, e quem chega depois espera na fila e já enxerga 'frozen'.
 create function migracao.guard_check(p text) returns void language plpgsql as $$
 begin
   if p is null or current_setting('app.guard_bypass', true) = 'on' then return; end if;
+  perform pg_advisory_xact_lock_shared(hashtext(p));
   if exists (select 1 from migracao.tenant_guard where parish_id = p) then
     raise exception 'paróquia % congelada ou migrada: escrita no legado recusada', p using errcode = 'P0423';
   end if;
+end $$;
+
+-- F5: User, Auth e AuthIdentity são globais. Ficam guardados pelas paróquias do mesmo escopo de
+-- usuários que o ETL copia (LEGACY_USER_SCOPE): usuário ligado a paróquia congelada ou migrada
+-- não muda perfil, senha nem identidade no legado (quem manda é a v2).
+create function migracao.user_parishes(u text) returns setof text language sql stable as $$
+  select "parishId" from "Membership" where "userId" = u
+  union select c."parishId" from "ClassCatechist" cc join "CatechesisClass" c on c.id = cc."classId" where cc."userId" = u
+  union select h."parishId" from "GuardianProfile" g join "Household" h on h.id = g."householdId" where g."userId" = u and h."parishId" is not null
+  union select "parishId" from "CatechumenProfile" where "userId" = u and "parishId" is not null
+  union select id from "Parish" where "ownerId" = u
+  union select c."parishId" from "AttendanceRecord" a join "Meeting" m on m.id = a."meetingId"
+        join "CatechesisClass" c on c.id = m."classId" where a."recordedById" = u
+$$;
+create function migracao.guard_user_check(u text) returns void language plpgsql as $$
+declare p text;
+begin
+  if u is null or current_setting('app.guard_bypass', true) = 'on' then return; end if;
+  for p in select x from migracao.user_parishes(u) x order by 1 loop perform migracao.guard_check(p); end loop;
 end $$;`];
   const gd = ['-- Reverte legacy_guard_up.sql.', 'begin;'];
   for (const t of TABLES.filter((x) => x.tenant)) {
@@ -163,6 +188,21 @@ begin
 end $$;
 create trigger poc_tenant_guard before insert or update or delete on ${q(t.legacy)} for each row execute function ${fn}();`);
     gd.push(`drop trigger if exists poc_tenant_guard on ${q(t.legacy)};`);
+  }
+  const userGuards = [
+    ['User', 'guard_user', (R) => `${R}."id"`],
+    ['Auth', 'guard_auth', (R) => `${R}."userId"`],
+    ['AuthIdentity', 'guard_auth_identity', (R) => `(select a."userId" from "Auth" a where a.id = ${R}."authId")`],
+  ];
+  for (const [tbl, fn, userOf] of userGuards) {
+    g.push(`create function migracao.${fn}() returns trigger language plpgsql as $$
+begin
+  if tg_op in ('UPDATE', 'DELETE') then perform migracao.guard_user_check(${userOf('OLD')}); end if;
+  if tg_op = 'UPDATE' then perform migracao.guard_user_check(${userOf('NEW')}); end if;
+  return coalesce(new, old);
+end $$;
+create trigger poc_tenant_guard before update or delete on ${q(tbl)} for each row execute function migracao.${fn}();`);
+    gd.push(`drop trigger if exists poc_tenant_guard on ${q(tbl)};`);
   }
   g.push('commit;');
   gd.push('drop schema if exists migracao cascade;', 'commit;');

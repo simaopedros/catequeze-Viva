@@ -18,9 +18,27 @@ function zeroDiff(cmp) {
   return { ok: bad.length === 0, divergentes: bad.map((b) => b.tabela) };
 }
 
+// F1: grava o estado e, na mesma transação, toma o lock exclusivo de cada paróquia (ordem fixa, sem
+// deadlock entre congelamentos). Só volta quando toda transação que já escrevia nessas paróquias
+// terminou; o snapshot do ETL é aberto depois, então enxerga essas escritas.
+async function withExclusive(pool, parishIds, sql, params) {
+  const c = await pool.connect();
+  try {
+    await c.query('begin');
+    await c.query(sql, params);
+    await c.query(`select pg_advisory_xact_lock(hashtext(p)) from unnest($1::text[]) p order by p`, [parishIds]);
+    await c.query('commit');
+  } catch (e) { await c.query('rollback').catch(() => {}); throw e; } finally { c.release(); }
+}
+
 async function freezeLegacy(parishIds) {
-  await db.legacy().query(`insert into migracao.tenant_guard (parish_id, state) select unnest($1::text[]), 'frozen'
+  await withExclusive(db.legacy(), parishIds, `insert into migracao.tenant_guard (parish_id, state) select unnest($1::text[]), 'frozen'
                            on conflict (parish_id) do update set state = 'frozen', updated_at = now()`, [parishIds]);
+}
+
+// Congelamento da v2 (rollback): a API lê tenant_home sob o lock compartilhado (api/server.js).
+async function freezeV2(parishIds) {
+  await withExclusive(db.v2(), parishIds, `update migracao.tenant_home set frozen_at = now(), updated_at = now() where parish_id = any($1)`, [parishIds]);
 }
 
 async function cutover(coorte, parishIds, hooks = {}) {
@@ -46,7 +64,7 @@ async function cutover(coorte, parishIds, hooks = {}) {
 async function rollback(coorte, parishIds) {
   const log = [];
   const t0 = now();
-  await step(log, 'congelar_v2', () => db.v2().query(`update migracao.tenant_home set frozen_at = now(), updated_at = now() where parish_id = any($1)`, [parishIds]));
+  await step(log, 'congelar_v2', () => freezeV2(parishIds));
   const rev = await step(log, 'export_reverso', () => etl.reverse(coorte, parishIds));
   const check = await step(log, 'verificar', async () => zeroDiff(await etl.compare(parishIds)));
   if (!check.ok) throw new Error(`rollback com divergência em ${check.divergentes.join(', ')} (grupo segue congelado nos dois lados)`);
@@ -55,4 +73,4 @@ async function rollback(coorte, parishIds) {
   return { coorte, passos: log, totalMs: ms(t0), reverso: rev, verificacao: check };
 }
 
-module.exports = { cutover, rollback, freezeLegacy };
+module.exports = { cutover, rollback, freezeLegacy, freezeV2 };

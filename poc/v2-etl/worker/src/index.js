@@ -11,16 +11,20 @@ let argon2;
 const getArgon2 = async () => (argon2 ||= new Argon2(await WebAssembly.instantiate(wasm)));
 
 const enc = new TextEncoder();
-const b64url = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const fromB64url = (s) => {
+  try { return Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), (ch) => ch.charCodeAt(0)); } catch { return null; }
+};
 
+// Comparação do HMAC em tempo constante: crypto.subtle.verify, não "===" entre strings.
 async function validSession(cookieHeader, key) {
   const m = /(?:^|;\s*)(?:__Host-)?cv2_session=([^;]+)/.exec(cookieHeader || '');
   if (!m) return null;
   const [sid, sig, exp] = m[1].split('.');
   if (!sid || !sig || !exp || Number(exp) * 1000 < Date.now()) return null;
-  const k = await crypto.subtle.importKey('raw', enc.encode(key), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-  const expected = b64url(await crypto.subtle.sign('HMAC', k, enc.encode(`${sid}.${exp}`)));
-  return expected === sig ? sid : null;
+  const sigBytes = fromB64url(sig);
+  if (!sigBytes) return null;
+  const k = await crypto.subtle.importKey('raw', enc.encode(key), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+  return (await crypto.subtle.verify('HMAC', k, sigBytes, enc.encode(`${sid}.${exp}`))) ? sid : null;
 }
 
 export default {

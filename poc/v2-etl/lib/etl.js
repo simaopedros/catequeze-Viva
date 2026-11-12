@@ -112,16 +112,18 @@ async function load(coorte, parishIds) {
       if (t.tenant && mapped.some((m) => !m.tenant_id)) throw new Error(`${t.v2}: tenant_id nulo derivado`);
       const v2Key = t.key.map(snake);
       const insCols = t.tenant ? [...v2Cols, 'tenant_id'] : v2Cols;
-      const { ins, upd } = mapped.length ? await upsertAll(vc, upsertSql(qv2(t.v2), insCols, v2Key, { bumpUpdatedAt: !hasUpdatedAt, sync: true }), mapped) : { ins: 0, upd: 0 };
-
-      // Linhas vivas na v2 que sumiram da origem viram soft-delete.
+      // Linhas vivas na v2 que sumiram da origem viram soft-delete. Nas tabelas de paróquia isso vem
+      // ANTES do upsert (F3): par apagado e recriado com outro id no legado libera o índice único
+      // parcial (where deleted_at is null) antes de a linha nova entrar.
       const keys = mapped.map((m) => v2Key.map((k) => m[k]).join('\u001f'));
       let del = 0;
       if (t.tenant) {
         const r = await vc.query(`update ${qv2(t.v2)} set deleted_at = now(), version = version + 1
           where ${v2ScopeWhere(t)} and deleted_at is null and not ((${keyExpr(v2Key)}) = any($2::text[]))`, [parishIds, keys]);
         del = r.rowCount;
-      } else {
+      }
+      const { ins, upd } = mapped.length ? await upsertAll(vc, upsertSql(qv2(t.v2), insCols, v2Key, { bumpUpdatedAt: !hasUpdatedAt, sync: true }), mapped) : { ins: 0, upd: 0 };
+      if (!t.tenant) {
         // Globais (identity, diocese): só some da v2 o que não existe mais em lugar nenhum no legado.
         const { rows: live } = await vc.query(`select (${keyExpr(v2Key)}) as k from ${qv2(t.v2)} where ${v2ScopeWhere(t)} and deleted_at is null`, [parishIds]);
         const liveKeys = live.map((x) => x.k);
@@ -167,21 +169,22 @@ async function reverse(coorte, parishIds) {
     await lc.query(`set local app.guard_bypass = 'on'`);
     await lc.query('set constraints all deferred');
     const liveKeysByTable = new Map();
+    const liveRowsByTable = new Map();
     for (const t of TABLES) {
       const tt = now();
       const { legacyCols, v2Cols } = cols.get(t.legacy);
-      const v2Key = t.key.map(snake);
       const { rows } = await vc.query(`select * from ${qv2(t.v2)} where ${v2ScopeWhere(t)} and deleted_at is null`, [parishIds]);
       const mapped = rows.map((r) => {
         const o = {};
         legacyCols.forEach((c, i) => { o[c] = r[v2Cols[i]]; });
         return o;
       });
+      liveRowsByTable.set(t.legacy, mapped);
       liveKeysByTable.set(t.legacy, mapped.map((m) => t.key.map((k) => m[k]).join('\u001f')));
-      const { ins, upd } = mapped.length ? await upsertAll(lc, upsertSql(q(t.legacy), legacyCols, t.key, { sync: false }), mapped) : { ins: 0, upd: 0 };
-      stats.push({ tabela: t.v2, lidas: rows.length, inseridos: ins, alterados: upd, apagados: 0, ms: ms(tt) });
+      stats.push({ tabela: t.v2, lidas: rows.length, inseridos: 0, alterados: 0, apagados: 0, ms: ms(tt) });
     }
-    // Exclusões, dos filhos para os pais.
+    // Exclusões primeiro, dos filhos para os pais (F3: par recriado com outro id na v2 não colide
+    // com o índice único do legado); depois os upserts, dos pais para os filhos.
     for (const t of [...TABLES].reverse()) {
       const s = stats.find((x) => x.tabela === t.v2);
       const keys = liveKeysByTable.get(t.legacy);
@@ -195,6 +198,13 @@ async function reverse(coorte, parishIds) {
         const { rows: dead } = await vc.query(`select (${keyExpr(v2Key)}) as k from ${qv2(t.v2)} where deleted_at is not null`);
         if (dead.length) s.apagados = (await lc.query(`delete from ${q(t.legacy)} where (${keyExpr(t.key)}) = any($1::text[])`, [dead.map((d) => d.k)])).rowCount;
       }
+    }
+    for (const t of TABLES) {
+      const mapped = liveRowsByTable.get(t.legacy);
+      if (!mapped.length) continue;
+      const s = stats.find((x) => x.tabela === t.v2);
+      const { ins, upd } = await upsertAll(lc, upsertSql(q(t.legacy), cols.get(t.legacy).legacyCols, t.key, { sync: false }), mapped);
+      s.inseridos = ins; s.alterados = upd;
     }
     await lc.query('commit');
     await vc.query('commit');

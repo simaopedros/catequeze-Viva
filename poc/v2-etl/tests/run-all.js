@@ -15,6 +15,7 @@ const { TABLES, q, qv2, v2ScopeWhere, legacyScopedSelect } = require('../lib/tab
 const { generate, writeLegacy, POC_TABLES } = require('../gen');
 const { createServer } = require('../api/server');
 const { ms, now, p95, median } = require('../lib/util');
+const { t7 } = require('./t7-ciclo1');
 
 const SEED = 20261111;
 const WORKER = process.env.WORKER_URL || 'http://127.0.0.1:8787';
@@ -276,13 +277,14 @@ async function t4(P, logins) {
   const cb = await db.v2().connect();
   await cb.query('set role etl');
   try {
-    for (let i = 0; i < 220; i++) {
-      let t = now();
-      await ca.query('begin'); await ca.query(`select set_config('app.tenant_id', $1, true)`, [A]); await ca.query(Q, [A]); await ca.query('commit');
-      if (i >= 20) withRls.push(Number(now() - t) / 1e6);
-      t = now();
-      await cb.query('begin'); await cb.query(`select set_config('app.tenant_id', $1, true)`, [A]); await cb.query(Q, [A]); await cb.query('commit');
-      if (i >= 20) without.push(Number(now() - t) / 1e6);
+    // 500 amostras de cada, alternando qual roda primeiro a cada rodada (F6 do A6: tira o viés de ordem).
+    const run = async (c, arr, i) => {
+      const t = now();
+      await c.query('begin'); await c.query(`select set_config('app.tenant_id', $1, true)`, [A]); await c.query(Q, [A]); await c.query('commit');
+      if (i >= 20) arr.push(Number(now() - t) / 1e6);
+    };
+    for (let i = 0; i < 520; i++) {
+      if (i % 2) { await run(ca, withRls, i); await run(cb, without, i); } else { await run(cb, without, i); await run(ca, withRls, i); }
     }
   } finally { await cb.query('reset role'); ca.release(); cb.release(); server.close(); }
   await db.v2().query(`update migracao.tenant_home set home = 'legacy' where parish_id = any($1)`, [[A, B]]);
@@ -377,12 +379,14 @@ async function t5(P, logins) {
 }
 
 // ---------- T6 ----------
-async function freePairs(parishIds, n, used) {
+// Pares (encontro, catequizando) ainda sem presença, só nas turmas em que userId é catequista (F2).
+async function freePairs(parishIds, n, used, userId) {
   const { rows } = await db.legacy().query(`
     select m.id as meeting, e."catechumenProfileId" as kid, c."parishId" as parish from "Meeting" m join "CatechesisClass" c on c.id = m."classId"
       join "ClassEnrollment" e on e."classId" = c.id and e.status = 'ENROLLED'
+      join "ClassCatechist" cc on cc."classId" = c.id and cc."userId" = $2
      where c."parishId" = any($1) and not exists (select 1 from "AttendanceRecord" a where a."meetingId" = m.id and a."catechumenProfileId" = e."catechumenProfileId")
-     order by md5(m.id || e."catechumenProfileId")`, [parishIds]);
+     order by md5(m.id || e."catechumenProfileId")`, [parishIds, userId]);
   const out = [];
   const per = new Map();
   for (const r of rows) {
@@ -428,7 +432,7 @@ async function t6(P, logins) {
   const ensaios = [];
   for (const n of [1, 2]) {
     log(`T6: ensaio ${n}`);
-    const pairs = await freePairs(grp, 200, used);
+    const pairs = await freePairs(grp, 200, used, catechist.userId);
     const queue = pairs.map((p) => ({ tenant: p.parish, encontroId: p.meeting, item: { catequizandoId: p.kid, status: 'PRESENT', clientMutationId: crypto.randomUUID() } }));
     let durante = null, apiDuranteCongelamento = null;
     const virada = await cutover.cutover(`grupo-P1P2-ensaio-${n}`, grp, {
@@ -493,6 +497,8 @@ async function main() {
   await t4(P, g.logins);
   await t5(P, g.logins);
   await t6(P, g.logins);
+  log('T7: regressão do A6 (F1 a F5)');
+  report.testes.T7 = await t7(P, g.logins, { listen, api, loginCookie });
   await social();
   report.fim = new Date().toISOString();
   fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(report, null, 1));

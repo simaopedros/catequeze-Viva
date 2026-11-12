@@ -28,7 +28,7 @@ create table "org"."diocese" (
   primary key ("id")
 );
 
-create unique index on "org"."diocese" ("wikidata_id");
+create unique index on "org"."diocese" ("wikidata_id") where deleted_at is null;
 
 create table "identity"."user" (
   "id" text not null default gen_random_uuid()::text,
@@ -67,13 +67,13 @@ create table "identity"."user" (
   primary key ("id")
 );
 
-create unique index on "identity"."user" ("email");
+create unique index on "identity"."user" ("email") where deleted_at is null;
 
-create unique index on "identity"."user" ("username");
+create unique index on "identity"."user" ("username") where deleted_at is null;
 
-create unique index on "identity"."user" ("payment_processor_user_id");
+create unique index on "identity"."user" ("payment_processor_user_id") where deleted_at is null;
 
-create unique index on "identity"."user" ("hotmart_subscriber_code");
+create unique index on "identity"."user" ("hotmart_subscriber_code") where deleted_at is null;
 
 create table "identity"."auth" (
   "id" text not null default gen_random_uuid()::text,
@@ -85,7 +85,7 @@ create table "identity"."auth" (
   primary key ("id")
 );
 
-create unique index on "identity"."auth" ("user_id");
+create unique index on "identity"."auth" ("user_id") where deleted_at is null;
 
 create table "identity"."auth_identity" (
   "provider_name" text not null,
@@ -126,7 +126,7 @@ create table "org"."parish" (
 
 create index on "org"."parish" (tenant_id);
 
-create unique index on "org"."parish" ("osm_id");
+create unique index on "org"."parish" ("osm_id") where deleted_at is null;
 
 create table "org"."community" (
   "id" text not null default gen_random_uuid()::text,
@@ -176,7 +176,7 @@ create table "org"."membership" (
 
 create index on "org"."membership" (tenant_id);
 
-create unique index on "org"."membership" ("invite_token");
+create unique index on "org"."membership" ("invite_token") where deleted_at is null;
 
 create table "catequese"."catechetical_year" (
   "id" text not null default gen_random_uuid()::text,
@@ -255,7 +255,7 @@ create table "catequese"."class_catechist" (
 
 create index on "catequese"."class_catechist" (tenant_id);
 
-create unique index on "catequese"."class_catechist" ("class_id", "user_id");
+create unique index on "catequese"."class_catechist" ("class_id", "user_id") where deleted_at is null;
 
 create table "catequese"."household" (
   "id" text not null default gen_random_uuid()::text,
@@ -293,7 +293,7 @@ create table "familia"."guardian_profile" (
 
 create index on "familia"."guardian_profile" (tenant_id);
 
-create unique index on "familia"."guardian_profile" ("user_id");
+create unique index on "familia"."guardian_profile" ("user_id") where deleted_at is null;
 
 create table "familia"."catechumen_profile" (
   "id" text not null default gen_random_uuid()::text,
@@ -317,7 +317,7 @@ create table "familia"."catechumen_profile" (
 
 create index on "familia"."catechumen_profile" (tenant_id);
 
-create unique index on "familia"."catechumen_profile" ("upload_token");
+create unique index on "familia"."catechumen_profile" ("upload_token") where deleted_at is null;
 
 create table "catequese"."class_enrollment" (
   "id" text not null default gen_random_uuid()::text,
@@ -339,7 +339,7 @@ create table "catequese"."class_enrollment" (
 
 create index on "catequese"."class_enrollment" (tenant_id);
 
-create unique index on "catequese"."class_enrollment" ("class_id", "catechumen_profile_id");
+create unique index on "catequese"."class_enrollment" ("class_id", "catechumen_profile_id") where deleted_at is null;
 
 create table "catequese"."meeting" (
   "id" text not null default gen_random_uuid()::text,
@@ -381,7 +381,7 @@ create table "catequese"."attendance_record" (
 
 create index on "catequese"."attendance_record" (tenant_id);
 
-create unique index on "catequese"."attendance_record" ("meeting_id", "catechumen_profile_id");
+create unique index on "catequese"."attendance_record" ("meeting_id", "catechumen_profile_id") where deleted_at is null;
 
 create table identity.session (
   "id" text primary key, "expires_at" timestamp(3) not null,

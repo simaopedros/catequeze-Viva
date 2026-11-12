@@ -31,9 +31,11 @@ function legacy() {
 function v2() {
   return (pools.v2 ||= new Pool({ connectionString: need('V2_DATABASE_URL'), max: 4 }));
 }
-// Pool da API: mesmo banco v2, mas com o papel app_rw (sem BYPASSRLS).
+// Pool da API: papel app_rw (sem BYPASSRLS). Fora da PoC, use V2_APP_DATABASE_URL com um login que
+// seja só membro de app_rw (nunca superusuário). Sem ela, a PoC local cai no SET ROLE app_rw.
 function v2App() {
   if (pools.v2App) return pools.v2App;
+  if (process.env.V2_APP_DATABASE_URL) return (pools.v2App = new Pool({ connectionString: process.env.V2_APP_DATABASE_URL, max: 8 }));
   return (pools.v2App = new Pool({ connectionString: need('V2_DATABASE_URL'), max: 8, options: '-c role=app_rw' }));
 }
 async function closeAll() {
