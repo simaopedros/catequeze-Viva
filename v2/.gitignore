@@ -1,0 +1,2 @@
+# O .gitignore da raiz ignora *.sql (legado); no v2 as migrations SQL são código versionado.
+!*.sql
