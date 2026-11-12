@@ -3,7 +3,6 @@ name: Deploy Homolog
 on:
   push:
     branches: [main]
-    paths-ignore: ['v2/**']
     # Cloud Agent cannot workflow_dispatch (HTTP 403). Push a homolog-* tag
     # from a feature branch to deploy that commit without merging to main.
     tags:
