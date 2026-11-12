@@ -1,0 +1,6 @@
+# Worker de teste da PoC. Uso só local: npx wrangler dev --config worker/wrangler.toml
+# Não publicar: deploy exige ok do Simão.
+name = "catechis-poc-argon2"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+workers_dev = false

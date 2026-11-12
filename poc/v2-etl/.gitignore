@@ -1,0 +1,7 @@
+node_modules/
+.wrangler/
+.env*
+.dev.vars
+out/
+# o .gitignore da raiz ignora *.sql (dumps); os DDL gerados da PoC entram no versionamento
+!sql/*.sql
