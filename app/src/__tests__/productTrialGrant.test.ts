@@ -29,11 +29,14 @@ import {
 } from '../shared/pricing';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+// Fixed clock. The it.each table below is built at collection time, before
+// beforeAll runs, so it must not read Date.now() (it would use the real clock).
+const NOW = new Date('2026-11-10T12:00:00Z');
 
 beforeAll(() => {
   process.env.PRICING_CATALOG_SOURCE = 'static';
   vi.useFakeTimers();
-  vi.setSystemTime(new Date('2026-11-10T12:00:00Z'));
+  vi.setSystemTime(NOW);
 });
 
 afterAll(() => vi.useRealTimers());
@@ -160,11 +163,11 @@ describe('ensureProductTrial — no-card 7-day grant', () => {
       'a previous trial',
       {
         subscriptionStatus: null,
-        trialEndsAt: new Date(Date.now() - DAY_MS),
+        trialEndsAt: new Date(NOW.getTime() - DAY_MS),
       },
     ],
-    ['a past payment', { datePaid: new Date(Date.now() - 30 * DAY_MS) }],
-    ['an account older than 7 days', { createdAt: new Date(Date.now() - 8 * DAY_MS) }],
+    ['a past payment', { datePaid: new Date(NOW.getTime() - 30 * DAY_MS) }],
+    ['an account older than 7 days', { createdAt: new Date(NOW.getTime() - 8 * DAY_MS) }],
   ])('never grants to %s', async (_label, overrides) => {
     const user = newUser(overrides as Partial<FakeUser>);
     const before = { ...user };
