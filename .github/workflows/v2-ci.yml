@@ -37,8 +37,19 @@ jobs:
       V2_DATABASE_URL: postgres://postgres:ci_only_password@localhost:5432/v2_ci
     steps:
       - uses: actions/checkout@v4
-      # Placeholder: migrations, suíte de RLS e ETL (dados fictícios) entram com T2/T3.
       - name: Postgres disponível
         run: pg_isready -h localhost -p 5432
-      - name: Tests (placeholder)
-        run: echo "sem testes v2 ainda (migrations/RLS/ETL entram com T2 e T3)"
+      - name: Migrations (up)
+        run: bash v2/db/migrate.sh up
+      - name: Suíte de RLS e papéis (CA2, R3)
+        run: bash v2/db/tests/rls.sh
+      - name: Rollback das migrations (down) e reaplicação
+        run: |
+          bash v2/db/migrate.sh down 2
+          left=$(psql "$V2_DATABASE_URL" -qAt -c "select count(*) from pg_namespace where nspname in ('identity','org','catequese','familia','audit','sync')")
+          roles=$(psql "$V2_DATABASE_URL" -qAt -c "select count(*) from pg_roles where rolname in ('app_rw','app_auth','v2_api','v2_auth','etl')")
+          echo "schemas restantes: $left, papéis restantes: $roles"
+          test "$left" = 0 && test "$roles" = 0
+          bash v2/db/migrate.sh up
+          bash v2/db/tests/rls.sh
+      # ETL com dados fictícios entra com a T3.
