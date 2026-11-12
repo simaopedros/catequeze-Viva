@@ -165,3 +165,4 @@ curl -I https://homolog.catechis.app/app/ai-planner 2>&1 | grep "404"
 ---
 
 **Next Step**: Disparar workflow via GitHub UI (link acima) ↑
+
