@@ -847,6 +847,45 @@ describe('stripeWebhook', () => {
     );
     expect(response.status).toHaveBeenCalledWith(204);
   });
+
+  it('acknowledges mandate.updated without treating it as unhandled', async () => {
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {});
+    mocks.constructEventMock.mockReturnValue({
+      id: 'evt_mandate_1',
+      type: 'mandate.updated',
+      data: {
+        object: {
+          id: 'mandate_1',
+          status: 'inactive',
+        },
+      },
+    });
+
+    const response = createResponse();
+    const context = createContext();
+    await stripeWebhook(
+      { headers: { 'stripe-signature': 'sig' }, body: Buffer.from('payload') } as any,
+      response,
+      context,
+    );
+
+    expect(response.status).toHaveBeenCalledWith(204);
+    expect(mocks.updateUserSubscriptionMock).not.toHaveBeenCalled();
+    expect(info).toHaveBeenCalledWith(
+      'Stripe mandate.updated',
+      expect.objectContaining({
+        eventId: 'evt_mandate_1',
+        mandateId: 'mandate_1',
+        status: 'inactive',
+      }),
+    );
+    expect(
+      context.entities.TrackedEvent.rows.some(
+        (row: any) => row.eventId === 'evt_mandate_1' || row.stripeEventId === 'evt_mandate_1',
+      ),
+    ).toBe(true);
+    info.mockRestore();
+  });
 });
 
 describe('getInvoiceSubscriptionId', () => {

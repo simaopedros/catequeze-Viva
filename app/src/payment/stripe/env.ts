@@ -25,4 +25,8 @@ export const stripeEnvSchema = z.object({
   // db (default) = PricingPlan tables (admin catalog)
   // static = hardcoded DEFAULT_PLANS + env Price IDs (rollback)
   PRICING_CATALOG_SOURCE: z.enum(['static', 'db']).optional().default('db'),
+  // Default off. Pix Automático is not available for Brazil-domiciled Stripe
+  // accounts; keep this false until there is an explicit go-live approval.
+  // https://docs.stripe.com/payments/pix
+  STRIPE_PIX_RECURRING_ENABLED: z.string().optional().default("false"),
 });

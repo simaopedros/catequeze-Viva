@@ -11,13 +11,14 @@ import {
   fetchUserPaymentProcessorUserId,
   updateUserPaymentProcessorUserId,
 } from "../user";
+import { getPlanPriceCents } from "../../shared/pricing";
+import { requireStripePriceId } from "../paymentProcessorPlans";
 import {
   createStripeCheckoutSession,
   ensureStripeCustomer,
 } from "./checkoutUtils";
 import { stripeClient } from "./stripeClient";
 import { stripeMiddlewareConfigFn, stripeWebhook } from "./webhook";
-import { requireStripePriceId } from "../paymentProcessorPlans";
 
 export const stripePaymentProcessor: PaymentProcessor = {
   id: "stripe",
@@ -41,12 +42,18 @@ export const stripePaymentProcessor: PaymentProcessor = {
     const priceId = priceIdOverride ?? requireStripePriceId(paymentPlan, interval);
     const mode = paymentPlanEffectToStripeCheckoutSessionMode(paymentPlan.effect);
     const resolvedTrialDays = Math.max(0, trialPeriodDays);
+    const resolvedInterval = interval === "annual" ? "annual" : "monthly";
     const checkoutSession = await createStripeCheckoutSession({
       customerId: customer.id,
       userId,
       priceId,
       mode,
       trialPeriodDays: resolvedTrialDays,
+      interval: mode === "subscription" ? resolvedInterval : undefined,
+      unitAmountCents:
+        mode === "subscription"
+          ? getPlanPriceCents(paymentPlan.id, resolvedInterval)
+          : undefined,
       tracking: {
         ...tracking,
         priceId: tracking?.priceId ?? priceId,
