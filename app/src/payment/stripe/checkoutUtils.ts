@@ -24,6 +24,28 @@ export async function ensureStripeCustomer(
   return customers.data[0];
 }
 
+export type PixPaymentSchedule = "monthly" | "yearly";
+
+export type PixMandateOptions = {
+  amount: number;
+  amount_type: "maximum";
+  currency: "brl";
+  payment_schedule: PixPaymentSchedule;
+  reference: string;
+};
+
+/**
+ * Pix Automático mandate options are not in stripe@18 typings (added in v22.1.0).
+ * Keep a narrow local type instead of upgrading the SDK in this change.
+ */
+type CheckoutParamsWithPixMandate = Stripe.Checkout.SessionCreateParams & {
+  payment_method_options?: {
+    pix?: {
+      mandate_options?: PixMandateOptions;
+    };
+  };
+};
+
 interface CreateStripeCheckoutSessionParams {
   priceId: Stripe.Price["id"];
   customerId: Stripe.Customer["id"];
@@ -31,6 +53,47 @@ interface CreateStripeCheckoutSessionParams {
   mode: Stripe.Checkout.Session.Mode;
   tracking?: CreateCheckoutSessionTrackingArgs;
   trialPeriodDays?: number;
+  interval?: "monthly" | "annual";
+  unitAmountCents?: number;
+  pixRecurringEnabled?: boolean;
+}
+
+export function isStripePixRecurringEnabled(
+  value: string | undefined = process.env.STRIPE_PIX_RECURRING_ENABLED,
+): boolean {
+  return value === "true";
+}
+
+export function pixScheduleForInterval(
+  interval?: "monthly" | "annual",
+): PixPaymentSchedule {
+  return interval === "annual" ? "yearly" : "monthly";
+}
+
+export function buildPixRecurringPaymentMethodOptions(args: {
+  unitAmountCents: number;
+  interval?: "monthly" | "annual";
+  reference?: string;
+}): { pix: { mandate_options: PixMandateOptions } } {
+  if (!Number.isInteger(args.unitAmountCents) || args.unitAmountCents <= 0) {
+    throw new Error(
+      "Pix recorrente exige o valor do plano em centavos para o mandato. O default da Stripe (R$ 400) não cobre todos os planos.",
+    );
+  }
+
+  const reference = (args.reference || "Catechis").trim() || "Catechis";
+
+  return {
+    pix: {
+      mandate_options: {
+        amount: args.unitAmountCents,
+        amount_type: "maximum",
+        currency: "brl",
+        payment_schedule: pixScheduleForInterval(args.interval),
+        reference: reference.slice(0, 100),
+      },
+    },
+  };
 }
 
 function cleanObject<T extends Record<string, unknown>>(value: T): T {
@@ -95,6 +158,9 @@ export function buildStripeCheckoutSessionCreateParams({
   tracking,
   trialPeriodDays = 0,
   frontendUrl,
+  interval,
+  unitAmountCents,
+  pixRecurringEnabled,
 }: CreateStripeCheckoutSessionParams & {
   frontendUrl?: string | null;
 }): Stripe.Checkout.SessionCreateParams {
@@ -111,8 +177,11 @@ export function buildStripeCheckoutSessionCreateParams({
   const urls = resolveCheckoutReturnUrls(
     frontendUrl ?? config.frontendUrl,
   );
+  const trialConfig = getCheckoutTrialConfig(mode, metadata, resolvedTrialDays);
+  const pixEnabled = pixRecurringEnabled ?? isStripePixRecurringEnabled();
+  const shouldOfferPixRecurring = pixEnabled && mode === "subscription";
 
-  return {
+  const params: CheckoutParamsWithPixMandate = {
     customer: customerId,
     client_reference_id: userId,
     line_items: [
@@ -127,10 +196,24 @@ export function buildStripeCheckoutSessionCreateParams({
     success_url: urls.success_url,
     cancel_url: urls.cancel_url,
     metadata,
-    ...getCheckoutTrialConfig(mode, metadata, resolvedTrialDays),
+    ...trialConfig,
     allow_promotion_codes: true,
     invoice_creation: getInvoiceCreationConfig(mode),
   };
+
+  if (shouldOfferPixRecurring) {
+    // Collect the Pix mandate even during a trial (no initial charge).
+    if (resolvedTrialDays > 0) {
+      params.payment_method_collection = "always";
+    }
+    params.payment_method_options = buildPixRecurringPaymentMethodOptions({
+      unitAmountCents: unitAmountCents ?? 0,
+      interval,
+      reference: tracking?.planName,
+    });
+  }
+
+  return params;
 }
 
 export function createStripeCheckoutSession(

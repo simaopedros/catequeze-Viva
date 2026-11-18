@@ -101,6 +101,12 @@ export const stripeWebhook: PaymentsWebhook = async (
       return response.status(204).send();
     }
 
+    if ((event.type as string) === "mandate.updated") {
+      handleMandateUpdated(event);
+      await recordStripeWebhookReceipt(trackedEventDelegate, event);
+      return response.status(204).send();
+    }
+
     switch (event.type) {
       case "checkout.session.completed":
         await handleCheckoutSessionCompleted(
@@ -958,6 +964,22 @@ async function markTrackedEventSkipped(
       },
     });
   }
+}
+
+/**
+ * A customer can revoke a Pix Automático mandate in their banking app.
+ * Stripe sends mandate.updated; the next invoice then fails and is already
+ * handled by invoice.payment_failed. We acknowledge the event so the webhook
+ * does not treat it as unhandled.
+ * @see https://docs.stripe.com/billing/subscriptions/pix
+ */
+function handleMandateUpdated(event: Stripe.Event): void {
+  const mandate = event.data.object as { id?: unknown; status?: unknown };
+  console.info("Stripe mandate.updated", {
+    eventId: event.id,
+    mandateId: typeof mandate.id === "string" ? mandate.id : undefined,
+    status: typeof mandate.status === "string" ? mandate.status : undefined,
+  });
 }
 
 async function recordStripeWebhookReceipt(

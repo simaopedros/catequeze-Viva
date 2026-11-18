@@ -88,6 +88,139 @@ describe("buildStripeCheckoutSessionCreateParams", () => {
     expect(params.subscription_data?.trial_period_days).toBeUndefined();
     expect(params.metadata?.trial_days).toBe("0");
     expect(JSON.stringify(params)).not.toMatch(/trial_period_days/);
+    expect(params.payment_method_options).toBeUndefined();
+    expect(params.payment_method_collection).toBe("always");
+  });
+
+  it("omits Pix mandate options when recurring Pix is disabled", async () => {
+    const { buildStripeCheckoutSessionCreateParams } = await import(
+      "../payment/stripe/checkoutUtils"
+    );
+
+    const params = buildStripeCheckoutSessionCreateParams({
+      priceId: HOMOLOG_TEST_MONTHLY,
+      customerId: "cus_test",
+      userId: "user-1",
+      mode: "subscription",
+      trialPeriodDays: 7,
+      frontendUrl: "https://homolog.catechis.app",
+      interval: "monthly",
+      unitAmountCents: 990,
+      pixRecurringEnabled: false,
+      tracking: {
+        planId: "single",
+        planName: "Plano Único",
+        value: 9.9,
+        currency: "BRL",
+      },
+    });
+
+    expect(params.payment_method_options).toBeUndefined();
+    expect(params.payment_method_collection).toBe("if_required");
+    expect(params.subscription_data?.trial_period_days).toBe(7);
+  });
+
+  it("adds monthly Pix mandate options when recurring Pix is enabled", async () => {
+    const { buildStripeCheckoutSessionCreateParams } = await import(
+      "../payment/stripe/checkoutUtils"
+    );
+
+    const params = buildStripeCheckoutSessionCreateParams({
+      priceId: HOMOLOG_TEST_MONTHLY,
+      customerId: "cus_test",
+      userId: "user-1",
+      mode: "subscription",
+      trialPeriodDays: 0,
+      frontendUrl: "https://homolog.catechis.app",
+      interval: "monthly",
+      unitAmountCents: getPlanPriceCents("single", "monthly"),
+      pixRecurringEnabled: true,
+      tracking: {
+        planId: "single",
+        planName: "Plano Catequista",
+        value: 9.9,
+        currency: "BRL",
+      },
+    });
+
+    expect(getPlanPriceCents("single", "monthly")).toBe(990);
+    expect(params.payment_method_options).toEqual({
+      pix: {
+        mandate_options: {
+          amount: 990,
+          amount_type: "maximum",
+          currency: "brl",
+          payment_schedule: "monthly",
+          reference: "Plano Catequista",
+        },
+      },
+    });
+    expect(params.payment_method_types).toBeUndefined();
+  });
+
+  it("adds yearly Pix mandate options for annual plans", async () => {
+    const { buildStripeCheckoutSessionCreateParams } = await import(
+      "../payment/stripe/checkoutUtils"
+    );
+
+    const params = buildStripeCheckoutSessionCreateParams({
+      priceId: "price_annual_test",
+      customerId: "cus_test",
+      userId: "user-1",
+      mode: "subscription",
+      trialPeriodDays: 0,
+      frontendUrl: "https://homolog.catechis.app",
+      interval: "annual",
+      unitAmountCents: getPlanPriceCents("unlimited", "annual"),
+      pixRecurringEnabled: true,
+      tracking: {
+        planId: "unlimited",
+        planName: "Plano Paróquia",
+        value: 990,
+        currency: "BRL",
+      },
+    });
+
+    expect(getPlanPriceCents("unlimited", "annual")).toBe(99000);
+    expect(params.payment_method_options).toEqual({
+      pix: {
+        mandate_options: {
+          amount: 99000,
+          amount_type: "maximum",
+          currency: "brl",
+          payment_schedule: "yearly",
+          reference: "Plano Paróquia",
+        },
+      },
+    });
+  });
+
+  it("always collects a payment method for trials when recurring Pix is enabled", async () => {
+    const { buildStripeCheckoutSessionCreateParams } = await import(
+      "../payment/stripe/checkoutUtils"
+    );
+
+    const params = buildStripeCheckoutSessionCreateParams({
+      priceId: HOMOLOG_TEST_MONTHLY,
+      customerId: "cus_test",
+      userId: "user-1",
+      mode: "subscription",
+      trialPeriodDays: 7,
+      frontendUrl: "https://homolog.catechis.app",
+      interval: "monthly",
+      unitAmountCents: 990,
+      pixRecurringEnabled: true,
+      tracking: {
+        planId: "single",
+        planName: "Plano Catequista",
+        value: 9.9,
+        currency: "BRL",
+      },
+    });
+
+    expect(params.payment_method_collection).toBe("always");
+    expect(params.subscription_data?.trial_period_days).toBe(7);
+    expect(params.payment_method_options?.pix?.mandate_options?.amount).toBe(990);
   });
 
   it("throws when the success URL origin is missing", async () => {
